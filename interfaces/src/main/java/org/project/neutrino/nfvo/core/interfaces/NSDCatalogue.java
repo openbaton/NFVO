@@ -1,0 +1,16 @@
+package org.project.neutrino.nfvo.core.interfaces;
+
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * Created by lto on 17/04/15.
+ */
+public interface NSDCatalogue {
+    public List<NetworkServiceDescriptor> findAll();
+
+    @Transactional(readOnly = true)
+    List<NetworkServiceDescriptor> find();
+}
