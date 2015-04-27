@@ -21,7 +21,7 @@ apply plugin: 'spring-boot'
 version = '1.0-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-mainClassName = 'de.fhg.fokus.ngni.osco.Application'
+mainClassName = 'Application'
 
 allprojects {
     task hello << { task -> println "I'm $task.project.name" }
