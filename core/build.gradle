@@ -1,0 +1,5 @@
+dependencies {
+    compile project(':interfaces')
+
+    testCompile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+}

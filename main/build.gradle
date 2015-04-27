@@ -1,0 +1,5 @@
+dependencies {
+    runtime project(':core')
+    runtime project(':api')
+    runtime project(':cli')
+}

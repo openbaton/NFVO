@@ -1,0 +1,94 @@
+buildscript {
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+    }
+}
+plugins {
+    id "net.saliman.cobertura" version "2.2.8"
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'spring-boot'
+
+version = '1.0-SNAPSHOT'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+mainClassName = 'de.fhg.fokus.ngni.osco.Application'
+
+allprojects {
+    task hello << { task -> println "I'm $task.project.name" }
+    //Put instructions for all projects
+    apply plugin: "java"
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
+        compile("org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE")
+        compile('org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE')
+        compile("org.springframework:spring-jms:4.1.6.RELEASE")
+        compile("javax.jms:javax.jms-api:2.0.1")
+        compile('org.apache.activemq:activemq-broker:5.11.1')
+        compile("mysql:mysql-connector-java:5.1.35")
+        compile("org.hibernate:hibernate-entitymanager:4.3.8.Final")
+        compile("org.hibernate:hibernate-core:4.3.8.Final")
+        compile('org.springframework:spring-orm:4.1.6.RELEASE')
+        compile('commons-dbcp:commons-dbcp:1.4')
+
+        testCompile("org.springframework.boot:spring-boot-starter-data-jpa:1.2.3.RELEASE")
+        testCompile('org.hsqldb:hsqldb:2.3.2')
+        testCompile("junit:junit:4.9")
+        testCompile("org.springframework:spring-test:4.1.6.RELEASE")
+        testCompile("org.mockito:mockito-core:1.9.5")
+    }
+}
+
+subprojects {
+    //Put instructions for each sub project
+}
+
+
+// tag::repositories[]
+// end::repositories[]
+
+// Tasks
+
+cobertura {
+    rootProject.subprojects.each {
+        coverageDirs << file("${it.name}/build/classes/main")
+    }
+}
+
+bootRun{
+    standardInput = System.in
+}
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+// tag::jar[]
+
+// end::jar[]
+
+// tag::dependencies[]
+
+dependencies {
+    compile project(':main')
+}
+
+// end::dependencies[]
+
+// tag::wrapper[]
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+// end::wrapper[]
