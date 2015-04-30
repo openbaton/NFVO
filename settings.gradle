@@ -1,1 +1,2 @@
-include 'api', 'cli', 'core', 'interfaces', 'main', 'repository'
+include 'api', 'cli', 'core', 'interfaces', 'main', 'catalogue'
+
