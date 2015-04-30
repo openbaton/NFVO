@@ -1,14 +1,12 @@
 package org.project.neutrino.nfvo.core.test.reositories;
 
+import org.junit.*;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.core.interfaces.NSDRepository;
 import org.project.neutrino.nfvo.core.test.ApplicationTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -130,6 +128,11 @@ public class RepositoryClassSuiteTest {
         virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
         nsd.setVnfd(virtualNetworkFunctionDescriptors);
         return nsd;
+    }
+
+    @AfterClass
+    public static void shutdown(){
+        // TODO Teardown to avoid exceptions during test shutdown
     }
 
 }
