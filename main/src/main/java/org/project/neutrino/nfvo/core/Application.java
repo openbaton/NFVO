@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.util.FileSystemUtils;
 
@@ -18,7 +19,8 @@ import java.io.File;
 
 @SpringBootApplication
 @EnableJms
-@EntityScan(basePackages="de.fhg.fokus.ngni.nfvo.repository.mano")
+@EntityScan(basePackages="org.project.neutrino.nfvo.catalogue.mano")
+@ComponentScan(basePackages = "org.project.neutrino.nfvo")
 public class Application {
 
 

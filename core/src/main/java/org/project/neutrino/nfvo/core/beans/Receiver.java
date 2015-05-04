@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
@@ -14,6 +15,7 @@ import org.springframework.util.FileSystemUtils;
 import java.io.File;
 
 @Component
+@EnableJms
 public class Receiver {
 
     private Logger log = LoggerFactory.getLogger(MyBean.class);
