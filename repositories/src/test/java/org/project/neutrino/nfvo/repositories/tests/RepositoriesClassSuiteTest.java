@@ -1,6 +1,7 @@
 package org.project.neutrino.nfvo.repositories.tests;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
@@ -35,8 +36,12 @@ public class RepositoriesClassSuiteTest {
     @Autowired
     private ConfigurableApplicationContext ctx;
 
-    @Autowired
-    NSDRepository nsdRepository;
+    private NSDRepository nsdRepository;
+
+    @BeforeClass
+    public void init(){
+        nsdRepository = new NSDRepository();
+    }
 
     @Test
     public void repositoryNotNullTest(){

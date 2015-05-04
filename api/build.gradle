@@ -1,5 +1,6 @@
 dependencies {
     compile project(':interfaces')
+    compile project(':repositories-interfaces')
     compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
     compile("mysql:mysql-connector-java:5.1.35")
 

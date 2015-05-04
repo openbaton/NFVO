@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -21,6 +22,7 @@ import javax.jms.Session;
  * Created by lto on 16/04/15.
  */
 @Service
+@EnableJms
 public class MyBean implements org.project.neutrino.nfvo.core.interfaces.MyBean {
 
     private Logger log = LoggerFactory.getLogger(MyBean.class);

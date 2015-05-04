@@ -4,6 +4,8 @@ import com.google.common.reflect.TypeToken;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,17 +32,20 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public T create(T entity) {
         this.entityManager.persist(entity);
         return entity;
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public T merge(T entity) {
         return this.entityManager.merge(entity);
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void remove(T entity) {
         this.entityManager.remove(entity);
     }
