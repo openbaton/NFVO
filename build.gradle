@@ -12,13 +12,17 @@ buildscript {
 plugins {
     id "net.saliman.cobertura" version "2.2.8"
 }
+plugins {
+    id 'net.researchgate.release' version '2.0.2'
+}
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 
-version = '1.0-SNAPSHOT'
+
+version = '0.1-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 mainClassName = 'org.project.neutrino.nfvo.core.Application'
@@ -93,3 +97,24 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
 // end::wrapper[]
+
+release {
+    failOnCommitNeeded = true	        // Fail the release process when there un-committed changes
+    failOnPublishNeeded = true	        // Fail when there are local commits that haven't been published upstream (DVCS support)
+    failOnSnapshotDependencies = true	// Fail when the project has dependencies on SNAPSHOT versions
+    failOnUnversionedFiles = true	    // Fail when files are found that are not under version control
+    failOnUpdateNeeded = true	        // Fail when the source needs to be updated, or there are changes available upstream that haven't been pulled
+    revertOnFail = true	                // When a failure occurs should the plugin revert it's changes to gradle.properties?
+}
+
+/*
+ * Gets the version name from the latest Git tag
+ */
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
