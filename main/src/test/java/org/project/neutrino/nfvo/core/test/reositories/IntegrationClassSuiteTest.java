@@ -1,11 +1,12 @@
 package org.project.neutrino.nfvo.core.test.reositories;
 
 
-import org.project.neutrino.nfvo.core.Application;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.project.neutrino.nfvo.core.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,17 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
 @ContextConfiguration(classes = {Application.class})
 @TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
-public class RepositoryClassSuiteTest {
+public class IntegrationClassSuiteTest {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ConfigurableApplicationContext context;
+
+    @BeforeClass
+    public static void init(){
+//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+    }
 
     @Test
     @Ignore

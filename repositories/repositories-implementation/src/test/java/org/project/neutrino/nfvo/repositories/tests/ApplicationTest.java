@@ -1,6 +1,5 @@
 package org.project.neutrino.nfvo.repositories.tests;
 
-import org.project.neutrino.nfvo.repositories.DatabaseRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -17,8 +16,8 @@ import javax.sql.DataSource;
  */
 @SpringBootApplication
 @EntityScan(basePackageClasses = {org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class, org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class, org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class})
-@ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.repositories.DatabaseRepository.class})
-@EnableJpaRepositories(basePackageClasses = {DatabaseRepository.class})
+@ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
+@EnableJpaRepositories(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
 public class ApplicationTest {
     @Bean
     public DataSource dataSource() {
@@ -36,6 +35,5 @@ public class ApplicationTest {
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
         for (String s : context.getBeanDefinitionNames())
             System.out.println(s);
-
     }
 }

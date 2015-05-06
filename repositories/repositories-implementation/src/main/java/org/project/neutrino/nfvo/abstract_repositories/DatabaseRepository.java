@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.repositories;
+package org.project.neutrino.nfvo.abstract_repositories;
 
 import com.google.common.reflect.TypeToken;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;

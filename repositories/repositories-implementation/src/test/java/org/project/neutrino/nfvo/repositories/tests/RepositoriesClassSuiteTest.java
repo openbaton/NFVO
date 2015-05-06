@@ -8,10 +8,11 @@ import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.neutrino.nfvo.repositories.NSDRepository;
+import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -36,11 +37,13 @@ public class RepositoriesClassSuiteTest {
     @Autowired
     private ConfigurableApplicationContext ctx;
 
-    private NSDRepository nsdRepository;
+    @Autowired
+    @Qualifier("NSDRepository")
+    private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
     @BeforeClass
-    public void init(){
-        nsdRepository = new NSDRepository();
+    public static void init(){
+//        nsdRepository = new NSDRepository();
     }
 
     @Test
@@ -76,7 +79,12 @@ public class RepositoriesClassSuiteTest {
             log.debug(n.toString());
         }
 
-        NetworkServiceDescriptor new_nsd = (NetworkServiceDescriptor) nsdRepository.find(nsd.getId());
+        NetworkServiceDescriptor new_nsd = null;
+        try {
+            new_nsd = nsdRepository.find(nsd.getId());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         Assert.assertNotNull(new_nsd);
         Assert.assertNotNull(new_nsd.getId());
