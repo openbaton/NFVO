@@ -9,16 +9,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/")
+@RequestMapping("/")
 public class RestServer {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    ConfigurableApplicationContext context;
 
     @Autowired
     MyBean myBean;
@@ -26,7 +31,14 @@ public class RestServer {
     @Autowired
     Sender sender;
 
+    @PostConstruct
+    public void init(){
+        for (String s : context.getBeanDefinitionNames())
+            log.debug(s);
+    }
+
     @Autowired
+//    @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
     @Autowired
