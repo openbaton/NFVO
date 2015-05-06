@@ -1,7 +1,6 @@
 include 'api'
 include 'cli'
-include 'core'
-include 'interfaces'
+include 'core', 'core:core-implementation', 'core:core-interfaces'
 include 'main'
 include 'catalogue'
 include 'repositories', 'repositories:repositories-implementation', 'repositories:repositories-interfaces'
