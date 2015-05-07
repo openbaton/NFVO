@@ -1,0 +1,9 @@
+include 'api'
+include 'cli'
+include 'core'
+include 'interfaces'
+include 'main'
+include 'catalogue'
+include 'repositories', 'repositories-interfaces'
+
+
