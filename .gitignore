@@ -24,6 +24,8 @@ activemq-data/
 .gradle/
 
 */build/*
+build/*
+build
 buildSrc/build
 /spring-*/build
 /src/asciidoc/build
