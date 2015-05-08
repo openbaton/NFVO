@@ -31,6 +31,10 @@ allprojects {
     task hello << { task -> println "I'm $task.project.name" }
     //Put instructions for all projects
     apply plugin: "java"
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    version = '0.1-SNAPSHOT'
+    
     repositories {
         mavenCentral()
     }
