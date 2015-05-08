@@ -81,7 +81,12 @@ test {
 }
 
 // tag::jar[]
-
+jar {
+    baseName = 'neutrino'
+    appendix = ''
+    classifier = ''
+    version = ''
+}
 // end::jar[]
 
 // tag::dependencies[]
