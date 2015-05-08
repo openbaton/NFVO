@@ -1,5 +1,6 @@
 include 'api'
 include 'cli'
+include 'nfvo-interfaces'
 include 'core', 'core:core-implementation', 'core:core-interfaces'
 include 'main'
 include 'catalogue'
