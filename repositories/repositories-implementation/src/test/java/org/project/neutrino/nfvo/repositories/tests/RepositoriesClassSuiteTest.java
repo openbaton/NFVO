@@ -80,11 +80,7 @@ public class RepositoriesClassSuiteTest {
         }
 
         NetworkServiceDescriptor new_nsd = null;
-        try {
-            new_nsd = nsdRepository.find(nsd.getId());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        new_nsd = nsdRepository.find(nsd.getId());
 
         Assert.assertNotNull(new_nsd);
         Assert.assertNotNull(new_nsd.getId());
