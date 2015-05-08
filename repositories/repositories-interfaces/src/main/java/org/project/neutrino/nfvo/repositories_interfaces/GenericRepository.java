@@ -2,6 +2,8 @@ package org.project.neutrino.nfvo.repositories_interfaces;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 /**
  * Created by lto on 30/04/15.
  */
@@ -10,5 +12,5 @@ public interface GenericRepository<T>{
     T create(T entity);
     T merge(T entity);
     void remove(T entity);
-    T find(String id) throws ClassNotFoundException;
+    T find(String id) throws NoResultException;
 }
