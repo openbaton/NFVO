@@ -7,4 +7,5 @@ dependencies {
     runtime project(':api')
     runtime project(':cli')
     runtime project(':repositories')
+    runtime project(':vim')
 }
