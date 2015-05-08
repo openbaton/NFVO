@@ -22,6 +22,10 @@ function tests {
     ./gradlew test
 }
 
+function clean {
+    ./gradlew clean
+}
+
 function end {
     exit
 }
@@ -32,6 +36,8 @@ function usage {
 for var in "$@"
 do
     case $var in
+        "clean" )
+            clean ;;
         "sc" )
             compile
             start ;;
