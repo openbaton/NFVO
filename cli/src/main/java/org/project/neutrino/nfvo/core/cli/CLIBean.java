@@ -38,6 +38,9 @@ public class CLIBean implements CommandLineRunner{
                     configurableApplicationContext.close();
                     exit = true;
                     break;
+                case "list beans":
+                    for (String s: configurableApplicationContext.getBeanDefinitionNames())
+                        log.info(s);
                 default:
 
 
