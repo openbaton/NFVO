@@ -8,6 +8,7 @@ import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -33,12 +34,13 @@ public class RestServer {
 
     @PostConstruct
     public void init(){
-        for (String s : context.getBeanDefinitionNames())
-            log.debug(s);
+        // To be used to initialize stuff
+//        for (String s : context.getBeanDefinitionNames())
+//            log.debug(s);
     }
 
     @Autowired
-//    @Qualifier("NSDRepository")
+    @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
     @Autowired

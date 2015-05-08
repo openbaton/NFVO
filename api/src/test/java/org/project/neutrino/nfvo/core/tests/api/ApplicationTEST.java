@@ -1,7 +1,6 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
 import org.project.neutrino.nfvo.core.interfaces.MyBean;
-import org.project.neutrino.nfvo.core.interfaces.NSDRepository;
 import org.project.neutrino.nfvo.core.interfaces.Sender;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
@@ -41,18 +40,12 @@ public class ApplicationTEST {
     }
 
     @Bean
-    GenericRepository<?> genericRepository(){ return mock(GenericRepository.class);}
+    GenericRepository genericRepository(){ return mock(GenericRepository.class);}
 
     @Bean
     Receiver receiver(){
         return mock(Receiver.class);
     }
-
-    @Bean
-    NSDRepository nsdRepository(){
-        return mock(NSDRepository.class);
-    }
-
 
     public static void main(String[] argv){
 
