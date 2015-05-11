@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=$(./gradlew -q getVersion)
+name=$(./gradlew -q getVersion)
 
 function start {
 
@@ -16,6 +16,7 @@ function start {
 }
 
 function compile {
+    echo -e "building $name"
     ./gradlew build
 }
 
@@ -31,7 +32,7 @@ function end {
     exit
 }
 function usage {
-    echo -e "$version\n"
+    echo -e "$name\n"
     echo -e "Usage:\n\t ./neutrino.sh <option>\n\t"
     echo -e "where option is"
     echo -e "\t\t * compile"

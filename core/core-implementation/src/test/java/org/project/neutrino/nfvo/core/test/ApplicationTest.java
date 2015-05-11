@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.core.test;
 
+import org.project.neutrino.nfvo.core.nfvo_core.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +21,7 @@ import javax.sql.DataSource;
 		org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class,
 		org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class,
 		org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class })
-@ComponentScan(basePackageClasses = { org.project.neutrino.nfvo.core.beans.MyBean.class }, basePackages = "org.project.neutrino.nfvo")
+@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class }, basePackages = "org.project.neutrino.nfvo")
 @EnableJpaRepositories(basePackageClasses = {GenericRepository.class})
 public class ApplicationTest {
 

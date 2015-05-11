@@ -127,5 +127,5 @@ def getVersionName = { ->
 }
 
 task getVersion {
-    task -> println "Neutrino Version: $project.version"
+    task -> println "Neutrino v$project.version"
 }

@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.interfaces;
+package org.project.neutrino.nfvo.core.interfaces;
 
 import java.util.List;
 

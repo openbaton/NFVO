@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.interfaces;
+package org.project.neutrino.nfvo.core.interfaces;
 
 /**
  * Created by mpa on 05/05/15.
