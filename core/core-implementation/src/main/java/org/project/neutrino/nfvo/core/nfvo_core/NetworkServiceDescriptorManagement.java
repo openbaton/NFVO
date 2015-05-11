@@ -2,6 +2,8 @@ package org.project.neutrino.nfvo.core.nfvo_core;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +20,8 @@ import java.util.List;
 @Scope // TODO think if singleton or prototype
 public class NetworkServiceDescriptorManagement implements org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
@@ -29,6 +33,8 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) {
+        log.trace("Creating " + networkServiceDescriptor);
+        log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return nsdRepository.create(networkServiceDescriptor);
     }
 
@@ -41,6 +47,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public boolean disable(String id) throws NoResultException {
+        log.debug("disabling NetworkServiceDescriptor with id " + id);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(id);
         networkServiceDescriptor.setEnabled(false);
         return networkServiceDescriptor.isEnabled();
@@ -53,6 +60,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public boolean enable(String id) throws NoResultException {
+        log.debug("enabling NetworkServiceDescriptor with id " + id);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(id);
         networkServiceDescriptor.setEnabled(true);
         return networkServiceDescriptor.isEnabled();
@@ -101,6 +109,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public void delete(String id) {
+        log.debug("Removing NetworkServiceDescriptor with id " + id);
         nsdRepository.remove(nsdRepository.find(id));
     }
 }

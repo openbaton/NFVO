@@ -1,6 +1,5 @@
 include 'api'
 include 'cli'
-include 'nfvo-interfaces'
 include 'core', 'core:core-implementation', 'core:core-interfaces'
 include 'main'
 include 'vim', 'vim:vim-implementation', 'vim:vim-interfaces'
