@@ -1,17 +1,19 @@
 package org.project.neutrino.nfvo.core.test.reositories;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.core.test.ApplicationTest;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -34,6 +36,9 @@ public class RepositoryClassSuiteTest {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	private MockMvc mockMvc;
 
 	@Autowired
@@ -46,6 +51,7 @@ public class RepositoryClassSuiteTest {
 	}
 
 	@Autowired
+	@Qualifier("NSDRepository")
 	GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
 	@Test
@@ -143,6 +149,8 @@ public class RepositoryClassSuiteTest {
 		nsdRepository.remove(nsd);
 
 		NetworkServiceDescriptor nsd_null = null;
+
+		exception.expect(javax.persistence.NoResultException.class);
 		nsd_null = nsdRepository.find(id);
 
 	}
