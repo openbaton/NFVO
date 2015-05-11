@@ -1,4 +1,7 @@
 dependencies {
     compile project(':core:core-interfaces')
+    compile project(':repositories:repositories-interfaces')
+
     testCompile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+    testRuntime project(':repositories:repositories-implementation')
 }
