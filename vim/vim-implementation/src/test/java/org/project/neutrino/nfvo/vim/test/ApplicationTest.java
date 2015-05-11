@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class ApplicationTest {
 
     /**
-     * Testing if the context contains all the needed beans
+     * Testing if the context contains all the needed nfvo_core
      * @param argv
      */
     public static void main(String[] argv){

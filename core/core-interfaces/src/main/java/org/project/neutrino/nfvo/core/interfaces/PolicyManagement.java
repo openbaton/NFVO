@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.interfaces;
+package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.Policy;
 import java.util.List;

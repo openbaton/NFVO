@@ -1,12 +1,12 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
-import org.project.neutrino.nfvo.api.RestServer;
-import org.project.neutrino.nfvo.api.model.TestClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.project.neutrino.nfvo.api.model.TestClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,6 @@ public class ApiClassSuiteTest {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    RestServer restServer;
-
-    @Autowired
     private WebApplicationContext ctx;
 
     private MockMvc mockMvc;
@@ -49,6 +46,7 @@ public class ApiClassSuiteTest {
     }
 
     @Test
+    @Ignore
     public void firstExampleTest() {
 
         // TESTClass

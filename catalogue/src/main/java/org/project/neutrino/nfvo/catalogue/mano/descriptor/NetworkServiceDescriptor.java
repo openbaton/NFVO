@@ -49,11 +49,20 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
     @OneToOne(cascade = CascadeType.ALL)
     private Security nsd_security;
 
+	private boolean enabled;
+
     public NetworkServiceDescriptor() {
     }
 
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    public List<VirtualNetworkFunctionDescriptor> getVnfd() {
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public List<VirtualNetworkFunctionDescriptor> getVnfd() {
 		return vnfd;
 	}
 
