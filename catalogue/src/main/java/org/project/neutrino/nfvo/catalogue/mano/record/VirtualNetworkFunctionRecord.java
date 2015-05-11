@@ -43,8 +43,8 @@ public class VirtualNetworkFunctionRecord {
 
     @Id
     private String id = IdGenerator.createUUID();
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private LifecycleEvent lifecycle_event;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<LifecycleEvent> lifecycle_event;
     /**
      * A language attribute may be specified to identifydefault localisation/language
      * */
@@ -174,11 +174,11 @@ public class VirtualNetworkFunctionRecord {
         this.id = id;
     }
 
-    public LifecycleEvent getLifecycle_event() {
+    public List<LifecycleEvent> getLifecycle_event() {
         return lifecycle_event;
     }
 
-    public void setLifecycle_event(LifecycleEvent lifecycle_event) {
+    public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
         this.lifecycle_event = lifecycle_event;
     }
 

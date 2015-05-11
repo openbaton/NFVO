@@ -17,6 +17,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,10 +48,10 @@ public class NetworkServiceRecord implements Serializable{
     private String version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VirtualLinkRecord> vlr;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private VirtualNetworkFunctionRecord vnfr;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private LifecycleEvent lifecycle_event;
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<VirtualNetworkFunctionRecord> vnfr;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<LifecycleEvent> lifecycle_event;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VNFDependency> vnf_dependency;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -162,19 +163,19 @@ public class NetworkServiceRecord implements Serializable{
         this.vlr = vlr;
     }
 
-    public VirtualNetworkFunctionRecord getVnfr() {
+    public List<VirtualNetworkFunctionRecord> getVnfr() {
         return vnfr;
     }
 
-    public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
+    public void setVnfr(ArrayList<VirtualNetworkFunctionRecord> vnfr) {
         this.vnfr = vnfr;
     }
 
-    public LifecycleEvent getLifecycle_event() {
+    public List<LifecycleEvent> getLifecycle_event() {
         return lifecycle_event;
     }
 
-    public void setLifecycle_event(LifecycleEvent lifecycle_event) {
+    public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
         this.lifecycle_event = lifecycle_event;
     }
 

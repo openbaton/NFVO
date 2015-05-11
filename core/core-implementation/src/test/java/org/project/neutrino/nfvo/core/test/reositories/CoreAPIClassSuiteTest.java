@@ -8,10 +8,6 @@ import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
-import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
-import org.project.neutrino.nfvo.core.interfaces.NetworkServiceFaultManagement;
-import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.neutrino.nfvo.core.test.ApplicationTest;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
@@ -36,7 +32,7 @@ import java.util.List;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 @ContextConfiguration(classes = { ApplicationTest.class })
 @TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
-public class RepositoryClassSuiteTest {
+public class CoreAPIClassSuiteTest {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -55,48 +51,15 @@ public class RepositoryClassSuiteTest {
 	}
 
 	@Autowired
-	private NetworkServiceDescriptorManagement nsdManagement;
-
-	@Autowired
-	private NFVImageManagement NFVImageManagement;
-
-	@Autowired
-	private NetworkServiceRecordManagement nsrManagement;
-
-	@Autowired
-	private NetworkServiceFaultManagement nsfManagement;
-
-	@Test
-	public void nsdManagementNotNull(){
-		Assert.assertNotNull(nsdManagement);
-	}
-	@Test
-	public void imageManagementNotNull(){
-		Assert.assertNotNull(NFVImageManagement);
-	}
-	@Test
-	public void nsrManagementNotNull(){
-		Assert.assertNotNull(nsrManagement);
-	}
-	@Test
-	public void nsfManagementNotNull(){
-		Assert.assertNotNull(nsfManagement);
-	}
-
-	@Autowired
 	@Qualifier("NSDRepository")
 	GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
-
-
 	@Test
-	@Ignore // TODO move it to the repository implementation tests
 	public void nsdRepositoryFindTest() {
 		Assert.assertEquals(0, nsdRepository.findAll().size());
 	}
 
 	@Test
-	@Ignore // TODO move it to the repository implementation tests
 	public void nsdRepositoryMergeTest() {
 		NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 		NetworkServiceDescriptor nsd_new;
