@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.core.nfvo_core;
+package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -34,8 +34,9 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) {
         log.trace("Creating " + networkServiceDescriptor);
+        nsdRepository.create(networkServiceDescriptor);
         log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
-        return nsdRepository.create(networkServiceDescriptor);
+        return networkServiceDescriptor;
     }
 
     /**
