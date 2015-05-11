@@ -1,5 +1,6 @@
 #!/bin/bash
 
+version=$(./gradlew -q getVersion)
 
 function start {
 
@@ -30,8 +31,20 @@ function end {
     exit
 }
 function usage {
-    echo -e "neutrino Usage:\n\t ./neutrino.sh <option>\n\n\n\twhere option is\n\t\t * compile\n\t\t * start\n\t\t * test\n"
+    echo -e "$version\n"
+    echo -e "Usage:\n\t ./neutrino.sh <option>\n\t"
+    echo -e "where option is"
+    echo -e "\t\t * compile"
+    echo -e "\t\t * start"
+    echo -e "\t\t * test"
+    echo -e "\t\t * clean"
 }
+
+if [ $# -eq 0 ]
+   then
+        usage
+        exit 1
+fi
 
 for var in "$@"
 do
