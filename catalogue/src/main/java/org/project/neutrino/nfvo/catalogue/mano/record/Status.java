@@ -12,4 +12,5 @@ package org.project.neutrino.nfvo.catalogue.mano.record;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 public enum Status {
+ INITIAILZED
 }

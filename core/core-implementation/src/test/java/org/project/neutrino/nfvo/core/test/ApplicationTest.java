@@ -1,6 +1,8 @@
 package org.project.neutrino.nfvo.core.test;
 
-import org.project.neutrino.nfvo.core.nfvo_core.NetworkServiceDescriptorManagement;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +15,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
 import javax.sql.DataSource;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * Created by lto on 20/04/15.
  */
@@ -24,6 +28,12 @@ import javax.sql.DataSource;
 @ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class }, basePackages = "org.project.neutrino.nfvo")
 @EnableJpaRepositories(basePackageClasses = {GenericRepository.class})
 public class ApplicationTest {
+
+	@Bean
+	GenericRepository<NetworkServiceDescriptor> genericRepositoryNSD(){ return mock(GenericRepository.class);}
+
+	@Bean
+	GenericRepository<NetworkServiceRecord> genericRepositoryNSR(){ return mock(GenericRepository.class);}
 
 	@Bean
 	public DataSource dataSource() {

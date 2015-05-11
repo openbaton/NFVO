@@ -27,7 +27,7 @@ public class ApplicationTest {
 
 
     /**
-     * Testing if the context contains all the needed nfvo_core
+     * Testing if the context contains all the needed beans
      * @param argv
      */
     public static void main(String[] argv){

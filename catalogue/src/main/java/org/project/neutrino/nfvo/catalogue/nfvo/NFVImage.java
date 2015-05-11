@@ -10,7 +10,7 @@ import javax.persistence.Version;
  * Created by lto on 11/05/15.
  */
 @Entity
-public class Image {
+public class NFVImage {
     @Id
     private String id = IdGenerator.createUUID();
     @Version
@@ -22,7 +22,7 @@ public class Image {
     private String minDiskSpace;
     private String minCPU;
 
-    public Image() {
+    public NFVImage() {
     }
 
     public String getName() {
