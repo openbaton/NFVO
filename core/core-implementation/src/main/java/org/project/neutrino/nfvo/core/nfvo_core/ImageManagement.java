@@ -1,11 +1,13 @@
 package org.project.neutrino.nfvo.core.nfvo_core;
 
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.nfvo.Image;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
@@ -22,10 +24,10 @@ public class ImageManagement implements org.project.neutrino.nfvo.core.interface
     private GenericRepository<Image> imageRepository;
 
     @Override
-    public void add(Image image) {
+    public Image add(Image image) {
         log.trace("Adding image " + image);
         log.debug("Adding image with name " + image.getName());
-        imageRepository.create(image);
+        return imageRepository.create(image);
     }
 
     @Override
@@ -43,7 +45,12 @@ public class ImageManagement implements org.project.neutrino.nfvo.core.interface
     public List<Image> query() {
         return imageRepository.findAll();
     }
-
+    
+    @Override
+    public Image query(String id){
+        return imageRepository.find(id);
+    }
+    
     @Override
     public void copy() {
         throw new NotImplementedException();

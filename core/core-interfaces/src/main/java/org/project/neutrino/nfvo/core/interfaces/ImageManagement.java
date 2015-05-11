@@ -1,8 +1,8 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
-import org.project.neutrino.nfvo.catalogue.nfvo.Image;
-
 import java.util.List;
+
+import org.project.neutrino.nfvo.catalogue.nfvo.Image;
 
 /**
  * Created by mpa on 30/04/15.
@@ -14,7 +14,7 @@ public interface ImageManagement {
      * This operation allows adding new VNF software 
      * images to the image repository.
      */
-    void add(Image image);
+    Image add(Image image);
 
     /**
 	 * This operation allows deleting in the VNF software 
@@ -36,6 +36,12 @@ public interface ImageManagement {
 	 * the VNF software images in the image repository.
 	 */
     List<Image> query();
+    
+    /**
+     * This operation allows querying the information of 
+     * the VNF software image in the image repository.
+     */
+    Image query(String id);
     
     /**
 	 * This operation allows copying images from 
