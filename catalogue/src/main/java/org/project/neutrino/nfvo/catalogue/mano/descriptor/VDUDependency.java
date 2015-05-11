@@ -22,7 +22,13 @@ public class VDUDependency {
 	@Version
 	private int version = 0;
 	
-    public String getId() {
+	@OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+	private VirtualDeploymentUnit source;
+	@OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+	private VirtualDeploymentUnit target;
+
+
+	public String getId() {
 		return id;
 	}
 
@@ -37,28 +43,24 @@ public class VDUDependency {
 	public void setVersion(int version) {
 		this.version = version;
 	}
-	@OneToOne(cascade={CascadeType.MERGE, CascadeType.PERSIST})
-	private VirtualDeploymentUnit source;
-	@OneToOne(cascade={CascadeType.MERGE, CascadeType.PERSIST})
-    private VirtualDeploymentUnit target;
 
-    public VirtualDeploymentUnit getTarget() {
-        return target;
-    }
+	public VirtualDeploymentUnit getTarget() {
+		return target;
+	}
 
-    public void setTarget(VirtualDeploymentUnit target) {
-        this.target = target;
-    }
+	public void setTarget(VirtualDeploymentUnit target) {
+		this.target = target;
+	}
 
-    public VirtualDeploymentUnit getSource() {
-        return source;
-    }
+	public VirtualDeploymentUnit getSource() {
+		return source;
+	}
 
-    public void setSource(VirtualDeploymentUnit source) {
-        this.source = source;
-    }
+	public void setSource(VirtualDeploymentUnit source) {
+		this.source = source;
+	}
 
-    public VDUDependency() {
+	public VDUDependency() {
 
-    }
+	}
 }
