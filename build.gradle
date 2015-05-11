@@ -22,7 +22,6 @@ apply plugin: 'application'
 apply plugin: 'spring-boot'
 
 
-version = '0.1-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 mainClassName = 'org.project.neutrino.nfvo.core.Application'
@@ -33,8 +32,7 @@ allprojects {
     apply plugin: "java"
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
-    version = '0.1-SNAPSHOT'
-    
+
     repositories {
         mavenCentral()
     }
@@ -126,4 +124,8 @@ def getVersionName = { ->
         standardOutput = stdout
     }
     return stdout.toString().trim()
+}
+
+task getVersion {
+    task -> println "Neutrino Version: $project.version"
 }

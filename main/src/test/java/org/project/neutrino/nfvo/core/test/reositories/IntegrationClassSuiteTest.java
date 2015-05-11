@@ -3,7 +3,6 @@ package org.project.neutrino.nfvo.core.test.reositories;
 
 import org.junit.After;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.project.neutrino.nfvo.core.Application;
@@ -37,7 +36,6 @@ public class IntegrationClassSuiteTest {
     }
 
     @Test
-    @Ignore
     public void method1(){
         log.info("Here the context");
 
