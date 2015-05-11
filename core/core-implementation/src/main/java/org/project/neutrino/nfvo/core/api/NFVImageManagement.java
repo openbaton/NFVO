@@ -1,33 +1,37 @@
-package org.project.neutrino.nfvo.core.nfvo_core;
+package org.project.neutrino.nfvo.core.api;
 
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.neutrino.nfvo.catalogue.nfvo.Image;
+import java.util.List;
+
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.List;
 
 /**
  * Created by lto on 11/05/15.
  */
-public class ImageManagement implements org.project.neutrino.nfvo.core.interfaces.ImageManagement{
+@Service
+@Scope
+public class NFVImageManagement implements org.project.neutrino.nfvo.core.interfaces.NFVImageManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("imageRepository")
-    private GenericRepository<Image> imageRepository;
+    private GenericRepository<NFVImage> imageRepository;
 
     @Override
-    public Image add(Image image) {
-        log.trace("Adding image " + image);
-        log.debug("Adding image with name " + image.getName());
-        return imageRepository.create(image);
+    public NFVImage add(NFVImage NFVImage) {
+        log.trace("Adding image " + NFVImage);
+        log.debug("Adding image with name " + NFVImage.getName());
+        //TODO maybe check whenever the image is available on the Datacenter
+        return imageRepository.create(NFVImage);
     }
 
     @Override
@@ -37,17 +41,17 @@ public class ImageManagement implements org.project.neutrino.nfvo.core.interface
     }
 
     @Override
-    public Image update(Image new_image, String id) {
+    public NFVImage update(NFVImage new_NFV_image, String id) {
         throw new NotImplementedException();
     }
 
     @Override
-    public List<Image> query() {
+    public List<NFVImage> query() {
         return imageRepository.findAll();
     }
     
     @Override
-    public Image query(String id){
+    public NFVImage query(String id){
         return imageRepository.find(id);
     }
     
