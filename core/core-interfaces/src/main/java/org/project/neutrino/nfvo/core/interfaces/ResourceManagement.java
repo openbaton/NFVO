@@ -2,6 +2,8 @@ package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 
+import java.util.concurrent.Future;
+
 /**
  * Created by mpa on 30/04/15.
  */
@@ -12,7 +14,7 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	void allocate(VirtualDeploymentUnit vdu);
+	Future<Void> allocate(VirtualDeploymentUnit vdu);
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
