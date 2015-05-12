@@ -33,6 +33,8 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) {
+        if (networkServiceDescriptor.getId() == null)
+            nsdRepository.create(networkServiceDescriptor);
         log.trace("Creating " + networkServiceDescriptor);
         nsdRepository.create(networkServiceDescriptor);
         log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );

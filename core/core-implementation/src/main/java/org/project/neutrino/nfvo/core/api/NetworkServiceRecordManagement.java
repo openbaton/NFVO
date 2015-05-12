@@ -38,6 +38,10 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
 
     @Override
     public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) {
+
+//        for (String s : context.getBeanDefinitionNames())
+//                log.debug(s);
+
         /*
         Create NSR
          */
@@ -58,13 +62,13 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
                 ResourceManagement vim;
                 switch (virtualDeploymentUnit.getDatacenter().getType()) {
                     case "test":
-                        vim = (ResourceManagement) context.getBean("TestVIM");
+                        vim = (ResourceManagement) context.getBean("testVIM");
                         break;
                     case "openstack":
-                        vim = (ResourceManagement) context.getBean("OpenstackVIM");
+                        vim = (ResourceManagement) context.getBean("openstackVIM");
                         break;
                     case "amazon":
-                        vim = (ResourceManagement) context.getBean("AmazonVIM");
+                        vim = (ResourceManagement) context.getBean("amazonVIM");
                         break;
                     default:
                         throw new NotImplementedException();

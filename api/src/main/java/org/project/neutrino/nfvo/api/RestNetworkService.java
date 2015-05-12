@@ -1,37 +1,35 @@
 package org.project.neutrino.nfvo.api;
 
-import java.util.List;
-
-import javax.persistence.NoResultException;
-import javax.validation.Valid;
-
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
+import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.NoResultException;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author dbo
  *
  */
 @RestController
-@RequestMapping("/ns-descriptors")
+@RequestMapping("/network-service")
 public class RestNetworkService {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
+	@Autowired
+	private NetworkServiceRecordManagement networkServiceRecordManagement;
 
 	/**
 	 * This operation allows submitting and
@@ -40,7 +38,7 @@ public class RestNetworkService {
 	 * @param networkServiceDescriptor: the Network Service Descriptor to be created
 	 * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from core
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/descriptors", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	NetworkServiceDescriptor create(
 			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
@@ -53,7 +51,7 @@ public class RestNetworkService {
      * disabled Network Service Descriptor 
 	 * @param id: the id of Network Service Descriptor
 	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/descriptors/{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void delete(@PathVariable("id") String id) {
 		try {
@@ -69,7 +67,7 @@ public class RestNetworkService {
 	 * This operation return the list of Network Service Descriptor (NSD)
 	 * @return List<NetworkServiceDescriptor>: the list of Network Service Descriptor stored
 	 */
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/descriptors", method = RequestMethod.GET)
 	List<NetworkServiceDescriptor> findAll() {
 		return networkServiceDescriptorManagement.query();
 	}
@@ -79,7 +77,7 @@ public class RestNetworkService {
 	 * @param id: the id of Network Service Descriptor
 	 * @return NetworkServiceDescriptor: the Network Service Descriptor selected
 	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/descriptors/{id}", method = RequestMethod.GET)
 	NetworkServiceDescriptor findById(@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -99,12 +97,18 @@ public class RestNetworkService {
 	 * @return networkServiceDescriptor: the Network Service Descriptor updated
 	 */
 
-	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/descriptors/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	NetworkServiceDescriptor update(
 			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
 			@PathVariable("id") String id) {
 		return networkServiceDescriptorManagement.update(
 				networkServiceDescriptor, id);
+	}
+
+	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	NetworkServiceRecord createRecord(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
+		return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 }
