@@ -17,6 +17,10 @@
 					"virtual_network_bandwidth_resource":"1000000",
 					"lifecycle_event":[
 					],
+					"datacenter":{
+						"name":"test_datacenter",
+						"type":"test"
+					},
 					"vdu_constraint":"",
 					"high_availability":"ACTIVE_PASSIVE",
 					"scale_in_out":3,

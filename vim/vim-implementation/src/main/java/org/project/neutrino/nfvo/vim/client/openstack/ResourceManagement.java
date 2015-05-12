@@ -1,11 +1,14 @@
 package org.project.neutrino.nfvo.vim.client.openstack;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 
 /**
@@ -36,9 +39,10 @@ public class ResourceManagement implements org.project.neutrino.nfvo.vim_interfa
     }
 
     @Override
-    public void allocate(VirtualDeploymentUnit vdu) {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         String s = osClient.launch_instance("test_instance","cirros","m1.small", null, null, null, null);
         //System.out.println(osClient.getImageId("cirros"));
+        return new AsyncResult<String>(s);
     }
 
     @Override
