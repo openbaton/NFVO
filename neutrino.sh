@@ -1,7 +1,5 @@
 #!/bin/bash
 
-name=$(./gradlew -q getVersion)
-
 function start {
 
     if [ ! -f build/libs/neutrino.jar  ]
@@ -16,7 +14,6 @@ function start {
 }
 
 function compile {
-    echo -e "building $name"
     ./gradlew build
 }
 
@@ -32,7 +29,7 @@ function end {
     exit
 }
 function usage {
-    echo -e "$name\n"
+    echo -e "Neutrino\n"
     echo -e "Usage:\n\t ./neutrino.sh <option>\n\t"
     echo -e "where option is"
     echo -e "\t\t * compile"
@@ -53,6 +50,7 @@ do
         "clean" )
             clean ;;
         "sc" )
+            clean
             compile
             start ;;
         "start" )

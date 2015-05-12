@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.core;
+package org.project.neutrino.nfvo.main;
 
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;

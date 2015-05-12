@@ -24,10 +24,10 @@ apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-mainClassName = 'org.project.neutrino.nfvo.core.Application'
+mainClassName = 'org.project.neutrino.nfvo.main.Application'
 
 allprojects {
-    task hello << { task -> println "I'm $task.project.name" }
+    task listmodules << { task -> println "\t * $task.project.name" }
     //Put instructions for all projects
     apply plugin: "java"
     sourceCompatibility = 1.7
