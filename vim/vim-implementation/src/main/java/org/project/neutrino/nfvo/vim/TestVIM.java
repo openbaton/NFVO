@@ -29,8 +29,8 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @Qualifier("AmazonClient")
-    private ClientInterfaces amazonClient;
+    @Qualifier("testClient")
+    private ClientInterfaces testClient;
 
     @Override
     public void add() {
