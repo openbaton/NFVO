@@ -9,6 +9,7 @@ import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,28 +30,31 @@ public class RestImage {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
+	@Qualifier("NFVImageManagement")
 	private NFVImageManagement imageManagement;
 
 	/**
 	 * Adds a new VNF software Image to the image repository
 	 * 
-	 * @param image: Image to add
+	 * @param image
+	 *            : Image to add
 	 * @return image: The image filled with values from the core
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	NFVImage create(@RequestBody @Valid NFVImage image) {
+	public NFVImage create(@RequestBody @Valid NFVImage image) {
 		return imageManagement.add(image);
 	}
 
 	/**
 	 * Removes the VNF software Image from the Image repository
 	 * 
-	 * @param id: The Image's id to be deleted
+	 * @param id
+	 *            : The Image's id to be deleted
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void delete(@PathVariable("id") String id) {
+	public void delete(@PathVariable("id") String id) {
 		imageManagement.delete(id);
 	}
 
@@ -60,18 +64,19 @@ public class RestImage {
 	 * @return List<Image>: The list of VNF software images available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	List<NFVImage> findAll() {
+	public List<NFVImage> findAll() {
 		return imageManagement.query();
 	}
 
 	/**
 	 * This operation returns the VNF software image selected by id
 	 * 
-	 * @param id: The id of the VNF software image
+	 * @param id
+	 *            : The id of the VNF software image
 	 * @return image: The VNF software image selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	NFVImage findById(@PathVariable("id") String id) {
+	public NFVImage findById(@PathVariable("id") String id) {
 		NFVImage image = imageManagement.query(id);
 
 		return image;
@@ -89,7 +94,8 @@ public class RestImage {
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	NFVImage update(@RequestBody @Valid NFVImage image, @PathVariable("id") String id) {
+	public NFVImage update(@RequestBody @Valid NFVImage image,
+			@PathVariable("id") String id) {
 		return imageManagement.update(image, id);
 	}
 }
