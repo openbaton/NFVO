@@ -19,7 +19,7 @@ import java.io.File;
 
 @SpringBootApplication
 @EnableJms
-@EntityScan(basePackages="org.project.neutrino.nfvo.catalogue.mano")
+@EntityScan(basePackages="org.project.neutrino.nfvo.catalogue")
 @ComponentScan(basePackages = "org.project.neutrino.nfvo")
 public class Application {
 
