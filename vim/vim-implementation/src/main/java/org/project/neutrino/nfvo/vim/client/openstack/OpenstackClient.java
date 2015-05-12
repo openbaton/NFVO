@@ -16,6 +16,8 @@ import org.jclouds.openstack.nova.v2_0.features.FlavorApi;
 import org.jclouds.openstack.nova.v2_0.features.ImageApi;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.v2_0.domain.Resource;
+import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +33,10 @@ import java.util.Set;
  */
 @Service
 @Scope
-class OpenstackClient {
-    private final NovaApi novaApi;
-    private final NeutronApi neutronApi;
-    private final Set<String> zones;
+class OpenstackClient implements ClientInterfaces {
+    private NovaApi novaApi;
+    private NeutronApi neutronApi;
+    private Set<String> zones;
     private String defaultZone = null;
 
     public OpenstackClient() {
@@ -45,20 +47,13 @@ class OpenstackClient {
     }
 
     public OpenstackClient(String user, String password, String tenant, String url) {
-        Iterable<Module> modules = ImmutableSet
-                .<Module> of(new SLF4JLoggingModule());
+        Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
         Properties overrides = new Properties();
-        overrides.setProperty(KeystoneProperties.CREDENTIAL_TYPE,
-                CredentialTypes.PASSWORD_CREDENTIALS);
+        overrides.setProperty(KeystoneProperties.CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
         overrides.setProperty(Constants.PROPERTY_RELAX_HOSTNAME, "true");
         overrides.setProperty(Constants.PROPERTY_TRUST_ALL_CERTS, "true");
-        novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(url)
-                .credentials(tenant + ":" + user, password).modules(modules)
-                .overrides(overrides).buildApi(NovaApi.class);
-        neutronApi = ContextBuilder.newBuilder("openstack-neutron")
-                .endpoint(url).credentials(tenant + ":" + user, password)
-                .modules(modules).overrides(overrides)
-                .buildApi(NeutronApi.class);
+        novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(url).credentials(tenant + ":" + user, password).modules(modules).overrides(overrides).buildApi(NovaApi.class);
+        neutronApi = ContextBuilder.newBuilder("openstack-neutron").endpoint(url).credentials(tenant + ":" + user, password).modules(modules).overrides(overrides).buildApi(NeutronApi.class);
         zones = novaApi.getConfiguredRegions();
         if (null == defaultZone) {
             defaultZone = zones.iterator().next();
@@ -117,8 +112,23 @@ class OpenstackClient {
         //CreateServerOptions options = CreateServerOptions.Builder
         //        .keyPairName(keypair).networks(network)
         //        .securityGroupNames(secGroup).userData(userData.getBytes());
-        ServerCreated ser = serverApi.create(name, this.getImageId(image), this.getFlavorId(flavor), null);
+        ServerCreated ser = serverApi.create(name, this.getImageId(image), this.getFlavorId(flavor));
         return ser.getId();
+    }
+
+    @Override
+    public void init(Datacenter datacenter) {
+        Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
+        Properties overrides = new Properties();
+        overrides.setProperty(KeystoneProperties.CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
+        overrides.setProperty(Constants.PROPERTY_RELAX_HOSTNAME, "true");
+        overrides.setProperty(Constants.PROPERTY_TRUST_ALL_CERTS, "true");
+        novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(datacenter.getAuthUrl()).credentials(datacenter.getTenant() + ":" + datacenter.getUsername(), datacenter.getPassword()).modules(modules).overrides(overrides).buildApi(NovaApi.class);
+        neutronApi = ContextBuilder.newBuilder("openstack-neutron").endpoint(datacenter.getAuthUrl()).credentials(datacenter.getTenant() + ":" + datacenter.getUsername(), datacenter.getPassword()).modules(modules).overrides(overrides).buildApi(NeutronApi.class);
+        zones = novaApi.getConfiguredRegions();
+        if (null == defaultZone) {
+            defaultZone = zones.iterator().next();
+        }
     }
 
     public void rebootServer(String server, RebootType type) {

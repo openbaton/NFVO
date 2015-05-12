@@ -1,24 +1,20 @@
 package org.project.neutrino.nfvo.api;
 
-import java.util.List;
-
-import javax.persistence.NoResultException;
-import javax.validation.Valid;
-
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
+import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.NoResultException;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author dbo
@@ -32,6 +28,8 @@ public class RestNetworkService {
 
 	@Autowired
 	private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
+	@Autowired
+	private NetworkServiceRecordManagement networkServiceRecordManagement;
 
 	/**
 	 * This operation allows submitting and validating a Network Service
@@ -74,8 +72,10 @@ public class RestNetworkService {
 	 * @return List<NetworkServiceDescriptor>: the list of Network Service
 	 *         Descriptor stored
 	 */
+
 	@RequestMapping(method = RequestMethod.GET)
 	public List<NetworkServiceDescriptor> findAll() {
+
 		return networkServiceDescriptorManagement.query();
 	}
 
@@ -87,6 +87,7 @@ public class RestNetworkService {
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceDescriptor: the Network Service Descriptor selected
 	 */
+
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public NetworkServiceDescriptor findById(@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
@@ -117,5 +118,11 @@ public class RestNetworkService {
 			@PathVariable("id") String id) {
 		return networkServiceDescriptorManagement.update(
 				networkServiceDescriptor, id);
+	}
+
+	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	NetworkServiceRecord createRecord(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
+		return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 }

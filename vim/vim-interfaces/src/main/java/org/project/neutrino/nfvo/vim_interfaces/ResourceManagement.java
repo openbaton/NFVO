@@ -1,6 +1,10 @@
 package org.project.neutrino.nfvo.vim_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.springframework.scheduling.annotation.Async;
+
+import java.util.concurrent.Future;
 
 /**
  * Created by mpa on 30/04/15.
@@ -12,7 +16,8 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	void allocate(VirtualDeploymentUnit vdu);
+	@Async
+	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows querying a virtualised resource, 

@@ -8,6 +8,7 @@ package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
+import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -75,6 +76,10 @@ public class VirtualDeploymentUnit {
      * */
     @ElementCollection(fetch=FetchType.EAGER)
     private List<String> monitoring_parameter;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Datacenter datacenter;
+    private String hostname;
 
     public VirtualDeploymentUnit() {
     }
@@ -191,5 +196,21 @@ public class VirtualDeploymentUnit {
                 ", vnfc=" + vnfc +
                 ", monitoring_parameter=" + monitoring_parameter +
                 '}';
+    }
+
+    public Datacenter getDatacenter() {
+        return datacenter;
+    }
+
+    public void setDatacenter(Datacenter datacenter) {
+        this.datacenter = datacenter;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 }
