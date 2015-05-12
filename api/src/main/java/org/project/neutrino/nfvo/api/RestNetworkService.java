@@ -34,28 +34,31 @@ public class RestNetworkService {
 	private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
 
 	/**
-	 * This operation allows submitting and
-     * validating a Network Service	Descriptor (NSD),
-     * including any related VNFFGD and VLD.
-	 * @param networkServiceDescriptor: the Network Service Descriptor to be created
-	 * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from core
+	 * This operation allows submitting and validating a Network Service
+	 * Descriptor (NSD), including any related VNFFGD and VLD.
+	 * 
+	 * @param networkServiceDescriptor
+	 *            : the Network Service Descriptor to be created
+	 * @return networkServiceDescriptor: the Network Service Descriptor filled
+	 *         with id and values from core
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	NetworkServiceDescriptor create(
+	public NetworkServiceDescriptor create(
 			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
 		return networkServiceDescriptorManagement
 				.onboard(networkServiceDescriptor);
 	}
 
 	/**
-	 * This operation is used to remove a
-     * disabled Network Service Descriptor 
-	 * @param id: the id of Network Service Descriptor
+	 * This operation is used to remove a disabled Network Service Descriptor
+	 * 
+	 * @param id
+	 *            : the id of Network Service Descriptor
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void delete(@PathVariable("id") String id) {
+	public void delete(@PathVariable("id") String id) {
 		try {
 			networkServiceDescriptorManagement.delete(id);
 		} catch (NoResultException e) {
@@ -66,21 +69,26 @@ public class RestNetworkService {
 	}
 
 	/**
-	 * This operation return the list of Network Service Descriptor (NSD)
-	 * @return List<NetworkServiceDescriptor>: the list of Network Service Descriptor stored
+	 * This operation returns the list of Network Service Descriptor (NSD)
+	 * 
+	 * @return List<NetworkServiceDescriptor>: the list of Network Service
+	 *         Descriptor stored
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	List<NetworkServiceDescriptor> findAll() {
+	public List<NetworkServiceDescriptor> findAll() {
 		return networkServiceDescriptorManagement.query();
 	}
 
 	/**
-	 * This operation returns the Network Service Descriptor (NSD) selected by id
-	 * @param id: the id of Network Service Descriptor
+	 * This operation returns the Network Service Descriptor (NSD) selected by
+	 * id
+	 * 
+	 * @param id
+	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceDescriptor: the Network Service Descriptor selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	NetworkServiceDescriptor findById(@PathVariable("id") String id) {
+	public NetworkServiceDescriptor findById(@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -91,17 +99,20 @@ public class RestNetworkService {
 		}
 		return nsd;
 	}
-	
+
 	/**
 	 * This operation updates the Network Service Descriptor (NSD)
-	 * @param networkServiceDescriptor: the Network Service Descriptor to be updated
-	 * @param id: the id of Network Service Descriptor
+	 * 
+	 * @param networkServiceDescriptor
+	 *            : the Network Service Descriptor to be updated
+	 * @param id
+	 *            : the id of Network Service Descriptor
 	 * @return networkServiceDescriptor: the Network Service Descriptor updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	NetworkServiceDescriptor update(
+	public NetworkServiceDescriptor update(
 			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
 			@PathVariable("id") String id) {
 		return networkServiceDescriptorManagement.update(

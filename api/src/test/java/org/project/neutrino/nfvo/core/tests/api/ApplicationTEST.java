@@ -19,13 +19,11 @@ import static org.mockito.Mockito.mock;
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "org.project.neutrino.nfvo")
-@EnableJpaRepositories(basePackageClasses = {GenericRepository.class})
+
 public class ApplicationTEST {
 
     private static Logger log = LoggerFactory.getLogger(ApplicationTEST.class);
 
-    @Bean
-    GenericRepository genericRepository(){ return mock(GenericRepository.class);}
 
     @Bean
     Receiver receiver(){
