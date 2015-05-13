@@ -1,0 +1,14 @@
+{
+  "name":"test_datacenter",
+  "authUrl":"http://the.ip.address.here/v2",
+  "tenant":"test_tenant",
+  "username":"test_username",
+  "password":"test_password",
+  "keyPair":"test_keyPair",
+  "securityGroup": [
+    "test_security_group1",
+    "test_security_group2",
+    "test_security_group3"
+  ],
+  "type":"test"
+}

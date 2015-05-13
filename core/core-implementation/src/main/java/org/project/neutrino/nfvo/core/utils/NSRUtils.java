@@ -1,9 +1,6 @@
 package org.project.neutrino.nfvo.core.utils;
 
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.*;
 import org.project.neutrino.nfvo.catalogue.mano.record.*;
 
 import java.util.ArrayList;
@@ -12,7 +9,7 @@ import java.util.List;
 /**
  * Created by lto on 11/05/15.
  */
-public class Utils {
+public class NSRUtils {
 
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor){
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
@@ -22,7 +19,7 @@ public class Utils {
         networkServiceRecord.setAuto_scale_policy(networkServiceDescriptor.getAuto_scale_policy());
         networkServiceRecord.setVnfr(new ArrayList<VirtualNetworkFunctionRecord>());
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = Utils.createVirtualNetworkFunctionRecord(vnfd);
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd);
             virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
             //TODO set dependecies!!!
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
@@ -31,7 +28,7 @@ public class Utils {
         networkServiceRecord.setLifecycle_event(networkServiceDescriptor.getLifecycle_event());
         List<PhysicalNetworkFunctionRecord> pnfrs = new ArrayList<PhysicalNetworkFunctionRecord>();
         for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()){
-            pnfrs.add(Utils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
+            pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
         }
         networkServiceRecord.setPnfr(pnfrs);
         networkServiceRecord.setStatus(Status.INITIAILZED);
@@ -39,7 +36,7 @@ public class Utils {
         networkServiceRecord.setVersion(networkServiceDescriptor.getVersion());
         networkServiceRecord.setVlr(new ArrayList<VirtualLinkRecord>());
         for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()){
-            networkServiceRecord.getVlr().add(Utils.createVirtualLinkRecord(virtualLinkDescriptor));
+            networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
         }
         networkServiceRecord.setVnf_dependency(networkServiceDescriptor.getVnf_dependency());
 

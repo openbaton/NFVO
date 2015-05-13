@@ -1,20 +1,18 @@
 package org.project.neutrino.nfvo.abstract_repositories;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-
+import com.google.common.reflect.TypeToken;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.reflect.TypeToken;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Created by lto on 30/04/15.
@@ -31,7 +29,7 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
 		};
 		Type type = typeToken.getType();
-		log.debug("TYPE: " + type.toString());
+		log.trace("TYPE: " + type.toString());
 		return this.entityManager.createQuery("FROM " + type.toString())
 				.getResultList();
 	}
@@ -60,7 +58,7 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
 		};
 		Type type = typeToken.getType();
-		log.debug("Type is: " + type.toString());
+		log.trace("Type is: " + type.toString());
 		Object o = entityManager.createQuery(
 				"FROM " + type.toString() + " WHERE id=\'" + id + "\'")
 				.getSingleResult();
