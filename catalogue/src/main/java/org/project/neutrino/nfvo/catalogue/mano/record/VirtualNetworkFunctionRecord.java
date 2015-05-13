@@ -6,6 +6,7 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.record;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.neutrino.nfvo.catalogue.mano.common.AutoScalePolicy;
 import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
@@ -17,6 +18,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+
 
 /**
  * Created by lto on 06/02/15.
@@ -74,6 +76,7 @@ public class VirtualNetworkFunctionRecord {
      * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
      * */
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private NetworkServiceRecord parent_ns;
     /**
