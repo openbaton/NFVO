@@ -20,7 +20,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-
+apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -35,7 +35,9 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
+
     dependencies {
         compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
         compile("org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE")
@@ -104,6 +106,38 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 // end::wrapper[]
+
+// tag::install[]
+
+
+install {
+    repositories.mavenInstaller {
+        // only necessary if artifact ID diverges from project name
+        // the latter defaults to project directory name and can be
+        // configured in settings.gradle
+//            pom.artifactId = 'nfvo-core'
+        // shouldn't be needed as this is the default anyway
+        pom.packaging = 'pom'
+        addFilter('api') {artifact, file ->
+            artifact.name == 'api'
+            artifact.packaging = 'war'
+        }
+        addFilter('core') {artifact, file ->
+            artifact.name == 'core'
+            artifact.packaging = 'jar'
+        }
+    }
+}
+
+// end::install[]
+
+uploadArchives {
+    repositories.mavenDeployer {
+    }
+}
+
+
+
 
 release {
     failOnCommitNeeded = true	        // Fail the release process when there un-committed changes

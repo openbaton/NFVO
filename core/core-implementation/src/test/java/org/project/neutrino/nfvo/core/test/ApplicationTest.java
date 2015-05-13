@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 @SpringBootApplication
 @EntityScan(basePackageClasses = {
 		org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class,
+		org.project.neutrino.nfvo.catalogue.nfvo.Datacenter.class,
 		org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class,
 		org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class })
 @ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class }, basePackages = "org.project.neutrino.nfvo")

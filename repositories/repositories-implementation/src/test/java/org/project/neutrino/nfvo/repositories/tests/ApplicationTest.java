@@ -15,7 +15,7 @@ import javax.sql.DataSource;
  * Created by lto on 30/04/15.
  */
 @SpringBootApplication
-@EntityScan(basePackageClasses = {org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class, org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class, org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class})
+@EntityScan(basePackageClasses = {org.project.neutrino.nfvo.catalogue.nfvo.Datacenter.class, org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class, org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class, org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class})
 @ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
 @EnableJpaRepositories(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
 public class ApplicationTest {

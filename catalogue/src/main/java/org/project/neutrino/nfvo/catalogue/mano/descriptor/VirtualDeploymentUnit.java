@@ -77,7 +77,7 @@ public class VirtualDeploymentUnit {
     @ElementCollection(fetch=FetchType.EAGER)
     private List<String> monitoring_parameter;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     private Datacenter datacenter;
     private String hostname;
 

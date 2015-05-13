@@ -4,7 +4,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.core.utils.Utils;
+import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         /*
         Create NSR
          */
-        NetworkServiceRecord networkServiceRecord = Utils.createNetworkServiceRecord(networkServiceDescriptor);
+        NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Deploying " + networkServiceRecord);
         nsrRepository.create(networkServiceRecord);
 
