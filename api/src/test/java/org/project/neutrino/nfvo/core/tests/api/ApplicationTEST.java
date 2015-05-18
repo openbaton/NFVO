@@ -1,6 +1,9 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import static org.mockito.Mockito.mock;
+
+import javax.sound.midi.Receiver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -8,11 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import javax.sound.midi.Receiver;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by lto on 20/04/15.
