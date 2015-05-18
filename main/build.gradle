@@ -1,7 +1,9 @@
 dependencies {
+    compile project(':repositories:repositories-interfaces')
+    compile project(':catalogue')
     runtime project(':core')
     runtime project(':api')
     runtime project(':cli')
-    runtime project(':repositories')
     runtime project(':vim')
+    runtime project(':repositories')
 }

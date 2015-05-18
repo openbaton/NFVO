@@ -21,6 +21,8 @@ public class Datacenter {
     private String username;
     private String password;
     private String keyPair;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Location location;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> securityGroups;
@@ -30,14 +32,26 @@ public class Datacenter {
     @Override
     public String toString() {
         return "Datacenter{" +
-                "name='" + name + '\'' +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
                 ", authUrl='" + authUrl + '\'' +
                 ", tenant='" + tenant + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", keyPair='" + keyPair + '\'' +
+                ", location=" + location +
                 ", securityGroups=" + securityGroups +
+                ", type='" + type + '\'' +
                 '}';
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public String getId() {

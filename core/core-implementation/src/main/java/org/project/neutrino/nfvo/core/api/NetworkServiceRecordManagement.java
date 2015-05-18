@@ -4,6 +4,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,10 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     private GenericRepository<NetworkServiceRecord> nsrRepository;
 
     @Autowired
-    ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
+
+    @Autowired
+    private NSDUtils nsdUtils;
 
     @Override
     public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) {
@@ -45,6 +48,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         /*
         Create NSR
          */
+        nsdUtils.fetchData(networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Deploying " + networkServiceRecord);
         nsrRepository.create(networkServiceRecord);
@@ -71,7 +75,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
                         vim = (ResourceManagement) context.getBean("amazonVIM");
                         break;
                     default:
-                        throw new NotImplementedException();
+                        throw new UnsupportedOperationException();
                 }
                 ids.add(vim.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord));
             }
@@ -81,7 +85,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
 
     @Override
     public NetworkServiceRecord update(NetworkServiceRecord new_nsd, String old_id) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

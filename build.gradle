@@ -21,6 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -66,6 +67,12 @@ subprojects {
 
 
 // tag::repositories[]
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
 // end::repositories[]
 
 // Tasks
@@ -89,7 +96,6 @@ jar {
     baseName = 'neutrino'
     appendix = ''
     classifier = ''
-    version = ''
 }
 // end::jar[]
 
@@ -108,36 +114,6 @@ task wrapper(type: Wrapper) {
 // end::wrapper[]
 
 // tag::install[]
-
-
-install {
-    repositories.mavenInstaller {
-        // only necessary if artifact ID diverges from project name
-        // the latter defaults to project directory name and can be
-        // configured in settings.gradle
-//            pom.artifactId = 'nfvo-core'
-        // shouldn't be needed as this is the default anyway
-        pom.packaging = 'pom'
-        addFilter('api') {artifact, file ->
-            artifact.name == 'api'
-            artifact.packaging = 'war'
-        }
-        addFilter('core') {artifact, file ->
-            artifact.name == 'core'
-            artifact.packaging = 'jar'
-        }
-    }
-}
-
-// end::install[]
-
-uploadArchives {
-    repositories.mavenDeployer {
-    }
-}
-
-
-
 
 release {
     failOnCommitNeeded = true	        // Fail the release process when there un-committed changes
@@ -162,4 +138,12 @@ def getVersionName = { ->
 
 task getVersion {
     task -> println "Neutrino v$project.version"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }

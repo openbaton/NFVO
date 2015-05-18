@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.concurrent.Future;
 
@@ -43,7 +42,7 @@ public class AmazonVIM implements ImageManagement, ResourceManagement {
     @Override
     @Async
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

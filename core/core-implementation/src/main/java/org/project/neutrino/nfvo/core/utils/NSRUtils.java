@@ -63,7 +63,9 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setAuto_scale_policy(vnfd.getAuto_scale_policy());
         // TODO mange the VirtualLinks and links...
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
+
         virtualNetworkFunctionRecord.setVdu(vnfd.getVdu());
+
         virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
         virtualNetworkFunctionRecord.setConnection_point(vnfd.getConnection_point());
         // TODO find a way to choose between deployment flavors
