@@ -26,11 +26,9 @@ public class RestDatacenter {
 	private DatacenterManagement datacenterManagement;
 
 	/**
-	 * Adds a new VNF software Image to the datacenter repository
-	 * 
+	 * Adds a new Datacenter to the Datacenters repository
 	 * @param datacenter
-	 *            : Image to add
-	 * @return datacenter: The datacenter filled with values from the core
+	 * @return datacenter
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
@@ -39,10 +37,9 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * Removes the VNF software Image from the Image repository
+	 * Removes the Datacenter from the Datacenter repository
 	 * 
-	 * @param id
-	 *            : The Image's id to be deleted
+	 * @param id: The Datacenter's id to be deleted
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -51,9 +48,8 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * Returns the list of the VNF software images available
-	 * 
-	 * @return List<Image>: The list of VNF software images available
+	 * Returns the list of the Datacenters available
+	 * @return List<Datacenter>: The List of Datacenters available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Datacenter> findAll() {
@@ -61,11 +57,9 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * This operation returns the VNF software image selected by id
-	 * 
-	 * @param id
-	 *            : The id of the VNF software image
-	 * @return image: The VNF software image selected
+	 * Returns the Datacenter selected by id
+	 * @param id: The Datacenter's id selected
+	 * @return Datacenter: The Datacenter selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public Datacenter findById(@PathVariable("id") String id) {
@@ -75,13 +69,10 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * This operation updates the Network Service Descriptor (NSD)
-	 * 
-	 * @param new_datacenter
-	 *            : the new datacenter to be updated to
-	 * @param id
-	 *            : the id of the old datacenter
-	 * @return datacenter: the Datacenter updated
+	 * Updates the Datacenter
+	 * @param new_datacenter: The Datacenter to be updated
+	 * @param id: The Datacenter's id selected
+	 * @return Datacenter: The Datacenter updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

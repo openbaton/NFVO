@@ -26,11 +26,9 @@ public class RestConfiguration {
 	private ConfigurationManagement configurationManagement;
 
 	/**
-	 * Adds a new VNF software Image to the configuration repository
-	 * 
+	 * Adds a new Configuration to the Configurations repository
 	 * @param configuration
-	 *            : Image to add
-	 * @return configuration: The configuration filled with values from the core
+	 * @return configuration
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
@@ -39,11 +37,10 @@ public class RestConfiguration {
 	}
 
 	/**
-	 * Removes the VNF software Image from the Image repository
-	 * 
-	 * @param id
-	 *            : The Image's id to be deleted
+	 * Removes the Configuration from the Configurations repository
+	 * @param id: the id of configuration to be removed
 	 */
+
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable("id") String id) {
@@ -51,9 +48,8 @@ public class RestConfiguration {
 	}
 
 	/**
-	 * Returns the list of the VNF software images available
-	 * 
-	 * @return List<Image>: The list of VNF software images available
+	 * Returns the list of the Configurations available
+	 * @return List<Configuration>: The list of Configurations available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Configuration> findAll() {
@@ -61,11 +57,9 @@ public class RestConfiguration {
 	}
 
 	/**
-	 * This operation returns the VNF software image selected by id
-	 * 
-	 * @param id
-	 *            : The id of the VNF software image
-	 * @return image: The VNF software image selected
+	 * Returns the Configuration selected by id
+	 * @param id: The id of the Configuration
+	 * @return Configuration: The Configuration selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public Configuration findById(@PathVariable("id") String id) {
@@ -75,13 +69,10 @@ public class RestConfiguration {
 	}
 
 	/**
-	 * This operation updates the Network Service Descriptor (NSD)
-	 * 
-	 * @param new_configuration
-	 *            : the new configuration to be updated to
-	 * @param id
-	 *            : the id of the old datacenter
-	 * @return datacenter: the Configuration updated
+	 * Updates the Configuration
+	 * @param new_configuration:  The Configuration to be updated
+	 * @param id: The id of the Configuration
+	 * @return Configuration The Configuration updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

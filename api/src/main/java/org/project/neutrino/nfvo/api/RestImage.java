@@ -69,7 +69,7 @@ public class RestImage {
 	}
 
 	/**
-	 * This operation returns the VNF software image selected by id
+	 * Returns the VNF software image selected by id
 	 * 
 	 * @param id
 	 *            : The id of the VNF software image
@@ -83,13 +83,13 @@ public class RestImage {
 	}
 
 	/**
-	 * This operation updates the Network Service Descriptor (NSD)
+	 * Updates the VNF software image
 	 * 
 	 * @param networkServiceDescriptor
-	 *            : the Network Service Descriptor to be updated
+	 *            : the VNF software image to be updated
 	 * @param id
-	 *            : the id of Network Service Descriptor
-	 * @return networkServiceDescriptor: the Network Service Descriptor updated
+	 *            : the id of VNF software image
+	 * @return networkServiceDescriptor: the VNF software image updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
