@@ -21,7 +21,6 @@ apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply plugin: 'maven'
-apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -31,6 +30,8 @@ allprojects {
     task listmodules << { task -> println "\t * $task.project.name" }
     //Put instructions for all projects
     apply plugin: "java"
+    apply plugin: 'maven'
+
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
 
@@ -138,12 +139,4 @@ def getVersionName = { ->
 
 task getVersion {
     task -> println "Neutrino v$project.version"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
 }
