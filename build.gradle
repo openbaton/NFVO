@@ -140,3 +140,35 @@ def getVersionName = { ->
 task getVersion {
     task -> println "Neutrino v$project.version"
 }
+
+//tag::uploadArchives[]
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            addFilter('api') {artifact, file ->
+                artifact.name == 'api'
+            }
+            addFilter('catalogue') {artifact, file ->
+                artifact.name == 'catalogue'
+            }
+            addFilter('cli') {artifact, file ->
+                artifact.name == 'cli'
+            }
+            addFilter('core') {artifact, file ->
+                artifact.name == 'core'
+            }
+            addFilter('main') {artifact, file ->
+                artifact.name == 'main'
+            }
+            addFilter('repository') {artifact, file ->
+                artifact.name == 'repository'
+            }
+            addFilter('vim') {artifact, file ->
+                artifact.name == 'vim'
+            }
+        }
+    }
+}
+
+//end::uploadArchives[]
