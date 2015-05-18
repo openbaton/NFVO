@@ -1,7 +1,5 @@
 package org.project.neutrino.nfvo.core.api;
 
-import java.util.List;
-
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
@@ -11,7 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.util.List;
 
 /**
  * Created by lto on 11/05/15.
@@ -42,7 +40,7 @@ public class NFVImageManagement implements org.project.neutrino.nfvo.core.interf
 
     @Override
     public NFVImage update(NFVImage new_NFV_image, String id) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -57,6 +55,6 @@ public class NFVImageManagement implements org.project.neutrino.nfvo.core.interf
     
     @Override
     public void copy() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }

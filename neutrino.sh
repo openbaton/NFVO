@@ -9,7 +9,7 @@ function start {
 
     if [ 0 -eq $? ]
         then
-            java -jar build/libs/neutrino.jar
+            java -jar build/libs/neutrino-0.2-SNAPSHOT.jar
     fi
 }
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class DatacenterManagement implements org.project.neutrino.nfvo.core.inte
 
     @Override
     public Datacenter update(Datacenter new_datacenter, String id) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
