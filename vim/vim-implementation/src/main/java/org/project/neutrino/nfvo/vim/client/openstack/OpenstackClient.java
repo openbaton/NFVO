@@ -4,29 +4,31 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
 import org.jclouds.Constants;
 import org.jclouds.ContextBuilder;
+import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.keystone.v2_0.config.CredentialTypes;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties;
 import org.jclouds.openstack.neutron.v2.NeutronApi;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.domain.*;
+import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.SecurityGroupApi;
 import org.jclouds.openstack.nova.v2_0.features.FlavorApi;
 import org.jclouds.openstack.nova.v2_0.features.ImageApi;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
+import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.jclouds.openstack.v2_0.domain.Resource;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
+import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by mpa on 06.05.15.
@@ -106,13 +108,11 @@ class OpenstackClient implements ClientInterfaces {
     }
 
     public String launch_instance(String name, String image, String flavor,
-                                  String keypair, String network, Iterable<String> secGroup,
+                                  String keypair, List<String> network, List<String> secGroup,
                                   String userData) {
         ServerApi serverApi = this.novaApi.getServerApi(defaultZone);
-        //CreateServerOptions options = CreateServerOptions.Builder
-        //        .keyPairName(keypair).networks(network)
-        //        .securityGroupNames(secGroup).userData(userData.getBytes());
-        ServerCreated ser = serverApi.create(name, this.getImageId(image), this.getFlavorId(flavor));
+        CreateServerOptions options = CreateServerOptions.Builder.keyPairName(keypair).networks(network).securityGroupNames(secGroup).userData(userData.getBytes());
+        ServerCreated ser = serverApi.create(name, this.getImageId(image), this.getFlavorId(flavor), options);
         return ser.getId();
     }
 
@@ -129,6 +129,53 @@ class OpenstackClient implements ClientInterfaces {
         if (null == defaultZone) {
             defaultZone = zones.iterator().next();
         }
+    }
+
+    @Override
+    public List<NFVImage> listImages() {
+        ImageApi imageApi = this.novaApi.getImageApi(defaultZone);
+        List<NFVImage> images = new ArrayList<NFVImage>();
+        for (IterableWithMarker<Image> im : imageApi.listInDetail().toList()){
+            for(int i = 0; i < im.size() ; i++){
+                NFVImage image = new NFVImage();
+                image.setName(im.get(i).getName());
+                image.setExtId(im.get(i).getId());
+                image.setMinRam("" + im.get(i).getMinRam());
+                image.setCreated(im.get(i).getCreated());
+                images.add(image);
+            }
+        }
+        return images;
+    }
+
+    public List<org.project.neutrino.nfvo.catalogue.nfvo.Server> listServer(){
+        List<org.project.neutrino.nfvo.catalogue.nfvo.Server> servers = new ArrayList<org.project.neutrino.nfvo.catalogue.nfvo.Server>();
+        ServerApi serverApi = this.novaApi.getServerApi(defaultZone);
+        for (Server s : serverApi.listInDetail().concat()){
+            org.project.neutrino.nfvo.catalogue.nfvo.Server server = new org.project.neutrino.nfvo.catalogue.nfvo.Server();
+            server.setName(s.getName());
+            server.setExtId(s.getId());
+            server.setIp(s.getAccessIPv4());
+            servers.add(server);
+        }
+        return servers;
+    }
+
+    @Override
+    public List<Network> listNetworks() {
+        List<Network> networks = new ArrayList<Network>();
+
+        for (org.jclouds.openstack.neutron.v2.domain.Network n : this.neutronApi.getNetworkApi(defaultZone).list().concat()){
+            Network network = new Network();
+            network.setName(n.getName());
+            network.setNetworkType(n.getNetworkType().name());
+            network.setExternal(n.getExternal());
+            network.setShared(n.getShared());
+            network.setSubnets(n.getSubnets());
+            networks.add(network);
+        }
+
+        return networks;
     }
 
     public void rebootServer(String server, RebootType type) {

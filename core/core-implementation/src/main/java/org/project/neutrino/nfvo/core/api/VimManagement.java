@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.neutrino.nfvo.vim_interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -18,9 +19,16 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     @Autowired
     @Qualifier("vimRepository")
     private GenericRepository<VimInstance> vimInstanceGenericRepository;
+    @Autowired
+    private VimBroker<ImageManagement> imageManagementVimBroker;
+
+    @Autowired
+    private VimBroker<org.project.neutrino.nfvo.vim_interfaces.NetworkManagement> networkManagementVimBroker;
+
 
     @Override
     public VimInstance add(VimInstance vimInstance) {
+        this.refresh(vimInstance);
         return vimInstanceGenericRepository.create(vimInstance);
     }
 
@@ -42,5 +50,11 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     @Override
     public VimInstance query(String id) {
         return vimInstanceGenericRepository.find(id);
+    }
+
+    @Override
+    public void refresh(VimInstance vimInstance) {
+        vimInstance.setImages(imageManagementVimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+        vimInstance.setNetworks(networkManagementVimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
     }
 }

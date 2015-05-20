@@ -2,8 +2,12 @@ package org.project.neutrino.nfvo.vim_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Server;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.scheduling.annotation.Async;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -17,14 +21,15 @@ public interface ResourceManagement {
 	 * indicated by the consumer functional block.
 	 */
 	@Async
-	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
 	 * i.e. retrieve information about an instantiated virtualised 
 	 * resource.
+	 * @param vimInstance
 	 */
-	void query();
+	List<Server> queryResources(VimInstance vimInstance);
 	
 	/**
 	 * This operation allows updating the configuration and/or 
