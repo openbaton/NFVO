@@ -1,20 +1,20 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.api.RestDatacenter;
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
-import org.project.neutrino.nfvo.core.interfaces.DatacenterManagement;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * @author dbo
@@ -29,7 +29,7 @@ public class ApiRestDatacenterTest {
 	RestDatacenter restDatacenter;
 
 	@Mock
-	DatacenterManagement mock;
+	private VimManagement mock;
 
 	@Before
 	public void init() {
@@ -40,27 +40,27 @@ public class ApiRestDatacenterTest {
 	public void testdatacenterFindAll() {
 
 		log.info("" + mock.query());
-		List<Datacenter> list = mock.query();
+		List<VimInstance> list = mock.query();
 		when(mock.query()).thenReturn(list);
 		assertEquals(list, restDatacenter.findAll());
 	}
 
 	@Test
 	public void testdatacenterCreate() {
-		Datacenter datacenter = new Datacenter();
+		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
 		datacenter.setType("OpenStack");
 		datacenter.setName("datacenter_test");
 		when(mock.add(datacenter)).thenReturn(datacenter);
 		log.info("" + restDatacenter.create(datacenter));
-		Datacenter datacenter2 = restDatacenter.create(datacenter);
+		VimInstance datacenter2 = restDatacenter.create(datacenter);
 		assertEquals(datacenter, datacenter2);
 	}
 
 	@Test
 	public void testdatacenterFindBy() {
-		Datacenter datacenter = new Datacenter();
+		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
 		datacenter.setType("OpenStack");
@@ -71,7 +71,7 @@ public class ApiRestDatacenterTest {
 
 	@Test
 	public void testdatacenterUpdate() {
-		Datacenter datacenter = new Datacenter();
+		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
 		datacenter.setType("OpenStack");

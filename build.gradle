@@ -17,7 +17,6 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-apply plugin: "jacoco"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -39,8 +38,6 @@ allprojects {
         mavenCentral()
         mavenLocal()
     }
-
-
 
     dependencies {
         compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
