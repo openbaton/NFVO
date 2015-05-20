@@ -61,7 +61,7 @@ public class RepositoriesClassSuiteTest {
 
         Assert.assertNotNull(nsd);
         Assert.assertNotNull(nsd.getId());
-        log.debug("Id is: " + nsd.getId());
+        log.debug("id is: " + nsd.getId());
 
     }
 
@@ -73,7 +73,7 @@ public class RepositoriesClassSuiteTest {
 
         Assert.assertNotNull(nsd);
         Assert.assertNotNull(nsd.getId());
-        log.debug("Id is: " + nsd.getId());
+        log.debug("id is: " + nsd.getId());
 
         List<NetworkServiceDescriptor> all = nsdRepository.findAll();
         log.debug("" + all);

@@ -35,6 +35,8 @@ public class RestConfiguration {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public Configuration create(@RequestBody @Valid Configuration configuration) {
+		log.trace("Adding Configuration: " + configuration);
+		log.debug("Adding Configuration");
 		return configurationManagement.add(configuration);
 	}
 
@@ -47,6 +49,7 @@ public class RestConfiguration {
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable("id") String id) {
+		log.debug("removing Configuration with id " + id);
 		configurationManagement.delete(id);
 	}
 
@@ -57,6 +60,7 @@ public class RestConfiguration {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Configuration> findAll() {
+		log.debug("Find all Configurations");
 		return configurationManagement.query();
 	}
 
@@ -69,8 +73,9 @@ public class RestConfiguration {
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public Configuration findById(@PathVariable("id") String id) {
+		log.debug("find Configuration with id " + id);
 		Configuration configuration = configurationManagement.query(id);
-
+		log.trace("Found Configuration: " + configuration);
 		return configuration;
 	}
 
@@ -88,6 +93,8 @@ public class RestConfiguration {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Configuration update(@RequestBody @Valid Configuration new_configuration,
 			@PathVariable("id") String id) {
+		log.trace("updating Configuration with id " + id + " with values: " + new_configuration);
+		log.debug("updating Configuration with id " + id);
 		return configurationManagement.update(new_configuration, id);
 	}
 }

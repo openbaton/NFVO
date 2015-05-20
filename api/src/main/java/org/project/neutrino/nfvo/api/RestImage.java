@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/images")
 public class RestImage {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	//	TODO add log prints
+//	private Logger log = LoggerFactory.getLogger(this.getClass());
+
 
 	@Autowired
 	@Qualifier("NFVImageManagement")

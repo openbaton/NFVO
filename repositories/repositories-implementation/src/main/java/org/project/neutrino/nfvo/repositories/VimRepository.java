@@ -11,5 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional(readOnly = true)
 @Scope("singleton")
-public class DatacenterRepository<Datacenter> extends DatabaseRepository<Datacenter>{
+public class VimRepository<VimInstance> extends DatabaseRepository<VimInstance>{
 }

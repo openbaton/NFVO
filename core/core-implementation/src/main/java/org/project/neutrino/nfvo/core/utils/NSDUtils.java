@@ -3,7 +3,7 @@ package org.project.neutrino.nfvo.core.utils;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,8 +20,8 @@ import javax.persistence.NoResultException;
 public class NSDUtils {
 
     @Autowired
-    @Qualifier("datacenterRepository")
-    private GenericRepository<Datacenter> datacenterRepository;
+    @Qualifier("vimRepository")
+    private GenericRepository<VimInstance> vimInstanceGenericRepository;
 
     public void fetchData(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
 
@@ -31,9 +31,11 @@ public class NSDUtils {
          */
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-                String id = vdu.getDatacenter().getId();
-                Datacenter datacenter = datacenterRepository.find(id);
-                vdu.setDatacenter(datacenter);
+                String id = vdu.getVimInstance().getId();
+                if (id != null) {
+                    VimInstance vimInstance = vimInstanceGenericRepository.find(id);
+                    vdu.setVimInstance(vimInstance);
+                }
             }
         }
     }

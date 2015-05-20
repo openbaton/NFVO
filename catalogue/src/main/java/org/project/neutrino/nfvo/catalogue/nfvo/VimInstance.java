@@ -9,7 +9,7 @@ import java.util.List;
  * Created by lto on 12/05/15.
  */
 @Entity
-public class Datacenter {
+public class VimInstance {
     @Id
     private String id = IdGenerator.createUUID();
     @Version
@@ -31,7 +31,7 @@ public class Datacenter {
 
     @Override
     public String toString() {
-        return "Datacenter{" +
+        return "VimInstance{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +

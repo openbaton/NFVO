@@ -28,7 +28,7 @@ public class NFVImageManagement implements org.project.neutrino.nfvo.core.interf
     public NFVImage add(NFVImage NFVImage) {
         log.trace("Adding image " + NFVImage);
         log.debug("Adding image with name " + NFVImage.getName());
-        //TODO maybe check whenever the image is available on the Datacenter
+        //TODO maybe check whenever the image is available on the VimInstance
         return imageRepository.create(NFVImage);
     }
 

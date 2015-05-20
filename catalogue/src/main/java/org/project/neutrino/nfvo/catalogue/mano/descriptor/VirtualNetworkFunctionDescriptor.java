@@ -77,7 +77,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 				+ ", deployment_flavour=" + deployment_flavour
 				+ ", manifest_file=" + manifest_file
 				+ ", manifest_file_security=" + manifest_file_security
-				+ ", Id=" + Id + ", hb_version=" + hb_version + ", vendor="
+				+ ", id=" + id + ", hb_version=" + hb_version + ", vendor="
 				+ vendor + ", version=" + version + ", vnffgd=" + vnffgd
 				+ ", vld=" + vld + ", lifecycle_event=" + lifecycle_event
 				+ ", monitoring_parameter=" + monitoring_parameter

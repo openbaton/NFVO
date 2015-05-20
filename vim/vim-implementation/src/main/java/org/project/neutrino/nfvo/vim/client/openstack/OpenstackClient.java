@@ -16,7 +16,7 @@ import org.jclouds.openstack.nova.v2_0.features.FlavorApi;
 import org.jclouds.openstack.nova.v2_0.features.ImageApi;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.v2_0.domain.Resource;
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -117,14 +117,14 @@ class OpenstackClient implements ClientInterfaces {
     }
 
     @Override
-    public void init(Datacenter datacenter) {
+    public void init(VimInstance vimInstance) {
         Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
         Properties overrides = new Properties();
         overrides.setProperty(KeystoneProperties.CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
         overrides.setProperty(Constants.PROPERTY_RELAX_HOSTNAME, "true");
         overrides.setProperty(Constants.PROPERTY_TRUST_ALL_CERTS, "true");
-        novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(datacenter.getAuthUrl()).credentials(datacenter.getTenant() + ":" + datacenter.getUsername(), datacenter.getPassword()).modules(modules).overrides(overrides).buildApi(NovaApi.class);
-        neutronApi = ContextBuilder.newBuilder("openstack-neutron").endpoint(datacenter.getAuthUrl()).credentials(datacenter.getTenant() + ":" + datacenter.getUsername(), datacenter.getPassword()).modules(modules).overrides(overrides).buildApi(NeutronApi.class);
+        novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(vimInstance.getAuthUrl()).credentials(vimInstance.getTenant() + ":" + vimInstance.getUsername(), vimInstance.getPassword()).modules(modules).overrides(overrides).buildApi(NovaApi.class);
+        neutronApi = ContextBuilder.newBuilder("openstack-neutron").endpoint(vimInstance.getAuthUrl()).credentials(vimInstance.getTenant() + ":" + vimInstance.getUsername(), vimInstance.getPassword()).modules(modules).overrides(overrides).buildApi(NeutronApi.class);
         zones = novaApi.getConfiguredRegions();
         if (null == defaultZone) {
             defaultZone = zones.iterator().next();

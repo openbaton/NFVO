@@ -6,17 +6,11 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.record;
 
-import org.project.neutrino.nfvo.catalogue.mano.common.AutoScalePolicy;
-import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
-import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
-import org.project.neutrino.nfvo.catalogue.mano.common.NFVEntityDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.common.ServiceDeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
+import org.project.neutrino.nfvo.catalogue.mano.common.*;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraph;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +20,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class NetworkServiceRecord implements Serializable{
+public class NetworkServiceRecord /*implements Serializable*/{
     @Id
     private String id = IdGenerator.createUUID();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
