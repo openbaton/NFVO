@@ -1,5 +1,8 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
+
+import static org.mockito.Mockito.mock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -7,9 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import javax.sound.midi.Receiver;
 
-import static org.mockito.Mockito.mock;
+import javax.sound.midi.Receiver;
 
 /**
  * Created by lto on 20/04/15.
