@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.core.test;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.mock;
 @SpringBootApplication
 @EntityScan(basePackageClasses = {
 		org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class,
-		org.project.neutrino.nfvo.catalogue.nfvo.Datacenter.class,
+		VimInstance.class,
 		org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class,
 		org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class })
 @ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class }, basePackages = "org.project.neutrino.nfvo")

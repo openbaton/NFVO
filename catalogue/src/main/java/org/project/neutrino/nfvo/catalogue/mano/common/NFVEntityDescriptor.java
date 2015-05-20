@@ -5,18 +5,17 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public abstract class NFVEntityDescriptor implements Serializable {
+public abstract class NFVEntityDescriptor /*implements Serializable*/ {
 
 	/**
 	 * ID of this Network Service Descriptor
 	 * */
 	@Id
-	protected String Id = IdGenerator.createUUID();
+	protected String id = IdGenerator.createUUID();
 	@Version
 	protected Integer hb_version = 0;
 	/**
@@ -73,10 +72,10 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL)
 	protected List<ConnectionPoint> connection_point;
 	public String getId() {
-		return Id;
+		return id;
 	}
 	public void setId(String id) {
-		Id = id;
+		this.id = id;
 	}
 	public Integer getHb_version() {
 		return hb_version;

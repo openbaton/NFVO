@@ -106,7 +106,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	public String toString() {
 		return "NetworkServiceDescriptor [vnfd=" + vnfd + ", vnf_dependency="
 				+ vnf_dependency + ", pnfd=" + pnfd + ", nsd_security="
-				+ nsd_security + ", Id=" + Id + ", hb_version=" + hb_version
+				+ nsd_security + ", id=" + id + ", hb_version=" + hb_version
 				+ ", vendor=" + vendor + ", version=" + version + ", vnffgd="
 				+ vnffgd + ", vld=" + vld + ", lifecycle_event="
 				+ lifecycle_event + ", monitoring_parameter="

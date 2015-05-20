@@ -64,7 +64,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for(VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                 ResourceManagement vim;
-                switch (virtualDeploymentUnit.getDatacenter().getType()) {
+                switch (virtualDeploymentUnit.getVimInstance().getType()) {
                     case "test":
                         vim = (ResourceManagement) context.getBean("testVIM");
                         break;

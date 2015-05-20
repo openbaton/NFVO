@@ -1,6 +1,6 @@
 package org.project.neutrino.nfvo.vim.client.amazon;
 
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class AmazonClient implements ClientInterfaces{
     }
 
     @Override
-    public void init(Datacenter datacenter) {
+    public void init(VimInstance vimInstance) {
 
     }
 }

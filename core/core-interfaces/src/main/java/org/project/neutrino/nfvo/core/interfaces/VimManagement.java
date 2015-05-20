@@ -1,20 +1,20 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 
 import java.util.List;
 
 /**
  * Created by lto on 13/05/15.
  */
-public interface DatacenterManagement {
+public interface VimManagement {
 
     /**
      * This operation allows adding a datacenter
      * into the datacenter repository.
-     * @param datacenter
+     * @param vimInstance
      */
-    Datacenter add(Datacenter datacenter);
+    VimInstance add(VimInstance vimInstance);
 
     /**
      * This operation allows deleting the datacenter
@@ -26,21 +26,21 @@ public interface DatacenterManagement {
     /**
      * This operation allows updating the datacenter
      * in the datacenter repository.
-     * @param new_datacenter
+     * @param new_vimInstance
      * @param id
      */
-    Datacenter update(Datacenter new_datacenter, String id);
+    VimInstance update(VimInstance new_vimInstance, String id);
 
     /**
      * This operation allows querying the information of
      * the datacenters in the datacenter repository.
      */
-    List<Datacenter> query();
+    List<VimInstance> query();
 
     /**
      * This operation allows querying the information of
      * the datacenter in the datacenter repository.
      */
-    Datacenter query(String id);
+    VimInstance query(String id);
 
 }

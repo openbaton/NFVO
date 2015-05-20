@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.vim;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
@@ -50,8 +50,8 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     @Override
     @Async
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        Datacenter datacenter = vdu.getDatacenter();
-        log.trace("Initializing " + datacenter);
+        VimInstance vimInstance = vdu.getVimInstance();
+        log.trace("Initializing " + vimInstance);
         try {
             Thread.sleep((new Random()).nextInt(4000));
         } catch (InterruptedException e) {

@@ -26,8 +26,7 @@ public class CLIBean implements CommandLineRunner{
     @Override
     public void run(String... strings) throws Exception {
 
-        BufferedReader br =
-                new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         String input;
         System.out.print(">> ");

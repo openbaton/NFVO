@@ -10,9 +10,6 @@ buildscript {
     }
 }
 plugins {
-    id "net.saliman.cobertura" version "2.2.8"
-}
-plugins {
     id 'net.researchgate.release' version '2.0.2'
 }
 apply plugin: 'java'
@@ -20,7 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-apply plugin: 'maven'
+apply plugin: "jacoco"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -31,6 +28,9 @@ allprojects {
     //Put instructions for all projects
     apply plugin: "java"
     apply plugin: 'maven'
+    apply plugin: "jacoco"
+
+    test { finalizedBy jacocoTestReport }
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
@@ -39,6 +39,8 @@ allprojects {
         mavenCentral()
         mavenLocal()
     }
+
+
 
     dependencies {
         compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
@@ -60,6 +62,7 @@ allprojects {
         testCompile("org.springframework:spring-test:4.1.6.RELEASE")
         testCompile("org.mockito:mockito-core:1.9.5")
     }
+
 }
 
 subprojects {
@@ -77,12 +80,6 @@ repositories {
 // end::repositories[]
 
 // Tasks
-
-cobertura {
-    rootProject.subprojects.each {
-        coverageDirs << file("${it.name}/build/classes/main")
-    }
-}
 
 bootRun{
     standardInput = System.in

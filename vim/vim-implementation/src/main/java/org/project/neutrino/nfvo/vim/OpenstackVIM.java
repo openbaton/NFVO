@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.vim;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
@@ -47,11 +47,11 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement {// TOD
     @Override
     @Async
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        Datacenter datacenter = vdu.getDatacenter();
-        log.trace("Initializing " + datacenter);
-        openstackClient.init(datacenter);
-        log.debug("initialized Datacenter");
-        String id = openstackClient.launch_instance(vdu.getHostname(), vdu.getVm_image().get(0), virtualNetworkFunctionRecord.getDeployment_flavour().getFlavour_key(), datacenter.getKeyPair(), null , datacenter.getSecurityGroups(), "#userdata");
+        VimInstance vimInstance = vdu.getVimInstance();
+        log.trace("Initializing " + vimInstance);
+        openstackClient.init(vimInstance);
+        log.debug("initialized VimInstance");
+        String id = openstackClient.launch_instance(vdu.getHostname(), vdu.getVm_image().get(0), virtualNetworkFunctionRecord.getDeployment_flavour().getFlavour_key(), vimInstance.getKeyPair(), null , vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + id);
         return new AsyncResult<String>(id);
     }

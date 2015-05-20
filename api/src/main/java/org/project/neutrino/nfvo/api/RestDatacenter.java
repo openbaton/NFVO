@@ -1,9 +1,7 @@
 package org.project.neutrino.nfvo.api;
 
-import org.project.neutrino.nfvo.catalogue.nfvo.Datacenter;
-import org.project.neutrino.nfvo.core.interfaces.DatacenterManagement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,22 +18,23 @@ import java.util.List;
 @RequestMapping("/datacenters")
 public class RestDatacenter {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+//	TODO add log prints
+//	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private DatacenterManagement datacenterManagement;
+	private VimManagement vimManagement;
 
 	/**
 	 * Adds a new VNF software Image to the datacenter repository
 	 * 
-	 * @param datacenter
+	 * @param vimInstance
 	 *            : Image to add
 	 * @return datacenter: The datacenter filled with values from the core
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public Datacenter create(@RequestBody @Valid Datacenter datacenter) {
-		return datacenterManagement.add(datacenter);
+	public VimInstance create(@RequestBody @Valid VimInstance vimInstance) {
+		return vimManagement.add(vimInstance);
 	}
 
 	/**
@@ -47,7 +46,7 @@ public class RestDatacenter {
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable("id") String id) {
-		datacenterManagement.delete(id);
+		vimManagement.delete(id);
 	}
 
 	/**
@@ -56,8 +55,8 @@ public class RestDatacenter {
 	 * @return List<Image>: The list of VNF software images available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Datacenter> findAll() {
-		return datacenterManagement.query();
+	public List<VimInstance> findAll() {
+		return vimManagement.query();
 	}
 
 	/**
@@ -68,26 +67,26 @@ public class RestDatacenter {
 	 * @return image: The VNF software image selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public Datacenter findById(@PathVariable("id") String id) {
-		Datacenter datacenter = datacenterManagement.query(id);
+	public VimInstance findById(@PathVariable("id") String id) {
+		VimInstance vimInstance = vimManagement.query(id);
 
-		return datacenter;
+		return vimInstance;
 	}
 
 	/**
 	 * This operation updates the Network Service Descriptor (NSD)
 	 * 
-	 * @param new_datacenter
+	 * @param new_vimInstance
 	 *            : the new datacenter to be updated to
 	 * @param id
 	 *            : the id of the old datacenter
-	 * @return datacenter: the Datacenter updated
+	 * @return VimInstance: the VimInstance updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public Datacenter update(@RequestBody @Valid Datacenter new_datacenter,
+	public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance,
 			@PathVariable("id") String id) {
-		return datacenterManagement.update(new_datacenter, id);
+		return vimManagement.update(new_vimInstance, id);
 	}
 }
