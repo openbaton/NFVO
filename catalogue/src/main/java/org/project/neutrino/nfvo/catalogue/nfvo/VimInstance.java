@@ -28,6 +28,10 @@ public class VimInstance {
     private List<String> securityGroups;
 
     private String type;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<NFVImage> images;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Network> networks;
 
     @Override
     public String toString() {
@@ -86,7 +90,7 @@ public class VimInstance {
         this.keyPair = keyPair;
     }
 
-    public Iterable<String> getSecurityGroups() {
+    public List<String> getSecurityGroups() {
         return securityGroups;
     }
 
@@ -132,5 +136,21 @@ public class VimInstance {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setImages(List<NFVImage> images) {
+        this.images = images;
+    }
+
+    public List<NFVImage> getImages() {
+        return images;
+    }
+
+    public void setNetworks(List<Network> networks) {
+        this.networks = networks;
+    }
+
+    public List<Network> getNetworks() {
+        return networks;
     }
 }

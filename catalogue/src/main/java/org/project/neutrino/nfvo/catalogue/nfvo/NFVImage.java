@@ -2,9 +2,8 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by lto on 11/05/15.
@@ -21,6 +20,9 @@ public class NFVImage {
     private String minRam;
     private String minDiskSpace;
     private String minCPU;
+
+    @Temporal(TemporalType.DATE)
+    private Date created;
 
     public NFVImage() {
     }
@@ -91,5 +93,13 @@ public class NFVImage {
                 ", minDiskSpace='" + minDiskSpace + '\'' +
                 ", minCPU='" + minCPU + '\'' +
                 '}';
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getCreated() {
+        return created;
     }
 }

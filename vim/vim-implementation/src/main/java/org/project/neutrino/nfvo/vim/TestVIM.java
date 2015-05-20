@@ -2,11 +2,13 @@ package org.project.neutrino.nfvo.vim;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
+import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
-import org.project.neutrino.nfvo.client_interfaces.ClientInterfaces;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
+import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Future;
 
@@ -33,18 +36,23 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     private ClientInterfaces testClient;
 
     @Override
-    public void add() {
+    public NFVImage add(NFVImage image) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete(String id) {
 
     }
 
     @Override
-    public void delete() {
+    public NFVImage update() {throw new UnsupportedOperationException();
 
     }
 
     @Override
-    public void update() {
-
+    public List<NFVImage> queryImages(VimInstance vimInstance) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -63,8 +71,9 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     }
 
     @Override
-    public void query() {
+    public List<Server> queryResources(VimInstance vimInstance) {
 
+        throw new UnsupportedOperationException();
     }
 
     @Override
