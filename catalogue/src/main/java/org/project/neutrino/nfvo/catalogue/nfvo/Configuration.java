@@ -7,6 +7,8 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,6 +51,8 @@ public class Configuration {
     }
 
     public List<ConfigurationParameter> getParameters() {
+    	if(parameters==null)
+			parameters = new ArrayList<ConfigurationParameter>();
         return parameters;
     }
 

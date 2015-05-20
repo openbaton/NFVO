@@ -38,10 +38,9 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * Removes the VNF software Image from the Image repository
+	 * Removes the Datacenter from the Datacenter repository
 	 * 
-	 * @param id
-	 *            : The Image's id to be deleted
+	 * @param id: The Datacenter's id to be deleted
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -50,9 +49,8 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * Returns the list of the VNF software images available
-	 * 
-	 * @return List<Image>: The list of VNF software images available
+	 * Returns the list of the Datacenters available
+	 * @return List<Datacenter>: The List of Datacenters available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public List<VimInstance> findAll() {
@@ -60,11 +58,9 @@ public class RestDatacenter {
 	}
 
 	/**
-	 * This operation returns the VNF software image selected by id
-	 * 
-	 * @param id
-	 *            : The id of the VNF software image
-	 * @return image: The VNF software image selected
+	 * Returns the Datacenter selected by id
+	 * @param id: The Datacenter's id selected
+	 * @return Datacenter: The Datacenter selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public VimInstance findById(@PathVariable("id") String id) {
@@ -74,6 +70,7 @@ public class RestDatacenter {
 	}
 
 	/**
+
 	 * This operation updates the Network Service Descriptor (NSD)
 	 * 
 	 * @param new_vimInstance
@@ -81,6 +78,7 @@ public class RestDatacenter {
 	 * @param id
 	 *            : the id of the old datacenter
 	 * @return VimInstance: the VimInstance updated
+
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
