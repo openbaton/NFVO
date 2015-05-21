@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 public class AmazonVIM implements ImageManagement, ResourceManagement {
 
     @Autowired
-    @Qualifier("AmazonClient")
+    @Qualifier("amazonClient")
     private ClientInterfaces amazonClient;
 
     @Override

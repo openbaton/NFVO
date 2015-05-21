@@ -4,7 +4,9 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,8 @@ import java.util.concurrent.Future;
 public class ResourceManagement implements org.project.neutrino.nfvo.vim_interfaces.ResourceManagement {
 
     @Autowired
-    private OpenstackClient osClient;
+    @Qualifier("openstackClient")
+    private ClientInterfaces osClient;
 
     public ResourceManagement() throws IOException{
         //TODO get info from the configuration

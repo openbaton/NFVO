@@ -100,10 +100,10 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
     }
 
     private String chooseImage(List<String> vm_images, VimInstance vimInstance) throws VimException {
-        if (vm_images.size() > 0)
+        if (vm_images != null && vm_images.size() > 0)
             return vm_images.get(0);
         else
-            throw new VimException();
+            throw new VimException("List of VM images is empty or null");
     }
 
     @Override
