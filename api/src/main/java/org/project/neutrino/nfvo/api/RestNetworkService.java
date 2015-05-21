@@ -9,6 +9,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import javax.persistence.NoResultException;
 import javax.validation.Valid;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -181,8 +183,15 @@ public class RestNetworkService {
 
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	NetworkServiceRecord createRecord(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
-		return networkServiceRecordManagement.onboard(networkServiceDescriptor);
+	NetworkServiceRecord createRecord(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
+		try {
+			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return null;//TODO return error
+
 	}
 }

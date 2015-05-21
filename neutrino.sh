@@ -1,20 +1,22 @@
 #!/bin/bash
 
+version="0.2-SNAPSHOT"
+
 function start {
 
-    if [ ! -f build/libs/neutrino.jar  ]
+    if [ ! -d build/  ]
         then
-            ./gradlew build
+            ./gradlew build -x test
     fi
 
     if [ 0 -eq $? ]
         then
-            java -jar build/libs/neutrino-0.2-SNAPSHOT.jar
+            java -jar "build/libs/neutrino-$version.jar"
     fi
 }
 
 function compile {
-    ./gradlew build
+    ./gradlew build -x test
 }
 
 function tests {

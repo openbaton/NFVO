@@ -1,5 +1,6 @@
 dependencies {
     compile project(':core:core-interfaces')
+    compile project(':vim:vim-interfaces')
     compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
     compile("mysql:mysql-connector-java:5.1.35")
 

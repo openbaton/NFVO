@@ -18,6 +18,9 @@ public abstract class NFVEntityDescriptor /*implements Serializable*/ {
 	protected String id = IdGenerator.createUUID();
 	@Version
 	protected Integer hb_version = 0;
+
+	protected String name;
+
 	/**
 	 * Provider or vendor of the Network Service.
 	 * */
@@ -64,13 +67,23 @@ public abstract class NFVEntityDescriptor /*implements Serializable*/ {
 	protected List<DeploymentFlavour> service_deployment_flavour;
 	@OneToMany(cascade = CascadeType.ALL)
 	protected List<AutoScalePolicy> auto_scale_policy;
+
 	/**
 	 * This element describes a Connection Point which acts as an endpoint of the Network Service, see clause 6.2.1.2.
 	 * This can, for example, be referenced by other elements as an
 	 * endpoint.
 	 * */
-	@OneToMany(cascade = CascadeType.ALL)
+
+ 	@OneToMany(cascade = CascadeType.ALL)
 	protected List<ConnectionPoint> connection_point;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	public String getId() {
 		return id;
 	}

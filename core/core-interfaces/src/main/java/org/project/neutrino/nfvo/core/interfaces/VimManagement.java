@@ -43,4 +43,5 @@ public interface VimManagement {
      */
     VimInstance query(String id);
 
+    void refresh(VimInstance vimInstance);
 }
