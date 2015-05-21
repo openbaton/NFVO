@@ -4,5 +4,8 @@ dependencies {
     compile project(':vim:vim-interfaces')
 
     testCompile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+
+    // TODO to be removed and changed with mocked instances
     testRuntime project(':repositories:repositories-implementation')
+    testRuntime project(':vim:vim-implementation')
 }
