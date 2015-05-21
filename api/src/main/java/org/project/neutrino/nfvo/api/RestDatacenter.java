@@ -10,17 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * @author dbo
- *
- */
+
 @RestController
 @RequestMapping("/datacenters")
 public class RestDatacenter {
 
 //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
-
+	
 	@Autowired
 	private VimManagement vimManagement;
 
