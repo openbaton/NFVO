@@ -1,7 +1,11 @@
 package org.project.neutrino.nfvo.api;
 
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
+import org.project.neutrino.nfvo.catalogue.mano.common.Security;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.NoResultException;
 import javax.validation.Valid;
+
 import java.util.List;
 
 /**
@@ -120,9 +125,67 @@ public class RestNetworkService {
 				networkServiceDescriptor, id);
 	}
 
+	@RequestMapping(value = "{id}/vnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public List<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
+			@PathVariable("id") String id) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		return nsd.getVnfd();
+	}
+
+	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public List<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		return nsd.getVnf_dependency();
+	}
+	
+	@RequestMapping(value = "{id}/pnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public List<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(@PathVariable("id") String id) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		return nsd.getPnfd();
+	}
+	
+	@RequestMapping(value = "{id}/security", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public Security getNsd_security(@PathVariable("id") String id) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		return nsd.getNsd_security();
+	}
+
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	NetworkServiceRecord createRecord(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
+	NetworkServiceRecord createRecord(
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
 		return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 }
