@@ -21,10 +21,7 @@ import javax.validation.Valid;
 
 import java.util.List;
 
-/**
- * @author dbo
- *
- */
+
 @RestController
 @RequestMapping("/ns-descriptors")
 public class RestNetworkService {
