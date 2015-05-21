@@ -133,6 +133,7 @@ public class VirtualNetworkFunctionRecord {
      * */
     @ElementCollection
     private List<String> runtime_policy_info;
+    private String name;
 
     public VirtualNetworkFunctionRecord() {
     }
@@ -311,5 +312,13 @@ public class VirtualNetworkFunctionRecord {
 
     public void setRuntime_policy_info(List<String> runtime_policy_info) {
         this.runtime_policy_info = runtime_policy_info;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

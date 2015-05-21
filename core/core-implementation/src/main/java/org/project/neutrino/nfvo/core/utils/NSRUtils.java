@@ -13,7 +13,7 @@ public class NSRUtils {
 
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor){
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
-
+        networkServiceRecord.setName(networkServiceDescriptor.getName());
         networkServiceRecord.setVendor(networkServiceDescriptor.getVendor());
         networkServiceRecord.setMonitoring_parameter(networkServiceDescriptor.getMonitoring_parameter());
         networkServiceRecord.setAuto_scale_policy(networkServiceDescriptor.getAuto_scale_policy());
@@ -57,7 +57,7 @@ public class NSRUtils {
 
     public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
-
+        virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setMonitoring_parameter(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
         virtualNetworkFunctionRecord.setAuto_scale_policy(vnfd.getAuto_scale_policy());

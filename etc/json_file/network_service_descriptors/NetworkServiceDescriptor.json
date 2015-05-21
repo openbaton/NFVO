@@ -3,6 +3,7 @@
 	"version":"0.1-ALPHA",
 	"vnfd":[
 		{
+			"name":"vnfd-name",
 			"vendor":"fokus",
 			"version":"",
 			"descriptor_version":"0.1-ALPHA",
@@ -17,9 +18,8 @@
 					"virtual_network_bandwidth_resource":"1000000",
 					"lifecycle_event":[
 					],
-					"datacenter":{
-						"name":"test_datacenter",
-						"type":"test"
+					"vimInstance":{
+						"id":"id_of_the_datacenter"
 					},
 					"vdu_constraint":"",
 					"high_availability":"ACTIVE_PASSIVE",
@@ -48,7 +48,7 @@
 					"constraint2"
 				],
 				"costituent_vdu":[],
-				"flavour_key":"flavour_key"
+				"flavour_key":"m1.small"
 			}],
 			"auto_scale_policy":[
 			],
@@ -79,3 +79,4 @@
 	]
 }
  
+

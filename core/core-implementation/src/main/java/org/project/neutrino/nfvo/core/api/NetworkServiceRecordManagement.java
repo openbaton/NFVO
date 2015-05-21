@@ -8,16 +8,18 @@ import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
+import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -33,14 +35,15 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Qualifier("NSRRepository")
     private GenericRepository<NetworkServiceRecord> nsrRepository;
 
+
     @Autowired
-    private ConfigurableApplicationContext context;
+    private VimBroker<ResourceManagement> vimBroker;
 
     @Autowired
     private NSDUtils nsdUtils;
 
     @Override
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) {
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException {
 
 //        for (String s : context.getBeanDefinitionNames())
 //                log.debug(s);
@@ -63,23 +66,15 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         List<Future<String>> ids = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for(VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                ResourceManagement vim;
-                switch (virtualDeploymentUnit.getVimInstance().getType()) {
-                    case "test":
-                        vim = (ResourceManagement) context.getBean("testVIM");
-                        break;
-                    case "openstack":
-                        vim = (ResourceManagement) context.getBean("openstackVIM");
-                        break;
-                    case "amazon":
-                        vim = (ResourceManagement) context.getBean("amazonVIM");
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
+                ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
                 ids.add(vim.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord));
             }
         }
+
+        for(Future<String> id : ids){
+            log.debug("Created VDU with id: " + id.get());
+        }
+
         return networkServiceRecord;
     }
 

@@ -92,6 +92,7 @@ public class NetworkServiceRecord /*implements Serializable*/{
      * TODO: maybe a pointer to a file?
      * */
     private String audit_log;
+    private String name;
 
     public String getId() {
         return id;
@@ -255,5 +256,13 @@ public class NetworkServiceRecord /*implements Serializable*/{
 
     public NetworkServiceRecord() {
 
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

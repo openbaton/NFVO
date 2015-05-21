@@ -21,7 +21,7 @@ public class NSDUtils {
 
     @Autowired
     @Qualifier("vimRepository")
-    private GenericRepository<VimInstance> vimInstanceGenericRepository;
+    private GenericRepository<VimInstance> vimRepository;
 
     public void fetchData(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
 
@@ -33,7 +33,7 @@ public class NSDUtils {
             for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
                 String id = vdu.getVimInstance().getId();
                 if (id != null) {
-                    VimInstance vimInstance = vimInstanceGenericRepository.find(id);
+                    VimInstance vimInstance = vimRepository.find(id);
                     vdu.setVimInstance(vimInstance);
                 }
             }
