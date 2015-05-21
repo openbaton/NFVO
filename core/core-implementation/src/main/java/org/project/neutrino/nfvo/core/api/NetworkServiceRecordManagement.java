@@ -75,6 +75,13 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
             log.debug("Created VDU with id: " + id.get());
         }
 
+        /**
+         * TODO start the VNF installation process:
+         *  *) call the VNFMRegister
+         *      *) the Register knows that all the VNFMs are available
+         *      *) the Register knows which protocol to use per VNFM
+         */
+
         return networkServiceRecord;
     }
 

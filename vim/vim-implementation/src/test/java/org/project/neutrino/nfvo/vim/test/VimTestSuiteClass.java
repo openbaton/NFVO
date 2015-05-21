@@ -49,6 +49,10 @@ import static org.mockito.Mockito.when;
 @TestPropertySource(properties = { "mocked_id=1234567890", "port: 4242" })
 public class VimTestSuiteClass {
 
+    /**
+     * TODO add all other tests
+     */
+
     @Autowired
     private Environment environment;
 
