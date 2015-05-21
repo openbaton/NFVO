@@ -16,10 +16,6 @@ import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author dbo
- *
- */
 
 public class ApiRestImageTest {
 

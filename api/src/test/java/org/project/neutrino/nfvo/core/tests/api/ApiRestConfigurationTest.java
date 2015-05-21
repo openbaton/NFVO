@@ -17,10 +17,6 @@ import org.project.neutrino.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author dbo
- *
- */
 
 public class ApiRestConfigurationTest {
 
