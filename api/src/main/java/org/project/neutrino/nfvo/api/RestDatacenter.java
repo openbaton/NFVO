@@ -20,7 +20,7 @@ public class RestDatacenter {
 
 //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
-
+	
 	@Autowired
 	private VimManagement vimManagement;
 
