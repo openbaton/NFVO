@@ -9,7 +9,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
-
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +189,8 @@ public class RestNetworkService {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (VimException e) {
 			e.printStackTrace();
 		}
 		return null;//TODO return error
