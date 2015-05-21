@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * @author dbo
- *
- */
 @RestController
 @RequestMapping("/configurations")
 public class RestConfiguration {
@@ -27,6 +23,7 @@ public class RestConfiguration {
 
 	/**
 	 * Adds a new Configuration to the Configurations repository
+	 * 
 	 * @param configuration
 	 * @return configuration
 	 */
@@ -40,7 +37,9 @@ public class RestConfiguration {
 
 	/**
 	 * Removes the Configuration from the Configurations repository
-	 * @param id: the id of configuration to be removed
+	 * 
+	 * @param id
+	 *            : the id of configuration to be removed
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -52,6 +51,7 @@ public class RestConfiguration {
 
 	/**
 	 * Returns the list of the Configurations available
+	 * 
 	 * @return List<Configuration>: The list of Configurations available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
@@ -62,7 +62,9 @@ public class RestConfiguration {
 
 	/**
 	 * Returns the Configuration selected by id
-	 * @param id: The id of the Configuration
+	 * 
+	 * @param id
+	 *            : The id of the Configuration
 	 * @return Configuration: The Configuration selected
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
@@ -75,16 +77,21 @@ public class RestConfiguration {
 
 	/**
 	 * Updates the Configuration
-	 * @param new_configuration:  The Configuration to be updated
-	 * @param id: The id of the Configuration
+	 * 
+	 * @param new_configuration
+	 *            : The Configuration to be updated
+	 * @param id
+	 *            : The id of the Configuration
 	 * @return Configuration The Configuration updated
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public Configuration update(@RequestBody @Valid Configuration new_configuration,
+	public Configuration update(
+			@RequestBody @Valid Configuration new_configuration,
 			@PathVariable("id") String id) {
-		log.trace("updating Configuration with id " + id + " with values: " + new_configuration);
+		log.trace("updating Configuration with id " + id + " with values: "
+				+ new_configuration);
 		log.debug("updating Configuration with id " + id);
 		return configurationManagement.update(new_configuration, id);
 	}
