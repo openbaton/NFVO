@@ -1,21 +1,24 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.api.RestNetworkService;
+import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class ApiRestNSDescriptorTest {
 
@@ -25,7 +28,10 @@ public class ApiRestNSDescriptorTest {
 	RestNetworkService restNetworkService;
 
 	@Mock
-	NetworkServiceDescriptorManagement mock;
+	NetworkServiceDescriptorManagement nsdManagement;
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	@Before
 	public void init() {
@@ -35,9 +41,9 @@ public class ApiRestNSDescriptorTest {
 	@Test
 	public void testNSDFindAll() {
 
-		log.info("" + mock.query());
-		List<NetworkServiceDescriptor> list = mock.query();
-		when(mock.query()).thenReturn(list);
+		log.info("" + nsdManagement.query());
+		List<NetworkServiceDescriptor> list = nsdManagement.query();
+		when(nsdManagement.query()).thenReturn(list);
 		assertEquals(list, restNetworkService.findAll());
 	}
 
@@ -46,12 +52,15 @@ public class ApiRestNSDescriptorTest {
 		NetworkServiceDescriptor networkServiceDescriptor = new NetworkServiceDescriptor();
 		networkServiceDescriptor.setId("123");
 		networkServiceDescriptor.setVendor("Fokus");
-		when(mock.onboard(networkServiceDescriptor)).thenReturn(
+		when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(
 				networkServiceDescriptor);
+		NetworkServiceDescriptor networkServiceDescriptor2 = null;
 		log.info("" + restNetworkService.create(networkServiceDescriptor));
-		NetworkServiceDescriptor networkServiceDescriptor2 = restNetworkService
+		networkServiceDescriptor2 = restNetworkService
 				.create(networkServiceDescriptor);
+
 		assertEquals(networkServiceDescriptor, networkServiceDescriptor2);
+
 	}
 
 	@Test
@@ -59,7 +68,7 @@ public class ApiRestNSDescriptorTest {
 		NetworkServiceDescriptor networkServiceDescriptor = new NetworkServiceDescriptor();
 		networkServiceDescriptor.setId("123");
 		networkServiceDescriptor.setVendor("Fokus");
-		when(mock.query(networkServiceDescriptor.getId())).thenReturn(
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		assertEquals(networkServiceDescriptor,
 				restNetworkService.findById(networkServiceDescriptor.getId()));
@@ -71,7 +80,7 @@ public class ApiRestNSDescriptorTest {
 		networkServiceDescriptor.setId("123");
 		networkServiceDescriptor.setVendor("Fokus");
 		when(
-				mock.update(networkServiceDescriptor,
+				nsdManagement.update(networkServiceDescriptor,
 						networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		assertEquals(networkServiceDescriptor, restNetworkService.update(
@@ -80,7 +89,7 @@ public class ApiRestNSDescriptorTest {
 
 	@Test
 	public void testNSDDelete() {
-		mock.delete("123");
-		restNetworkService.delete("123");
+		nsdManagement.delete(anyString());
+		restNetworkService.delete(anyString());
 	}
 }
