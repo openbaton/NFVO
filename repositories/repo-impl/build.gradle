@@ -4,7 +4,7 @@ repositories {
 
 dependencies {
     compile project(':catalogue')
-    compile project(':repositories:repositories-interfaces')
+    compile project(':repositories:repo-int')
 
     compile('com.google.guava:guava:18.0')
 
