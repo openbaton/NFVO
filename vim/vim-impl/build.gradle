@@ -4,7 +4,7 @@ repositories {
 
 dependencies {
     compile project(':catalogue')
-    compile project(':vim:vim-interfaces')
+    compile project(':vim:vim-int')
 
     compile ('org.apache.jclouds.driver:jclouds-slf4j:1.9.0')
     compile ('org.apache.jclouds.driver:jclouds-sshj:1.9.0')

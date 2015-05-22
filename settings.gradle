@@ -1,9 +1,9 @@
 include 'api'
 include 'cli'
-include 'core', 'core:core-implementation', 'core:core-interfaces'
+include 'core', 'core:core-impl', 'core:core-int'
 include 'main'
-include 'vim', 'vim:vim-implementation', 'vim:vim-interfaces'
+include 'vim', 'vim:vim-impl', 'vim:vim-int'
 include 'vnfm'
 include 'catalogue'
-include 'repositories', 'repositories:repositories-implementation', 'repositories:repositories-interfaces'
+include 'repositories', 'repositories:repo-impl', 'repositories:repo-int'
 

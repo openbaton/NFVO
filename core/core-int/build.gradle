@@ -1,4 +1,4 @@
 dependencies {
     compile project(':catalogue')
-    compile project(':vim:vim-interfaces')
+    compile project(':vim:vim-int')
 }
