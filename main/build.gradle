@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':repositories:repositories-interfaces')
+    compile project(':repositories:repo-int')
     compile project(':catalogue')
     runtime project(':core')
     runtime project(':api')

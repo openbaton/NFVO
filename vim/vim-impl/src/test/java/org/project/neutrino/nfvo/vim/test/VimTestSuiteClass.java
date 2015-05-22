@@ -1,9 +1,6 @@
 package org.project.neutrino.nfvo.vim.test;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -124,6 +121,18 @@ public class VimTestSuiteClass {
         exception.expect(VimException.class);
         openstackVIM.allocate(vdu, vnfr);
     }
+
+    @Test
+    @Ignore
+    public void testVimAmazon(){}
+
+    @Test
+    @Ignore
+    public void testVimTest(){}
+
+    @Test
+    @Ignore
+    public void testOpenstackClient(){}
 
     private VirtualNetworkFunctionRecord createVNFR(){
         VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();

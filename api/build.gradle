@@ -1,10 +1,11 @@
 dependencies {
-    compile project(':core:core-interfaces')
-    compile project(':vim:vim-interfaces')
+    compile project(':core:core-int')
+    compile project(':vim:vim-int')
     compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
     compile("mysql:mysql-connector-java:5.1.35")
 
     testCompile("com.jayway.jsonpath:json-path-assert:2.0.0")
     testCompile("org.mockito:mockito-all:1.10.19")
-    testCompile project(':repositories:repositories-implementation')
+    // TODO to be removed using mock instances
+    testCompile project(':repositories:repo-impl')
 }
