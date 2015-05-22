@@ -53,6 +53,7 @@ public class ApiRestDatacenterTest {
 		log.info("" + restDatacenter.create(datacenter));
 		VimInstance datacenter2 = restDatacenter.create(datacenter);
 		assertEquals(datacenter, datacenter2);
+		
 	}
 
 	@Test

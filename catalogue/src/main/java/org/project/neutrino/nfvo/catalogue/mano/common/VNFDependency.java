@@ -52,4 +52,14 @@ public class VNFDependency /*implements Serializable*/{
     public void setTarget(VirtualNetworkFunctionDescriptor target) {
         this.target = target;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	
 }

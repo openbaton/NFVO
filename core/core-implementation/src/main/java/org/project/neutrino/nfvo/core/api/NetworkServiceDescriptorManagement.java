@@ -36,7 +36,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
         log.trace("Creating " + networkServiceDescriptor);
-        nsdUtils.fetchData(networkServiceDescriptor);
+//        nsdUtils.fetchData(networkServiceDescriptor);
         nsdRepository.create(networkServiceDescriptor);
         log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;
@@ -102,7 +102,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      * related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor query(String id){
+    public NetworkServiceDescriptor query(String id) throws NoResultException {
         return nsdRepository.find(id);
     }
 
