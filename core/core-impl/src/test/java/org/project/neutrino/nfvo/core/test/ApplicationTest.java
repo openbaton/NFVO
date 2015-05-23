@@ -2,19 +2,19 @@ package org.project.neutrino.nfvo.core.test;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Configuration;
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
+import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
+import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-
-import javax.sql.DataSource;
 
 import static org.mockito.Mockito.mock;
 
@@ -22,33 +22,43 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 20/04/15.
  */
 @SpringBootApplication
-@EntityScan(basePackageClasses = {
-		org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class,
-		VimInstance.class,
-		org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink.class,
-		org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord.class })
-@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class }, basePackages = "org.project.neutrino.nfvo")
-@EnableJpaRepositories(basePackageClasses = {GenericRepository.class})
+@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
 public class ApplicationTest {
 
 	@Bean
-	GenericRepository<NetworkServiceDescriptor> genericRepositoryNSD(){ return mock(GenericRepository.class);}
+	GenericRepository<Configuration> configurationRepository(){
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "NSRRepository")
+	GenericRepository<NetworkServiceRecord> nsrRepository(){
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "NSDRepository")
+	GenericRepository<NetworkServiceDescriptor> nsdRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "imageRepository")
+	GenericRepository<NFVImage> imageRepository() {
+		return mock(GenericRepository.class);
+	}
+
+
+	@Bean(name = "vimRepository")
+	GenericRepository<VimInstance> vimRepository() {
+		return mock(GenericRepository.class);
+	}
 
 	@Bean
-	GenericRepository<NetworkServiceRecord> genericRepositoryNSR(){ return mock(GenericRepository.class);}
-
-	@Bean
-	public DataSource dataSource() {
-		// instantiate, configure and return embedded DataSource
-		return new EmbeddedDatabaseBuilder().build();
+	VimBroker vimBroker(){
+		return mock(VimBroker.class);
 	}
 
 	public static void main(String[] argv) {
-
-		ConfigurableApplicationContext context = SpringApplication
-				.run(ApplicationTest.class);
+		ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
 		for (String s : context.getBeanDefinitionNames())
 			System.out.println(s);
-
 	}
 }

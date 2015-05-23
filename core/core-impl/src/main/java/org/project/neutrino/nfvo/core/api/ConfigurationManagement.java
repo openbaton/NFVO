@@ -15,18 +15,19 @@ import java.util.List;
 @Service
 @Scope
 public class ConfigurationManagement implements org.project.neutrino.nfvo.core.interfaces.ConfigurationManagement {
+
     @Autowired
     @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationGenericRepository;
+    private GenericRepository<Configuration> configurationRepository;
 
     @Override
     public Configuration add(Configuration datacenter) {
-        return configurationGenericRepository.create(datacenter);
+        return configurationRepository.create(datacenter);
     }
 
     @Override
     public void delete(String id) {
-        configurationGenericRepository.remove(configurationGenericRepository.find(id));
+        configurationRepository.remove(configurationRepository.find(id));
     }
 
     @Override
@@ -36,11 +37,11 @@ public class ConfigurationManagement implements org.project.neutrino.nfvo.core.i
 
     @Override
     public List<Configuration> query() {
-        return configurationGenericRepository.findAll();
+        return configurationRepository.findAll();
     }
 
     @Override
     public Configuration query(String id) {
-        return configurationGenericRepository.find(id);
+        return configurationRepository.find(id);
     }
 }
