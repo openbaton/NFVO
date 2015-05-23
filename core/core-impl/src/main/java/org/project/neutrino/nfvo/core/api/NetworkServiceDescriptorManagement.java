@@ -1,7 +1,6 @@
 package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,6 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
-    @Autowired
-    private NSDUtils nsdUtils;
     /**
      * This operation allows submitting and
      * validating a Network Service	Descriptor (NSD),
@@ -36,7 +33,6 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
         log.trace("Creating " + networkServiceDescriptor);
-//        nsdUtils.fetchData(networkServiceDescriptor);
         nsdRepository.create(networkServiceDescriptor);
         log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;

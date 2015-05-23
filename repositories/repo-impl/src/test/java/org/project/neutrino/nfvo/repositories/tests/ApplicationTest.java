@@ -20,12 +20,12 @@ import javax.sql.DataSource;
 @ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
 @EnableJpaRepositories(basePackageClasses = {org.project.neutrino.nfvo.repositories.NSDRepository.class, org.project.neutrino.nfvo.abstract_repositories.DatabaseRepository.class})
 public class ApplicationTest {
+
     @Bean
     public DataSource dataSource() {
         // instantiate, configure and return embedded DataSource
         return new EmbeddedDatabaseBuilder().build();
     }
-
 
     /**
      * Testing if the context contains all the needed beans
