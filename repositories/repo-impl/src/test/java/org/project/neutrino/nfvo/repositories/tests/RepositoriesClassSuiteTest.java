@@ -64,6 +64,8 @@ public class RepositoriesClassSuiteTest {
         Assert.assertNotNull(nsd.getId());
         log.debug("id is: " + nsd.getId());
 
+        // Clean
+        nsdRepository.remove(nsd);
     }
 
     @Test
@@ -87,6 +89,9 @@ public class RepositoriesClassSuiteTest {
 
         Assert.assertNotNull(new_nsd);
         Assert.assertNotNull(new_nsd.getId());
+
+        // Clean
+        nsdRepository.remove(new_nsd);
     }
 
 
@@ -113,6 +118,7 @@ public class RepositoriesClassSuiteTest {
             nsd = nsd_new;
         }
 
+        // Clean
         nsdRepository.remove(nsd);
     }
 
@@ -182,6 +188,7 @@ public class RepositoriesClassSuiteTest {
             }
         }
 
+        // Clean
         nsdRepository.remove(nsd);
 
         NetworkServiceDescriptor nsd_null = null;
