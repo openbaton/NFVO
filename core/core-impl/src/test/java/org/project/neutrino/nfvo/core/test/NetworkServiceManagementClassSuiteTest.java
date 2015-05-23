@@ -3,7 +3,6 @@ package org.project.neutrino.nfvo.core.test;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -15,6 +14,7 @@ import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -38,16 +38,16 @@ public class NetworkServiceManagementClassSuiteTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-	@InjectMocks
+	@Autowired
 	ConfigurationManagement configurationManagement;
 
-	@InjectMocks
+	@Autowired
 	NetworkServiceDescriptorManagement nsdManagement;
 
-	@InjectMocks
+	@Autowired
 	NFVImageManagement NFVImageManagement;
 
-	@InjectMocks
+	@Autowired
 	NetworkServiceRecordManagement nsrManagement;
 
 	@Before
