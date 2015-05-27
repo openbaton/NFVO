@@ -4,6 +4,8 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.core.interfaces.VnfmManager;
+import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -42,11 +44,11 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Autowired
     private NSDUtils nsdUtils;
 
-    @Override
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException {
+    @Autowired
+    private VnfmManager vnfmManager;
 
-//        for (String s : context.getBeanDefinitionNames())
-//                log.debug(s);
+    @Override
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException {
 
         /*
         Create NSR
@@ -80,7 +82,11 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
          *  *) call the VNFMRegister
          *      *) the Register knows that all the VNFMs are available
          *      *) the Register knows which protocol to use per VNFM
+         *
+         *  for instance...
          */
+
+        vnfmManager.deploy(networkServiceRecord);
 
         return networkServiceRecord;
     }

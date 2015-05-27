@@ -60,6 +60,7 @@ public class NSRUtils {
     public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setName(vnfd.getName());
+        virtualNetworkFunctionRecord.setType(vnfd.getType());
         virtualNetworkFunctionRecord.setMonitoring_parameter(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
         virtualNetworkFunctionRecord.setAuto_scale_policy(vnfd.getAuto_scale_policy());
