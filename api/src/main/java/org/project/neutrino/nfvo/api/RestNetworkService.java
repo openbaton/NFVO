@@ -284,7 +284,7 @@ public class RestNetworkService {
 
 	@RequestMapping(value = "{id}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public VNFDependency update(
+	public VNFDependency postVNFDependency(
 			@RequestBody @Valid VNFDependency vnfDependency,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
