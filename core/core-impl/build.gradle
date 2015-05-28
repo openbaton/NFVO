@@ -2,7 +2,6 @@ dependencies {
     compile project(':core:core-int')
     compile project(':repositories:repo-int')
     compile project(':vim:vim-int')
-
-//    testCompile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+    compile 'org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE'
 
 }

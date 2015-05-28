@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface NetworkServiceRecordManagement {
 	 * validating a Network Service	Descriptor (NSD), 
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException;
+	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException;
 
 	/**
 	 * This operation allows updating a Network 
