@@ -77,6 +77,8 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	}
 
 	public List<VNFDependency> getVnf_dependency() {
+		if (vnf_dependency == null)
+			vnf_dependency = new ArrayList<VNFDependency>();
 		return vnf_dependency;
 	}
 

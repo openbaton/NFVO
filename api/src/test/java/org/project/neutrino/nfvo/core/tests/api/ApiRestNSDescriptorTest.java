@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.api.RestNetworkService;
 import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
+import org.project.neutrino.nfvo.api.exceptions.VNFDependencyNotFoundException;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
@@ -49,6 +51,8 @@ public class ApiRestNSDescriptorTest {
 		virtualNetworkFunctionDescriptor.setVendor("Fokus");
 		networkServiceDescriptor.getVnfd()
 				.add(virtualNetworkFunctionDescriptor);
+		VNFDependency vnfdependency = new VNFDependency();
+		networkServiceDescriptor.getVnf_dependency().add(vnfdependency);
 	}
 
 	@Test
@@ -92,7 +96,7 @@ public class ApiRestNSDescriptorTest {
 		restNetworkService.delete(anyString());
 	}
 
-	// TODO from here
+	// XXX from here VirtualNetworkFunctionDescriptor
 	@Test
 	public void testpostVNFD() {
 		List<VirtualNetworkFunctionDescriptor> list = new ArrayList<VirtualNetworkFunctionDescriptor>();
@@ -180,10 +184,106 @@ public class ApiRestNSDescriptorTest {
 	public void testdeleteVirtualNetworkFunctionDescriptor() {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
-		VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor.getVnfd().get(0);
+		VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor
+				.getVnfd().get(0);
 		restNetworkService.deleteVirtualNetworkFunctionDescriptor(
 				networkServiceDescriptor.getId(), vnfd.getId());
-		log.info(""+networkServiceDescriptor);
+		log.info("" + networkServiceDescriptor);
 	}
-	// TODO to here
+
+	// XXX to here VirtualNetworkFunctionDescriptor
+
+	// XXX FROM VNFDependency
+	@Test
+	public void testpostVNFDependency() {
+		List<VNFDependency> list = new ArrayList<VNFDependency>();
+		networkServiceDescriptor.setVnf_dependency(list);
+		VNFDependency vnfd = new VNFDependency();
+
+		networkServiceDescriptor.getVnf_dependency().add(vnfd);
+		when(
+				nsdManagement.update(networkServiceDescriptor,
+						networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		NetworkServiceDescriptor nsdUpdate = nsdManagement.update(
+				networkServiceDescriptor, networkServiceDescriptor.getId());
+		VNFDependency vnsDependency1 = restNetworkService.postVNFDependency(
+				vnfd, networkServiceDescriptor.getId());
+
+		List<VNFDependency> listVnfds = nsdUpdate.getVnf_dependency();
+		for (VNFDependency vnsDependency : listVnfds) {
+			if (vnsDependency.getId().equals(vnfd.getId()))
+				assertEquals(vnsDependency1, vnsDependency);
+			else {
+				fail("testpostVNFDependency FAILED: not found the VNFDependency into NSD");
+			}
+		}
+
+	}
+
+	@Test
+	public void testgetVNFDependency() {
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency()
+				.get(0);
+		assertEquals(vnfd, restNetworkService.getVNFDependency(
+				networkServiceDescriptor.getId(), networkServiceDescriptor
+						.getVnf_dependency().get(0).getId()));
+	}
+
+	@Test
+	public void testgetVNFDependencies() {
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		List<VNFDependency> vnfds = networkServiceDescriptor
+				.getVnf_dependency();
+		assertEquals(vnfds,
+				restNetworkService.getVNFDependencies(networkServiceDescriptor
+						.getId()));
+
+	}
+
+	@Test
+	public void testVNFDependencyNotFoundException() {
+		exception.expect(VNFDependencyNotFoundException.class);
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		restNetworkService.getVNFDependency(networkServiceDescriptor.getId(),
+				"-1");
+	}
+
+	@Test
+	public void testupdateVNFD() {
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		VNFDependency vnfd = new VNFDependency();
+
+		VNFDependency vnfd_toUp = networkServiceDescriptor.getVnf_dependency()
+				.get(0);
+		log.info("" + vnfd_toUp);
+		vnfd_toUp = vnfd;
+		networkServiceDescriptor.getVnf_dependency().add(vnfd_toUp);
+		log.info("" + vnfd);
+		assertEquals(
+				vnfd,
+				restNetworkService.updateVNFD(vnfd,
+						networkServiceDescriptor.getId(), vnfd_toUp.getId()));
+
+	}
+
+	@Test
+	public void testdeleteVNFDependency() {
+		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
+				networkServiceDescriptor);
+		VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency()
+				.get(0);
+		restNetworkService.deleteVNFDependency(
+				networkServiceDescriptor.getId(), vnfd.getId());
+		log.info("" + networkServiceDescriptor);
+	}
+	// XXX HERE VNFDependency
+
 }
