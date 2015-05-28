@@ -26,4 +26,10 @@ public class Security implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	@Override
+	public String toString() {
+		return "Security [id=" + id + ", version=" + version + "]";
+	}
+	
 }

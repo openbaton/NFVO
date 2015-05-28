@@ -544,7 +544,7 @@ public class RestNetworkService {
 	 */
 	@RequestMapping(value = "{id}/security/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public Security creataSecurity(@RequestBody @Valid Security security,
+	public Security postSecurity(@RequestBody @Valid Security security,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
