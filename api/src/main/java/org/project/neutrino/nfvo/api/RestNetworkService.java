@@ -1,11 +1,5 @@
 package org.project.neutrino.nfvo.api;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import javax.persistence.NoResultException;
-import javax.validation.Valid;
-
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
@@ -18,18 +12,19 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.NoResultException;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/ns-descriptors")
@@ -587,6 +582,8 @@ public class RestNetworkService {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (VimException e) {
+			e.printStackTrace();
+		} catch (NotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;// TODO return error

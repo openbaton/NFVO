@@ -7,9 +7,12 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.Configuration;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
+import org.project.neutrino.nfvo.core.vnfm.VnfmManager;
+import org.project.neutrino.nfvo.core.vnfm.impl.RestRegister;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
@@ -19,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import static org.mockito.Matchers.any;
@@ -30,7 +34,8 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
+@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class, RestRegister.class, VnfmManager.class})
+@EnableJms
 public class ApplicationTest {
 
 	@Bean
@@ -60,6 +65,11 @@ public class ApplicationTest {
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "vnfmEndpointRepository")
+	GenericRepository<VnfmManagerEndpoint> vnfmManagerEndpointRepository() {
 		return mock(GenericRepository.class);
 	}
 
