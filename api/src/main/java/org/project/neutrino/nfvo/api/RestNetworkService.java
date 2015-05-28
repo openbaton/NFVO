@@ -220,7 +220,7 @@ public class RestNetworkService {
 		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
 				id_vfn);
 		nDescriptor = vnfDescriptor;
-		//TODO: replace all PUT like this
+		// TODO: replace all PUT like this
 		// nsd.getVnfd().remove(nDescriptor);
 		nsd.getVnfd().add(nDescriptor);
 		networkServiceDescriptorManagement.update(nsd, id);
@@ -314,8 +314,8 @@ public class RestNetworkService {
 		}
 
 		VNFDependency vDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
-		nsd.getVnf_dependency().remove(vDependency);
-		nsd.getVnf_dependency().add(vnfDependency);
+		vDependency = vnfDependency;
+		nsd.getVnf_dependency().add(vDependency);
 		networkServiceDescriptorManagement.update(nsd, id);
 		return vnfDependency;
 	}
@@ -408,7 +408,7 @@ public class RestNetworkService {
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public PhysicalNetworkFunctionDescriptor update(
+	public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
@@ -433,9 +433,9 @@ public class RestNetworkService {
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor edited
 	 */
-	@RequestMapping(value = "{id}/vnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public PhysicalNetworkFunctionDescriptor updatePNF(
+	public PhysicalNetworkFunctionDescriptor updatePNFD(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
 			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
 		NetworkServiceDescriptor nsd = null;
@@ -446,12 +446,12 @@ public class RestNetworkService {
 			throw new NSDNotFoundException(id);
 		}
 
-		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
-				id_pnf);
-		nsd.getPnfd().remove(nDescriptor);
-		nsd.getPnfd().add(pDescriptor);
+		PhysicalNetworkFunctionDescriptor pnfDescriptor = findPNFD(
+				nsd.getPnfd(), id_pnf);
+		pnfDescriptor = pDescriptor;
+		nsd.getPnfd().add(pnfDescriptor);
 		networkServiceDescriptorManagement.update(nsd, id);
-		return pDescriptor;
+		return pnfDescriptor;
 	}
 
 	/**

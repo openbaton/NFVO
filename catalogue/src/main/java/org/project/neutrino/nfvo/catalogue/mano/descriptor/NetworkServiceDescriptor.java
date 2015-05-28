@@ -87,6 +87,8 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	}
 
 	public List<PhysicalNetworkFunctionDescriptor> getPnfd() {
+		if (pnfd == null)
+			pnfd = new ArrayList<PhysicalNetworkFunctionDescriptor>();
 		return pnfd;
 	}
 
