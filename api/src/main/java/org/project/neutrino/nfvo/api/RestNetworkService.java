@@ -1,6 +1,9 @@
 package org.project.neutrino.nfvo.api;
 
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
+import org.project.neutrino.nfvo.api.exceptions.PNFDNotFoundException;
+import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
+import org.project.neutrino.nfvo.api.exceptions.VNFDependencyNotFoundException;
 import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -181,7 +184,7 @@ public class RestNetworkService {
 
 	@RequestMapping(value = "{id}/vnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public VirtualNetworkFunctionDescriptor update(
+	public VirtualNetworkFunctionDescriptor postVNFD(
 			@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
@@ -211,10 +214,12 @@ public class RestNetworkService {
 
 		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
 				id_vfn);
-		nsd.getVnfd().remove(nDescriptor);
-		nsd.getVnfd().add(vnfDescriptor);
+		nDescriptor = vnfDescriptor;
+		// TODO: replace all PUT like this
+		// nsd.getVnfd().remove(nDescriptor);
+		nsd.getVnfd().add(nDescriptor);
 		networkServiceDescriptorManagement.update(nsd, id);
-		return vnfDescriptor;
+		return nDescriptor;
 	}
 
 	/**
@@ -274,7 +279,7 @@ public class RestNetworkService {
 
 	@RequestMapping(value = "{id}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public VNFDependency update(
+	public VNFDependency postVNFDependency(
 			@RequestBody @Valid VNFDependency vnfDependency,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
@@ -304,8 +309,8 @@ public class RestNetworkService {
 		}
 
 		VNFDependency vDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
-		nsd.getVnf_dependency().remove(vDependency);
-		nsd.getVnf_dependency().add(vnfDependency);
+		vDependency = vnfDependency;
+		nsd.getVnf_dependency().add(vDependency);
 		networkServiceDescriptorManagement.update(nsd, id);
 		return vnfDependency;
 	}
@@ -333,6 +338,17 @@ public class RestNetworkService {
 		return nsd.getPnfd();
 	}
 
+	/**
+	 * Returns the PhysicalNetworkFunctionDescriptor
+	 * 
+	 * @param id
+	 *            : The NSD id
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor selected
+	 */
+
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
@@ -349,6 +365,14 @@ public class RestNetworkService {
 		return findPNFD(nsd.getPnfd(), id_pnf);
 	}
 
+	/**
+	 * Deletes the PhysicalNetworkFunctionDescriptor with the id_pnf
+	 * 
+	 * @param id
+	 *            : The NSD id
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
+	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePhysicalNetworkFunctionDescriptor(
@@ -367,9 +391,19 @@ public class RestNetworkService {
 		nsd.getVnfd().remove(pDescriptor);
 	}
 
+	/**
+	 * Stores the PhysicalNetworkFunctionDescriptor
+	 * 
+	 * @param pDescriptor
+	 *            : The PhysicalNetworkFunctionDescriptor to be stored
+	 * @param id
+	 *            : The NSD id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor stored
+	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public PhysicalNetworkFunctionDescriptor update(
+	public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
@@ -384,9 +418,19 @@ public class RestNetworkService {
 		return pDescriptor;
 	}
 
-	@RequestMapping(value = "{id}/vnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**
+	 * Edits the PhysicalNetworkFunctionDescriptor
+	 * 
+	 * @param pDescriptor
+	 *            : The PhysicalNetworkFunctionDescriptor to be edited
+	 * @param id
+	 *            : The NSD id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor edited
+	 */
+	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public PhysicalNetworkFunctionDescriptor updatePNF(
+	public PhysicalNetworkFunctionDescriptor updatePNFD(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
 			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
 		NetworkServiceDescriptor nsd = null;
@@ -397,12 +441,12 @@ public class RestNetworkService {
 			throw new NSDNotFoundException(id);
 		}
 
-		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
-				id_pnf);
-		nsd.getPnfd().remove(nDescriptor);
-		nsd.getPnfd().add(pDescriptor);
+		PhysicalNetworkFunctionDescriptor pnfDescriptor = findPNFD(
+				nsd.getPnfd(), id_pnf);
+		pnfDescriptor = pDescriptor;
+		nsd.getPnfd().add(pnfDescriptor);
 		networkServiceDescriptorManagement.update(nsd, id);
-		return pDescriptor;
+		return pnfDescriptor;
 	}
 
 	/**
@@ -416,7 +460,7 @@ public class RestNetworkService {
 
 	@RequestMapping(value = "{id}/security", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public Security getNsd_security(@PathVariable("id") String id) {
+	public Security getSecurity(@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -428,7 +472,103 @@ public class RestNetworkService {
 		return nsd.getNsd_security();
 	}
 
-	// TODO CRUD for Security
+	/**
+	 * Returns the Security with the id_s
+	 * 
+	 * @param id
+	 *            : The NSD id
+	 * @param id_s
+	 *            : The Security id
+	 * @return Security: The Security selected by id_s
+	 */
+	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public Security getSecurity(@PathVariable("id") String id,
+			@PathVariable("id_s") String id_s) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		if (!nsd.getNsd_security().getId().equals(id_s)) {
+			log.error("Security with id: " + id_s + " not found.");
+			throw new NSDNotFoundException(id_s);
+		}
+		return nsd.getNsd_security();
+	}
+
+	/**
+	 * Deletes the Security with the id_s
+	 * 
+	 * @param id
+	 *            : The NSD id
+	 * @param id_s
+	 *            : The Security id
+	 */
+	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteSecurity(@PathVariable("id") String id,
+			@PathVariable("id_s") String id_s) {
+
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		if (!nsd.getNsd_security().getId().equals(id_s)) {
+			log.error("Security with id: " + id_s + " not found.");
+			throw new NSDNotFoundException(id_s);
+		}
+		nsd.setNsd_security(null);
+		networkServiceDescriptorManagement.update(nsd, id);
+	}
+
+	/**
+	 * Stores the Security into NSD
+	 * 
+	 * @param security
+	 *            : The Security to be stored
+	 * @param id
+	 *            : The id of NSD
+	 * @return Security: The Security stored
+	 */
+	@RequestMapping(value = "{id}/security/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public Security postSecurity(@RequestBody @Valid Security security,
+			@PathVariable("id") String id) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+		nsd.setNsd_security(security);
+		networkServiceDescriptorManagement.update(nsd, id);
+		return security;
+	}
+
+	@RequestMapping(value = "{id}/vnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public Security updateSecurity(@RequestBody @Valid Security security,
+			@PathVariable("id") String id, @PathVariable("id_s") String id_s) {
+		NetworkServiceDescriptor nsd = null;
+		try {
+			nsd = networkServiceDescriptorManagement.query(id);
+		} catch (NoResultException e) {
+			log.error(e.getMessage());
+			throw new NSDNotFoundException(id);
+		}
+
+		nsd.setNsd_security(security);
+		networkServiceDescriptorManagement.update(nsd, id);
+		return security;
+	}
 
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
@@ -459,8 +599,7 @@ public class RestNetworkService {
 			}
 		}
 		if (pNetworkFunctionDescriptor == null) {
-			// TODO Implement the right Exception
-			throw new NSDNotFoundException(id_pnf);
+			throw new PNFDNotFoundException(id_pnf);
 		}
 		return pNetworkFunctionDescriptor;
 	}
@@ -474,8 +613,8 @@ public class RestNetworkService {
 			}
 		}
 		if (vDependency == null) {
-			// TODO Implement the right Exception
-			throw new NSDNotFoundException(id_vnfd);
+
+			throw new VNFDependencyNotFoundException(id_vnfd);
 		}
 		return vDependency;
 	}
@@ -490,8 +629,7 @@ public class RestNetworkService {
 			}
 		}
 		if (nDescriptor == null) {
-			// TODO Implement the right Exception
-			throw new NSDNotFoundException(id_vfn);
+			throw new VNFDNotFoundException(id_vfn);
 		}
 		return nDescriptor;
 	}
