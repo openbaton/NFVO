@@ -1,9 +1,6 @@
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    runtime project(':core:core-impl')
+    compile project(':catalogue')
+    compile project(':common')
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

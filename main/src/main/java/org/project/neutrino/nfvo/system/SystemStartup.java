@@ -28,9 +28,15 @@ class SystemStartup implements CommandLineRunner {
     @Qualifier("configurationRepository")
     private GenericRepository<Configuration> configurationRepository;
 
+//    @Autowired
+//    DefaultMessageListenerContainer defaultMessageListenerContainer;
+
     @Override
     public void run(String... args) throws Exception {
         log.info("Initializing NEUTRINO");
+
+//        defaultMessageListenerContainer.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONNECTION);
+
         ClassPathResource classPathResource = new ClassPathResource("neutrino.properties");
         Properties properties = new Properties();
         properties.load(classPathResource.getInputStream());

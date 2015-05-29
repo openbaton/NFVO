@@ -1,7 +1,6 @@
 dependencies {
     compile project(':core:core-int')
+    compile project(':common')
     compile project(':repositories:repo-int')
     compile project(':vim:vim-int')
-    compile 'org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE'
-
 }

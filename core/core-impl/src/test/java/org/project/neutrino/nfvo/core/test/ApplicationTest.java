@@ -11,12 +11,12 @@ import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
-import org.project.neutrino.nfvo.core.vnfm.VnfmManager;
-import org.project.neutrino.nfvo.core.vnfm.impl.RestRegister;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
+import org.project.neutrino.vnfm.interfaces.register.VnfmRegister;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -34,9 +34,20 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class, RestRegister.class, VnfmManager.class})
+@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
 @EnableJms
 public class ApplicationTest {
+
+	@Bean
+	VnfmRegister vnfmRegister(){
+		return mock(VnfmRegister.class);
+	}
+
+	@Bean
+	VnfmManager vnfmManager(){
+		return mock(VnfmManager.class);
+	}
+
 
 	@Bean
 	GenericRepository<Configuration> configurationRepository(){
