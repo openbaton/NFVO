@@ -11,11 +11,11 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,13 +75,12 @@ public class NetworkServiceManagementClassSuiteTest {
 		Assert.assertNotNull(nsrManagement);
 	}
 	@Test
-	public void nsrManagementCreateTest() throws NotFoundException {
+	public void nsrManagementCreateTest()  {
 		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
 		NetworkServiceRecord networkServiceRecord = null;
 		/**
-		 * TODO to remove when there will be some vnfm registered and figure out how to do in tests
+		 * TODO to remove when there will be some vnfm_reg registered and figure out how to do in tests
 		 */
-		exception.expect(NotFoundException.class);
 		try {
 			networkServiceRecord = nsrManagement.onboard(networkServiceDescriptor);
 		} catch (ExecutionException e) {
@@ -91,6 +90,9 @@ public class NetworkServiceManagementClassSuiteTest {
 			e.printStackTrace();
 			Assert.fail();
 		} catch (VimException e) {
+			e.printStackTrace();
+			Assert.fail();
+		} catch (NotFoundException e) {
 			e.printStackTrace();
 			Assert.fail();
 		}
