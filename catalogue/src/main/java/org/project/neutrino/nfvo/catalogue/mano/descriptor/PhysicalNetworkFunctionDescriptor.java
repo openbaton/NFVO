@@ -122,4 +122,13 @@ public class PhysicalNetworkFunctionDescriptor {
     public PhysicalNetworkFunctionDescriptor() {
 
     }
+
+	@Override
+	public String toString() {
+		return "PhysicalNetworkFunctionDescriptor [id=" + id + ", hb_version="
+				+ hb_version + ", vendor=" + vendor + ", version=" + version
+				+ ", description=" + description + ", connection_point="
+				+ connection_point + ", descriptor_version="
+				+ descriptor_version + ", pnfd_security=" + pnfd_security + "]";
+	}
 }
