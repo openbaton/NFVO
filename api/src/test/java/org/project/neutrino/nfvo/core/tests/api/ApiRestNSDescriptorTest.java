@@ -15,7 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.neutrino.nfvo.api.RestNetworkService;
+import org.project.neutrino.nfvo.api.RestNetworkServiceDescriptor;
 import org.project.neutrino.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDependencyNotFoundException;
@@ -33,7 +33,7 @@ public class ApiRestNSDescriptorTest {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@InjectMocks
-	RestNetworkService restNetworkService;
+	RestNetworkServiceDescriptor restNetworkService;
 
 	@Mock
 	NetworkServiceDescriptorManagement nsdManagement;

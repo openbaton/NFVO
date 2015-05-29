@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
 import java.util.List;
