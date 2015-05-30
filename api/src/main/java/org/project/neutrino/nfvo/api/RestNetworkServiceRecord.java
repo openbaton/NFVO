@@ -15,8 +15,8 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.neutrino.nfvo.core.interfaces.exception.NotFoundException;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
