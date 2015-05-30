@@ -1,6 +1,8 @@
 package org.project.neutrino.nfvo.common.vnfm;
 
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Action;
+import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.vnfm.interfaces.VNFLifecycleManagement;
 import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
@@ -10,10 +12,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import javax.jms.Message;
+import javax.jms.MessageListener;
 import java.io.IOException;
 import java.util.Properties;
+
+import static org.project.neutrino.nfvo.catalogue.nfvo.Action.INSTATIATE;
 
 /**
  * Created by lto on 28/05/15.
@@ -53,6 +60,14 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
 
     @Override
     public abstract void terminate();
+
+    protected void onAction(CoreMessage message) {
+        log.trace("Inside ONMESSAGE");
+        switch (message.getAction()){
+            case INSTATIATE:
+                this.instantiate((VirtualNetworkFunctionRecord) message.getObject());
+        }
+    }
 
     @Override
     public void run(String... args) throws Exception {

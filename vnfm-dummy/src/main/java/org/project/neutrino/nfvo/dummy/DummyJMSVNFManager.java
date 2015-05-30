@@ -8,8 +8,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.JmsListener;
 
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.naming.NamingException;
 
 /**
@@ -18,6 +20,7 @@ import javax.naming.NamingException;
 @Configuration
 @ComponentScan
 public class DummyJMSVNFManager extends AbstractVnfmJMS {
+
 
     @Override
     public void instantiate(VirtualNetworkFunctionRecord vnfr) {
@@ -83,7 +86,10 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
 
     }
 
-
+    @JmsListener(destination = "vnfm-actions", selector = "dummy")
+    public void onMessage(Message message){
+        this.onMessage(message);
+    }
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(DummyJMSVNFManager.class, args);
