@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface ClientInterfaces {
 
-    public String launch_instance(String name, String image, String flavor, String keypair, List<String> network, List<String> secGroup, String userData);
+    public Server launchInstance(String name, String image, String flavor, String keypair, List<String> network, List<String> secGroup, String userData);
     public void init(VimInstance vimInstance);
 
     List<NFVImage> listImages();

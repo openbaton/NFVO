@@ -17,7 +17,7 @@ import java.util.List;
 @Scope
 public class TestClient implements ClientInterfaces {
     @Override
-    public String launch_instance(String name, String image, String flavor, String keypair, List<String> network, List<String> secGroup, String userData) {
+    public Server launchInstance(String name, String image, String flavor, String keypair, List<String> network, List<String> secGroup, String userData) {
         throw new UnsupportedOperationException();
     }
 
