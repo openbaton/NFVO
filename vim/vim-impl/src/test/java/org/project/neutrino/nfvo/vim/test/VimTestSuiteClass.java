@@ -97,7 +97,7 @@ public class VimTestSuiteClass {
         ArrayList<String> secGroups = new ArrayList<>();
         secGroups.add("secGroup1");
 
-        when(openstackClient.launch_instance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(environment.getProperty("mocked_id"));
+        //when(openstackClient.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(environment.getProperty("mocked_id"));
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);
