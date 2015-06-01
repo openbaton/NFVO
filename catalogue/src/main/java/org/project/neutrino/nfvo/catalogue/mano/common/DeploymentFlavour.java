@@ -34,6 +34,8 @@ public class DeploymentFlavour {
         * */
     protected String flavour_key;
 
+    private String extId;
+
     public String getFlavour_key() {
         return flavour_key;
     }
@@ -49,4 +51,8 @@ public class DeploymentFlavour {
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getExtId() { return extId; }
+
+    public void setExtId(String extId) { this.extId = extId; }
 }
