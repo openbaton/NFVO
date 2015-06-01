@@ -1,10 +1,12 @@
 package org.project.neutrino.nfvo.catalogue.nfvo;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import java.util.Date;
 
 /**
  * Created by lto on 20/05/15.
@@ -16,8 +18,18 @@ public class Server {
     @Version
     private int version = 0;
     private String name;
+    private NFVImage image;
+    private DeploymentFlavour flavor;
+    private String status;
+    private String extendedStatus;
     private String extId;
     private String ip;
+    private Date created;
+    private Date updated;
+
+    public String getId() { return id; }
+
+    public int getVersion() { return version; }
 
     public void setName(String name) {
         this.name = name;
@@ -25,6 +37,14 @@ public class Server {
 
     public String getName() {
         return name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setExtId(String extId) {
@@ -42,4 +62,60 @@ public class Server {
     public String getIp() {
         return ip;
     }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public String getExtendedStatus() {
+        return extendedStatus;
+    }
+
+    public void setExtendedStatus(String extendedStatus) {
+        this.extendedStatus = extendedStatus;
+    }
+
+    public NFVImage getImage() {
+        return image;
+    }
+
+    public void setImage(NFVImage image) {
+        this.image = image;
+    }
+
+    public DeploymentFlavour getFlavor() {
+        return flavor;
+    }
+
+    public void setFlavor(DeploymentFlavour flavor) {
+        this.flavor = flavor;
+    }
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", extendedStatus='" + status + '\'' +
+                ", version=" + version +
+                ", extId='" + extId + '\'' +
+                ", ip='" + ip + '\'' +
+                ", created='" + created + '\'' +
+                ", updated='" + updated + '\'' +
+                '}';
+    }
 }
+
