@@ -17,12 +17,15 @@ public class NFVImage {
 
     private String extId;
     private String name;
-    private String minRam;
-    private String minDiskSpace;
+    private int minRam;
+    private int minDiskSpace;
     private String minCPU;
 
     @Temporal(TemporalType.DATE)
     private Date created;
+
+    @Temporal(TemporalType.DATE)
+    private Date updated;
 
     public NFVImage() {
     }
@@ -59,19 +62,19 @@ public class NFVImage {
         this.extId = extId;
     }
 
-    public String getMinRam() {
+    public int getMinRam() {
         return minRam;
     }
 
-    public void setMinRam(String minRam) {
+    public void setMinRam(int minRam) {
         this.minRam = minRam;
     }
 
-    public String getMinDiskSpace() {
+    public int getMinDiskSpace() {
         return minDiskSpace;
     }
 
-    public void setMinDiskSpace(String minDiskSpace) {
+    public void setMinDiskSpace(int minDiskSpace) {
         this.minDiskSpace = minDiskSpace;
     }
 
@@ -83,23 +86,28 @@ public class NFVImage {
         this.minCPU = minCPU;
     }
 
-    @Override
-    public String toString() {
-        return "Image{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", extId='" + extId + '\'' +
-                ", minRam='" + minRam + '\'' +
-                ", minDiskSpace='" + minDiskSpace + '\'' +
-                ", minCPU='" + minCPU + '\'' +
-                '}';
-    }
-
     public void setCreated(Date created) {
         this.created = created;
     }
 
     public Date getCreated() {
         return created;
+    }
+
+    public Date getUpdated() { return updated; }
+
+    public void setUpdated(Date updated) { this.updated = updated; }
+
+    @Override
+    public String toString() {
+        return "Image{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", version=" + version +
+                ", extId='" + extId + '\'' +
+                ", minRam='" + minRam + '\'' +
+                ", minDiskSpace='" + minDiskSpace + '\'' +
+                ", minCPU='" + minCPU + '\'' +
+                '}';
     }
 }
