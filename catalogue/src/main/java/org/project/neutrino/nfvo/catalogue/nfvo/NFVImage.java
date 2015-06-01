@@ -108,6 +108,8 @@ public class NFVImage {
                 ", minRam='" + minRam + '\'' +
                 ", minDiskSpace='" + minDiskSpace + '\'' +
                 ", minCPU='" + minCPU + '\'' +
+                ", created='" + created + '\'' +
+                ", updated='" + updated + '\'' +
                 '}';
     }
 }
