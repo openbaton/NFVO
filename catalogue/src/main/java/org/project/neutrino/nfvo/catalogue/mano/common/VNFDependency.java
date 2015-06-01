@@ -61,5 +61,11 @@ public class VNFDependency /*implements Serializable*/{
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return "VNFDependency [id=" + id + ", version=" + version + ", source="
+				+ source + ", target=" + target + "]";
+	}
+
 	
 }

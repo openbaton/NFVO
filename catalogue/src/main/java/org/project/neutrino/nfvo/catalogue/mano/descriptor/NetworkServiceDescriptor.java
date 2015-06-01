@@ -11,6 +11,8 @@ import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,38 +23,40 @@ import java.util.List;
 @Entity
 public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
-    /**
-     * VNF which is part of the Network Service, see clause 6.3.1. This element is required, for example, when the Network Service is being built top-down or instantiating the member VNFs as well.
-     * */
-    @OneToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<VirtualNetworkFunctionDescriptor> vnfd;
-    /**
-     * Describe dependencies between VNF. Defined in terms of
-     * source and target VNF i.e. target VNF "depends on" source
-     * VNF. In other words a source VNF shall exist and connect to
-     * the service before target VNF can be initiated/deployed and
-     * connected. This element would be used, for example, to define
-     * the sequence in which various numbered network nodes and
-     * links within a VNF FG should be instantiated by the NFV
-     * Orchestrator.*/
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFDependency> vnf_dependency;
-    /*See PhysicalNetworkFunctionDescriptor class for description*/
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<PhysicalNetworkFunctionDescriptor> pnfd;
-    /*
-    * This is a signature of nsd to prevent tampering. The particular hash algorithm used to compute the signature, together with the
-    * corresponding cryptographic certificate to validate the signature should also be included.
-    * Not mandatory from NFV.
-    * TODO could also be called Security and used for all the objects that need it.
-    * */
-    @OneToOne(cascade = CascadeType.ALL)
-    private Security nsd_security;
+	/**
+	 * VNF which is part of the Network Service, see clause 6.3.1. This element
+	 * is required, for example, when the Network Service is being built
+	 * top-down or instantiating the member VNFs as well.
+	 * */
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+	private List<VirtualNetworkFunctionDescriptor> vnfd;
+	/**
+	 * Describe dependencies between VNF. Defined in terms of source and target
+	 * VNF i.e. target VNF "depends on" source VNF. In other words a source VNF
+	 * shall exist and connect to the service before target VNF can be
+	 * initiated/deployed and connected. This element would be used, for
+	 * example, to define the sequence in which various numbered network nodes
+	 * and links within a VNF FG should be instantiated by the NFV Orchestrator.
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<VNFDependency> vnf_dependency;
+	/* See PhysicalNetworkFunctionDescriptor class for description */
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<PhysicalNetworkFunctionDescriptor> pnfd;
+	/*
+	 * This is a signature of nsd to prevent tampering. The particular hash
+	 * algorithm used to compute the signature, together with the corresponding
+	 * cryptographic certificate to validate the signature should also be
+	 * included. Not mandatory from NFV. TODO could also be called Security and
+	 * used for all the objects that need it.
+	 */
+	@OneToOne(cascade = CascadeType.ALL)
+	private Security nsd_security;
 
 	private boolean enabled;
 
-    public NetworkServiceDescriptor() {
-    }
+	public NetworkServiceDescriptor() {
+	}
 
 	public boolean isEnabled() {
 		return enabled;
@@ -63,44 +67,42 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	}
 
 	public List<VirtualNetworkFunctionDescriptor> getVnfd() {
+		if (vnfd == null)
+			vnfd = new ArrayList<VirtualNetworkFunctionDescriptor>();
 		return vnfd;
 	}
-
 
 	public void setVnfd(List<VirtualNetworkFunctionDescriptor> vnfd) {
 		this.vnfd = vnfd;
 	}
 
-
 	public List<VNFDependency> getVnf_dependency() {
+		if (vnf_dependency == null)
+			vnf_dependency = new ArrayList<VNFDependency>();
 		return vnf_dependency;
 	}
-
 
 	public void setVnf_dependency(List<VNFDependency> vnf_dependency) {
 		this.vnf_dependency = vnf_dependency;
 	}
 
-
 	public List<PhysicalNetworkFunctionDescriptor> getPnfd() {
+		if (pnfd == null)
+			pnfd = new ArrayList<PhysicalNetworkFunctionDescriptor>();
 		return pnfd;
 	}
-
 
 	public void setPnfd(List<PhysicalNetworkFunctionDescriptor> pnfd) {
 		this.pnfd = pnfd;
 	}
 
-
 	public Security getNsd_security() {
 		return nsd_security;
 	}
 
-
 	public void setNsd_security(Security nsd_security) {
 		this.nsd_security = nsd_security;
 	}
-
 
 	@Override
 	public String toString() {

@@ -1,8 +1,7 @@
 dependencies {
     compile project(':core:core-int')
+    compile project(':common')
     compile project(':repositories:repo-int')
     compile project(':vim:vim-int')
-
-//    testCompile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
-
+    compile project(':vnfm:vnfm-int')
 }

@@ -68,8 +68,9 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      * */
     @OneToMany(cascade=CascadeType.ALL)
     private List<Security> manifest_file_security;
+	private String type;
 
-    @Override
+	@Override
 	public String toString() {
 		return "VirtualNetworkFunctionDescriptor [descriptor_version="
 				+ descriptor_version + ", vdu=" + vdu + ", virtual_link="
@@ -164,4 +165,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 	}
 
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

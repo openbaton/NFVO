@@ -3,8 +3,6 @@ repositories {
 }
 
 dependencies {
-    compile project(':vim:vim-int')
-
     runtime project(':core:core-impl')
 
     testCompile group: 'junit', name: 'junit', version: '4.11'

@@ -4,6 +4,8 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 /**
  * Created by mpa on 30/04/15.
  */
@@ -52,7 +54,7 @@ public interface NetworkServiceDescriptorManagement {
 	 */
 	List<NetworkServiceDescriptor> query();
 
-	NetworkServiceDescriptor query(String id);
+	NetworkServiceDescriptor query(String id) throws NoResultException;
 
 	/**
 	 * This operation is used to remove a
