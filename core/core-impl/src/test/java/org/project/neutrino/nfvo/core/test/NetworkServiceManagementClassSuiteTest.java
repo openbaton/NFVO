@@ -8,10 +8,15 @@ import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lto on 20/04/15.
@@ -68,6 +74,44 @@ public class NetworkServiceManagementClassSuiteTest {
 	public void nsrManagementNotNull(){
 		Assert.assertNotNull(nsrManagement);
 	}
+	@Test
+	public void nsrManagementCreateTest()  {
+		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
+		NetworkServiceRecord networkServiceRecord = null;
+		/**
+		 * TODO to remove when there will be some vnfm_reg registered and figure out how to do in tests
+		 */
+		try {
+			networkServiceRecord = nsrManagement.onboard(networkServiceDescriptor);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			Assert.fail();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			Assert.fail();
+		} catch (VimException e) {
+			e.printStackTrace();
+			Assert.fail();
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+
+		Assert.assertNotNull(networkServiceRecord);
+		Assert.assertEquals(networkServiceDescriptor.getName(), networkServiceRecord.getName());
+		Assert.assertEquals(networkServiceDescriptor.getMonitoring_parameter(), networkServiceRecord.getMonitoring_parameter());
+		Assert.assertEquals(networkServiceDescriptor.getVendor(), networkServiceRecord.getVendor());
+		Assert.assertEquals(networkServiceDescriptor.getLifecycle_event(),networkServiceRecord.getLifecycle_event());
+		Assert.assertEquals(networkServiceDescriptor.getVersion(),networkServiceRecord.getVersion());
+		int i=0;
+		for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+			VirtualNetworkFunctionRecord vnfr = networkServiceRecord.getVnfr().get(i++);
+			Assert.assertEquals(vnfd.getMonitoring_parameter(),vnfr.getMonitoring_parameter());
+			Assert.assertEquals(vnfd.getLifecycle_event(),vnfr.getLifecycle_event());
+			Assert.assertEquals(vnfd.getVersion(),vnfr.getVersion());
+			Assert.assertEquals(vnfd.getVendor(),vnfr.getVendor());
+		}
+	}
 
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
 		NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
@@ -85,6 +129,10 @@ public class NetworkServiceManagementClassSuiteTest {
 		final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 		vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
 		vdu.setComputation_requirement("high_requirements");
+		VimInstance vimInstance = new VimInstance();
+		vimInstance.setName("testVIM");
+		vimInstance.setType("test");
+		vdu.setVimInstance(vimInstance);
 		virtualNetworkFunctionDescriptor
 				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
 					{

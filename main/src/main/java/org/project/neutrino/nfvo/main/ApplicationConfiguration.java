@@ -24,4 +24,6 @@ public class ApplicationConfiguration {
         }
         return broker;
     }
+
+
 }

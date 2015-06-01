@@ -4,12 +4,14 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +44,11 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Autowired
     private NSDUtils nsdUtils;
 
-    @Override
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException {
+    @Autowired
+    private VnfmManager vnfmManager;
 
-//        for (String s : context.getBeanDefinitionNames())
-//                log.debug(s);
+    @Override
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException {
 
         /*
         Create NSR
@@ -80,7 +82,11 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
          *  *) call the VNFMRegister
          *      *) the Register knows that all the VNFMs are available
          *      *) the Register knows which protocol to use per VNFM
+         *
+         *  for instance...
          */
+
+        vnfmManager.deploy(networkServiceRecord);
 
         return networkServiceRecord;
     }

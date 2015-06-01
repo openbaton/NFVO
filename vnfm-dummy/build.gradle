@@ -1,0 +1,31 @@
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+    }
+}
+apply plugin: "spring-boot"
+apply plugin: "java"
+apply plugin: 'maven'
+apply plugin: "jacoco"
+
+test { finalizedBy jacocoTestReport }
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+mainClassName = 'org.project.neutrino.nfvo.dummy.DummyJMSVNFManager'
+
+
+dependencies {
+    compile 'org.project.neutrino:common:0.2-SNAPSHOT'
+    compile "javax.jms:javax.jms-api:2.0.1"
+    compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
+}

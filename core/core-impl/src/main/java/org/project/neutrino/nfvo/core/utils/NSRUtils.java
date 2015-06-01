@@ -21,23 +21,25 @@ public class NSRUtils {
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd);
             virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
-            //TODO set dependecies!!!
+            //TODO set dependencies!!!
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
 
         }
         networkServiceRecord.setLifecycle_event(networkServiceDescriptor.getLifecycle_event());
         List<PhysicalNetworkFunctionRecord> pnfrs = new ArrayList<PhysicalNetworkFunctionRecord>();
-        for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()){
-            pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
-        }
+        if(networkServiceDescriptor.getPnfd() != null)
+            for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()){
+                pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
+            }
         networkServiceRecord.setPnfr(pnfrs);
         networkServiceRecord.setStatus(Status.INITIAILZED);
         networkServiceRecord.setVnffgr(networkServiceDescriptor.getVnffgd());
         networkServiceRecord.setVersion(networkServiceDescriptor.getVersion());
         networkServiceRecord.setVlr(new ArrayList<VirtualLinkRecord>());
-        for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()){
-            networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
-        }
+        if(networkServiceDescriptor.getVld() != null)
+            for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()){
+                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
+            }
         networkServiceRecord.setVnf_dependency(networkServiceDescriptor.getVnf_dependency());
 
         return networkServiceRecord;
@@ -58,6 +60,7 @@ public class NSRUtils {
     public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setName(vnfd.getName());
+        virtualNetworkFunctionRecord.setType(vnfd.getType());
         virtualNetworkFunctionRecord.setMonitoring_parameter(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
         virtualNetworkFunctionRecord.setAuto_scale_policy(vnfd.getAuto_scale_policy());
@@ -68,7 +71,7 @@ public class NSRUtils {
 
         virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
         virtualNetworkFunctionRecord.setConnection_point(vnfd.getConnection_point());
-        // TODO find a way to choose between deployment flavors
+        // TODO find a way to choose between deployment flavors and create the new one
 //        virtualNetworkFunctionRecord.setDeployment_flavour(vnfd.getDeployment_flavour());
         virtualNetworkFunctionRecord.setDescriptor_reference(vnfd.getId());
         virtualNetworkFunctionRecord.setLifecycle_event(vnfd.getLifecycle_event());
