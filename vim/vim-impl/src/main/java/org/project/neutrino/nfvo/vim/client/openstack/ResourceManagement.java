@@ -46,9 +46,9 @@ public class ResourceManagement implements org.project.neutrino.nfvo.vim_interfa
 
     @Override
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        String s = osClient.launch_instance("test_instance","cirros","m1.small", null, null, null, null);
+        Server server = osClient.launchInstance("test_instance","cirros","m1.small", null, null, null, null);
         //System.out.println(osClient.getImageId("cirros"));
-        return new AsyncResult<String>(s);
+        return new AsyncResult<String>(server.getExtId());
     }
 
     @Override
