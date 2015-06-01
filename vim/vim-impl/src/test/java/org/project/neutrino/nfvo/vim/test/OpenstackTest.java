@@ -220,10 +220,10 @@ public class OpenstackTest {
     private VimInstance createVimInstance() {
         VimInstance vimInstance = new VimInstance();
         vimInstance.setName("mock_vim_instance");
-        vimInstance.setUsername("nubomedia");
-        vimInstance.setPassword("nub0m3d1@");
-        vimInstance.setTenant("nubomedia");
-        vimInstance.setAuthUrl("http://80.96.122.48:5000/v2.0");
+        vimInstance.setUsername("user");
+        vimInstance.setPassword("pass");
+        vimInstance.setTenant("tenant");
+        vimInstance.setAuthUrl("url");
         return vimInstance;
     }
 
