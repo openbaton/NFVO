@@ -12,16 +12,34 @@ import java.util.List;
 @Entity
 public class Network {
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
-    private int version = 0;
+    private static int version = 0;
     private String name;
     private String extId;
+    private int segmentationId;
+    private String physicalNetworkName;
     private String networkType;
     private Boolean external;
     private Boolean shared;
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> subnets;
+    private List<Subnet> subnets;
+
+    public Network(){
+        id = IdGenerator.createUUID();
+        name = "";
+        extId = "";
+        segmentationId = -1;
+        physicalNetworkName = "";
+        networkType = "";
+        external = false;
+        shared = false;
+        subnets = new ArrayList<Subnet>();
+    }
+
+    public String getId() { return id; }
+
+    public int getVersion() { return version; }
 
     public void setName(String name) {
         this.name = name;
@@ -63,15 +81,60 @@ public class Network {
         return shared;
     }
 
-    public void setSubnets(Iterable<String> subnets) {
-        List<String> tmp = new ArrayList<String>();
-        for (String s : subnets){
-            tmp.add(s);
+    public int getSegmentationId() {
+        return segmentationId;
+    }
+
+    public void setSegmentationId(int segmentationId) {
+        this.segmentationId = segmentationId;
+    }
+
+    public String getPhysicalNetworkName() {
+        return physicalNetworkName;
+    }
+
+    public void setPhysicalNetworkName(String physicalNetworkName) {
+        this.physicalNetworkName = physicalNetworkName;
+    }
+
+    public void setSubnets(Iterable<Subnet> subnets) {
+        List<Subnet> tmp = new ArrayList<Subnet>();
+        for (Subnet subnet : subnets){
+            tmp.add(subnet);
         }
         this.subnets = tmp;
     }
 
-    public Iterable<String> getSubnets() {
+    public Iterable<Subnet> getSubnets() {
         return subnets;
+    }
+
+    public void addSubnet(Subnet subnet) {
+        this.subnets.add(subnet);
+    }
+
+    public boolean removeSubnet(Subnet subnet) {
+        return subnets.remove(subnet);
+    }
+
+    @Override
+    public String toString() {
+        String subnetsString = "[";
+        for (Subnet subnet : subnets) {
+            subnetsString = subnetsString + ", " + subnet.toString();
+        }
+        subnetsString = "]";
+        return "Network{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", version='" + version +
+            ", extId='" + extId + '\'' +
+            ", external='" + external + '\'' +
+            ", networkType='" + networkType + '\'' +
+            ", shared='" + shared + '\'' +
+            ", segmentationId='" + segmentationId + '\'' +
+            ", physicalNetworkName='" + physicalNetworkName + '\'' +
+            ", subnets='" + subnetsString + '\'' +
+            '}';
     }
 }
