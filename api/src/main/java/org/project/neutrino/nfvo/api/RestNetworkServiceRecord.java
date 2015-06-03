@@ -3,6 +3,8 @@ package org.project.neutrino.nfvo.api;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.validation.Valid;
 
@@ -43,7 +45,7 @@ public class RestNetworkServiceRecord {
 	 * This operation allows submitting and validating a Network Service
 	 * Descriptor (NSD), including any related VNFFGD and VLD.
 	 * 
-	 * @param NetworkServiceRecord
+	 * @param networkServiceDescriptor
 	 *            : the Network Service Descriptor to be created
 	 * @return NetworkServiceRecord: the Network Service Descriptor filled with
 	 *         id and values from core
@@ -62,6 +64,10 @@ public class RestNetworkServiceRecord {
 		} catch (VimException e) {
 			e.printStackTrace();
 		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		} catch (JMSException e) {
 			e.printStackTrace();
 		}
 		return null;// TODO return error
@@ -122,7 +128,7 @@ public class RestNetworkServiceRecord {
 	/**
 	 * This operation updates the Network Service Descriptor (NSD)
 	 * 
-	 * @param NetworkServiceRecord
+	 * @param networkServiceRecord
 	 *            : the Network Service Descriptor to be updated
 	 * @param id
 	 *            : the id of Network Service Descriptor
