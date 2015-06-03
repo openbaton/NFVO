@@ -6,14 +6,10 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import java.util.Map;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
+import java.util.Map;
 
 /**
  * Created by lto on 06/02/15.
@@ -29,7 +25,7 @@ public class LifecycleEvent {
 	@Version
 	private int version = 0;
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
     private Map<Event,String> lifecycle_events;
 
     public LifecycleEvent() {

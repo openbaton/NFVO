@@ -17,6 +17,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -25,7 +26,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualNetworkFunctionRecord {
+public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AutoScalePolicy> auto_scale_policy;

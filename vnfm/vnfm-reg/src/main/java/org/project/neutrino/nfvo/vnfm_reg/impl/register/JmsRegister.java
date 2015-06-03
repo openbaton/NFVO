@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vnfm_reg.impl;
+package org.project.neutrino.nfvo.vnfm_reg.impl.register;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.vnfm_reg.VnfmRegister;
