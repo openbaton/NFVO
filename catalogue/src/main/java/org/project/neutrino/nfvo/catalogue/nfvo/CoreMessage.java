@@ -1,7 +1,5 @@
 package org.project.neutrino.nfvo.catalogue.nfvo;
 
-import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-
 import java.io.Serializable;
 
 /**
@@ -25,5 +23,13 @@ public class CoreMessage implements Serializable{
 
     public void setObject(Serializable object) {
         this.object = object;
+    }
+
+    @Override
+    public String toString() {
+        return "CoreMessage{" +
+                "action=" + action +
+                ", object=" + object +
+                '}';
     }
 }
