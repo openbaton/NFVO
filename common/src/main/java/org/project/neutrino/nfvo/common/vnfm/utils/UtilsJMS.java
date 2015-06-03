@@ -6,6 +6,7 @@ import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.io.Serializable;
 import java.util.Properties;
 
 /**
@@ -28,16 +29,13 @@ public class UtilsJMS {
     // the JMS Session
     private static Session session = null;
 
-    // the queue-name from which the message should be read
-    private static String queueName = "vnfm-register";
-
     // that is the destination from which we want to read the messages
     private static Destination destinationQueue = null;
 
     // that is the Consumer that receives the messages
     private static MessageProducer messageProducer = null;
 
-    public static void sendToQueue(VnfmManagerEndpoint endpoint, String queueName) throws NamingException, JMSException {
+    public static void sendToQueue(Serializable endpoint, String queueName) throws NamingException, JMSException {
         init(queueName);
         connection = connectionFactory.createConnection();
         connection.start();
@@ -51,8 +49,8 @@ public class UtilsJMS {
         messageProducer.send(objMessage);
     }
 
-    public static void sendToNFVO(VnfmManagerEndpoint endpoint) throws NamingException, JMSException {
-        init(queueName);
+    public static void sendToRegister(VnfmManagerEndpoint endpoint) throws NamingException, JMSException {
+        init("vnfm-register");
 
         // Connect to ActiveMQ
         connection = connectionFactory.createConnection();

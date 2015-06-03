@@ -12,15 +12,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import java.io.IOException;
 import java.util.Properties;
-
-import static org.project.neutrino.nfvo.catalogue.nfvo.Action.INSTATIATE;
 
 /**
  * Created by lto on 28/05/15.
@@ -80,7 +75,14 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
         vnfmManagerEndpoint.setEndpoinType("jms");
         log.debug("Registering to queue: vnfm-register");
-        UtilsJMS.sendToQueue(vnfmManagerEndpoint,"vnfm-register");
+        UtilsJMS.sendToRegister(vnfmManagerEndpoint);
+
+
+        Thread.sleep(10000);
+        CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setAction(Action.INSTATIATE_FINISH);
+        coreMessage.setObject(null);
+        UtilsJMS.sendToQueue(coreMessage, "vnfm-core-actions");
     }
 
     private void loadProperties() {

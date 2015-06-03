@@ -28,6 +28,7 @@ import java.util.List;
 @ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
 public class OpenstackTest {
+
     @Autowired
     org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient openstackClient;
 
