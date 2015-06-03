@@ -21,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.validation.Valid;
 
@@ -585,6 +587,10 @@ public class RestNetworkServiceDescriptor {
 		} catch (VimException e) {
 			e.printStackTrace();
 		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		} catch (JMSException e) {
 			e.printStackTrace();
 		}
 		return null;// TODO return error

@@ -1,26 +1,37 @@
 package org.project.neutrino.nfvo.dummy;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.vnfm.AbstractVnfmJMS;
 import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.naming.NamingException;
 
 /**
  * Created by lto on 27/05/15.
  */
 @Configuration
-@ComponentScan
+@EnableJms
 public class DummyJMSVNFManager extends AbstractVnfmJMS {
 
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        return new ActiveMQConnectionFactory();
+    }
+
+    private static final String SELECTOR = "dummy-endpoint";
 
     @Override
     public void instantiate(VirtualNetworkFunctionRecord vnfr) {
@@ -34,7 +45,7 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
 
         VnfmManagerEndpoint endpoint = new VnfmManagerEndpoint();
         endpoint.setType("dummy");
-        endpoint.setEndpoint("dummy-endpoint");
+        endpoint.setEndpoint(SELECTOR);
         endpoint.setEndpoinType("jms");
 
         try {
@@ -86,9 +97,17 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
 
     }
 
-    @JmsListener(destination = "vnfm-actions", selector = "dummy")
-    public void onMessage(Message message){
-        this.onMessage(message);
+    @JmsListener(destination = "core-vnfm-actions", selector = "type=\'" + SELECTOR + "\'", containerFactory = "myJmsContainerFactory")
+    public void onMessage(CoreMessage message){
+        this.onAction(message);
+    }
+
+    @Bean
+    JmsListenerContainerFactory<?> myJmsContainerFactory(ConnectionFactory connectionFactory) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setCacheLevelName("CACHE_CONNECTION");
+        factory.setConnectionFactory(connectionFactory);
+        return factory;
     }
 
     public static void main(String[] args) {

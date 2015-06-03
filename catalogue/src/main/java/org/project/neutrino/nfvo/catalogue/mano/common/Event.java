@@ -9,5 +9,5 @@ package org.project.neutrino.nfvo.catalogue.mano.common;
 /**
  * Created by lto on 06/02/15.
  */
-public enum Event {
+public enum  Event {
 }
