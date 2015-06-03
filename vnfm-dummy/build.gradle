@@ -29,3 +29,10 @@ dependencies {
     compile "javax.jms:javax.jms-api:2.0.1"
     compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
 }
+
+
+// tag::wrapper[]
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+// end::wrapper[]

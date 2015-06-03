@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vim_interfaces.client_interfaces;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
@@ -19,4 +20,5 @@ public interface ClientInterfaces {
 
     List<Server> listServer();
     List<Network> listNetworks();
+    List<DeploymentFlavour> listFlavors();
 }

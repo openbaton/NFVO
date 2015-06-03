@@ -12,7 +12,7 @@ import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.InternalVirtualLink;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDDeploymentFlavour;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
@@ -38,7 +38,7 @@ public class VirtualNetworkFunctionRecord {
      * */
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private VNFDDeploymentFlavour deployment_flavour;
+    private VNFDeploymentFlavour deployment_flavour;
     /**
      * ID of the VNF instance
      * */
@@ -163,11 +163,11 @@ public class VirtualNetworkFunctionRecord {
         this.dependency = dependency;
     }
 
-    public VNFDDeploymentFlavour getDeployment_flavour() {
+    public VNFDeploymentFlavour getDeployment_flavour() {
         return deployment_flavour;
     }
 
-    public void setDeployment_flavour(VNFDDeploymentFlavour deployment_flavour) {
+    public void setDeployment_flavour(VNFDeploymentFlavour deployment_flavour) {
         this.deployment_flavour = deployment_flavour;
     }
 
@@ -329,5 +329,35 @@ public class VirtualNetworkFunctionRecord {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "VirtualNetworkFunctionRecord{" +
+                "auto_scale_policy=" + auto_scale_policy +
+                ", connection_point=" + connection_point +
+                ", dependency=" + dependency +
+                ", deployment_flavour=" + deployment_flavour +
+                ", id='" + id + '\'' +
+                ", lifecycle_event=" + lifecycle_event +
+                ", localization='" + localization + '\'' +
+                ", monitoring_parameter=" + monitoring_parameter +
+                ", vdu=" + vdu +
+                ", vendor='" + vendor + '\'' +
+                ", version='" + version + '\'' +
+                ", virtual_link=" + virtual_link +
+                ", parent_ns=" + parent_ns +
+                ", descriptor_reference='" + descriptor_reference + '\'' +
+                ", vnfm_id='" + vnfm_id + '\'' +
+                ", connected_external_virtual_link=" + connected_external_virtual_link +
+                ", vnf_address=" + vnf_address +
+                ", status=" + status +
+                ", notification=" + notification +
+                ", lifecycle_event_history=" + lifecycle_event_history +
+                ", audit_log='" + audit_log + '\'' +
+                ", runtime_policy_info=" + runtime_policy_info +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }

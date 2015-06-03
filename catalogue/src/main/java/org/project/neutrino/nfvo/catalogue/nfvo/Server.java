@@ -3,9 +3,7 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -18,13 +16,20 @@ public class Server {
     @Version
     private int version = 0;
     private String name;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private NFVImage image;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private DeploymentFlavour flavor;
+
     private String status;
     private String extendedStatus;
     private String extId;
     private String ip;
+
+    @Temporal(TemporalType.DATE)
     private Date created;
+    @Temporal(TemporalType.DATE)
     private Date updated;
 
     public String getId() { return id; }

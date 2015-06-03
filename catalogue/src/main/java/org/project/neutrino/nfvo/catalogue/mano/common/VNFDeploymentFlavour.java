@@ -4,10 +4,7 @@
  # This file is part of the OpenSDNCore project.                              #
  #############################################################################*/
 
-package org.project.neutrino.nfvo.catalogue.mano.descriptor;
-
-import org.project.neutrino.nfvo.catalogue.mano.common.CostituentVDU;
-import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
+package org.project.neutrino.nfvo.catalogue.mano.common;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,7 +15,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFDDeploymentFlavour extends DeploymentFlavour {
+public class VNFDeploymentFlavour extends DeploymentFlavour {
 
     /**
      * Constraint that this deployment flavour can only meet the requirements on certain hardware.
@@ -50,7 +47,7 @@ public class VNFDDeploymentFlavour extends DeploymentFlavour {
         this.costituent_vdu = costituent_vdu;
     }
 
-    public VNFDDeploymentFlavour() {
+    public VNFDeploymentFlavour() {
 
     }
 }

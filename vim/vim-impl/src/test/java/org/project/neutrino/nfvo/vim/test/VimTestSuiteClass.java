@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDDeploymentFlavour;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.Status;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -32,10 +32,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by lto on 21/05/15.
@@ -140,7 +136,7 @@ public class VimTestSuiteClass {
         vnfr.setStatus(Status.INITIAILZED);
         vnfr.setAudit_log("audit_log");
         vnfr.setDescriptor_reference("test_dr");
-        VNFDDeploymentFlavour deployment_flavour = new VNFDDeploymentFlavour();
+        VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();
         deployment_flavour.setFlavour_key("m1.small");
         vnfr.setDeployment_flavour(deployment_flavour);
         return vnfr;

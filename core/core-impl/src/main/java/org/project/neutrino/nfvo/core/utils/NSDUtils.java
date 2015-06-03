@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
+import java.util.List;
 
 /**
  * Created by lto on 13/05/15.
@@ -25,16 +26,20 @@ public class NSDUtils {
 
     public void fetchData(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
 
+        List<VimInstance> vimInstances = vimRepository.findAll();
         /**
          * Fetch datacenters..
          *
          */
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-                String id = vdu.getVimInstance().getId();
-                if (id != null) {
-                    VimInstance vimInstance = vimRepository.find(id);
-                    vdu.setVimInstance(vimInstance);
+                String vimName = vdu.getVimInstance().getName();
+                String name_id = vimName != null ? vimName : vdu.getVimInstance().getId();
+                for(VimInstance vimInstance : vimInstances){
+                    if (vimInstance.getName().equals(name_id) || vimInstance.getId().equals(name_id)){
+                        vdu.setVimInstance(vimInstance);
+                        return;
+                    }
                 }
             }
         }

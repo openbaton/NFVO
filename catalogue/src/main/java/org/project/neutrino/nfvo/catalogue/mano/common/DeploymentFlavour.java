@@ -6,13 +6,9 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
 
 /**
  * Created by lto on 06/02/15.
@@ -34,7 +30,7 @@ public class DeploymentFlavour {
         * */
     protected String flavour_key;
 
-    private String extId;
+    protected String extId;
 
     public String getFlavour_key() {
         return flavour_key;
@@ -55,4 +51,14 @@ public class DeploymentFlavour {
     public String getExtId() { return extId; }
 
     public void setExtId(String extId) { this.extId = extId; }
+
+    @Override
+    public String toString() {
+        return "DeploymentFlavour{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", flavour_key='" + flavour_key + '\'' +
+                ", extId='" + extId + '\'' +
+                '}';
+    }
 }

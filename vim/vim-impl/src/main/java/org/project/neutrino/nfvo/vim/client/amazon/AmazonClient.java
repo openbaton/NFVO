@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vim.client.amazon;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
@@ -38,6 +39,11 @@ public class AmazonClient implements ClientInterfaces{
 
     @Override
     public List<Network> listNetworks() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<DeploymentFlavour> listFlavors() {
         throw new UnsupportedOperationException();
     }
 }

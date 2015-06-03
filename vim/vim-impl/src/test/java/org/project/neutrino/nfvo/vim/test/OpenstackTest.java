@@ -1,21 +1,14 @@
 package org.project.neutrino.nfvo.vim.test;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.internal.matchers.Null;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDDeploymentFlavour;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.Status;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
-import org.project.neutrino.nfvo.vim.OpenstackVIM;
-import org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -24,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -233,7 +225,7 @@ public class OpenstackTest {
         vnfr.setStatus(Status.INITIAILZED);
         vnfr.setAudit_log("audit_log");
         vnfr.setDescriptor_reference("test_dr");
-        VNFDDeploymentFlavour deployment_flavour = new VNFDDeploymentFlavour();
+        VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();
         deployment_flavour.setFlavour_key("m1.small");
         vnfr.setDeployment_flavour(deployment_flavour);
         return vnfr;
