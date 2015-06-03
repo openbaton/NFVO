@@ -1,10 +1,5 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +10,11 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 
 public class ApiRestImageTest {
@@ -46,7 +46,7 @@ public class ApiRestImageTest {
 		NFVImage image = new NFVImage();
 		image.setId("123");
 		image.setMinCPU("1");
-		image.setMinRam("1000");
+		image.setMinRam(1000);
 		image.setName("Image_test");
 		when(mock.add(image)).thenReturn(image);
 		log.info("" + restImage.create(image));
@@ -59,7 +59,7 @@ public class ApiRestImageTest {
 		NFVImage image = new NFVImage();
 		image.setId("123");
 		image.setMinCPU("1");
-		image.setMinRam("1000");
+		image.setMinRam(1000);
 		image.setName("Image_test");
 		when(mock.query(image.getId())).thenReturn(image);
 		assertEquals(image, restImage.findById(image.getId()));
@@ -70,7 +70,7 @@ public class ApiRestImageTest {
 		NFVImage image = new NFVImage();
 		image.setId("123");
 		image.setMinCPU("1");
-		image.setMinRam("1000");
+		image.setMinRam(1000);
 		image.setName("Image_test");
 		when(mock.update(image, image.getId())).thenReturn(image);
 		assertEquals(image, restImage.update(image, image.getId()));

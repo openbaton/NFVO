@@ -38,7 +38,7 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
         endpoint.setEndpoinType("jms");
 
         try {
-            UtilsJMS.sendToNFVO(endpoint);
+            UtilsJMS.sendToRegister(endpoint);
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (JMSException e) {

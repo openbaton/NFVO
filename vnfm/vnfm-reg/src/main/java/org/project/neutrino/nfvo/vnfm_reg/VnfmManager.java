@@ -2,11 +2,16 @@ package org.project.neutrino.nfvo.vnfm_reg;
 
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,8 @@ import java.util.concurrent.Future;
 @Service
 @Scope
 public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager.VnfmManager {
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("vnfmRegister")
@@ -39,5 +46,12 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
 
         }
         return new AsyncResult<Void>(null);
+    }
+
+    @Override
+    @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
+    public void actionFinished(@Payload CoreMessage coreMessage) {
+        log.debug("Received: " + coreMessage);
+
     }
 }

@@ -5,6 +5,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -45,16 +46,16 @@ public class NetworkServiceManagementClassSuiteTest {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Autowired
-	ConfigurationManagement configurationManagement;
+	private ConfigurationManagement configurationManagement;
 
 	@Autowired
-	NetworkServiceDescriptorManagement nsdManagement;
+	private NetworkServiceDescriptorManagement nsdManagement;
 
 	@Autowired
-	NFVImageManagement NFVImageManagement;
+	private NFVImageManagement NFVImageManagement;
 
 	@Autowired
-	NetworkServiceRecordManagement nsrManagement;
+	private NetworkServiceRecordManagement nsrManagement;
 
 	@Before
 	public void init() {
@@ -75,6 +76,7 @@ public class NetworkServiceManagementClassSuiteTest {
 		Assert.assertNotNull(nsrManagement);
 	}
 	@Test
+	@Ignore
 	public void nsrManagementCreateTest()  {
 		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
 		NetworkServiceRecord networkServiceRecord = null;
@@ -114,7 +116,7 @@ public class NetworkServiceManagementClassSuiteTest {
 	}
 
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-		NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 		nsd.setVendor("FOKUS");
 		List<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new ArrayList<VirtualNetworkFunctionDescriptor>();
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
@@ -126,6 +128,10 @@ public class NetworkServiceManagementClassSuiteTest {
 						add("monitor3");
 					}
 				});
+		final VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+		vdf.setExtId("extID");
+		vdf.setFlavour_key("flavor_name");
+		virtualNetworkFunctionDescriptor.setDeployment_flavour(new ArrayList<VNFDeploymentFlavour>(){{add(vdf);}});
 		final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 		vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
 		vdu.setComputation_requirement("high_requirements");

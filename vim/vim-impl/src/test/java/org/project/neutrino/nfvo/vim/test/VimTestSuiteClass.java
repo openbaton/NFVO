@@ -10,6 +10,8 @@ import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.Status;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
+import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.vim.AmazonVIM;
 import org.project.neutrino.nfvo.vim.OpenstackVIM;
@@ -32,6 +34,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by lto on 21/05/15.
@@ -93,14 +99,16 @@ public class VimTestSuiteClass {
         ArrayList<String> secGroups = new ArrayList<>();
         secGroups.add("secGroup1");
 
-        //when(openstackClient.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(environment.getProperty("mocked_id"));
+        Server server = new Server();
+        server.setExtId(environment.getProperty("mocked_id"));
+        when(openstackClient.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);
             String expectedId = id.get();
             log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
             Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
-            Assert.assertEquals(vdu.getHostname(), vnfr.getName() + "-" + vdu.getId().substring((vdu.getId().length()-4), vdu.getId().length()-1));
+            Assert.assertEquals(vdu.getHostname(), vnfr.getName() + "-" + vdu.getId().substring((vdu.getId().length()-5), vdu.getId().length()-1));
         } catch (VimException e) {
             e.printStackTrace();
             Assert.fail();
@@ -146,6 +154,10 @@ public class VimTestSuiteClass {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         VimInstance vimInstance = new VimInstance();
         vimInstance.setName("mock_vim_instance");
+        vimInstance.setImages(new ArrayList<NFVImage>(){{
+            NFVImage nfvImage = new NFVImage();
+            nfvImage.setName("image_1234");
+            add(nfvImage);}});
         vdu.setVimInstance(vimInstance);
         ArrayList<String> monitoring_parameter = new ArrayList<>();
         monitoring_parameter.add("parameter_1");
