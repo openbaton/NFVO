@@ -4,4 +4,5 @@ dependencies {
     compile project(':repositories:repo-int')
     compile project(':vim:vim-int')
     compile project(':vnfm:vnfm-int')
+
 }
