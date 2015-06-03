@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.catalogue.nfvo;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -27,6 +28,9 @@ public class VimInstance {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> securityGroups;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    private List<DeploymentFlavour> flavours;
+
     private String type;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<NFVImage> images;
@@ -46,8 +50,19 @@ public class VimInstance {
                 ", keyPair='" + keyPair + '\'' +
                 ", location=" + location +
                 ", securityGroups=" + securityGroups +
+                ", flavours=" + flavours +
                 ", type='" + type + '\'' +
+                ", images=" + images +
+                ", networks=" + networks +
                 '}';
+    }
+
+    public List<DeploymentFlavour> getFlavours() {
+        return flavours;
+    }
+
+    public void setFlavours(List<DeploymentFlavour> flavours) {
+        this.flavours = flavours;
     }
 
     public Location getLocation() {

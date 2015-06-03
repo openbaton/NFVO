@@ -47,7 +47,7 @@ public class VnfmManagerEndpoint implements Serializable{
         this.endpoint = endpoint;
     }
 
-    public String getEndpoinType() {
+    public String getEndpointType() {
         return endpoinType;
     }
 

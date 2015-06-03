@@ -37,7 +37,7 @@ public class NetworkServiceRecord /*implements Serializable*/{
      * */
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-     private ServiceDeploymentFlavour service_deployment_flavour;
+     private NetworkServiceDeploymentFlavour service_deployment_flavour;
     private String vendor;
     private String version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -126,11 +126,11 @@ public class NetworkServiceRecord /*implements Serializable*/{
         this.monitoring_parameter = monitoring_parameter;
     }
 
-    public ServiceDeploymentFlavour getService_deployment_flavour() {
+    public NetworkServiceDeploymentFlavour getService_deployment_flavour() {
         return service_deployment_flavour;
     }
 
-    public void setService_deployment_flavour(ServiceDeploymentFlavour service_deployment_flavour) {
+    public void setService_deployment_flavour(NetworkServiceDeploymentFlavour service_deployment_flavour) {
         this.service_deployment_flavour = service_deployment_flavour;
     }
 

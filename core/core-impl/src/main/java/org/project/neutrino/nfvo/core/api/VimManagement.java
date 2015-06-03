@@ -2,7 +2,9 @@ package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.*;
+import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
+import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
+import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +23,8 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     private GenericRepository<VimInstance> vimInstanceGenericRepository;
     @Autowired
     private VimBroker<ImageManagement> imageManagementVimBroker;
+    @Autowired
+    private VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker;
 
     @Autowired
     private VimBroker<org.project.neutrino.nfvo.vim_interfaces.NetworkManagement> networkManagementVimBroker;
@@ -56,5 +60,6 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     public void refresh(VimInstance vimInstance) {
         vimInstance.setImages(imageManagementVimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
         vimInstance.setNetworks(networkManagementVimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+        vimInstance.setFlavours(flavorManagementVimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
     }
 }

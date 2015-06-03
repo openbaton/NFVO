@@ -26,6 +26,7 @@ public class VirtualLinkRecord {
     private int number_of_enpoints;
     private String root_requirement;
     private String leaf_requirement;
+
     @ElementCollection
     private List<String> qos;
     /**

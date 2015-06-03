@@ -1,10 +1,9 @@
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import java.util.List;
 
 /**
  * Created by lto on 06/02/15.
@@ -12,13 +11,13 @@ import javax.persistence.OneToMany;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class ServiceDeploymentFlavour extends DeploymentFlavour {
+public class NetworkServiceDeploymentFlavour extends DeploymentFlavour {
 
     /*Represents the characteristics of a constituent flavour element.*/
 	@OneToMany(cascade=CascadeType.ALL)
     private List<CostituentVNF> constituent_vnf;
 
-    public ServiceDeploymentFlavour() {
+    public NetworkServiceDeploymentFlavour() {
     }
 
     public List<CostituentVNF> getConstituent_vnf() {

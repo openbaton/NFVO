@@ -1,11 +1,13 @@
 package org.project.neutrino.nfvo.vim;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
@@ -20,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -28,7 +31,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-public class OpenstackVIM implements ImageManagement, ResourceManagement, NetworkManagement {// TODO and so on...
+public class OpenstackVIM implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {// TODO and so on...
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -79,11 +82,15 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
          *  *) choose image
          *  *) ...?
          */
-        vdu.setHostname(virtualNetworkFunctionRecord.getName() + "-" + vdu.getId().substring((vdu.getId().length()-4), vdu.getId().length()-1));
+        vdu.setHostname(virtualNetworkFunctionRecord.getName() + "-" + vdu.getId().substring((vdu.getId().length()-5), vdu.getId().length()-1));
 
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
-        Server server = openstackClient.launchInstance(vdu.getHostname(), image, virtualNetworkFunctionRecord.getDeployment_flavour().getFlavour_key(), vimInstance.getKeyPair(), null , vimInstance.getSecurityGroups(), "#userdata");
+        List<String> networks = new ArrayList<String>(){{add("7e62608d-efaa-4891-8ea2-3d3f537559c1");}};
+        log.trace(""+virtualNetworkFunctionRecord);
+        log.trace("");
+        log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + virtualNetworkFunctionRecord.getDeployment_flavour().getExtId() + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
+        Server server = openstackClient.launchInstance(vdu.getHostname(), image, virtualNetworkFunctionRecord.getDeployment_flavour().getExtId(), vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         return new AsyncResult<>(server.getExtId());
     }
@@ -99,12 +106,18 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
         return null;
     }
 
-    // TODO choose the right image
+//     TODO choose the right image (DONE)
     private String chooseImage(List<String> vm_images, VimInstance vimInstance) throws VimException {
-        if (vm_images != null && vm_images.size() > 0)
-            return vm_images.get(0);
-        else
-            throw new VimException("List of VM images is empty or null");
+        if (vm_images != null && vm_images.size() > 0) {
+            for (String image : vm_images){
+                for (NFVImage nfvImage : vimInstance.getImages()){
+                    if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId()))
+                        return nfvImage.getExtId();
+                }
+            }
+            throw new VimException("No available image matching: " + vm_images);
+        }
+        throw new VimException("List of VM images is empty or null");
     }
 
     @Override
@@ -161,5 +174,21 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
     @Override
     public void copy() {
 
+    }
+
+    @Override
+    public DeploymentFlavour add(DeploymentFlavour deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeploymentFlavour update(DeploymentFlavour new_deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance){
+        openstackClient.init(vimInstance);
+        return openstackClient.listFlavors();
     }
 }

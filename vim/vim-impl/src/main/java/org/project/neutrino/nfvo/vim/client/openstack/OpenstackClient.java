@@ -30,6 +30,8 @@ import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +46,7 @@ import java.util.*;
 @Service
 @Scope
 public class OpenstackClient implements ClientInterfaces {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     private NovaApi novaApi;
     private NeutronApi neutronApi;
     private Set<String> zones;
@@ -269,6 +272,7 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Flavor not found");
     }
 
+    @Override
     public List<DeploymentFlavour> listFlavors() {
         List<DeploymentFlavour> flavors = new ArrayList<DeploymentFlavour>();
         FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
@@ -356,6 +360,7 @@ public class OpenstackClient implements ClientInterfaces {
     public List<Network> listNetworks() {
         List<Network> networks = new ArrayList<Network>();
         for (org.jclouds.openstack.neutron.v2.domain.Network jcloudsNetwork : this.neutronApi.getNetworkApi(defaultZone).list().concat()){
+            log.trace("OpenstackNetwork: " + jcloudsNetwork.toString());
             Network network = new Network();
             network.setName(jcloudsNetwork.getName());
             network.setExtId(jcloudsNetwork.getId());
@@ -364,7 +369,7 @@ public class OpenstackClient implements ClientInterfaces {
             network.setShared(jcloudsNetwork.getShared());
             //network.setSubnets(jcloudsNetwork.getSubnets());
             network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
-            network.setSegmentationId(jcloudsNetwork.getSegmentationId());
+//            network.setSegmentationId(jcloudsNetwork.getSegmentationId());
             networks.add(network);
         }
         return networks;
