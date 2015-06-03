@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vnfm_reg;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.Event;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
@@ -9,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -23,13 +26,14 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope
-public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager.VnfmManager {
+public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("vnfmRegister")
     private org.project.neutrino.vnfm.interfaces.register.VnfmRegister vnfmRegister;
+    private ApplicationEventPublisher publisher;
 
     @Override
     @Async
@@ -52,6 +56,13 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
     public void actionFinished(@Payload CoreMessage coreMessage) {
         log.debug("Received: " + coreMessage);
+        Event event = new Event(this, coreMessage.getAction());
+        log.debug("Publishing event: " + event);
+        publisher.publishEvent(event);
+    }
 
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.publisher = applicationEventPublisher;
     }
 }
