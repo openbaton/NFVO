@@ -1,12 +1,16 @@
 package org.project.neutrino.nfvo.vim;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
+import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.slf4j.Logger;
@@ -18,8 +22,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Future;
 
 /**
@@ -27,7 +31,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-public class TestVIM implements ImageManagement, ResourceManagement {
+public class TestVIM implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement{
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -41,8 +45,43 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     }
 
     @Override
+    public Network add(Network network) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeploymentFlavour add(DeploymentFlavour deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void delete(String id) {
 
+    }
+
+    @Override
+    public DeploymentFlavour update(DeploymentFlavour new_deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) {
+        return testClient.listFlavors();
+    }
+
+    @Override
+    public Network update(Network new_network, String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Network> queryNetwork(VimInstance vimInstance) {
+        return testClient.listNetworks();
+    }
+
+    @Override
+    public Network query(String id) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -52,7 +91,7 @@ public class TestVIM implements ImageManagement, ResourceManagement {
 
     @Override
     public List<NFVImage> queryImages(VimInstance vimInstance) {
-        throw new UnsupportedOperationException();
+        return testClient.listImages();
     }
 
     @Override
@@ -60,11 +99,7 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
-        try {
-            Thread.sleep((new Random()).nextInt(4000));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        testClient.launchInstanceAndWait(vdu.getHostname(),vimInstance.getImages().get(0).getExtId(),"flavor","keypair",new ArrayList<String>(){{add("network_id");}}, new ArrayList<String>(){{add("secGroup_id");}}, "#userdate");
         String id = IdGenerator.createUUID();
         log.debug("launched instance with id " + id);
         return new AsyncResult<String>(id);
@@ -73,7 +108,7 @@ public class TestVIM implements ImageManagement, ResourceManagement {
     @Override
     public List<Server> queryResources(VimInstance vimInstance) {
 
-        throw new UnsupportedOperationException();
+        return testClient.listServer();
     }
 
     @Override
