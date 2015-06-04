@@ -32,6 +32,12 @@ public class DeploymentFlavour {
 
     protected String extId;
 
+    private int ram;
+
+    private int disk;
+
+    private int vcpus;
+
     public String getFlavour_key() {
         return flavour_key;
     }
@@ -51,6 +57,18 @@ public class DeploymentFlavour {
     public String getExtId() { return extId; }
 
     public void setExtId(String extId) { this.extId = extId; }
+
+    public int getRam() { return ram; }
+
+    public void setRam(int ram) { this.ram = ram; }
+
+    public int getDisk() { return disk; }
+
+    public void setDisk(int disk) { this.disk = disk; }
+
+    public int getVcpus() { return vcpus; }
+
+    public void setVcpus(int vcpus) { this.vcpus = vcpus; }
 
     @Override
     public String toString() {
