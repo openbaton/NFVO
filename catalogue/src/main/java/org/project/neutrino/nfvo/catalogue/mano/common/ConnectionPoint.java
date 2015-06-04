@@ -1,12 +1,9 @@
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
@@ -16,7 +13,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class ConnectionPoint {
+public class ConnectionPoint implements Serializable{
 
     /*ID of the Connection Point.*/
 	@Id

@@ -26,7 +26,7 @@ public class NSRUtils {
         networkServiceRecord.setVnfr(new ArrayList<VirtualNetworkFunctionRecord>());
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd);
-            virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
+//            virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
             //TODO set dependencies!!!
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
 

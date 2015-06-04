@@ -3,13 +3,14 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by lto on 11/05/15.
  */
 @Entity
-public class NFVImage {
+public class NFVImage implements Serializable {
     @Id
     private String id = IdGenerator.createUUID();
     @Version

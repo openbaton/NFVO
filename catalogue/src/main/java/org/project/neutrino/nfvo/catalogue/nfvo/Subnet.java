@@ -5,12 +5,13 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
  * Created by mpa on 28.05.15.
  */
 @Entity
-public class Subnet {
+public class Subnet implements Serializable {
     @Id
     private String id = IdGenerator.createUUID();
     @Version

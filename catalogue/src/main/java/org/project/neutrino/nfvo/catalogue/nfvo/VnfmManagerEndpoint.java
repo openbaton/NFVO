@@ -58,7 +58,9 @@ public class VnfmManagerEndpoint implements Serializable{
     @Override
     public String toString() {
         return "VnfmManagerEndpoint{" +
-                "type='" + type + '\'' +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
                 ", endpoinType='" + endpoinType + '\'' +
                 '}';

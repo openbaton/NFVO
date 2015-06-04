@@ -48,6 +48,8 @@ public class VnfmRegister implements org.project.neutrino.vnfm.interfaces.regist
     @Override
     public VnfmManagerEndpoint getVnfm(String type) throws NotFoundException {
         for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmManagerEndpointRepository.findAll()){
+            log.trace(""+vnfmManagerEndpoint);
+            log.trace("" + type);
             if (vnfmManagerEndpoint.getType().toLowerCase().equals(type.toLowerCase())){
                 return vnfmManagerEndpoint;
             }

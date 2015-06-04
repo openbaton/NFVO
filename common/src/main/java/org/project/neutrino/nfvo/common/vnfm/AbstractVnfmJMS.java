@@ -1,7 +1,6 @@
 package org.project.neutrino.nfvo.common.vnfm;
 
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.Action;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.vnfm.interfaces.VNFLifecycleManagement;
@@ -78,11 +77,11 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
         UtilsJMS.sendToRegister(vnfmManagerEndpoint);
 
 
-        Thread.sleep(10000);
-        CoreMessage coreMessage = new CoreMessage();
-        coreMessage.setAction(Action.INSTATIATE_FINISH);
-        coreMessage.setObject(null);
-        UtilsJMS.sendToQueue(coreMessage, "vnfm-core-actions");
+//        Thread.sleep(10000);
+//        CoreMessage coreMessage = new CoreMessage();
+//        coreMessage.setAction(Action.INSTATIATE_FINISH);
+//        coreMessage.setObject(null);
+//        UtilsJMS.sendToQueue(coreMessage, "vnfm-core-actions");
     }
 
     private void loadProperties() {

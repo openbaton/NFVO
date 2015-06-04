@@ -9,6 +9,7 @@ package org.project.neutrino.nfvo.catalogue.mano.common;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
@@ -17,7 +18,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class DeploymentFlavour {
+public class DeploymentFlavour implements Serializable{
     /*ID of the deployment flavour.*/
 	@Id
     protected String id = IdGenerator.createUUID();
