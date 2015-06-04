@@ -27,6 +27,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -97,6 +99,10 @@ public class NetworkServiceManagementClassSuiteTest {
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 			Assert.fail();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		} catch (JMSException e) {
+			e.printStackTrace();
 		}
 
 		Assert.assertNotNull(networkServiceRecord);

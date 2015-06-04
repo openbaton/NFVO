@@ -56,7 +56,7 @@ public class VimTestSuiteClass {
     private Environment environment;
 
     @Mock
-    ClientInterfaces openstackClient;
+    ClientInterfaces clientInterfaces;
 
     @InjectMocks
     OpenstackVIM openstackVIM;
@@ -101,7 +101,7 @@ public class VimTestSuiteClass {
 
         Server server = new Server();
         server.setExtId(environment.getProperty("mocked_id"));
-        when(openstackClient.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
+        when(clientInterfaces.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);

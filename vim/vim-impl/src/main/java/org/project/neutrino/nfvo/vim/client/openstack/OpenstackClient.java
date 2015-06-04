@@ -47,10 +47,20 @@ import java.util.*;
 @Scope
 public class OpenstackClient implements ClientInterfaces {
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
     private NovaApi novaApi;
     private NeutronApi neutronApi;
+
     private Set<String> zones;
     private String defaultZone = null;
+
+    public void setNovaApi(NovaApi novaApi) {
+        this.novaApi = novaApi;
+    }
+
+    public void setNeutronApi(NeutronApi neutronApi) {
+        this.neutronApi = neutronApi;
+    }
 
     public OpenstackClient() {
         //TODO get properties from configurations
