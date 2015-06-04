@@ -10,6 +10,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Describe dependencies between VNF. Defined in terms of
@@ -21,7 +22,7 @@ import javax.persistence.*;
  * links within a VNF FG should be instantiated by the NFV
  * Orchestrator.*/
 @Entity
-public class VNFDependency /*implements Serializable*/{
+public class VNFDependency implements Serializable {
 	@Id
 	private String id = IdGenerator.createUUID();
 	@Version

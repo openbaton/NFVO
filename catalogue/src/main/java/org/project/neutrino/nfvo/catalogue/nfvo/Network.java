@@ -3,6 +3,7 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by lto on 20/05/15.
  */
 @Entity
-public class Network {
+public class Network implements Serializable {
     @Id
     private String id;
     @Version
@@ -22,7 +23,7 @@ public class Network {
     private String networkType;
     private Boolean external;
     private Boolean shared;
-    @ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Subnet> subnets;
 
     public Network(){

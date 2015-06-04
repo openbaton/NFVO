@@ -3,6 +3,7 @@ package org.project.neutrino.nfvo.catalogue.mano.common;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class AbstractVirtualLink {
+public abstract class AbstractVirtualLink implements Serializable{
 
     /**
      * ID of the VLD

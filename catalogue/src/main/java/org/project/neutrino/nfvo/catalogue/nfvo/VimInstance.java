@@ -4,13 +4,14 @@ import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by lto on 12/05/15.
  */
 @Entity
-public class VimInstance {
+public class VimInstance implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version
