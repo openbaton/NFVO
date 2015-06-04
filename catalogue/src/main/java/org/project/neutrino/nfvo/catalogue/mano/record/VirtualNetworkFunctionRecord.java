@@ -6,13 +6,8 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.record;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.project.neutrino.nfvo.catalogue.mano.common.AutoScalePolicy;
-import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
-import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
-import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
+import org.project.neutrino.nfvo.catalogue.mano.common.*;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.InternalVirtualLink;
-import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
@@ -77,9 +72,10 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
      * */
 
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private NetworkServiceRecord parent_ns;
+//    @JsonIgnore
+//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @XmlTransient
+//    private transient NetworkServiceRecord parent_ns;
     /**
      * The reference to the VNFD used to instantiate this VNF
      * */
@@ -236,13 +232,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.virtual_link = virtual_link;
     }
 
-    public NetworkServiceRecord getParent_ns() {
-        return parent_ns;
-    }
-
-    public void setParent_ns(NetworkServiceRecord parent_ns) {
-        this.parent_ns = parent_ns;
-    }
+//    public NetworkServiceRecord getParent_ns() {
+//        return parent_ns;
+//    }
+//
+//    public void setParent_ns(NetworkServiceRecord parent_ns) {
+//        this.parent_ns = parent_ns;
+//    }
 
     public String getDescriptor_reference() {
         return descriptor_reference;
@@ -347,7 +343,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
                 ", vendor='" + vendor + '\'' +
                 ", version='" + version + '\'' +
                 ", virtual_link=" + virtual_link +
-                ", parent_ns=" + parent_ns +
+//                ", parent_ns=" + parent_ns +
                 ", descriptor_reference='" + descriptor_reference + '\'' +
                 ", vnfm_id='" + vnfm_id + '\'' +
                 ", connected_external_virtual_link=" + connected_external_virtual_link +

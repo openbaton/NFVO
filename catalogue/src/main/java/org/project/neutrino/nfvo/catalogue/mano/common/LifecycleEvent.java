@@ -9,6 +9,7 @@ package org.project.neutrino.nfvo.catalogue.mano.common;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Map;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class LifecycleEvent {
+public class LifecycleEvent implements Serializable{
 
 	@Id
 	private String id = IdGenerator.createUUID();
