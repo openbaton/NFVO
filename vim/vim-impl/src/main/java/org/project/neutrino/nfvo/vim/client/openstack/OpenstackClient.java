@@ -257,6 +257,9 @@ public class OpenstackClient implements ClientInterfaces {
             DeploymentFlavour flavor = new DeploymentFlavour();
             flavor.setFlavour_key(jcloudsFlavor.getName());
             flavor.setExtId(jcloudsFlavor.getId());
+            flavor.setRam(jcloudsFlavor.getRam());
+            flavor.setDisk(jcloudsFlavor.getDisk());
+            flavor.setVcpus(jcloudsFlavor.getVcpus());
             return flavor;
         } catch (NullPointerException e) {
             throw new NullPointerException("Flavor not found");
@@ -280,6 +283,9 @@ public class OpenstackClient implements ClientInterfaces {
             DeploymentFlavour flavor = new DeploymentFlavour();
             flavor.setExtId(jcloudsFlavor.getId());
             flavor.setFlavour_key(jcloudsFlavor.getName());
+            flavor.setRam(jcloudsFlavor.getRam());
+            flavor.setDisk(jcloudsFlavor.getDisk());
+            flavor.setVcpus(jcloudsFlavor.getVcpus());
             flavors.add(flavor);
         }
         return flavors;
