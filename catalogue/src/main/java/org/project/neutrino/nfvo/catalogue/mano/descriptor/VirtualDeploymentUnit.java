@@ -12,6 +12,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualDeploymentUnit {
+public class VirtualDeploymentUnit implements Serializable{
 	@Id
     private String id = IdGenerator.createUUID();
 	@Version

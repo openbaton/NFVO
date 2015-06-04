@@ -2,8 +2,8 @@ package org.project.neutrino.nfvo.dummy;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Action;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
-import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.vnfm.AbstractVnfmJMS;
 import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
 import org.springframework.boot.SpringApplication;
@@ -42,14 +42,10 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        VnfmManagerEndpoint endpoint = new VnfmManagerEndpoint();
-        endpoint.setType("dummy");
-        endpoint.setEndpoint(SELECTOR);
-        endpoint.setEndpoinType("jms");
-
+        CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setAction(Action.INSTATIATE_FINISH);
         try {
-            UtilsJMS.sendToRegister(endpoint);
+            UtilsJMS.sendToQueue(coreMessage, "vnfm-core-actions");
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (JMSException e) {
@@ -97,7 +93,7 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
 
     }
 
-    @JmsListener(destination = "core-vnfm-actions", selector = "type=\'" + SELECTOR + "\'", containerFactory = "myJmsContainerFactory")
+    @JmsListener(destination = "core-vnfm-actions", selector = "type = \'" + SELECTOR + "\'", containerFactory = "myJmsContainerFactory")
     public void onMessage(CoreMessage message){
         this.onAction(message);
     }
@@ -111,6 +107,7 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
     }
 
     public static void main(String[] args) {
+        System.out.println("type=\"" + SELECTOR + "\"");
         ConfigurableApplicationContext context = SpringApplication.run(DummyJMSVNFManager.class, args);
     }
 }

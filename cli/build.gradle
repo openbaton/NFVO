@@ -1,2 +1,5 @@
 dependencies {
+
+    compile 'jline:jline:2.11'
+
 }

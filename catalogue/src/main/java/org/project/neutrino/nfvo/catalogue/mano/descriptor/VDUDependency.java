@@ -9,6 +9,7 @@ package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
@@ -16,7 +17,7 @@ import javax.persistence.*;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VDUDependency {
+public class VDUDependency implements Serializable{
 	@Id
 	private String id = IdGenerator.createUUID();
 	@Version
