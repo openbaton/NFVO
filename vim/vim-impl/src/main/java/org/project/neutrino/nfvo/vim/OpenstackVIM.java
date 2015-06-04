@@ -90,7 +90,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
         log.trace(""+virtualNetworkFunctionRecord);
         log.trace("");
         log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + virtualNetworkFunctionRecord.getDeployment_flavour().getExtId() + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
-        Server server = openstackClient.launchInstance(vdu.getHostname(), image, virtualNetworkFunctionRecord.getDeployment_flavour().getExtId(), vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
+        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, virtualNetworkFunctionRecord.getDeployment_flavour().getExtId(), vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         return new AsyncResult<>(server.getExtId());
     }

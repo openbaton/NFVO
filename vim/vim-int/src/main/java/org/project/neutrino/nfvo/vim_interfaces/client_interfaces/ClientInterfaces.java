@@ -21,4 +21,6 @@ public interface ClientInterfaces {
     List<Server> listServer();
     List<Network> listNetworks();
     List<DeploymentFlavour> listFlavors();
+
+    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s);
 }

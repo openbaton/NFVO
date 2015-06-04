@@ -46,4 +46,9 @@ public class AmazonClient implements ClientInterfaces{
     public List<DeploymentFlavour> listFlavors() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) {
+        throw new UnsupportedOperationException();
+    }
 }

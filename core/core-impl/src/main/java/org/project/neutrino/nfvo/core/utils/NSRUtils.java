@@ -96,11 +96,15 @@ public class NSRUtils {
         for (VNFDeploymentFlavour deploymentFlavour : vnfd.getDeployment_flavour()){
             for(VimInstance vimInstance : vimInstances){
                 for (DeploymentFlavour df : vimInstance.getFlavours()){
-                    if (deploymentFlavour.getFlavour_key().equals(df.getFlavour_key()) || deploymentFlavour.getExtId().equals(df.getExtId()) || deploymentFlavour.getId().equals(df.getId())){
-                        log.debug("Found DeploymentFlavor: " + df);
-                        deploymentFlavour.setFlavour_key(df.getFlavour_key());
-                        deploymentFlavour.setExtId(df.getExtId());
-                        return deploymentFlavour;
+                    try {
+                        if (deploymentFlavour.getFlavour_key().equals(df.getFlavour_key()) || deploymentFlavour.getExtId().equals(df.getExtId()) || deploymentFlavour.getId().equals(df.getId())) {
+                            log.debug("Found DeploymentFlavor: " + df);
+                            deploymentFlavour.setFlavour_key(df.getFlavour_key());
+                            deploymentFlavour.setExtId(df.getExtId());
+                            return deploymentFlavour;
+                        }
+                    }catch (NullPointerException e){
+
                     }
                 }
             }
