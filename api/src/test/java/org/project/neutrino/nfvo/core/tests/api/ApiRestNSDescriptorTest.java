@@ -1,13 +1,5 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,9 +16,18 @@ import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class ApiRestNSDescriptorTest {
 
@@ -70,7 +71,7 @@ public class ApiRestNSDescriptorTest {
 	}
 
 	@Test
-	public void testNSDCreate() {
+	public void testNSDCreate() throws NotFoundException {
 		when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(
 				networkServiceDescriptor);
 		NetworkServiceDescriptor networkServiceDescriptor2 = null;

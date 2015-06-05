@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,7 +41,14 @@ public class NFVImageManagement implements org.project.neutrino.nfvo.core.interf
 
     @Override
     public NFVImage update(NFVImage new_NFV_image, String id) {
-        throw new UnsupportedOperationException();
+        NFVImage old = imageRepository.find(id);
+        old.setName(new_NFV_image.getName());
+        old.setMinRam(new_NFV_image.getMinRam());
+        old.setMinCPU(new_NFV_image.getMinCPU());
+        old.setExtId(new_NFV_image.getExtId());
+        old.setUpdated(new Date());
+        old.setMinDiskSpace(new_NFV_image.getMinDiskSpace());
+        return old;
     }
 
     @Override

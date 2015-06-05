@@ -5,6 +5,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
 import java.util.List;
 
@@ -22,5 +23,7 @@ public interface ClientInterfaces {
     List<Network> listNetworks();
     List<DeploymentFlavour> listFlavors();
 
-    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s);
+    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) throws VimException;
+
+    void deleteServerByIdAndWait(String id);
 }

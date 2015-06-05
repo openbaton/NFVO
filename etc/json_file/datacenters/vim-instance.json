@@ -1,5 +1,5 @@
 {
-  "name":"test_datacenter",
+  "name":"vim-instance",
   "authUrl":"http://the.ip.address.here/v2",
   "tenant":"test_tenant",
   "username":"test_username",

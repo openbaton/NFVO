@@ -39,6 +39,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -132,7 +133,7 @@ public class OpenstackClient implements ClientInterfaces {
 
     public Server launchInstanceAndWait(String name, String imageId, String flavorId,
                                   String keypair, List<String> network, List<String> secGroup,
-                                  String userData) {
+                                  String userData) throws VimException {
         boolean bootCompleted = false;
         Server server = launchInstance(name, imageId, flavorId, keypair, network, secGroup, userData);
         while (bootCompleted==false) {
@@ -144,6 +145,9 @@ public class OpenstackClient implements ClientInterfaces {
             server = getServerById(server.getExtId());
             if (server.getStatus().equals("ACTIVE")) {
                 bootCompleted = true;
+            }
+            if (server.getStatus().equals("ERROR")){
+                throw new VimException(server.getExtendedStatus());
             }
         }
         return server;
@@ -169,7 +173,7 @@ public class OpenstackClient implements ClientInterfaces {
                 e.printStackTrace();
             }
             try {
-                Server instance = getServerById(extId);
+                getServerById(extId);
             } catch (NullPointerException e) {
                 deleteCompleted = true;
             }
@@ -220,6 +224,7 @@ public class OpenstackClient implements ClientInterfaces {
         ServerApi serverApi = this.novaApi.getServerApi(defaultZone);
         try {
             org.jclouds.openstack.nova.v2_0.domain.Server jcloudsServer = serverApi.get(extId);
+            log.trace("" + jcloudsServer);
             Server server = new Server();
             server.setExtId(jcloudsServer.getId());
             server.setName(jcloudsServer.getName());

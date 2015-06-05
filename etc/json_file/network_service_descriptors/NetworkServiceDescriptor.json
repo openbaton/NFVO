@@ -11,8 +11,7 @@
 			"vdu":[
 				{
 					"vm_image":[
-						"image_name_1", 
-						"image_name_2"
+						"image_name_1" 
 					],
 					"computation_requirement":"",
 					"virtual_memory_resource_element":"1024",
@@ -20,7 +19,7 @@
 					"lifecycle_event":[
 					],
 					"vimInstance":{
-						"id":"id_of_the_datacenter"
+						"name":"vim-instance"
 					},
 					"vdu_constraint":"",
 					"high_availability":"ACTIVE_PASSIVE",

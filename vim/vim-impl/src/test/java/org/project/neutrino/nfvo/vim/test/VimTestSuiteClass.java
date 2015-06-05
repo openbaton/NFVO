@@ -101,7 +101,7 @@ public class VimTestSuiteClass {
 
         Server server = new Server();
         server.setExtId(environment.getProperty("mocked_id"));
-        when(clientInterfaces.launchInstance(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
+        when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);
