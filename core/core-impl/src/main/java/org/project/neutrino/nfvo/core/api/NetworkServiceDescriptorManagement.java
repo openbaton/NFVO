@@ -1,6 +1,8 @@
 package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +27,22 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
+    @Autowired
+    private NSDUtils nsdUtils;
+
     /**
      * This operation allows submitting and
      * validating a Network Service	Descriptor (NSD),
      * including any related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException{
+    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException, NotFoundException {
         log.trace("Creating " + networkServiceDescriptor);
+        log.trace("Fetching Data");
+        nsdUtils.fetchData(networkServiceDescriptor);
+        log.trace("Fetched Data");
         nsdRepository.create(networkServiceDescriptor);
-        log.debug("Creating NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
+        log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;
     }
 
@@ -77,7 +85,12 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
-        throw new UnsupportedOperationException();
+        NetworkServiceDescriptor old_nsd = nsdRepository.find(old_id);
+        old_nsd.setName(new_nsd.getName());
+        old_nsd.setVendor(new_nsd.getVendor());
+        old_nsd.setEnabled(new_nsd.isEnabled());
+        old_nsd.setVersion(new_nsd.getVersion());
+        return old_nsd;
     }
 
     /**

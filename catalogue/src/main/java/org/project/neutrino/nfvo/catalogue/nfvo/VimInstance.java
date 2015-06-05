@@ -38,26 +38,6 @@ public class VimInstance implements Serializable{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Network> networks;
 
-    @Override
-    public String toString() {
-        return "VimInstance{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", authUrl='" + authUrl + '\'' +
-                ", tenant='" + tenant + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", keyPair='" + keyPair + '\'' +
-                ", location=" + location +
-                ", securityGroups=" + securityGroups +
-                ", flavours=" + flavours +
-                ", type='" + type + '\'' +
-                ", images=" + images +
-                ", networks=" + networks +
-                '}';
-    }
-
     public List<DeploymentFlavour> getFlavours() {
         return flavours;
     }
@@ -168,5 +148,25 @@ public class VimInstance implements Serializable{
 
     public List<Network> getNetworks() {
         return networks;
+    }
+
+    @Override
+    public String toString() {
+        return "VimInstance{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", authUrl='" + authUrl + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", keyPair='" + keyPair + '\'' +
+                ", location=" + location +
+                ", securityGroups=" + securityGroups +
+                ", flavours=" + flavours +
+                ", type='" + type + '\'' +
+                ", images=" + images +
+                ", networks=" + networks +
+                '}';
     }
 }

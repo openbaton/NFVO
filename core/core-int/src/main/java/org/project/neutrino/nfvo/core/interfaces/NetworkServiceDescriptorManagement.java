@@ -1,6 +1,7 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface NetworkServiceDescriptorManagement {
 	 * validating a Network Service	Descriptor (NSD), 
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor);
+	NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException;
 
 	/**
 	 * This operation allows disabling a

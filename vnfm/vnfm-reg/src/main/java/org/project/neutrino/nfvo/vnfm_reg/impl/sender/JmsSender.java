@@ -35,9 +35,8 @@ public class JmsSender implements VnfmSender{
             @Override
             public Message createMessage(Session session) throws JMSException {
                 ObjectMessage objectMessage = session.createObjectMessage(coreMessage);
-                String endpointValue = endpoint.getEndpoint().substring(1, endpoint.getEndpoint().length() - 1);
-                log.trace("SELECTOR: type=\'"+ endpointValue + "\'");
-                objectMessage.setStringProperty("type", endpointValue);
+                log.trace("SELECTOR: type=\'"+ endpoint.getEndpoint()+ "\'");
+                objectMessage.setStringProperty("type", endpoint.getEndpoint() );
                 return objectMessage;
             }
         };
