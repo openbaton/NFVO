@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.neutrino.nfvo.api.RestDatacenter;
+import org.project.neutrino.nfvo.api.RestVimInstances;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
@@ -18,12 +18,12 @@ import static org.mockito.Mockito.when;
 
 
 
-public class ApiRestDatacenterTest {
+public class ApiRestVimInstancesTest {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@InjectMocks
-	RestDatacenter restDatacenter;
+	RestVimInstances restVimInstances;
 
 	@Mock
 	private VimManagement mock;
@@ -39,7 +39,7 @@ public class ApiRestDatacenterTest {
 		log.info("" + mock.query());
 		List<VimInstance> list = mock.query();
 		when(mock.query()).thenReturn(list);
-		assertEquals(list, restDatacenter.findAll());
+		assertEquals(list, restVimInstances.findAll());
 	}
 
 	@Test
@@ -50,8 +50,8 @@ public class ApiRestDatacenterTest {
 		datacenter.setType("OpenStack");
 		datacenter.setName("datacenter_test");
 		when(mock.add(datacenter)).thenReturn(datacenter);
-		log.info("" + restDatacenter.create(datacenter));
-		VimInstance datacenter2 = restDatacenter.create(datacenter);
+		log.info("" + restVimInstances.create(datacenter));
+		VimInstance datacenter2 = restVimInstances.create(datacenter);
 		assertEquals(datacenter, datacenter2);
 		
 	}
@@ -64,7 +64,7 @@ public class ApiRestDatacenterTest {
 		datacenter.setType("OpenStack");
 		datacenter.setName("datacenter_test");
 		when(mock.query(datacenter.getId())).thenReturn(datacenter);
-		assertEquals(datacenter, restDatacenter.findById(datacenter.getId()));
+		assertEquals(datacenter, restVimInstances.findById(datacenter.getId()));
 	}
 
 	@Test
@@ -75,12 +75,12 @@ public class ApiRestDatacenterTest {
 		datacenter.setType("OpenStack");
 		datacenter.setName("datacenter_test");
 		when(mock.update(datacenter, datacenter.getId())).thenReturn(datacenter);
-		assertEquals(datacenter, restDatacenter.update(datacenter, datacenter.getId()));
+		assertEquals(datacenter, restVimInstances.update(datacenter, datacenter.getId()));
 	}
 
 	@Test
 	public void testdatacenterDelete() {
 		mock.delete("123");
-		restDatacenter.delete("123");
+		restVimInstances.delete("123");
 	}
 }
