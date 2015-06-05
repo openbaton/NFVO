@@ -31,8 +31,12 @@ public class ConfigurationManagement implements org.project.neutrino.nfvo.core.i
     }
 
     @Override
-    public Configuration update(Configuration new_datacenter, String id) {
-        throw new UnsupportedOperationException();
+    public Configuration update(Configuration configuration_new, String id) {
+        Configuration old = configurationRepository.find(id);
+        old.setName(configuration_new.getName());
+        old.setParameters(configuration_new.getParameters());
+        return old;
+
     }
 
     @Override
