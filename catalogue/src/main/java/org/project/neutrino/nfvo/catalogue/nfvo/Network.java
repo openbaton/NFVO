@@ -106,7 +106,7 @@ public class Network implements Serializable {
         this.subnets = tmp;
     }
 
-    public Iterable<Subnet> getSubnets() {
+    public List<Subnet> getSubnets() {
         return subnets;
     }
 

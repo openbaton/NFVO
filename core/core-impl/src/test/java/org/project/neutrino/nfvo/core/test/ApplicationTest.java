@@ -4,10 +4,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.Configuration;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
@@ -76,6 +73,11 @@ public class ApplicationTest {
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "networkRepository")
+	GenericRepository<Network> networkRepository() {
 		return mock(GenericRepository.class);
 	}
 

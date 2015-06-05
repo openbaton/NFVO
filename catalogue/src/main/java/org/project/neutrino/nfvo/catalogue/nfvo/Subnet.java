@@ -23,6 +23,14 @@ public class Subnet implements Serializable {
 
     public String getId() { return id; }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     public int getVersion() { return version; }
 
     public String getName() {
