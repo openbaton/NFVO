@@ -56,6 +56,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         Create NSR
          */
         nsdUtils.fetchData(networkServiceDescriptor);
+        log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Deploying " + networkServiceRecord);
         nsrRepository.create(networkServiceRecord);
@@ -94,8 +95,12 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     }
 
     @Override
-    public NetworkServiceRecord update(NetworkServiceRecord new_nsd, String old_id) {
-        throw new UnsupportedOperationException();
+    public NetworkServiceRecord update(NetworkServiceRecord new_nsr, String old_id) {
+        NetworkServiceRecord old_nsr = nsrRepository.find(old_id);
+        old_nsr.setName(new_nsr.getName());
+        old_nsr.setVendor(new_nsr.getVendor());
+        old_nsr.setVersion(new_nsr.getVersion());
+        return old_nsr;
     }
 
     @Override

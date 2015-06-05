@@ -16,17 +16,13 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
-import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
-import org.project.neutrino.nfvo.core.interfaces.NFVImageManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.neutrino.nfvo.core.interfaces.VimManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -50,7 +46,7 @@ import static org.mockito.Mockito.when;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 @ContextConfiguration(classes = { ApplicationTest.class })
 @TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
-public class NetworkServiceManagementClassSuiteTest {
+public class NetworkServiceRecordManagementClassSuiteTest {
 
 	private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
@@ -59,22 +55,20 @@ public class NetworkServiceManagementClassSuiteTest {
 
 
 	@Autowired
-	private NetworkServiceDescriptorManagement nsdManagement;
-
-	@Autowired
-	private NFVImageManagement NFVImageManagement;
-
-	@Autowired
 	private NetworkServiceRecordManagement nsrManagement;
+
 
 	@Autowired
 	@Qualifier("vimRepository")
 	GenericRepository<VimInstance> vimRepository;
 
-
 	@Autowired
 	@Qualifier("NSDRepository")
 	GenericRepository<NetworkServiceDescriptor> nsdRepository;
+
+	@Autowired
+	@Qualifier("NSRRepository")
+	GenericRepository<NetworkServiceRecord> nsrRepository;
 
 	@Before
 	public void init() {
@@ -83,162 +77,76 @@ public class NetworkServiceManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsdManagementNotNull(){
-		Assert.assertNotNull(nsdManagement);
-	}
-	@Test
-	public void imageManagementNotNull(){
-		Assert.assertNotNull(NFVImageManagement);
-	}
-	@Test
 	public void nsrManagementNotNull(){
 		Assert.assertNotNull(nsrManagement);
 	}
 
 	@Test
-	public void nsdManagementEnableTest() throws NotFoundException {
-		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
-		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
-			add(createVimInstance());
-		}});
-
-		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(anyString())).thenReturn(nsd_exp);
-		Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
-		Assert.assertTrue(nsd_exp.isEnabled());
-		nsdManagement.delete(nsd_exp.getId());
-	}
-
-	@Test
-	public void nsdManagementDisableTest() throws NotFoundException {
-		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
-		nsd_exp.setEnabled(true);
-		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
-			add(createVimInstance());
-		}});
-
-		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(anyString())).thenReturn(nsd_exp);
-		Assert.assertFalse(nsdManagement.disable(nsd_exp.getId()));
-		Assert.assertFalse(nsd_exp.isEnabled());
-		nsdManagement.delete(nsd_exp.getId());
-	}
-
-	@Test
-	public void nsdManagementQueryTest(){
-		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
-		List<NetworkServiceDescriptor> nsds = nsdManagement.query();
+	public void nsrManagementQueryTest(){
+		when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
+		List<NetworkServiceRecord> nsds = nsrManagement.query();
 		Assert.assertEquals(nsds.size(), 0);
-		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
-		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>() {{
+		final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
+		when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>() {{
 			add(nsd_exp);
 		}});
-		nsds = nsdManagement.query();
+		nsds = nsrManagement.query();
 		Assert.assertEquals(nsds.size(), 1);
-		nsdManagement.delete(nsd_exp.getId());
-	};
+
+		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		assertEqualsNSR(nsd_exp);
+	}
 
 	@Test
-	public void nsdManagementOnboardTest() throws NotFoundException {
+	public void nsrManagementDeleteTest(){
+		NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
+		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		nsrManagement.delete(nsd_exp.getId());
+	}
+
+	@Test
+	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
-		when(nsdRepository.find(anyString())).thenReturn(null);
-		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
-		nsdManagement.onboard(nsd_exp);
-
-		exception.expect(NullPointerException.class);
-		assertEqualsNSD(nsd_exp);
-
-		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
-			add(createVimInstance());
-		}});
-
-		exception = ExpectedException.none();
-		nsdManagement.onboard(nsd_exp);
-		assertEqualsNSD(nsd_exp);
-		nsdManagement.delete(nsd_exp.getId());
-	}
-
-
-	@Test
-	public void nsdManagementUpdateTest() throws NotFoundException {
-		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
+		exception.expect(NotFoundException.class);
+		nsrManagement.onboard(nsd_exp);
+	}
+
+	@Test
+	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException {
+		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
 		}});
 
-		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
-
-		NetworkServiceDescriptor new_nsd = createNetworkServiceDescriptor();
-		new_nsd.setName("UpdatedName");
-		nsdManagement.update(new_nsd, nsd_exp.getId());
-
-		new_nsd.setId(nsd_exp.getId());
-
-		assertEqualsNSD(new_nsd);
-
-		nsdManagement.delete(nsd_exp.getId());
+		nsrManagement.onboard(nsd_exp);
 	}
 
 	@Test
-	@Ignore
-	public void nsrManagementCreateTest()  {
-		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
-		NetworkServiceRecord networkServiceRecord = null;
-		/**
-		 * TODO to remove when there will be some vnfm_reg registered and figure out how to do in tests
-		 */
-		try {
-			networkServiceRecord = nsrManagement.onboard(networkServiceDescriptor);
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (VimException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (NamingException e) {
-			e.printStackTrace();
-		} catch (JMSException e) {
-			e.printStackTrace();
-		}
-
-		Assert.assertNotNull(networkServiceRecord);
-		Assert.assertEquals(networkServiceDescriptor.getName(), networkServiceRecord.getName());
-		Assert.assertEquals(networkServiceDescriptor.getMonitoring_parameter(), networkServiceRecord.getMonitoring_parameter());
-		Assert.assertEquals(networkServiceDescriptor.getVendor(), networkServiceRecord.getVendor());
-		Assert.assertEquals(networkServiceDescriptor.getLifecycle_event(), networkServiceRecord.getLifecycle_event());
-		Assert.assertEquals(networkServiceDescriptor.getVersion(), networkServiceRecord.getVersion());
-		int i=0;
-		for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
-			VirtualNetworkFunctionRecord vnfr = networkServiceRecord.getVnfr().get(i++);
-			Assert.assertEquals(vnfd.getMonitoring_parameter(),vnfr.getMonitoring_parameter());
-			Assert.assertEquals(vnfd.getLifecycle_event(),vnfr.getLifecycle_event());
-			Assert.assertEquals(vnfd.getVersion(),vnfr.getVersion());
-			Assert.assertEquals(vnfd.getVendor(),vnfr.getVendor());
-		}
+	public void nsrManagementUpdateTest() throws NotFoundException {
+		final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
+		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		NetworkServiceRecord new_nsr = createNetworkServiceRecord();
+		new_nsr.setName("UpdatedName");
+		nsrManagement.update(new_nsr,nsd_exp.getId());
+		new_nsr.setId(nsd_exp.getId());
+		assertEqualsNSR(new_nsr);
 	}
+
 
 	@AfterClass
 	public static void shutdown() {
 		// TODO Teardown to avoid exceptions during test shutdown
 	}
 
-	private void assertEqualsNSD(NetworkServiceDescriptor nsd_exp) throws NoResultException {
-		NetworkServiceDescriptor nsd = nsdManagement.query(nsd_exp.getId());
-		Assert.assertEquals(nsd_exp.getId(), nsd.getId());
-		Assert.assertEquals(nsd_exp.getName(), nsd.getName());
-		Assert.assertEquals(nsd_exp.getVendor(), nsd.getVendor());
-		Assert.assertEquals(nsd_exp.getVersion(), nsd.getVersion());
-		Assert.assertEquals(nsd_exp.isEnabled(), nsd.isEnabled());
+	private void assertEqualsNSR(NetworkServiceRecord nsr_exp) throws NoResultException {
+		NetworkServiceRecord nsd = nsrManagement.query(nsr_exp.getId());
+		Assert.assertEquals(nsr_exp.getId(), nsd.getId());
+		Assert.assertEquals(nsr_exp.getName(), nsd.getName());
+		Assert.assertEquals(nsr_exp.getVendor(), nsd.getVendor());
+		Assert.assertEquals(nsr_exp.getVersion(), nsd.getVersion());
 	}
 
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
@@ -276,6 +184,41 @@ public class NetworkServiceManagementClassSuiteTest {
 		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
 		nsd.setVnfd(virtualNetworkFunctionDescriptors);
 		return nsd;
+	}
+
+	private NetworkServiceRecord createNetworkServiceRecord() {
+		final NetworkServiceRecord nsr = new NetworkServiceRecord();
+		nsr.setVendor("FOKUS");
+		ArrayList<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new ArrayList<VirtualNetworkFunctionRecord>();
+		VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
+		virtualNetworkFunctionRecord
+				.setMonitoring_parameter(new ArrayList<String>() {
+					{
+						add("monitor1");
+						add("monitor2");
+						add("monitor3");
+					}
+				});
+		VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+		vdf.setExtId("ext_id");
+		vdf.setFlavour_key("flavor_name");
+		virtualNetworkFunctionRecord.setDeployment_flavour(vdf);
+		virtualNetworkFunctionRecord
+				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
+					{
+						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+						vdu.setComputation_requirement("high_requirements");
+						VimInstance vimInstance = new VimInstance();
+						vimInstance.setName("vim_instance");
+						vimInstance.setType("test");
+						vdu.setVimInstance(vimInstance);
+						add(vdu);
+					}
+				});
+		virtualNetworkFunctionRecords.add(virtualNetworkFunctionRecord);
+		nsr.setVnfr(virtualNetworkFunctionRecords);
+		return nsr;
 	}
 
 	private VimInstance createVimInstance() {

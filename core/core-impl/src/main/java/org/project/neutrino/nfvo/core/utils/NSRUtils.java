@@ -95,7 +95,7 @@ public class NSRUtils {
         }
         for (VNFDeploymentFlavour deploymentFlavour : vnfd.getDeployment_flavour()){
             for(VimInstance vimInstance : vimInstances){
-                log.trace(""+vimInstance);
+                log.debug(""+vimInstance);
                 for (DeploymentFlavour df : vimInstance.getFlavours()){
                     try {
                         if (deploymentFlavour.getFlavour_key().equals(df.getFlavour_key()) || deploymentFlavour.getExtId().equals(df.getExtId()) || deploymentFlavour.getId().equals(df.getId())) {
