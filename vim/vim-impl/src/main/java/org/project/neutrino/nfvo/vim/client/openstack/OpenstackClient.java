@@ -5,7 +5,16 @@ import com.google.inject.Module;
 import org.jclouds.Constants;
 import org.jclouds.ContextBuilder;
 import org.jclouds.collect.IterableWithMarker;
+import org.jclouds.io.Payload;
+import org.jclouds.io.payloads.ByteArrayPayload;
+import org.jclouds.io.payloads.FilePayload;
+import org.jclouds.io.payloads.InputStreamPayload;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
+import org.jclouds.openstack.glance.v1_0.domain.DiskFormat;
+import org.jclouds.openstack.glance.v1_0.domain.ImageDetails;
+import org.jclouds.openstack.glance.v1_0.features.ImageApi;
+import org.jclouds.openstack.glance.v1_0.options.CreateImageOptions;
+import org.jclouds.openstack.glance.v1_0.options.UpdateImageOptions;
 import org.jclouds.openstack.keystone.v2_0.config.CredentialTypes;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties;
 import org.jclouds.openstack.neutron.v2.NeutronApi;
@@ -19,9 +28,9 @@ import org.jclouds.openstack.nova.v2_0.domain.*;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.SecurityGroupApi;
 import org.jclouds.openstack.nova.v2_0.features.FlavorApi;
-import org.jclouds.openstack.nova.v2_0.features.ImageApi;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
+import org.jclouds.openstack.glance.v1_0.GlanceApi;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
@@ -36,9 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -51,6 +58,7 @@ public class OpenstackClient implements ClientInterfaces {
 
     private NovaApi novaApi;
     private NeutronApi neutronApi;
+    private GlanceApi glanceApi;
 
     private Set<String> zones;
     private String defaultZone = null;
@@ -68,6 +76,7 @@ public class OpenstackClient implements ClientInterfaces {
         neutronApi = null;
         zones = null;
         novaApi = null;
+        glanceApi = null;
     }
 
     @Override
@@ -79,6 +88,7 @@ public class OpenstackClient implements ClientInterfaces {
         overrides.setProperty(Constants.PROPERTY_TRUST_ALL_CERTS, "true");
         novaApi = ContextBuilder.newBuilder("openstack-nova").endpoint(vimInstance.getAuthUrl()).credentials(vimInstance.getTenant() + ":" + vimInstance.getUsername(), vimInstance.getPassword()).modules(modules).overrides(overrides).buildApi(NovaApi.class);
         neutronApi = ContextBuilder.newBuilder("openstack-neutron").endpoint(vimInstance.getAuthUrl()).credentials(vimInstance.getTenant() + ":" + vimInstance.getUsername(), vimInstance.getPassword()).modules(modules).overrides(overrides).buildApi(NeutronApi.class);
+        glanceApi = ContextBuilder.newBuilder("openstack-glance").endpoint(vimInstance.getAuthUrl()).credentials(vimInstance.getTenant() + ":" + vimInstance.getUsername(), vimInstance.getPassword()).modules(modules).overrides(overrides).buildApi(GlanceApi.class);
         zones = novaApi.getConfiguredRegions();
         if (null == defaultZone) {
             defaultZone = zones.iterator().next();
@@ -172,17 +182,19 @@ public class OpenstackClient implements ClientInterfaces {
 
     @Override
     public List<NFVImage> listImages() {
-        ImageApi imageApi = this.novaApi.getImageApi(defaultZone);
+        ImageApi imageApi = this.glanceApi.getImageApi(defaultZone);
         List<NFVImage> images = new ArrayList<NFVImage>();
-        for (IterableWithMarker<Image> im : imageApi.listInDetail().toList()){
-            for(int i = 0; i < im.size() ; i++){
+        for (IterableWithMarker<ImageDetails> jcloudsImage : imageApi.listInDetail().toList()){
+            for(int i = 0; i < jcloudsImage.size() ; i++){
                 NFVImage image = new NFVImage();
-                image.setName(im.get(i).getName());
-                image.setExtId(im.get(i).getId());
-                image.setMinRam(im.get(i).getMinRam());
-                image.setMinDiskSpace(im.get(i).getMinDisk());
-                image.setCreated(im.get(i).getCreated());
-                image.setUpdated(im.get(i).getUpdated());
+                image.setName(jcloudsImage.get(i).getName());
+                image.setExtId(jcloudsImage.get(i).getId());
+                image.setMinRam(jcloudsImage.get(i).getMinRam());
+                image.setMinDiskSpace(jcloudsImage.get(i).getMinDisk());
+                image.setCreated(jcloudsImage.get(i).getCreatedAt());
+                image.setUpdated(jcloudsImage.get(i).getUpdatedAt());
+                image.setIsPublic(jcloudsImage.get(i).isPublic());
+                image.setDiskFormat(jcloudsImage.get(i).getDiskFormat().toString());
                 images.add(image);
             }
         }
@@ -238,18 +250,91 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Server not found");
     }
 
-    public NFVImage getImageById(String extId) {
-        ImageApi imageApi = this.novaApi.getImageApi(this.defaultZone);
+    public NFVImage addImage(String name, InputStream payload, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        CreateImageOptions createImageOptions = new CreateImageOptions();
+        createImageOptions.minDisk(minDisk);
+        createImageOptions.minRam(minRam);
+        createImageOptions.isPublic(isPublic);
+        createImageOptions.diskFormat(DiskFormat.fromValue(diskFormat));
+
+        //File tmpFile;
+        Payload jcloudsPayload = new InputStreamPayload(payload);
         try {
-            Image jcloudsImage = imageApi.get(extId);
+            //tmpFile = File.createTempFile(name,".tmp");
+            //OutputStream tmpOutputStream = new FileOutputStream(tmpFile);
+            ByteArrayOutputStream bufferedPayload = new ByteArrayOutputStream();
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = payload.read(bytes)) != -1) {
+                bufferedPayload.write(bytes, 0, read);
+            }
+            bufferedPayload.flush();
+            jcloudsPayload = new ByteArrayPayload(bufferedPayload.toByteArray());
+            //jcloudsPayload.getContentMetadata().setContentLength(tmpFile.length());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ImageDetails imageDetails = imageApi.create(name, jcloudsPayload, new CreateImageOptions[]{createImageOptions});
+        NFVImage image = new NFVImage();
+        image.setName(imageDetails.getName());
+        image.setExtId(imageDetails.getId());
+        image.setCreated(imageDetails.getCreatedAt());
+        image.setUpdated(imageDetails.getUpdatedAt());
+        image.setMinDiskSpace(imageDetails.getMinDisk());
+        image.setMinRam(imageDetails.getMinDisk());
+        image.setIsPublic(imageDetails.isPublic());
+        image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        return image;
+    }
+
+    public boolean deleteImage(String extId) {
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        boolean isDeleted = imageApi.delete(extId);
+        return isDeleted;
+    }
+
+    public NFVImage updateImage(String extId, String name, long minDisk, long minRam, boolean isPublic){
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        UpdateImageOptions updateImageOptions = new UpdateImageOptions();
+        updateImageOptions.name(name);
+        updateImageOptions.minRam(minRam);
+        updateImageOptions.minDisk(minDisk);
+        updateImageOptions.isPublic(isPublic);
+        ImageDetails imageDetails = imageApi.update(extId, updateImageOptions);
+        NFVImage image = new NFVImage();
+        image.setName(imageDetails.getName());
+        image.setExtId(imageDetails.getId());
+        image.setCreated(imageDetails.getCreatedAt());
+        image.setUpdated(imageDetails.getUpdatedAt());
+        image.setMinDiskSpace(imageDetails.getMinDisk());
+        image.setMinRam(imageDetails.getMinDisk());
+        image.setIsPublic(imageDetails.isPublic());
+        image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        return image;
+    }
+
+    public NFVImage copyImage(String extId, String name, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        InputStream inputStream = imageApi.getAsStream(extId);
+        NFVImage image = addImage(name, inputStream, diskFormat, minDisk, minRam, isPublic);
+        return image;
+    }
+
+    public NFVImage getImageById(String extId) {
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        try {
+            ImageDetails jcloudsImage = imageApi.get(extId);
             NFVImage image = new NFVImage();
             image.setExtId(jcloudsImage.getId());
             image.setName(jcloudsImage.getName());
-            image.setCreated(jcloudsImage.getCreated());
-            image.setUpdated(jcloudsImage.getUpdated());
+            image.setCreated(jcloudsImage.getCreatedAt());
+            image.setUpdated(jcloudsImage.getUpdatedAt());
             //image.setMinCPU(jcloudsImage.getMinCPU());
             image.setMinDiskSpace(jcloudsImage.getMinDisk());
             image.setMinRam(jcloudsImage.getMinRam());
+            image.setIsPublic(jcloudsImage.isPublic());
+            image.setDiskFormat(jcloudsImage.getDiskFormat().toString());
             return image;
         } catch (NullPointerException e) {
             throw new NullPointerException("Image not found");
@@ -257,13 +342,15 @@ public class OpenstackClient implements ClientInterfaces {
     }
 
     public String getImageIdByName(String name) {
-        ImageApi imageApi = this.novaApi.getImageApi(this.defaultZone);
+        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         for (Resource i : imageApi.list().concat()) {
             if (i.getName().equalsIgnoreCase(name))
                 return i.getId();
         }
         throw new NullPointerException("Image not found");
     }
+
+
 
     public DeploymentFlavour getFlavorById(String extId) {
         FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
