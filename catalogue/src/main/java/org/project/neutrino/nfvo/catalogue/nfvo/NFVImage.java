@@ -18,9 +18,12 @@ public class NFVImage implements Serializable {
 
     private String extId;
     private String name;
-    private int minRam;
-    private int minDiskSpace;
+    private long minRam;
+    private long minDiskSpace;
     private String minCPU;
+
+    private boolean isPublic;
+    private String diskFormat;
 
     @Temporal(TemporalType.DATE)
     private Date created;
@@ -63,19 +66,19 @@ public class NFVImage implements Serializable {
         this.extId = extId;
     }
 
-    public int getMinRam() {
+    public long getMinRam() {
         return minRam;
     }
 
-    public void setMinRam(int minRam) {
+    public void setMinRam(long minRam) {
         this.minRam = minRam;
     }
 
-    public int getMinDiskSpace() {
+    public long getMinDiskSpace() {
         return minDiskSpace;
     }
 
-    public void setMinDiskSpace(int minDiskSpace) {
+    public void setMinDiskSpace(long minDiskSpace) {
         this.minDiskSpace = minDiskSpace;
     }
 
@@ -99,6 +102,20 @@ public class NFVImage implements Serializable {
 
     public void setUpdated(Date updated) { this.updated = updated; }
 
+    public boolean isPublic() { return isPublic; }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public String getDiskFormat() {
+        return diskFormat;
+    }
+
+    public void setDiskFormat(String diskFormat) {
+        this.diskFormat = diskFormat;
+    }
+
     @Override
     public String toString() {
         return "Image{" +
@@ -109,6 +126,7 @@ public class NFVImage implements Serializable {
                 ", minRam='" + minRam + '\'' +
                 ", minDiskSpace='" + minDiskSpace + '\'' +
                 ", minCPU='" + minCPU + '\'' +
+                ", public='" + isPublic + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
                 '}';
