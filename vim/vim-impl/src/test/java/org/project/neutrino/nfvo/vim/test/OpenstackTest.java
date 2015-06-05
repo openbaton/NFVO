@@ -20,6 +20,7 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -114,12 +115,12 @@ public class OpenstackTest {
 
     @Test
     @Ignore
-    public void test_server(){
+    public void test_server() throws VimException {
         Server server = test_launch_server();
         test_delete_server(server);
     }
 
-    public Server test_launch_server(){
+    public Server test_launch_server() throws VimException {
         String hostname = vdu.getHostname();
         String image_name = vdu.getVm_image().get(0);
         String image_id = openstackClient.getImageIdByName(image_name);

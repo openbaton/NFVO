@@ -76,6 +76,7 @@ public class ApplicationTest {
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
+
 		return mock(GenericRepository.class);
 	}
 

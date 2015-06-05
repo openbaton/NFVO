@@ -85,7 +85,12 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      */
     @Override
     public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
-        throw new UnsupportedOperationException();
+        NetworkServiceDescriptor old_nsd = nsdRepository.find(old_id);
+        old_nsd.setName(new_nsd.getName());
+        old_nsd.setVendor(new_nsd.getVendor());
+        old_nsd.setEnabled(new_nsd.isEnabled());
+        old_nsd.setVersion(new_nsd.getVersion());
+        return old_nsd;
     }
 
     /**
