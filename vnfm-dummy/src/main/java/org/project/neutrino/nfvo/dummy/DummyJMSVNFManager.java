@@ -31,7 +31,7 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
         return new ActiveMQConnectionFactory();
     }
 
-    private static final String SELECTOR = "dummy-endpoint";
+    private final static String SELECTOR = "dummy-endpoint";
 
     @Override
     public void instantiate(VirtualNetworkFunctionRecord vnfr) {

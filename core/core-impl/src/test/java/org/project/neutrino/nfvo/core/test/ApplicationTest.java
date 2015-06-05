@@ -8,6 +8,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.Configuration;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
@@ -24,6 +25,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.AsyncResult;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -44,18 +48,16 @@ public class ApplicationTest {
 	}
 
 	@Bean
-	VnfmManager vnfmManager(){
-		return mock(VnfmManager.class);
+	VnfmManager vnfmManager() throws JMSException, NamingException, NotFoundException {
+		VnfmManager vnfmManager = mock(VnfmManager.class);
+		when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
+		return vnfmManager;
 	}
 
 
 	@Bean
 	GenericRepository<Configuration> configurationRepository(){
 		return mock(GenericRepository.class);
-	}
-	@Bean
-	NSDUtils nsdUtils(){
-		return mock(NSDUtils.class);
 	}
 
 	@Bean(name = "NSRRepository")
@@ -72,7 +74,6 @@ public class ApplicationTest {
 	GenericRepository<NFVImage> imageRepository() {
 		return mock(GenericRepository.class);
 	}
-
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
