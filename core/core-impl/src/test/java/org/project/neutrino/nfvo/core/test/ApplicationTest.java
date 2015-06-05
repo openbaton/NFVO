@@ -13,8 +13,7 @@ import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.*;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
 import org.project.neutrino.vnfm.interfaces.register.VnfmRegister;
@@ -77,7 +76,6 @@ public class ApplicationTest {
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
-
 		return mock(GenericRepository.class);
 	}
 
@@ -87,12 +85,25 @@ public class ApplicationTest {
 	}
 
 	@Bean
-	VimBroker vimBroker() throws VimException {
+	VimBroker<ResourceManagement> vimBroker() throws VimException {
 		VimBroker mock = mock(VimBroker.class);
 		ResourceManagement resourceManagement = mock(ResourceManagement.class);
 		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
 		when(mock.getVim(anyString())).thenReturn(resourceManagement);
 		return mock;
+	}
+
+	@Bean
+	VimBroker<ImageManagement> imageManagementVimBroker(){
+		return mock(VimBroker.class);
+	}
+	@Bean
+	VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker(){
+		return mock(VimBroker.class);
+	}
+	@Bean
+	VimBroker<NetworkManagement> networkManagementVimBroker(){
+		return mock(VimBroker.class);
 	}
 
 	public static void main(String[] argv) {

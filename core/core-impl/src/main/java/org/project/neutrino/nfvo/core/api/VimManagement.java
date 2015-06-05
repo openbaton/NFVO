@@ -4,6 +4,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
+import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,13 +22,13 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     @Autowired
     @Qualifier("vimRepository")
     private GenericRepository<VimInstance> vimInstanceGenericRepository;
+
     @Autowired
     private VimBroker<ImageManagement> imageManagementVimBroker;
     @Autowired
     private VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker;
-
     @Autowired
-    private VimBroker<org.project.neutrino.nfvo.vim_interfaces.NetworkManagement> networkManagementVimBroker;
+    private VimBroker<NetworkManagement> networkManagementVimBroker;
 
 
     @Override
@@ -43,7 +44,17 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
 
     @Override
     public VimInstance update(VimInstance new_vimInstance, String id) {
-        throw new UnsupportedOperationException();
+        VimInstance old = vimInstanceGenericRepository.find(id);
+        old.setName(new_vimInstance.getName());
+        old.setType(new_vimInstance.getType());
+        old.setAuthUrl(new_vimInstance.getAuthUrl());
+        old.setKeyPair(new_vimInstance.getKeyPair());
+        old.setLocation(new_vimInstance.getLocation());
+        old.setUsername(new_vimInstance.getUsername());
+        old.setPassword(new_vimInstance.getPassword());
+        old.setTenant(new_vimInstance.getTenant());
+        refresh(old);
+        return old;
     }
 
     @Override

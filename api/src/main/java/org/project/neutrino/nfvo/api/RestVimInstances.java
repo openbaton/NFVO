@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/datacenters")
-public class RestDatacenter {
+public class RestVimInstances {
 
 //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
