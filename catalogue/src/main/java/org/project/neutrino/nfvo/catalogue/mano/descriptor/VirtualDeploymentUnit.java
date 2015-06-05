@@ -82,6 +82,8 @@ public class VirtualDeploymentUnit implements Serializable{
     private VimInstance vimInstance;
     private String hostname;
 
+    private String extId;
+
     public VirtualDeploymentUnit() {
     }
 
@@ -213,5 +215,13 @@ public class VirtualDeploymentUnit implements Serializable{
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
     }
 }
