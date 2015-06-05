@@ -31,14 +31,18 @@ function end {
     exit
 }
 function usage {
-    echo -e "Neutrino\n"
-    echo -e "Usage:\n\t ./neutrino.sh <option>\n\t"
+    echo -e "Open-Baton\n"
+    echo -e "Usage:\n\t ./openbaton.sh <option>\n\t"
     echo -e "where option is"
     echo -e "\t\t * compile"
     echo -e "\t\t * start"
     echo -e "\t\t * test"
     echo -e "\t\t * clean"
 }
+
+##
+#   MAIN
+##
 
 if [ $# -eq 0 ]
    then

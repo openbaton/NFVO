@@ -13,6 +13,7 @@ import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         testClient.launchInstanceAndWait(vdu.getHostname(),vimInstance.getImages().get(0).getExtId(),"flavor","keypair",new ArrayList<String>(){{add("network_id");}}, new ArrayList<String>(){{add("secGroup_id");}}, "#userdate");

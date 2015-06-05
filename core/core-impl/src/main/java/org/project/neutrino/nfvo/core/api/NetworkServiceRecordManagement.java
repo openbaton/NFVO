@@ -110,6 +110,13 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
 
     @Override
     public void delete(String id) {
-        nsrRepository.remove(nsrRepository.find(id));
+        NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+                ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+                vim.release(virtualDeploymentUnit);
+            }
+        }
+        nsrRepository.remove(networkServiceRecord);
     }
 }

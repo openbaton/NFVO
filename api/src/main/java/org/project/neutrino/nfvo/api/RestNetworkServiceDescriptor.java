@@ -17,15 +17,18 @@ import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -37,6 +40,7 @@ public class RestNetworkServiceDescriptor {
 
 	@Autowired
 	private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
+
 	@Autowired
 	private NetworkServiceRecordManagement networkServiceRecordManagement;
 
@@ -51,10 +55,8 @@ public class RestNetworkServiceDescriptor {
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public NetworkServiceDescriptor create(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
-		return networkServiceDescriptorManagement
-				.onboard(networkServiceDescriptor);
+	public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
+		return networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
 	}
 
 	/**
@@ -639,5 +641,50 @@ public class RestNetworkServiceDescriptor {
 			throw new VNFDNotFoundException(id_vfn);
 		}
 		return nDescriptor;
+	}
+
+	/**
+	 * Exception handling
+	 */
+
+	// Convert a predefined exception to an HTTP Status code
+	@ExceptionHandler(value = {VimException.class, NotFoundException.class})
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST)  //
+	public ModelAndView vimException(HttpServletRequest req, Exception exception) {
+
+		log.error("Exception: " + exception.getClass().getSimpleName());
+		log.error("Request: " + req.getRequestURL());
+		log.error(" raised " + exception);
+		exception.printStackTrace();
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("exception", exception);
+		mav.addObject("url", req.getRequestURL());
+		mav.setViewName("Error");
+		return mav;
+	}
+//
+//	// Specify the name of a specific view that will be used to display the error:
+//	@ExceptionHandler({SQLException.class,DataAccessException.class})
+//	public String databaseError() {
+//		// Nothing to do.  Returns the logical view name of an error page, passed to
+//		// the view-resolver(s) in usual way.
+//		// Note that the exception is _not_ available to this view (it is not added to
+//		// the model) but see "Extending ExceptionHandlerExceptionResolver" below.
+//		return "databaseError";
+//	}
+
+	// Total control - setup a model and return the view name yourself. Or consider
+	// subclassing ExceptionHandlerExceptionResolver (see below).
+	@ExceptionHandler(Exception.class)
+	public ModelAndView handleError(HttpServletRequest req, Exception exception) {
+		log.error("Request: " + req.getRequestURL() + " raised " + exception);
+		exception.printStackTrace();
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("exception", exception);
+		mav.addObject("url", req.getRequestURL());
+		mav.setViewName("error");
+		return mav;
 	}
 }

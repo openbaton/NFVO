@@ -36,8 +36,13 @@ public class TestClient implements ClientInterfaces {
     public List<NFVImage> listImages() {
         return new ArrayList<NFVImage>(){{
             NFVImage image = new NFVImage();
-            image.setExtId("ext_id");
+            image.setExtId("ext_id_1");
             image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
+            add(image);
+
+            image = new NFVImage();
+            image.setExtId("ext_id_2");
+            image.setName("image_name_1");
             add(image);
         }};
     }
@@ -89,5 +94,14 @@ public class TestClient implements ClientInterfaces {
         server.setName("server_name");
         server.setExtId("ext_id");
         return server;
+    }
+
+    @Override
+    public void deleteServerByIdAndWait(String id) {
+        try {
+            Thread.sleep((long) (Math.random() * 1500));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
