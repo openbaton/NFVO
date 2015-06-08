@@ -2,19 +2,11 @@ package org.project.neutrino.nfvo.core.cli;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.shell.Bootstrap;
 import org.springframework.shell.core.CommandMarker;
-import org.springframework.shell.core.JLineShellComponent;
 import org.springframework.shell.core.annotation.CliAvailabilityIndicator;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.shell.Bootstrap;
-import org.springframework.shell.core.CommandResult;
-import org.springframework.shell.core.JLineShellComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 

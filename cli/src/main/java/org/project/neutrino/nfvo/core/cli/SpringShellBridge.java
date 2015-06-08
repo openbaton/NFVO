@@ -1,8 +1,5 @@
 package org.project.neutrino.nfvo.core.cli;
 
-import jline.console.ConsoleReader;
-import jline.console.completer.StringsCompleter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
