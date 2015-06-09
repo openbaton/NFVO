@@ -38,6 +38,8 @@ public class Network implements Serializable {
         subnets = new ArrayList<Subnet>();
     }
 
+    public void setId(String id) { this.id = id; }
+
     public String getId() { return id; }
 
     public int getVersion() { return version; }
