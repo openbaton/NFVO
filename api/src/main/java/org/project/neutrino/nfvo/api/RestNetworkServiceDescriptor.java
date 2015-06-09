@@ -10,6 +10,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescrip
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
@@ -55,7 +56,7 @@ public class RestNetworkServiceDescriptor {
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
+	public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
 		return networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
 	}
 
@@ -578,25 +579,8 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	NetworkServiceRecord createRecord(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
-		try {
-			return networkServiceRecordManagement
-					.onboard(networkServiceDescriptor);
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (VimException e) {
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (NamingException e) {
-			e.printStackTrace();
-		} catch (JMSException e) {
-			e.printStackTrace();
-		}
-		return null;// TODO return error
-
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException {
+			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 
 	private PhysicalNetworkFunctionDescriptor findPNFD(
@@ -648,7 +632,7 @@ public class RestNetworkServiceDescriptor {
 	 */
 
 	// Convert a predefined exception to an HTTP Status code
-	@ExceptionHandler(value = {VimException.class, NotFoundException.class})
+	@ExceptionHandler(value = {VimException.class, NotFoundException.class, BadFormatException.class})
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)  //
 	public ModelAndView vimException(HttpServletRequest req, Exception exception) {
 

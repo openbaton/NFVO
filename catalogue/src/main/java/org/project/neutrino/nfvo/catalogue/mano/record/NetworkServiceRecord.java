@@ -36,18 +36,22 @@ public class NetworkServiceRecord /*implements Serializable*/{
      * References the nsd:service_deployment_flavour used to instantiate this Network Service instance.
      * */
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
      private NetworkServiceDeploymentFlavour service_deployment_flavour;
     private String vendor;
     private String version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VirtualLinkRecord> vlr;
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+    @OneToMany(fetch = FetchType.EAGER)
     private List<VirtualNetworkFunctionRecord> vnfr;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<VNFRecordDependency> vnf_dependency;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<LifecycleEvent> lifecycle_event;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFDependency> vnf_dependency;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VNFForwardingGraph> vnffgr;
     /**
@@ -174,11 +178,11 @@ public class NetworkServiceRecord /*implements Serializable*/{
         this.lifecycle_event = lifecycle_event;
     }
 
-    public List<VNFDependency> getVnf_dependency() {
+    public List<VNFRecordDependency> getVnf_dependency() {
         return vnf_dependency;
     }
 
-    public void setVnf_dependency(List<VNFDependency> vnf_dependency) {
+    public void setVnf_dependency(List<VNFRecordDependency> vnf_dependency) {
         this.vnf_dependency = vnf_dependency;
     }
 
@@ -264,5 +268,32 @@ public class NetworkServiceRecord /*implements Serializable*/{
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "NetworkServiceRecord{" +
+                "id='" + id + '\'' +
+                ", auto_scale_policy=" + auto_scale_policy +
+                ", connection_point=" + connection_point +
+                ", monitoring_parameter=" + monitoring_parameter +
+                ", service_deployment_flavour=" + service_deployment_flavour +
+                ", vendor='" + vendor + '\'' +
+                ", version='" + version + '\'' +
+                ", vlr=" + vlr +
+                ", vnfr=" + vnfr +
+                ", lifecycle_event=" + lifecycle_event +
+                ", vnf_dependency=" + vnf_dependency +
+                ", vnffgr=" + vnffgr +
+                ", pnfr=" + pnfr +
+                ", descriptor_reference=" + descriptor_reference +
+                ", resource_reservation='" + resource_reservation + '\'' +
+                ", runtime_policy_info='" + runtime_policy_info + '\'' +
+                ", status=" + status +
+                ", notification='" + notification + '\'' +
+                ", lifecycle_event_history=" + lifecycle_event_history +
+                ", audit_log='" + audit_log + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

@@ -6,6 +6,8 @@ import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -29,11 +31,13 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     private VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker;
     @Autowired
     private VimBroker<NetworkManagement> networkManagementVimBroker;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
     public VimInstance add(VimInstance vimInstance) {
         this.refresh(vimInstance);
+        log.trace("Persisting VimInstance: " + vimInstance);
         return vimInstanceGenericRepository.create(vimInstance);
     }
 

@@ -29,7 +29,7 @@ public class VimInstance implements Serializable{
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> securityGroups;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.PERSIST})
     private List<DeploymentFlavour> flavours;
 
     private String type;

@@ -1,6 +1,7 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface NetworkServiceDescriptorManagement {
 	 * validating a Network Service	Descriptor (NSD), 
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException;
+	NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException;
 
 	/**
 	 * This operation allows disabling a

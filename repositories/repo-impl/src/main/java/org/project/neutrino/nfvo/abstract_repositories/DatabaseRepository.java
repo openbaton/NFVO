@@ -10,16 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import java.lang.reflect.Type;
 import java.util.List;
 
 /**
  * Created by lto on 30/04/15.
  */
+@Transactional
 public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 
-	@PersistenceContext(type = PersistenceContextType.EXTENDED)
+	@PersistenceContext
 	private EntityManager entityManager;
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -35,20 +35,20 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public T create(T entity) {
 		this.entityManager.persist(entity);
 		return entity;
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public T merge(T entity) {
 		return this.entityManager.merge(entity);
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void remove(T entity) {
 		this.entityManager.remove(entity);
 	}

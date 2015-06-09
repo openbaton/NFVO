@@ -30,17 +30,16 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VNFDependency> dependency;
     /**
-     * Reference to selected deployment flavour (vnfd:deployment_flavour:id)
+     * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
      * */
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private VNFDeploymentFlavour deployment_flavour;
+    private String deployment_flavour_key;
     /**
      * ID of the VNF instance
      * */
 
-    @Id
-    private String id = IdGenerator.createUUID();
+        @Id
+        private String id = IdGenerator.createUUID();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<LifecycleEvent> lifecycle_event;
     /**
@@ -160,12 +159,12 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.dependency = dependency;
     }
 
-    public VNFDeploymentFlavour getDeployment_flavour() {
-        return deployment_flavour;
+    public String getDeployment_flavour_key() {
+        return deployment_flavour_key;
     }
 
-    public void setDeployment_flavour(VNFDeploymentFlavour deployment_flavour) {
-        this.deployment_flavour = deployment_flavour;
+    public void setDeployment_flavour_key(String deployment_flavour_key) {
+        this.deployment_flavour_key = deployment_flavour_key;
     }
 
     public String getId() {
@@ -334,7 +333,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
                 "auto_scale_policy=" + auto_scale_policy +
                 ", connection_point=" + connection_point +
                 ", dependency=" + dependency +
-                ", deployment_flavour=" + deployment_flavour +
+                ", deployment_flavour_key=" + deployment_flavour_key +
                 ", id='" + id + '\'' +
                 ", lifecycle_event=" + lifecycle_event +
                 ", localization='" + localization + '\'' +

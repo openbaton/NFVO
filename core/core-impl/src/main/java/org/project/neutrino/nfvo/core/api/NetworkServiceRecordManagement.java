@@ -1,9 +1,11 @@
 package org.project.neutrino.nfvo.core.api;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -30,7 +34,7 @@ import java.util.concurrent.Future;
  * Created by lto on 11/05/15.
  */
 @Service
-@Scope
+@Scope("prototype")
 public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -39,6 +43,17 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Qualifier("NSRRepository")
     private GenericRepository<NetworkServiceRecord> nsrRepository;
 
+    @Autowired
+    @Qualifier("NSDRepository")
+    private GenericRepository<NetworkServiceDescriptor> nsdRepository;
+
+    @Autowired
+    @Qualifier("VNFRRepository")
+    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+
+    @Autowired
+    @Qualifier("VNFRDependencyRepository")
+    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
 
     @Autowired
     private VimBroker<ResourceManagement> vimBroker;
@@ -49,16 +64,41 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Autowired
     private VnfmManager vnfmManager;
 
+    // TODO fetch the NetworkServiceDescriptor from the DB
+
     @Override
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, JMSException, NamingException {
+    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(nsd_id);
+        return deployNSR(networkServiceDescriptor);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, JMSException, NamingException, BadFormatException {
 
         /*
         Create NSR
          */
-        nsdUtils.fetchData(networkServiceDescriptor);
+        nsdUtils.fetchVimInstances(networkServiceDescriptor);
+        return deployNSR(networkServiceDescriptor);
+    }
+
+    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, NamingException, JMSException {
         log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-        log.trace("Deploying " + networkServiceRecord);
+        log.trace("Creating " + networkServiceRecord);
+
+        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
+            vnfrRepository.create(vnfr);
+
+        log.trace("Persisting VNFDependencies");
+        for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
+            log.trace("" + vnfrDependency.getSource());
+            vnfrDependencyRepository.create(vnfrDependency);
+        }
+        log.trace("Persisted VNFDependencies");
+
+
         nsrRepository.create(networkServiceRecord);
 
 

@@ -146,7 +146,7 @@ public class VimTestSuiteClass {
         vnfr.setDescriptor_reference("test_dr");
         VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();
         deployment_flavour.setFlavour_key("m1.small");
-        vnfr.setDeployment_flavour(deployment_flavour);
+        vnfr.setDeployment_flavour_key(deployment_flavour);
         return vnfr;
     }
 

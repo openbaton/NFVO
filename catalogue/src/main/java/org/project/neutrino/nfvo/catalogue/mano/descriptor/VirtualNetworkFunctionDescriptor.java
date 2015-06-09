@@ -6,10 +6,7 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
-import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
-import org.project.neutrino.nfvo.catalogue.mano.common.NFVEntityDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.common.Security;
-import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.neutrino.nfvo.catalogue.mano.common.*;
 
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
@@ -31,7 +28,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     /**
      * This describes a set of elements related to a particular VDU
      * */
-    @OneToMany(cascade=CascadeType.ALL)
+     @OneToMany(cascade=CascadeType.ALL)
     private List<VirtualDeploymentUnit> vdu;
     /**
      * Represents the type of network connectivity mandated by the VNF vendor between two or more Connection Point
@@ -88,10 +85,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 	public VirtualNetworkFunctionDescriptor() {
     }
 
+	@Override
     public List<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
-    
+
     public List<VNFDConnectionPoint> getVNFDConnection_point() {
     	List<VNFDConnectionPoint> res = new ArrayList<VNFDConnectionPoint>();
     	for (ConnectionPoint cp : connection_point)
@@ -99,6 +97,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         return res;
     }
 
+	@Override
     public void setConnection_point(List<ConnectionPoint> connection_point) {
     	for (ConnectionPoint cp : connection_point)
     		if (!(cp instanceof VNFDConnectionPoint))
@@ -106,11 +105,13 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         this.connection_point = connection_point;
     }
 
-	public String getDescriptor_version() {
+	@Override
+	public String getVersion() {
 		return descriptor_version;
 	}
 
-	public void setDescriptor_version(String descriptor_version) {
+	@Override
+	public void setVersion(String descriptor_version) {
 		this.descriptor_version = descriptor_version;
 	}
 
