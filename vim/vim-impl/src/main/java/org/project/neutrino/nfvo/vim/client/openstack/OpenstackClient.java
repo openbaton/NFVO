@@ -8,8 +8,10 @@ import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.io.Payload;
 import org.jclouds.io.payloads.ByteArrayPayload;
 import org.jclouds.io.payloads.InputStreamPayload;
+import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.glance.v1_0.GlanceApi;
+import org.jclouds.openstack.glance.v1_0.domain.ContainerFormat;
 import org.jclouds.openstack.glance.v1_0.domain.DiskFormat;
 import org.jclouds.openstack.glance.v1_0.domain.ImageDetails;
 import org.jclouds.openstack.glance.v1_0.features.ImageApi;
@@ -247,19 +249,17 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Server not found");
     }
 
-    public NFVImage addImage(String name, InputStream payload, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+    public NFVImage addImage(String name, InputStream payload, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) {
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         CreateImageOptions createImageOptions = new CreateImageOptions();
         createImageOptions.minDisk(minDisk);
         createImageOptions.minRam(minRam);
         createImageOptions.isPublic(isPublic);
-        createImageOptions.diskFormat(DiskFormat.fromValue(diskFormat));
+        createImageOptions.diskFormat(DiskFormat.valueOf(diskFormat));
+        createImageOptions.containerFormat(ContainerFormat.valueOf(containerFromat));
 
-        //File tmpFile;
         Payload jcloudsPayload = new InputStreamPayload(payload);
         try {
-            //tmpFile = File.createTempFile(name,".tmp");
-            //OutputStream tmpOutputStream = new FileOutputStream(tmpFile);
             ByteArrayOutputStream bufferedPayload = new ByteArrayOutputStream();
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -268,7 +268,6 @@ public class OpenstackClient implements ClientInterfaces {
             }
             bufferedPayload.flush();
             jcloudsPayload = new ByteArrayPayload(bufferedPayload.toByteArray());
-            //jcloudsPayload.getContentMetadata().setContentLength(tmpFile.length());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -282,6 +281,7 @@ public class OpenstackClient implements ClientInterfaces {
         image.setMinRam(imageDetails.getMinDisk());
         image.setIsPublic(imageDetails.isPublic());
         image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        image.setContainerFormat(imageDetails.getContainerFormat().toString());
         return image;
     }
 
@@ -291,13 +291,15 @@ public class OpenstackClient implements ClientInterfaces {
         return isDeleted;
     }
 
-    public NFVImage updateImage(String extId, String name, long minDisk, long minRam, boolean isPublic){
+    public NFVImage updateImage(String extId, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic){
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         UpdateImageOptions updateImageOptions = new UpdateImageOptions();
         updateImageOptions.name(name);
         updateImageOptions.minRam(minRam);
         updateImageOptions.minDisk(minDisk);
         updateImageOptions.isPublic(isPublic);
+        updateImageOptions.diskFormat(DiskFormat.valueOf(diskFormat));
+        updateImageOptions.containerFormat(ContainerFormat.valueOf(containerFromat));
         ImageDetails imageDetails = imageApi.update(extId, updateImageOptions);
         NFVImage image = new NFVImage();
         image.setName(imageDetails.getName());
@@ -308,13 +310,14 @@ public class OpenstackClient implements ClientInterfaces {
         image.setMinRam(imageDetails.getMinDisk());
         image.setIsPublic(imageDetails.isPublic());
         image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        image.setContainerFormat(imageDetails.getContainerFormat().toString());
         return image;
     }
 
-    public NFVImage copyImage(String extId, String name, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+    public NFVImage copyImage(String extId, String name, String diskFormat, String containerFormat, long minDisk, long minRam, boolean isPublic) {
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         InputStream inputStream = imageApi.getAsStream(extId);
-        NFVImage image = addImage(name, inputStream, diskFormat, minDisk, minRam, isPublic);
+        NFVImage image = addImage(name, inputStream, diskFormat, containerFormat, minDisk, minRam, isPublic);
         return image;
     }
 
@@ -327,11 +330,11 @@ public class OpenstackClient implements ClientInterfaces {
             image.setName(jcloudsImage.getName());
             image.setCreated(jcloudsImage.getCreatedAt());
             image.setUpdated(jcloudsImage.getUpdatedAt());
-            //image.setMinCPU(jcloudsImage.getMinCPU());
             image.setMinDiskSpace(jcloudsImage.getMinDisk());
             image.setMinRam(jcloudsImage.getMinRam());
             image.setIsPublic(jcloudsImage.isPublic());
             image.setDiskFormat(jcloudsImage.getDiskFormat().toString());
+            image.setContainerFormat(jcloudsImage.getContainerFormat().toString());
             return image;
         } catch (NullPointerException e) {
             throw new NullPointerException("Image not found");
