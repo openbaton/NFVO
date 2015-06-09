@@ -136,6 +136,8 @@ public class NFVImage implements Serializable {
                 ", minDiskSpace='" + minDiskSpace + '\'' +
                 ", minCPU='" + minCPU + '\'' +
                 ", public='" + isPublic + '\'' +
+                ", diskFormat='" + diskFormat + '\'' +
+                ", containerFormat='" + containerFormat + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
                 '}';
