@@ -13,6 +13,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraph;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFForwardingGraphRecord {
+public class VNFForwardingGraphRecord implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     /**
@@ -77,7 +78,7 @@ public class VNFForwardingGraphRecord {
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFDConnectionPoint>connection_point;
+    private List<VNFDConnectionPoint> connection_point;
 
     /**
      * VNF instance used to instantiate this VNFFG

@@ -94,7 +94,8 @@ public class DummyJMSVNFManager extends AbstractVnfmJMS {
     }
 
     @JmsListener(destination = "core-vnfm-actions", selector = "type = \'" + SELECTOR + "\'", containerFactory = "myJmsContainerFactory")
-    public void onMessage(CoreMessage message){
+    public void onMessage(CoreMessage message) throws JMSException {
+        log.trace(message.toString());
         this.onAction(message);
     }
 
