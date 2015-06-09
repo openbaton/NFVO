@@ -7,6 +7,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient;
 import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
@@ -37,7 +38,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Autowired
     @Qualifier("openstackClient")
-    private ClientInterfaces openstackClient;
+    private OpenstackClient openstackClient;
 
     @Override
     public NFVImage add(NFVImage image) {
@@ -46,7 +47,8 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Override
     public Network add(Network network) {
-        throw new UnsupportedOperationException();
+        Network createdNetwork = openstackClient.createNetwork(network);
+        return createdNetwork;
     }
 
     @Override
@@ -56,7 +58,8 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Override
     public Network update(Network new_network, String id) {
-        throw new UnsupportedOperationException();
+        Network updatedNetwork = openstackClient.updateNetwork(id, new_network);
+        return updatedNetwork;
     }
 
     @Override
@@ -67,7 +70,8 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Override
     public NFVImage update() {
-        throw new UnsupportedOperationException();
+        //NFVImage updatedImage = openstackClient.updateImage(image);
+        return null;
     }
 
     @Override
@@ -190,7 +194,8 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Override
     public DeploymentFlavour add(DeploymentFlavour deploymentFlavour) {
-        throw new UnsupportedOperationException();
+        DeploymentFlavour flavor = openstackClient.addFlavor(deploymentFlavour);
+        return flavor;
     }
 
     @Override

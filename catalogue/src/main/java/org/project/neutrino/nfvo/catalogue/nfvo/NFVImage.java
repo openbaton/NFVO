@@ -18,12 +18,13 @@ public class NFVImage implements Serializable {
 
     private String extId;
     private String name;
-    private long minRam;
-    private long minDiskSpace;
+    private long minRam; //in MB
+    private long minDiskSpace; //in GB
     private String minCPU;
 
     private boolean isPublic;
     private String diskFormat;
+    private String containerFormat;
 
     @Temporal(TemporalType.DATE)
     private Date created;
@@ -116,6 +117,14 @@ public class NFVImage implements Serializable {
         this.diskFormat = diskFormat;
     }
 
+    public String getContainerFormat() {
+        return containerFormat;
+    }
+
+    public void setContainerFormat(String containerFormat) {
+        this.containerFormat = containerFormat;
+    }
+
     @Override
     public String toString() {
         return "Image{" +
@@ -127,6 +136,8 @@ public class NFVImage implements Serializable {
                 ", minDiskSpace='" + minDiskSpace + '\'' +
                 ", minCPU='" + minCPU + '\'' +
                 ", public='" + isPublic + '\'' +
+                ", diskFormat='" + diskFormat + '\'' +
+                ", containerFormat='" + containerFormat + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
                 '}';
