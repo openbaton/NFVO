@@ -6,11 +6,12 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
+import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
-
-import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
@@ -20,7 +21,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
  * A policy or rule to apply to the NFP
  */
 @Entity
-public class Policy {
+public class Policy implements Serializable{
 	
 	@Id
 	private String id = IdGenerator.createUUID();

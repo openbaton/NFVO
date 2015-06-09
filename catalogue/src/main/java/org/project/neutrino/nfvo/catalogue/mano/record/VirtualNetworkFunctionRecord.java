@@ -23,27 +23,33 @@ import java.util.List;
 @Entity
 public class VirtualNetworkFunctionRecord implements Serializable{
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<AutoScalePolicy> auto_scale_policy;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ConnectionPoint> connection_point;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFDependency> dependency;
-    /**
-     * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
-     * */
-
-    private String deployment_flavour_key;
     /**
      * ID of the VNF instance
      * */
+    @Id
+    private String id = IdGenerator.createUUID();
+    @Version
+    private int hb_version = 0;
 
-        @Id
-        private String id = IdGenerator.createUUID();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<AutoScalePolicy> auto_scale_policy;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ConnectionPoint> connection_point;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<VNFRecordDependency> dependency;
+
+    /**
+     * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
+     * */
+    private String deployment_flavour_key;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<LifecycleEvent> lifecycle_event;
+
     /**
-     * A language attribute may be specified to identifydefault localisation/language
+     * A language attribute may be specified to identify default localisation/language
      * */
     private String localization;
     /**
@@ -58,20 +64,18 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VirtualDeploymentUnit> vdu;
-
     private String vendor;
+
     private String version;
+
     /**
      * Internal Virtual Links instances used in this VNF
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<InternalVirtualLink> virtual_link;
-    /**
-     * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
-     * */
-
 //    @JsonIgnore
+
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //    @XmlTransient
 //    private transient NetworkServiceRecord parent_ns;
@@ -84,7 +88,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * TODO probably it is better to have a reference than a string pointing to the id
      * */
     private String vnfm_id;
-
     /**
      * Reference to a VLR (vlr:id) used for the management access path or other internal and external connection
      * interface configured for use by this VNF instance
@@ -92,6 +95,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VirtualLinkRecord> connected_external_virtual_link;
+
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
      * interface on this VNF
@@ -130,6 +134,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @ElementCollection
     private List<String> runtime_policy_info;
     private String name;
+
     private String type;
 
     public VirtualNetworkFunctionRecord() {
@@ -137,6 +142,17 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     public List<AutoScalePolicy> getAuto_scale_policy() {
         return auto_scale_policy;
+    }
+
+    /**
+     * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
+     * */
+    public int getHb_version() {
+        return hb_version;
+    }
+
+    public void setHb_version(int hb_version) {
+        this.hb_version = hb_version;
     }
 
     public void setAuto_scale_policy(List<AutoScalePolicy> auto_scale_policy) {
@@ -151,11 +167,11 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.connection_point = connection_point;
     }
 
-    public List<VNFDependency> getDependency() {
+    public List<VNFRecordDependency> getDependency() {
         return dependency;
     }
 
-    public void setDependency(List<VNFDependency> dependency) {
+    public void setDependency(List<VNFRecordDependency> dependency) {
         this.dependency = dependency;
     }
 
