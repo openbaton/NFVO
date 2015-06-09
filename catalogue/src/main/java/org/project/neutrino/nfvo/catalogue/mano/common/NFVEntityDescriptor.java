@@ -20,6 +20,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	@Version
 	protected Integer hb_version = 0;
 
+	@Column(unique = true)
 	protected String name;
 
 	/**

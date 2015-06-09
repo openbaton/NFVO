@@ -82,18 +82,28 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
          *  *) choose image
          *  *) ...?
          */
-        vdu.setHostname(virtualNetworkFunctionRecord.getName() + "-" + vdu.getId().substring((vdu.getId().length()-5), vdu.getId().length()-1));
+        vdu.setHostname(virtualNetworkFunctionRecord.getName() + "-" + vdu.getId().substring((vdu.getId().length() - 5), vdu.getId().length() - 1));
 
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
         List<String> networks = new ArrayList<String>(){{add("7e62608d-efaa-4891-8ea2-3d3f537559c1");}};
         log.trace(""+virtualNetworkFunctionRecord);
         log.trace("");
-        log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + virtualNetworkFunctionRecord.getDeployment_flavour().getExtId() + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
-        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, virtualNetworkFunctionRecord.getDeployment_flavour().getExtId(), vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
+        String flavorExtId = getFlavorExtID(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vimInstance);
+        log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
+        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
         return new AsyncResult<>(server.getExtId());
+    }
+
+    private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
+        for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()){
+            if (deploymentFlavour.getFlavour_key().equals(key) || deploymentFlavour.getExtId().equals(key) || deploymentFlavour.getId().equals(key)){
+                return deploymentFlavour.getExtId();
+            }
+        }
+        throw new VimException("no key " + key + " found in any vim instance found");
     }
 
     @Override

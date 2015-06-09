@@ -1,6 +1,9 @@
 package org.project.neutrino.nfvo.core.api;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -28,7 +31,14 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
 
     @Autowired
+    @Qualifier("VNFDRepository")
+    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+
+    @Autowired
     private NSDUtils nsdUtils;
+    @Autowired
+    @Qualifier("VNFDependencyRepository")
+    private GenericRepository<VNFDependency> vnfDependencyRepository;
 
     /**
      * This operation allows submitting and
@@ -36,11 +46,23 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
      * including any related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException, NotFoundException {
+    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException, NotFoundException, BadFormatException {
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
-        nsdUtils.fetchData(networkServiceDescriptor);
+        nsdUtils.fetchVimInstances(networkServiceDescriptor);
         log.trace("Fetched Data");
+
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
+            vnfdRepository.create(vnfd);
+
+        log.trace("Persisting VNFDependencies");
+        nsdUtils.fetchDependencies(networkServiceDescriptor);
+        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()){
+            log.trace(""+ vnfDependency.getSource());
+            vnfDependencyRepository.create(vnfDependency);
+        }
+        log.trace("Persisted VNFDependencies");
+
         nsdRepository.create(networkServiceDescriptor);
         log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;

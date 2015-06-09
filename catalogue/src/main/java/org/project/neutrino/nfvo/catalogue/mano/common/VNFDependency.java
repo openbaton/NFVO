@@ -28,10 +28,10 @@ public class VNFDependency implements Serializable {
 	@Version
 	private int version = 0;
 	
-	@OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionDescriptor source;
-	
-	@OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+
+	@OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionDescriptor target;
 
     public VNFDependency() {
@@ -65,7 +65,7 @@ public class VNFDependency implements Serializable {
 	@Override
 	public String toString() {
 		return "VNFDependency [id=" + id + ", version=" + version + ", source="
-				+ source + ", target=" + target + "]";
+				+ source.getName() + ", target=" + target.getName() + "]";
 	}
 
 	

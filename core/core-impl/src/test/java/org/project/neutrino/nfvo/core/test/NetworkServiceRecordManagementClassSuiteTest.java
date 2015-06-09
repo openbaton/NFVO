@@ -15,6 +15,7 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -36,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -105,7 +105,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException {
+	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
@@ -115,7 +115,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException {
+	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
 		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
@@ -202,7 +202,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 		vdf.setExtId("ext_id");
 		vdf.setFlavour_key("flavor_name");
-		virtualNetworkFunctionRecord.setDeployment_flavour(vdf);
+		virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf);
 		virtualNetworkFunctionRecord
 				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
 					{

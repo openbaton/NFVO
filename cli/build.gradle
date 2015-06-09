@@ -2,10 +2,6 @@ repositories {
 	maven { url "http://repo.springsource.org/lib-release" }
 }
 
-apply plugin: "spring-boot"
-apply plugin: "java"
-apply plugin: 'maven'
-
 dependencies {
 	compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
 }

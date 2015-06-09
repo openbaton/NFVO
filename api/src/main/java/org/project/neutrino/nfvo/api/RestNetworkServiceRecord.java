@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
@@ -13,10 +14,12 @@ import org.project.neutrino.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDependencyNotFoundException;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
@@ -25,12 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/ns-records")
@@ -53,26 +52,17 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public NetworkServiceRecord create(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
-		try {
-			return networkServiceRecordManagement
-					.onboard(networkServiceDescriptor);
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (VimException e) {
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (NamingException e) {
-			e.printStackTrace();
-		} catch (JMSException e) {
-			e.printStackTrace();
-		}
-		return null;// TODO return error
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 
 	}
+
+	@RequestMapping(value = "{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+		return networkServiceRecordManagement.onboard(id);
+	}
+
 
 	/**
 	 * This operation is used to remove a disabled Network Service Descriptor
@@ -246,7 +236,7 @@ public class RestNetworkServiceRecord {
 
 	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
+	public List<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
 		NetworkServiceRecord nsd = null;
 		try {
 			nsd = networkServiceRecordManagement.query(id);
@@ -259,8 +249,8 @@ public class RestNetworkServiceRecord {
 
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public VNFDependency getVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfr") String id_vnfr) {
+	public VNFRecordDependency getVNFDependency(@PathVariable("id") String id,
+												@PathVariable("id_vnfr") String id_vnfr) {
 		NetworkServiceRecord nsr = null;
 		try {
 			nsr = networkServiceRecordManagement.query(id);
@@ -286,14 +276,14 @@ public class RestNetworkServiceRecord {
 			throw new NSDNotFoundException(id);
 		}
 
-		VNFDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
+		VNFRecordDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
 		nsd.getVnf_dependency().remove(vnfDependency);
 	}
 
 	@RequestMapping(value = "{id}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public VNFDependency postVNFDependency(
-			@RequestBody @Valid VNFDependency vnfDependency,
+	public VNFRecordDependency postVNFDependency(
+			@RequestBody @Valid VNFRecordDependency vnfDependency,
 			@PathVariable("id") String id) {
 		NetworkServiceRecord nsr = null;
 		try {
@@ -309,8 +299,8 @@ public class RestNetworkServiceRecord {
 
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public VNFDependency updateVNFD(
-			@RequestBody @Valid VNFDependency vnfDependency,
+	public VNFRecordDependency updateVNFD(
+			@RequestBody @Valid VNFRecordDependency vnfDependency,
 			@PathVariable("id") String id,
 			@PathVariable("id_pnf") String id_vnfd) {
 		NetworkServiceRecord nsr = null;
@@ -321,7 +311,7 @@ public class RestNetworkServiceRecord {
 			throw new NSDNotFoundException(id);
 		}
 
-		VNFDependency vDependency = findVNFD(nsr.getVnf_dependency(), id_vnfd);
+		VNFRecordDependency vDependency = findVNFD(nsr.getVnf_dependency(), id_vnfd);
 		vDependency = vnfDependency;
 		nsr.getVnf_dependency().add(vDependency);
 		networkServiceRecordManagement.update(nsr, id);
@@ -478,10 +468,10 @@ public class RestNetworkServiceRecord {
 		return pNetworkFunctionDescriptor;
 	}
 
-	private VNFDependency findVNFD(List<VNFDependency> vnf_dependency,
-			String id_vnfd) {
-		VNFDependency vDependency = null;
-		for (VNFDependency vnfDependency : vnf_dependency) {
+	private VNFRecordDependency findVNFD(List<VNFRecordDependency> vnf_dependency,
+										 String id_vnfd) {
+		VNFRecordDependency vDependency = null;
+		for (VNFRecordDependency vnfDependency : vnf_dependency) {
 			if (vnfDependency.getId().equals(id_vnfd)) {
 				vDependency = vnfDependency;
 			}
@@ -506,5 +496,54 @@ public class RestNetworkServiceRecord {
 			throw new VNFDNotFoundException(id_vnf);
 		}
 		return nRecord;
+	}
+
+
+
+	/**
+	 * Exception handling
+	 *
+	 * TODO make a common class for handling exceptions over all the rest classes
+	 */
+
+	// Convert a predefined exception to an HTTP Status code
+	@ExceptionHandler(value = {VimException.class, NotFoundException.class, BadFormatException.class})
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST)  //
+	public ModelAndView vimException(HttpServletRequest req, Exception exception) {
+
+		log.error("Exception: " + exception.getClass().getSimpleName());
+		log.error("Request: " + req.getRequestURL());
+		log.error(" raised " + exception);
+		exception.printStackTrace();
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("exception", exception);
+		mav.addObject("url", req.getRequestURL());
+		mav.setViewName("Error");
+		return mav;
+	}
+//
+//	// Specify the name of a specific view that will be used to display the error:
+//	@ExceptionHandler({SQLException.class,DataAccessException.class})
+//	public String databaseError() {
+//		// Nothing to do.  Returns the logical view name of an error page, passed to
+//		// the view-resolver(s) in usual way.
+//		// Note that the exception is _not_ available to this view (it is not added to
+//		// the model) but see "Extending ExceptionHandlerExceptionResolver" below.
+//		return "databaseError";
+//	}
+
+	// Total control - setup a model and return the view name yourself. Or consider
+	// subclassing ExceptionHandlerExceptionResolver (see below).
+	@ExceptionHandler(Exception.class)
+	public ModelAndView handleError(HttpServletRequest req, Exception exception) {
+		log.error("Request: " + req.getRequestURL() + " raised " + exception);
+		exception.printStackTrace();
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("exception", exception);
+		mav.addObject("url", req.getRequestURL());
+		mav.setViewName("error");
+		return mav;
 	}
 }
