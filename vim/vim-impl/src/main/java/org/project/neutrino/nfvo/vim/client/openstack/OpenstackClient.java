@@ -350,7 +350,25 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Image not found");
     }
 
+    public DeploymentFlavour addFlavor(String name, int vcpus, int ram, int disk) {
+        UUID id = java.util.UUID.randomUUID();
+        Flavor newFlavor = Flavor.builder().id(id.toString()).name(name).disk(disk).ram(ram).vcpus(vcpus).build();
+        FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
+        Flavor jcloudsFlavor = flavorApi.create(newFlavor);
+        DeploymentFlavour flavor = new DeploymentFlavour();
+        flavor.setExtId(jcloudsFlavor.getId());
+        flavor.setFlavour_key(jcloudsFlavor.getName());
+        flavor.setVcpus(jcloudsFlavor.getVcpus());
+        flavor.setRam(jcloudsFlavor.getRam());
+        flavor.setDisk(jcloudsFlavor.getVcpus());
+        return flavor;
+    }
 
+    public boolean deleteFlavor(String extId) {
+        FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
+        flavorApi.delete(extId);
+        return true;
+    }
 
     public DeploymentFlavour getFlavorById(String extId) {
         FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
