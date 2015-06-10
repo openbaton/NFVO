@@ -65,8 +65,8 @@ public class VNFDependency implements Serializable {
 	@Override
 	public String toString() {
 		return "VNFDependency [id=" + id + ", version=" + version + ", source="
-				+ source.getName() + ", target=" + target.getName() + "]";
+				+ (source == null ? source : source.getName()) + ", target=" + (target == null ? target : target.getName())  + "]";
 	}
 
-	
+
 }

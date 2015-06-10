@@ -28,7 +28,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	 * is required, for example, when the Network Service is being built
 	 * top-down or instantiating the member VNFs as well.
 	 * */
-	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.EAGER)
+	@OneToMany(cascade = { CascadeType.ALL/*CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE */}, fetch = FetchType.EAGER)
 	private List<VirtualNetworkFunctionDescriptor> vnfd;
 	/**
 	 * Describe dependencies between VNF. Defined in terms of source and target
@@ -38,10 +38,10 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	 * example, to define the sequence in which various numbered network nodes
 	 * and links within a VNF FG should be instantiated by the NFV Orchestrator.
 	 */
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+	@OneToMany(cascade = { CascadeType.ALL/*CascadeType.REFRESH*/}, fetch = FetchType.EAGER)
 	private List<VNFDependency> vnf_dependency;
 	/* See PhysicalNetworkFunctionDescriptor class for description */
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<PhysicalNetworkFunctionDescriptor> pnfd;
 	/*
 	 * This is a signature of nsd to prevent tampering. The particular hash
@@ -50,7 +50,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	 * included. Not mandatory from NFV. TODO could also be called Security and
 	 * used for all the objects that need it.
 	 */
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Security nsd_security;
 
 	private boolean enabled;
