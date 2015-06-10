@@ -15,7 +15,7 @@ import java.io.File;
  * OpenBaton image-related commands implementation using the spring-shell library.
  */
 @Component
-public class VimInstanceCommand implements CommandMarker {
+public class Image implements CommandMarker {
 	
 	private static Logger log = LoggerFactory.getLogger("CLInterface");
 	
@@ -31,19 +31,19 @@ public class VimInstanceCommand implements CommandMarker {
      */
 	@CliCommand(value = "image create", help = "Adds a new VNF software Image to the image repository")
 	public String create(
-            @CliOption(key = { "imageFile" }, mandatory = true, help = "The image id to find.") final File image) {
+            @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image) {
 		return "IMAGE CREATED";
 	}
 
 	/**
      * Removes the VNF software Image from the Image repository
      *
-     * @param imageId
+     * @param id
      *            : The Image's id to be deleted
      */
 	@CliCommand(value = "image delete", help = "Removes the VNF software Image from the Image repository")
 	public String delete(
-            @CliOption(key = { "imageId" }, mandatory = true, help = "The image id to find.") final String imageId) {
+            @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		return "IMAGE CREATED";
 	}
 
@@ -60,13 +60,13 @@ public class VimInstanceCommand implements CommandMarker {
 	/**
      * Returns the VNF software image selected by id
      *
-     * @param imageId
+     * @param id
      *            : The id of the VNF software image
      * @return image: The VNF software image selected
      */
 	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id")
 	public String findById(
-            @CliOption(key = { "imageId" }, mandatory = true, help = "The image id to find.") final String imageId) {
+            @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		return "IMAGE RESULT";
 	}
 
@@ -75,14 +75,14 @@ public class VimInstanceCommand implements CommandMarker {
      *
      * @param image
      *            : Image to add
-     * @param imageId
+     * @param id
      *            : the id of VNF software image
      * @return image: the VNF software image updated
      */
 	@CliCommand(value = "image update", help = "Updates the VNF software image")
 	public String update(
-            @CliOption(key = { "imageFile" }, mandatory = true, help = "The image id to find.") final File image,
-            @CliOption(key = { "imageId" }, mandatory = true, help = "The image id to find.") final String imageId) {
+            @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image,
+            @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		return "IMAGE UPDATED";
 	}
 
