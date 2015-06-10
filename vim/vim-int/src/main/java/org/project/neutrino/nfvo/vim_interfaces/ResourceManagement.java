@@ -29,20 +29,22 @@ public interface ResourceManagement {
 	 * resource.
 	 * @param vimInstance
 	 */
-	List<Server> queryResources(VimInstance vimInstance);
+	List<Server> queryResources(VimInstance vimInstance) throws VimException;
 	
 	/**
 	 * This operation allows updating the configuration and/or 
 	 * parameterization of an instantiated virtualised resource.
+	 * @param vdu
 	 */
-	void update(VirtualDeploymentUnit vdu);
+	void update(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows scaling a virtualised resource by 
 	 * adding or removing capacity, e.g. adding vCPUs to a 
 	 * virtual machine.
+	 * @param vdu
 	 */
-	void scale(VirtualDeploymentUnit vdu);
+	void scale(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows moving virtualised resources 
@@ -50,30 +52,35 @@ public interface ResourceManagement {
 	 * the migration of a computing resource from one host to 
 	 * another host; while for a storage resource, it migrates 
 	 * the resource from one storage location to another.
+	 * @param vdu
 	 */
-	void migrate(VirtualDeploymentUnit vdu);
+	void migrate(VirtualDeploymentUnit vdu) throws VimException;
 
 	/**
 	* This operation allows executing specific commands on 
 	* certain allocated virtualised resources. Examples on 
 	* compute resources can include (but not limited to): start, 
 	* stop, pause, suspend, capture snapshot, etc.
+	* @param vdu
+	* @param operation
 	*/
-	void operate(VirtualDeploymentUnit vdu, String operation);
+	void operate(VirtualDeploymentUnit vdu, String operation) throws VimException;
 	
 	/**
 	 * This operation allows de-allocating and terminating an 
 	 * instantiated virtualised resource. This operation frees 
 	 * resources and returns them to the NFVI resource pool.
+	 * @param vdu
 	 */
-	void release(VirtualDeploymentUnit vdu);
+	void release(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 
 	 * of virtualised resources to a consumer functional block 
 	 * without performing the steps of "Allocate Resource".
+	 * @param vdu
 	 */
-	void createReservation(VirtualDeploymentUnit vdu);
+	void createReservation(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows querying an issued resources 
@@ -81,19 +88,21 @@ public interface ResourceManagement {
 	 * included in a specific reserved resources pool, or the 
 	 * amount of free resources in such a pool.
 	 */
-	void queryReservation();
+	void queryReservation() throws VimException;
 	
 	/**
 	 * This operation allows updating an issued resources 
 	 * reservation to increase or decrease the amount of 
 	 * virtualised resources in the reserved resources pool.
+	 * @param vdu
 	 */
-	void updateReservation(VirtualDeploymentUnit vdu);
+	void updateReservation(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows releasing an issued resources 
 	 * reservation, hence freeing the reserved virtualised 
 	 * resources.
+	 * @param vdu
 	 */
-	void releaseReservation(VirtualDeploymentUnit vdu);
+	void releaseReservation(VirtualDeploymentUnit vdu) throws VimException;
 }

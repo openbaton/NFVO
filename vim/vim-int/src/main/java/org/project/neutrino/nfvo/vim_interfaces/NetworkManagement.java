@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.vim_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
 import java.util.List;
 
@@ -13,36 +14,40 @@ import java.util.List;
 public interface NetworkManagement {
     
 	/**
-     * This operation allows adding new VNF software 
-     * images to the image repository.
+     * This operation allows adding new Network
+     * to the network repository.
+     * @param vimInstance
+     * @param network
      */
-    Network add(Network network);
+    Network add(VimInstance vimInstance, Network network) throws VimException;
 
     /**
-	 * This operation allows deleting in the VNF software 
-	 * images from the image repository.
-     * @param id
+	 * This operation allows deleting in the Networks
+     * from the network repository.
+     * @param vimInstance
+     * @param network
      */
-    void delete(String id);
+    void delete(VimInstance vimInstance, Network network) throws VimException;
     
     /**
-	 * This operation allows updating the VNF software 
-	 * images in the image repository.
-     * @param new_network
-     * @param id
+	 * This operation allows updating the Network
+     * in the network repository.
+     * @param vimInstance
+     * @param updatingNetwork
      */
-    Network update(Network new_network, String id);
+    Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException;
     
     /**
 	 * This operation allows querying the information of 
-	 * the VNF software images in the image repository.
+	 * the Networks in the network repository.
      * @param vimInstance
      */
-    List<Network> queryNetwork(VimInstance vimInstance);
+    List<Network> queryNetwork(VimInstance vimInstance) throws VimException;
     
     /**
      * This operation allows querying the information of 
-     * the VNF software image in the image repository.
+     * the Networks in the network repository.
+     * @param vimInstance
      */
-    Network query(String id);
+    Network query(VimInstance vimInstance, String extId) throws VimException;
 }
