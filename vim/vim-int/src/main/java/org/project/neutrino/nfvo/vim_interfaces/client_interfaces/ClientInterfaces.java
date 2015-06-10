@@ -26,4 +26,7 @@ public interface ClientInterfaces {
     Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) throws VimException;
 
     void deleteServerByIdAndWait(String id);
+    Network createNetwork(Network network);
+    Network updateNetwork(String id, Network network);
+    DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour);
 }

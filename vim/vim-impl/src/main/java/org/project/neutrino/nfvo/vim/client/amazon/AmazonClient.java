@@ -56,4 +56,19 @@ public class AmazonClient implements ClientInterfaces{
     public void deleteServerByIdAndWait(String id) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Network createNetwork(Network network) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Network updateNetwork(String id, Network network) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
 }
