@@ -16,6 +16,7 @@ import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
@@ -71,12 +72,10 @@ public class ApiRestNSDescriptorTest {
 	}
 
 	@Test
-	public void testNSDCreate() throws NotFoundException {
-		when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(
-				networkServiceDescriptor);
+	public void testNSDCreate() throws NotFoundException, BadFormatException {
+		when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
 		NetworkServiceDescriptor networkServiceDescriptor2 = null;
-		networkServiceDescriptor2 = restNetworkService
-				.create(networkServiceDescriptor);
+		networkServiceDescriptor2 = restNetworkService.create(networkServiceDescriptor);
 		assertEquals(networkServiceDescriptor, networkServiceDescriptor2);
 	}
 
