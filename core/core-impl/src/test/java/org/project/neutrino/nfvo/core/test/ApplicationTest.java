@@ -1,7 +1,10 @@
 package org.project.neutrino.nfvo.core.test;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
@@ -73,6 +76,25 @@ public class ApplicationTest {
 
 	@Bean(name = "vimRepository")
 	GenericRepository<VimInstance> vimRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "VNFDependencyRepository")
+	GenericRepository<VNFDependency> vnfDependencyRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "VNFDRepository")
+	GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository() {
+		return mock(GenericRepository.class);
+
+	}@Bean(name = "VNFRRepository")
+	GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "VNFRDependencyRepository")
+	GenericRepository<VNFRecordDependency> vnfRecordRepository() {
 		return mock(GenericRepository.class);
 	}
 

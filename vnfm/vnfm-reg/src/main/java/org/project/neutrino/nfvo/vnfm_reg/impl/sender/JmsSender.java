@@ -23,13 +23,14 @@ import javax.naming.NamingException;
 public class JmsSender implements VnfmSender{
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    private String queueName = "core-vnfm-actions";
 
     @Autowired
     private JmsTemplate jmsTemplate;
 
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
-        String queueName = "core-vnfm-actions";
+
         log.debug("Sending message: " + coreMessage + " to Queue: " + queueName + " where selector is: type=\'" + endpoint.getEndpoint() + "\'");
         MessageCreator messageCreator = new MessageCreator() {
             @Override

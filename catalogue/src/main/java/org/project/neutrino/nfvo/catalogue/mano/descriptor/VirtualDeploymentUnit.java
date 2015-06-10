@@ -49,7 +49,7 @@ public class VirtualDeploymentUnit implements Serializable{
      * Defines VNF component functional scripts/workflows for specific lifecycle events(e.g. initialization, termination,
      * graceful shutdown, scaling out/in).
      * */
-    @OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private List<LifecycleEvent> lifecycle_event;
     /**
      * Placeholder for other constraints.
@@ -69,7 +69,7 @@ public class VirtualDeploymentUnit implements Serializable{
     /**
      * Contains information that is distinct for each VNFC created based on this VDU.
      * */
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VNFComponent> vnfc;
     /**
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,

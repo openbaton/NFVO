@@ -6,6 +6,7 @@ import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
 
 
     @Override
-    public VimInstance add(VimInstance vimInstance) {
+    public VimInstance add(VimInstance vimInstance) throws VimException {
         this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
         return vimInstanceGenericRepository.create(vimInstance);
@@ -47,7 +48,7 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     }
 
     @Override
-    public VimInstance update(VimInstance new_vimInstance, String id) {
+    public VimInstance update(VimInstance new_vimInstance, String id) throws VimException {
         VimInstance old = vimInstanceGenericRepository.find(id);
         old.setName(new_vimInstance.getName());
         old.setType(new_vimInstance.getType());
@@ -72,7 +73,7 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     }
 
     @Override
-    public void refresh(VimInstance vimInstance) {
+    public void refresh(VimInstance vimInstance) throws VimException {
         vimInstance.setImages(imageManagementVimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
         vimInstance.setNetworks(networkManagementVimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
         vimInstance.setFlavours(flavorManagementVimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));

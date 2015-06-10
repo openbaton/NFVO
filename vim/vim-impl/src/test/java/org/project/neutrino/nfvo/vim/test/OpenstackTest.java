@@ -124,7 +124,7 @@ public class OpenstackTest {
         String hostname = vdu.getHostname();
         String image_name = vdu.getVm_image().get(0);
         String image_id = openstackClient.getImageIdByName(image_name);
-        String flavor_name = vnfr.getDeployment_flavour_key().getFlavour_key();
+        String flavor_name = vnfr.getDeployment_flavour_key();
         String flavor_id = openstackClient.getFlavorIdByName(flavor_name);
         String key_pair = "";
         List<String> networks = new ArrayList<String>();
@@ -266,7 +266,7 @@ public class OpenstackTest {
     }
 
     public void test_delete_subnet(Network network, Subnet subnet) {
-        openstackClient.deleteSubnet(network, subnet);
+        openstackClient.deleteSubnet(subnet);
         //Check that Subnet was delete successfully
         try {
             openstackClient.getSubnetById(subnet.getExtId());
@@ -293,8 +293,7 @@ public class OpenstackTest {
         vnfr.setAudit_log("audit_log");
         vnfr.setDescriptor_reference("test_dr");
         VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();
-        deployment_flavour.setFlavour_key("m1.small");
-        vnfr.setDeployment_flavour_key(deployment_flavour);
+        vnfr.setDeployment_flavour_key("m1.small");
         return vnfr;
     }
 

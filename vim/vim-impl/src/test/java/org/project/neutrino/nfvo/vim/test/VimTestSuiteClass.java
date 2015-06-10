@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.Status;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -146,7 +148,7 @@ public class VimTestSuiteClass {
         vnfr.setDescriptor_reference("test_dr");
         VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();
         deployment_flavour.setFlavour_key("m1.small");
-        vnfr.setDeployment_flavour_key(deployment_flavour);
+        vnfr.setDeployment_flavour_key("m1.small");
         return vnfr;
     }
 
@@ -154,10 +156,12 @@ public class VimTestSuiteClass {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         VimInstance vimInstance = new VimInstance();
         vimInstance.setName("mock_vim_instance");
-        vimInstance.setImages(new ArrayList<NFVImage>(){{
+        vimInstance.setImages(new ArrayList<NFVImage>() {{
             NFVImage nfvImage = new NFVImage();
             nfvImage.setName("image_1234");
-            add(nfvImage);}});
+            nfvImage.setExtId("ext_id");
+            add(nfvImage);
+        }});
         vdu.setVimInstance(vimInstance);
         ArrayList<String> monitoring_parameter = new ArrayList<>();
         monitoring_parameter.add("parameter_1");
@@ -168,6 +172,11 @@ public class VimTestSuiteClass {
         ArrayList<String> vm_images = new ArrayList<>();
         vm_images.add("image_1234");
         vdu.setVm_image(vm_images);
+        vimInstance.setFlavours(new ArrayList<DeploymentFlavour>());
+        DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
+        deploymentFlavour.setExtId("ext_id");
+        deploymentFlavour.setFlavour_key("m1.small");
+        vimInstance.getFlavours().add(deploymentFlavour);
         return vdu;
     }
 }

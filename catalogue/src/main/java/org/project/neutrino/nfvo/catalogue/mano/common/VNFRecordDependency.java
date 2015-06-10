@@ -4,12 +4,13 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 08/06/15.
  */
 @Entity
-public class VNFRecordDependency {
+public class VNFRecordDependency implements Serializable{
 
     @Id
     private String id = IdGenerator.createUUID();

@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.api.RestVimInstances;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.interfaces.VimManagement;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterCreate() {
+	public void testdatacenterCreate() throws VimException {
 		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
@@ -68,7 +69,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterUpdate() {
+	public void testdatacenterUpdate() throws VimException {
 		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");

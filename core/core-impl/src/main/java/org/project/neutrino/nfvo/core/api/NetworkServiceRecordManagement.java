@@ -86,6 +86,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, NamingException, JMSException {
         log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
+
         log.trace("Creating " + networkServiceRecord);
 
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
@@ -154,7 +155,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws VimException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {

@@ -28,17 +28,17 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     /**
      * This describes a set of elements related to a particular VDU
      * */
-     @OneToMany(cascade=CascadeType.ALL)
+     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VirtualDeploymentUnit> vdu;
     /**
      * Represents the type of network connectivity mandated by the VNF vendor between two or more Connection Point
      * */
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<InternalVirtualLink> virtual_link;
     /**
      * Describe dependencies between VDUs. Defined in terms of source and target VDU, i.e. target VDU "depends on" source VDU. In other words sources VDU   shall exists before target VDU can be initiated/deployed.
      * */
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<VDUDependency> vdu_dependency;
 
     /**
@@ -61,7 +61,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      * information can be used to help ensure the contents of the VNF package have not been tampered with.
      *
      * */
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Security> manifest_file_security;
 	private String type;
 

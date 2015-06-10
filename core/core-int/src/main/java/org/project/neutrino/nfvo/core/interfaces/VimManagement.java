@@ -1,6 +1,7 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface VimManagement {
      * into the datacenter repository.
      * @param vimInstance
      */
-    VimInstance add(VimInstance vimInstance);
+    VimInstance add(VimInstance vimInstance) throws VimException;
 
     /**
      * This operation allows deleting the datacenter
@@ -29,7 +30,7 @@ public interface VimManagement {
      * @param new_vimInstance
      * @param id
      */
-    VimInstance update(VimInstance new_vimInstance, String id);
+    VimInstance update(VimInstance new_vimInstance, String id) throws VimException;
 
     /**
      * This operation allows querying the information of
@@ -43,5 +44,5 @@ public interface VimManagement {
      */
     VimInstance query(String id);
 
-    void refresh(VimInstance vimInstance);
+    void refresh(VimInstance vimInstance) throws VimException;
 }
