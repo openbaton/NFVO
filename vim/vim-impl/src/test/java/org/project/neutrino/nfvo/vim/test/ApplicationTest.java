@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 30/04/15.
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.vim.client.openstack.PolicyManagement.class, org.project.neutrino.nfvo.vim.client.amazon.AmazonClient.class, org.project.neutrino.nfvo.vim.client.test.TestClient.class, org.project.neutrino.nfvo.vim.TestVIM.class})
+@ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient.class, org.project.neutrino.nfvo.vim.client.amazon.AmazonClient.class, org.project.neutrino.nfvo.vim.client.test.TestClient.class, org.project.neutrino.nfvo.vim.TestVIM.class})
 public class ApplicationTest {
 
     @Bean

@@ -4,7 +4,6 @@ import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
-import org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
@@ -40,7 +39,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Autowired
     @Qualifier("openstackClient")
-    private OpenstackClient openstackClient;
+    private ClientInterfaces openstackClient;
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
@@ -208,7 +207,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
             }
         }
         updatedNetwork.setSubnets(updatedSubnets);
-        List<String> existingSubnetExtIds = openstackClient.getSubnetsExtIdsFromNetworkById(updatedNetwork.getExtId());
+        List<String> existingSubnetExtIds = openstackClient.getSubnetsExtIds(updatedNetwork.getExtId());
         for (String existingSubnetExtId : existingSubnetExtIds) {
             if (!updatedSubnetExtIds.contains(existingSubnetExtId)) {
                 openstackClient.deleteSubnet(existingSubnetExtId);

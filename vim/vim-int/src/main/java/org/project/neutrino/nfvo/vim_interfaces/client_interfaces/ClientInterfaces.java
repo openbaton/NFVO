@@ -1,12 +1,10 @@
 package org.project.neutrino.nfvo.vim_interfaces.client_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.Network;
-import org.project.neutrino.nfvo.catalogue.nfvo.Server;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -27,6 +25,31 @@ public interface ClientInterfaces {
 
     void deleteServerByIdAndWait(String id);
     Network createNetwork(Network network);
-    Network updateNetwork(String id, Network network);
     DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour);
+
+    NFVImage addImage(NFVImage image, InputStream inputStream);
+
+    NFVImage updateImage(NFVImage image);
+
+    NFVImage copyImage(NFVImage image, InputStream inputStream);
+
+    boolean deleteImage(NFVImage image);
+
+    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour);
+
+    boolean deleteFlavor(String extId);
+
+    Subnet createSubnet(Network createdNetwork, Subnet subnet);
+
+    Network updateNetwork(Network network);
+
+    Subnet updateSubnet(Network updatedNetwork, Subnet subnet);
+
+    List<String> getSubnetsExtIds(String network_extId);
+
+    boolean deleteSubnet(String existingSubnetExtId);
+
+    boolean deleteNetwork(String extId);
+
+    Network getNetworkById(String id);
 }

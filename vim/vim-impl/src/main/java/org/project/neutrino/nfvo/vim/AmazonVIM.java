@@ -8,12 +8,14 @@ import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -29,22 +31,28 @@ public class AmazonVIM implements ImageManagement, ResourceManagement {
     private ClientInterfaces amazonClient;
 
     @Override
-    public NFVImage add(NFVImage image) {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
+
     }
 
     @Override
-    public NFVImage update() {
+    public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public List<NFVImage> queryImages(VimInstance vimInstance) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+
     }
 
     @Override
@@ -100,11 +108,6 @@ public class AmazonVIM implements ImageManagement, ResourceManagement {
 
     @Override
     public void releaseReservation(VirtualDeploymentUnit vdu) {
-
-    }
-
-    @Override
-    public void copy() {
 
     }
 }

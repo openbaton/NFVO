@@ -94,7 +94,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementDeleteTest(){
+	public void nsrManagementDeleteTest() throws VimException {
 		NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
 		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
 		nsrManagement.delete(nsd_exp.getId());
