@@ -1,6 +1,5 @@
 package org.project.neutrino.nfvo.vim.client.openstack;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
 import org.jclouds.Constants;
@@ -9,7 +8,6 @@ import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.io.Payload;
 import org.jclouds.io.payloads.ByteArrayPayload;
 import org.jclouds.io.payloads.InputStreamPayload;
-import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.glance.v1_0.GlanceApi;
 import org.jclouds.openstack.glance.v1_0.domain.ContainerFormat;
@@ -605,7 +603,7 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Network not found");
     }
 
-    public List<String> getSubnetsExtIdsFromNetworkById(String extId) {
+    public List<String> getSubnetsExtIds(String extId) {
         NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
         List<String> subnets = new ArrayList<String>();
         try {
