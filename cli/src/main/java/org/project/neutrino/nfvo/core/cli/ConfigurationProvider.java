@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class OpenBatonConfigurationProvider implements BannerProvider, HistoryFileNameProvider, PromptProvider {
+public class ConfigurationProvider implements BannerProvider, HistoryFileNameProvider, PromptProvider {
 
 	/**
 	 * Gets the banner
