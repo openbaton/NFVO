@@ -266,7 +266,7 @@ public class OpenstackTest {
     }
 
     public void test_delete_subnet(Network network, Subnet subnet) {
-        openstackClient.deleteSubnet(network, subnet);
+        openstackClient.deleteSubnet(subnet);
         //Check that Subnet was delete successfully
         try {
             openstackClient.getSubnetById(subnet.getExtId());
