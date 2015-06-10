@@ -60,7 +60,8 @@ public class NSRUtils {
             }
         networkServiceRecord.setPnfr(pnfrs);
         networkServiceRecord.setStatus(Status.INITIAILZED);
-        networkServiceRecord.setVnffgr(new ArrayList<VNFForwardingGraph>());networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
+        networkServiceRecord.setVnffgr(new ArrayList<VNFForwardingGraph>());
+        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
         networkServiceRecord.setVersion(networkServiceDescriptor.getVersion());
         networkServiceRecord.setVlr(new ArrayList<VirtualLinkRecord>());
         if(networkServiceDescriptor.getVld() != null) {
