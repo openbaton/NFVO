@@ -13,6 +13,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctio
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -72,7 +73,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsdManagementEnableTest() throws NotFoundException {
+	public void nsdManagementEnableTest() throws NotFoundException, BadFormatException {
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
@@ -86,7 +87,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsdManagementDisableTest() throws NotFoundException {
+	public void nsdManagementDisableTest() throws NotFoundException, BadFormatException {
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		nsd_exp.setEnabled(true);
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
@@ -115,7 +116,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 	};
 
 	@Test
-	public void nsdManagementOnboardTest() throws NotFoundException {
+	public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		when(nsdRepository.find(anyString())).thenReturn(null);
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
@@ -138,7 +139,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
 
 	@Test
-	public void nsdManagementUpdateTest() throws NotFoundException {
+	public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
