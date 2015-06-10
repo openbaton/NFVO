@@ -1,6 +1,10 @@
 package org.project.neutrino.nfvo.repositories.tests;
 
-import org.junit.*;
+import org.hibernate.SessionFactory;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
@@ -13,14 +17,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
 //import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 
@@ -28,6 +37,7 @@ import java.util.List;
  * Created by lto on 30/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 @TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
 @ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
@@ -35,12 +45,23 @@ public class RepositoriesClassSuiteTest {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
     @Autowired
     private ConfigurableApplicationContext ctx;
 
     @Autowired
     @Qualifier("NSDRepository")
     private GenericRepository<NetworkServiceDescriptor> nsdRepository;
+
+    @Autowired
+    @Qualifier("VNFDRepository")
+    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -58,17 +79,22 @@ public class RepositoriesClassSuiteTest {
     public void createEntityTest(){
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
+        int count = countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR");
+
         nsdRepository.create(nsd);
 
         Assert.assertNotNull(nsd);
         Assert.assertNotNull(nsd.getId());
         log.debug("id is: " + nsd.getId());
 
+        Assert.assertEquals((count+1) , countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR"));
+
         // Clean
         nsdRepository.remove(nsd);
     }
 
     @Test
+    @Transactional
     public void findEntityTest(){
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
