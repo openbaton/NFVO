@@ -7,7 +7,6 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient;
 import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
@@ -38,7 +37,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
 
     @Autowired
     @Qualifier("openstackClient")
-    private OpenstackClient openstackClient;
+    private ClientInterfaces openstackClient;
 
     @Override
     public NFVImage add(NFVImage image) {
