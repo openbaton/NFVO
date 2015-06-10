@@ -50,7 +50,7 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void remove(T entity) {
-		this.entityManager.remove(entity);
+		this.entityManager.remove(entityManager.merge(entity));
 	}
 
 	@Override

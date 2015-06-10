@@ -6,15 +6,11 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by lto on 06/02/15.
@@ -22,7 +18,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFComponent {
+public class VNFComponent implements Serializable{
     /**
      * Unique VNFC identification within the namespace of a specific VNF.
      * */

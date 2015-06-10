@@ -5,14 +5,9 @@ import org.project.neutrino.nfvo.catalogue.mano.common.CostituentVNF;
 import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Version;
 
 /**
  * Created by lto on 05/02/15.
@@ -20,7 +15,7 @@ import javax.persistence.Version;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFForwardingGraph {
+public class VNFForwardingGraph implements Serializable{
 
     /**
      * ID of the VNFFG Descriptor

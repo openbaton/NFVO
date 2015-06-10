@@ -5,6 +5,10 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient;
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
+import org.project.neutrino.nfvo.catalogue.nfvo.Server;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;

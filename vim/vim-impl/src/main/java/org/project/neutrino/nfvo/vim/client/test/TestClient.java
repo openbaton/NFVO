@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 @Scope
 public class TestClient implements ClientInterfaces {
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -103,5 +104,20 @@ public class TestClient implements ClientInterfaces {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Network createNetwork(Network network) {
+        return network;
+    }
+
+    @Override
+    public Network updateNetwork(String id, Network network) {
+        network.setId(id); return network;
+    }
+
+    @Override
+    public DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour) {
+        return deploymentFlavour;
     }
 }
