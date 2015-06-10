@@ -39,11 +39,11 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 *  3. User plane traffic itself could have multiple NFPs based on the QOS etc. The traffic is steered amongst 1 of these NFPs based on the policy decisions.
 	 *
 	 **/
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<VNFForwardingGraph> vnffgd;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<VirtualLinkDescriptor> vld;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<LifecycleEvent> lifecycle_event;
 	/**
 	 *
@@ -65,9 +65,9 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	* per second. There could be another flavour describing the requirements to support a vEPC with 500k calls per second.
 	*
 	* */
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<DeploymentFlavour> service_deployment_flavour;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<AutoScalePolicy> auto_scale_policy;
 
 	/**
@@ -76,7 +76,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 * endpoint.
 	 * */
 
- 	@OneToMany(cascade = CascadeType.ALL)
+ 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected List<ConnectionPoint> connection_point;
 
 	public String getName() {

@@ -10,6 +10,7 @@ import org.jclouds.io.payloads.ByteArrayPayload;
 import org.jclouds.io.payloads.InputStreamPayload;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.glance.v1_0.GlanceApi;
+import org.jclouds.openstack.glance.v1_0.domain.ContainerFormat;
 import org.jclouds.openstack.glance.v1_0.domain.DiskFormat;
 import org.jclouds.openstack.glance.v1_0.domain.ImageDetails;
 import org.jclouds.openstack.glance.v1_0.features.ImageApi;
@@ -18,11 +19,13 @@ import org.jclouds.openstack.glance.v1_0.options.UpdateImageOptions;
 import org.jclouds.openstack.keystone.v2_0.config.CredentialTypes;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties;
 import org.jclouds.openstack.neutron.v2.NeutronApi;
+import org.jclouds.openstack.neutron.v2.domain.*;
 import org.jclouds.openstack.neutron.v2.domain.Network.CreateNetwork;
-import org.jclouds.openstack.neutron.v2.domain.NetworkType;
 import org.jclouds.openstack.neutron.v2.domain.Subnet.CreateSubnet;
 import org.jclouds.openstack.neutron.v2.features.NetworkApi;
 import org.jclouds.openstack.neutron.v2.features.SubnetApi;
+import org.jclouds.openstack.neutron.v2.domain.Network.UpdateNetwork;
+import org.jclouds.openstack.neutron.v2.domain.Subnet.UpdateSubnet;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.domain.Flavor;
 import org.jclouds.openstack.nova.v2_0.domain.RebootType;
@@ -35,6 +38,8 @@ import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
+import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
@@ -234,7 +239,7 @@ public class OpenstackClient implements ClientInterfaces {
             server.setFlavor(getFlavorById(jcloudsServer.getFlavor().getId()));
             return server;
         } catch (NullPointerException e) {
-            throw new NullPointerException("Server not found");
+            throw new NullPointerException("Server with extId: " + extId + " not found.");
         }
     }
 
@@ -244,22 +249,34 @@ public class OpenstackClient implements ClientInterfaces {
             if (s.getName().equalsIgnoreCase(name))
                 return s.getId();
         }
-        throw new NullPointerException("Server not found");
+        throw new NullPointerException("Server with name: " + name + " not found.");
     }
 
-    public NFVImage addImage(String name, InputStream payload, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+    public NFVImage addImage(NFVImage image, InputStream payload) {
+        NFVImage addedImage = addImage(image.getName(), payload, image.getDiskFormat(), image.getContainerFormat(), image.getMinDiskSpace(), image.getMinRam(), image.isPublic());
+        image.setName(addedImage.getName());
+        image.setExtId(addedImage.getId());
+        image.setCreated(addedImage.getCreated());
+        image.setUpdated(addedImage.getUpdated());
+        image.setMinDiskSpace(addedImage.getMinDiskSpace());
+        image.setMinRam(addedImage.getMinRam());
+        image.setIsPublic(addedImage.isPublic());
+        image.setDiskFormat(addedImage.getDiskFormat());
+        image.setContainerFormat(addedImage.getContainerFormat());
+        return image;
+    }
+
+    public NFVImage addImage(String name, InputStream payload, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) {
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         CreateImageOptions createImageOptions = new CreateImageOptions();
         createImageOptions.minDisk(minDisk);
         createImageOptions.minRam(minRam);
         createImageOptions.isPublic(isPublic);
-        createImageOptions.diskFormat(DiskFormat.fromValue(diskFormat));
+        createImageOptions.diskFormat(DiskFormat.valueOf(diskFormat));
+        createImageOptions.containerFormat(ContainerFormat.valueOf(containerFromat));
 
-        //File tmpFile;
         Payload jcloudsPayload = new InputStreamPayload(payload);
         try {
-            //tmpFile = File.createTempFile(name,".tmp");
-            //OutputStream tmpOutputStream = new FileOutputStream(tmpFile);
             ByteArrayOutputStream bufferedPayload = new ByteArrayOutputStream();
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -268,7 +285,6 @@ public class OpenstackClient implements ClientInterfaces {
             }
             bufferedPayload.flush();
             jcloudsPayload = new ByteArrayPayload(bufferedPayload.toByteArray());
-            //jcloudsPayload.getContentMetadata().setContentLength(tmpFile.length());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -279,25 +295,42 @@ public class OpenstackClient implements ClientInterfaces {
         image.setCreated(imageDetails.getCreatedAt());
         image.setUpdated(imageDetails.getUpdatedAt());
         image.setMinDiskSpace(imageDetails.getMinDisk());
-        image.setMinRam(imageDetails.getMinDisk());
+        image.setMinRam(imageDetails.getMinRam());
         image.setIsPublic(imageDetails.isPublic());
         image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        image.setContainerFormat(imageDetails.getContainerFormat().toString());
         return image;
     }
 
-    public boolean deleteImage(String extId) {
+    public boolean deleteImage(NFVImage image) {
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
-        boolean isDeleted = imageApi.delete(extId);
+        boolean isDeleted = imageApi.delete(image.getExtId());
         return isDeleted;
     }
 
-    public NFVImage updateImage(String extId, String name, long minDisk, long minRam, boolean isPublic){
+    public NFVImage updateImage(NFVImage image){
+        NFVImage updatedImage = updateImage(image.getExtId(), image.getName(), image.getDiskFormat(), image.getContainerFormat(), image.getMinDiskSpace(), image.getMinRam(), image.isPublic());
+        image.setName(updatedImage.getName());
+        image.setExtId(updatedImage.getId());
+        image.setCreated(updatedImage.getCreated());
+        image.setUpdated(updatedImage.getUpdated());
+        image.setMinDiskSpace(updatedImage.getMinDiskSpace());
+        image.setMinRam(updatedImage.getMinRam());
+        image.setIsPublic(updatedImage.isPublic());
+        image.setDiskFormat(updatedImage.getDiskFormat());
+        image.setContainerFormat(updatedImage.getContainerFormat());
+        return image;
+    }
+
+    public NFVImage updateImage(String extId, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic){
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         UpdateImageOptions updateImageOptions = new UpdateImageOptions();
         updateImageOptions.name(name);
         updateImageOptions.minRam(minRam);
         updateImageOptions.minDisk(minDisk);
         updateImageOptions.isPublic(isPublic);
+        updateImageOptions.diskFormat(DiskFormat.valueOf(diskFormat));
+        updateImageOptions.containerFormat(ContainerFormat.valueOf(containerFromat));
         ImageDetails imageDetails = imageApi.update(extId, updateImageOptions);
         NFVImage image = new NFVImage();
         image.setName(imageDetails.getName());
@@ -305,16 +338,30 @@ public class OpenstackClient implements ClientInterfaces {
         image.setCreated(imageDetails.getCreatedAt());
         image.setUpdated(imageDetails.getUpdatedAt());
         image.setMinDiskSpace(imageDetails.getMinDisk());
-        image.setMinRam(imageDetails.getMinDisk());
+        image.setMinRam(imageDetails.getMinRam());
         image.setIsPublic(imageDetails.isPublic());
         image.setDiskFormat(imageDetails.getDiskFormat().toString());
+        image.setContainerFormat(imageDetails.getContainerFormat().toString());
         return image;
     }
 
-    public NFVImage copyImage(String extId, String name, String diskFormat, long minDisk, long minRam, boolean isPublic) {
+    public NFVImage copyImage(NFVImage image, InputStream inputStream) {
+        NFVImage copiedImage = copyImage(image.getName(), inputStream, image.getDiskFormat(), image.getContainerFormat(), image.getMinDiskSpace(), image.getMinRam(), image.isPublic());
+        image.setName(copiedImage.getName());
+        image.setExtId(copiedImage.getId());
+        image.setCreated(copiedImage.getCreated());
+        image.setUpdated(copiedImage.getUpdated());
+        image.setMinDiskSpace(copiedImage.getMinDiskSpace());
+        image.setMinRam(copiedImage.getMinRam());
+        image.setIsPublic(copiedImage.isPublic());
+        image.setDiskFormat(copiedImage.getDiskFormat());
+        image.setContainerFormat(copiedImage.getContainerFormat());
+        return image;
+    }
+
+    public NFVImage copyImage(String name, InputStream inputStream, String diskFormat, String containerFormat, long minDisk, long minRam, boolean isPublic) {
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
-        InputStream inputStream = imageApi.getAsStream(extId);
-        NFVImage image = addImage(name, inputStream, diskFormat, minDisk, minRam, isPublic);
+        NFVImage image = addImage(name, inputStream, diskFormat, containerFormat, minDisk, minRam, isPublic);
         return image;
     }
 
@@ -327,14 +374,14 @@ public class OpenstackClient implements ClientInterfaces {
             image.setName(jcloudsImage.getName());
             image.setCreated(jcloudsImage.getCreatedAt());
             image.setUpdated(jcloudsImage.getUpdatedAt());
-            //image.setMinCPU(jcloudsImage.getMinCPU());
             image.setMinDiskSpace(jcloudsImage.getMinDisk());
             image.setMinRam(jcloudsImage.getMinRam());
             image.setIsPublic(jcloudsImage.isPublic());
             image.setDiskFormat(jcloudsImage.getDiskFormat().toString());
+            image.setContainerFormat(jcloudsImage.getContainerFormat().toString());
             return image;
         } catch (NullPointerException e) {
-            throw new NullPointerException("Image not found");
+            throw new NullPointerException("Image with extId: " + extId + " not found.");
         }
     }
 
@@ -344,10 +391,61 @@ public class OpenstackClient implements ClientInterfaces {
             if (i.getName().equalsIgnoreCase(name))
                 return i.getId();
         }
-        throw new NullPointerException("Image not found");
+        throw new NullPointerException("Image with name: " + name + " not found");
     }
 
+    public DeploymentFlavour addFlavor(DeploymentFlavour flavor) {
+        DeploymentFlavour addedFlavor = addFlavor(flavor.getFlavour_key(), flavor.getVcpus(), flavor.getRam(), flavor.getDisk());
+        flavor.setExtId(addedFlavor.getId());
+        flavor.setFlavour_key(addedFlavor.getFlavour_key());
+        flavor.setVcpus(addedFlavor.getVcpus());
+        flavor.setRam(addedFlavor.getRam());
+        flavor.setDisk(addedFlavor.getVcpus());
+        return flavor;
+    }
 
+    public DeploymentFlavour addFlavor(String name, int vcpus, int ram, int disk) {
+        UUID id = java.util.UUID.randomUUID();
+        Flavor newFlavor = Flavor.builder().id(id.toString()).name(name).disk(disk).ram(ram).vcpus(vcpus).build();
+        FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
+        Flavor jcloudsFlavor = flavorApi.create(newFlavor);
+        DeploymentFlavour flavor = new DeploymentFlavour();
+        flavor.setExtId(jcloudsFlavor.getId());
+        flavor.setFlavour_key(jcloudsFlavor.getName());
+        flavor.setVcpus(jcloudsFlavor.getVcpus());
+        flavor.setRam(jcloudsFlavor.getRam());
+        flavor.setDisk(jcloudsFlavor.getVcpus());
+        return flavor;
+    }
+
+    public DeploymentFlavour updateFlavor(DeploymentFlavour flavor) {
+        DeploymentFlavour updatedFlavor = updateFlavor(flavor.getExtId(), flavor.getFlavour_key(), flavor.getVcpus(), flavor.getRam(), flavor.getDisk());
+        flavor.setFlavour_key(updatedFlavor.getFlavour_key());
+        flavor.setExtId(updatedFlavor.getId());
+        flavor.setRam(updatedFlavor.getRam());
+        flavor.setDisk(updatedFlavor.getDisk());
+        flavor.setVcpus(updatedFlavor.getVcpus());
+        return flavor;
+    }
+
+    public DeploymentFlavour updateFlavor(String extId, String name, int vcpus, int ram, int disk) {
+        deleteFlavor(extId);
+        DeploymentFlavour updatedFlavor = addFlavor(name, vcpus, ram, disk);
+        return updatedFlavor;
+    }
+
+    public boolean deleteFlavor(String extId) {
+        FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
+        flavorApi.delete(extId);
+        boolean isDeleted;
+        try {
+            getFlavorById(extId);
+            isDeleted = true;
+        } catch (NullPointerException e) {
+            isDeleted = false;
+        }
+        return isDeleted;
+    }
 
     public DeploymentFlavour getFlavorById(String extId) {
         FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
@@ -361,7 +459,7 @@ public class OpenstackClient implements ClientInterfaces {
             flavor.setVcpus(jcloudsFlavor.getVcpus());
             return flavor;
         } catch (NullPointerException e) {
-            throw new NullPointerException("Flavor not found");
+            throw new NullPointerException("Flavor with extId: " + extId + " not found.");
         }
     }
 
@@ -371,7 +469,7 @@ public class OpenstackClient implements ClientInterfaces {
             if (f.getName().equalsIgnoreCase(name))
                 return f.getId();
         }
-        throw new NullPointerException("Flavor not found");
+        throw new NullPointerException("Flavor with name: " + name + " not found.");
     }
 
     @Override
@@ -379,7 +477,6 @@ public class OpenstackClient implements ClientInterfaces {
         List<DeploymentFlavour> flavors = new ArrayList<DeploymentFlavour>();
         FlavorApi flavorApi = this.novaApi.getFlavorApi(this.defaultZone);
         for (Flavor jcloudsFlavor : flavorApi.listInDetail().concat()) {
-            log.trace("got flavor: " + jcloudsFlavor);
             DeploymentFlavour flavor = new DeploymentFlavour();
             flavor.setExtId(jcloudsFlavor.getId());
             flavor.setFlavour_key(jcloudsFlavor.getName());
@@ -397,7 +494,7 @@ public class OpenstackClient implements ClientInterfaces {
             SecurityGroup securityGroup = securityGroupApi.get(extId);
             return securityGroup.getId();
         } catch (Exception e) {
-            throw new NullPointerException("Security Group not found");
+            throw new NullPointerException("Security Group with extId: " + extId + " not found.");
         }
     }
 
@@ -409,7 +506,19 @@ public class OpenstackClient implements ClientInterfaces {
             if (group.getName().equalsIgnoreCase(name))
                 return group.getId();
         }
-        throw new NullPointerException("Security Group not found");
+        throw new NullPointerException("Security Group with name: " + name + " not found.");
+    }
+
+    public Network createNetwork(Network network) {
+        Network createdNetwork = createNetwork(network.getName(), network.getNetworkType(), network.getExternal(), network.getShared(), network.getSegmentationId(), network.getPhysicalNetworkName());
+        network.setName(createdNetwork.getName());
+        network.setExtId(createdNetwork.getId());
+        network.setExternal(createdNetwork.getExternal());
+        network.setNetworkType(createdNetwork.getNetworkType());
+        network.setShared(createdNetwork.getShared());
+        network.setPhysicalNetworkName(createdNetwork.getPhysicalNetworkName());
+        network.setSegmentationId(createdNetwork.getSegmentationId());
+        return network;
     }
 
     public Network createNetwork(String name, String networkType, boolean external, boolean shared, int segmentationId, String physicalNetworkName ) {
@@ -422,16 +531,48 @@ public class OpenstackClient implements ClientInterfaces {
         network.setExternal(jcloudsNetwork.getExternal());
         network.setNetworkType(jcloudsNetwork.getNetworkType().toString());
         network.setShared(jcloudsNetwork.getShared());
-        //network.setSubnets(jcloudsNetwork.getSubnets());
         network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
         network.setSegmentationId(jcloudsNetwork.getSegmentationId());
         return network;
     }
 
-    public Boolean deleteNetwork(String extId) {
+    public Network updateNetwork(Network network) {
+        Network updatedNetwork = updateNetwork(network.getExtId(), network.getName(), network.getNetworkType(), network.getExternal(), network.getShared(), network.getSegmentationId(), network.getPhysicalNetworkName());
+        network.setName(updatedNetwork.getName());
+        network.setExtId(updatedNetwork.getId());
+        network.setExternal(updatedNetwork.getExternal());
+        network.setNetworkType(updatedNetwork.getNetworkType());
+        network.setShared(updatedNetwork.getShared());
+        network.setPhysicalNetworkName(updatedNetwork.getPhysicalNetworkName());
+        network.setSegmentationId(updatedNetwork.getSegmentationId());
+        return network;
+    }
+
+    public Network updateNetwork(String extId, String name, String networkType, boolean external, boolean shared, int segmentationId, String physicalNetworkName) {
         NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
-        Boolean deleted = networkApi.delete(extId);
-        return deleted;
+        UpdateNetwork updateNetwork = UpdateNetwork.updateBuilder().name(name).networkType(NetworkType.fromValue(networkType)).external(external).shared(shared).segmentationId(segmentationId).physicalNetworkName(physicalNetworkName).build();
+        org.jclouds.openstack.neutron.v2.domain.Network jcloudsNetwork = networkApi.update(extId, updateNetwork);
+        Network network = new Network();
+        network.setName(jcloudsNetwork.getName());
+        network.setExtId(jcloudsNetwork.getId());
+        network.setExternal(jcloudsNetwork.getExternal());
+        network.setNetworkType(jcloudsNetwork.getNetworkType().toString());
+        network.setShared(jcloudsNetwork.getShared());
+        network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
+        network.setSegmentationId(jcloudsNetwork.getSegmentationId());
+        return network;
+    }
+
+    public boolean deleteNetwork(Network network) {
+        NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
+        boolean isDeleted = networkApi.delete(network.getExtId());
+        return isDeleted;
+    }
+
+    public boolean deleteNetwork(String extId) {
+        NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
+        boolean isDeleted = networkApi.delete(extId);
+        return isDeleted;
     }
 
     public Network getNetworkById(String extId) {
@@ -462,6 +603,18 @@ public class OpenstackClient implements ClientInterfaces {
         throw new NullPointerException("Network not found");
     }
 
+    public List<String> getSubnetsExtIds(String extId) {
+        NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
+        List<String> subnets = new ArrayList<String>();
+        try {
+            org.jclouds.openstack.neutron.v2.domain.Network jcloudsNetwork = networkApi.get(extId);
+            subnets = jcloudsNetwork.getSubnets().asList();
+            return subnets;
+        } catch (Exception e) {
+            throw new NullPointerException("Network not found");
+        }
+    }
+
     @Override
     public List<Network> listNetworks() {
         List<Network> networks = new ArrayList<Network>();
@@ -475,10 +628,18 @@ public class OpenstackClient implements ClientInterfaces {
             network.setShared(jcloudsNetwork.getShared());
             //network.setSubnets(jcloudsNetwork.getSubnets());
             network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
-//            network.setSegmentationId(jcloudsNetwork.getSegmentationId());
+            network.setSegmentationId(jcloudsNetwork.getSegmentationId());
             networks.add(network);
         }
         return networks;
+    }
+
+    public Subnet createSubnet(Network network, Subnet subnet) {
+        Subnet createdSubnet = createSubnet(network, subnet.getName(), subnet.getCidr());
+        subnet.setExtId(createdSubnet.getId());
+        subnet.setName(createdSubnet.getName());
+        subnet.setCidr(createdSubnet.getCidr());
+        return subnet;
     }
 
     public Subnet createSubnet(Network network, String name, String cidr) {
@@ -489,16 +650,38 @@ public class OpenstackClient implements ClientInterfaces {
         subnet.setExtId(jcloudsSubnet.getId());
         subnet.setName(jcloudsSubnet.getName());
         subnet.setCidr(jcloudsSubnet.getCidr());
-        //Association between network and subnet
-        subnet.setNetworkId(network.getId());
-        network.addSubnet(subnet);
         return subnet;
     }
 
-    public void deleteSubnet(Network network, Subnet subnet) {
+    public Subnet updateSubnet(Network network, Subnet subnet) {
+        Subnet updatedSubnet = updateSubnet(network, subnet.getExtId(), subnet.getName(), subnet.getCidr());
+        subnet.setExtId(updatedSubnet.getId());
+        subnet.setName(updatedSubnet.getName());
+        subnet.setCidr(updatedSubnet.getCidr());
+        return subnet;
+    }
+
+    public Subnet updateSubnet(Network network, String subnetExtId, String name, String cidr) {
         SubnetApi subnetApi = neutronApi.getSubnetApi(defaultZone);
-        subnetApi.delete(subnet.getExtId());
-        network.removeSubnet(subnet);
+        UpdateSubnet updateSubnet = UpdateSubnet.updateBuilder().networkId(network.getExtId()).cidr(cidr).name(name).ipVersion(4).build();
+        org.jclouds.openstack.neutron.v2.domain.Subnet jcloudsSubnet = subnetApi.update(subnetExtId, updateSubnet);
+        Subnet subnet = new Subnet();
+        subnet.setExtId(jcloudsSubnet.getId());
+        subnet.setName(jcloudsSubnet.getName());
+        subnet.setCidr(jcloudsSubnet.getCidr());
+        return subnet;
+    }
+
+    public boolean deleteSubnet(Subnet subnet) {
+        SubnetApi subnetApi = neutronApi.getSubnetApi(defaultZone);
+        boolean isDeleted = subnetApi.delete(subnet.getExtId());
+        return isDeleted;
+    }
+
+    public boolean deleteSubnet(String extId) {
+        SubnetApi subnetApi = neutronApi.getSubnetApi(defaultZone);
+        boolean isDeleted = subnetApi.delete(extId);
+        return isDeleted;
     }
 
     public Subnet getSubnetById(String extId) {
@@ -512,7 +695,7 @@ public class OpenstackClient implements ClientInterfaces {
             subnet.setCidr(jcloudsSubnet.getCidr());
             return subnet;
         } catch (Exception e) {
-            throw new NullPointerException("Subnet not found");
+            throw new NullPointerException("Subnet with extId: " + extId + " not found.");
         }
     }
 

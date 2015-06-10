@@ -55,7 +55,15 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
 
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.INSTATIATE);
-            coreMessage.setObject(vnfr);
+//            vnfr.setVdu(null);
+//            vnfr.setVirtual_link(null);
+//            vnfr.setConnected_external_virtual_link(null);
+//            vnfr.setAuto_scale_policy(null);
+//            vnfr.setConnection_point(null);
+//            vnfr.setDependency(null);
+//
+//            vnfr.setLifecycle_event(null);
+            coreMessage.setVirtualNetworkFunctionRecord(vnfr);
 
             /**
              *  TODO Here use an abstraction to call the particular vnfm_reg

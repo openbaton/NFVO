@@ -10,6 +10,7 @@ import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualLinkRecord {
+public class VirtualLinkRecord implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     private String vendor;

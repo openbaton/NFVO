@@ -6,17 +6,11 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
-import java.util.Map;
-
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by lto on 06/02/15.
@@ -24,7 +18,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class NetworkForwardingPath {
+public class NetworkForwardingPath implements Serializable{
 
 	@Id
     private String id = IdGenerator.createUUID();

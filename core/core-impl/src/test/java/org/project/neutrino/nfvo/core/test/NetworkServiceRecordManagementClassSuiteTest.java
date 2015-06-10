@@ -4,12 +4,8 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
-import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.common.*;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.*;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
@@ -98,7 +94,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementDeleteTest(){
+	public void nsrManagementDeleteTest() throws VimException {
 		NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
 		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
 		nsrManagement.delete(nsd_exp.getId());
@@ -152,35 +148,43 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
 		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 		nsd.setVendor("FOKUS");
+		nsd.setMonitoring_parameter(new ArrayList<String>());
+		nsd.getMonitoring_parameter().add("monitor1");
+		nsd.getMonitoring_parameter().add("monitor2");
+		nsd.getMonitoring_parameter().add("monitor3");
+		nsd.setLifecycle_event(new ArrayList<LifecycleEvent>());
+		nsd.setPnfd(new ArrayList<PhysicalNetworkFunctionDescriptor>());
+		nsd.setVnffgd(new ArrayList<VNFForwardingGraph>());
+		nsd.setVld(new ArrayList<VirtualLinkDescriptor>());
+		nsd.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
 		List<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new ArrayList<VirtualNetworkFunctionDescriptor>();
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-		virtualNetworkFunctionDescriptor
-				.setMonitoring_parameter(new ArrayList<String>() {
-					{
-						add("monitor1");
-						add("monitor2");
-						add("monitor3");
-					}
-				});
+		virtualNetworkFunctionDescriptor.setMonitoring_parameter(new ArrayList<String>());
+		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
+		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor2");
+		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor3");
+		virtualNetworkFunctionDescriptor.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
+		virtualNetworkFunctionDescriptor.setConnection_point(new ArrayList<ConnectionPoint>());
+		virtualNetworkFunctionDescriptor.setVirtual_link(new ArrayList<InternalVirtualLink>());
+		virtualNetworkFunctionDescriptor.setLifecycle_event(new ArrayList<LifecycleEvent>());
 		virtualNetworkFunctionDescriptor.setDeployment_flavour(new ArrayList<VNFDeploymentFlavour>() {{
 			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 			vdf.setExtId("ext_id");
 			vdf.setFlavour_key("flavor_name");
 			add(vdf);
 		}});
-		virtualNetworkFunctionDescriptor
-				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
-					{
-						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
-						vdu.setComputation_requirement("high_requirements");
-						VimInstance vimInstance = new VimInstance();
-						vimInstance.setName("vim_instance");
-						vimInstance.setType("test");
-						vdu.setVimInstance(vimInstance);
-						add(vdu);
-					}
-				});
+		virtualNetworkFunctionDescriptor.setVdu(new ArrayList<VirtualDeploymentUnit>() {
+			{
+				VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+				vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+				vdu.setComputation_requirement("high_requirements");
+				VimInstance vimInstance = new VimInstance();
+				vimInstance.setName("vim_instance");
+				vimInstance.setType("test");
+				vdu.setVimInstance(vimInstance);
+				add(vdu);
+			}
+		});
 		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
 		nsd.setVnfd(virtualNetworkFunctionDescriptors);
 		return nsd;
@@ -189,6 +193,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	private NetworkServiceRecord createNetworkServiceRecord() {
 		final NetworkServiceRecord nsr = new NetworkServiceRecord();
 		nsr.setVendor("FOKUS");
+		nsr.setMonitoring_parameter(new ArrayList<String>());
+		nsr.getMonitoring_parameter().add("monitor1");
+		nsr.getMonitoring_parameter().add("monitor2");
+		nsr.getMonitoring_parameter().add("monitor3");
 		ArrayList<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new ArrayList<VirtualNetworkFunctionRecord>();
 		VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
 		virtualNetworkFunctionRecord
@@ -202,7 +210,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 		vdf.setExtId("ext_id");
 		vdf.setFlavour_key("flavor_name");
-		virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf);
+		virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf.getFlavour_key());
 		virtualNetworkFunctionRecord
 				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
 					{

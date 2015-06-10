@@ -20,6 +20,7 @@ import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public class VimManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nfvImageManagementRefreshTest(){
+	public void nfvImageManagementRefreshTest() throws VimException {
 		initMocks();
 		VimInstance vimInstance = createVimInstance();
 		vimManagement.refresh(vimInstance);
@@ -92,7 +93,7 @@ public class VimManagementClassSuiteTest {
 	}
 
 	@Test
-	public void vimManagementUpdateTest(){
+	public void vimManagementUpdateTest() throws VimException {
 		initMocks();
 		VimInstance vimInstance_exp = createVimInstance();
 		when(vimRepository.find(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -119,7 +120,7 @@ public class VimManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nfvImageManagementAddTest(){
+	public void nfvImageManagementAddTest() throws VimException {
 		initMocks();
 		VimInstance vimInstance_exp = createVimInstance();
 		when(vimRepository.create(any(VimInstance.class))).thenReturn(vimInstance_exp);
@@ -140,7 +141,7 @@ public class VimManagementClassSuiteTest {
 		Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
 	}
 
-	private void initMocks() {
+	private void initMocks() throws VimException {
 		ImageManagement imageManagement = mock(ImageManagement.class);
 		when(imageManagement.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
 		when(imageManagementVimBroker.getVim(anyString())).thenReturn(imageManagement);

@@ -1,12 +1,9 @@
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Version;
-
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
@@ -14,7 +11,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class CostituentVNF {
+public class CostituentVNF implements Serializable{
 
 	@Id
 	private String id = IdGenerator.createUUID();

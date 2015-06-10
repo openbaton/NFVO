@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.api;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.interfaces.VimManagement;
+import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +31,7 @@ public class RestVimInstances {
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public VimInstance create(@RequestBody @Valid VimInstance vimInstance) {
+	public VimInstance create(@RequestBody @Valid VimInstance vimInstance) throws VimException {
 		return vimManagement.add(vimInstance);
 	}
 
@@ -81,7 +82,7 @@ public class RestVimInstances {
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id) throws VimException {
 		return vimManagement.update(new_vimInstance, id);
 	}
 }

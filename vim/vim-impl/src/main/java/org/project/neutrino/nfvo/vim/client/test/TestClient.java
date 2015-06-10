@@ -1,16 +1,14 @@
 package org.project.neutrino.nfvo.vim.client.test;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.Network;
-import org.project.neutrino.nfvo.catalogue.nfvo.Server;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +18,7 @@ import java.util.List;
 @Service
 @Scope
 public class TestClient implements ClientInterfaces {
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -103,5 +102,80 @@ public class TestClient implements ClientInterfaces {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Network createNetwork(Network network) {
+        return network;
+    }
+
+    @Override
+    public DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour) {
+        return deploymentFlavour;
+    }
+
+    @Override
+    public NFVImage addImage(NFVImage image, InputStream inputStream) {
+        return image;
+    }
+
+    @Override
+    public NFVImage updateImage(NFVImage image) {
+        return image;
+    }
+
+    @Override
+    public NFVImage copyImage(NFVImage image, InputStream inputStream) {
+        return image;
+    }
+
+    @Override
+    public boolean deleteImage(NFVImage image) {
+        return true;
+    }
+
+    @Override
+    public DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) {
+        return deploymentFlavour;
+    }
+
+    @Override
+    public boolean deleteFlavor(String extId) {
+        return true;
+    }
+
+    @Override
+    public Subnet createSubnet(Network createdNetwork, Subnet subnet) {
+        return subnet;
+    }
+
+    @Override
+    public Network updateNetwork(Network network) {
+        return network;
+    }
+
+    @Override
+    public Subnet updateSubnet(Network updatedNetwork, Subnet subnet) {
+        return subnet;
+    }
+
+    @Override
+    public List<String> getSubnetsExtIds(String network_extId) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteSubnet(String existingSubnetExtId) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteNetwork(String extId) {
+        return false;
+    }
+
+    @Override
+    public Network getNetworkById(String id) {
+        return null;
     }
 }

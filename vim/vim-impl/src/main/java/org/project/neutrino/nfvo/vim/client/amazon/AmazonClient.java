@@ -1,14 +1,12 @@
 package org.project.neutrino.nfvo.vim.client.amazon;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.Network;
-import org.project.neutrino.nfvo.catalogue.nfvo.Server;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -54,6 +52,81 @@ public class AmazonClient implements ClientInterfaces{
 
     @Override
     public void deleteServerByIdAndWait(String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Network createNetwork(Network network) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NFVImage addImage(NFVImage image, InputStream inputStream) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NFVImage updateImage(NFVImage image) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NFVImage copyImage(NFVImage image, InputStream inputStream) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean deleteImage(NFVImage image) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean deleteFlavor(String extId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Subnet createSubnet(Network createdNetwork, Subnet subnet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Network updateNetwork(Network network) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Subnet updateSubnet(Network updatedNetwork, Subnet subnet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getSubnetsExtIds(String network_extId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean deleteSubnet(String existingSubnetExtId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean deleteNetwork(String extId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Network getNetworkById(String id) {
         throw new UnsupportedOperationException();
     }
 }

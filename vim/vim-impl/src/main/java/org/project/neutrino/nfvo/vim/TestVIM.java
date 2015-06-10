@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -40,28 +41,19 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
     @Qualifier("testClient")
     private ClientInterfaces testClient;
 
+
     @Override
-    public NFVImage add(NFVImage image) {
+    public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Network add(Network network) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public DeploymentFlavour add(DeploymentFlavour deploymentFlavour) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(String id) {
+    public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException {
 
     }
 
     @Override
-    public DeploymentFlavour update(DeploymentFlavour new_deploymentFlavour) {
+    public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
     }
 
@@ -70,29 +62,30 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
         return testClient.listFlavors();
     }
 
+
     @Override
-    public Network update(Network new_network, String id) {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Network> queryNetwork(VimInstance vimInstance) {
-        return testClient.listNetworks();
+    public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
+
     }
 
     @Override
-    public Network query(String id) {
+    public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public NFVImage update() {throw new UnsupportedOperationException();
-
     }
 
     @Override
     public List<NFVImage> queryImages(VimInstance vimInstance) {
         return testClient.listImages();
+    }
+
+    @Override
+    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+
     }
 
     @Override
@@ -158,7 +151,27 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
     }
 
     @Override
-    public void copy() {
+    public Network add(VimInstance vimInstance, Network network) throws VimException {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public void delete(VimInstance vimInstance, Network network) throws VimException {
+
+    }
+
+    @Override
+    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Network query(VimInstance vimInstance, String extId) throws VimException {
+        throw new UnsupportedOperationException();
     }
 }
