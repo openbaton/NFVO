@@ -1,5 +1,15 @@
 package org.project.neutrino.nfvo.api;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.persistence.NoResultException;
+import javax.validation.Valid;
+
 import org.project.neutrino.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.neutrino.nfvo.api.exceptions.VNFDNotFoundException;
@@ -18,22 +28,14 @@ import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/ns-descriptors")
@@ -67,10 +69,11 @@ public class RestNetworkServiceDescriptor {
 	 * 
 	 * @param id
 	 *            : the id of Network Service Descriptor
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable("id") String id) {
+	public void delete(@PathVariable("id") String id)  {
 		try {
 			networkServiceDescriptorManagement.delete(id);
 		} catch (NoResultException e) {
@@ -100,15 +103,17 @@ public class RestNetworkServiceDescriptor {
 	 * @param id
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceDescriptor: the Network Service Descriptor selected
+	 * @ 
 	 */
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public NetworkServiceDescriptor findById(@PathVariable("id") String id) {
+	public NetworkServiceDescriptor findById(@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
 			log.error(e.getMessage());
+			e.printStackTrace();
 			throw new NSDNotFoundException(id);
 		}
 		return nsd;
@@ -140,11 +145,13 @@ public class RestNetworkServiceDescriptor {
 	 *            : The id of NSD
 	 * @return List<VirtualNetworkFunctionDescriptor>: The List of
 	 *         VirtualNetworkFunctionDescriptor into NSD
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/vnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
 			@PathVariable("id") String id) {
+
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -159,7 +166,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdescriptors/{id_vfn}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn) {
+			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -175,7 +182,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdescriptors/{id_vfn}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn) {
+			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  {
 
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -194,7 +201,7 @@ public class RestNetworkServiceDescriptor {
 	@ResponseStatus(HttpStatus.CREATED)
 	public VirtualNetworkFunctionDescriptor postVNFD(
 			@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -211,7 +218,7 @@ public class RestNetworkServiceDescriptor {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionDescriptor updateVNF(
 			@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
-			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn) {
+			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -236,6 +243,7 @@ public class RestNetworkServiceDescriptor {
 	 * @param id
 	 *            : The id of NSD
 	 * @return List<VNFDependency>: The List of VNFDependency into NSD
+	 * @ 
 	 */
 
 	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -255,7 +263,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VNFDependency getVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd) {
+			@PathVariable("id_vnfd") String id_vnfd)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -271,7 +279,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd) {
+			@PathVariable("id_vnfd") String id_vnfd)  {
 
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -289,7 +297,7 @@ public class RestNetworkServiceDescriptor {
 	@ResponseStatus(HttpStatus.CREATED)
 	public VNFDependency postVNFDependency(
 			@RequestBody @Valid VNFDependency vnfDependency,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -307,7 +315,7 @@ public class RestNetworkServiceDescriptor {
 	public VNFDependency updateVNFD(
 			@RequestBody @Valid VNFDependency vnfDependency,
 			@PathVariable("id") String id,
-			@PathVariable("id_pnf") String id_vnfd) {
+			@PathVariable("id_pnf") String id_vnfd)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -330,6 +338,7 @@ public class RestNetworkServiceDescriptor {
 	 *            : The id of NSD
 	 * @return List<PhysicalNetworkFunctionDescriptor>: The List of
 	 *         PhysicalNetworkFunctionDescriptor into NSD
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -355,12 +364,13 @@ public class RestNetworkServiceDescriptor {
 	 *            : The PhysicalNetworkFunctionDescriptor id
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor selected
+	 * @ 
 	 */
 
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -380,11 +390,12 @@ public class RestNetworkServiceDescriptor {
 	 *            : The NSD id
 	 * @param id_pnf
 	 *            : The PhysicalNetworkFunctionDescriptor id
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePhysicalNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  {
 
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -408,12 +419,13 @@ public class RestNetworkServiceDescriptor {
 	 *            : The NSD id
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor stored
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -435,12 +447,13 @@ public class RestNetworkServiceDescriptor {
 	 *            : The NSD id
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor edited
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionDescriptor updatePNFD(
 			@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -464,11 +477,12 @@ public class RestNetworkServiceDescriptor {
 	 *            : The id of NSD
 	 * @return Security: The Security of PhysicalNetworkFunctionDescriptor into
 	 *         NSD
+	 * @ 
 	 */
 
 	@RequestMapping(value = "{id}/security", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public Security getSecurity(@PathVariable("id") String id) {
+	public Security getSecurity(@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -488,11 +502,12 @@ public class RestNetworkServiceDescriptor {
 	 * @param id_s
 	 *            : The Security id
 	 * @return Security: The Security selected by id_s
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Security getSecurity(@PathVariable("id") String id,
-			@PathVariable("id_s") String id_s) {
+			@PathVariable("id_s") String id_s)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -515,11 +530,12 @@ public class RestNetworkServiceDescriptor {
 	 *            : The NSD id
 	 * @param id_s
 	 *            : The Security id
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteSecurity(@PathVariable("id") String id,
-			@PathVariable("id_s") String id_s) {
+			@PathVariable("id_s") String id_s)  {
 
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -544,11 +560,12 @@ public class RestNetworkServiceDescriptor {
 	 * @param id
 	 *            : The id of NSD
 	 * @return Security: The Security stored
+	 * @ 
 	 */
 	@RequestMapping(value = "{id}/security/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public Security postSecurity(@RequestBody @Valid Security security,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id)  {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -628,48 +645,4 @@ public class RestNetworkServiceDescriptor {
 		return nDescriptor;
 	}
 
-	/**
-	 * Exception handling
-	 */
-
-	// Convert a predefined exception to an HTTP Status code
-	@ExceptionHandler(value = {VimException.class, NotFoundException.class, BadFormatException.class})
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)  //
-	public ModelAndView vimException(HttpServletRequest req, Exception exception) {
-
-		log.error("Exception: " + exception.getClass().getSimpleName());
-		log.error("Request: " + req.getRequestURL());
-		log.error(" raised " + exception);
-		exception.printStackTrace();
-
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", exception);
-		mav.addObject("url", req.getRequestURL());
-		mav.setViewName("Error");
-		return mav;
-	}
-//
-//	// Specify the name of a specific view that will be used to display the error:
-//	@ExceptionHandler({SQLException.class,DataAccessException.class})
-//	public String databaseError() {
-//		// Nothing to do.  Returns the logical view name of an error page, passed to
-//		// the view-resolver(s) in usual way.
-//		// Note that the exception is _not_ available to this view (it is not added to
-//		// the model) but see "Extending ExceptionHandlerExceptionResolver" below.
-//		return "databaseError";
-//	}
-
-	// Total control - setup a model and return the view name yourself. Or consider
-	// subclassing ExceptionHandlerExceptionResolver (see below).
-	@ExceptionHandler(Exception.class)
-	public ModelAndView handleError(HttpServletRequest req, Exception exception) {
-		log.error("Request: " + req.getRequestURL() + " raised " + exception);
-		exception.printStackTrace();
-
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", exception);
-		mav.addObject("url", req.getRequestURL());
-		mav.setViewName("error");
-		return mav;
-	}
 }
