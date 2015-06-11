@@ -94,6 +94,7 @@ public class VimTestSuiteClass {
         resourceManagementVimBroker.getVim("throw_exception");
     }
 
+    @Ignore
     @Test
     public void testVimOpenstack() throws VimException {
         VirtualDeploymentUnit vdu = createVDU();
