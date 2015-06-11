@@ -15,7 +15,7 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFForwardingGraph implements Serializable{
+public class VNFForwardingGraphDescriptor implements Serializable{
 
     /**
      * ID of the VNFFG Descriptor
@@ -72,7 +72,7 @@ public class VNFForwardingGraph implements Serializable{
     @OneToOne(cascade = CascadeType.ALL)
     private Security vnffgd_security;
 
-    public VNFForwardingGraph() {
+    public VNFForwardingGraphDescriptor() {
     }
 
     public String getId() {
