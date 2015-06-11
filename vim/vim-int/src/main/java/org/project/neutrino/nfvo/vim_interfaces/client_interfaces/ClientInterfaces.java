@@ -35,7 +35,7 @@ public interface ClientInterfaces {
 
     boolean deleteImage(NFVImage image);
 
-    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour);
+    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) throws VimException;
 
     boolean deleteFlavor(String extId);
 
