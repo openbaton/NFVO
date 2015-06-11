@@ -17,7 +17,7 @@ import java.util.List;
  * Created by lto on 30/04/15.
  */
 @Transactional
-public abstract class DatabaseRepository<T> implements GenericRepository<T> {
+public abstract class DatabaseRepository<T> implements GenericRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -30,31 +30,30 @@ public abstract class DatabaseRepository<T> implements GenericRepository<T> {
 		};
 		Type type = typeToken.getType();
 		log.trace("TYPE: " + type.toString());
-		return this.entityManager.createQuery("FROM " + type.toString())
-				.getResultList();
+		return this.entityManager.createQuery("FROM " + type.toString()).getResultList();
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public T create(T entity) {
+	public Object create(Object entity) {
 		this.entityManager.persist(entity);
 		return entity;
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public T merge(T entity) {
+	public Object merge(Object entity) {
 		return this.entityManager.merge(entity);
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void remove(T entity) {
+	public void remove(Object entity) {
 		this.entityManager.remove(entityManager.merge(entity));
 	}
 
 	@Override
-	public T find(String id) throws NoResultException {
+	public Object find(String id) throws NoResultException {
 		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
 		};
 		Type type = typeToken.getType();

@@ -9,8 +9,8 @@ import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lto on 11/05/15.
@@ -21,18 +21,18 @@ public class NSRUtils {
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
         networkServiceRecord.setName(networkServiceDescriptor.getName());
         networkServiceRecord.setVendor(networkServiceDescriptor.getVendor());
-        networkServiceRecord.setMonitoring_parameter(new ArrayList<String>());
+        networkServiceRecord.setMonitoring_parameter(new HashSet<String>());
         networkServiceRecord.getMonitoring_parameter().addAll(networkServiceDescriptor.getMonitoring_parameter());
-        networkServiceRecord.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
+        networkServiceRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         networkServiceRecord.getAuto_scale_policy().addAll(networkServiceDescriptor.getAuto_scale_policy());
-        networkServiceRecord.setVnfr(new ArrayList<VirtualNetworkFunctionRecord>());
+        networkServiceRecord.setVnfr(new HashSet<VirtualNetworkFunctionRecord>());
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd);
 //            virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
         }
         //TODO set dependencies!!! (DONE)
-        networkServiceRecord.setVnf_dependency(new ArrayList<VNFRecordDependency>());
+        networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
         for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
             VNFRecordDependency vnfDependency_new = new VNFRecordDependency();
 
@@ -51,19 +51,20 @@ public class NSRUtils {
             networkServiceRecord.getVnf_dependency().add(vnfDependency_new);
         }
 
-        networkServiceRecord.setLifecycle_event(new ArrayList<LifecycleEvent>());
+        networkServiceRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
         networkServiceRecord.getLifecycle_event().addAll(networkServiceDescriptor.getLifecycle_event());
-        List<PhysicalNetworkFunctionRecord> pnfrs = new ArrayList<PhysicalNetworkFunctionRecord>();
+        Set<PhysicalNetworkFunctionRecord> pnfrs = new HashSet<PhysicalNetworkFunctionRecord>();
         if(networkServiceDescriptor.getPnfd() != null)
             for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()){
                 pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
             }
         networkServiceRecord.setPnfr(pnfrs);
         networkServiceRecord.setStatus(Status.INITIAILZED);
-        networkServiceRecord.setVnffgr(new ArrayList<VNFForwardingGraph>());
-        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
+        networkServiceRecord.setVnffgr(new HashSet<VNFForwardingGraphRecord>());
+//      TODO translate them from descriptors to records
+//        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
         networkServiceRecord.setVersion(networkServiceDescriptor.getVersion());
-        networkServiceRecord.setVlr(new ArrayList<VirtualLinkRecord>());
+        networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if(networkServiceDescriptor.getVld() != null) {
             for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
                 networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
@@ -88,24 +89,24 @@ public class NSRUtils {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
-        virtualNetworkFunctionRecord.setMonitoring_parameter(new ArrayList<String>());
+        virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
         virtualNetworkFunctionRecord.getMonitoring_parameter().addAll(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
-        virtualNetworkFunctionRecord.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
+        virtualNetworkFunctionRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         virtualNetworkFunctionRecord.getAuto_scale_policy().addAll(vnfd.getAuto_scale_policy());
 
 
         // TODO mange the VirtualLinks and links...
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
 
-        virtualNetworkFunctionRecord.setVdu(new ArrayList<VirtualDeploymentUnit>());
+        virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
         virtualNetworkFunctionRecord.getVdu().addAll(vnfd.getVdu());
         virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
-        virtualNetworkFunctionRecord.setConnection_point(new ArrayList<ConnectionPoint>());
+        virtualNetworkFunctionRecord.setConnection_point(new HashSet<ConnectionPoint>());
         virtualNetworkFunctionRecord.getConnection_point().addAll(vnfd.getConnection_point());
 
         // TODO find a way to choose between deployment flavors and create the new one
-        virtualNetworkFunctionRecord.setDeployment_flavour_key(vnfd.getDeployment_flavour().get(0).getFlavour_key());
+        virtualNetworkFunctionRecord.setDeployment_flavour_key(vnfd.getDeployment_flavour().iterator().next().getFlavour_key());
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
             if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), virtualDeploymentUnit.getVimInstance())){
                 throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + virtualDeploymentUnit.getVimInstance());
@@ -113,9 +114,9 @@ public class NSRUtils {
         }
 
         virtualNetworkFunctionRecord.setDescriptor_reference(vnfd.getId());
-        virtualNetworkFunctionRecord.setLifecycle_event(new ArrayList<LifecycleEvent>());
+        virtualNetworkFunctionRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.getLifecycle_event().addAll(vnfd.getLifecycle_event());
-        virtualNetworkFunctionRecord.setVirtual_link(new ArrayList<InternalVirtualLink>());
+        virtualNetworkFunctionRecord.setVirtual_link(new HashSet<InternalVirtualLink>());
         virtualNetworkFunctionRecord.getVirtual_link().addAll(vnfd.getVirtual_link());
         virtualNetworkFunctionRecord.setStatus(Status.INITIAILZED);
         return virtualNetworkFunctionRecord;

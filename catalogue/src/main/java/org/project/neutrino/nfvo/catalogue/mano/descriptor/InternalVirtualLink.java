@@ -8,7 +8,7 @@ package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -26,16 +26,16 @@ public class InternalVirtualLink extends AbstractVirtualLink {
      * References to Connection Points (vnfd:vdu:vnfc:connection_point:id,vnfd:connection_point:id), e.g. of type E-Line, E-Tree, or E-LAN.
      * */
 	@ElementCollection(fetch = FetchType.EAGER)
-    private List<String> connection_points_references;
+    private Set<String> connection_points_references;
 
     public InternalVirtualLink() {
     }
 
-    public List<String> getConnection_points_references() {
+    public Set<String> getConnection_points_references() {
         return connection_points_references;
     }
 
-    public void setConnection_points_references(List<String> connection_points_references) {
+    public void setConnection_points_references(Set<String> connection_points_references) {
         this.connection_points_references = connection_points_references;
     }
 }

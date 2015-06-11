@@ -10,7 +10,7 @@ import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -51,7 +51,7 @@ public class PhysicalNetworkFunctionDescriptor {
      * This element describes an external interface exposed by this PNF enabling connection with a VL.
      * */
     @OneToMany(cascade = CascadeType.ALL)	
-    private List<ConnectionPoint> connection_point;
+    private Set<ConnectionPoint> connection_point;
     /**
      * Version of the PNF descriptor.
      * */
@@ -95,11 +95,11 @@ public class PhysicalNetworkFunctionDescriptor {
         this.description = description;
     }
 
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 

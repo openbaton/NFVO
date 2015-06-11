@@ -6,12 +6,18 @@
 
 package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 
-import org.project.neutrino.nfvo.catalogue.mano.common.*;
+import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
+import org.project.neutrino.nfvo.catalogue.mano.common.NFVEntityDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.common.Security;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.xml.bind.TypeConstraintException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
@@ -29,23 +35,23 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      * This describes a set of elements related to a particular VDU
      * */
      @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualDeploymentUnit> vdu;
+    private Set<VirtualDeploymentUnit> vdu;
     /**
      * Represents the type of network connectivity mandated by the VNF vendor between two or more Connection Point
      * */
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<InternalVirtualLink> virtual_link;
+    private Set<InternalVirtualLink> virtual_link;
     /**
      * Describe dependencies between VDUs. Defined in terms of source and target VDU, i.e. target VDU "depends on" source VDU. In other words sources VDU   shall exists before target VDU can be initiated/deployed.
      * */
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VDUDependency> vdu_dependency;
+    private Set<VDUDependency> vdu_dependency;
 
     /**
      * Represents the assurance parameter(s) and its requirement for each deployment flavour of the VNF being described, see clause 6.3.1.5.
      * */
     @OneToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<VNFDeploymentFlavour> deployment_flavour;
+    private Set<VNFDeploymentFlavour> deployment_flavour;
     /**
      * The VNF package may contain a file that lists all files in the package. This can be useful for auditing purposes or for enabling some security features on the package.
      * TODO consider having a stream of a pointer to a file
@@ -62,7 +68,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      *
      * */
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Security> manifest_file_security;
+    private Set<Security> manifest_file_security;
 	private String type;
 
 	@Override
@@ -86,19 +92,19 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     }
 
 	@Override
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public List<VNFDConnectionPoint> getVNFDConnection_point() {
-    	List<VNFDConnectionPoint> res = new ArrayList<VNFDConnectionPoint>();
+    public Set<VNFDConnectionPoint> getVNFDConnection_point() {
+    	Set<VNFDConnectionPoint> res = new HashSet<>();
     	for (ConnectionPoint cp : connection_point)
     		res.add((VNFDConnectionPoint)cp);
         return res;
     }
 
 	@Override
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
     	for (ConnectionPoint cp : connection_point)
     		if (!(cp instanceof VNFDConnectionPoint))
     				throw new TypeConstraintException("Connection Point " + cp.getId() + " field must be an instance of " + ConnectionPoint.class.getCanonicalName());
@@ -115,35 +121,35 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 		this.descriptor_version = descriptor_version;
 	}
 
-	public List<VirtualDeploymentUnit> getVdu() {
+	public Set<VirtualDeploymentUnit> getVdu() {
 		return vdu;
 	}
 
-	public void setVdu(List<VirtualDeploymentUnit> vdu) {
+	public void setVdu(Set<VirtualDeploymentUnit> vdu) {
 		this.vdu = vdu;
 	}
 
-	public List<InternalVirtualLink> getVirtual_link() {
+	public Set<InternalVirtualLink> getVirtual_link() {
 		return virtual_link;
 	}
 
-	public void setVirtual_link(List<InternalVirtualLink> virtual_link) {
+	public void setVirtual_link(Set<InternalVirtualLink> virtual_link) {
 		this.virtual_link = virtual_link;
 	}
 
-	public List<VDUDependency> getVdu_dependency() {
+	public Set<VDUDependency> getVdu_dependency() {
 		return vdu_dependency;
 	}
 
-	public void setVdu_dependency(List<VDUDependency> vdu_dependency) {
+	public void setVdu_dependency(Set<VDUDependency> vdu_dependency) {
 		this.vdu_dependency = vdu_dependency;
 	}
 
-	public List<VNFDeploymentFlavour> getDeployment_flavour() {
+	public Set<VNFDeploymentFlavour> getDeployment_flavour() {
 		return deployment_flavour;
 	}
 
-	public void setDeployment_flavour(List<VNFDeploymentFlavour> deployment_flavour) {
+	public void setDeployment_flavour(Set<VNFDeploymentFlavour> deployment_flavour) {
 		this.deployment_flavour = deployment_flavour;
 	}
 
@@ -155,11 +161,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 		this.manifest_file = manifest_file;
 	}
 
-	public List<Security> getManifest_file_security() {
+	public Set<Security> getManifest_file_security() {
 		return manifest_file_security;
 	}
 
-	public void setManifest_file_security(List<Security> manifest_file_security) {
+	public void setManifest_file_security(Set<Security> manifest_file_security) {
 		this.manifest_file_security = manifest_file_security;
 	}
 
