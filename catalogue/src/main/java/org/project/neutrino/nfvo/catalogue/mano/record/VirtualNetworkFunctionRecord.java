@@ -13,7 +13,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -32,13 +32,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     private int hb_version = 0;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<AutoScalePolicy> auto_scale_policy;
+    private Set<AutoScalePolicy> auto_scale_policy;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ConnectionPoint> connection_point;
+    private Set<ConnectionPoint> connection_point;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFRecordDependency> dependency;
+    private Set<VNFRecordDependency> dependency;
 
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
@@ -46,7 +46,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     private String deployment_flavour_key;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event;
+    private Set<LifecycleEvent> lifecycle_event;
 
     /**
      * A language attribute may be specified to identify default localisation/language
@@ -57,13 +57,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> monitoring_parameter;
+    private Set<String> monitoring_parameter;
     /**
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualDeploymentUnit> vdu;
+    private Set<VirtualDeploymentUnit> vdu;
     private String vendor;
 
     private String version;
@@ -73,7 +73,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<InternalVirtualLink> virtual_link;
+    private Set<InternalVirtualLink> virtual_link;
 //    @JsonIgnore
 
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -94,7 +94,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualLinkRecord> connected_external_virtual_link;
+    private Set<VirtualLinkRecord> connected_external_virtual_link;
 
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
@@ -102,7 +102,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> vnf_address;
+    private Set<String> vnf_address;
     /**
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
@@ -116,13 +116,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> notification;
+    private Set<String> notification;
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event_history;
+    private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent)
      * */
@@ -132,7 +132,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * during runtime of a specific VNF instance (e.g. for VNF prioritization, etc.)
      * */
     @ElementCollection
-    private List<String> runtime_policy_info;
+    private Set<String> runtime_policy_info;
     private String name;
 
     private String type;
@@ -140,7 +140,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     public VirtualNetworkFunctionRecord() {
     }
 
-    public List<AutoScalePolicy> getAuto_scale_policy() {
+    public Set<AutoScalePolicy> getAuto_scale_policy() {
         return auto_scale_policy;
     }
 
@@ -155,23 +155,23 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.hb_version = hb_version;
     }
 
-    public void setAuto_scale_policy(List<AutoScalePolicy> auto_scale_policy) {
+    public void setAuto_scale_policy(Set<AutoScalePolicy> auto_scale_policy) {
         this.auto_scale_policy = auto_scale_policy;
     }
 
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 
-    public List<VNFRecordDependency> getDependency() {
+    public Set<VNFRecordDependency> getDependency() {
         return dependency;
     }
 
-    public void setDependency(List<VNFRecordDependency> dependency) {
+    public void setDependency(Set<VNFRecordDependency> dependency) {
         this.dependency = dependency;
     }
 
@@ -191,11 +191,11 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.id = id;
     }
 
-    public List<LifecycleEvent> getLifecycle_event() {
+    public Set<LifecycleEvent> getLifecycle_event() {
         return lifecycle_event;
     }
 
-    public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
+    public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
         this.lifecycle_event = lifecycle_event;
     }
 
@@ -207,19 +207,19 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.localization = localization;
     }
 
-    public List<String> getMonitoring_parameter() {
+    public Set<String> getMonitoring_parameter() {
         return monitoring_parameter;
     }
 
-    public void setMonitoring_parameter(List<String> monitoring_parameter) {
+    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
         this.monitoring_parameter = monitoring_parameter;
     }
 
-    public List<VirtualDeploymentUnit> getVdu() {
+    public Set<VirtualDeploymentUnit> getVdu() {
         return vdu;
     }
 
-    public void setVdu(List<VirtualDeploymentUnit> vdu) {
+    public void setVdu(Set<VirtualDeploymentUnit> vdu) {
         this.vdu = vdu;
     }
 
@@ -239,11 +239,11 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.version = version;
     }
 
-    public List<InternalVirtualLink> getVirtual_link() {
+    public Set<InternalVirtualLink> getVirtual_link() {
         return virtual_link;
     }
 
-    public void setVirtual_link(List<InternalVirtualLink> virtual_link) {
+    public void setVirtual_link(Set<InternalVirtualLink> virtual_link) {
         this.virtual_link = virtual_link;
     }
 
@@ -271,19 +271,19 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.vnfm_id = vnfm_id;
     }
 
-    public List<VirtualLinkRecord> getConnected_external_virtual_link() {
+    public Set<VirtualLinkRecord> getConnected_external_virtual_link() {
         return connected_external_virtual_link;
     }
 
-    public void setConnected_external_virtual_link(List<VirtualLinkRecord> connected_external_virtual_link) {
+    public void setConnected_external_virtual_link(Set<VirtualLinkRecord> connected_external_virtual_link) {
         this.connected_external_virtual_link = connected_external_virtual_link;
     }
 
-    public List<String> getVnf_address() {
+    public Set<String> getVnf_address() {
         return vnf_address;
     }
 
-    public void setVnf_address(List<String> vnf_address) {
+    public void setVnf_address(Set<String> vnf_address) {
         this.vnf_address = vnf_address;
     }
 
@@ -295,19 +295,19 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.status = status;
     }
 
-    public List<String> getNotification() {
+    public Set<String> getNotification() {
         return notification;
     }
 
-    public void setNotification(List<String> notification) {
+    public void setNotification(Set<String> notification) {
         this.notification = notification;
     }
 
-    public List<LifecycleEvent> getLifecycle_event_history() {
+    public Set<LifecycleEvent> getLifecycle_event_history() {
         return lifecycle_event_history;
     }
 
-    public void setLifecycle_event_history(List<LifecycleEvent> lifecycle_event_history) {
+    public void setLifecycle_event_history(Set<LifecycleEvent> lifecycle_event_history) {
         this.lifecycle_event_history = lifecycle_event_history;
     }
 
@@ -319,11 +319,11 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.audit_log = audit_log;
     }
 
-    public List<String> getRuntime_policy_info() {
+    public Set<String> getRuntime_policy_info() {
         return runtime_policy_info;
     }
 
-    public void setRuntime_policy_info(List<String> runtime_policy_info) {
+    public void setRuntime_policy_info(Set<String> runtime_policy_info) {
         this.runtime_policy_info = runtime_policy_info;
     }
 

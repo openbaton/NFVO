@@ -9,12 +9,12 @@ package org.project.neutrino.nfvo.catalogue.mano.record;
 import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkForwardingPath;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraph;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -30,7 +30,7 @@ public class VNFForwardingGraphRecord implements Serializable{
      * */
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private VNFForwardingGraph descriptor_reference;
+    private VNFForwardingGraphDescriptor descriptor_reference;
     /**
      * Reference to the record (nsr:id) for Network Service instance that this VNFFG instance is part of
      * */
@@ -42,7 +42,7 @@ public class VNFForwardingGraphRecord implements Serializable{
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualLinkRecord> dependent_virtual_link;
+    private Set<VirtualLinkRecord> dependent_virtual_link;
     /**
      * Flag to report status of the VNFFG (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= Offline
      * through management action)
@@ -55,19 +55,19 @@ public class VNFForwardingGraphRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> notification;
+    private Set<String> notification;
     /**
      * Record of significant VNFFG lifecycle events (e.g. creation, configuration changes)
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event_history;
+    private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational events, (e.g. graph up/down, alarms sent)
      * */
     private String audit_log;
     /**
-     * List of Connection Points which form a Network Forwarding Path and description of policies to establish and rules
+     * Set of Connection Points which form a Network Forwarding Path and description of policies to establish and rules
      * to choose the path
      * */
 
@@ -78,14 +78,14 @@ public class VNFForwardingGraphRecord implements Serializable{
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFDConnectionPoint> connection_point;
+    private Set<VNFDConnectionPoint> connection_point;
 
     /**
      * VNF instance used to instantiate this VNFFG
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualNetworkFunctionRecord> member_vnfs;
+    private Set<VirtualNetworkFunctionRecord> member_vnfs;
     private String vendor;
     private String version;
     private int number_of_endpoints;
@@ -104,11 +104,11 @@ public class VNFForwardingGraphRecord implements Serializable{
         this.id = id;
     }
 
-    public VNFForwardingGraph getDescriptor_reference() {
+    public VNFForwardingGraphDescriptor getDescriptor_reference() {
         return descriptor_reference;
     }
 
-    public void setDescriptor_reference(VNFForwardingGraph descriptor_reference) {
+    public void setDescriptor_reference(VNFForwardingGraphDescriptor descriptor_reference) {
         this.descriptor_reference = descriptor_reference;
     }
 
@@ -120,11 +120,11 @@ public class VNFForwardingGraphRecord implements Serializable{
         this.parent_ns = parent_ns;
     }
 
-    public List<VirtualLinkRecord> getDependent_virtual_link() {
+    public Set<VirtualLinkRecord> getDependent_virtual_link() {
         return dependent_virtual_link;
     }
 
-    public void setDependent_virtual_link(List<VirtualLinkRecord> dependent_virtual_link) {
+    public void setDependent_virtual_link(Set<VirtualLinkRecord> dependent_virtual_link) {
         this.dependent_virtual_link = dependent_virtual_link;
     }
 
@@ -136,19 +136,19 @@ public class VNFForwardingGraphRecord implements Serializable{
         this.status = status;
     }
 
-    public List<String> getNotification() {
+    public Set<String> getNotification() {
         return notification;
     }
 
-    public void setNotification(List<String> notification) {
+    public void setNotification(Set<String> notification) {
         this.notification = notification;
     }
 
-    public List<LifecycleEvent> getLifecycle_event_history() {
+    public Set<LifecycleEvent> getLifecycle_event_history() {
         return lifecycle_event_history;
     }
 
-    public void setLifecycle_event_history(List<LifecycleEvent> lifecycle_event_history) {
+    public void setLifecycle_event_history(Set<LifecycleEvent> lifecycle_event_history) {
         this.lifecycle_event_history = lifecycle_event_history;
     }
 
@@ -168,19 +168,19 @@ public class VNFForwardingGraphRecord implements Serializable{
         this.network_forwarding_path = network_forwarding_path;
     }
 
-    public List<VNFDConnectionPoint> getConnection_point() {
+    public Set<VNFDConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<VNFDConnectionPoint> connection_point) {
+    public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 
-    public List<VirtualNetworkFunctionRecord> getMember_vnfs() {
+    public Set<VirtualNetworkFunctionRecord> getMember_vnfs() {
         return member_vnfs;
     }
 
-    public void setMember_vnfs(List<VirtualNetworkFunctionRecord> member_vnfs) {
+    public void setMember_vnfs(Set<VirtualNetworkFunctionRecord> member_vnfs) {
         this.member_vnfs = member_vnfs;
     }
 

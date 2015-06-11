@@ -1,6 +1,8 @@
 package org.project.neutrino.nfvo.api;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.JMSException;
@@ -143,7 +145,7 @@ public class RestNetworkServiceRecord {
 	 */
 	@RequestMapping(value = "{id}/vnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecord(
+	public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecord(
 			@PathVariable("id") String id) {
 		NetworkServiceRecord nsr = null;
 		try {
@@ -236,7 +238,7 @@ public class RestNetworkServiceRecord {
 
 	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
+	public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
 		NetworkServiceRecord nsd = null;
 		try {
 			nsd = networkServiceRecordManagement.query(id);
@@ -328,7 +330,7 @@ public class RestNetworkServiceRecord {
 	 */
 	@RequestMapping(value = "{id}/pnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
+	public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
 			@PathVariable("id") String id) {
 		NetworkServiceRecord nsr = null;
 		try {
@@ -444,8 +446,7 @@ public class RestNetworkServiceRecord {
 			throw new NSDNotFoundException(id);
 		}
 
-		PhysicalNetworkFunctionRecord pnfDescriptor = findPNFD(nsd.getPnfr(),
-				id_pnf);
+		PhysicalNetworkFunctionRecord pnfDescriptor = findPNFD(nsd.getPnfr(), id_pnf);
 		pnfDescriptor = pRecord;
 		nsd.getPnfr().add(pnfDescriptor);
 		networkServiceRecordManagement.update(nsd, id);
@@ -454,8 +455,7 @@ public class RestNetworkServiceRecord {
 
 	// TODO The Rest of the classes
 
-	private PhysicalNetworkFunctionRecord findPNFD(
-			List<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) {
+	private PhysicalNetworkFunctionRecord findPNFD(Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) {
 		PhysicalNetworkFunctionRecord pNetworkFunctionDescriptor = null;
 		for (PhysicalNetworkFunctionRecord pRecord : listPNFR) {
 			if (pRecord.getId().equals(id_pnf)) {
@@ -468,8 +468,7 @@ public class RestNetworkServiceRecord {
 		return pNetworkFunctionDescriptor;
 	}
 
-	private VNFRecordDependency findVNFD(List<VNFRecordDependency> vnf_dependency,
-										 String id_vnfd) {
+	private VNFRecordDependency findVNFD(Collection<VNFRecordDependency> vnf_dependency, String id_vnfd) {
 		VNFRecordDependency vDependency = null;
 		for (VNFRecordDependency vnfDependency : vnf_dependency) {
 			if (vnfDependency.getId().equals(id_vnfd)) {
@@ -484,7 +483,7 @@ public class RestNetworkServiceRecord {
 	}
 
 	private VirtualNetworkFunctionRecord findVNF(
-			List<VirtualNetworkFunctionRecord> listVNF, String id_vnf) {
+			Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) {
 
 		VirtualNetworkFunctionRecord nRecord = null;
 		for (VirtualNetworkFunctionRecord vnfRecord : listVNF) {

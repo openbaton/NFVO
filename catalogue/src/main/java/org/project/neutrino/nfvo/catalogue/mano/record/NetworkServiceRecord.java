@@ -7,12 +7,10 @@
 package org.project.neutrino.nfvo.catalogue.mano.record;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.*;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraph;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -24,14 +22,14 @@ public class NetworkServiceRecord /*implements Serializable*/{
     @Id
     private String id = IdGenerator.createUUID();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<AutoScalePolicy> auto_scale_policy;
+    private Set<AutoScalePolicy> auto_scale_policy;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ConnectionPoint> connection_point;
+    private Set<ConnectionPoint> connection_point;
     /**
      * Monitoring parameter used in this instance.
      * */
     @ElementCollection
-     private List<String> monitoring_parameter;
+     private Set<String> monitoring_parameter;
     /**
      * References the nsd:service_deployment_flavour used to instantiate this Network Service instance.
      * */
@@ -41,25 +39,25 @@ public class NetworkServiceRecord /*implements Serializable*/{
     private String vendor;
     private String version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualLinkRecord> vlr;
+    private Set<VirtualLinkRecord> vlr;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<VirtualNetworkFunctionRecord> vnfr;
+    private Set<VirtualNetworkFunctionRecord> vnfr;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<VNFRecordDependency> vnf_dependency;
+    private Set<VNFRecordDependency> vnf_dependency;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event;
+    private Set<LifecycleEvent> lifecycle_event;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFForwardingGraph> vnffgr;
+    private Set<VNFForwardingGraphRecord> vnffgr;
     /**
      * At least one
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<PhysicalNetworkFunctionRecord> pnfr;
+    private Set<PhysicalNetworkFunctionRecord> pnfr;
     /**
      * The reference to the Network Service Descriptor used to instantiate this Network Service.
      * */
@@ -90,7 +88,7 @@ public class NetworkServiceRecord /*implements Serializable*/{
      * Record of significant Network Service lifecycle events.
      * */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event_history;
+    private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational events.
      * TODO: maybe a pointer to a file?
@@ -106,27 +104,27 @@ public class NetworkServiceRecord /*implements Serializable*/{
         this.id = id;
     }
 
-    public List<AutoScalePolicy> getAuto_scale_policy() {
+    public Set<AutoScalePolicy> getAuto_scale_policy() {
         return auto_scale_policy;
     }
 
-    public void setAuto_scale_policy(List<AutoScalePolicy> auto_scale_policy) {
+    public void setAuto_scale_policy(Set<AutoScalePolicy> auto_scale_policy) {
         this.auto_scale_policy = auto_scale_policy;
     }
 
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 
-    public List<String> getMonitoring_parameter() {
+    public Set<String> getMonitoring_parameter() {
         return monitoring_parameter;
     }
 
-    public void setMonitoring_parameter(List<String> monitoring_parameter) {
+    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
         this.monitoring_parameter = monitoring_parameter;
     }
 
@@ -154,51 +152,51 @@ public class NetworkServiceRecord /*implements Serializable*/{
         this.version = version;
     }
 
-    public List<VirtualLinkRecord> getVlr() {
+    public Set<VirtualLinkRecord> getVlr() {
         return vlr;
     }
 
-    public void setVlr(List<VirtualLinkRecord> vlr) {
+    public void setVlr(Set<VirtualLinkRecord> vlr) {
         this.vlr = vlr;
     }
 
-    public List<VirtualNetworkFunctionRecord> getVnfr() {
+    public Set<VirtualNetworkFunctionRecord> getVnfr() {
         return vnfr;
     }
 
-    public void setVnfr(ArrayList<VirtualNetworkFunctionRecord> vnfr) {
+    public void setVnfr(Set<VirtualNetworkFunctionRecord> vnfr) {
         this.vnfr = vnfr;
     }
 
-    public List<LifecycleEvent> getLifecycle_event() {
+    public Set<LifecycleEvent> getLifecycle_event() {
         return lifecycle_event;
     }
 
-    public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
+    public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
         this.lifecycle_event = lifecycle_event;
     }
 
-    public List<VNFRecordDependency> getVnf_dependency() {
+    public Set<VNFRecordDependency> getVnf_dependency() {
         return vnf_dependency;
     }
 
-    public void setVnf_dependency(List<VNFRecordDependency> vnf_dependency) {
+    public void setVnf_dependency(Set<VNFRecordDependency> vnf_dependency) {
         this.vnf_dependency = vnf_dependency;
     }
 
-    public List<VNFForwardingGraph> getVnffgr() {
+    public Set<VNFForwardingGraphRecord> getVnffgr() {
         return vnffgr;
     }
 
-    public void setVnffgr(List<VNFForwardingGraph> vnffgr) {
+    public void setVnffgr(Set<VNFForwardingGraphRecord> vnffgr) {
         this.vnffgr = vnffgr;
     }
 
-    public List<PhysicalNetworkFunctionRecord> getPnfr() {
+    public Set<PhysicalNetworkFunctionRecord> getPnfr() {
         return pnfr;
     }
 
-    public void setPnfr(List<PhysicalNetworkFunctionRecord> pnfr) {
+    public void setPnfr(Set<PhysicalNetworkFunctionRecord> pnfr) {
         this.pnfr = pnfr;
     }
 
@@ -242,11 +240,11 @@ public class NetworkServiceRecord /*implements Serializable*/{
         this.notification = notification;
     }
 
-    public List<LifecycleEvent> getLifecycle_event_history() {
+    public Set<LifecycleEvent> getLifecycle_event_history() {
         return lifecycle_event_history;
     }
 
-    public void setLifecycle_event_history(List<LifecycleEvent> lifecycle_event_history) {
+    public void setLifecycle_event_history(Set<LifecycleEvent> lifecycle_event_history) {
         this.lifecycle_event_history = lifecycle_event_history;
     }
 

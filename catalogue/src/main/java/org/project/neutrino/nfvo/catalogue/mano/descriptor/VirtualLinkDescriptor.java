@@ -9,7 +9,7 @@ package org.project.neutrino.nfvo.catalogue.mano.descriptor;
 import org.project.neutrino.nfvo.catalogue.mano.common.AbstractVirtualLink;
 import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -40,7 +40,7 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
      * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
      * */
     @ElementCollection
-    private List<String> connection;
+    private Set<String> connection;
     /**
      * This is a signature of vld to prevent tampering. The particular hash algorithm used to compute the signature,
      * together with the corresponding cryptographic certificate to validate the signature should also be included
@@ -75,11 +75,11 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
         this.number_of_endpoints = number_of_endpoints;
     }
 
-    public List<String> getConnection() {
+    public Set<String> getConnection() {
         return connection;
     }
 
-    public void setConnection(List<String> connection) {
+    public void setConnection(Set<String> connection) {
         this.connection = connection;
     }
 
