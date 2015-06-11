@@ -122,7 +122,7 @@ public class OpenstackTest {
 
     public Server test_launch_server() throws VimException {
         String hostname = vdu.getHostname();
-        String image_name = vdu.getVm_image().get(0);
+        String image_name = vdu.getVm_image().iterator().next();
         String image_id = openstackClient.getImageIdByName(image_name);
         String flavor_name = vnfr.getDeployment_flavour_key();
         String flavor_id = openstackClient.getFlavorIdByName(flavor_name);
@@ -300,13 +300,13 @@ public class OpenstackTest {
     private VirtualDeploymentUnit createVDU() {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         vdu.setHostname("test_server");
-        ArrayList<String> monitoring_parameter = new ArrayList<>();
+        Set<String> monitoring_parameter = new HashSet<>();
         monitoring_parameter.add("parameter_1");
         monitoring_parameter.add("parameter_2");
         monitoring_parameter.add("parameter_3");
         vdu.setMonitoring_parameter(monitoring_parameter);
         vdu.setComputation_requirement("computation_requirement");
-        ArrayList<String> vm_images = new ArrayList<>();
+        Set<String> vm_images = new HashSet<>();
         vm_images.add("cirros");
         vdu.setVm_image(vm_images);
         return vdu;
