@@ -22,8 +22,10 @@ import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagem
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -106,7 +108,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX from here VirtualNetworkFunctionDescriptor
 	@Test
 	public void testpostVNFD() {
-		List<VirtualNetworkFunctionDescriptor> list = new ArrayList<VirtualNetworkFunctionDescriptor>();
+		Set<VirtualNetworkFunctionDescriptor> list = new HashSet<>();
 		networkServiceDescriptor.setVnfd(list);
 		VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 		vnfd.setName("test_VNFD");
@@ -122,7 +124,7 @@ public class ApiRestNSDescriptorTest {
 		VirtualNetworkFunctionDescriptor vnsDescriptor1 = restNetworkService
 				.postVNFD(vnfd, networkServiceDescriptor.getId());
 
-		List<VirtualNetworkFunctionDescriptor> listVnfds = nsdUpdate.getVnfd();
+		Set<VirtualNetworkFunctionDescriptor> listVnfds = nsdUpdate.getVnfd();
 		for (VirtualNetworkFunctionDescriptor vnsDescriptor : listVnfds) {
 			if (vnsDescriptor.getId().equals(vnfd.getId()))
 				assertEquals(vnsDescriptor1, vnsDescriptor);
@@ -138,18 +140,18 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor
-				.getVnfd().get(0);
+				.getVnfd().iterator().next();
 		assertEquals(vnfd,
 				restNetworkService.getVirtualNetworkFunctionDescriptor(
 						networkServiceDescriptor.getId(),
-						networkServiceDescriptor.getVnfd().get(0).getId()));
+						networkServiceDescriptor.getVnfd().iterator().next().getId()));
 	}
 
 	@Test
 	public void testgetVNFDs() {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
-		List<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor
+		Set<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor
 				.getVnfd();
 		assertEquals(
 				vnfds,
@@ -175,7 +177,7 @@ public class ApiRestNSDescriptorTest {
 		VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 		vnfd.setVendor("FOKUS");
 		VirtualNetworkFunctionDescriptor vnfd_toUp = networkServiceDescriptor
-				.getVnfd().get(0);
+				.getVnfd().iterator().next();
 		log.info("" + vnfd_toUp);
 		vnfd_toUp = vnfd;
 		networkServiceDescriptor.getVnfd().add(vnfd_toUp);
@@ -192,7 +194,7 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor
-				.getVnfd().get(0);
+				.getVnfd().iterator().next();
 		restNetworkService.deleteVirtualNetworkFunctionDescriptor(
 				networkServiceDescriptor.getId(), vnfd.getId());
 		log.info("" + networkServiceDescriptor);
@@ -203,7 +205,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM VNFDependency
 	@Test
 	public void testpostVNFDependency() {
-		List<VNFDependency> list = new ArrayList<VNFDependency>();
+		Set<VNFDependency> list = new HashSet<>();
 		networkServiceDescriptor.setVnf_dependency(list);
 		VNFDependency vnfd = new VNFDependency();
 
@@ -219,7 +221,7 @@ public class ApiRestNSDescriptorTest {
 		VNFDependency vnsDependency1 = restNetworkService.postVNFDependency(
 				vnfd, networkServiceDescriptor.getId());
 
-		List<VNFDependency> listVnfds = nsdUpdate.getVnf_dependency();
+		Set<VNFDependency> listVnfds = nsdUpdate.getVnf_dependency();
 		for (VNFDependency vnsDependency : listVnfds) {
 			if (vnsDependency.getId().equals(vnfd.getId()))
 				assertEquals(vnsDependency1, vnsDependency);
@@ -235,17 +237,17 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency()
-				.get(0);
+				.iterator().next();
 		assertEquals(vnfd, restNetworkService.getVNFDependency(
 				networkServiceDescriptor.getId(), networkServiceDescriptor
-						.getVnf_dependency().get(0).getId()));
+						.getVnf_dependency().iterator().next().getId()));
 	}
 
 	@Test
 	public void testgetVNFDependencies() {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
-		List<VNFDependency> vnfds = networkServiceDescriptor
+		Set<VNFDependency> vnfds = networkServiceDescriptor
 				.getVnf_dependency();
 		assertEquals(vnfds,
 				restNetworkService.getVNFDependencies(networkServiceDescriptor
@@ -269,7 +271,7 @@ public class ApiRestNSDescriptorTest {
 		VNFDependency vnfd = new VNFDependency();
 
 		VNFDependency vnfd_toUp = networkServiceDescriptor.getVnf_dependency()
-				.get(0);
+				.iterator().next();
 		log.info("" + vnfd_toUp);
 		vnfd_toUp = vnfd;
 		networkServiceDescriptor.getVnf_dependency().add(vnfd_toUp);
@@ -286,7 +288,7 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency()
-				.get(0);
+				.iterator().next();
 		restNetworkService.deleteVNFDependency(
 				networkServiceDescriptor.getId(), vnfd.getId());
 		log.info("" + networkServiceDescriptor);
@@ -297,7 +299,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM PhysicalNetworkFunctionDescriptor
 	@Test
 	public void testpostPhysicalNetworkFunctionDescriptor() {
-		List<PhysicalNetworkFunctionDescriptor> list = new ArrayList<PhysicalNetworkFunctionDescriptor>();
+		Set<PhysicalNetworkFunctionDescriptor> list = new HashSet<>();
 		networkServiceDescriptor.setPnfd(list);
 		PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
 
@@ -314,7 +316,7 @@ public class ApiRestNSDescriptorTest {
 				.postPhysicalNetworkFunctionDescriptor(pnfd,
 						networkServiceDescriptor.getId());
 
-		List<PhysicalNetworkFunctionDescriptor> listVnfds = nsdUpdate.getPnfd();
+		Set<PhysicalNetworkFunctionDescriptor> listVnfds = nsdUpdate.getPnfd();
 		for (PhysicalNetworkFunctionDescriptor pnfdescriptor : listVnfds) {
 			if (pnfdescriptor.getId().equals(pnfd.getId()))
 				assertEquals(pnfdescriptor, pnfd1);
@@ -330,18 +332,18 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor
-				.getPnfd().get(0);
+				.getPnfd().iterator().next();
 		assertEquals(pnfd,
 				restNetworkService.getPhysicalNetworkFunctionDescriptor(
 						networkServiceDescriptor.getId(),
-						networkServiceDescriptor.getPnfd().get(0).getId()));
+						networkServiceDescriptor.getPnfd().iterator().next().getId()));
 	}
 
 	@Test
 	public void testgetPhysicalNetworkFunctionDescriptors() {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
-		List<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor
+		Set<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor
 				.getPnfd();
 		assertEquals(
 				pnfds,
@@ -367,7 +369,7 @@ public class ApiRestNSDescriptorTest {
 		PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
 
 		PhysicalNetworkFunctionDescriptor pnfd_toUp = networkServiceDescriptor
-				.getPnfd().get(0);
+				.getPnfd().iterator().next();
 		log.info("" + pnfd_toUp);
 		pnfd_toUp = pnfd;
 		networkServiceDescriptor.getPnfd().add(pnfd_toUp);
@@ -384,7 +386,7 @@ public class ApiRestNSDescriptorTest {
 		when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
 				networkServiceDescriptor);
 		PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor
-				.getPnfd().get(0);
+				.getPnfd().iterator().next();
 		restNetworkService.deletePhysicalNetworkFunctionDescriptor(
 				networkServiceDescriptor.getId(), pnfd.getId());
 		log.info("" + networkServiceDescriptor);
