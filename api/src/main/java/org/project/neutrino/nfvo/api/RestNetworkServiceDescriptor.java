@@ -30,7 +30,9 @@ import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -141,7 +143,7 @@ public class RestNetworkServiceDescriptor {
 	 */
 	@RequestMapping(value = "{id}/vnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
+	public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -238,7 +240,7 @@ public class RestNetworkServiceDescriptor {
 
 	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
+	public Set<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
@@ -331,7 +333,7 @@ public class RestNetworkServiceDescriptor {
 	 */
 	@RequestMapping(value = "{id}/pnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(
+	public Set<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(
 			@PathVariable("id") String id) {
 		NetworkServiceDescriptor nsd = null;
 		try {
@@ -584,7 +586,7 @@ public class RestNetworkServiceDescriptor {
 	}
 
 	private PhysicalNetworkFunctionDescriptor findPNFD(
-			List<PhysicalNetworkFunctionDescriptor> listPNFD, String id_pnf) {
+			Collection<PhysicalNetworkFunctionDescriptor> listPNFD, String id_pnf) {
 		PhysicalNetworkFunctionDescriptor pNetworkFunctionDescriptor = null;
 		for (PhysicalNetworkFunctionDescriptor pDescriptor : listPNFD) {
 			if (pDescriptor.getId().equals(id_pnf)) {
@@ -597,7 +599,7 @@ public class RestNetworkServiceDescriptor {
 		return pNetworkFunctionDescriptor;
 	}
 
-	private VNFDependency findVNFD(List<VNFDependency> vnf_dependency,
+	private VNFDependency findVNFD(Collection<VNFDependency> vnf_dependency,
 			String id_vnfd) {
 		VNFDependency vDependency = null;
 		for (VNFDependency vnfDependency : vnf_dependency) {
@@ -612,8 +614,7 @@ public class RestNetworkServiceDescriptor {
 		return vDependency;
 	}
 
-	private VirtualNetworkFunctionDescriptor findVNF(
-			List<VirtualNetworkFunctionDescriptor> listVNF, String id_vfn) {
+	private VirtualNetworkFunctionDescriptor findVNF(Collection<VirtualNetworkFunctionDescriptor> listVNF, String id_vfn) {
 
 		VirtualNetworkFunctionDescriptor nDescriptor = null;
 		for (VirtualNetworkFunctionDescriptor vnfDescriptor : listVNF) {

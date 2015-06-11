@@ -13,7 +13,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -31,7 +31,7 @@ public class VirtualDeploymentUnit implements Serializable{
      * NOTE: A cardinality of zero allows for creating empty virtualisation containers as per (ETSI GS NFV-SWA 001 [i.8]).
      * */
     @ElementCollection(fetch=FetchType.EAGER)
-    private List<String> vm_image;
+    private Set<String> vm_image;
     /**
      * Describe the required computation resources characteristics (e.g. processing power, number of virtual CPUs, etc.),
      * including Key Quality Indicators (KQIs) for performance and reliability/availability.
@@ -50,7 +50,7 @@ public class VirtualDeploymentUnit implements Serializable{
      * graceful shutdown, scaling out/in).
      * */
     @OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event;
+    private Set<LifecycleEvent> lifecycle_event;
     /**
      * Placeholder for other constraints.
      * */
@@ -70,13 +70,13 @@ public class VirtualDeploymentUnit implements Serializable{
      * Contains information that is distinct for each VNFC created based on this VDU.
      * */
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFComponent> vnfc;
+    private Set<VNFComponent> vnfc;
     /**
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,
      * CPU-utilisation, bandwidth-consumption, VNFC downtime, etc.
      * */
     @ElementCollection(fetch=FetchType.EAGER)
-    private List<String> monitoring_parameter;
+    private Set<String> monitoring_parameter;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     private VimInstance vimInstance;
@@ -103,11 +103,11 @@ public class VirtualDeploymentUnit implements Serializable{
 		this.version = version;
 	}
 
-	public List<String> getVm_image() {
+	public Set<String> getVm_image() {
         return vm_image;
     }
 
-    public void setVm_image(List<String> vm_image) {
+    public void setVm_image(Set<String> vm_image) {
         this.vm_image = vm_image;
     }
 
@@ -135,11 +135,11 @@ public class VirtualDeploymentUnit implements Serializable{
         this.virtual_network_bandwidth_resource = virtual_network_bandwidth_resource;
     }
 
-    public List<LifecycleEvent> getLifecycle_event() {
+    public Set<LifecycleEvent> getLifecycle_event() {
         return lifecycle_event;
     }
 
-    public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
+    public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
         this.lifecycle_event = lifecycle_event;
     }
 
@@ -167,19 +167,19 @@ public class VirtualDeploymentUnit implements Serializable{
         this.scale_in_out = scale_in_out;
     }
 
-    public List<VNFComponent> getVnfc() {
+    public Set<VNFComponent> getVnfc() {
         return vnfc;
     }
 
-    public void setVnfc(List<VNFComponent> vnfc) {
+    public void setVnfc(Set<VNFComponent> vnfc) {
         this.vnfc = vnfc;
     }
 
-    public List<String> getMonitoring_parameter() {
+    public Set<String> getMonitoring_parameter() {
         return monitoring_parameter;
     }
 
-    public void setMonitoring_parameter(List<String> monitoring_parameter) {
+    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
         this.monitoring_parameter = monitoring_parameter;
     }
 

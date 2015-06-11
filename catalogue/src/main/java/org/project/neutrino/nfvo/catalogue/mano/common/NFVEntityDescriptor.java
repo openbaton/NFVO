@@ -1,12 +1,12 @@
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraph;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
@@ -40,11 +40,11 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 *
 	 **/
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<VNFForwardingGraph> vnffgd;
+	protected Set<VNFForwardingGraphDescriptor> vnffgd;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<VirtualLinkDescriptor> vld;
+	protected Set<VirtualLinkDescriptor> vld;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<LifecycleEvent> lifecycle_event;
+	protected Set<LifecycleEvent> lifecycle_event;
 	/**
 	 *
 	 * Represents a monitoring parameter which can be tracked for this NS. These can be network service metrics that are tracked for the
@@ -57,7 +57,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 *
 	 * */
 	@ElementCollection(fetch = FetchType.EAGER)
-	protected List<String> monitoring_parameter;
+	protected Set<String> monitoring_parameter;
 	/**
 	*
 	* Represents the service KPI parameters and its requirement for each deployment flavour of the NS being described,
@@ -66,9 +66,9 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	*
 	* */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<DeploymentFlavour> service_deployment_flavour;
+	protected Set<DeploymentFlavour> service_deployment_flavour;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<AutoScalePolicy> auto_scale_policy;
+	protected Set<AutoScalePolicy> auto_scale_policy;
 
 	/**
 	 * This element describes a Connection Point which acts as an endpoint of the Network Service, see clause 6.2.1.2.
@@ -77,7 +77,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 * */
 
  	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected List<ConnectionPoint> connection_point;
+	protected Set<ConnectionPoint> connection_point;
 
 	public String getName() {
 		return name;
@@ -110,47 +110,47 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	public List<VNFForwardingGraph> getVnffgd() {
+	public Set<VNFForwardingGraphDescriptor> getVnffgd() {
 		return vnffgd;
 	}
-	public void setVnffgd(List<VNFForwardingGraph> vnffgd) {
+	public void setVnffgd(Set<VNFForwardingGraphDescriptor> vnffgd) {
 		this.vnffgd = vnffgd;
 	}
-	public List<VirtualLinkDescriptor> getVld() {
+	public Set<VirtualLinkDescriptor> getVld() {
 		return vld;
 	}
-	public void setVld(List<VirtualLinkDescriptor> vld) {
+	public void setVld(Set<VirtualLinkDescriptor> vld) {
 		this.vld = vld;
 	}
-	public List<LifecycleEvent> getLifecycle_event() {
+	public Set<LifecycleEvent> getLifecycle_event() {
 		return lifecycle_event;
 	}
-	public void setLifecycle_event(List<LifecycleEvent> lifecycle_event) {
+	public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
 		this.lifecycle_event = lifecycle_event;
 	}
-	public List<String> getMonitoring_parameter() {
+	public Set<String> getMonitoring_parameter() {
 		return monitoring_parameter;
 	}
-	public void setMonitoring_parameter(List<String> monitoring_parameter) {
+	public void setMonitoring_parameter(Set<String> monitoring_parameter) {
 		this.monitoring_parameter = monitoring_parameter;
 	}
-	public List<AutoScalePolicy> getAuto_scale_policy() {
+	public Set<AutoScalePolicy> getAuto_scale_policy() {
 		return auto_scale_policy;
 	}
-	public void setAuto_scale_policy(List<AutoScalePolicy> auto_scale_policy) {
+	public void setAuto_scale_policy(Set<AutoScalePolicy> auto_scale_policy) {
 		this.auto_scale_policy = auto_scale_policy;
 	}
-	public List<ConnectionPoint> getConnection_point() {
+	public Set<ConnectionPoint> getConnection_point() {
 		return connection_point;
 	}
-	public void setConnection_point(List<ConnectionPoint> connection_point) {
+	public void setConnection_point(Set<ConnectionPoint> connection_point) {
 		this.connection_point = connection_point;
 	}
-	public List<DeploymentFlavour> getService_deployment_flavour() {
+	public Set<DeploymentFlavour> getService_deployment_flavour() {
 		return service_deployment_flavour;
 	}
 	public void setService_deployment_flavour(
-			List<DeploymentFlavour> service_deployment_flavour) {
+			Set<DeploymentFlavour> service_deployment_flavour) {
 		this.service_deployment_flavour = service_deployment_flavour;
 	}
 	

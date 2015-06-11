@@ -11,7 +11,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -29,7 +29,7 @@ public class VirtualLinkRecord implements Serializable{
     private String leaf_requirement;
 
     @ElementCollection
-    private List<String> qos;
+    private Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
@@ -39,7 +39,7 @@ public class VirtualLinkRecord implements Serializable{
      * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
      * */
     @ElementCollection
-     private List<String> connection;
+     private Set<String> connection;
     /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
      * */
@@ -49,7 +49,7 @@ public class VirtualLinkRecord implements Serializable{
      * References to the records of the VNFFG instances in which this VL instance participates
      * */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFForwardingGraphRecord> vnffgr_reference;
+    private Set<VNFForwardingGraphRecord> vnffgr_reference;
     /**
      * Reference to the id of VLD used to instantiate this VL
      * */
@@ -63,7 +63,7 @@ public class VirtualLinkRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> allocated_capacity;
+    private Set<String> allocated_capacity;
     /**
      * Flag to report status of the VL (e.g. 0=Link down, 1= normal operation, 2= degraded operation, 3= Offline through management action)
      * */
@@ -77,20 +77,20 @@ public class VirtualLinkRecord implements Serializable{
      * */
 
     @ElementCollection
-    private List<String> notification;
+    private Set<String> notification;
     /**
      * Record of significant VL lifecycle event (e.g. Creation, Configuration changes)
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<LifecycleEvent> lifecycle_event_history;
+    private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational events (e.g. link up/down, Operator logins, Alarms sent)
      * TODO consider a stream to a file
      * */
 
     @ElementCollection
-    private List<String> audit_log;
+    private Set<String> audit_log;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree
      * TODO consider a Enum
@@ -148,11 +148,11 @@ public class VirtualLinkRecord implements Serializable{
         this.leaf_requirement = leaf_requirement;
     }
 
-    public List<String> getQos() {
+    public Set<String> getQos() {
         return qos;
     }
 
-    public void setQos(List<String> qos) {
+    public void setQos(Set<String> qos) {
         this.qos = qos;
     }
 
@@ -164,11 +164,11 @@ public class VirtualLinkRecord implements Serializable{
         this.test_access = test_access;
     }
 
-    public List<String> getConnection() {
+    public Set<String> getConnection() {
         return connection;
     }
 
-    public void setConnection(List<String> connection) {
+    public void setConnection(Set<String> connection) {
         this.connection = connection;
     }
 
@@ -180,11 +180,11 @@ public class VirtualLinkRecord implements Serializable{
         this.parent_ns = parent_ns;
     }
 
-    public List<VNFForwardingGraphRecord> getVnffgr_reference() {
+    public Set<VNFForwardingGraphRecord> getVnffgr_reference() {
         return vnffgr_reference;
     }
 
-    public void setVnffgr_reference(List<VNFForwardingGraphRecord> vnffgr_reference) {
+    public void setVnffgr_reference(Set<VNFForwardingGraphRecord> vnffgr_reference) {
         this.vnffgr_reference = vnffgr_reference;
     }
 
@@ -204,11 +204,11 @@ public class VirtualLinkRecord implements Serializable{
         this.vim_id = vim_id;
     }
 
-    public List<String> getAllocated_capacity() {
+    public Set<String> getAllocated_capacity() {
         return allocated_capacity;
     }
 
-    public void setAllocated_capacity(List<String> allocated_capacity) {
+    public void setAllocated_capacity(Set<String> allocated_capacity) {
         this.allocated_capacity = allocated_capacity;
     }
 
@@ -220,27 +220,27 @@ public class VirtualLinkRecord implements Serializable{
         this.status = status;
     }
 
-    public List<String> getNotification() {
+    public Set<String> getNotification() {
         return notification;
     }
 
-    public void setNotification(List<String> notification) {
+    public void setNotification(Set<String> notification) {
         this.notification = notification;
     }
 
-    public List<LifecycleEvent> getLifecycle_event_history() {
+    public Set<LifecycleEvent> getLifecycle_event_history() {
         return lifecycle_event_history;
     }
 
-    public void setLifecycle_event_history(List<LifecycleEvent> lifecycle_event_history) {
+    public void setLifecycle_event_history(Set<LifecycleEvent> lifecycle_event_history) {
         this.lifecycle_event_history = lifecycle_event_history;
     }
 
-    public List<String> getAudit_log() {
+    public Set<String> getAudit_log() {
         return audit_log;
     }
 
-    public void setAudit_log(List<String> audit_log) {
+    public void setAudit_log(Set<String> audit_log) {
         this.audit_log = audit_log;
     }
 

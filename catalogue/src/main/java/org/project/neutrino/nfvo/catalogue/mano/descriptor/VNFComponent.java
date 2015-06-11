@@ -10,7 +10,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -38,7 +38,7 @@ public class VNFComponent implements Serializable{
      * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
      * */
 	@OneToMany(cascade=CascadeType.ALL)
-    private List<VNFDConnectionPoint> connection_point;
+    private Set<VNFDConnectionPoint> connection_point;
 
     public VNFComponent() {
     }
@@ -51,11 +51,11 @@ public class VNFComponent implements Serializable{
         this.id = id;
     }
 
-    public List<VNFDConnectionPoint> getConnection_point() {
+    public Set<VNFDConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<VNFDConnectionPoint> connection_point) {
+    public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 }

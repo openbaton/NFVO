@@ -7,7 +7,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
@@ -44,18 +44,18 @@ public class VNFForwardingGraphDescriptor implements Serializable{
      * Reference to a VLD (vld:id) used to instantiate this Forwarding Graph
      * */
     @OneToMany(cascade = CascadeType.ALL)
-    private List<VirtualLinkDescriptor> dependent_virtual_link;
+    private Set<VirtualLinkDescriptor> dependent_virtual_link;
     /**
      * This element describes a Network Forwarding Path within the VNFFG
      * */
     @OneToMany(cascade = CascadeType.ALL)
-    private List<NetworkForwardingPath> network_forwarding_path;
+    private Set<NetworkForwardingPath> network_forwarding_path;
     /**
      * Reference to Connection Points (nsd/vnfd/pnfd:connection_point:id) forming the VNFFG including Connection Points
      * attached to PNFs
      * */
     @OneToMany(cascade = CascadeType.ALL)
-    private List<ConnectionPoint> connection_point;
+    private Set<ConnectionPoint> connection_point;
     /**
      * Version of this VNFFGD
      * */
@@ -64,7 +64,7 @@ public class VNFForwardingGraphDescriptor implements Serializable{
      * Reference to a VNFD (nsd:deployment_flavours:constituent_vnf:id) used to instantiate this VNF Forwarding Graph
      * */
     @OneToMany(cascade = CascadeType.ALL)
-    private List<CostituentVNF> constituent_vnfs;
+    private Set<CostituentVNF> constituent_vnfs;
     /**
      * This is a signature of vnffgd to prevent tampering. The particular hash algorithm used to compute the signature,
      * together with the corresponding cryptographic certificate to validate the signature should also be included
@@ -115,27 +115,27 @@ public class VNFForwardingGraphDescriptor implements Serializable{
         this.number_of_virtual_links = number_of_virtual_links;
     }
 
-    public List<VirtualLinkDescriptor> getDependent_virtual_link() {
+    public Set<VirtualLinkDescriptor> getDependent_virtual_link() {
         return dependent_virtual_link;
     }
 
-    public void setDependent_virtual_link(List<VirtualLinkDescriptor> dependent_virtual_link) {
+    public void setDependent_virtual_link(Set<VirtualLinkDescriptor> dependent_virtual_link) {
         this.dependent_virtual_link = dependent_virtual_link;
     }
 
-    public List<NetworkForwardingPath> getNetwork_forwarding_path() {
+    public Set<NetworkForwardingPath> getNetwork_forwarding_path() {
         return network_forwarding_path;
     }
 
-    public void setNetwork_forwarding_path(List<NetworkForwardingPath> network_forwarding_path) {
+    public void setNetwork_forwarding_path(Set<NetworkForwardingPath> network_forwarding_path) {
         this.network_forwarding_path = network_forwarding_path;
     }
 
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 
@@ -147,11 +147,11 @@ public class VNFForwardingGraphDescriptor implements Serializable{
         this.descriptor_version = descriptor_version;
     }
 
-    public List<CostituentVNF> getConstituent_vnfs() {
+    public Set<CostituentVNF> getConstituent_vnfs() {
         return constituent_vnfs;
     }
 
-    public void setConstituent_vnfs(List<CostituentVNF> constituent_vnfs) {
+    public void setConstituent_vnfs(Set<CostituentVNF> constituent_vnfs) {
         this.constituent_vnfs = constituent_vnfs;
     }
 
