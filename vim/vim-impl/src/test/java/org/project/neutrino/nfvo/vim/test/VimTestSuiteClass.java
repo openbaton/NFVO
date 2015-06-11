@@ -33,6 +33,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -163,13 +165,13 @@ public class VimTestSuiteClass {
             add(nfvImage);
         }});
         vdu.setVimInstance(vimInstance);
-        ArrayList<String> monitoring_parameter = new ArrayList<>();
+        Set<String> monitoring_parameter = new HashSet<>();
         monitoring_parameter.add("parameter_1");
         monitoring_parameter.add("parameter_2");
         monitoring_parameter.add("parameter_3");
         vdu.setMonitoring_parameter(monitoring_parameter);
         vdu.setComputation_requirement("computation_requirement");
-        ArrayList<String> vm_images = new ArrayList<>();
+        Set<String> vm_images = new HashSet<>();
         vm_images.add("image_1234");
         vdu.setVm_image(vm_images);
         vimInstance.setFlavours(new ArrayList<DeploymentFlavour>());
