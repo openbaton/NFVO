@@ -11,7 +11,7 @@ import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -27,7 +27,7 @@ public class PhysicalNetworkFunctionRecord {
     private String version;
     private String description;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ConnectionPoint> connection_point;
+    private Set<ConnectionPoint> connection_point;
     /**
      * The reference for the record of the NS instance (nsr:id) that this PNF instance is part of
      * */
@@ -44,7 +44,7 @@ public class PhysicalNetworkFunctionRecord {
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VNFForwardingGraphRecord> vnffgr;
+    private Set<VNFForwardingGraphRecord> vnffgr;
     /**
      * The reference to the system managing this PNF
      * */
@@ -55,13 +55,13 @@ public class PhysicalNetworkFunctionRecord {
      * */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<VirtualLinkRecord> connected_virtual_link;
+    private Set<VirtualLinkRecord> connected_virtual_link;
     /**
      * The network addresses (e.g. VLAN, IP) configured for the management access and all other external connection
      * interfaces on this PNF
      * */
     @ElementCollection
-    private List<String> pnf_address;
+    private Set<String> pnf_address;
 
     public PhysicalNetworkFunctionRecord() {
     }
@@ -98,11 +98,11 @@ public class PhysicalNetworkFunctionRecord {
         this.description = description;
     }
 
-    public List<ConnectionPoint> getConnection_point() {
+    public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
-    public void setConnection_point(List<ConnectionPoint> connection_point) {
+    public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
     }
 
@@ -122,11 +122,11 @@ public class PhysicalNetworkFunctionRecord {
         this.descriptor_reference = descriptor_reference;
     }
 
-    public List<VNFForwardingGraphRecord> getVnffgr() {
+    public Set<VNFForwardingGraphRecord> getVnffgr() {
         return vnffgr;
     }
 
-    public void setVnffgr(List<VNFForwardingGraphRecord> vnffgr) {
+    public void setVnffgr(Set<VNFForwardingGraphRecord> vnffgr) {
         this.vnffgr = vnffgr;
     }
 
@@ -138,19 +138,19 @@ public class PhysicalNetworkFunctionRecord {
         this.oam_reference = oam_reference;
     }
 
-    public List<VirtualLinkRecord> getConnected_virtual_link() {
+    public Set<VirtualLinkRecord> getConnected_virtual_link() {
         return connected_virtual_link;
     }
 
-    public void setConnected_virtual_link(List<VirtualLinkRecord> connected_virtual_link) {
+    public void setConnected_virtual_link(Set<VirtualLinkRecord> connected_virtual_link) {
         this.connected_virtual_link = connected_virtual_link;
     }
 
-    public List<String> getPnf_address() {
+    public Set<String> getPnf_address() {
         return pnf_address;
     }
 
-    public void setPnf_address(List<String> pnf_address) {
+    public void setPnf_address(Set<String> pnf_address) {
         this.pnf_address = pnf_address;
     }
 

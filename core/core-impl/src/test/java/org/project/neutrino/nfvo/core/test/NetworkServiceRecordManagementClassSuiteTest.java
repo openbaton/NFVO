@@ -154,7 +154,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		nsd.getMonitoring_parameter().add("monitor3");
 		nsd.setLifecycle_event(new ArrayList<LifecycleEvent>());
 		nsd.setPnfd(new ArrayList<PhysicalNetworkFunctionDescriptor>());
-		nsd.setVnffgd(new ArrayList<VNFForwardingGraph>());
+		nsd.setVnffgd(new ArrayList<VNFForwardingGraphDescriptor>());
 		nsd.setVld(new ArrayList<VirtualLinkDescriptor>());
 		nsd.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
 		List<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new ArrayList<VirtualNetworkFunctionDescriptor>();

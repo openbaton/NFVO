@@ -11,9 +11,8 @@ import org.project.neutrino.nfvo.catalogue.mano.common.Security;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 
 import javax.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
@@ -29,7 +28,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	 * top-down or instantiating the member VNFs as well.
 	 * */
 	@OneToMany(cascade = { CascadeType.ALL/*CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE */}, fetch = FetchType.EAGER)
-	private List<VirtualNetworkFunctionDescriptor> vnfd;
+	private Set<VirtualNetworkFunctionDescriptor> vnfd;
 	/**
 	 * Describe dependencies between VNF. Defined in terms of source and target
 	 * VNF i.e. target VNF "depends on" source VNF. In other words a source VNF
@@ -39,10 +38,10 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 	 * and links within a VNF FG should be instantiated by the NFV Orchestrator.
 	 */
 	@OneToMany(cascade = { CascadeType.ALL/*CascadeType.REFRESH*/}, fetch = FetchType.EAGER)
-	private List<VNFDependency> vnf_dependency;
+	private Set<VNFDependency> vnf_dependency;
 	/* See PhysicalNetworkFunctionDescriptor class for description */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<PhysicalNetworkFunctionDescriptor> pnfd;
+	private Set<PhysicalNetworkFunctionDescriptor> pnfd;
 	/*
 	 * This is a signature of nsd to prevent tampering. The particular hash
 	 * algorithm used to compute the signature, together with the corresponding
@@ -66,33 +65,33 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 		this.enabled = enabled;
 	}
 
-	public List<VirtualNetworkFunctionDescriptor> getVnfd() {
+	public Set<VirtualNetworkFunctionDescriptor> getVnfd() {
 		if (vnfd == null)
-			vnfd = new ArrayList<VirtualNetworkFunctionDescriptor>();
+			vnfd = new HashSet<>();
 		return vnfd;
 	}
 
-	public void setVnfd(List<VirtualNetworkFunctionDescriptor> vnfd) {
+	public void setVnfd(Set<VirtualNetworkFunctionDescriptor> vnfd) {
 		this.vnfd = vnfd;
 	}
 
-	public List<VNFDependency> getVnf_dependency() {
+	public Set<VNFDependency> getVnf_dependency() {
 		if (vnf_dependency == null)
-			vnf_dependency = new ArrayList<VNFDependency>();
+			vnf_dependency = new HashSet<>();
 		return vnf_dependency;
 	}
 
-	public void setVnf_dependency(List<VNFDependency> vnf_dependency) {
+	public void setVnf_dependency(Set<VNFDependency> vnf_dependency) {
 		this.vnf_dependency = vnf_dependency;
 	}
 
-	public List<PhysicalNetworkFunctionDescriptor> getPnfd() {
+	public Set<PhysicalNetworkFunctionDescriptor> getPnfd() {
 		if (pnfd == null)
-			pnfd = new ArrayList<PhysicalNetworkFunctionDescriptor>();
+			pnfd = new HashSet<>();
 		return pnfd;
 	}
 
-	public void setPnfd(List<PhysicalNetworkFunctionDescriptor> pnfd) {
+	public void setPnfd(Set<PhysicalNetworkFunctionDescriptor> pnfd) {
 		this.pnfd = pnfd;
 	}
 

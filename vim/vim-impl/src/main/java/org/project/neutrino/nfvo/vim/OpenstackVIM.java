@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -298,7 +299,7 @@ public class OpenstackVIM implements ImageManagement, ResourceManagement, Networ
     }
 
 //     TODO choose the right image (DONE)
-    private String chooseImage(List<String> vm_images, VimInstance vimInstance) throws VimException {
+    private String chooseImage(Collection<String> vm_images, VimInstance vimInstance) throws VimException {
         openstackClient.init(vimInstance);
         if (vm_images != null && vm_images.size() > 0) {
             for (String image : vm_images){

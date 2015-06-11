@@ -4,7 +4,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
@@ -40,13 +40,13 @@ public abstract class AbstractVirtualLink implements Serializable{
      * QoS options available on the VL, e.g. latency, jitter, etc.
      * */
     @ElementCollection
-    private List<String> qos;
+    private Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
      * */
     @ElementCollection
-    private List<String> test_access;
+    private Set<String> test_access;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree.
      * TODO: think of using Enum instead of String
@@ -80,19 +80,19 @@ public abstract class AbstractVirtualLink implements Serializable{
         this.leaf_requirement = leaf_requirement;
     }
 
-    public List<String> getQos() {
+    public Set<String> getQos() {
         return qos;
     }
 
-    public void setQos(List<String> qos) {
+    public void setQos(Set<String> qos) {
         this.qos = qos;
     }
 
-    public List<String> getTest_access() {
+    public Set<String> getTest_access() {
         return test_access;
     }
 
-    public void setTest_access(List<String> test_access) {
+    public void setTest_access(Set<String> test_access) {
         this.test_access = test_access;
     }
 
