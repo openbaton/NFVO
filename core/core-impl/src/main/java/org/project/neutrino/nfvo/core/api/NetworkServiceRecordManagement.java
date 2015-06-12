@@ -1,5 +1,7 @@
 package org.project.neutrino.nfvo.core.api;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.Event;
+import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -10,9 +12,7 @@ import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.core.utils.NSRUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -56,13 +58,13 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
 
     @Autowired
-    private VimBroker<ResourceManagement> vimBroker;
-
-    @Autowired
     private NSDUtils nsdUtils;
 
     @Autowired
     private VnfmManager vnfmManager;
+
+    @Autowired
+    private org.project.neutrino.nfvo.core.interfaces.ResourceManagement resourceManagement;
 
     // TODO fetch the NetworkServiceDescriptor from the DB
 
@@ -111,10 +113,14 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
          */
         List<Future<String>> ids = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
-            for(VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-                ids.add(vim.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord));
+            Set<Event> events = new HashSet<>();
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
+                events.add(lifecycleEvent.getEvent());
             }
+            if (!events.contains(Event.ALLOCATE))
+                for(VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+                    ids.add(resourceManagement.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord));
+                }
         }
 
         for(Future<String> id : ids){
@@ -159,8 +165,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-                vim.release(virtualDeploymentUnit);
+                resourceManagement.release(virtualDeploymentUnit);
             }
         }
         nsrRepository.remove(networkServiceRecord);

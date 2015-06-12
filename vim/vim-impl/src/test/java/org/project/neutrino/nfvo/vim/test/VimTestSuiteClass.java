@@ -14,13 +14,13 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.vim.AmazonVIM;
 import org.project.neutrino.nfvo.vim.OpenstackVIM;
 import org.project.neutrino.nfvo.vim.TestVIM;
 import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;

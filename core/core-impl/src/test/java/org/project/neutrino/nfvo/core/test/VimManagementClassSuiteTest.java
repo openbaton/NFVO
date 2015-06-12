@@ -20,11 +20,10 @@ import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
 import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -32,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -199,24 +199,24 @@ public class VimManagementClassSuiteTest {
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
 		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 		nsd.setVendor("FOKUS");
-		List<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new ArrayList<VirtualNetworkFunctionDescriptor>();
+		HashSet<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
 		virtualNetworkFunctionDescriptor
-				.setMonitoring_parameter(new ArrayList<String>() {
+				.setMonitoring_parameter(new HashSet<String>() {
 					{
 						add("monitor1");
 						add("monitor2");
 						add("monitor3");
 					}
 				});
-		virtualNetworkFunctionDescriptor.setDeployment_flavour(new ArrayList<VNFDeploymentFlavour>() {{
+		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
 			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 			vdf.setExtId("ext_id");
 			vdf.setFlavour_key("flavor_name");
 			add(vdf);
 		}});
 		virtualNetworkFunctionDescriptor
-				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
+				.setVdu(new HashSet<VirtualDeploymentUnit>() {
 					{
 						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
