@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
+package org.project.neutrino.nfvo.vim_interfaces.network_management;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
