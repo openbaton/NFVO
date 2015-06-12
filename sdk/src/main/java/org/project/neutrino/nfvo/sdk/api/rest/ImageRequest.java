@@ -10,6 +10,7 @@ import java.io.File;
 /**
  * OpenBaton image-related api requester.
  */
+@Component
 public class ImageRequest {
 	
 private static Logger log = LoggerFactory.getLogger("SDKApi");
