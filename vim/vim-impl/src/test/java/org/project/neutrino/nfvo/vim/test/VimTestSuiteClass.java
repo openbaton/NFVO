@@ -18,8 +18,8 @@ import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.vim.AmazonVIM;
 import org.project.neutrino.nfvo.vim.OpenstackVIM;
 import org.project.neutrino.nfvo.vim.TestVIM;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class VimTestSuiteClass {
     private ConfigurableApplicationContext context;
 
     @Autowired
-    private VimBroker<ResourceManagement> resourceManagementVimBroker;
+    private VimBroker vimBroker;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -83,14 +83,14 @@ public class VimTestSuiteClass {
     @Test
     public void testVimBrokers(){
 
-        Assert.assertNotNull(resourceManagementVimBroker);
-        ResourceManagement testVIM = resourceManagementVimBroker.getVim("test");
+        Assert.assertNotNull(vimBroker);
+        Vim testVIM = vimBroker.getVim("test");
         Assert.assertEquals(testVIM.getClass(), TestVIM.class);
-        ResourceManagement openstackVIM = resourceManagementVimBroker.getVim("openstack");
+        Vim openstackVIM = vimBroker.getVim("openstack");
         Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
-        Assert.assertEquals(resourceManagementVimBroker.getVim("amazon").getClass(), AmazonVIM.class);
+        Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
         exception.expect(UnsupportedOperationException.class);
-        resourceManagementVimBroker.getVim("throw_exception");
+        vimBroker.getVim("throw_exception");
     }
 
     @Ignore
