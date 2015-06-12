@@ -1,8 +1,8 @@
-package org.project.neutrino.nfvo.vim_interfaces;
+package org.project.neutrino.nfvo.vim_interfaces.flavor_management;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 
 import java.util.List;
 

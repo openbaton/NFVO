@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.vim_interfaces.client_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 
 import java.io.InputStream;
 import java.util.List;
@@ -52,4 +52,6 @@ public interface ClientInterfaces {
     boolean deleteNetwork(String extId);
 
     Network getNetworkById(String id);
+
+    Quota getQuota();
 }

@@ -20,7 +20,6 @@ public class Quota {
 
     private int cores;
     private int floatingIps;
-    private int gigabytes;
     private int instances;
     private int keyPairs;
     private int ram;
@@ -49,21 +48,9 @@ public class Quota {
         this.keyPairs = keyPairs;
     }
 
-    public int getInstances() {
-        return instances;
-    }
+    public int getInstances() { return instances; }
 
-    public void setInstances(int instances) {
-        this.instances = instances;
-    }
-
-    public int getGigabytes() {
-        return gigabytes;
-    }
-
-    public void setGigabytes(int gigabytes) {
-        this.gigabytes = gigabytes;
-    }
+    public void setInstances(int instances) { this.instances = instances; }
 
     public int getFloatingIps() {
         return floatingIps;
@@ -97,7 +84,6 @@ public class Quota {
                 ", tenant='" + tenant + '\'' +
                 ", cores='" + cores + '\'' +
                 ", floatingIps='" + floatingIps + '\'' +
-                ", gigabytes='" + gigabytes + '\'' +
                 ", instances='" + instances + '\'' +
                 ", keypairs='" + keyPairs + '\'' +
                 ", ram='" + ram + '\'' +
