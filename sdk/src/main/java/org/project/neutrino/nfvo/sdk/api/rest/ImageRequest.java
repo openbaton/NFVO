@@ -5,7 +5,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * OpenBaton image-related api requester.
@@ -26,12 +28,33 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      * @return string: The image filled with values from the api
      */
 	public String create (final File image) {
-        // create the json
-        log.debug("Received CREATE Request");
-        // call the sdk image create function here
+        log.debug("Received CREATE IMAGE Request");
 
-		return "IMAGE CREATED";
+        String result;
+        try {
+            // deserialize the json as string from the file
+            result = readFile(image);
+            log.debug(result);
+
+            // call the sdk request here
+
+            // return the response of the request
+
+            result = "IMAGE CREATED" + " " + result;
+
+        } catch (IOException e) {
+            // maybe use a custom SDK exception here
+            result = "IMAGE COULD NOT BE CREATED" + e.getMessage();
+        }
+        // catch request exceptions here
+        // maybe use a custom SDK exception here
+
+		return result;
 	}
+
+    private String readFile(final File file) throws IOException {
+        return FileUtils.readFileToString(file);
+    }
 
 	/**
      * Removes the VNF software Image from the Image repository
