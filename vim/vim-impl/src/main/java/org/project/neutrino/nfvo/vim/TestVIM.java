@@ -3,17 +3,11 @@ package org.project.neutrino.nfvo.vim;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.Network;
-import org.project.neutrino.nfvo.catalogue.nfvo.Server;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
-import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
-import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
-import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +27,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-public class TestVIM implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement{
+public class TestVIM implements Vim {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -173,5 +167,10 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
     @Override
     public Network query(VimInstance vimInstance, String extId) throws VimException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Quota getQuota(VimInstance vimInstance) {
+        return null;
     }
 }
