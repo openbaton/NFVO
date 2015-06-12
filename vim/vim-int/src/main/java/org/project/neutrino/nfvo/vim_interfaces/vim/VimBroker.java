@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces.Vim;
+package org.project.neutrino.nfvo.vim_interfaces.vim;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.Quota;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;

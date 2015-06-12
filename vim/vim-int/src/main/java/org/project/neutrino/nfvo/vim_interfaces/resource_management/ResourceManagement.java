@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
+package org.project.neutrino.nfvo.vim_interfaces.resource_management;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
