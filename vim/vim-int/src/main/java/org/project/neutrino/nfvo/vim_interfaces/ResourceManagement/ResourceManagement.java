@@ -1,7 +1,8 @@
-package org.project.neutrino.nfvo.vim_interfaces;
+package org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Quota;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
@@ -106,4 +107,10 @@ public interface ResourceManagement {
 	 * @param vdu
 	 */
 	void releaseReservation(VirtualDeploymentUnit vdu) throws VimException;
+
+	/**
+	 * This operations return the maximal Quotas allowed to allocate.
+	 * @return quota
+	 */
+	Quota getQuota(VimInstance vimInstance);
 }
