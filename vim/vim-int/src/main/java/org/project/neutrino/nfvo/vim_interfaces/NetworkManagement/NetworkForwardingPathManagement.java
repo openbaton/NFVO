@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces;
+package org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkForwardingPath;
 

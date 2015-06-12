@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces;
+package org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
