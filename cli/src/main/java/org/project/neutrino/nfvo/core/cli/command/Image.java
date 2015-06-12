@@ -37,7 +37,7 @@ public class Image implements CommandMarker {
 	public String create(
             @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image) {
         // create the json
-		imageRequest.create("TEST");
+		imageRequest.create(image);
         // call the sdk image create function here
 
 		return "IMAGE CREATED";
