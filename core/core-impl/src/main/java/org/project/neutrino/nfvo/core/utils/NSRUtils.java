@@ -95,7 +95,6 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         virtualNetworkFunctionRecord.getAuto_scale_policy().addAll(vnfd.getAuto_scale_policy());
 
-
         // TODO mange the VirtualLinks and links...
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
 

@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.vim_interfaces;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 
 import java.io.InputStream;
 import java.util.List;

@@ -4,8 +4,10 @@ import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualLinkRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
@@ -14,7 +16,7 @@ import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.project.neutrino.nfvo.vim_interfaces.*;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
 import org.project.neutrino.vnfm.interfaces.register.VnfmRegister;
 import org.springframework.boot.SpringApplication;
@@ -105,6 +107,14 @@ public class ApplicationTest {
 
 	@Bean(name = "vnfmEndpointRepository")
 	GenericRepository<VnfmManagerEndpoint> vnfmManagerEndpointRepository() {
+		return mock(GenericRepository.class);
+	}
+	@Bean(name = "virtualLinkDescriptorRepository")
+	GenericRepository<VirtualLinkDescriptor> virtualLinkDescriptorRepository() {
+		return mock(GenericRepository.class);
+	}
+	@Bean(name = "virtualLinkRecordRepository")
+	GenericRepository<VirtualLinkRecord> virtualLinkRecordRepository() {
 		return mock(GenericRepository.class);
 	}
 

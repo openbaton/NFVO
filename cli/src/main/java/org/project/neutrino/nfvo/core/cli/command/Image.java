@@ -32,6 +32,7 @@ public class Image implements CommandMarker {
 	@CliCommand(value = "image create", help = "Adds a new VNF software Image to the image repository")
 	public String create(
             @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image) {
+
 		return "IMAGE CREATED";
 	}
 

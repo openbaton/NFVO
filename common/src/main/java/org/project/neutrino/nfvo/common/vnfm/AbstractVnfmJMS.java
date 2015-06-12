@@ -59,7 +59,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
         log.trace("Inside ONMESSAGE");
         switch (message.getAction()){
             case INSTATIATE:
-                this.instantiate(message.getVirtualNetworkFunctionRecord());
+                this.instantiate((VirtualNetworkFunctionRecord) message.getPayload());
         }
     }
 

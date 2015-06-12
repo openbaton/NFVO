@@ -13,9 +13,9 @@ import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,9 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Mockito.when;
@@ -148,32 +150,32 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
 		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 		nsd.setVendor("FOKUS");
-		nsd.setMonitoring_parameter(new ArrayList<String>());
+		nsd.setMonitoring_parameter(new HashSet<String>());
 		nsd.getMonitoring_parameter().add("monitor1");
 		nsd.getMonitoring_parameter().add("monitor2");
 		nsd.getMonitoring_parameter().add("monitor3");
-		nsd.setLifecycle_event(new ArrayList<LifecycleEvent>());
-		nsd.setPnfd(new ArrayList<PhysicalNetworkFunctionDescriptor>());
-		nsd.setVnffgd(new ArrayList<VNFForwardingGraphDescriptor>());
-		nsd.setVld(new ArrayList<VirtualLinkDescriptor>());
-		nsd.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
-		List<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new ArrayList<VirtualNetworkFunctionDescriptor>();
+		nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
+		nsd.setPnfd(new HashSet<PhysicalNetworkFunctionDescriptor>());
+		nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
+		nsd.setVld(new HashSet<VirtualLinkDescriptor>());
+		nsd.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
+		Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-		virtualNetworkFunctionDescriptor.setMonitoring_parameter(new ArrayList<String>());
+		virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
 		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
 		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor2");
 		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor3");
-		virtualNetworkFunctionDescriptor.setAuto_scale_policy(new ArrayList<AutoScalePolicy>());
-		virtualNetworkFunctionDescriptor.setConnection_point(new ArrayList<ConnectionPoint>());
-		virtualNetworkFunctionDescriptor.setVirtual_link(new ArrayList<InternalVirtualLink>());
-		virtualNetworkFunctionDescriptor.setLifecycle_event(new ArrayList<LifecycleEvent>());
-		virtualNetworkFunctionDescriptor.setDeployment_flavour(new ArrayList<VNFDeploymentFlavour>() {{
+		virtualNetworkFunctionDescriptor.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
+		virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
+		virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
+		virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<LifecycleEvent>());
+		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
 			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 			vdf.setExtId("ext_id");
 			vdf.setFlavour_key("flavor_name");
 			add(vdf);
 		}});
-		virtualNetworkFunctionDescriptor.setVdu(new ArrayList<VirtualDeploymentUnit>() {
+		virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {
 			{
 				VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 				vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
@@ -193,14 +195,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	private NetworkServiceRecord createNetworkServiceRecord() {
 		final NetworkServiceRecord nsr = new NetworkServiceRecord();
 		nsr.setVendor("FOKUS");
-		nsr.setMonitoring_parameter(new ArrayList<String>());
+		nsr.setMonitoring_parameter(new HashSet<String>());
 		nsr.getMonitoring_parameter().add("monitor1");
 		nsr.getMonitoring_parameter().add("monitor2");
 		nsr.getMonitoring_parameter().add("monitor3");
-		ArrayList<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new ArrayList<VirtualNetworkFunctionRecord>();
+		HashSet<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new HashSet<VirtualNetworkFunctionRecord>();
 		VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
 		virtualNetworkFunctionRecord
-				.setMonitoring_parameter(new ArrayList<String>() {
+				.setMonitoring_parameter(new HashSet<String>() {
 					{
 						add("monitor1");
 						add("monitor2");
@@ -212,7 +214,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		vdf.setFlavour_key("flavor_name");
 		virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf.getFlavour_key());
 		virtualNetworkFunctionRecord
-				.setVdu(new ArrayList<VirtualDeploymentUnit>() {
+				.setVdu(new HashSet<VirtualDeploymentUnit>() {
 					{
 						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
