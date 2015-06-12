@@ -4,7 +4,7 @@ import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -20,11 +20,11 @@ import java.util.concurrent.Future;
 @Scope
 public class ResourceManagement implements org.project.neutrino.nfvo.core.interfaces.ResourceManagement {
     @Autowired
-    private VimBroker<org.project.neutrino.nfvo.vim_interfaces.ResourceManagement> vimBroker;
+    private VimBroker vimBroker;
 
     @Override
     public Future<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
-        org.project.neutrino.nfvo.vim_interfaces.ResourceManagement vim;
+        org.project.neutrino.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         return vim.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord);
     }
@@ -56,7 +56,7 @@ public class ResourceManagement implements org.project.neutrino.nfvo.core.interf
 
     @Override
     public void release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
-        org.project.neutrino.nfvo.vim_interfaces.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        org.project.neutrino.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         vim.release(virtualDeploymentUnit);
     }
 
