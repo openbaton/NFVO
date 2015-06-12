@@ -26,6 +26,7 @@ public class Server {
     private String extendedStatus;
     private String extId;
     private String ip;
+    private String floatingIp;
 
     @Temporal(TemporalType.DATE)
     private Date created;
@@ -108,6 +109,10 @@ public class Server {
         this.flavor = flavor;
     }
 
+    public String getFloatingIp() { return floatingIp; }
+
+    public void setFloatingIp(String floatingIp) { this.floatingIp = floatingIp; }
+
     @Override
     public String toString() {
         return "Server{" +
@@ -118,6 +123,7 @@ public class Server {
                 ", version=" + version +
                 ", extId='" + extId + '\'' +
                 ", ip='" + ip + '\'' +
+                ", floatingIp='" + floatingIp + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
                 '}';
