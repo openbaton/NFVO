@@ -1,5 +1,14 @@
 package org.project.neutrino.nfvo.core.tests.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,15 +31,6 @@ import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagem
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class ApiRestNSDescriptorTest {
 
@@ -108,7 +108,8 @@ public class ApiRestNSDescriptorTest {
 	// XXX from here VirtualNetworkFunctionDescriptor
 	@Test
 	public void testpostVNFD() {
-		Set<VirtualNetworkFunctionDescriptor> list = new HashSet<>();
+
+		Set<VirtualNetworkFunctionDescriptor> list = new HashSet<VirtualNetworkFunctionDescriptor>();
 		networkServiceDescriptor.setVnfd(list);
 		VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 		vnfd.setName("test_VNFD");
@@ -205,7 +206,8 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM VNFDependency
 	@Test
 	public void testpostVNFDependency() {
-		Set<VNFDependency> list = new HashSet<>();
+
+		Set<VNFDependency> list = new HashSet<VNFDependency>();
 		networkServiceDescriptor.setVnf_dependency(list);
 		VNFDependency vnfd = new VNFDependency();
 
@@ -299,7 +301,8 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM PhysicalNetworkFunctionDescriptor
 	@Test
 	public void testpostPhysicalNetworkFunctionDescriptor() {
-		Set<PhysicalNetworkFunctionDescriptor> list = new HashSet<>();
+
+		Set<PhysicalNetworkFunctionDescriptor> list = new HashSet<PhysicalNetworkFunctionDescriptor>();
 		networkServiceDescriptor.setPnfd(list);
 		PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
 

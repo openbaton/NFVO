@@ -43,7 +43,7 @@ public class RestNetworkServiceRecord {
 	/**
 	 * This operation allows submitting and validating a Network Service
 	 * Descriptor (NSD), including any related VNFFGD and VLD.
-	 * 
+	 *
 	 * @param networkServiceDescriptor
 	 *            : the Network Service Descriptor to be created
 	 * @return NetworkServiceRecord: the Network Service Descriptor filled with
@@ -66,7 +66,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * This operation is used to remove a disabled Network Service Descriptor
-	 * 
+	 *
 	 * @param id
 	 *            : the id of Network Service Descriptor
 	 */
@@ -84,7 +84,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * This operation returns the list of Network Service Descriptor (NSD)
-	 * 
+	 *
 	 * @return List<NetworkServiceRecord>: the list of Network Service
 	 *         Descriptor stored
 	 */
@@ -97,7 +97,7 @@ public class RestNetworkServiceRecord {
 	/**
 	 * This operation returns the Network Service Descriptor (NSD) selected by
 	 * id
-	 * 
+	 *
 	 * @param id
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceRecord: the Network Service Descriptor selected
@@ -117,7 +117,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * This operation updates the Network Service Descriptor (NSD)
-	 * 
+	 *
 	 * @param networkServiceRecord
 	 *            : the Network Service Descriptor to be updated
 	 * @param id
@@ -135,7 +135,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Returns the list of VirtualNetworkFunctionDescriptor into a NSD with id
-	 * 
+	 *
 	 * @param id
 	 *            : The id of NSD
 	 * @return List<VirtualNetworkFunctionDescriptor>: The List of
@@ -228,7 +228,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Returns the list of VNFDependency into a NSD with id
-	 * 
+	 *
 	 * @param id
 	 *            : The id of NSD
 	 * @return List<VNFDependency>: The List of VNFDependency into NSD
@@ -320,7 +320,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Returns the list of PhysicalNetworkFunctionRecord into a NSD with id
-	 * 
+	 *
 	 * @param id
 	 *            : The id of NSD
 	 * @return List<PhysicalNetworkFunctionRecord>: The List of
@@ -343,7 +343,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Returns the PhysicalNetworkFunctionRecord
-	 * 
+	 *
 	 * @param id
 	 *            : The NSD id
 	 * @param id_pnf
@@ -370,7 +370,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Deletes the PhysicalNetworkFunctionRecord with the id_pnf
-	 * 
+	 *
 	 * @param id
 	 *            : The NSD id
 	 * @param id_pnf
@@ -396,7 +396,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Stores the PhysicalNetworkFunctionRecord
-	 * 
+	 *
 	 * @param pDescriptor
 	 *            : The PhysicalNetworkFunctionRecord to be stored
 	 * @param id
@@ -423,7 +423,7 @@ public class RestNetworkServiceRecord {
 
 	/**
 	 * Edits the PhysicalNetworkFunctionRecord
-	 * 
+	 *
 	 * @param pRecord
 	 *            : The PhysicalNetworkFunctionRecord to be edited
 	 * @param id

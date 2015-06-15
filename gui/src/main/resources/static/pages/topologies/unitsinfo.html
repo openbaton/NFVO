@@ -1,0 +1,166 @@
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1>Container <small>Information</small></h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a></li>
+            <li><a href="#topologies/{{topologyId}}"><i class="fa fa fa-cloud-upload"></i>
+                    Topology: {{topologyId}}</a></li>
+            <li class="active"><i class="fa fa-cogs"></i>
+                Container: {{serviceSelected.containerName}}</li>
+        </ol>
+    </div>
+</div>
+<div class="row" ng-show="true">
+    <div class="col-lg-12 top-buffer">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
+        <div >
+            <!--                <div id="divTableUnit" ng-if="serviceSelected">
+                                <hr>
+                                <h4>Units on Datacenter: {{k}}</h4>
+                            </div>-->
+
+            <div id="divTableServices" ng-if="serviceSelected" >
+                <hr>
+                <h3>Services into Container: {{serviceSelected.containerName}}</h3>
+                <!--<div ng-bind-html="selectedServiceHtml">serviceSelected</div>-->
+            </div>
+            <table id="tableInfoService" class="table table-bordered table-striped table-hover tablesorter prettyprint top-buffer"
+                   ng-if="serviceSelected">
+                <thead>
+                    <tr>
+                        <th ng-click="predicate = 'id';
+                            reverse = !reverse">id <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'version';
+                            reverse = !reverse">version <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'instanceName';
+                            reverse = !reverse">instanceName <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'flavour';
+                            reverse = !reverse">flavour <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'serviceType';
+                            reverse = !reverse">serviceType <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'state';
+                            reverse = !reverse">state <i class="fa fa-sort"></i></th>
+                        <!--<th>Unit</th>-->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="relationElement in relationElements| orderBy:predicate:reverse">
+                        <td><a href="#topologies/{{topologyId}}/services/{{relationElement.serviceInstance.id}}">{{relationElement.serviceInstance.id}}</a></td>
+                        <td>{{relationElement.serviceInstance.version}}</td>
+                        <td>{{relationElement.serviceInstance.instanceName}}</td>
+                        <td>{{relationElement.serviceInstance.flavour}}</td>
+                        <td>{{relationElement.serviceInstance.serviceType}}</td>
+                        <td>{{relationElement.serviceInstance.state}}</td>
+                        <!--                        <td>
+                                                    <div class="btn-group pull-right"><button type="button" class="btn btn-default" ng-click="removeUnit(containerId)">-</button> 
+                                                        <button type="button" class="btn btn-default" ng-click="addUnit(containerId)">+</button>
+                                                    </div>
+                                                </td>-->
+                        <!--<td><a ng-href="#topologies/{{topologyId}}/containers/{{serviceSelected.id}}/units/{{relationElement.serviceInstance.id}}">Units</a></td>-->
+                        <td>
+                            <div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action <span class="caret"></span></button> 
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href=""  ng-click="cleanService(relationElement.serviceInstance.id)">Clean</a></li>
+                                    <li class="divider"></li>
+                                    <li><a  href=""  ng-click="deleteServiceInstance(relationElement.serviceInstance)">Delete</a></li>   
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
+            <h3>Units for Container: {{serviceSelected.containerName}}</h3>
+            <table id="tableInfoUnit" class="table table-bordered table-striped table-hover tablesorter prettyprint top-buffer"
+                   ng-if="serviceSelected">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>ips</th>
+                        <th>datacenter</th>
+                        <th>hostname</th>
+                        <th>state</th>
+                        <th>floating Ips</th>
+                        <th>upTime</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="unit in tablesUnits">
+                        <td>{{unit.id}}</td>
+                        <td>
+                            <p ng-repeat="(ku,vu) in unit.ips" >
+                                <b>{{ku}}:</b><br>{{vu}}
+                            </p>
+                        </td>
+                        <td><b>id:</b> {{unit.datacenterId}}
+                        <td>{{unit.hostname}}</td>
+                        <td>
+                            {{unit.state}}
+                            <div ng-show="unit.message">
+                                Message: "{{unit.message}}"
+                            </div>
+                        </td>
+                        <td><p ng-repeat="(ku,vu) in unit.floatingIps" >
+                                <b>{{ku}}:</b><br>{{vu}}
+                            </p></td>
+                        <td>{{returnUptime(unit.upTime)}}</td>
+                        <td>
+                            <div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action <span class="caret"></span></button> 
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href=""  ng-click="startUnit(instanceId, unit.id)">Start</a></li>
+                                    <li><a href=""  ng-click="stopUnit(instanceId, unit.id)">Stop</a></li>
+                                    <li><a href=""  ng-click="cleanUnit(instanceId, unit.id)">Clean</a></li>
+                                    <li><a href=""  ng-click="testUnit(instanceId, unit.id)">Test</a></li>
+                                    <li ng-show="!isEmpty(unit.floatingIps)"><a href=""  ng-click="deleteFloatingIp(unit)">Delete Floating IP</a></li>
+                                    <li ng-show="isEmpty(unit.floatingIps)"><a href=""  ng-click="showFloatingIps(unit)">Set Floating IP</a></li>
+                                    <li class="divider"></li>
+                                    <li><a  href=""  ng-click="deleteUnitToService(containerId, unit.id)">Delete</a></li>   
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="floatingIP">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Set Floating IP for unit: {{modalUnit.hostname}}</h4>
+            </div>
+            <div class="modal-body">
+                <br/>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class=" ">Networks</label> 
+                        <select name="typeSelect" class="form-control modal-select" ng-init="floatingIP.net = k[0]" ng-model="floatingIP.net" ng-options="k as k for (k,v) in networks| orderBy:'k':false" ></select>
+                        <span class="help-block">Choose one network</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class=" ">FloatingIPs</label> 
+                        <select name="typeSelect" class="form-control modal-select" ng-init="floatingIP.IP = ip[0]" ng-model="floatingIP.IP" ng-options="ip for ip in floatingIPs| orderBy:'ip':false" ></select>
+                        <span ng-show="floatingIP.net" class="help-block">Set the Floating IP for network: {{floatingIP.net}}</span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="addInstance" 
+                        ng-disabled="!floatingIP.IP || !floatingIP.net"
+                        ng-click="setFloatingIP()" class="btn btn-primary">Set Floating IP</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -161,7 +161,7 @@ public class TestVIM implements Vim {
 
     @Override
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
-        throw new UnsupportedOperationException();
+        return this.testClient.listNetworks();
     }
 
     @Override
