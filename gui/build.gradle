@@ -1,0 +1,11 @@
+//dependencies{
+ //   compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
+//     compile "org.springframework.boot:spring-boot-starter-web:1.0.1.RELEASE"
+//    }
+    
+project(":gui") {
+    dependencies {
+ 		compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
+    }
+}
+ 
