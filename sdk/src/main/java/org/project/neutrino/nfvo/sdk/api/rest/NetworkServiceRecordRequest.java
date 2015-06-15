@@ -7,6 +7,18 @@ import java.io.File;
  */
 public class NetworkServiceRecordRequest{
 
+	private final String path;
+
+	/**
+	 * Create a NetworkServiceRecord requester with a given url path
+	 *
+	 * @param path
+	 * 				the url path used for the api requests
+	 */
+	public NetworkServiceRecordRequest(final String path) {
+		this.path = path;
+	}
+
 	/**
 	 * Creates a Network Service Record
 	 *

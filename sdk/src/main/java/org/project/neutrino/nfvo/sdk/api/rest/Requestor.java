@@ -1,18 +1,32 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
+import org.project.neutrino.nfvo.sdk.api.util.PropertyReader;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * OpenBaton api requestor. Can be extended with security features to provide instances only only to granted requestors.
  * The Class is implemented in a static way to avoid any dependencies to spring and to create a corresponding small lib size.
  */
 public final class Requestor {
 
-	// create the requester here
-	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest();
-	private static final ImageRequest imageRequest = new ImageRequest();
-	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest();
-	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest();
-	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest();
+	// application.properties path as string
+	private static final String PROPERTIES_FILE = "application.properties";
 
+	// get the url configuration from
+	private static final PropertyReader propertyReader = new PropertyReader(PROPERTIES_FILE);
+
+	// create the requester here, maybe shift this to a manager
+	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationPath());
+	private static final ImageRequest imageRequest = new ImageRequest(propertyReader.getRestImagePath());
+	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorPath());
+	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordPath());
+	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstancePath());
+
+//	TODO
+//	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkPath());
 
 	// create a "static class" with a private constructor
 	private Requestor() {};
@@ -61,5 +75,14 @@ public final class Requestor {
 	public static VimInstanceRequest getVimInstanceRequest() {
 		return vimInstanceRequest;
 	}
+
+	/**
+	 * Gets the virtualLink requester
+	 *
+	 * @return virtualLinkRequest: The (final) static virtualLink requester
+	 */
+//	public static VirtualLinkRequest getVirtualLinkRequest() {
+//		return virtualLinkRequest;
+//	}
 
 }

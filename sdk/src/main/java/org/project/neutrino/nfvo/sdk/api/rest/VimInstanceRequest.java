@@ -7,6 +7,18 @@ import java.io.File;
  */
 public class VimInstanceRequest {
 
+	private final String path;
+
+	/**
+	 * Create a VimInstance requester with a given url path
+	 *
+	 * @param path
+	 * 				the url path used for the api requests
+	 */
+	public VimInstanceRequest(final String path) {
+		this.path = path;
+	}
+
 	/**
 	 * Adds a new datacenter to the datacenter repository
 	 *
