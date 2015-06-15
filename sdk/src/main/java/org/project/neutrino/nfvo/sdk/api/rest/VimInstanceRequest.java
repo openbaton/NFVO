@@ -6,8 +6,6 @@ import java.io.File;
  * OpenBaton viminstance(datacenter)-related api requester.
  */
 public class VimInstanceRequest {
-	
-//	private static Logger log = LoggerFactory.getLogger("SDKApi");
 
 	/**
 	 * Adds a new datacenter to the datacenter repository
