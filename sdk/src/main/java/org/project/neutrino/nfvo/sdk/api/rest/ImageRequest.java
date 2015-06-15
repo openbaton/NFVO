@@ -3,6 +3,11 @@ package org.project.neutrino.nfvo.sdk.api.rest;
 import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
 
 import org.apache.commons.io.FileUtils;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 
@@ -10,6 +15,18 @@ import java.io.IOException;
  * OpenBaton image-related api requester.
  */
 public class ImageRequest {
+
+    private final String path;
+
+    /**
+     * Create a image requester with a given url path
+     *
+     * @param path
+     * 				the url path used for the api requests
+     */
+    public ImageRequest(final String path) {
+        this.path = path;
+    }
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -20,32 +37,35 @@ public class ImageRequest {
      */
 	public String create (final File image) throws SDKException {
 
-        String result;
+        String result = "";
         try {
             // deserialize the json as string from the file
-            result = readFile(image);
+            result = FileUtils.readFileToString(image);
+//            System.out.println(path);
 
-            // call the sdk request here
-//            Requestor.post(result)
+            // call the api here
+            String url = "http://localhost:8080/images";
+            HttpResponse<JsonNode> httpResponse = Unirest.post(url)
+                    .header("accept", "application/json")
+                    .body(result)
+                    .asJson();
+            JSONObject responseJSONBody = httpResponse.getBody().getObject();
+//          call toString() of the response body
+            System.out.println(responseJSONBody);
 
             // return the response of the request
+            result = "IMAGE CREATED" + " " + responseJSONBody;
 
-            result = "IMAGE CREATED" + " " + result;
+        } catch (IOException | UnirestException e) {
+            // close the unirest threadpool
+//            Unirest.shutdown();
 
-        } catch (IOException e) {
-            // maybe use a custom SDK exception here
-            result = "IMAGE COULD NOT BE CREATED" + e.getMessage();
-            throw new SDKException("File Not Found");
+            // catch request exceptions here
+            result = "IMAGE COULD NOT BE CREATED";
+            throw new SDKException("Something went wrong.");
         }
-        // catch request exceptions here
-        // maybe use a custom SDK exception here
-
 		return result;
 	}
-
-    private String readFile(final File file) throws IOException {
-        return FileUtils.readFileToString(file);
-    }
 
 	/**
      * Removes the VNF software Image from the Image repository

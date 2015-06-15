@@ -6,7 +6,19 @@ import java.io.File;
  * OpenBaton network-service-descriptor-related api requester.
  */
 public class NetworkServiceDescriptorRequest {
-	
+
+	private final String path;
+
+	/**
+	 * Create a NetworkServiceDescriptor requester with a given url path
+	 *
+	 * @param path
+	 * 				the url path used for the api requests
+	 */
+	public NetworkServiceDescriptorRequest(final String path) {
+		this.path = path;
+	}
+
 	/**
 	 * This operation allows submitting and validating a Network Service
 	 * Descriptor (NSD), including any related VNFFGD and VLD.

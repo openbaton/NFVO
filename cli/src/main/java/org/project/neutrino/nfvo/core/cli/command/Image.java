@@ -36,18 +36,14 @@ public class Image implements CommandMarker {
 	@CliCommand(value = "image create", help = "Adds a new VNF software Image to the image repository")
 	public String create(
             @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image) {
-        // create the json
+		// call the sdk image create function
 		try {
 			ImageRequest imageRequest = Requestor.getImageRequest();
-			imageRequest.create(image);
-			return "IMAGE CREATED";
+			return imageRequest.create(image);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "IMAGE NOT CREATED";
 		}
-
-
-        // call the sdk image create function her
 	}
 
 	/**

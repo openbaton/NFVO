@@ -7,6 +7,18 @@ import java.io.File;
  */
 public class ConfigurationRequest {
 
+	private final String path;
+
+	/**
+	 * Create a configuration requester with a given url path
+	 *
+	 * @param path
+	 * 				the url path used for the api requests
+	 */
+	public ConfigurationRequest(final String path) {
+		this.path = path;
+	}
+
 	/**
 	 * Adds a new Configuration to the Configurations repository
 	 *
