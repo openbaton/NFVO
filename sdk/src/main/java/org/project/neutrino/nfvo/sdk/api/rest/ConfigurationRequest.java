@@ -1,21 +1,13 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 
 /**
  * OpenBaton configuration-related api requester.
  */
-@Component
 public class ConfigurationRequest {
 	
 //	private static Logger log = LoggerFactory.getLogger("CLInterface");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	/**
 	 * Adds a new Configuration to the Configurations repository

@@ -1,8 +1,7 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.FileUtils;
@@ -12,13 +11,9 @@ import java.io.IOException;
 /**
  * OpenBaton image-related api requester.
  */
-@Component
 public class ImageRequest {
 	
 private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -27,7 +22,7 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      *            : Image to add
      * @return string: The image filled with values from the api
      */
-	public String create (final File image) {
+	public String create (final File image) throws SDKException {
         log.debug("Received CREATE IMAGE Request");
 
         String result;
@@ -37,6 +32,7 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
             log.debug(result);
 
             // call the sdk request here
+//            Requestor.post(result)
 
             // return the response of the request
 
@@ -45,6 +41,7 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
         } catch (IOException e) {
             // maybe use a custom SDK exception here
             result = "IMAGE COULD NOT BE CREATED" + e.getMessage();
+            throw new SDKException("File Not Found");
         }
         // catch request exceptions here
         // maybe use a custom SDK exception here

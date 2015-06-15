@@ -1,6 +1,9 @@
 package org.project.neutrino.nfvo.core.cli.command;
 
+import org.project.neutrino.nfvo.sdk.api.rest.Requestor;
 import org.project.neutrino.nfvo.sdk.api.rest.ImageRequest;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,6 @@ public class Image implements CommandMarker {
 	@Autowired
 	private ConfigurableApplicationContext context;
 
-	@Autowired
-	private ImageRequest imageRequest;
-
     /**
      * Adds a new VNF software Image to the image repository
      *
@@ -37,10 +37,17 @@ public class Image implements CommandMarker {
 	public String create(
             @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image) {
         // create the json
-		imageRequest.create(image);
-        // call the sdk image create function here
+		try {
+			ImageRequest imageRequest = Requestor.getImageRequest();
+			imageRequest.create(image);
+			return "IMAGE CREATED";
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "IMAGE NOT CREATED";
+		}
 
-		return "IMAGE CREATED";
+
+        // call the sdk image create function her
 	}
 
 	/**

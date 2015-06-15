@@ -1,22 +1,14 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 
 /**
  * OpenBaton network-service-descriptor-related api requester.
  */
-@Component
 public class NetworkServiceDescriptorRequest {
 	
 //	private static Logger log = LoggerFactory.getLogger("SDKApi");
 	
-	@Autowired
-	private ConfigurableApplicationContext context;
-
 	/**
 	 * This operation allows submitting and validating a Network Service
 	 * Descriptor (NSD), including any related VNFFGD and VLD.
