@@ -167,7 +167,7 @@ public class TestVIM implements ImageManagement, ResourceManagement, NetworkMana
 
     @Override
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
-        throw new UnsupportedOperationException();
+        return this.testClient.listNetworks();
     }
 
     @Override
