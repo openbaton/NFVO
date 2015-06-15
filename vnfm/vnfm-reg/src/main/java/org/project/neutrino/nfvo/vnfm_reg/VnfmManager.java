@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vnfm_reg;
 
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.Action;
@@ -7,6 +8,8 @@ import org.project.neutrino.nfvo.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
 import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,11 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     @Autowired
     @Qualifier("vnfmRegister")
     private org.project.neutrino.vnfm.interfaces.register.VnfmRegister vnfmRegister;
+
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private ResourceManagement resourceManagement;
 
     @Override
     @Async
@@ -63,7 +70,7 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
 //            vnfr.setDependency(null);
 //
 //            vnfr.setLifecycle_event(null);
-            coreMessage.setVirtualNetworkFunctionRecord(vnfr);
+            coreMessage.setPayload(vnfr);
 
             /**
              *  TODO Here use an abstraction to call the particular vnfm_reg
@@ -83,18 +90,57 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
 
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
-    public void actionFinished(@Payload CoreMessage coreMessage) {
+    public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
         log.debug("Received: " + coreMessage);
-        ApplicationEventNFVO event = new ApplicationEventNFVO(this, coreMessage.getAction());
-        log.debug("Publishing event: " + event);
-        publisher.publishEvent(event);
+
+        try {
+            this.executeAction(coreMessage);
+        } catch (VimException e) {
+            log.error(e.getMessage());
+            VnfmSender vnfmSender;
+            try {
+
+                vnfmSender = this.getVnfmSender("jms");// we know it is jms, I'm in a jms receiver...
+            } catch (BeansException e2) {
+                throw new NotFoundException(e2);
+            }
+
+            CoreMessage errorMessage = new CoreMessage();
+            errorMessage.setAction(Action.ERROR);
+            errorMessage.setPayload("There was an error while deploying VMs");
+            vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(((VirtualNetworkFunctionRecord) coreMessage.getPayload()).getType()));
+        }
     }
 
     @Override
     public VnfmSender getVnfmSender(String endpointType) throws BeansException{
         String senderName = endpointType + "Sender";
-
         return (VnfmSender) this.context.getBean(senderName);
+    }
+
+    @Override
+    public void executeAction(CoreMessage message) throws VimException {
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+        switch (message.getAction()){
+
+            case INSTATIATE_FINISH:
+                ApplicationEventNFVO event = new ApplicationEventNFVO(this, message.getAction());
+                log.debug("Publishing event: " + event);
+                publisher.publishEvent(event);
+                break;
+            case RELEASE_RESOURCES:
+                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
+                    resourceManagement.release(vdu);
+                break;
+            case ALLOCATE_RESOURCES:
+                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
+                    resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
+                break;
+            case INSTATIATE:
+                break;
+        }
     }
 
     @Override

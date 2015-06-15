@@ -1,14 +1,12 @@
 package org.project.neutrino.nfvo.vim;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
-import org.project.neutrino.nfvo.catalogue.nfvo.Server;
-import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
-import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -24,7 +22,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-public class AmazonVIM implements ImageManagement, ResourceManagement {
+public class AmazonVIM implements Vim {
 
     @Autowired
     @Qualifier("amazonClient")
@@ -109,5 +107,55 @@ public class AmazonVIM implements ImageManagement, ResourceManagement {
     @Override
     public void releaseReservation(VirtualDeploymentUnit vdu) {
 
+    }
+
+    @Override
+    public Quota getQuota(VimInstance vimInstance) {
+        return null;
+    }
+
+    @Override
+    public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
+        return null;
+    }
+
+    @Override
+    public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException {
+
+    }
+
+    @Override
+    public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
+        return null;
+    }
+
+    @Override
+    public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
+        return null;
+    }
+
+    @Override
+    public Network add(VimInstance vimInstance, Network network) throws VimException {
+        return null;
+    }
+
+    @Override
+    public void delete(VimInstance vimInstance, Network network) throws VimException {
+
+    }
+
+    @Override
+    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
+        return null;
+    }
+
+    @Override
+    public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
+        return null;
+    }
+
+    @Override
+    public Network query(VimInstance vimInstance, String extId) throws VimException {
+        return null;
     }
 }

@@ -129,4 +129,9 @@ public class AmazonClient implements ClientInterfaces{
     public Network getNetworkById(String id) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Quota getQuota() {
+        throw new UnsupportedOperationException();
+    }
 }
