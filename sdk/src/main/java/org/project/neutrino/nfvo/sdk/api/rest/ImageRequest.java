@@ -2,8 +2,6 @@ package org.project.neutrino.nfvo.sdk.api.rest;
 
 import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +10,6 @@ import java.io.IOException;
  * OpenBaton image-related api requester.
  */
 public class ImageRequest {
-	
-private static Logger log = LoggerFactory.getLogger("SDKApi");
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -23,13 +19,11 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      * @return string: The image filled with values from the api
      */
 	public String create (final File image) throws SDKException {
-        log.debug("Received CREATE IMAGE Request");
 
         String result;
         try {
             // deserialize the json as string from the file
             result = readFile(image);
-            log.debug(result);
 
             // call the sdk request here
 //            Requestor.post(result)

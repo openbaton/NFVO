@@ -7,8 +7,6 @@ import java.io.File;
  */
 public class NetworkServiceDescriptorRequest {
 	
-//	private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
 	/**
 	 * This operation allows submitting and validating a Network Service
 	 * Descriptor (NSD), including any related VNFFGD and VLD.

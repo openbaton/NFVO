@@ -6,8 +6,6 @@ import java.io.File;
  * OpenBaton configuration-related api requester.
  */
 public class ConfigurationRequest {
-	
-//	private static Logger log = LoggerFactory.getLogger("CLInterface");
 
 	/**
 	 * Adds a new Configuration to the Configurations repository

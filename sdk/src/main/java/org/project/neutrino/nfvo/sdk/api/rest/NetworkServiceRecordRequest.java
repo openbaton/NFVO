@@ -6,8 +6,7 @@ import java.io.File;
  * OpenBaton image-related commands api requester.
  */
 public class NetworkServiceRecordRequest{
-	
-//	private static Logger log = LoggerFactory.getLogger("SDKApi");
+
 	/**
 	 * Creates a Network Service Record
 	 *
