@@ -16,11 +16,9 @@ import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.interfaces.VimManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
-import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
-import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -55,11 +52,8 @@ public class VimManagementClassSuiteTest {
 
 
 	@Autowired
-	VimBroker<ImageManagement> imageManagementVimBroker;
-	@Autowired
-	VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker;
-	@Autowired
-	VimBroker<NetworkManagement> networkManagementVimBroker;
+	VimBroker vimBroker;
+
 	@Autowired
 	GenericRepository<VimInstance> vimRepository;
 
@@ -142,17 +136,9 @@ public class VimManagementClassSuiteTest {
 	}
 
 	private void initMocks() throws VimException {
-		ImageManagement imageManagement = mock(ImageManagement.class);
-		when(imageManagement.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
-		when(imageManagementVimBroker.getVim(anyString())).thenReturn(imageManagement);
-
-		NetworkManagement networkManagement = mock(NetworkManagement.class);
-		when(networkManagement.queryNetwork(any(VimInstance.class))).thenReturn(new ArrayList<Network>());
-		when(networkManagementVimBroker.getVim(anyString())).thenReturn(networkManagement);
-
-		DeploymentFlavorManagement deploymentFlavorManagement = mock(DeploymentFlavorManagement.class);
-		when(deploymentFlavorManagement.queryDeploymentFlavors(any(VimInstance.class))).thenReturn(new ArrayList<DeploymentFlavour>());
-		when(flavorManagementVimBroker.getVim(anyString())).thenReturn(deploymentFlavorManagement);
+		Vim vim = mock(Vim.class);
+		when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
+		when(vimBroker.getVim(anyString())).thenReturn(vim);
 	}
 
 	@Test

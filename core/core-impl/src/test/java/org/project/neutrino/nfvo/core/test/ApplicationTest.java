@@ -15,8 +15,9 @@ import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.*;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
 import org.project.neutrino.vnfm.interfaces.register.VnfmRegister;
 import org.springframework.boot.SpringApplication;
@@ -119,25 +120,12 @@ public class ApplicationTest {
 	}
 
 	@Bean
-	VimBroker<ResourceManagement> vimBroker() throws VimException {
+	VimBroker vimBroker() throws VimException {
 		VimBroker mock = mock(VimBroker.class);
-		ResourceManagement resourceManagement = mock(ResourceManagement.class);
-		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
-		when(mock.getVim(anyString())).thenReturn(resourceManagement);
+		Vim vim = mock(Vim.class);
+		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
+		when(mock.getVim(anyString())).thenReturn(vim);
 		return mock;
-	}
-
-	@Bean
-	VimBroker<ImageManagement> imageManagementVimBroker(){
-		return mock(VimBroker.class);
-	}
-	@Bean
-	VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker(){
-		return mock(VimBroker.class);
-	}
-	@Bean
-	VimBroker<NetworkManagement> networkManagementVimBroker(){
-		return mock(VimBroker.class);
 	}
 
 	public static void main(String[] argv) {

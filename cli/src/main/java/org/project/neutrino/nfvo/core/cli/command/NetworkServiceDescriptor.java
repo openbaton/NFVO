@@ -197,5 +197,172 @@ public class NetworkServiceDescriptor implements CommandMarker {
 		return "IMAGE UPDATED";
 	}
 
+	/**
+	 * Returns the list of PhysicalNetworkFunctionDescriptor into a NSD with id
+	 *
+	 * @param id
+	 *            : The id of NSD
+	 * @return List<PhysicalNetworkFunctionDescriptor>: The List of
+	 *         PhysicalNetworkFunctionDescriptor into NSD
+	 *
+	 */
+	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptors", help = "TODO")
+	public String getPhysicalNetworkFunctionDescriptors(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
+		return "IMAGE UPDATED";
+	}
 
+	/**
+	 * Returns the PhysicalNetworkFunctionDescriptor
+	 *
+	 * @param id
+	 *            : The NSD id
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor selected
+	 *
+	 */
+	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptor", help = "TODO")
+	public String getPhysicalNetworkFunctionDescriptor(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Deletes the PhysicalNetworkFunctionDescriptor with the id_pnf
+	 *
+	 * @param id
+	 *            : The NSD id
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
+	 */
+	@CliCommand(value = "networkServiceDescriptor deletePhysicalNetworkFunctionDescriptor", help = "TODO")
+	public String deletePhysicalNetworkFunctionDescriptor(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Stores the PhysicalNetworkFunctionDescriptor
+	 *
+	 * @param pnf
+	 *            : The PhysicalNetworkFunctionDescriptor to be stored
+	 * @param id
+	 *            : The NSD id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor stored
+	 * @
+	 */
+	@CliCommand(value = "networkServiceDescriptor postPhysicalNetworkFunctionDescriptor", help = "TODO")
+	public String postPhysicalNetworkFunctionDescriptor(
+			@CliOption(key = { "pnfFile" }, mandatory = true, help = "TODO") final File pnf,
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Edits the PhysicalNetworkFunctionDescriptor
+	 *
+	 * @param pnf
+	 *            : The PhysicalNetworkFunctionDescriptor to be edited
+	 * @param id
+	 *            : The NSD id
+	 * @return PhysicalNetworkFunctionDescriptor: The
+	 *         PhysicalNetworkFunctionDescriptor edited
+	 * @
+	 */
+	@CliCommand(value = "networkServiceDescriptor updatePNFD", help = "TODO")
+	public String updatePNFD(
+			@CliOption(key = { "pnfFile" }, mandatory = true, help = "TODO") final File pnf,
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Returns the Security into a NSD with id
+	 *
+	 * @param id
+	 *            : The id of NSD
+	 * @return Security: The Security of PhysicalNetworkFunctionDescriptor into
+	 *         NSD
+	 */
+	@CliCommand(value = "networkServiceDescriptor getSecurity", help = "TODO")
+	public String getSecurity(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Returns the Security with the id_s
+	 *
+	 * @param id
+	 *            : The NSD id
+	 * @param id_s
+	 *            : The Security id
+	 * @return Security: The Security selected by id_s
+	 */
+	@CliCommand(value = "networkServiceDescriptor getSecurity", help = "TODO")
+	public String getSecurity(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Deletes the Security with the id_s
+	 *
+	 * @param id
+	 *            : The NSD id
+	 * @param id_s
+	 *            : The Security id
+	 * @
+	 */
+	@CliCommand(value = "networkServiceDescriptor deleteSecurity", help = "TODO")
+	public String deleteSecurity(
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 * Stores the Security into NSD
+	 *
+	 * @param security
+	 *            : The Security to be stored
+	 * @param id
+	 *            : The id of NSD
+	 * @return Security: The Security stored
+	 * @
+	 */
+	@CliCommand(value = "networkServiceDescriptor postSecurity", help = "TODO")
+	public String postSecurity(
+			@CliOption(key = { "securityFile" }, mandatory = true, help = "TODO") final File security,
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 *
+	 */
+	@CliCommand(value = "networkServiceDescriptor updateSecurity", help = "TODO")
+	public String updateSecurity(
+			@CliOption(key = { "securityFile" }, mandatory = true, help = "TODO") final File security,
+			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+		return "IMAGE UPDATED";
+	}
+
+	/**
+	 *
+	 */
+	@CliCommand(value = "networkServiceDescriptor createRecord", help = "TODO")
+	public String createRecord(
+			@CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "TODO") final File networkServiceDescriptor) {
+		return "IMAGE UPDATED";
+	}
 }

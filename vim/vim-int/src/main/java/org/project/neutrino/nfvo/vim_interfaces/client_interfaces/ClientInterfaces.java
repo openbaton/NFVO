@@ -52,4 +52,6 @@ public interface ClientInterfaces {
     boolean deleteNetwork(String extId);
 
     Network getNetworkById(String id);
+
+    Quota getQuota();
 }
