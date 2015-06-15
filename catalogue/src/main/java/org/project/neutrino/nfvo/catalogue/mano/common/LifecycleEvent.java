@@ -10,7 +10,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -25,9 +25,12 @@ public class LifecycleEvent implements Serializable{
 	
 	@Version
 	private int version = 0;
-	
+
+	@Enumerated(EnumType.STRING)
+	private Event event;
+
 	@ElementCollection(fetch = FetchType.EAGER)
-    private Map<Event,String> lifecycle_events;
+    private Set<String> lifecycle_events;
 
     public LifecycleEvent() {
     }
@@ -57,12 +60,29 @@ public class LifecycleEvent implements Serializable{
 	}
 
 
+	@Override
+	public String toString() {
+		return "LifecycleEvent{" +
+				"id='" + id + '\'' +
+				", version=" + version +
+				", event=" + event +
+				", lifecycle_events=" + lifecycle_events +
+				'}';
+	}
 
-	public Map<Event, String> getLifecycle_events() {
-        return lifecycle_events;
-    }
+	public Event getEvent() {
+		return event;
+	}
 
-    public void setLifecycle_events(Map<Event, String> lifecycle_events) {
-        this.lifecycle_events = lifecycle_events;
-    }
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	public Set<String> getLifecycle_events() {
+		return lifecycle_events;
+	}
+
+	public void setLifecycle_events(Set<String> lifecycle_events) {
+		this.lifecycle_events = lifecycle_events;
+	}
 }

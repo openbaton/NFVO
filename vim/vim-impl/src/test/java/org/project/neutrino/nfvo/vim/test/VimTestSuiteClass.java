@@ -14,13 +14,13 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Server;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.vim.AmazonVIM;
 import org.project.neutrino.nfvo.vim.OpenstackVIM;
 import org.project.neutrino.nfvo.vim.TestVIM;
-import org.project.neutrino.nfvo.vim_interfaces.ResourceManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +33,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -67,7 +68,7 @@ public class VimTestSuiteClass {
     private ConfigurableApplicationContext context;
 
     @Autowired
-    private VimBroker<ResourceManagement> resourceManagementVimBroker;
+    private VimBroker vimBroker;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -82,16 +83,17 @@ public class VimTestSuiteClass {
     @Test
     public void testVimBrokers(){
 
-        Assert.assertNotNull(resourceManagementVimBroker);
-        ResourceManagement testVIM = resourceManagementVimBroker.getVim("test");
+        Assert.assertNotNull(vimBroker);
+        Vim testVIM = vimBroker.getVim("test");
         Assert.assertEquals(testVIM.getClass(), TestVIM.class);
-        ResourceManagement openstackVIM = resourceManagementVimBroker.getVim("openstack");
+        Vim openstackVIM = vimBroker.getVim("openstack");
         Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
-        Assert.assertEquals(resourceManagementVimBroker.getVim("amazon").getClass(), AmazonVIM.class);
+        Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
         exception.expect(UnsupportedOperationException.class);
-        resourceManagementVimBroker.getVim("throw_exception");
+        vimBroker.getVim("throw_exception");
     }
 
+    @Ignore
     @Test
     public void testVimOpenstack() throws VimException {
         VirtualDeploymentUnit vdu = createVDU();
@@ -163,13 +165,13 @@ public class VimTestSuiteClass {
             add(nfvImage);
         }});
         vdu.setVimInstance(vimInstance);
-        ArrayList<String> monitoring_parameter = new ArrayList<>();
+        Set<String> monitoring_parameter = new HashSet<>();
         monitoring_parameter.add("parameter_1");
         monitoring_parameter.add("parameter_2");
         monitoring_parameter.add("parameter_3");
         vdu.setMonitoring_parameter(monitoring_parameter);
         vdu.setComputation_requirement("computation_requirement");
-        ArrayList<String> vm_images = new ArrayList<>();
+        Set<String> vm_images = new HashSet<>();
         vm_images.add("image_1234");
         vdu.setVm_image(vm_images);
         vimInstance.setFlavours(new ArrayList<DeploymentFlavour>());

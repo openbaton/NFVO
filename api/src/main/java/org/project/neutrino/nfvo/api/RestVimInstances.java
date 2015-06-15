@@ -2,7 +2,7 @@ package org.project.neutrino.nfvo.api;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.core.interfaces.VimManagement;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

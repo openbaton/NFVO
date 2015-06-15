@@ -79,6 +79,11 @@ public class TestClient implements ClientInterfaces {
             deploymentFlavour.setExtId("ext_id_2");
             deploymentFlavour.setFlavour_key("m1.tiny");
             add(deploymentFlavour);
+
+            deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_3");
+            deploymentFlavour.setFlavour_key("m1.small");
+            add(deploymentFlavour);
         }};
     }
 
@@ -177,5 +182,10 @@ public class TestClient implements ClientInterfaces {
     @Override
     public Network getNetworkById(String id) {
         return null;
+    }
+
+    @Override
+    public Quota getQuota() {
+        throw new UnsupportedOperationException();
     }
 }

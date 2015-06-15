@@ -1,7 +1,12 @@
 package org.project.neutrino.nfvo.core.interfaces;
 
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Server;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -14,14 +19,15 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	Future<Void> allocate(VirtualDeploymentUnit vdu);
+	Future<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
 	 * i.e. retrieve information about an instantiated virtualised 
 	 * resource.
+	 * @param vimInstance
 	 */
-	void query();
+	List<Server> query(VimInstance vimInstance) throws VimException;
 	
 	/**
 	 * This operation allows updating the configuration and/or 
@@ -58,7 +64,7 @@ public interface ResourceManagement {
 	 * instantiated virtualised resource. This operation frees 
 	 * resources and returns them to the NFVI resource pool.
 	 */
-	void release(VirtualDeploymentUnit vdu);
+	void release(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 

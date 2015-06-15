@@ -2,11 +2,8 @@ package org.project.neutrino.nfvo.core.api;
 
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.vim_interfaces.DeploymentFlavorManagement;
-import org.project.neutrino.nfvo.vim_interfaces.ImageManagement;
-import org.project.neutrino.nfvo.vim_interfaces.NetworkManagement;
-import org.project.neutrino.nfvo.vim_interfaces.VimBroker;
-import org.project.neutrino.nfvo.vim_interfaces.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +24,8 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
     private GenericRepository<VimInstance> vimInstanceGenericRepository;
 
     @Autowired
-    private VimBroker<ImageManagement> imageManagementVimBroker;
-    @Autowired
-    private VimBroker<DeploymentFlavorManagement> flavorManagementVimBroker;
-    @Autowired
-    private VimBroker<NetworkManagement> networkManagementVimBroker;
+    private VimBroker vimBroker;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
@@ -74,8 +68,8 @@ public class VimManagement implements org.project.neutrino.nfvo.core.interfaces.
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
-        vimInstance.setImages(imageManagementVimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
-        vimInstance.setNetworks(networkManagementVimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
-        vimInstance.setFlavours(flavorManagementVimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        vimInstance.setImages(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+        vimInstance.setNetworks(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+        vimInstance.setFlavours(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
     }
 }

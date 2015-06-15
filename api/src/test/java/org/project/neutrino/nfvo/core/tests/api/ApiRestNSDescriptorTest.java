@@ -31,6 +31,7 @@ import org.project.neutrino.nfvo.core.interfaces.NetworkServiceDescriptorManagem
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class ApiRestNSDescriptorTest {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -107,6 +108,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX from here VirtualNetworkFunctionDescriptor
 	@Test
 	public void testpostVNFD() {
+
 		Set<VirtualNetworkFunctionDescriptor> list = new HashSet<VirtualNetworkFunctionDescriptor>();
 		networkServiceDescriptor.setVnfd(list);
 		VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
@@ -204,6 +206,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM VNFDependency
 	@Test
 	public void testpostVNFDependency() {
+
 		Set<VNFDependency> list = new HashSet<VNFDependency>();
 		networkServiceDescriptor.setVnf_dependency(list);
 		VNFDependency vnfd = new VNFDependency();
@@ -298,6 +301,7 @@ public class ApiRestNSDescriptorTest {
 	// XXX FROM PhysicalNetworkFunctionDescriptor
 	@Test
 	public void testpostPhysicalNetworkFunctionDescriptor() {
+
 		Set<PhysicalNetworkFunctionDescriptor> list = new HashSet<PhysicalNetworkFunctionDescriptor>();
 		networkServiceDescriptor.setPnfd(list);
 		PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();

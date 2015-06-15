@@ -1,7 +1,5 @@
 package org.project.neutrino.nfvo.catalogue.nfvo;
 
-import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-
 import java.io.Serializable;
 
 /**
@@ -9,8 +7,7 @@ import java.io.Serializable;
  */
 public class CoreMessage implements Serializable{
     private Action action;
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    private VnfmManagerEndpoint vnfmManagerEndpoint;
+    private Serializable payload;
 
     public Action getAction() {
         return action;
@@ -20,29 +17,19 @@ public class CoreMessage implements Serializable{
         this.action = action;
     }
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
-
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
-
     @Override
     public String toString() {
         return "CoreMessage{" +
                 "action=" + action +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", vnfmManagerEndpoint=" + vnfmManagerEndpoint +
+                ", payload=" + payload +
                 '}';
     }
 
-    public VnfmManagerEndpoint getVnfmManagerEndpoint() {
-        return vnfmManagerEndpoint;
+    public Serializable getPayload() {
+        return payload;
     }
 
-    public void setVnfmManagerEndpoint(VnfmManagerEndpoint vnfmManagerEndpoint) {
-        this.vnfmManagerEndpoint = vnfmManagerEndpoint;
+    public void setPayload(Serializable payload) {
+        this.payload = payload;
     }
-
 }
