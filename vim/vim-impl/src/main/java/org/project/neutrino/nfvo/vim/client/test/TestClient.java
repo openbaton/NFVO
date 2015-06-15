@@ -183,4 +183,9 @@ public class TestClient implements ClientInterfaces {
     public Network getNetworkById(String id) {
         return null;
     }
+
+    @Override
+    public Quota getQuota() {
+        throw new UnsupportedOperationException();
+    }
 }

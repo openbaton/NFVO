@@ -17,13 +17,14 @@ apply plugin: "spring-boot"
 apply plugin: "java"
 apply plugin: 'maven'
 
+mainClassName = 'org.project.neutrino.nfvo.sdk.Main'
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-mainClassName = 'org.project.neutrino.nfvo.core.cli.SpringShellBridge'
-
 dependencies {
-    compile 'org.project.neutrino:sdk:0.3-SNAPSHOT'
-	compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.mashape.unirest:unirest-java:1.4.5'
 }
+
 

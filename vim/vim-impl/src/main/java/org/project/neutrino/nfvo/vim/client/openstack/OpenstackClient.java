@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vim.client.openstack;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
 import org.jclouds.Constants;
@@ -24,9 +25,11 @@ import org.jclouds.openstack.neutron.v2.domain.Network.UpdateNetwork;
 import org.jclouds.openstack.neutron.v2.domain.NetworkType;
 import org.jclouds.openstack.neutron.v2.domain.Subnet.CreateSubnet;
 import org.jclouds.openstack.neutron.v2.domain.Subnet.UpdateSubnet;
+import org.jclouds.openstack.neutron.v2.extensions.FloatingIPApi;
 import org.jclouds.openstack.neutron.v2.features.NetworkApi;
 import org.jclouds.openstack.neutron.v2.features.SubnetApi;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.RebootType;
 import org.jclouds.openstack.nova.v2_0.domain.SecurityGroup;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
@@ -737,6 +740,59 @@ public class OpenstackClient implements ClientInterfaces {
         return subnets;
     }
 
+    public List<String> listAllFloatingIps() {
+        List<String> floatingIPs = new LinkedList<String>();
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        Iterator<FloatingIP> floatingIpIterator = floatingIPApi.list().iterator();
+        while (floatingIpIterator.hasNext()) {
+            FloatingIP floatingIP = floatingIpIterator.next();
+            floatingIPs.add(floatingIP.getIp());
+        }
+        return floatingIPs;
+    }
+
+    public List<String> listAssociatedFloatingIps() {
+        List<String> floatingIPs = new LinkedList<String>();
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        Iterator<FloatingIP> floatingIpIterator = floatingIPApi.list().iterator();
+        while (floatingIpIterator.hasNext()) {
+            FloatingIP floatingIP = floatingIpIterator.next();
+            if (floatingIP.getInstanceId() != null) {
+                floatingIPs.add(floatingIP.getIp());
+            }
+        }
+        return floatingIPs;
+    }
+
+    public List<String> listFreeFloatingIps() {
+        List<String> floatingIPs = new LinkedList<String>();
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        Iterator<FloatingIP> floatingIpIterator = floatingIPApi.list().iterator();
+        while (floatingIpIterator.hasNext()) {
+            FloatingIP floatingIP = floatingIpIterator.next();
+            if (floatingIP.getInstanceId() == null) {
+                floatingIPs.add(floatingIP.getIp());
+            }
+        }
+        return floatingIPs;
+    }
+
+    public void associateFloatingIpFromPool(Server server, String pool) {
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        FloatingIP floatingIp = floatingIPApi.allocateFromPool(pool);
+        associateFloatingIp(server, floatingIp.getIp());
+    }
+
+    public void associateFloatingIp(Server server, String floatingIp) {
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        floatingIPApi.addToServer(floatingIp, server.getExtId());
+    }
+
+    public void disassociateFloatingIp(Server server, String floatingIp) {
+        org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi floatingIPApi = novaApi.getFloatingIPApi(defaultZone).get();
+        floatingIPApi.removeFromServer(floatingIp, server.getExtId());
+    }
+
     public Quota getQuota() {
         QuotaApi quotaApi = novaApi.getQuotaApi(defaultZone).get();
         org.jclouds.openstack.nova.v2_0.domain.Quota jcloudsQuota = quotaApi.getByTenant(vimInstance.getTenant());
@@ -744,7 +800,6 @@ public class OpenstackClient implements ClientInterfaces {
         quota.setTenant(jcloudsQuota.getId());
         quota.setCores(jcloudsQuota.getCores());
         quota.setFloatingIps(jcloudsQuota.getFloatingIps());
-        quota.setGigabytes(jcloudsQuota.getGigabytes());
         quota.setInstances(jcloudsQuota.getInstances());
         quota.setKeyPairs(jcloudsQuota.getKeyPairs());
         quota.setRam(jcloudsQuota.getRam());

@@ -81,7 +81,7 @@ public class RestImage {
 	/**
 	 * Updates the VNF software image
 	 * 
-	 * @param networkServiceDescriptor
+	 * @param image
 	 *            : the VNF software image to be updated
 	 * @param id
 	 *            : the id of VNF software image

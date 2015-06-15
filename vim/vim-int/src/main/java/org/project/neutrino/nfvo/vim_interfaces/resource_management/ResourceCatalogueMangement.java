@@ -1,4 +1,4 @@
-package org.project.neutrino.nfvo.vim_interfaces;
+package org.project.neutrino.nfvo.vim_interfaces.resource_management;
 
 /**
  * Created by mpa on 30/04/15.
