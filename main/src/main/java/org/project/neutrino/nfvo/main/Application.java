@@ -1,5 +1,9 @@
 package org.project.neutrino.nfvo.main;
 
+import java.io.File;
+
+import javax.jms.ConnectionFactory;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +18,6 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.util.FileSystemUtils;
-
-import javax.jms.ConnectionFactory;
-import java.io.File;
 
 /**
  * Created by lto on 16/04/15.
@@ -49,5 +50,7 @@ public class Application {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         log.info("Bye!");
     }
+    
+  
 
 }
