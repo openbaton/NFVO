@@ -1,22 +1,13 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 
 /**
  * OpenBaton image-related commands api requester.
  */
-@Component
 public class NetworkServiceRecordRequest{
 	
 //	private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
-
 	/**
 	 * Creates a Network Service Record
 	 *

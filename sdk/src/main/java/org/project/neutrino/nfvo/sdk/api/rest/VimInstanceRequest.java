@@ -1,21 +1,13 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 
 /**
  * OpenBaton viminstance(datacenter)-related api requester.
  */
-@Component
 public class VimInstanceRequest {
 	
 //	private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	/**
 	 * Adds a new datacenter to the datacenter repository
