@@ -79,6 +79,11 @@ public class TestClient implements ClientInterfaces {
             deploymentFlavour.setExtId("ext_id_2");
             deploymentFlavour.setFlavour_key("m1.tiny");
             add(deploymentFlavour);
+
+            deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_3");
+            deploymentFlavour.setFlavour_key("m1.small");
+            add(deploymentFlavour);
         }};
     }
 

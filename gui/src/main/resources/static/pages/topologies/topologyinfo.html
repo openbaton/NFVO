@@ -1,0 +1,208 @@
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Topology <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a></li>
+            <li><a href="#topologies"><i class="fa fa-cloud-upload"></i>
+                    Topologies</a></li>
+            <li class="active"><i class="fa fa-cloud-upload"></i>
+                {{topologyShow.name}}</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer">
+        <h2>Topology name: {{topologyShow.name}}</h2>
+        <a href="" ng-click="showServices()">Show Graphical view of Topology</a>
+        <br/>
+        <a href="#deployed/{{topologyShow.id}}">Show Infrastructure deployed</a>
+        <br/>
+        <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+        <br/>
+
+        <dl>
+            <!--<h4><a href="#/datacenters/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
+            <div ng-repeat="(key,value) in topologyShow">
+                <div ng-if="key != 'serviceContainers' && key != 'policies' && key != 'locations' && key != 'version'">
+                    <dt>{{key}}:</dt>
+                    <dd>{{value}}</dd>
+                </div>
+                <div ng-if="key == 'locations'">
+                    <dt>{{key}}:</dt>
+                    <dd ng-repeat="loc in value">{{loc}}</dd>
+                </div>
+            </div>
+        </dl>
+        <hr>
+        <h3 ng-if="topologyShow">Containers</h3>
+        <table id="topologyInfo" ng-if="topologyShow"
+               class="table table-bordered table-striped table-hover tablesorter prettyprint top-buffer">
+            <thead>
+                <tr>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'containerName'; reverse = !reverse">Container Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'runningUnits'; reverse = !reverse">Number of Units <i class="fa fa-sort"></i></th>
+
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+            </thead>
+            <tbody id="serviceTable">
+                <tr ng-repeat="serviceContainer in topologyShow.serviceContainers| orderBy:predicate:reverse">
+                    <td><a href="#topologies/{{topologyId}}/containers/{{serviceContainer.id}}">{{serviceContainer.id}}</a></td>
+                    <td>{{serviceContainer.containerName}}</td>
+                    <td>{{serviceContainer.state}}</td>
+
+                    <td>{{serviceContainer.runningUnits}}
+                        <div class="btn-group pull-right"><button type="button" class="btn btn-default" ng-click="removeUnit(serviceContainer.id)">-</button>
+                            <button type="button" class="btn btn-default" ng-click="addUnit(serviceContainer.id)">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href=""  ng-click="addInstanceInfo(serviceContainer)">Add Instance</a></li>
+                                <li class="divider"></li>
+                                <li><a  href=""  ng-click="deleteService(serviceContainer)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+
+<div class="modal" id="addInstanceModal" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Add Instance</h4>
+            </div>
+            <div class="modal-body">
+                <br>
+                <form class="form-horizontal" role="form" name="formForm" novalidate>
+
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="col-md-6 row">
+                                    <div id="left-box">
+                                        <label class=" ">Select Instance</label>
+                                        <select name="typeSelect" class="form-control modal-select" ng-model="selection" ng-options="services as services.serviceType for services in services" ng-change="changeSelection(selection)"></select>
+                                    </div>
+                                </td>
+                                <td class="col-md-6 row">
+                                    <div id="right-box" class="right-box">
+                                        <div  ng-repeat="(key,value) in serviceEdit track by $index">
+                                            <div class="form-group" ng-if="key != 'configuration' && key != 'locations' && key != 'serviceType' && key != 'requires'">
+                                                <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+                                                <div class="col-sm-8 input-group">
+                                                    <input type="text" name="{{key}}" class="form-control" ng-model="serviceEdit[key]">
+                                                    <!--                            <p>{{value}}</p>-->
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="key == 'configuration'" ng-repeat="parameter in value.parameters track by $index">
+                                                <label for="{{parameter.config_key}}" class="col-sm-4 control-label">{{parameter.config_key}}</label>
+                                                <div class="col-sm-8 input-group"><input type="text" ng-model="serviceEdit.configuration.parameters[$index].config_value" class="form-control parameters" id="{{parameter.config_key}}"  >
+                                                    <span class="input-group-addon">@</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="key == 'requires'">
+                                                <label for="checkboxDiv" class="col-sm-4 control-label">requires</label>
+                                                <div id="checkboxDiv" >
+                                                    <div class="col-sm-8 input-group" >
+                                                        <div class="checkbox" ng-repeat="require in requires track by $index">
+                                                            <label>
+                                                                <input type="checkbox" value="{{require}}"  ng-model="requireChecked[require]" ng-change="selectedRequires(require)" >
+                                                                {{require}}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="addInstance"
+                        ng-disabled="formIsEmpity()"
+                        ng-click="addServiceToContainer(serviceEdit)" class="btn btn-primary">Add Instance</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">JSON of Topology: {{topologyShow.name}}</h4>
+            </div>
+            <div class="modal-body">
+
+                <pre id="json">{{topologyShowJSON}}</pre>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="addUnit" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Unit to Topology: {{topologyShow.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <label>
+                    <input type="checkbox"   ng-model="chooseLoc" ng-init="chooseLoc = false" >
+                    Do you want to specify the location where to deploy the new unit?
+                </label>
+                <div class="row" ng-show="chooseLoc">
+                    <div class="col-sm-offset-3 col-sm-6" >
+                        <br>
+
+
+
+                        <label class="">Choose one location:</label>
+                        <select name="typeSelect" class="col-sm-2 form-control" ng-model="locAddUnit" ng-options="loc for loc in topologyShow.locations"></select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="addUn" ng-click="sendAddUnit()" class="btn btn-primary"
+                        data-dismiss="modal">Add Unit</button>
+            </div>
+        </div>
+    </div>
+</div>
