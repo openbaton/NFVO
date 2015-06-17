@@ -18,6 +18,7 @@ import java.util.Set;
 public class NSRUtils {
     private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+        log.debug("" + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
         networkServiceRecord.setName(networkServiceDescriptor.getName());
         networkServiceRecord.setVendor(networkServiceDescriptor.getVendor());
@@ -36,7 +37,9 @@ public class NSRUtils {
         for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
             VNFRecordDependency vnfDependency_new = new VNFRecordDependency();
 
+
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+                log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
                 if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
                     vnfDependency_new.setSource(virtualNetworkFunctionRecord);
                 }
@@ -122,6 +125,7 @@ public class NSRUtils {
     }
 
     private static boolean existsDeploymentFlavor(String key, VimInstance vimInstance){
+        log.debug("" + vimInstance);
         for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()){
             if (deploymentFlavour.getFlavour_key().equals(key) || deploymentFlavour.getExtId().equals(key) || deploymentFlavour.getId().equals(key)){
                 return true;
