@@ -23,5 +23,5 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(String endpointType);
 
-    void executeAction(CoreMessage message) throws VimException;
+    void executeAction(CoreMessage message) throws VimException, JMSException, NamingException;
 }
