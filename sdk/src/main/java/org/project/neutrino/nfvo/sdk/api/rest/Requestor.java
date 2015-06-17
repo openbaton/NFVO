@@ -19,11 +19,11 @@ public final class Requestor {
 	private static final PropertyReader propertyReader = new PropertyReader(PROPERTIES_FILE);
 
 	// create the requester here, maybe shift this to a manager
-	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationPath());
-	private static final ImageRequest imageRequest = new ImageRequest(propertyReader.getRestImagePath());
-	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorPath());
-	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordPath());
-	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstancePath());
+	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationUrl());
+	private static final ImageRequest imageRequest = new ImageRequest(propertyReader.getRestImageUrl());
+	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorUrl());
+	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordUrl());
+	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstanceUrl());
 
 //	TODO
 //	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkPath());

@@ -10,11 +10,11 @@ public class NetworkServiceDescriptorRequest extends Request {
 	/**
 	 * Create a NetworkServiceDescriptor requester with a given url path
 	 *
-	 * @param path
+	 * @param url
 	 * 				the url path used for the api requests
 	 */
-	public NetworkServiceDescriptorRequest(final String path) {
-		super(path);
+	public NetworkServiceDescriptorRequest(final String url) {
+		super(url);
 	}
 
 	/**
