@@ -13,8 +13,8 @@ public class VimInstanceRequest extends Request {
 	 * @param path
 	 * 				the url path used for the api requests
 	 */
-	public VimInstanceRequest(final String path) {
-		super(path);
+	public VimInstanceRequest(final String url) {
+		super(url);
 	}
 
 	/**

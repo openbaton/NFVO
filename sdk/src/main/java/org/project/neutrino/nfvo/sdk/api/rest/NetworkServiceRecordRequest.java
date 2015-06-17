@@ -10,11 +10,11 @@ public class NetworkServiceRecordRequest extends Request {
 	/**
 	 * Create a NetworkServiceRecord requester with a given url path
 	 *
-	 * @param path
+	 * @param url
 	 * 				the url path used for the api requests
 	 */
-	public NetworkServiceRecordRequest(final String path) {
-		super(path);
+	public NetworkServiceRecordRequest(final String url) {
+		super(url);
 	}
 
 	/**

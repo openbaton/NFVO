@@ -10,11 +10,11 @@ public class ConfigurationRequest extends Request {
 	/**
 	 * Create a configuration requester with a given url path
 	 *
-	 * @param path
+	 * @param url
 	 * 				the url path used for the api requests
 	 */
-	public ConfigurationRequest(final String path) {
-		super(path);
+	public ConfigurationRequest(final String url) {
+		super(url);
 	}
 
 	/**
