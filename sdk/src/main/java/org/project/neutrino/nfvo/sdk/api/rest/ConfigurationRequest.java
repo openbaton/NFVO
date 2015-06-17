@@ -5,9 +5,7 @@ import java.io.File;
 /**
  * OpenBaton configuration-related api requester.
  */
-public class ConfigurationRequest {
-
-	private final String path;
+public class ConfigurationRequest extends Request {
 
 	/**
 	 * Create a configuration requester with a given url path
@@ -16,7 +14,7 @@ public class ConfigurationRequest {
 	 * 				the url path used for the api requests
 	 */
 	public ConfigurationRequest(final String path) {
-		this.path = path;
+		super(path);
 	}
 
 	/**
