@@ -15,6 +15,7 @@ import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -67,6 +69,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	@Autowired
 	@Qualifier("NSRRepository")
 	GenericRepository<NetworkServiceRecord> nsrRepository;
+
+	@Autowired
+	private NSDUtils nsdUtils;
 
 	@Before
 	public void init() {
@@ -123,12 +128,70 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
+	public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+		/**
+		 * Initial settings
+		 */
+		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
+
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
+		LifecycleEvent event = new LifecycleEvent();
+		event.setEvent(Event.INSTALL);
+		event.setLifecycle_events(new HashSet<String>());
+		event.getLifecycle_events().add("command_1");
+		virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
+
+		when(nsdRepository.find(anyString())).thenReturn(networkServiceDescriptor);
+		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
+			add(createVimInstance());
+		}});
+
+		nsdUtils.fetchDependencies(networkServiceDescriptor);
+		nsdUtils.fetchVimInstances(networkServiceDescriptor);
+
+		/**
+		 * Real Method
+		 */
+
+		nsrManagement.onboard(networkServiceDescriptor.getId());
+	}
+
+	@Test
+	public void nsrManagementOnboardTest4() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+		/**
+		 * Initial settings
+		 */
+		NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
+
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
+		LifecycleEvent event = new LifecycleEvent();
+		event.setEvent(Event.ALLOCATE);
+		event.setLifecycle_events(new HashSet<String>());
+		event.getLifecycle_events().add("command_1");
+		virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
+
+		when(nsdRepository.find(anyString())).thenReturn(networkServiceDescriptor);
+		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
+			add(createVimInstance());
+		}});
+
+		nsdUtils.fetchDependencies(networkServiceDescriptor);
+		nsdUtils.fetchVimInstances(networkServiceDescriptor);
+
+		/**
+		 * Real Method
+		 */
+
+		nsrManagement.onboard(networkServiceDescriptor.getId());
+	}
+
+	@Test
 	public void nsrManagementUpdateTest() throws NotFoundException {
 		final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
 		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
 		NetworkServiceRecord new_nsr = createNetworkServiceRecord();
 		new_nsr.setName("UpdatedName");
-		nsrManagement.update(new_nsr,nsd_exp.getId());
+		nsrManagement.update(new_nsr, nsd_exp.getId());
 		new_nsr.setId(nsd_exp.getId());
 		assertEqualsNSR(new_nsr);
 	}
@@ -159,8 +222,27 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
 		nsd.setVld(new HashSet<VirtualLinkDescriptor>());
 		nsd.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
+		nsd.setVnf_dependency(new HashSet<VNFDependency>());
 		Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 = createVirtualNetworkFunctionDescriptor();
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor2 = createVirtualNetworkFunctionDescriptor();
+		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor1);
+		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor2);
+
+		nsd.setVnfd(virtualNetworkFunctionDescriptors);
+
+
+		VNFDependency vnfDependency = new VNFDependency();
+		vnfDependency.setSource(virtualNetworkFunctionDescriptor1);
+		vnfDependency.setTarget(virtualNetworkFunctionDescriptor2);
+		nsd.getVnf_dependency().add(vnfDependency);
+
+		return nsd;
+	}
+
+	private VirtualNetworkFunctionDescriptor createVirtualNetworkFunctionDescriptor() {
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+		virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 10000)));
 		virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
 		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
 		virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor2");
@@ -169,6 +251,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
 		virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
 		virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<LifecycleEvent>());
+
 		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
 			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
 			vdf.setExtId("ext_id");
@@ -187,9 +270,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 				add(vdu);
 			}
 		});
-		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-		nsd.setVnfd(virtualNetworkFunctionDescriptors);
-		return nsd;
+		return virtualNetworkFunctionDescriptor;
 	}
 
 	private NetworkServiceRecord createNetworkServiceRecord() {
