@@ -5,9 +5,7 @@ import java.io.File;
 /**
  * OpenBaton viminstance(datacenter)-related api requester.
  */
-public class VimInstanceRequest {
-
-	private final String path;
+public class VimInstanceRequest extends Request {
 
 	/**
 	 * Create a VimInstance requester with a given url path
@@ -16,7 +14,7 @@ public class VimInstanceRequest {
 	 * 				the url path used for the api requests
 	 */
 	public VimInstanceRequest(final String path) {
-		this.path = path;
+		super(path);
 	}
 
 	/**

@@ -5,9 +5,7 @@ import java.io.File;
 /**
  * OpenBaton network-service-descriptor-related api requester.
  */
-public class NetworkServiceDescriptorRequest {
-
-	private final String path;
+public class NetworkServiceDescriptorRequest extends Request {
 
 	/**
 	 * Create a NetworkServiceDescriptor requester with a given url path
@@ -16,7 +14,7 @@ public class NetworkServiceDescriptorRequest {
 	 * 				the url path used for the api requests
 	 */
 	public NetworkServiceDescriptorRequest(final String path) {
-		this.path = path;
+		super(path);
 	}
 
 	/**

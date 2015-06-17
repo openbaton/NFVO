@@ -14,9 +14,7 @@ import java.io.IOException;
 /**
  * OpenBaton image-related api requester.
  */
-public class ImageRequest {
-
-    private final String path;
+public class ImageRequest extends Request {
 
     /**
      * Create a image requester with a given url path
@@ -25,7 +23,7 @@ public class ImageRequest {
      * 				the url path used for the api requests
      */
     public ImageRequest(final String path) {
-        this.path = path;
+        super(path);
     }
 
     /**
@@ -40,14 +38,17 @@ public class ImageRequest {
         String result = "";
         try {
             // deserialize the json as string from the file
-            result = FileUtils.readFileToString(image);
-//            System.out.println(path);
+            String imageString = FileUtils.readFileToString(image);
+            JSONObject imageJSON = new JSONObject(imageString);
+            JsonNode imageJSONNode = new JsonNode(imageString);
+            System.out.println(imageJSONNode);
 
             // call the api here
             String url = "http://localhost:8080/images";
             HttpResponse<JsonNode> httpResponse = Unirest.post(url)
                     .header("accept", "application/json")
-                    .body(result)
+                    .header("Content-Type", "application/json")
+                    .body(imageJSONNode)
                     .asJson();
             JSONObject responseJSONBody = httpResponse.getBody().getObject();
 //          call toString() of the response body
@@ -64,6 +65,9 @@ public class ImageRequest {
             result = "IMAGE COULD NOT BE CREATED";
             throw new SDKException("Something went wrong.");
         }
+
+//        hier finally
+
 		return result;
 	}
 
