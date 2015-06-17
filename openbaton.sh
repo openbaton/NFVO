@@ -6,7 +6,7 @@ function start {
 
     if [ ! -d build/  ]
         then
-            ./gradlew build -x test
+            compile_nfvo
     fi
 
     if [ 0 -eq $? ]
@@ -15,8 +15,15 @@ function start {
     fi
 }
 
-function compile {
-    ./gradlew build -x test
+function compile_sdk {
+    cd sdk
+    ./gradlew build -x test install
+    cd ..
+}
+
+function compile_nfvo {
+    compile_sdk
+    ./gradlew build -x test install
 }
 
 function tests {
@@ -35,6 +42,8 @@ function usage {
     echo -e "Usage:\n\t ./openbaton.sh <option>\n\t"
     echo -e "where option is"
     echo -e "\t\t * compile"
+    echo -e "\t\t\t\t * sdk"
+    echo -e "\t\t\t\t * nfvo"
     echo -e "\t\t * start"
     echo -e "\t\t * test"
     echo -e "\t\t * clean"
@@ -42,6 +51,7 @@ function usage {
 
 ##
 #   MAIN
+#   TODO start activemq and/or define application.properties
 ##
 
 if [ $# -eq 0 ]
@@ -57,12 +67,14 @@ do
             clean ;;
         "sc" )
             clean
-            compile
+            compile_nfvo
             start ;;
         "start" )
             start ;;
-        "compile" )
-            compile ;;
+        "compile nfvo" )
+            compile_nfvo ;;
+        "compile sdk" )
+            compile_sdk ;;
         "test" )
             tests ;;
         * )
