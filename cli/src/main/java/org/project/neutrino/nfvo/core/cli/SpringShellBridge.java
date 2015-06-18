@@ -3,8 +3,6 @@ package org.project.neutrino.nfvo.core.cli;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.shell.Bootstrap;
 
@@ -17,9 +15,7 @@ import java.util.List;
  * spring boot environment that either leads to calls of the main() or the run()
  * method.
  */
-@SpringBootApplication
 @Component
-@ComponentScan(basePackages = "org.project.neutrino.nfvo")
 public class SpringShellBridge implements CommandLineRunner {
 
     private static Logger log = LoggerFactory.getLogger("CLInterface");
