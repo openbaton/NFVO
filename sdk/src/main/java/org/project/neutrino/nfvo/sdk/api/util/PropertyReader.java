@@ -50,56 +50,56 @@ public class PropertyReader {
     }
 
     /**
-     * Gets the configuration path
+     * Gets the configuration Url path
      *
-     * @return the configuration path property
+     * @return the configuration Url path property
      */
-    public String getRestConfigurationPath() {
+    public String getRestConfigurationUrl() {
         return getApiUrl() + applicationProperties.getProperty("restConfigurationPath");
     }
 
     /**
-     * Gets the image path
+     * Gets the image Url path
      *
-     * @return the image path property
+     * @return the image Url path property
      */
-    public String getRestImagePath() {
+    public String getRestImageUrl() {
         return getApiUrl() + applicationProperties.getProperty("restImagePath");
     }
 
     /**
-     * Gets the networkservicedescriptor path
+     * Gets the networkservicedescriptor Url path
      *
-     * @return the networkservicedescriptor path property
+     * @return the networkservicedescriptor Url path property
      */
-    public String getRestNetworkServiceDescriptorPath() {
+    public String getRestNetworkServiceDescriptorUrl() {
         return getApiUrl() + applicationProperties.getProperty("restNetworkServiceDescriptorPath");
     }
 
     /**
-     * Gets the networkservicerecord path
+     * Gets the networkservicerecord Url path
      *
-     * @return the networkservicerecord path property
+     * @return the networkservicerecord Url path property
      */
-    public String getRestNetworkServiceRecordPath() {
+    public String getRestNetworkServiceRecordUrl() {
         return getApiUrl() + applicationProperties.getProperty("restNetworkServiceRecordPath");
     }
 
     /**
-     * Gets the viminstance path
+     * Gets the viminstance Url path
      *
-     * @return the viminstance path property
+     * @return the viminstance Url path property
      */
-    public String getRestVimInstancePath() {
+    public String getRestVimInstanceUrl() {
         return getApiUrl() + applicationProperties.getProperty("restVimInstancePath");
     }
 
     /**
-     * Gets the virtuallink path
+     * Gets the virtuallink Url path
      *
-     * @return the virtuallink path property
+     * @return the virtuallink Url path property
      */
-    public String getRestVirtualLinkPath() {
+    public String getRestVirtualLinkUrl() {
         return getApiUrl() + applicationProperties.getProperty("restVirtualLinkPath");
     }
 
