@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
     }
 }
 plugins {
@@ -18,9 +18,10 @@ apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
 mainClassName = 'org.project.neutrino.nfvo.main.Application'
+
+
+def springBootVersion = "1.2.4.RELEASE"
 
 allprojects {
     task listmodules << { task -> println "\t * $task.project.name" }
@@ -32,7 +33,7 @@ allprojects {
     test { finalizedBy jacocoTestReport }
 
     sourceCompatibility = 1.7
-    targetCompatibility = 1.7
+    targetCompatibility = 1.8
 
     repositories {
         mavenCentral()
@@ -40,10 +41,12 @@ allprojects {
     }
 
     dependencies {
-        compile("org.springframework.boot:spring-boot:1.2.3.RELEASE")
-        compile("org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE")
+        compile("org.springframework.boot:spring-boot:" + springBootVersion)
+        compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
         compile('org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE')
         compile("org.springframework:spring-jms:4.1.6.RELEASE")
+        compile('org.springframework:spring-orm:4.1.6.RELEASE')
+
         compile("javax.jms:javax.jms-api:2.0.1")
         compile('org.apache.activemq:activemq-broker:5.11.1')
         compile('org.apache.activemq:activemq-kahadb-store:5.11.1')
@@ -51,10 +54,9 @@ allprojects {
         compile('org.hsqldb:hsqldb:2.3.2')
         compile("org.hibernate:hibernate-entitymanager:4.3.8.Final")
         compile("org.hibernate:hibernate-core:4.3.8.Final")
-        compile('org.springframework:spring-orm:4.1.6.RELEASE')
         compile('commons-dbcp:commons-dbcp:1.4')
 
-        testCompile("org.springframework.boot:spring-boot-starter-data-jpa:1.2.3.RELEASE")
+        testCompile("org.springframework.boot:spring-boot-starter-data-jpa:" + springBootVersion)
         testCompile('org.hsqldb:hsqldb:2.3.2')
         testCompile("junit:junit:4.9")
         testCompile("org.springframework:spring-test:4.1.6.RELEASE")
