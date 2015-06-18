@@ -1,5 +1,9 @@
 package org.project.neutrino.nfvo.core.cli.command;
 
+import org.project.neutrino.nfvo.sdk.api.rest.Requestor;
+import org.project.neutrino.nfvo.sdk.api.rest.ConfigurationRequest;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +22,6 @@ import java.io.File;
 public class Configuration implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	/**
 	 * Adds a new Configuration to the Configurations repository
@@ -31,7 +32,13 @@ public class Configuration implements CommandMarker {
 	@CliCommand(value = "configuration create", help = "Adds a new VNF software Image to the image repository")
 	public String create(
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration) {
-		return "IMAGE CREATED";
+		try {
+			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
+			return configurationRequest.create(configuration);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "CONFIGURATION NOT CREATED";
+		}
 	}
 
 	/**
@@ -43,17 +50,13 @@ public class Configuration implements CommandMarker {
 	@CliCommand(value = "configuration delete", help = "Removes the VNF software Image from the Configurations repository")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
-		return "IMAGE CREATED";
-	}
-
-	/**
-	 * Returns the list of the Configurations available
-	 *
-	 * @return List<Configuration>: The list of Configurations available
-	 */
-	@CliCommand(value = "configuration find all", help = "Returns the list of the Configurations available")
-	public String findAll() {
-		return "IMAGE RESULTS";
+		try {
+			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
+			return configurationRequest.delete(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "CONFIGURATION NOT DELETED";
+		}
 	}
 
 	/**
@@ -63,10 +66,20 @@ public class Configuration implements CommandMarker {
 	 *            : The id of the Configuration
 	 * @return Configuration: The Configuration selected
 	 */
-	@CliCommand(value = "configuration find", help = "Returns the Configuration selected by id")
+	@CliCommand(value = "configuration find", help = "Returns the Configuration selected by id, or all if no id is given")
 	public String findById(
-            @CliOption(key = { "id" }, mandatory = true, help = "The configuration id to find.") final String id) {
-		return "IMAGE RESULT";
+            @CliOption(key = { "id" }, mandatory = false, help = "The configuration id to find.") final String id) {
+		try {
+			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
+			if (id != null) {
+				return configurationRequest.findById(id);
+			} else {
+				return configurationRequest.findAll();
+			}
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NO CONFIGURATION FOUND";
+		}
 	}
 
 	/**
@@ -82,7 +95,13 @@ public class Configuration implements CommandMarker {
 	public String update(
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration,
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
+			return configurationRequest.update(configuration, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "CONFIGURATION NOT UPDATED";
+		}
 	}
 
 }

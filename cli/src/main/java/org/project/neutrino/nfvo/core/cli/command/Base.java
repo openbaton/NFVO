@@ -40,29 +40,4 @@ public class Base implements CommandMarker {
 		}
 		return stringBuilder.toString();
 	}
-	/**
-	 * Test function. Simply shows all bean names available
-	 */
-	@CliCommand(value = "list directory files", help = "Lists all files in the given directory. If no directory is given, lists the files from the current dir.")
-	public String showDirectoryFiles(
-            @CliOption(key = { "path" }, mandatory = false, unspecifiedDefaultValue="build/resources/main", specifiedDefaultValue="build/resources/main", help = "The image id to find.") final String path) {
-		StringBuilder stringBuilder = new StringBuilder();
-
-        // get the current path and its files
-//        String currentPath = ;
-//		File folder = new File(currentPath);
-        File folder = new File(path);
-		File[] folderFiles = folder.listFiles();
-        Arrays.sort(folderFiles);
-
-        // print files to console
-		for (File file : folderFiles) {
-			if (file.isFile()) {
-                stringBuilder.append(file.getName() + SEPARATOR);
-			}
-		}
-		return stringBuilder.toString();
-	}
-
-
 }
