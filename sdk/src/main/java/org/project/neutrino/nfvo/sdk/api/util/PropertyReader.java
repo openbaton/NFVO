@@ -1,5 +1,9 @@
 package org.project.neutrino.nfvo.sdk.api.util;
 
+import java.lang.String;
+import java.util.Collections;
+import java.util.ArrayList;
+
 import java.io.IOException;
 import java.util.Properties;
 import java.io.InputStream;
@@ -10,7 +14,7 @@ import java.io.FileInputStream;
 */
 public class PropertyReader {
 
-    private Properties applicationProperties;
+    private Properties sdkProperties;
 
     /**
      * Creates a property reader that deserializes the property file from a jar
@@ -18,15 +22,24 @@ public class PropertyReader {
      * @param propertiesPath
      * 				the jar (class)path to the properties file
      */
-    public PropertyReader(final String propertiesPath) {
+    public PropertyReader(final String sdkPropertiesPath) {
 
-        applicationProperties = new Properties();
+        sdkProperties = new Properties();
         InputStream inputStream = null;
 
         try {
             // load the jars properties file
-            inputStream = PropertyReader.class.getClassLoader().getResourceAsStream(propertiesPath);
-            applicationProperties.load(inputStream);
+            inputStream = PropertyReader.class.getClassLoader().getResourceAsStream(sdkPropertiesPath);
+            sdkProperties.load(inputStream);
+
+            // Print the sorted properties when called
+//            ArrayList<String> list = new ArrayList(sdkProperties.stringPropertyNames());
+//            Collections.sort(list);
+//            for (String str : list) {
+//                System.out.print(str);
+//                System.out.println(sdkProperties.getProperty(str));
+//            }
+
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -46,7 +59,7 @@ public class PropertyReader {
      * @return the api url property
      */
     public String getApiUrl() {
-        return applicationProperties.getProperty("apiUrl");
+        return sdkProperties.getProperty("apiUrl");
     }
 
     /**
@@ -55,7 +68,7 @@ public class PropertyReader {
      * @return the configuration Url path property
      */
     public String getRestConfigurationUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restConfigurationPath");
+        return getApiUrl() + sdkProperties.getProperty("restConfigurationPath");
     }
 
     /**
@@ -64,7 +77,7 @@ public class PropertyReader {
      * @return the image Url path property
      */
     public String getRestImageUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restImagePath");
+        return getApiUrl() + sdkProperties.getProperty("restImagePath");
     }
 
     /**
@@ -73,7 +86,7 @@ public class PropertyReader {
      * @return the networkservicedescriptor Url path property
      */
     public String getRestNetworkServiceDescriptorUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restNetworkServiceDescriptorPath");
+        return getApiUrl() + sdkProperties.getProperty("restNetworkServiceDescriptorPath");
     }
 
     /**
@@ -82,7 +95,7 @@ public class PropertyReader {
      * @return the networkservicerecord Url path property
      */
     public String getRestNetworkServiceRecordUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restNetworkServiceRecordPath");
+        return getApiUrl() + sdkProperties.getProperty("restNetworkServiceRecordPath");
     }
 
     /**
@@ -91,7 +104,7 @@ public class PropertyReader {
      * @return the viminstance Url path property
      */
     public String getRestVimInstanceUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restVimInstancePath");
+        return getApiUrl() + sdkProperties.getProperty("restVimInstancePath");
     }
 
     /**
@@ -100,7 +113,7 @@ public class PropertyReader {
      * @return the virtuallink Url path property
      */
     public String getRestVirtualLinkUrl() {
-        return getApiUrl() + applicationProperties.getProperty("restVirtualLinkPath");
+        return getApiUrl() + sdkProperties.getProperty("restVirtualLinkPath");
     }
 
 }

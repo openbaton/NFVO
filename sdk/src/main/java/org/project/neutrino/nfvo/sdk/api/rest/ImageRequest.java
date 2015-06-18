@@ -27,8 +27,6 @@ public class ImageRequest extends Request {
      * @return string: The image filled with values from the api
      */
 	public String create (final File image) throws SDKException {
-
-        String url = "http://localhost:8080/images";
         return post(url, image, "IMAGE CREATED");
 	}
 
@@ -39,8 +37,7 @@ public class ImageRequest extends Request {
      *            : The Image's id to be deleted
      */
 	public String delete(final String id) throws SDKException {
-        String url = "http://localhost:8080/images";
-        url = url + "/" + id;
+        String url = this.url + "/" + id;
         return delete(url, "IMAGE DELETED");
 	}
 
@@ -50,7 +47,6 @@ public class ImageRequest extends Request {
      * @return List<Image>: The list of VNF software images available
      */
 	public String findAll() throws SDKException {
-        String url = "http://localhost:8080/images";
         return get(url, "FOUND IMAGES");
 	}
 
@@ -62,8 +58,7 @@ public class ImageRequest extends Request {
      * @return image: The VNF software image selected
      */
 	public String findById(final String id) throws SDKException {
-        String url = "http://localhost:8080/images";
-        url = url + "/" + id;
+        String url = this.url + "/" + id;
         return get(url, "FOUND IMAGE");
 	}
 
@@ -77,8 +72,7 @@ public class ImageRequest extends Request {
      * @return image: the VNF software image updated
      */
 	public String update(final File image, final String id) throws SDKException {
-        String url = "http://localhost:8080/images";
-        url = url + "/" + id;
+        String url = this.url + "/" + id;
         return put(url, image, "IMAGE UPDATED");
 	}
 
