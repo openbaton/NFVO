@@ -116,4 +116,13 @@ public class PropertyReader {
         return getApiUrl() + sdkProperties.getProperty("restVirtualLinkPath");
     }
 
+    /**
+     * Gets the vnffg Url path
+     *
+     * @return the vnffg Url path property
+     */
+    public String getRestVNFFGUrl() {
+        return getApiUrl() + sdkProperties.getProperty("restVNFFGPath");
+    }
+
 }

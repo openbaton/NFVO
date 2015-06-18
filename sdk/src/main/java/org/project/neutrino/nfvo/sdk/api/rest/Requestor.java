@@ -24,6 +24,8 @@ public final class Requestor {
 	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorUrl());
 	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordUrl());
 	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstanceUrl());
+	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkUrl());
+	private static final VNFFGRequest vNFFGRequest = new VNFFGRequest(propertyReader.getRestVNFFGUrl());
 
 //	TODO
 //	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkPath());
@@ -81,8 +83,17 @@ public final class Requestor {
 	 *
 	 * @return virtualLinkRequest: The (final) static virtualLink requester
 	 */
-//	public static VirtualLinkRequest getVirtualLinkRequest() {
-//		return virtualLinkRequest;
-//	}
+	public static VirtualLinkRequest getVirtualLinkRequest() {
+		return virtualLinkRequest;
+	}
+
+	/**
+	 * Gets the VNFFG requester
+	 *
+	 * @return vNFFGRequest: The (final) static vNFFG requester
+	 */
+	public static VNFFGRequest getVNFFGRequest() {
+		return vNFFGRequest;
+	}
 
 }
