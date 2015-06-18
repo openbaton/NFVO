@@ -10,15 +10,17 @@ buildscript {
 
 apply plugin: "spring-boot"
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+
 mainClassName = 'org.project.neutrino.integration.test.MainIntegrationTest'
 
-
 repositories {
-    mavenCentral()
+    	mavenCentral()
 	mavenLocal()
 }
 
@@ -41,3 +43,9 @@ dependencies {
 	compile('org.apache.httpcomponents:httpclient:4.5')
 	
 }
+
+// tag::wrapper[]
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+// end::wrapper[]
