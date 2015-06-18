@@ -20,7 +20,7 @@ import java.util.Arrays;
 @Component
 public class Base implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("CLInterface");
+	private Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String CURRENT_PATH = Paths.get(".").toAbsolutePath().normalize().toString();
     private final String SEPARATOR = "\t";
 	

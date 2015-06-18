@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class SpringShellBridge implements CommandLineRunner {
 
-    private static Logger log = LoggerFactory.getLogger("CLInterface");
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * When running in spring boot application this implements the CommandLineRunner 
@@ -41,10 +41,11 @@ public class SpringShellBridge implements CommandLineRunner {
 	 *            parameters for starting the shell and bootstrap
 	 */
     public static void main(String[] args) {
+        SpringShellBridge springShellBridge = new SpringShellBridge();
         try {
-            new SpringShellBridge().run(args);
+            springShellBridge.run(args);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            springShellBridge.log.error(e.getMessage(), e);
         }
     }
 }
