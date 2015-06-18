@@ -18,9 +18,6 @@ import java.io.File;
 public class NetworkServiceRecord implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	/**
 	 * Creates a Network Service Record

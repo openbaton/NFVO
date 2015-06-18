@@ -18,9 +18,6 @@ import java.io.File;
 public class NetworkServiceDescriptor implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	/**
 	 * This operation allows submitting and validating a Network Service

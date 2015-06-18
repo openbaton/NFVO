@@ -22,9 +22,6 @@ import java.io.File;
 public class Image implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -71,7 +68,7 @@ public class Image implements CommandMarker {
      *            : The id of the VNF software image
      * @return image: The VNF software image(s) selected
      */
-	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id, or all")
+	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id, or all if no id is given")
 	public String findById(
             @CliOption(key = { "id" }, mandatory = false, help = "The image id") final String id) {
 		try {
@@ -81,10 +78,9 @@ public class Image implements CommandMarker {
 			} else {
 				return imageRequest.findAll();
 			}
-
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT FOUND";
+			return "NO IMAGE FOUND";
 		}
 	}
 
@@ -108,7 +104,6 @@ public class Image implements CommandMarker {
 			log.debug(e.getMessage());
 			return "IMAGE NOT UPDATED";
 		}
-
 	}
 
 }
