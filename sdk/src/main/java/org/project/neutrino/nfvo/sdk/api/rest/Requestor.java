@@ -13,10 +13,11 @@ import java.io.InputStream;
 public final class Requestor {
 
 	// sdk.api.properties path as string
-	private static final String PROPERTIES_FILE = "sdk.api.properties";
+	private static final String MAIN_PROPERTIES_FILE = "application.properties";
+	private static final String SDK_PROPERTIES_FILE = "sdk.api.properties";
 
 	// get the url configuration from
-	private static final PropertyReader propertyReader = new PropertyReader(PROPERTIES_FILE);
+	private static final PropertyReader propertyReader = new PropertyReader(MAIN_PROPERTIES_FILE, SDK_PROPERTIES_FILE);
 
 	// create the requester here, maybe shift this to a manager
 	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationUrl());
