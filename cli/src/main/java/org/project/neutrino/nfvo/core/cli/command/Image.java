@@ -21,7 +21,7 @@ import java.io.File;
 @Component
 public class Image implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("CLInterface");
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private ConfigurableApplicationContext context;
