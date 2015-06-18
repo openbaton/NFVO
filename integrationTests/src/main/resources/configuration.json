@@ -1,0 +1,7 @@
+{
+	"name" : "configuration_name",
+	"parameters":[{
+		"key":"test_key",
+		"value":"test_value"
+	}]
+}
