@@ -14,7 +14,7 @@ import java.io.FileInputStream;
 */
 public class PropertyReader {
 
-    private Properties sdkProperties;
+    private Properties mainProperties, sdkProperties;
 
     /**
      * Creates a property reader that deserializes the property file from a jar
@@ -22,22 +22,27 @@ public class PropertyReader {
      * @param propertiesPath
      * 				the jar (class)path to the properties file
      */
-    public PropertyReader(final String sdkPropertiesPath) {
+    public PropertyReader(final String mainPropertiesPath, final String sdkPropertiesPath) {
+        mainProperties = readProperties(mainPropertiesPath);
+        sdkProperties = readProperties(sdkPropertiesPath);
+    }
 
-        sdkProperties = new Properties();
+    private Properties readProperties(final String propertiesPath) {
+        Properties properties = null;
         InputStream inputStream = null;
-
         try {
-            // load the jars properties file
-            inputStream = PropertyReader.class.getClassLoader().getResourceAsStream(sdkPropertiesPath);
-            sdkProperties.load(inputStream);
+            // load the jar's properties files
+            inputStream = PropertyReader.class.getClassLoader().getResourceAsStream(propertiesPath);
+            // if there is an inputstream, execute the following
+            properties = new Properties();
+            properties.load(inputStream);
 
             // Print the sorted properties when called
-//            ArrayList<String> list = new ArrayList(sdkProperties.stringPropertyNames());
-//            Collections.sort(list);
-//            for (String str : list) {
-//                System.out.print(str);
-//                System.out.println(sdkProperties.getProperty(str));
+//            ArrayList<String> propertyList = new ArrayList(properties.stringPropertyNames());
+//            Collections.sort(propertyList);
+//            for (String property : propertyList) {
+//                System.out.print(propertyList);
+//                System.out.println(properties.getProperty(property));
 //            }
 
         } catch (IOException ex) {
@@ -51,6 +56,7 @@ public class PropertyReader {
                 }
             }
         }
+        return properties;
     }
 
     /**
