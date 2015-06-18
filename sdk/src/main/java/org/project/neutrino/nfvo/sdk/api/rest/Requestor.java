@@ -12,8 +12,8 @@ import java.io.InputStream;
  */
 public final class Requestor {
 
-	// application.properties path as string
-	private static final String PROPERTIES_FILE = "application.properties";
+	// sdk.api.properties path as string
+	private static final String PROPERTIES_FILE = "sdk.api.properties";
 
 	// get the url configuration from
 	private static final PropertyReader propertyReader = new PropertyReader(PROPERTIES_FILE);
