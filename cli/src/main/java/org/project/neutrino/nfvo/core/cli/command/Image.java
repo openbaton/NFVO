@@ -21,10 +21,7 @@ import java.io.File;
 @Component
 public class Image implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("CLInterface");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -55,30 +52,36 @@ public class Image implements CommandMarker {
 	@CliCommand(value = "image delete", help = "Removes the VNF software Image from the Image repository")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
-		return "IMAGE CREATED";
-	}
-
-    /**
-     * Returns the list of the VNF software images available
-     *
-     * @return List<Image>: The list of VNF software images available
-     */
-	@CliCommand(value = "image find all", help = "Returns the list of the VNF software images available")
-	public String findAll() {
-		return "IMAGE RESULTS";
+		try {
+			ImageRequest imageRequest = Requestor.getImageRequest();
+			return imageRequest.delete(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "IMAGE NOT DELETED";
+		}
 	}
 
 	/**
-     * Returns the VNF software image selected by id
+     * Returns the list of the VNF software images available or Returns the VNF software image selected by id
      *
      * @param id
      *            : The id of the VNF software image
-     * @return image: The VNF software image selected
+     * @return image: The VNF software image(s) selected
      */
-	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id")
+	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id, or all if no id is given")
 	public String findById(
-            @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
-		return "IMAGE RESULT";
+            @CliOption(key = { "id" }, mandatory = false, help = "The image id") final String id) {
+		try {
+			ImageRequest imageRequest = Requestor.getImageRequest();
+			if (id != null) {
+				return imageRequest.findById(id);
+			} else {
+				return imageRequest.findAll();
+			}
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NO IMAGE FOUND";
+		}
 	}
 
     /**
@@ -94,7 +97,13 @@ public class Image implements CommandMarker {
 	public String update(
             @CliOption(key = { "imageFile" }, mandatory = true, help = "The image json file") final File image,
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			ImageRequest imageRequest = Requestor.getImageRequest();
+			return imageRequest.update(image, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "IMAGE NOT UPDATED";
+		}
 	}
 
 }

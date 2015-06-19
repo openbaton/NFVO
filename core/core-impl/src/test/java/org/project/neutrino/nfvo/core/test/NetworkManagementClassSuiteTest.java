@@ -10,8 +10,11 @@ import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.neutrino.nfvo.catalogue.nfvo.*;
-import org.project.neutrino.nfvo.core.interfaces.ConfigurationManagement;
+import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
+import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;
+import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.core.interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -46,11 +50,11 @@ public class NetworkManagementClassSuiteTest {
 
 
 	@Autowired
-	private ConfigurationManagement configurationManagement;
+	private NetworkManagement networkManagement;
 
 	@Autowired
-	@Qualifier("configurationRepository")
-	private GenericRepository<Configuration> configurationRepository;
+	@Qualifier("networkRepository")
+	private GenericRepository<Network> networkRepository;
 
 	@Before
 	public void init() {
@@ -59,58 +63,23 @@ public class NetworkManagementClassSuiteTest {
 	}
 
 	@Test
-	public void configurationManagementNotNull(){
-		Assert.assertNotNull(configurationManagement);
+	public void nfvImageManagementNotNull(){
+		Assert.assertNotNull(networkManagement);
 	}
 
 	@Test
-	public void nfvImageManagementUpdateTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(configuration_exp);
+	public void networkManagementUpdateTest(){
+		Network network_exp = createNetwork();
+		when(networkRepository.find(anyString())).thenReturn(network_exp);
 
-		Configuration configuration_new = createConfigutation();
-		configuration_new.setName("UpdatedName");
-		ConfigurationParameter configurationParameter = new ConfigurationParameter();
-		configurationParameter.setKey("new_key");
-		configurationParameter.setValue("new_value");
-		configuration_new.getParameters().add(configurationParameter);
-		configuration_exp = configurationManagement.update(configuration_new, configuration_exp.getId());
+		Network network_new = createNetwork();
+		network_new.setName("UpdatedName");
+		network_new.setExternal(true);
+		network_exp = networkManagement.update(network_new, network_exp.getId());
 
-		assertEqualsConfiguration(configuration_exp, configuration_new);
-
-	}
-
-	private void assertEqualsConfiguration(Configuration configuration_exp, Configuration configuration_new) {
-		Assert.assertEquals(configuration_exp.getName(), configuration_new.getName());
-		int i = 0;
-		for (ConfigurationParameter configurationParameter : configuration_exp.getParameters()){
-			Assert.assertEquals(configurationParameter.getKey(),configuration_new.getParameters().get(i).getKey());
-			Assert.assertEquals(configurationParameter.getValue(),configuration_new.getParameters().get(i).getValue());
-			i++;
-		}
-	}
-
-	private Configuration createConfigutation() {
-		Configuration configuration = new Configuration();
-		configuration.setName("configuration_name");
-		configuration.setParameters(new ArrayList<ConfigurationParameter>(){{
-			ConfigurationParameter configurationParameter = new ConfigurationParameter();
-			configurationParameter.setKey("key");
-			configurationParameter.setValue("value");
-			add(configurationParameter);
-		}});
-		return configuration;
-	}
-
-	private void assertEqualsNetwork(Network network_exp, Network network_new) {
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
 		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
 		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
-		Assert.assertEquals(network_exp.getNetworkType(), network_new.getNetworkType());
-		Assert.assertEquals(network_exp.getPhysicalNetworkName(), network_new.getPhysicalNetworkName());
-		Assert.assertEquals(network_exp.getSegmentationId(), network_new.getSegmentationId());
-		Assert.assertEquals(network_exp.getShared(), network_new.getShared());
-		Assert.assertEquals(network_exp.getSubnets().size(), network_new.getSubnets().size());
 	}
 
 	private Network createNetwork() {
@@ -122,7 +91,7 @@ public class NetworkManagementClassSuiteTest {
 		network.setPhysicalNetworkName("physical_network_name");
 		network.setSegmentationId(0);
 		network.setShared(false);
-		network.setSubnets(new ArrayList<Subnet>(){{
+		network.setSubnets(new ArrayList<Subnet>() {{
 			add(createSubnet());
 		}});
 		return network;
@@ -138,34 +107,42 @@ public class NetworkManagementClassSuiteTest {
 	}
 
 	@Test
-	public void configurationManagementAddTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.create(any(Configuration.class))).thenReturn(configuration_exp);
-		Configuration configuration_new = configurationManagement.add(configuration_exp);
+	public void networkManagementAddTest(){
+		Network network_exp = createNetwork();
+		when(networkRepository.create(any(Network.class))).thenReturn(network_exp);
+		Network network_new = networkManagement.add(network_exp);
 
-		assertEqualsConfiguration(configuration_exp, configuration_new);
+		Assert.assertEquals(network_exp.getId(), network_new.getId());
+		Assert.assertEquals(network_exp.getName(), network_new.getName());
+		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
+		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+		Assert.assertEquals(network_exp.getSegmentationId(), network_new.getSegmentationId());
 	}
 
 	@Test
-	public void configurationManagementQueryTest(){
-		when(configurationRepository.findAll()).thenReturn(new ArrayList<Configuration>());
+	public void networkManagementQueryTest(){
+		when(networkRepository.findAll()).thenReturn(new ArrayList<Network>());
 
-		Assert.assertEquals(0, configurationManagement.query().size());
+		Assert.assertEquals(0, networkManagement.query().size());
 
-		Configuration configutation_exp = createConfigutation();
-		when(configurationRepository.find(configutation_exp.getId())).thenReturn(configutation_exp);
-		Configuration configuration_new = configurationManagement.query(configutation_exp.getId());
-		assertEqualsConfiguration(configutation_exp, configuration_new);
+		Network network_exp = createNetwork();
+		when(networkRepository.find(network_exp.getId())).thenReturn(network_exp);
+		Network network_new = networkManagement.query(network_exp.getId());
+		Assert.assertEquals(network_exp.getId(), network_new.getId());
+		Assert.assertEquals(network_exp.getName(), network_new.getName());
+		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
+		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+		Assert.assertEquals(network_exp.getSegmentationId(), network_new.getSegmentationId());
 	}
 
 	@Test
-	public void configurationManagementDeleteTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(configuration_exp);
-		configurationManagement.delete(configuration_exp.getId());
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(null);
-		Configuration configuration_new = configurationManagement.query(configuration_exp.getId());
-		Assert.assertNull(configuration_new);
+	public void networkManagementDeleteTest(){
+		Network network_exp = createNetwork();
+		when(networkRepository.find(network_exp.getId())).thenReturn(network_exp);
+		networkManagement.delete(network_exp.getId());
+		when(networkRepository.find(network_exp.getId())).thenReturn(null);
+		Network network_new = networkManagement.query(network_exp.getId());
+		Assert.assertNull(network_new);
 	}
 
 	@AfterClass

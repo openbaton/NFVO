@@ -17,10 +17,7 @@ import java.io.File;
 @Component
 public class NetworkServiceDescriptor implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("CLInterface");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * This operation allows submitting and validating a Network Service

@@ -1,5 +1,9 @@
 package org.project.neutrino.nfvo.core.cli.command;
 
+import org.project.neutrino.nfvo.sdk.api.rest.Requestor;
+import org.project.neutrino.nfvo.sdk.api.rest.VimInstanceRequest;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +21,7 @@ import java.io.File;
 @Component
 public class VimInstance implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("CLInterface");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Adds a new datacenter to the datacenter repository
@@ -31,8 +32,14 @@ public class VimInstance implements CommandMarker {
 	 */
 	@CliCommand(value = "viminstance create", help = "Adds a new datacenter to the datacenter repository")
 	public String create(
-            @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The image id to find.") final File datacenter) {
-		return "IMAGE CREATED";
+            @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter) {
+		try {
+			VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
+			return vimInstanceRequest.create(datacenter);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VIMINSTANCE NOT CREATED";
+		}
 	}
 
 	/**
@@ -42,17 +49,14 @@ public class VimInstance implements CommandMarker {
 	 */
 	@CliCommand(value = "viminstance delete", help = "Removes the Datacenter from the Datacenter repository")
 	public String delete(
-            @CliOption(key = { "id" }, mandatory = true, help = "The image id to find.") final String id) {
-		return "IMAGE CREATED";
-	}
-
-	/**
-	 * Returns the list of the Datacenters available
-	 * @return List<Datacenter>: The List of Datacenters available
-	 */
-	@CliCommand(value = "viminstance find all", help = "Returns the list of the Datacenters available")
-	public String findAll() {
-		return "IMAGE RESULTS";
+            @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
+        try {
+            VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
+            return vimInstanceRequest.delete(id);
+        } catch (SDKException e) {
+            log.debug(e.getMessage());
+            return "VIMINSTANCE NOT DELETED";
+        }
 	}
 
 	/**
@@ -60,10 +64,20 @@ public class VimInstance implements CommandMarker {
 	 * @param id: The Datacenter's id selected
 	 * @return Datacenter: The Datacenter selected
 	 */
-	@CliCommand(value = "viminstance find", help = "Returns the Datacenter selected by id")
+	@CliCommand(value = "viminstance find", help = "Returns the Datacenter selected by id" )
 	public String findById(
-            @CliOption(key = { "id" }, mandatory = true, help = "The image id to find.") final String id) {
-		return "IMAGE RESULT";
+            @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
+        try {
+            VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
+            if (id != null) {
+                return vimInstanceRequest.findById(id);
+            } else {
+                return vimInstanceRequest.findAll();
+            }
+        } catch (SDKException e) {
+            log.debug(e.getMessage());
+            return "NO VIMINSTANCE FOUND";
+        }
 	}
 
 	/**
@@ -77,9 +91,15 @@ public class VimInstance implements CommandMarker {
 	 */
 	@CliCommand(value = "viminstance update", help = "Updates the Datacenter")
 	public String update(
-            @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The image to find.") final File datacenter,
-            @CliOption(key = { "id" }, mandatory = true, help = "The image id to find.") final String id) {
-		return "IMAGE UPDATED";
+            @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter,
+            @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
+        try {
+            VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
+            return vimInstanceRequest.update(datacenter, id);
+        } catch (SDKException e) {
+            log.debug(e.getMessage());
+            return "VIMINSTANCE NOT UPDATED";
+        }
 	}
 
 }

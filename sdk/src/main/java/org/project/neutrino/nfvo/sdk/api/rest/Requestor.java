@@ -12,18 +12,21 @@ import java.io.InputStream;
  */
 public final class Requestor {
 
-	// application.properties path as string
-	private static final String PROPERTIES_FILE = "application.properties";
+	// sdk.api.properties path as string
+	private static final String MAIN_PROPERTIES_FILE = "application.properties";
+	private static final String SDK_PROPERTIES_FILE = "sdk.api.properties";
 
 	// get the url configuration from
-	private static final PropertyReader propertyReader = new PropertyReader(PROPERTIES_FILE);
+	private static final PropertyReader propertyReader = new PropertyReader(MAIN_PROPERTIES_FILE, SDK_PROPERTIES_FILE);
 
 	// create the requester here, maybe shift this to a manager
-	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationPath());
-	private static final ImageRequest imageRequest = new ImageRequest(propertyReader.getRestImagePath());
-	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorPath());
-	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordPath());
-	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstancePath());
+	private static final ConfigurationRequest configurationRequest = new ConfigurationRequest(propertyReader.getRestConfigurationUrl());
+	private static final ImageRequest imageRequest = new ImageRequest(propertyReader.getRestImageUrl());
+	private static final NetworkServiceDescriptorRequest networkServiceDescriptorRequest = new NetworkServiceDescriptorRequest(propertyReader.getRestNetworkServiceDescriptorUrl());
+	private static final NetworkServiceRecordRequest networkServiceRecordRequest = new NetworkServiceRecordRequest(propertyReader.getRestNetworkServiceRecordUrl());
+	private static final VimInstanceRequest vimInstanceRequest = new VimInstanceRequest(propertyReader.getRestVimInstanceUrl());
+	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkUrl());
+	private static final VNFFGRequest vNFFGRequest = new VNFFGRequest(propertyReader.getRestVNFFGUrl());
 
 //	TODO
 //	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkPath());
@@ -81,8 +84,17 @@ public final class Requestor {
 	 *
 	 * @return virtualLinkRequest: The (final) static virtualLink requester
 	 */
-//	public static VirtualLinkRequest getVirtualLinkRequest() {
-//		return virtualLinkRequest;
-//	}
+	public static VirtualLinkRequest getVirtualLinkRequest() {
+		return virtualLinkRequest;
+	}
+
+	/**
+	 * Gets the VNFFG requester
+	 *
+	 * @return vNFFGRequest: The (final) static vNFFG requester
+	 */
+	public static VNFFGRequest getVNFFGRequest() {
+		return vNFFGRequest;
+	}
 
 }
