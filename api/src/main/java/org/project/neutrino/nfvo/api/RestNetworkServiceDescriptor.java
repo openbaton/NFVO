@@ -270,7 +270,7 @@ public class RestNetworkServiceDescriptor {
 		return findVNFD(nsd.getVnf_dependency(), id_vnfd);
 	}
 
-	@RequestMapping(value = "{id}/vnfdependencies/{id_pnf}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
 			@PathVariable("id_vnfd") String id_vnfd)  {
@@ -304,7 +304,7 @@ public class RestNetworkServiceDescriptor {
 		return vnfDependency;
 	}
 
-	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "{id}/vnfdependencies/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VNFDependency updateVNFD(
 			@RequestBody @Valid VNFDependency vnfDependency,
