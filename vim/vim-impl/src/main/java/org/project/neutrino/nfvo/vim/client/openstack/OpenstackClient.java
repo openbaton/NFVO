@@ -13,6 +13,7 @@ import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.glance.v1_0.GlanceApi;
 import org.jclouds.openstack.glance.v1_0.domain.ContainerFormat;
 import org.jclouds.openstack.glance.v1_0.domain.DiskFormat;
+import org.jclouds.openstack.glance.v1_0.domain.Image;
 import org.jclouds.openstack.glance.v1_0.domain.ImageDetails;
 import org.jclouds.openstack.glance.v1_0.features.ImageApi;
 import org.jclouds.openstack.glance.v1_0.options.CreateImageOptions;
@@ -71,9 +72,12 @@ public class OpenstackClient implements ClientInterfaces {
     public void setNovaApi(NovaApi novaApi) {
         this.novaApi = novaApi;
     }
-
+    public void setVimInstance(VimInstance vimInstance) { this.vimInstance = vimInstance; }
     public void setNeutronApi(NeutronApi neutronApi) {
         this.neutronApi = neutronApi;
+    }
+    public void setGlanceApi(GlanceApi glanceApi) {
+        this.glanceApi = glanceApi;
     }
 
     public OpenstackClient() {
@@ -328,7 +332,7 @@ public class OpenstackClient implements ClientInterfaces {
         return image;
     }
 
-    public NFVImage updateImage(String extId, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic){
+    public NFVImage updateImage(String extId, String name, String diskFormat, String containerFormat, long minDisk, long minRam, boolean isPublic){
         ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
         UpdateImageOptions updateImageOptions = new UpdateImageOptions();
         updateImageOptions.name(name);
@@ -336,7 +340,7 @@ public class OpenstackClient implements ClientInterfaces {
         updateImageOptions.minDisk(minDisk);
         updateImageOptions.isPublic(isPublic);
         updateImageOptions.diskFormat(DiskFormat.valueOf(diskFormat));
-        updateImageOptions.containerFormat(ContainerFormat.valueOf(containerFromat));
+        updateImageOptions.containerFormat(ContainerFormat.valueOf(containerFormat));
         ImageDetails imageDetails = imageApi.update(extId, updateImageOptions);
         NFVImage image = new NFVImage();
         image.setName(imageDetails.getName());
