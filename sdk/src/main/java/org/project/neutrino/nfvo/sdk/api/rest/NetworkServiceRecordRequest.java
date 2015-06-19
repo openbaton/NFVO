@@ -1,5 +1,7 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import java.io.File;
 
 /**
@@ -25,8 +27,8 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return NetworkServiceRecord: the Network Service Descriptor filled with
 	 *         id and values from core
 	 */
-	public String create(final File networkServiceDescriptor) {
-		return "IMAGE CREATED";
+	public String create(final File networkServiceDescriptor) throws SDKException {
+		return post(url, networkServiceDescriptor, "NETWORKSERVICEDESCRIPTOR CREATED");
 	}
 
 	/**
@@ -37,8 +39,8 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return NetworkServiceRecord: the Network Service Descriptor filled with
 	 *         id and values from core
 	 */
-	public String create(final String id) {
-		return "IMAGE CREATED";
+	public String create(final String id) throws SDKException {
+		throw new SDKException("NOT IMPLEMENTED");
 	}
 
 	/**
@@ -47,8 +49,9 @@ public class NetworkServiceRecordRequest extends Request {
      * @param id
      *            : The NetworkServiceRecord's id to be deleted
      */
-	public String delete(final String id) {
-		return "IMAGE CREATED";
+	public String delete(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return delete(url, "NETWORKSERVICERECORD DELETED");
 	}
 
     /**
@@ -56,8 +59,8 @@ public class NetworkServiceRecordRequest extends Request {
      *
      * @return Set<NetworkServiceRecord>: The set of NetworkServiceRecords available
      */
-	public String findAll() {
-		return "IMAGE RESULTS";
+	public String findAll() throws SDKException {
+		return get(url, "FOUND NETWORKSERVICERECORDS");
 	}
 
 	/**
@@ -68,8 +71,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceRecord: the Network Service Descriptor selected
 	 */
-	public String findById(final String id) {
-		return "IMAGE RESULT";
+	public String findById(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return get(url, "FOUND NETWORKSERVICERECORD");
 	}
 
 	/**
@@ -81,78 +85,89 @@ public class NetworkServiceRecordRequest extends Request {
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceRecord: the Network Service Descriptor updated
 	 */
-	public String update(final File networkServiceRecord, final String id) {
-		return "IMAGE UPDATED";
+	public String update(final File networkServiceRecord, final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return put(url, networkServiceRecord, "NETWORKSERVICERECORD UPDATED");
 	}
 
 	/**
 	 *
 	 */
-	public String getVirtualNetworkFunctionRecord(final String id) {
-		return "IMAGE UPDATED";
+	public String getVirtualNetworkFunctionRecords(final String id) throws SDKException {
+		String url = this.url + "/" + id + "/vnfrecords";
+		return getWithStatusAccepted(url, "FOUND VNFRECORDS");
 	}
 
 	/**
 	 *
 	 */
-	public String getVirtualNetworkFunctionRecord(final String id, final String id_vnf) {
-		return "IMAGE UPDATED";
+	public String getVirtualNetworkFunctionRecord(final String id, final String id_vnf) throws SDKException {
+		String url = this.url + "/" + id + "/vnfrecords" + "/" + id_vnf;
+		return getWithStatusAccepted(url, "FOUND VNFRECORD");
 	}
 
 	/**
 	 *
 	 */
-	public String deleteVirtualNetworkFunctionDescriptor(final String id, final String id_vnf) {
-		return "IMAGE UPDATED";
+	public String deleteVirtualNetworkFunctionDescriptor(final String id, final String id_vnf) throws SDKException {
+		String url = this.url + "/" + id + "/vnfrecords" + "/" + id_vnf;
+		return delete(url, "DELETED VNFRECORDS");
 	}
 
 	/**
 	 *
 	 */
-	public String postVNFR(final File networkServiceRecord, final String id) {
-		return "IMAGE UPDATED";
+	public String postVNFR(final File networkServiceRecord, final String id) throws SDKException {
+		String url = this.url + "/" + id + "/vnfrecords" + "/";
+		return post(url, networkServiceRecord, "VNFRECORDS CREATED");
 	}
 
 	/**
 	 *
 	 */
-	public String updateVNF(final File networkServiceRecord, final String id, final String id_vnf) {
-		return "IMAGE UPDATED";
+	public String updateVNF(final File networkServiceRecord, final String id, final String id_vnf) throws SDKException {
+		String url = this.url + "/" + id + "/vnfrecords" + "/" + id_vnf;
+		return put(url, networkServiceRecord, "VNFRECORDS UPDATED");
 	}
 
 	/**
 	 *
 	 */
-	public String getVNFDependencies(final String id) {
-		return "IMAGE UPDATED";
+	public String getVNFDependencies(final String id) throws SDKException {
+		String url = this.url + "/" + id + "/vnfdependencies";
+		return getWithStatusAccepted(url, "FOUND VNFDEPENDENCIES");
 	}
 
 	/**
 	 *
 	 */
-	public String getVNFDependency(final String id, final String id_vnfr) {
-		return "IMAGE UPDATED";
+	public String getVNFDependency(final String id, final String id_vnfr) throws SDKException {
+		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfr;
+		return getWithStatusAccepted(url, "FOUND VNFDEPENDENCY");
 	}
 
 	/**
 	 *
 	 */
-	public String deleteVNFDependency(final String id, final String id_vnfd) {
-		return "IMAGE UPDATED";
+	public String deleteVNFDependency(final String id, final String id_vnfd) throws SDKException {
+		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
+		return delete(url, "DELETED VNFDEPENDENCY");
 	}
 
 	/**
 	 *
 	 */
-	public String postVNFDependency(final File vnfDependency, final String id) {
-		return "IMAGE UPDATED";
+	public String postVNFDependency(final File vnfDependency, final String id) throws SDKException {
+		String url = this.url + "/" + id + "/vnfdependencies" + "/";
+		return post(url, vnfDependency, "VNFDEPENDENCY CREATED");
 	}
 
 	/**
 	 *
 	 */
-	public String updateVNFD(final File vnfDependency, final String id, final String id_vnfd) {
-		return "IMAGE UPDATED";
+	public String updateVNFD(final File vnfDependency, final String id, final String id_vnfd) throws SDKException {
+		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
+		return put(url, vnfDependency, "VNFDEPENDENCY UPDATED");
 	}
 
 	/**
@@ -163,8 +178,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return Set<PhysicalNetworkFunctionRecord>: The Set of
 	 *         PhysicalNetworkFunctionRecord into NSD
 	 */
-	public String getPhysicalNetworkFunctionRecord(final String id) {
-		return "IMAGE UPDATED";
+	public String getPhysicalNetworkFunctionRecords(final String id) throws SDKException {
+		String url = this.url + "/" + id + "/pnfrecords";
+		return getWithStatusAccepted(url, "FOUND PNFRECORDS");
 	}
 
 	/**
@@ -177,8 +193,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return PhysicalNetworkFunctionRecord: The PhysicalNetworkFunctionRecord
 	 *         selected
 	 */
-	public String getPhysicalNetworkFunctionRecord(final String id, final String id_pnf) {
-		return "IMAGE UPDATED";
+	public String getPhysicalNetworkFunctionRecord(final String id, final String id_pnf) throws SDKException {
+		String url = this.url + "/" + id + "/pnfrecords" + "/" + id_pnf;
+		return getWithStatusAccepted(url, "FOUND PNFRECORDS");
 	}
 
 	/**
@@ -189,8 +206,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @param id_pnf
 	 *            : The PhysicalNetworkFunctionRecord id
 	 */
-	public String deletePhysicalNetworkFunctionRecord(final String id, final String id_pnf) {
-		return "IMAGE UPDATED";
+	public String deletePhysicalNetworkFunctionRecord(final String id, final String id_pnf) throws SDKException {
+		String url = this.url + "/" + id + "/pnfrecords" + "/" + id_pnf;
+		return delete(url, "DELETED PNFRECORDS");
 	}
 
 	/**
@@ -203,8 +221,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return PhysicalNetworkFunctionRecord: The PhysicalNetworkFunctionRecord
 	 *         stored
 	 */
-	public String postPhysicalNetworkFunctionRecord(final File physicalNetworkFunctionRecord, final String id) {
-		return "IMAGE UPDATED";
+	public String postPhysicalNetworkFunctionRecord(final File physicalNetworkFunctionRecord, final String id) throws SDKException {
+		String url = this.url + "/" + id + "/pnfrecords" + "/";
+		return post(url, physicalNetworkFunctionRecord, "PNFRECORDS CREATED");
 	}
 
 	/**
@@ -217,8 +236,9 @@ public class NetworkServiceRecordRequest extends Request {
 	 * @return PhysicalNetworkFunctionRecord: The PhysicalNetworkFunctionRecord
 	 *         edited
 	 */
-	public String updatePNFD(final File physicalNetworkFunctionRecord, final String id, final String id_pnf) {
-		return "IMAGE UPDATED";
+	public String updatePNFD(final File physicalNetworkFunctionRecord, final String id, final String id_pnf) throws SDKException {
+		String url = this.url + "/" + id + "/pnfrecords" + "/" + id_pnf;
+		return put(url, physicalNetworkFunctionRecord, "PNFRECORDS UPDATED");
 	}
 
 }

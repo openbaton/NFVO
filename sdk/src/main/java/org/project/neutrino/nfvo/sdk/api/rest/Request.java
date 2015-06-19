@@ -53,6 +53,8 @@ public class Request {
                     .header("Content-Type", "application/json")
                     .body(fileJSONNode)
                     .asJson();
+//            check response status
+            checkStatus(jsonResponse, HttpURLConnection.HTTP_CREATED);
             JsonNode jsonResponseBody = jsonResponse.getBody();
             // return the response of the request
             return message + " " + jsonResponseBody;
@@ -78,9 +80,7 @@ public class Request {
             HttpResponse<JsonNode> jsonResponse = Unirest.delete(url)
                     .asJson();
 //            check response status
-            if (jsonResponse.getStatus() != HttpURLConnection.HTTP_NO_CONTENT) {
-                throw new SDKException("Received wrong API HTTPStatus");
-            }
+            checkStatus(jsonResponse, HttpURLConnection.HTTP_NO_CONTENT);
             // return the response of the request
             return message;
 
@@ -100,11 +100,31 @@ public class Request {
      * @return a string containing the message as prefix and the response content
      */
     public String get(final String url, final String message) throws SDKException {
+        return getWithStatus(url, message, null);
+    }
+
+    /**
+     * Executes a http get with to a given url, and possible executed an http (accept) status check of the response if an httpStatus is delivered.
+     * If httpStatus is null, no check will be executed.
+     *
+     * @param url
+     * 				the url path used for the api request
+     * @param message
+     * 	            the prefix to be returned before the response content
+     * @param httpStatus
+     * 	            the http status to be checked.
+     * @return a string containing the message as prefix and the response content
+     */
+    private String getWithStatus(final String url, final String message, final Integer httpStatus) throws SDKException {
         try {
             // call the api here
             HttpResponse<JsonNode> jsonResponse = Unirest.get(url)
                     .asJson();
             JsonNode jsonResponseBody = jsonResponse.getBody();
+            // check response status
+            if (httpStatus != null) {
+                checkStatus(jsonResponse, httpStatus);
+            }
             // return the response of the request
             return message + " " + jsonResponseBody;
 
@@ -113,6 +133,21 @@ public class Request {
             throw new SDKException("Could not http-get properly");
         }
     }
+
+    /**
+     * Executes a http get with to a given url, in contrast to the normal get it uses an http (accept) status check of the response
+     *
+     * @param url
+     * 				the url path used for the api request
+     * @param message
+     * 	            the prefix to be returned before the response content
+     * @return a string containing the message as prefix and the response content
+     */
+    public String getWithStatusAccepted(final String url, final String message) throws SDKException {
+        return getWithStatus(url, message, new Integer(HttpURLConnection.HTTP_ACCEPTED));
+    }
+
+
 
     /**
      * Executes a http put with to a given url, while serializing the file content as json
@@ -140,10 +175,7 @@ public class Request {
                     .asJson();
 
 //          check response status
-            if (jsonResponse.getStatus() != HttpURLConnection.HTTP_ACCEPTED) {
-                throw new SDKException("Received wrong API HTTPStatus");
-            }
-
+            checkStatus(jsonResponse, HttpURLConnection.HTTP_ACCEPTED);
             JsonNode jsonResponseBody = jsonResponse.getBody();
 
             // return the response of the request
@@ -152,6 +184,20 @@ public class Request {
         } catch (IOException | UnirestException | SDKException e) {
             // catch request exceptions here
             throw new SDKException("Could not http-put or the api response was wrong or open the file properly");
+        }
+    }
+
+    /**
+     * Check wether a json repsonse has the right http status. If not, an SDKException is thrown.
+     *
+     * @param jsonResponse
+     * 				the http json response
+     * @param httpStatus
+     * 				the (desired) http status of the repsonse
+     */
+    private void checkStatus(HttpResponse<JsonNode> jsonResponse, final int httpStatus) throws SDKException {
+        if (jsonResponse.getStatus() != httpStatus) {
+            throw new SDKException("Received wrong API HTTPStatus");
         }
     }
 
