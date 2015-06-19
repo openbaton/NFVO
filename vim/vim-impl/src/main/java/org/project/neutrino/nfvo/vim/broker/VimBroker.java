@@ -64,9 +64,11 @@ public class VimBroker implements org.project.neutrino.nfvo.vim_interfaces.vim.V
             //Subtract instances
             leftQuota.setInstances(leftQuota.getInstances()-1);
             //Subtract used ram and cpus
+            // TODO check whenever the library/rest command work.
             DeploymentFlavour flavor = server.getFlavor();
             leftQuota.setRam(leftQuota.getRam()-flavor.getRam());
             leftQuota.setCores(leftQuota.getCores()-flavor.getVcpus());
+            // TODO add floating ips when quota command will work...
         }
         return leftQuota;
     }
