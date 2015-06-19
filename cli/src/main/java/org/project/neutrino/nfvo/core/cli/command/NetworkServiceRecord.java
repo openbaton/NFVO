@@ -17,10 +17,7 @@ import java.io.File;
 @Component
 public class NetworkServiceRecord implements CommandMarker {
 	
-	private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Creates a Network Service Record

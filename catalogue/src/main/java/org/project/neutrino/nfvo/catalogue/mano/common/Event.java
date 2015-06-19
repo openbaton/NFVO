@@ -12,5 +12,6 @@ package org.project.neutrino.nfvo.catalogue.mano.common;
 public enum  Event {
   ALLOCATE,
   INSTALL,
-  START
+    ERROR,
+  START;
 }

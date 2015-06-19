@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.common.HighAvailability;
+import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -181,7 +182,22 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 		nsd.setVendor("FOKUS");
 		Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 = getVirtualNetworkFunctionDescriptor();
+		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor2 = getVirtualNetworkFunctionDescriptor();
+		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor1);
+		nsd.setVnfd(virtualNetworkFunctionDescriptors);
+
+		VNFDependency vnfDependency = new VNFDependency();
+		vnfDependency.setSource(virtualNetworkFunctionDescriptor1);
+		vnfDependency.setTarget(virtualNetworkFunctionDescriptor2);
+		nsd.getVnf_dependency().add(vnfDependency);
+
+		return nsd;
+	}
+
+	private VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+		virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random()*1000)));
 		virtualNetworkFunctionDescriptor
 				.setMonitoring_parameter(new HashSet<String>() {
 					{
@@ -209,9 +225,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 						add(vdu);
 					}
 				});
-		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-		nsd.setVnfd(virtualNetworkFunctionDescriptors);
-		return nsd;
+		return virtualNetworkFunctionDescriptor;
 	}
 
 	private VimInstance createVimInstance() {

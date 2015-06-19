@@ -1,22 +1,22 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import java.io.File;
 
 /**
  * OpenBaton configuration-related api requester.
  */
-public class ConfigurationRequest {
-
-	private final String path;
+public class ConfigurationRequest extends Request {
 
 	/**
 	 * Create a configuration requester with a given url path
 	 *
-	 * @param path
+	 * @param url
 	 * 				the url path used for the api requests
 	 */
-	public ConfigurationRequest(final String path) {
-		this.path = path;
+	public ConfigurationRequest(final String url) {
+		super(url);
 	}
 
 	/**
@@ -25,8 +25,8 @@ public class ConfigurationRequest {
 	 * @param configuration
 	 * @return configuration
 	 */
-	public String create(final File configuration) {
-		return "IMAGE CREATED";
+	public String create(final File configuration) throws SDKException {
+		return post(url, configuration, "CONFIGURATION CREATED");
 	}
 
 	/**
@@ -35,8 +35,9 @@ public class ConfigurationRequest {
 	 * @param id
 	 *            : the id of configuration to be removed
 	 */
-	public String delete(final String id) {
-		return "IMAGE CREATED";
+	public String delete(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return delete(url, "CONFIGURATION DELETED");
 	}
 
 	/**
@@ -44,8 +45,8 @@ public class ConfigurationRequest {
 	 *
 	 * @return List<Configuration>: The list of Configurations available
 	 */
-	public String findAll() {
-		return "IMAGE RESULTS";
+	public String findAll() throws SDKException {
+		return get(url, "FOUND CONFIGURATIONS");
 	}
 
 	/**
@@ -55,8 +56,9 @@ public class ConfigurationRequest {
 	 *            : The id of the Configuration
 	 * @return Configuration: The Configuration selected
 	 */
-	public String findById(final String id) {
-		return "IMAGE RESULT";
+	public String findById(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return get(url, "FOUND CONFIGURATION");
 	}
 
 	/**
@@ -68,8 +70,9 @@ public class ConfigurationRequest {
 	 *            : The id of the Configuration
 	 * @return Configuration The Configuration updated
 	 */
-	public String update(final File configuration, final String id) {
-		return "IMAGE UPDATED";
+	public String update(final File configuration, final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return put(url, configuration, "CONFIGURATION UPDATED");
 	}
 
 }

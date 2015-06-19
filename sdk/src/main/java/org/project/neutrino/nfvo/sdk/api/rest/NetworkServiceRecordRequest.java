@@ -5,18 +5,16 @@ import java.io.File;
 /**
  * OpenBaton image-related commands api requester.
  */
-public class NetworkServiceRecordRequest{
-
-	private final String path;
+public class NetworkServiceRecordRequest extends Request {
 
 	/**
 	 * Create a NetworkServiceRecord requester with a given url path
 	 *
-	 * @param path
+	 * @param url
 	 * 				the url path used for the api requests
 	 */
-	public NetworkServiceRecordRequest(final String path) {
-		this.path = path;
+	public NetworkServiceRecordRequest(final String url) {
+		super(url);
 	}
 
 	/**

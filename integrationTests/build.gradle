@@ -1,0 +1,51 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+	}
+}
+
+apply plugin: "spring-boot"
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+mainClassName = 'org.project.neutrino.integration.test.MainIntegrationTest'
+
+repositories {
+    	mavenCentral()
+	mavenLocal()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.2.4.RELEASE")
+	compile('org.springframework:spring-test:4.1.6.RELEASE')
+	
+	compile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+	compile('org.project.neutrino:main:0.3-SNAPSHOT')
+
+	testCompile('junit:junit:4.12')
+	compile('org.apache.commons:commons-dbcp2:2.1')
+	compile('org.hsqldb:hsqldb:2.3.2')
+	compile 'org.aspectj:aspectjweaver:1.8.5'
+	
+	testCompile("org.mockito:mockito-all:1.10.19")
+		
+	runtime 'org.project.neutrino:api:0.3-SNAPSHOT'
+	
+	compile('org.apache.httpcomponents:httpclient:4.5')
+	
+}
+
+// tag::wrapper[]
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+// end::wrapper[]
