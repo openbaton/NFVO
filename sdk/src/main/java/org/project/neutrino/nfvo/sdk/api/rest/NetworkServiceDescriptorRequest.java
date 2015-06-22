@@ -29,7 +29,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 *         with id and values from core
 	 */
 	public String create(final File networkServiceDescriptor) throws SDKException {
-		return post(url, networkServiceDescriptor, "NETWORKSERVICEDESCRIPTOR CREATED");
+		return requestPost(url, networkServiceDescriptor);
 	}
 
 	/**
@@ -38,9 +38,9 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 * @param id
 	 *            : the id of Network Service Descriptor
 	 */
-	public String delete(final String id) throws SDKException {
+	public void delete(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return delete(url, "NETWORKSERVICEDESCRIPTOR DELETED");
+		requestDelete(url);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 *         Descriptor stored
 	 */
 	public String findAll() throws SDKException {
-		return get(url, "FOUND NETWORKSERVICEDESCRIPTORS");
+		return requestGet(url);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String findById(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return get(url, "FOUND NETWORKSERVICEDESCRIPTOR");
+		return requestGet(url);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String update(final File networkServiceDescriptor, final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return put(url, networkServiceDescriptor, "NETWORKSERVICEDESCRIPTOR UPDATED");
+		return requestPut(url, networkServiceDescriptor);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getVirtualNetworkFunctionDescriptors(final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors";
-		return getWithStatusAccepted(url, "FOUND VIRTUALNETWORKSERVICEDESCRIPTORS");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -98,15 +98,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getVirtualNetworkFunctionDescriptor(final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
-		return getWithStatusAccepted(url, "FOUND VIRTUALNETWORKSERVICEDESCRIPTOR");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
 	 *
 	 */
-	public String deleteVirtualNetworkFunctionDescriptors(final String id, final String id_vfn) throws SDKException {
+	public void deleteVirtualNetworkFunctionDescriptors(final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
-		return delete(url, "DELETED VIRTUALNETWORKSERVICEDESCRIPTORS");
+		requestDelete(url);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String postVNFD(final File virtualNetworkFunctionDescriptor, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/";
-		return post(url, virtualNetworkFunctionDescriptor, "VIRTUALNETWORKSERVICEDESCRIPTORS CREATED");
+		return requestPost(url, virtualNetworkFunctionDescriptor);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String updateVNF(final File virtualNetworkFunctionDescriptor, final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
-		return put(url, virtualNetworkFunctionDescriptor, "VIRTUALNETWORKSERVICEDESCRIPTOR UPDATED");
+		return requestPut(url, virtualNetworkFunctionDescriptor);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getVNFDependencies(final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies";
-		return getWithStatusAccepted(url, "FOUND VNFDEPENDENCIES");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -138,15 +138,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getVNFDependency(final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
-		return getWithStatusAccepted(url, "FOUND VNFDEPENDENCY");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
 	 *
 	 */
-	public String deleteVNFDependency(final String id, final String id_vnfd) throws SDKException {
+	public void deleteVNFDependency(final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
-		return delete(url, "DELETED VNFDEPENDENCY");
+		requestDelete(url);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String postVNFDependency(final File vnfDependency, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/";
-		return post(url, vnfDependency, "CREATED VNFDEPENDENCY");
+		return requestPost(url, vnfDependency);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String updateVNFD(final File vnfDependency, final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
-		return put(url, vnfDependency, "UPDATED VNFDEPENDENCY");
+		return requestPut(url, vnfDependency);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getPhysicalNetworkFunctionDescriptors(final String id) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors";
-		return getWithStatusAccepted(url, "FOUND PNFDESCRIPTORS");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getPhysicalNetworkFunctionDescriptor(final String id, final String id_pnf) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors" + "/" + id_pnf;
-		return getWithStatusAccepted(url, "FOUND PNFDESCRIPTOR");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -203,9 +203,9 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 * @param id_pnf
 	 *            : The PhysicalNetworkFunctionDescriptor id
 	 */
-	public String deletePhysicalNetworkFunctionDescriptor(final String id, final String id_pnf) throws SDKException {
+	public void deletePhysicalNetworkFunctionDescriptor(final String id, final String id_pnf) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors" + "/" + id_pnf;
-		return delete(url, "DELETED PNFDESCRIPTOR");
+		requestDelete(url);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String postPhysicalNetworkFunctionDescriptor(final File pnf, final String id, final String id_pnf) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors" + "/" + id_pnf;
-		return post(url, pnf, "CREATED PNFDESCRIPTOR");
+		return requestPost(url, pnf);
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String updatePNFD(final File pnf, final String id, final String id_pnf) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors" + "/" + id_pnf;
-		return put(url, pnf, "UPDATED PNFDESCRIPTOR");
+		return requestPut(url, pnf);
 	}
 
 	/**
@@ -250,7 +250,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getSecurities(final String id) throws SDKException {
 		String url = this.url + "/" + id + "/security";
-		return getWithStatusAccepted(url, "FOUND SECURITIES");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String getSecurity(final String id, final String id_s) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/" + id_s;
-		return getWithStatusAccepted(url, "FOUND SECURITY");
+		return requestGetWithStatusAccepted(url);
 	}
 
 	/**
@@ -276,9 +276,9 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 *            : The Security id
 	 * @
 	 */
-	public String deleteSecurity(final String id, final String id_s) throws SDKException {
+	public void deleteSecurity(final String id, final String id_s) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/" + id_s;
-		return delete(url, "DELETED SECURITY");
+		requestDelete(url);
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String postSecurity(final File security, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/";
-		return post(url, security, "CREATED SECURITY");
+		return requestPost(url, security);
 	}
 
 	/**
@@ -301,7 +301,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String updateSecurity(final File security, final String id, final String id_s) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/" + id_s;
-		return put(url, security, "UPDATED SECURITY");
+		return requestPut(url, security);
 	}
 
 	/**
@@ -309,6 +309,6 @@ public class NetworkServiceDescriptorRequest extends Request {
 	 */
 	public String createRecord(final File networkServiceDescriptor) throws SDKException {
 		String url = this.url + "/records";
-		return post(url, networkServiceDescriptor, "CREATED RECORD");
+		return requestPost(url, networkServiceDescriptor);
 	}
 }

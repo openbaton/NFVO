@@ -37,11 +37,9 @@ public class Request {
      * 				the url path used for the api request
      * @param file
      * 				the file content to be serialized as json
-     * @param message
-     * 	            the prefix to be returned before the response content
-     * @return a string containing the message as prefix and the response content
+     * @return a string containing the response content
      */
-	public String post(final String url, final File file, final String message) throws SDKException {
+    public String requestPost(final String url, final File file) throws SDKException {
         try {
             // deserialize the json as string from the file
             String fileString = FileUtils.readFileToString(file);
@@ -55,34 +53,28 @@ public class Request {
                     .asJson();
 //            check response status
             checkStatus(jsonResponse, HttpURLConnection.HTTP_CREATED);
-            JsonNode jsonResponseBody = jsonResponse.getBody();
             // return the response of the request
-            return message + " " + jsonResponseBody;
+            return jsonResponse.getBody().toString();
 
         } catch (IOException | UnirestException e) {
             // catch request exceptions here
             throw new SDKException("Could not http-post or open the file properly");
         }
-	}
+    }
 
     /**
      * Executes a http delete with to a given url
      *
      * @param url
      * 				the url path used for the api request
-     * @param message
-     * 	            the prefix to be returned before the response content
-     * @return a string containing the message as prefix
      */
-    public String delete(final String url, final String message) throws SDKException {
+    public void requestDelete(final String url) throws SDKException {
         try {
             // call the api here
             HttpResponse<JsonNode> jsonResponse = Unirest.delete(url)
                     .asJson();
 //            check response status
             checkStatus(jsonResponse, HttpURLConnection.HTTP_NO_CONTENT);
-            // return the response of the request
-            return message;
 
         } catch (UnirestException | SDKException e) {
             // catch request exceptions here
@@ -95,12 +87,10 @@ public class Request {
      *
      * @param url
      * 				the url path used for the api request
-     * @param message
-     * 	            the prefix to be returned before the response content
-     * @return a string containing the message as prefix and the response content
+     * @return a string containing he response content
      */
-    public String get(final String url, final String message) throws SDKException {
-        return getWithStatus(url, message, null);
+    public String requestGet(final String url) throws SDKException {
+        return requestGetWithStatus(url, null);
     }
 
     /**
@@ -109,24 +99,22 @@ public class Request {
      *
      * @param url
      * 				the url path used for the api request
-     * @param message
-     * 	            the prefix to be returned before the response content
      * @param httpStatus
      * 	            the http status to be checked.
-     * @return a string containing the message as prefix and the response content
+     * @return a string containing the response content
      */
-    private String getWithStatus(final String url, final String message, final Integer httpStatus) throws SDKException {
+    private String requestGetWithStatus(final String url, final Integer httpStatus) throws SDKException {
         try {
             // call the api here
             HttpResponse<JsonNode> jsonResponse = Unirest.get(url)
                     .asJson();
-            JsonNode jsonResponseBody = jsonResponse.getBody();
+
             // check response status
             if (httpStatus != null) {
                 checkStatus(jsonResponse, httpStatus);
             }
             // return the response of the request
-            return message + " " + jsonResponseBody;
+            return jsonResponse.getBody().toString();
 
         } catch (UnirestException e) {
             // catch request exceptions here
@@ -139,12 +127,10 @@ public class Request {
      *
      * @param url
      * 				the url path used for the api request
-     * @param message
-     * 	            the prefix to be returned before the response content
-     * @return a string containing the message as prefix and the response content
+     * @return a string containing the response content
      */
-    public String getWithStatusAccepted(final String url, final String message) throws SDKException {
-        return getWithStatus(url, message, new Integer(HttpURLConnection.HTTP_ACCEPTED));
+    public String requestGetWithStatusAccepted(final String url) throws SDKException {
+        return requestGetWithStatus(url, new Integer(HttpURLConnection.HTTP_ACCEPTED));
     }
 
 
@@ -157,11 +143,9 @@ public class Request {
      * 				the url path used for the api request
      * @param file
      * 				the file content to be serialized as json
-     * @param message
-     * 	            the prefix to be returned before the response content
-     * @return a string containing the message as prefix and the response content
+     * @return a string containing the response content
      */
-    public String put(final String url, final File file, final String message) throws SDKException {
+    public String requestPut(final String url, final File file) throws SDKException {
         try {
             // deserialize the json as string from the file
             String fileString = FileUtils.readFileToString(file);
@@ -176,10 +160,9 @@ public class Request {
 
 //          check response status
             checkStatus(jsonResponse, HttpURLConnection.HTTP_ACCEPTED);
-            JsonNode jsonResponseBody = jsonResponse.getBody();
 
             // return the response of the request
-            return message + " " + jsonResponseBody;
+            return jsonResponse.getBody().toString();
 
         } catch (IOException | UnirestException | SDKException e) {
             // catch request exceptions here

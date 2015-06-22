@@ -37,10 +37,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
             @CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.create(networkServiceDescriptor);
+            return "NSD CREATED" + networkServiceDescriptorRequest.create(networkServiceDescriptor);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "NSD NOT CREATED";
         }
 	}
 
@@ -55,10 +55,11 @@ public class NetworkServiceDescriptor implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.delete(id);
+            networkServiceDescriptorRequest.delete(id);
+            return "NETWORKSERVICEDESCRIPTOR DELETED";
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "NETWORKSERVICEDESCRIPTOR NOT DELETED";
         }
 	}
 
@@ -76,13 +77,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             if (id != null) {
-                return networkServiceDescriptorRequest.findById(id);
+                return "FOUND NSD: " + networkServiceDescriptorRequest.findById(id);
             } else {
-                return networkServiceDescriptorRequest.findAll();
+                return "FOUND NSDs: " + networkServiceDescriptorRequest.findAll();
             }
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "NO IMAGE FOUND";
+            return "NO NSD FOUND";
         }
 	}
 
@@ -101,10 +102,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.update(networkServiceDescriptor, id);
+            return "UPDATED NSD: " + networkServiceDescriptorRequest.update(networkServiceDescriptor, id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "NSD NOT UPDATED";
         }
 	}
 
@@ -121,10 +122,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getVirtualNetworkFunctionDescriptors(id);
+            return "FOUND VNFDESCRIPTORs: " + networkServiceDescriptorRequest.getVirtualNetworkFunctionDescriptors(id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDESCRIPTOR NOT FOUND";
         }
 	}
 
@@ -137,10 +138,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getVirtualNetworkFunctionDescriptor(id, id_vfn);
+            return "FOUND VNFDESCRIPTOR: " + networkServiceDescriptorRequest.getVirtualNetworkFunctionDescriptor(id, id_vfn);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDESCRIPTOR NOT FOUND";
         }
 	}
 
@@ -153,10 +154,11 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.deleteVirtualNetworkFunctionDescriptors(id, id_vfn);
+            networkServiceDescriptorRequest.deleteVirtualNetworkFunctionDescriptors(id, id_vfn);
+            return "DELETED VNFDESCRIPTOR";
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDESCRIPTOR NOT DELETED";
         }
 	}
 
@@ -169,10 +171,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.postVNFD(virtualNetworkFunctionDescriptor, id);
+            return "CREATED VNFDESCRIPTOR: " + networkServiceDescriptorRequest.postVNFD(virtualNetworkFunctionDescriptor, id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDESCRIPTOR NOT CREATED";
         }
 	}
 
@@ -186,10 +188,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.updateVNF(virtualNetworkFunctionDescriptor, id, id_vfn);
+            return "UPDATED VNFDESCRIPTOR: " + networkServiceDescriptorRequest.updateVNF(virtualNetworkFunctionDescriptor, id, id_vfn);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDESCRIPTOR NOT UPDATED";
         }
 	}
 
@@ -201,10 +203,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getVNFDependencies(id);
+            return "FOUND VNFDEPENDENCIES: " + networkServiceDescriptorRequest.getVNFDependencies(id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDEPENDENCY NOT FOUND";
         }
 	}
 
@@ -217,10 +219,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getVNFDependency(id, id_vnfd);
+            return "FOUND VNFDEPENDENCY: " + networkServiceDescriptorRequest.getVNFDependency(id, id_vnfd);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDEPENDENCY NOT FOUND";
         }
 	}
 
@@ -233,10 +235,11 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.deleteVNFDependency(id, id_vnfd);
+            networkServiceDescriptorRequest.deleteVNFDependency(id, id_vnfd);
+            return "DELETED VNFDEPENDENCY";
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDEPENDENCY NOT DELETED";
         }
 	}
 
@@ -249,10 +252,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.postVNFDependency(vnfDependency, id);
+            return "CREATED VNFDEPENDENCY: " + networkServiceDescriptorRequest.postVNFDependency(vnfDependency, id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDEPENDENCY NOT CREATED";
         }
 	}
 
@@ -266,10 +269,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.updateVNFD(vnfDependency, id, id_vnfd);
+            return "UPDATED VNFDEPENDENCY: " + networkServiceDescriptorRequest.updateVNFD(vnfDependency, id, id_vnfd);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "VNFDEPENDENCY NOT UPDATED";
         }
 	}
 
@@ -287,10 +290,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getPhysicalNetworkFunctionDescriptors(id);
+            return "FOUND PNFDESCRIPTORs: " + networkServiceDescriptorRequest.getPhysicalNetworkFunctionDescriptors(id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "PNFDESCRIPTOR NOT FOUND";
         }
 	}
 
@@ -311,10 +314,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getPhysicalNetworkFunctionDescriptor(id, id_pnf);
+            return "FOUND PNFDESCRIPTOR: " + networkServiceDescriptorRequest.getPhysicalNetworkFunctionDescriptor(id, id_pnf);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "PNFDESCRIPTOR NOT FOUND";
         }
 	}
 
@@ -332,10 +335,11 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.deletePhysicalNetworkFunctionDescriptor(id, id_pnf);
+            networkServiceDescriptorRequest.deletePhysicalNetworkFunctionDescriptor(id, id_pnf);
+            return "DELETED PNFDESCRIPTOR";
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "PNFDESCRIPTOR NOT DELETED";
         }
 	}
 
@@ -357,10 +361,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.postPhysicalNetworkFunctionDescriptor(pnf, id, id_pnf);
+            return "CREATED PNFDESCRIPTOR: " + networkServiceDescriptorRequest.postPhysicalNetworkFunctionDescriptor(pnf, id, id_pnf);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "PNFDESCRIPTOR NOT CREATED";
         }
 	}
 
@@ -382,10 +386,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.updatePNFD(pnf, id, id_pnf);
+            return "UPDATED PNFDESCRIPTOR: " + networkServiceDescriptorRequest.updatePNFD(pnf, id, id_pnf);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "PNFDESCRIPTOR NOT UPDATED";
         }
 	}
 
@@ -402,10 +406,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getSecurities(id);
+            return "FOUND SECURITIES: " + networkServiceDescriptorRequest.getSecurities(id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "SECURITY NOT FOUND";
         }
 	}
 
@@ -424,10 +428,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.getSecurity(id, id_s);
+            return "FOUND SECURITY: " + networkServiceDescriptorRequest.getSecurity(id, id_s);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "SECURITY NOT FOUND";
         }
 	}
 
@@ -446,10 +450,11 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.deleteSecurity(id, id_s);
+            networkServiceDescriptorRequest.deleteSecurity(id, id_s);
+            return "DELETED SECURITY";
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "SECURITY NOT DELETED";
         }
 	}
 
@@ -469,10 +474,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.postSecurity(security, id);
+            return "CREATED SECURITY: " + networkServiceDescriptorRequest.postSecurity(security, id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "SECURITY NOT CREATED";
         }
 	}
 
@@ -486,10 +491,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.updateSecurity(security, id, id_s);
+            return "UPDATED SECURITY: " + networkServiceDescriptorRequest.updateSecurity(security, id, id_s);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "SECURITY NOT UPDATED";
         }
 	}
 
@@ -501,10 +506,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 			@CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "TODO") final File networkServiceDescriptor) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
-            return networkServiceDescriptorRequest.createRecord(networkServiceDescriptor);
+            return "CREATED RECORD: " + networkServiceDescriptorRequest.createRecord(networkServiceDescriptor);
         } catch (SDKException e) {
             log.debug(e.getMessage());
-            return "IMAGE NOT CREATED";
+            return "RECORD NOT CREATED";
         }
 	}
 }
