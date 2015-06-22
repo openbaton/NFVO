@@ -26,7 +26,7 @@ public class ConfigurationRequest extends Request {
 	 * @return configuration
 	 */
 	public String create(final File configuration) throws SDKException {
-		return post(url, configuration, "CONFIGURATION CREATED");
+		return requestPost(url, configuration);
 	}
 
 	/**
@@ -35,9 +35,9 @@ public class ConfigurationRequest extends Request {
 	 * @param id
 	 *            : the id of configuration to be removed
 	 */
-	public String delete(final String id) throws SDKException {
+	public void delete(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return delete(url, "CONFIGURATION DELETED");
+		requestDelete(url);
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class ConfigurationRequest extends Request {
 	 * @return List<Configuration>: The list of Configurations available
 	 */
 	public String findAll() throws SDKException {
-		return get(url, "FOUND CONFIGURATIONS");
+		return requestGet(url);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class ConfigurationRequest extends Request {
 	 */
 	public String findById(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return get(url, "FOUND CONFIGURATION");
+		return requestGet(url);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class ConfigurationRequest extends Request {
 	 */
 	public String update(final File configuration, final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return put(url, configuration, "CONFIGURATION UPDATED");
+		return requestPut(url, configuration);
 	}
 
 }

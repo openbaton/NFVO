@@ -36,10 +36,10 @@ public class NetworkServiceRecord implements CommandMarker {
             @CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.create(networkServiceDescriptor);
+			return "CREATED NSR: " + networkServiceRecordRequest.create(networkServiceDescriptor);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "NSR NOT CREATED";
 		}
 	}
 
@@ -56,10 +56,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.create(id);
+			return "CREATED NSR: " + networkServiceRecordRequest.create(id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "NSR NOT CREATED";
 		}
 	}
 
@@ -74,10 +74,11 @@ public class NetworkServiceRecord implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.delete(id);
+			networkServiceRecordRequest.delete(id);
+			return "DELETED NSR";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "NSR NOT DELETED";
 		}
 	}
 
@@ -95,13 +96,13 @@ public class NetworkServiceRecord implements CommandMarker {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
 			if (id != null) {
-				return networkServiceRecordRequest.findById(id);
+				return "FOUND NSR: " + networkServiceRecordRequest.findById(id);
 			} else {
-				return networkServiceRecordRequest.findAll();
+				return "FOUND NSRs: " + networkServiceRecordRequest.findAll();
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "NO IMAGE FOUND";
+			return "NO NSR FOUND";
 		}
 	}
 
@@ -118,7 +119,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String update(
             @CliOption(key = { "networkServiceRecordFile" }, mandatory = true, help = "The NetworkServiceRecord json file") final File networkServiceRecord,
             @CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "UPDATED NSR: " + networkServiceRecordRequest.update(networkServiceRecord, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NSR NOT UPDATED";
+		}
 	}
 
 	/**
@@ -129,10 +136,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getVirtualNetworkFunctionRecords(id);
+			return "FOUND VNFRECORDs: " + networkServiceRecordRequest.getVirtualNetworkFunctionRecords(id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFRECORD NOT FOUND";
 		}
 	}
 
@@ -145,10 +152,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getVirtualNetworkFunctionRecord(id, id_vnf);
+			return "FOUND VNFRECORD: " + networkServiceRecordRequest.getVirtualNetworkFunctionRecord(id, id_vnf);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFRECORD NOT FOUND";
 		}
 	}
 
@@ -161,10 +168,11 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.deleteVirtualNetworkFunctionDescriptor(id, id_vnf);
+			networkServiceRecordRequest.deleteVirtualNetworkFunctionDescriptor(id, id_vnf);
+			return "DELETED VNFRECORD";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFRECORD NOT DELETED";
 		}
 	}
 
@@ -177,10 +185,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "TODO") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.postVNFR(networkServiceRecord, id);
+			return "FOUND VNFRECORDs: " + networkServiceRecordRequest.postVNFR(networkServiceRecord, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFRECORD NOT FOUND";
 		}
 	}
 
@@ -194,10 +202,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.updateVNF(networkServiceRecord, id, id_vnf);
+			return "UPDATED VNFRECORD: " + networkServiceRecordRequest.updateVNF(networkServiceRecord, id, id_vnf);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFRECORD NOT UPDATED";
 		}
 	}
 
@@ -209,10 +217,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getVNFDependencies(id);
+			return "FOUND VNFDEPENDENCIES: " + networkServiceRecordRequest.getVNFDependencies(id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFDEPENDENCY NOT FOUND";
 		}
 	}
 
@@ -225,10 +233,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnfr" }, mandatory = true, help = "TODO") final String id_vnfr) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getVNFDependency(id, id_vnfr);
+			return "FOUND VNFDEPENDENCY: " + networkServiceRecordRequest.getVNFDependency(id, id_vnfr);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFDEPENDENCY NOT FOUND";
 		}
 	}
 
@@ -241,10 +249,11 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.deleteVNFDependency(id, id_vnfd);
+			networkServiceRecordRequest.deleteVNFDependency(id, id_vnfd);
+			return "DELETED VNFDEPENDENCY";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFDEPENDENCY NOT DELETED";
 		}
 	}
 
@@ -257,10 +266,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.postVNFDependency(vnfDependency, id);
+			return "CREATED VNFDEPENDENCY: " + networkServiceRecordRequest.postVNFDependency(vnfDependency, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFDEPENDENCY NOT CREATED";
 		}
 	}
 
@@ -274,10 +283,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.updateVNFD(vnfDependency, id, id_vnfd);
+			return "UPDATED VNFDEPENDENCY" + networkServiceRecordRequest.updateVNFD(vnfDependency, id, id_vnfd);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "VNFDEPENDENCY NOT UPDATED";
 		}
 	}
 
@@ -294,10 +303,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getPhysicalNetworkFunctionRecords(id);
+			return "FOUND PNFRECORDs: " + networkServiceRecordRequest.getPhysicalNetworkFunctionRecords(id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "PNFRECORD NOT FOUND";
 		}
 	}
 
@@ -317,10 +326,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.getPhysicalNetworkFunctionRecord(id, id_pnf);
+			return "FOUND PNFRECORD: " + networkServiceRecordRequest.getPhysicalNetworkFunctionRecord(id, id_pnf);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "PNFRECORD NOT FOUND";
 		}
 	}
 
@@ -338,10 +347,11 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.deletePhysicalNetworkFunctionRecord(id, id_pnf);
+			networkServiceRecordRequest.deletePhysicalNetworkFunctionRecord(id, id_pnf);
+			return "DELETED PNFRECORD";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "PNFRECORD NOT DELETED";
 		}
 	}
 
@@ -361,10 +371,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.postPhysicalNetworkFunctionRecord(physicalNetworkFunctionRecord, id);
+			return "CREATED PNFRECORD: " + networkServiceRecordRequest.postPhysicalNetworkFunctionRecord(physicalNetworkFunctionRecord, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "PNFRECORD NOT CREATED";
 		}
 	}
 
@@ -385,10 +395,10 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
 		try {
 			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
-			return networkServiceRecordRequest.updatePNFD(physicalNetworkFunctionRecord, id, id_pnf);
+			return "UPDATED PNFRECORD: " + networkServiceRecordRequest.updatePNFD(physicalNetworkFunctionRecord, id, id_pnf);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
+			return "PNFRECORD NOT UPDATED";
 		}
 	}
 

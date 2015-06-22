@@ -27,7 +27,7 @@ public class VNFFGRequest extends Request {
 	 * @return vnfForwardingGraphDescriptor: The vnfForwardingGraphDescriptor filled with values from the core
 	 */
 	public String create(final File vnfForwardingGraphDescriptor) throws SDKException {
-		return post(url, vnfForwardingGraphDescriptor, "VNF SOFTWARE VNFFG CREATED");
+		return requestPost(url, vnfForwardingGraphDescriptor);
 	}
 
 	/**
@@ -36,9 +36,9 @@ public class VNFFGRequest extends Request {
 	 * @param id
 	 *            : The VNFFG's id to be deleted
 	 */
-	public String delete(final String id) throws SDKException {
+	public void delete(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return delete(url, "NF SOFTWARE VNFFG DELETED");
+		requestDelete(url);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class VNFFGRequest extends Request {
 	 * @return List<VNFForwardingGraphDescriptor>: The list of VNFFGs available
 	 */
 	public String findAll() throws SDKException {
-		return get(url, "FOUND NF SOFTWARE VNFFGS");
+		return requestGet(url);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class VNFFGRequest extends Request {
 	 */
 	public String findById(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return get(url, "FOUND NF SOFTWARE VNFFG");
+		return requestGet(url);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class VNFFGRequest extends Request {
 	 */
 	public String update(final File vnfForwardingGraphDescriptor, final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return put(url, vnfForwardingGraphDescriptor, "NF SOFTWARE VNFFG UPDATED");
+		return requestPut(url, vnfForwardingGraphDescriptor);
 	}
 
 }
