@@ -27,7 +27,7 @@ public class ImageRequest extends Request {
      * @return string: The image filled with values from the api
      */
 	public String create (final File image) throws SDKException {
-        return post(url, image, "IMAGE CREATED");
+        return requestPost(url, image);
 	}
 
 	/**
@@ -36,9 +36,9 @@ public class ImageRequest extends Request {
      * @param id
      *            : The Image's id to be deleted
      */
-	public String delete(final String id) throws SDKException {
+	public void delete(final String id) throws SDKException {
         String url = this.url + "/" + id;
-        return delete(url, "IMAGE DELETED");
+        requestDelete(url);
 	}
 
     /**
@@ -47,7 +47,7 @@ public class ImageRequest extends Request {
      * @return List<Image>: The list of VNF software images available
      */
 	public String findAll() throws SDKException {
-        return get(url, "FOUND IMAGES");
+        return requestGet(url);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class ImageRequest extends Request {
      */
 	public String findById(final String id) throws SDKException {
         String url = this.url + "/" + id;
-        return get(url, "FOUND IMAGE");
+        return requestGet(url);
 	}
 
     /**
@@ -73,7 +73,7 @@ public class ImageRequest extends Request {
      */
 	public String update(final File image, final String id) throws SDKException {
         String url = this.url + "/" + id;
-        return put(url, image, "IMAGE UPDATED");
+        return requestPut(url, image);
 	}
 
 }

@@ -34,7 +34,7 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration) {
 		try {
 			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
-			return configurationRequest.create(configuration);
+			return "CONFIGURATION CREATED: " + configurationRequest.create(configuration);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "CONFIGURATION NOT CREATED";
@@ -52,7 +52,8 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
 		try {
 			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
-			return configurationRequest.delete(id);
+			configurationRequest.delete(id);
+			return "CONFIGURATION DELETED";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "CONFIGURATION NOT DELETED";
@@ -72,9 +73,9 @@ public class Configuration implements CommandMarker {
 		try {
 			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
 			if (id != null) {
-				return configurationRequest.findById(id);
+				return "FOUND CONFIGURATION: " + configurationRequest.findById(id);
 			} else {
-				return configurationRequest.findAll();
+				return "FOUND CONFIGURATIONS: " + configurationRequest.findAll();
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
@@ -97,7 +98,7 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
 		try {
 			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
-			return configurationRequest.update(configuration, id);
+			return "CONFIGURATION UPDATED: " + configurationRequest.update(configuration, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "CONFIGURATION NOT UPDATED";

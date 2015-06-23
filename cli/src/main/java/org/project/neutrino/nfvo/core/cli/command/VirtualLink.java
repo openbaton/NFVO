@@ -35,10 +35,10 @@ public class VirtualLink implements CommandMarker {
             @CliOption(key = { "virtualLinkDescriptorFile" }, mandatory = true, help = "The virtualLinkDescriptor json file") final File virtualLinkDescriptor) {
 		try {
 			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
-			return virtualLinkRequest.create(virtualLinkDescriptor);
+			return "VLD CREATED: " + virtualLinkRequest.create(virtualLinkDescriptor);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VIRTUALLINKDESCRIPTOR NOT CREATED";
+			return "VLD NOT CREATED";
 		}
 	}
 
@@ -52,10 +52,11 @@ public class VirtualLink implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The virtualLinkDescriptor id") final String id) {
 		try {
 			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
-			return virtualLinkRequest.delete(id);
+			virtualLinkRequest.delete(id);
+			return  "VLD DELETED";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VIRTUALLINKDESCRIPTOR NOT DELETED";
+			return "VLD NOT DELETED";
 		}
 	}
 
@@ -70,13 +71,13 @@ public class VirtualLink implements CommandMarker {
 		try {
 			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
 			if (id != null) {
-				return virtualLinkRequest.findById(id);
+				return "FOUND VLD: " + virtualLinkRequest.findById(id);
 			} else {
-				return virtualLinkRequest.findAll();
+				return "FOUND VLDs: " + virtualLinkRequest.findAll();
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VIRTUALLINKDESCRIPTOR NOT FOUND";
+			return "VLD NOT FOUND";
 		}
 	}
 
@@ -95,10 +96,10 @@ public class VirtualLink implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The virtualLinkDescriptor id") final String id) {
 		try {
 			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
-			return virtualLinkRequest.update(virtualLinkDescriptor, id);
+			return "VLD UPDATED: " + virtualLinkRequest.update(virtualLinkDescriptor, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VIRTUALLINKDESCRIPTOR NOT UPDATED";
+			return "VLD NOT UPDATED";
 		}
 	}
 

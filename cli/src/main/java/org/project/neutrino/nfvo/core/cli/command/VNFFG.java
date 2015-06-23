@@ -35,10 +35,10 @@ public class VNFFG implements CommandMarker {
             @CliOption(key = { "vnfForwardingGraphDescriptorFile" }, mandatory = true, help = "The vnfForwardingGraphDescriptor json file") final File vnfForwardingGraphDescriptor) {
 		try {
 			VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
-			return vNFFGRequest.create(vnfForwardingGraphDescriptor);
+			return "VNFFG CREATED: " + vNFFGRequest.create(vnfForwardingGraphDescriptor);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VNFFORWARDINGGRAPHDESCRIPTOR NOT CREATED";
+			return "VNFFG NOT CREATED";
 		}
 	}
 
@@ -53,10 +53,11 @@ public class VNFFG implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The vnfForwardingGraphDescriptor id") final String id) {
 		try {
             VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
-			return vNFFGRequest.delete(id);
+			vNFFGRequest.delete(id);
+			return "VNFFG DELETED";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VNFFORWARDINGGRAPHDESCRIPTOR NOT DELETED";
+			return "VNFFG NOT DELETED";
 		}
 	}
 
@@ -73,13 +74,13 @@ public class VNFFG implements CommandMarker {
 		try {
             VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
 			if (id != null) {
-				return vNFFGRequest.findById(id);
+				return "FOUND VNFFG: " + vNFFGRequest.findById(id);
 			} else {
-				return vNFFGRequest.findAll();
+				return "FOUND VNFFGs: " + vNFFGRequest.findAll();
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "NO VNFFORWARDINGGRAPHDESCRIPTOR FOUND";
+			return "NO VNFFG FOUND";
 		}
 	}
 	/**
@@ -97,10 +98,10 @@ public class VNFFG implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The vnfForwardingGraphDescriptor id") final String id) {
 		try {
             VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
-            return vNFFGRequest.update(vnfForwardingGraphDescriptor, id);
+            return "VNFFG UPDATED: " + vNFFGRequest.update(vnfForwardingGraphDescriptor, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VNFFORWARDINGGRAPHDESCRIPTOR NOT UPDATED";
+			return "VNFFG NOT UPDATED";
 		}
 	}
 
