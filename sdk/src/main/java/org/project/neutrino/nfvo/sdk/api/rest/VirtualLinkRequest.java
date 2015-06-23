@@ -27,7 +27,7 @@ public class VirtualLinkRequest extends Request {
 	 * @return VirtualLinkDescriptor: The VirtualLinkDescriptor filled with values from the core
 	 */
 	public String create(final File virtualLinkDescriptor) throws SDKException {
-		return post(url, virtualLinkDescriptor, "VIRTUAL LINK DESCRIPTOR CREATED");
+		return requestPost(url, virtualLinkDescriptor);
 	}
 
 	/**
@@ -35,9 +35,9 @@ public class VirtualLinkRequest extends Request {
 	 *
 	 * @param id: The VirtualLinkDescriptor's id to be deleted
 	 */
-	public String delete(final String id) throws SDKException {
+	public void delete(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return delete(url, "VIRTUAL LINK DESCRIPTOR DELETED");
+		requestDelete(url);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class VirtualLinkRequest extends Request {
 	 * @return List<VirtualLinkDescriptor>: The List of VirtualLinkDescriptor available
 	 */
 	public String findAll() throws SDKException {
-		return get(url, "FOUND VIRTUAL LINK DESCRIPTORS");
+		return requestGet(url);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class VirtualLinkRequest extends Request {
 	 */
 	public String findById(final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return get(url, "FOUND VIRTUAL LINK DESCRIPTOR");
+		return requestGet(url);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class VirtualLinkRequest extends Request {
 	 */
 	public String update(final File virtualLinkDescriptor, final String id) throws SDKException {
 		String url = this.url + "/" + id;
-		return put(url, virtualLinkDescriptor, "VIRTUAL LINK DESCRIPTOR UPDATED");
+		return requestPut(url, virtualLinkDescriptor);
 	}
 
 }

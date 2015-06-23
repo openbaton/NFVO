@@ -36,7 +36,7 @@ public class Image implements CommandMarker {
 		// call the sdk image create function
 		try {
 			ImageRequest imageRequest = Requestor.getImageRequest();
-			return imageRequest.create(image);
+			return "IMAGE CREATED: " + imageRequest.create(image);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "IMAGE NOT CREATED";
@@ -54,7 +54,8 @@ public class Image implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		try {
 			ImageRequest imageRequest = Requestor.getImageRequest();
-			return imageRequest.delete(id);
+			imageRequest.delete(id);
+			return "IMAGE DELETED";
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "IMAGE NOT DELETED";
@@ -74,9 +75,9 @@ public class Image implements CommandMarker {
 		try {
 			ImageRequest imageRequest = Requestor.getImageRequest();
 			if (id != null) {
-				return imageRequest.findById(id);
+				return "FOUND IMAGE: " + imageRequest.findById(id);
 			} else {
-				return imageRequest.findAll();
+				return "FOUND IMAGES: " + imageRequest.findAll();
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
@@ -99,7 +100,7 @@ public class Image implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		try {
 			ImageRequest imageRequest = Requestor.getImageRequest();
-			return imageRequest.update(image, id);
+			return "IMAGE UPDATED: " + imageRequest.update(image, id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "IMAGE NOT UPDATED";

@@ -1,5 +1,9 @@
 package org.project.neutrino.nfvo.core.cli.command;
 
+import org.project.neutrino.nfvo.sdk.api.rest.Requestor;
+import org.project.neutrino.nfvo.sdk.api.rest.NetworkServiceRecordRequest;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +34,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	@CliCommand(value = "networkServiceRecord create", help = "submitting and validating a Network Service Descriptor (NSD), including any related VNFFGD and VLD")
 	public String create(
             @CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
-		return "IMAGE CREATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "CREATED NSR: " + networkServiceRecordRequest.create(networkServiceDescriptor);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NSR NOT CREATED";
+		}
 	}
 
 	/**
@@ -44,7 +54,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	@CliCommand(value = "networkServiceRecord create", help = "submitting and validating a Network Service Descriptor (NSD), including any related VNFFGD and VLD")
 	public String create(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
-		return "IMAGE CREATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "CREATED NSR: " + networkServiceRecordRequest.create(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NSR NOT CREATED";
+		}
 	}
 
 	/**
@@ -56,17 +72,14 @@ public class NetworkServiceRecord implements CommandMarker {
 	@CliCommand(value = "networkServiceRecord delete", help = "Removes the Network Service Record")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
-		return "IMAGE CREATED";
-	}
-
-    /**
-     * Returns the set of the Network Service Records available
-     *
-     * @return Set<NetworkServiceRecord>: The set of NetworkServiceRecords available
-     */
-	@CliCommand(value = "networkServiceRecord find all", help = "Returns the set of the Network Service Records available")
-	public String findAll() {
-		return "IMAGE RESULTS";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			networkServiceRecordRequest.delete(id);
+			return "DELETED NSR";
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NSR NOT DELETED";
+		}
 	}
 
 	/**
@@ -77,10 +90,20 @@ public class NetworkServiceRecord implements CommandMarker {
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceRecord: the Network Service Descriptor selected
 	 */
-	@CliCommand(value = "networkServiceRecord find", help = "Returns the Network Service Record selected by id")
+	@CliCommand(value = "networkServiceRecord find", help = "Returns the Network Service Record selected by id, or all if no id is given")
 	public String findById(
-            @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
-		return "IMAGE RESULT";
+            @CliOption(key = { "id" }, mandatory = false, help = "The networkServiceDescriptor id") final String id) {
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			if (id != null) {
+				return "FOUND NSR: " + networkServiceRecordRequest.findById(id);
+			} else {
+				return "FOUND NSRs: " + networkServiceRecordRequest.findAll();
+			}
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NO NSR FOUND";
+		}
 	}
 
 	/**
@@ -96,16 +119,28 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String update(
             @CliOption(key = { "networkServiceRecordFile" }, mandatory = true, help = "The NetworkServiceRecord json file") final File networkServiceRecord,
             @CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "UPDATED NSR: " + networkServiceRecordRequest.update(networkServiceRecord, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "NSR NOT UPDATED";
+		}
 	}
 
 	/**
 	 *
 	 */
-	@CliCommand(value = "networkServiceRecord getVirtualNetworkFunctionRecord", help = "TODO")
+	@CliCommand(value = "networkServiceRecord getVirtualNetworkFunctionRecords", help = "TODO")
 	public String getVirtualNetworkFunctionRecord(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND VNFRECORDs: " + networkServiceRecordRequest.getVirtualNetworkFunctionRecords(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFRECORD NOT FOUND";
+		}
 	}
 
 	/**
@@ -115,7 +150,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String getVirtualNetworkFunctionRecord(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND VNFRECORD: " + networkServiceRecordRequest.getVirtualNetworkFunctionRecord(id, id_vnf);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFRECORD NOT FOUND";
+		}
 	}
 
 	/**
@@ -125,7 +166,14 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String deleteVirtualNetworkFunctionDescriptor(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			networkServiceRecordRequest.deleteVirtualNetworkFunctionDescriptor(id, id_vnf);
+			return "DELETED VNFRECORD";
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFRECORD NOT DELETED";
+		}
 	}
 
 	/**
@@ -135,7 +183,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String postVNFR(
 			@CliOption(key = { "networkServiceRecordFile" }, mandatory = true, help = "The NetworkServiceRecord json file") final File networkServiceRecord,
 			@CliOption(key = { "id" }, mandatory = true, help = "TODO") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND VNFRECORDs: " + networkServiceRecordRequest.postVNFR(networkServiceRecord, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFRECORD NOT FOUND";
+		}
 	}
 
 	/**
@@ -146,7 +200,13 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "networkServiceRecordFile" }, mandatory = true, help = "The NetworkServiceRecord json file") final File networkServiceRecord,
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnf" }, mandatory = true, help = "TODO") final String id_vnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "UPDATED VNFRECORD: " + networkServiceRecordRequest.updateVNF(networkServiceRecord, id, id_vnf);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFRECORD NOT UPDATED";
+		}
 	}
 
 	/**
@@ -155,7 +215,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	@CliCommand(value = "networkServiceRecord getVNFDependencies", help = "TODO")
 	public String getVNFDependencies(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND VNFDEPENDENCIES: " + networkServiceRecordRequest.getVNFDependencies(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFDEPENDENCY NOT FOUND";
+		}
 	}
 
 	/**
@@ -165,7 +231,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String getVNFDependency(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnfr" }, mandatory = true, help = "TODO") final String id_vnfr) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND VNFDEPENDENCY: " + networkServiceRecordRequest.getVNFDependency(id, id_vnfr);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFDEPENDENCY NOT FOUND";
+		}
 	}
 
 	/**
@@ -175,7 +247,14 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String deleteVNFDependency(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			networkServiceRecordRequest.deleteVNFDependency(id, id_vnfd);
+			return "DELETED VNFDEPENDENCY";
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFDEPENDENCY NOT DELETED";
+		}
 	}
 
 	/**
@@ -185,7 +264,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String postVNFDependency(
 			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "The VNFDependency json file") final File vnfDependency,
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "CREATED VNFDEPENDENCY: " + networkServiceRecordRequest.postVNFDependency(vnfDependency, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFDEPENDENCY NOT CREATED";
+		}
 	}
 
 	/**
@@ -196,7 +281,13 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "The VNFDependency json file") final File vnfDependency,
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "UPDATED VNFDEPENDENCY" + networkServiceRecordRequest.updateVNFD(vnfDependency, id, id_vnfd);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "VNFDEPENDENCY NOT UPDATED";
+		}
 	}
 
 	/**
@@ -207,10 +298,16 @@ public class NetworkServiceRecord implements CommandMarker {
 	 * @return Set<PhysicalNetworkFunctionRecord>: The Set of
 	 *         PhysicalNetworkFunctionRecord into NSD
 	 */
-	@CliCommand(value = "networkServiceRecord getPhysicalNetworkFunctionRecord", help = "Returns the set of PhysicalNetworkFunctionRecords")
-	public String getPhysicalNetworkFunctionRecord(
+	@CliCommand(value = "networkServiceRecord getPhysicalNetworkFunctionRecords", help = "Returns the set of PhysicalNetworkFunctionRecords")
+	public String getPhysicalNetworkFunctionRecords(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND PNFRECORDs: " + networkServiceRecordRequest.getPhysicalNetworkFunctionRecords(id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "PNFRECORD NOT FOUND";
+		}
 	}
 
 	/**
@@ -227,7 +324,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String getPhysicalNetworkFunctionRecord(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "FOUND PNFRECORD: " + networkServiceRecordRequest.getPhysicalNetworkFunctionRecord(id, id_pnf);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "PNFRECORD NOT FOUND";
+		}
 	}
 
 	/**
@@ -242,7 +345,14 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String deletePhysicalNetworkFunctionRecord(
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			networkServiceRecordRequest.deletePhysicalNetworkFunctionRecord(id, id_pnf);
+			return "DELETED PNFRECORD";
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "PNFRECORD NOT DELETED";
+		}
 	}
 
 	/**
@@ -259,7 +369,13 @@ public class NetworkServiceRecord implements CommandMarker {
 	public String postPhysicalNetworkFunctionRecord(
 			@CliOption(key = { "physicalNetworkFunctionRecordFile" }, mandatory = true, help = "The physicalNetworkFunctionRecord json file") final File physicalNetworkFunctionRecord,
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "CREATED PNFRECORD: " + networkServiceRecordRequest.postPhysicalNetworkFunctionRecord(physicalNetworkFunctionRecord, id);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "PNFRECORD NOT CREATED";
+		}
 	}
 
 	/**
@@ -277,7 +393,13 @@ public class NetworkServiceRecord implements CommandMarker {
 			@CliOption(key = { "physicalNetworkFunctionRecordFile" }, mandatory = true, help = "The physicalNetworkFunctionRecord json file") final File physicalNetworkFunctionRecord,
 			@CliOption(key = { "id" }, mandatory = true, help = "The NetworkServiceRecord id") final String id,
 			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
-		return "IMAGE UPDATED";
+		try {
+			NetworkServiceRecordRequest networkServiceRecordRequest = Requestor.getNetworkServiceRecordRequest();
+			return "UPDATED PNFRECORD: " + networkServiceRecordRequest.updatePNFD(physicalNetworkFunctionRecord, id, id_pnf);
+		} catch (SDKException e) {
+			log.debug(e.getMessage());
+			return "PNFRECORD NOT UPDATED";
+		}
 	}
 
 }

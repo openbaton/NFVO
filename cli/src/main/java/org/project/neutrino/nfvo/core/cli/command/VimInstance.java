@@ -35,10 +35,10 @@ public class VimInstance implements CommandMarker {
             @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter) {
 		try {
 			VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
-			return vimInstanceRequest.create(datacenter);
+			return "DATACENTER CREATED: " + vimInstanceRequest.create(datacenter);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "VIMINSTANCE NOT CREATED";
+			return "DATACENTER NOT CREATED";
 		}
 	}
 
@@ -52,7 +52,8 @@ public class VimInstance implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
         try {
             VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
-            return vimInstanceRequest.delete(id);
+            vimInstanceRequest.delete(id);
+            return "DATACENTER DELETED";
         } catch (SDKException e) {
             log.debug(e.getMessage());
             return "VIMINSTANCE NOT DELETED";
@@ -70,9 +71,9 @@ public class VimInstance implements CommandMarker {
         try {
             VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
             if (id != null) {
-                return vimInstanceRequest.findById(id);
+                return "FOUND DATACENTER: " + vimInstanceRequest.findById(id);
             } else {
-                return vimInstanceRequest.findAll();
+                return "FOUND DATACENTERS: " + vimInstanceRequest.findAll();
             }
         } catch (SDKException e) {
             log.debug(e.getMessage());
@@ -95,7 +96,7 @@ public class VimInstance implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
         try {
             VimInstanceRequest vimInstanceRequest = Requestor.getVimInstanceRequest();
-            return vimInstanceRequest.update(datacenter, id);
+            return "DATACENTER UPDATED: " + vimInstanceRequest.update(datacenter, id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
             return "VIMINSTANCE NOT UPDATED";
