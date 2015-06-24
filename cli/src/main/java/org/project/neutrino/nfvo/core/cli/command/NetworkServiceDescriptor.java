@@ -32,7 +32,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 * @return networkServiceDescriptor: the Network Service Descriptor filled
 	 *         with id and values from core
 	 */
-	@CliCommand(value = "networkServiceDescriptor create", help = "Submits and validates a new Network Service Descriptor (NSD)")
+	@CliCommand(value = "networkServiceDescriptor create", help = "Submit and validate a new Network Service Descriptor (NSD)")
 	public String create(
             @CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
         try {
@@ -50,7 +50,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 * @param id
 	 *            : the id of Network Service Descriptor
 	 */
-	@CliCommand(value = "networkServiceDescriptor delete", help = "Removes a disabled Network Service Descriptor (NSD)")
+	@CliCommand(value = "networkServiceDescriptor delete", help = "Remove a disabled Network Service Descriptor (NSD)")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -71,7 +71,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *            : the id of Network Service Descriptor
 	 * @return NetworkServiceDescriptor: the Network Service Descriptor selected
 	 */
-	@CliCommand(value = "networkServiceDescriptor find", help = "Returns the Network Service Descriptor (NSD) selected by id, or all if no id is given")
+	@CliCommand(value = "networkServiceDescriptor find", help = "Return the Network Service Descriptor (NSD) selected by id, or all if no id is given")
 	public String findById(
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -96,7 +96,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *            : the id of Network Service Descriptor
 	 * @return networkServiceDescriptor: the Network Service Descriptor updated
 	 */
-	@CliCommand(value = "networkServiceDescriptor update", help = "Updates he Network Service Descriptor (NSD)")
+	@CliCommand(value = "networkServiceDescriptor update", help = "Update he Network Service Descriptor (NSD)")
 	public String update(
             @CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor,
             @CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
@@ -110,14 +110,14 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Returns the list of VirtualNetworkFunctionDescriptor into a NSD with id
+	 * Return the list of VirtualNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The id of NSD
 	 * @return List<VirtualNetworkFunctionDescriptor>: The List of
 	 *         VirtualNetworkFunctionDescriptor into NSD
 	 */
-	@CliCommand(value = "networkServiceDescriptor getVirtualNetworkFunctionDescriptors", help = "Returns the list of VirtualNetworkFunctionDescriptor into a NSD with id")
+	@CliCommand(value = "networkServiceDescriptor getVirtualNetworkFunctionDescriptors", help = "Return the list of VirtualNetworkFunctionDescriptor into a NSD with id")
 	public String getVirtualNetworkFunctionDescriptors(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -129,13 +129,20 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor getVirtualNetworkFunctionDescriptor", help = "TODO")
+    /**
+     * Return a VirtualNetworkFunctionDescriptor into a NSD with id
+     *
+     * @param id
+     *            : The id of NSD
+     * @param id_vfn
+     *            : The id of the VNF Descriptor
+     * @return List<VirtualNetworkFunctionDescriptor>: The List of
+     *         VirtualNetworkFunctionDescriptor into NSD
+     */
+	@CliCommand(value = "networkServiceDescriptor getVirtualNetworkFunctionDescriptor", help = "Return the list of VirtualNetworkFunctionDescriptor into a NSD with id")
 	public String getVirtualNetworkFunctionDescriptor(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
+			@CliOption(key = { "id_vfn" }, mandatory = true, help = "The virtual network function descriptor id") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "FOUND VNFDESCRIPTOR: " + networkServiceDescriptorRequest.getVirtualNetworkFunctionDescriptor(id, id_vfn);
@@ -145,13 +152,18 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor deleteVirtualNetworkFunctionDescriptor", help = "TODO")
+    /**
+     * Delete the VirtualNetworkFunctionDescriptor
+     *
+     * @param id
+     *            : The id of NSD
+     * @param id_vfn
+     *            : The id of the VNF Descriptor
+     */
+	@CliCommand(value = "networkServiceDescriptor deleteVirtualNetworkFunctionDescriptor", help = "Delete the VirtualNetworkFunctionDescriptor")
 	public String deleteVirtualNetworkFunctionDescriptors(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
+			@CliOption(key = { "id_vfn" }, mandatory = true, help = "The virtual network function descriptor id") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             networkServiceDescriptorRequest.deleteVirtualNetworkFunctionDescriptors(id, id_vfn);
@@ -162,12 +174,17 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor postVNFD", help = "TODO")
+    /**
+     * Create a VirtualNetworkFunctionDescriptor
+     *
+     * @param virtualNetworkFunctionDescriptor
+     *            : : the Network Service Descriptor to be updated
+     * @param id
+     *            : The id of the networkServiceDescriptor the vnfd shall be created at
+     */
+	@CliCommand(value = "networkServiceDescriptor postVNFD", help = "Create a VirtualNetworkFunctionDescriptor")
 	public String postVNFD(
-			@CliOption(key = { "virtualNetworkFunctionDescriptorFile" }, mandatory = true, help = "TODO") final File virtualNetworkFunctionDescriptor,
+			@CliOption(key = { "virtualNetworkFunctionDescriptorFile" }, mandatory = true, help = "The virtualNetworkFunction json file") final File virtualNetworkFunctionDescriptor,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
@@ -178,14 +195,22 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor updateVNF", help = "TODO")
+    /**
+     * Update the VirtualNetworkFunctionDescriptor
+     *
+     * @param virtualNetworkFunctionDescriptor
+     *            : : the Network Service Descriptor to be updated
+     * @param id
+     *            : The id of the (old) VNF Descriptor
+     * @param id_vfn
+     *            : The id of the VNF Descriptor
+     * @return List<VirtualNetworkFunctionDescriptor>: The updated virtualNetworkFunctionDescriptor
+     */
+	@CliCommand(value = "networkServiceDescriptor updateVNF", help = "update the VirtualNetworkFunctionDescriptor")
 	public String updateVNF(
-			@CliOption(key = { "virtualNetworkFunctionDescriptorFile" }, mandatory = true, help = "TODO") final File virtualNetworkFunctionDescriptor,
+			@CliOption(key = { "virtualNetworkFunctionDescriptorFile" }, mandatory = true, help = "The virtualNetworkFunction json file") final File virtualNetworkFunctionDescriptor,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vfn" }, mandatory = true, help = "TODO") final String id_vfn) {
+			@CliOption(key = { "id_vfn" }, mandatory = true, help = "The virtual network function descriptor id") final String id_vfn) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "UPDATED VNFDESCRIPTOR: " + networkServiceDescriptorRequest.updateVNF(virtualNetworkFunctionDescriptor, id, id_vfn);
@@ -195,10 +220,14 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor getVNFDependencies", help = "TODO")
+    /**
+     * Return the list of VNFDependencies into a NSD
+     *
+     * @param id
+     *            : The id of the networkServiceDescriptor
+     * @return List<VNFDependency>:  The List of VNFDependency into NSD
+     */
+	@CliCommand(value = "networkServiceDescriptor getVNFDependencies", help = "Return the list of VNFDependencies into a NSD")
 	public String getVNFDependencies(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -210,13 +239,19 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor getVNFDependency", help = "TODO")
+    /**
+     * Return a VNFDependency into a NSD
+     *
+     * @param id
+     *            : The id of the VNF Descriptor
+     * @param id_vnfd
+     *            : The VNFDependencies id
+     * @return VNFDependency:  The List of VNFDependency into NSD
+     */
+	@CliCommand(value = "networkServiceDescriptor getVNFDependency", help = "Return a VNFDependency into a NSD")
 	public String getVNFDependency(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
+			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "The VNFDependencies id") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "FOUND VNFDEPENDENCY: " + networkServiceDescriptorRequest.getVNFDependency(id, id_vnfd);
@@ -226,13 +261,18 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor deleteVNFDependency", help = "TODO")
+    /**
+     * Delets a VNFDependency
+     *
+     * @param id
+     *            : The id of the networkServiceDescriptor
+     * @param id_vnfd
+     *            : The id of the VNFDependency
+     */
+	@CliCommand(value = "networkServiceDescriptor deleteVNFDependency", help = "Delete a VNFDependency")
 	public String deleteVNFDependency(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
+			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "The VNFDependencies id") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             networkServiceDescriptorRequest.deleteVNFDependency(id, id_vnfd);
@@ -243,12 +283,17 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor postVNFDependency", help = "TODO")
+    /**
+     * Create a VNFDependency
+     *
+     * @param vnfDependency
+     *            : The VNFDependency to be updated
+     * @param id
+     *            : The id of the networkServiceDescriptor
+     */
+	@CliCommand(value = "networkServiceDescriptor postVNFDependency", help = "Creates a VNFDependency")
 	public String postVNFDependency(
-			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "TODO") final File vnfDependency,
+			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "The VNFDependency json file") final File vnfDependency,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
@@ -259,14 +304,22 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor updateVNFD", help = "TODO")
+    /**
+     * Update the VNFDependency
+     *
+     * @param vnfDependency
+     *            : The VNFDependency to be updated
+     * @param id
+     *            : The id of the networkServiceDescriptor
+     * @param id_vnfd
+     *            : The id of the VNFDependency
+     * @return The updated VNFDependency
+     */
+	@CliCommand(value = "networkServiceDescriptor updateVNFD", help = "Update the VNFDependency")
 	public String updateVNFD(
-			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "TODO") final File vnfDependency,
+			@CliOption(key = { "vnfDependencyFile" }, mandatory = true, help = "Update the VNFDependency") final File vnfDependency,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "TODO") final String id_vnfd) {
+			@CliOption(key = { "id_vnfd" }, mandatory = true, help = "The VNFDependencies id") final String id_vnfd) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "UPDATED VNFDEPENDENCY: " + networkServiceDescriptorRequest.updateVNFD(vnfDependency, id, id_vnfd);
@@ -277,7 +330,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Returns the list of PhysicalNetworkFunctionDescriptor into a NSD with id
+	 * Return the list of PhysicalNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The id of NSD
@@ -285,7 +338,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *         PhysicalNetworkFunctionDescriptor into NSD
 	 *
 	 */
-	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptors", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptors", help = "Return the list of PhysicalNetworkFunctionDescriptor into a NSD with id")
 	public String getPhysicalNetworkFunctionDescriptors(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -298,7 +351,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Returns the PhysicalNetworkFunctionDescriptor
+	 * Returns the PhysicalNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -308,10 +361,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *         PhysicalNetworkFunctionDescriptor selected
 	 *
 	 */
-	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptor", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor getPhysicalNetworkFunctionDescriptor", help = "Return the PhysicalNetworkFunctionDescriptor into a NSD with id")
 	public String getPhysicalNetworkFunctionDescriptor(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "FOUND PNFDESCRIPTOR: " + networkServiceDescriptorRequest.getPhysicalNetworkFunctionDescriptor(id, id_pnf);
@@ -322,17 +375,17 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Deletes the PhysicalNetworkFunctionDescriptor with the id_pnf
+	 * Delete the PhysicalNetworkFunctionDescriptor with the id_pnf
 	 *
 	 * @param id
 	 *            : The NSD id
 	 * @param id_pnf
 	 *            : The PhysicalNetworkFunctionDescriptor id
 	 */
-	@CliCommand(value = "networkServiceDescriptor deletePhysicalNetworkFunctionDescriptor", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor deletePhysicalNetworkFunctionDescriptor", help = "Delete the PhysicalNetworkFunctionDescriptor with the id_pnf")
 	public String deletePhysicalNetworkFunctionDescriptor(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             networkServiceDescriptorRequest.deletePhysicalNetworkFunctionDescriptor(id, id_pnf);
@@ -344,21 +397,21 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Stores the PhysicalNetworkFunctionDescriptor
+	 * Store the PhysicalNetworkFunctionDescriptor
 	 *
 	 * @param pnf
 	 *            : The PhysicalNetworkFunctionDescriptor to be stored
 	 * @param id
 	 *            : The NSD id
-	 * @return PhysicalNetworkFunctionDescriptor: The
-	 *         PhysicalNetworkFunctionDescriptor stored
-	 * @
+     * @param id_pnf
+     *            : The PhysicalNetworkFunctionDescriptor id
+	 * @return PhysicalNetworkFunctionDescriptor: The PhysicalNetworkFunctionDescriptor stored
 	 */
-	@CliCommand(value = "networkServiceDescriptor postPhysicalNetworkFunctionDescriptor", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor postPhysicalNetworkFunctionDescriptor", help = "Store the PhysicalNetworkFunctionDescriptor")
 	public String postPhysicalNetworkFunctionDescriptor(
-			@CliOption(key = { "pnfFile" }, mandatory = true, help = "TODO") final File pnf,
+			@CliOption(key = { "pnfFile" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor json file") final File pnf,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "CREATED PNFDESCRIPTOR: " + networkServiceDescriptorRequest.postPhysicalNetworkFunctionDescriptor(pnf, id, id_pnf);
@@ -369,21 +422,23 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Edits the PhysicalNetworkFunctionDescriptor
+	 * Update the PhysicalNetworkFunctionDescriptor
 	 *
 	 * @param pnf
 	 *            : The PhysicalNetworkFunctionDescriptor to be edited
 	 * @param id
-	 *            : The NSD id
+     *            : The NSD id
+     * @param id_pnf
+     *            : The PhysicalNetworkFunctionDescriptor id
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor edited
 	 * @
 	 */
-	@CliCommand(value = "networkServiceDescriptor updatePNFD", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor updatePNFD", help = "Update the PhysicalNetworkFunctionDescriptor")
 	public String updatePNFD(
-			@CliOption(key = { "pnfFile" }, mandatory = true, help = "TODO") final File pnf,
+			@CliOption(key = { "pnfFile" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor json file") final File pnf,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_pnf" }, mandatory = true, help = "TODO") final String id_pnf) {
+			@CliOption(key = { "id_pnf" }, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "UPDATED PNFDESCRIPTOR: " + networkServiceDescriptorRequest.updatePNFD(pnf, id, id_pnf);
@@ -394,14 +449,14 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Returns the Security into a NSD with id
+	 * Return the Security into a NSD
 	 *
 	 * @param id
 	 *            : The id of NSD
 	 * @return Security: The Security of PhysicalNetworkFunctionDescriptor into
 	 *         NSD
 	 */
-	@CliCommand(value = "networkServiceDescriptor getSecurities", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor getSecurities", help = "Return all Security from a nsd")
 	public String getSecurities(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
@@ -414,7 +469,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Returns the Security with the id_s
+	 * Return the Security with the id_s
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -422,10 +477,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *            : The Security id
 	 * @return Security: The Security selected by id_s
 	 */
-	@CliCommand(value = "networkServiceDescriptor getSecurity", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor getSecurity", help = "Return the Security with the id_s")
 	public String getSecurity(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+			@CliOption(key = { "id_s" }, mandatory = true, help = "The security id") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "FOUND SECURITY: " + networkServiceDescriptorRequest.getSecurity(id, id_s);
@@ -436,7 +491,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Deletes the Security with the id_s
+	 * Delete the Security with the id_s
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -444,10 +499,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	 *            : The Security id
 	 * @
 	 */
-	@CliCommand(value = "networkServiceDescriptor deleteSecurity", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor deleteSecurity", help = "Delete the Security with the id_s")
 	public String deleteSecurity(
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+			@CliOption(key = { "id_s" }, mandatory = true, help = "The security id") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             networkServiceDescriptorRequest.deleteSecurity(id, id_s);
@@ -459,18 +514,17 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	}
 
 	/**
-	 * Stores the Security into NSD
+	 * Store the Security into NSD
 	 *
 	 * @param security
 	 *            : The Security to be stored
 	 * @param id
 	 *            : The id of NSD
 	 * @return Security: The Security stored
-	 * @
 	 */
-	@CliCommand(value = "networkServiceDescriptor postSecurity", help = "TODO")
+	@CliCommand(value = "networkServiceDescriptor postSecurity", help = " Store the Security into NSD")
 	public String postSecurity(
-			@CliOption(key = { "securityFile" }, mandatory = true, help = "TODO") final File security,
+			@CliOption(key = { "securityFile" }, mandatory = true, help = "The Security json file") final File security,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
@@ -481,14 +535,22 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor updateSecurity", help = "TODO")
+    /**
+     * Update the Security into NSD
+     *
+     * @param security
+     *            : The Security to be stored
+     * @param id
+     *            : The id of NSD
+     * @param id_s
+     *            : The security id
+     * @return Security: The Security stored
+     */
+	@CliCommand(value = "networkServiceDescriptor updateSecurity", help = "Update the Security into NSD")
 	public String updateSecurity(
-			@CliOption(key = { "securityFile" }, mandatory = true, help = "TODO") final File security,
+			@CliOption(key = { "securityFile" }, mandatory = true, help = "The Security json file") final File security,
 			@CliOption(key = { "id" }, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-			@CliOption(key = { "id_s" }, mandatory = true, help = "TODO") final String id_s) {
+			@CliOption(key = { "id_s" }, mandatory = true, help = "The security id") final String id_s) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "UPDATED SECURITY: " + networkServiceDescriptorRequest.updateSecurity(security, id, id_s);
@@ -498,12 +560,15 @@ public class NetworkServiceDescriptor implements CommandMarker {
         }
 	}
 
-	/**
-	 *
-	 */
-	@CliCommand(value = "networkServiceDescriptor createRecord", help = "TODO")
+    /**
+     * Create a record into NSD
+     *
+     * @param networkServiceDescriptor
+     *            : the networkServiceDescriptor JSON File
+     */
+	@CliCommand(value = "networkServiceDescriptor createRecord", help = "Create a record into NSD")
 	public String createRecord(
-			@CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "TODO") final File networkServiceDescriptor) {
+			@CliOption(key = { "networkServiceDescriptorFile" }, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
         try {
             NetworkServiceDescriptorRequest networkServiceDescriptorRequest = Requestor.getNetworkServiceDescriptorRequest();
             return "CREATED RECORD: " + networkServiceDescriptorRequest.createRecord(networkServiceDescriptor);
