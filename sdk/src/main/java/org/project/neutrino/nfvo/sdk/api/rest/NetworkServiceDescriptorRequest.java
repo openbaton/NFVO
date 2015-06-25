@@ -81,7 +81,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Returns the list of VirtualNetworkFunctionDescriptor into a NSD with id
+	 * Return the list of VirtualNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The id of NSD
@@ -94,7 +94,14 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Return a VirtualNetworkFunctionDescriptor into a NSD with id
 	 *
+	 * @param id
+	 *            : The id of NSD
+	 * @param id_vfn
+	 *            : The id of the VNF Descriptor
+	 * @return List<VirtualNetworkFunctionDescriptor>: The List of
+	 *         VirtualNetworkFunctionDescriptor into NSD
 	 */
 	public String getVirtualNetworkFunctionDescriptor(final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
@@ -102,7 +109,12 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Delete the VirtualNetworkFunctionDescriptor
 	 *
+	 * @param id
+	 *            : The id of NSD
+	 * @param id_vfn
+	 *            : The id of the VNF Descriptor
 	 */
 	public void deleteVirtualNetworkFunctionDescriptors(final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
@@ -110,7 +122,12 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Create a VirtualNetworkFunctionDescriptor
 	 *
+	 * @param virtualNetworkFunctionDescriptor
+	 *            : : the Network Service Descriptor to be updated
+	 * @param id
+	 *            : The id of the networkServiceDescriptor the vnfd shall be created at
 	 */
 	public String postVNFD(final File virtualNetworkFunctionDescriptor, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/";
@@ -118,7 +135,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Update the VirtualNetworkFunctionDescriptor
 	 *
+	 * @param virtualNetworkFunctionDescriptor
+	 *            : : the Network Service Descriptor to be updated
+	 * @param id
+	 *            : The id of the (old) VNF Descriptor
+	 * @param id_vfn
+	 *            : The id of the VNF Descriptor
+	 * @return List<VirtualNetworkFunctionDescriptor>: The updated virtualNetworkFunctionDescriptor
 	 */
 	public String updateVNF(final File virtualNetworkFunctionDescriptor, final String id, final String id_vfn) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdescriptors" + "/" + id_vfn;
@@ -126,7 +151,11 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Return the list of VNFDependencies into a NSD
 	 *
+	 * @param id
+	 *            : The id of the networkServiceDescriptor
+	 * @return List<VNFDependency>:  The List of VNFDependency into NSD
 	 */
 	public String getVNFDependencies(final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies";
@@ -134,7 +163,13 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Return a VNFDependency into a NSD
 	 *
+	 * @param id
+	 *            : The id of the VNF Descriptor
+	 * @param id_vnfd
+	 *            : The VNFDependencies id
+	 * @return VNFDependency:  The List of VNFDependency into NSD
 	 */
 	public String getVNFDependency(final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
@@ -142,7 +177,12 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Delets a VNFDependency
 	 *
+	 * @param id
+	 *            : The id of the networkServiceDescriptor
+	 * @param id_vnfd
+	 *            : The id of the VNFDependency
 	 */
 	public void deleteVNFDependency(final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
@@ -150,7 +190,12 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Create a VNFDependency
 	 *
+	 * @param vnfDependency
+	 *            : The VNFDependency to be updated
+	 * @param id
+	 *            : The id of the networkServiceDescriptor
 	 */
 	public String postVNFDependency(final File vnfDependency, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/";
@@ -158,7 +203,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Update the VNFDependency
 	 *
+	 * @param vnfDependency
+	 *            : The VNFDependency to be updated
+	 * @param id
+	 *            : The id of the networkServiceDescriptor
+	 * @param id_vnfd
+	 *            : The id of the VNFDependency
+	 * @return The updated VNFDependency
 	 */
 	public String updateVNFD(final File vnfDependency, final String id, final String id_vnfd) throws SDKException {
 		String url = this.url + "/" + id + "/vnfdependencies" + "/" + id_vnfd;
@@ -166,7 +219,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Returns the list of PhysicalNetworkFunctionDescriptor into a NSD with id
+	 * Return the list of PhysicalNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The id of NSD
@@ -180,7 +233,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Returns the PhysicalNetworkFunctionDescriptor
+	 * Returns the PhysicalNetworkFunctionDescriptor into a NSD with id
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -196,7 +249,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Deletes the PhysicalNetworkFunctionDescriptor with the id_pnf
+	 * Delete the PhysicalNetworkFunctionDescriptor with the id_pnf
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -209,15 +262,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Stores the PhysicalNetworkFunctionDescriptor
+	 * Store the PhysicalNetworkFunctionDescriptor
 	 *
 	 * @param pnf
 	 *            : The PhysicalNetworkFunctionDescriptor to be stored
 	 * @param id
 	 *            : The NSD id
-	 * @return PhysicalNetworkFunctionDescriptor: The
-	 *         PhysicalNetworkFunctionDescriptor stored
-	 * @
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
+	 * @return PhysicalNetworkFunctionDescriptor: The PhysicalNetworkFunctionDescriptor stored
 	 */
 	public String postPhysicalNetworkFunctionDescriptor(final File pnf, final String id, final String id_pnf) throws SDKException {
 		String url = this.url + "/" + id + "/pnfdescriptors" + "/" + id_pnf;
@@ -225,12 +278,14 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Edits the PhysicalNetworkFunctionDescriptor
+	 * Update the PhysicalNetworkFunctionDescriptor
 	 *
 	 * @param pnf
 	 *            : The PhysicalNetworkFunctionDescriptor to be edited
 	 * @param id
 	 *            : The NSD id
+	 * @param id_pnf
+	 *            : The PhysicalNetworkFunctionDescriptor id
 	 * @return PhysicalNetworkFunctionDescriptor: The
 	 *         PhysicalNetworkFunctionDescriptor edited
 	 * @
@@ -241,7 +296,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Returns the Security into a NSD with id
+	 * Return the Security into a NSD
 	 *
 	 * @param id
 	 *            : The id of NSD
@@ -254,7 +309,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Returns the Security with the id_s
+	 * Return the Security with the id_s
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -268,7 +323,7 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Deletes the Security with the id_s
+	 * Delete the Security with the id_s
 	 *
 	 * @param id
 	 *            : The NSD id
@@ -282,14 +337,13 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
-	 * Stores the Security into NSD
+	 * Store the Security into NSD
 	 *
 	 * @param security
 	 *            : The Security to be stored
 	 * @param id
 	 *            : The id of NSD
 	 * @return Security: The Security stored
-	 * @
 	 */
 	public String postSecurity(final File security, final String id) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/";
@@ -297,7 +351,15 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Update the Security into NSD
 	 *
+	 * @param security
+	 *            : The Security to be stored
+	 * @param id
+	 *            : The id of NSD
+	 * @param id_s
+	 *            : The security id
+	 * @return Security: The Security stored
 	 */
 	public String updateSecurity(final File security, final String id, final String id_s) throws SDKException {
 		String url = this.url + "/" + id + "/security" + "/" + id_s;
@@ -305,7 +367,10 @@ public class NetworkServiceDescriptorRequest extends Request {
 	}
 
 	/**
+	 * Create a record into NSD
 	 *
+	 * @param networkServiceDescriptor
+	 *            : the networkServiceDescriptor JSON File
 	 */
 	public String createRecord(final File networkServiceDescriptor) throws SDKException {
 		String url = this.url + "/records";
