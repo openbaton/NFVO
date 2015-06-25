@@ -482,43 +482,9 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
     $scope.fixedip = {};
 
     $scope.imageId = {};
-    $scope.$watchCollection(
-            "locationChecked",
-            function(newValue, oldValue) {
-                //                console.log(newValue);
-                //                console.log(serviceAPI.returnKeys($scope.locationChecked, true));
-                $scope.datacenters = [];
-                var arrayLocations = serviceAPI.returnKeys($scope.locationChecked, true);
-                http.syncGet('/api/rest/admin/v2/datacenters').then(function(response) {
-                    _.each(response, function(datacenter) {
-                        _.each(arrayLocations, function(location) {
-                            if (datacenter.location.name === location) {
-                                if (_.contains($scope.datacenters, datacenter.id))
-                                    $scope.datacenters.push(datacenter);
-                            }
 
-                        });
-                    });
-                });
-            }
-    );
 
-    $scope.$watchCollection(
-            "locationCheckedS",
-            function(newValue, oldValue) {
-                $scope.datacenters = [];
-                var arrayLocations = serviceAPI.returnKeys($scope.locationCheckedS, true);
-                http.syncGet('/api/rest/admin/v2/datacenters').then(function(response) {
-                    _.each(response, function(datacenter) {
-                        _.each(arrayLocations, function(location) {
-                            if (datacenter.location.name === location) {
-                                $scope.datacenters.push(datacenter);
-                            }
-                        });
-                    });
-                });
-            }
-    );
+  
     $scope.selImage = function(image) {
         console.log(image);
     };
@@ -788,17 +754,17 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
     };
 
     $scope.floatingIP = {};
-    $scope.showFloatingIps = function(unit) {
-        $scope.modalUnit = unit;
-        http.syncGet('/api/rest/admin/v2/floatingips/' + unit.datacenterId).then(function(response) {
-            $scope.floatingIPs = response;
-            $scope.networks = unit.ips;
-
-            $('#floatingIP').modal('show');
-
-
-        });
-    };
+//    $scope.showFloatingIps = function(unit) {
+//        $scope.modalUnit = unit;
+//        http.syncGet('/api/rest/admin/v2/floatingips/' + unit.datacenterId).then(function(response) {
+//            $scope.floatingIPs = response;
+//            $scope.networks = unit.ips;
+//
+//            $('#floatingIP').modal('show');
+//
+//
+//        });
+//    };
     $scope.expose = {};
 
     $scope.setFloatingIP = function() {
@@ -1077,6 +1043,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
             http.get(urlT)
                     .success(function(response, status) {
                         $scope.topologies = response;
+                        console.log(response);
                     })
                     .error(function(data, status) {
                         var destinationUrl = '#';

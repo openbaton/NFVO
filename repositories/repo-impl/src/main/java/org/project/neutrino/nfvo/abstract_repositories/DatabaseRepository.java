@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class DatabaseRepository<T> implements GenericRepository {
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	protected EntityManager entityManager;
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 

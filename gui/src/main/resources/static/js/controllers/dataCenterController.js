@@ -7,6 +7,7 @@ angular.module('app').
             $scope.datacenter = {};
             $scope.file = '';
 
+            var urlDC = '/api/v1/datacenters/';
             loadDatacenter();
 
             $scope.dataSelect = ['select..', 'TEST', 'AMAZON', 'OPENSTACK'];
@@ -159,9 +160,10 @@ angular.module('app').
 
                 $('.modal').modal('hide');
                 console.log(datacenterJson);
-                http.post('/api/v1/datacenters/', datacenterJson)
+                http.post(urlDC, datacenterJson)
                         .success(function(response) {
                             showOk('Data Center created!');
+                            console.log(response);
                             $scope.selection = $scope.dataSelect[0];
                             $scope.datacenterJson = {};
                         })
@@ -191,7 +193,7 @@ angular.module('app').
             $scope.refreshDc = function() {
                 loadDatacenter();
                 $('#refreshIco').addClass('fa-spin');
-                http.get('/api/rest/admin/v2/datacenters/' + $routeParams.dataCenterId + '/refresh')
+                http.get(urlDC + $routeParams.dataCenterId + '/refresh')
                         .success(function(data) {
                             $('#refreshIco').removeClass('fa-spin');
                             $scope.datacenter = data;
@@ -237,7 +239,7 @@ angular.module('app').
                 copyDatacanter = serviceAPI.cleanDC(copyDatacanter);
                 console.log(copyDatacanter);
 
-                http.put('/api/rest/admin/v2/datacenters/' + datacenter.id, copyDatacanter)
+                http.put(urlDC + datacenter.id, copyDatacanter)
                         .success(function(response) {
                             showOk('Datacenter updated.');
                         })
@@ -265,7 +267,7 @@ angular.module('app').
                 $('#modalUpdate').modal('show');
             };
             $scope.deleteData = function(id) {
-                http.delete('/api/rest/admin/v2/datacenters/' + id)
+                http.delete(urlDC + id)
                         .success(function(response) {
                             showOk('Data Center deleted with id ' + id + '.');
                             delete $scope.dataCenterSelected;
@@ -277,7 +279,7 @@ angular.module('app').
 
             function loadDatacenter() {
                 if (!angular.isUndefined($routeParams.dataCenterId))
-                    http.syncGet('/api/rest/admin/v2/datacenters/' + $routeParams.dataCenterId).then(function(data) {
+                    http.syncGet(urlDC + $routeParams.dataCenterId).then(function(data) {
                         $scope.datacenter = data;
                         $scope.datacenterJSON = JSON.stringify(data, undefined, 4);
                         $scope.upDatacenter = data;
@@ -285,7 +287,7 @@ angular.module('app').
             }
 
             function loadTableDatacenter() {
-                http.get('/api/rest/admin/v2/datacenters').success(function(response) {
+                http.get(urlDC).success(function(response) {
 
                     $scope.datacenters = response;
                 });
