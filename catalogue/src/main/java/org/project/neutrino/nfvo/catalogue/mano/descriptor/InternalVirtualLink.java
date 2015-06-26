@@ -38,4 +38,19 @@ public class InternalVirtualLink extends AbstractVirtualLink {
     public void setConnection_points_references(Set<String> connection_points_references) {
         this.connection_points_references = connection_points_references;
     }
+
+    @Override
+    public String toString() {
+        return "InternalVirtualLink{" +
+                "id='" + id + '\'' +
+                ", version='" + version +
+                ", connectivity_type='" + getConnectivity_type() + '\'' +
+                ", connection_points_references='" + connection_points_references + '\'' +
+                ", root_requirement='" + getRoot_requirement() + '\'' +
+                ", leaf_requirement='" + getLeaf_requirement() + '\'' +
+                ", qos='" + getQos() + '\'' +
+                ", test_access='" + getTest_access() + '\'' +
+                '}';
+    }
+
 }
