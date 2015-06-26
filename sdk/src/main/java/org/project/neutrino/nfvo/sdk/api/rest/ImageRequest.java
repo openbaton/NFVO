@@ -1,24 +1,23 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.io.FileUtils;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
+
 import java.io.File;
-import java.io.IOException;
 
 /**
  * OpenBaton image-related api requester.
  */
-@Component
-public class ImageRequest {
-	
-private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+public class ImageRequest extends Request {
+
+    /**
+     * Create a image requester with a given url path
+     *
+     * @param url
+     * 				the url path used for the api requests
+     */
+    public ImageRequest(final String url) {
+        super(url);
+    }
 
     /**
      * Adds a new VNF software Image to the image repository
@@ -27,34 +26,9 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      *            : Image to add
      * @return string: The image filled with values from the api
      */
-	public String create (final File image) {
-        log.debug("Received CREATE IMAGE Request");
-
-        String result;
-        try {
-            // deserialize the json as string from the file
-            result = readFile(image);
-            log.debug(result);
-
-            // call the sdk request here
-
-            // return the response of the request
-
-            result = "IMAGE CREATED" + " " + result;
-
-        } catch (IOException e) {
-            // maybe use a custom SDK exception here
-            result = "IMAGE COULD NOT BE CREATED" + e.getMessage();
-        }
-        // catch request exceptions here
-        // maybe use a custom SDK exception here
-
-		return result;
+	public String create (final File image) throws SDKException {
+        return requestPost(url, image);
 	}
-
-    private String readFile(final File file) throws IOException {
-        return FileUtils.readFileToString(file);
-    }
 
 	/**
      * Removes the VNF software Image from the Image repository
@@ -62,8 +36,9 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      * @param id
      *            : The Image's id to be deleted
      */
-	public String delete(final String id) {
-            return "IMAGE CREATED";
+	public void delete(final String id) throws SDKException {
+        String url = this.url + "/" + id;
+        requestDelete(url);
 	}
 
     /**
@@ -71,8 +46,8 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      *
      * @return List<Image>: The list of VNF software images available
      */
-	public String findAll() {
-		return "IMAGE RESULTS";
+	public String findAll() throws SDKException {
+        return requestGet(url);
 	}
 
 	/**
@@ -82,8 +57,9 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      *            : The id of the VNF software image
      * @return image: The VNF software image selected
      */
-	public String findById(final File image, String id) {
-            return "IMAGE RESULT";
+	public String findById(final String id) throws SDKException {
+        String url = this.url + "/" + id;
+        return requestGet(url);
 	}
 
     /**
@@ -95,8 +71,9 @@ private static Logger log = LoggerFactory.getLogger("SDKApi");
      *            : the id of VNF software image
      * @return image: the VNF software image updated
      */
-	public String update(final File image, final String id) {
-            return "IMAGE UPDATED";
+	public String update(final File image, final String id) throws SDKException {
+        String url = this.url + "/" + id;
+        return requestPut(url, image);
 	}
 
 }

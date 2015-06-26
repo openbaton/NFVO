@@ -1,21 +1,23 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
 
 import java.io.File;
 
 /**
  * OpenBaton configuration-related api requester.
  */
-@Component
-public class ConfigurationRequest {
-	
-//	private static Logger log = LoggerFactory.getLogger("CLInterface");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+public class ConfigurationRequest extends Request {
+
+	/**
+	 * Create a configuration requester with a given url path
+	 *
+	 * @param url
+	 * 				the url path used for the api requests
+	 */
+	public ConfigurationRequest(final String url) {
+		super(url);
+	}
 
 	/**
 	 * Adds a new Configuration to the Configurations repository
@@ -23,8 +25,8 @@ public class ConfigurationRequest {
 	 * @param configuration
 	 * @return configuration
 	 */
-	public String create(final File configuration) {
-		return "IMAGE CREATED";
+	public String create(final File configuration) throws SDKException {
+		return requestPost(url, configuration);
 	}
 
 	/**
@@ -33,8 +35,9 @@ public class ConfigurationRequest {
 	 * @param id
 	 *            : the id of configuration to be removed
 	 */
-	public String delete(final String id) {
-		return "IMAGE CREATED";
+	public void delete(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		requestDelete(url);
 	}
 
 	/**
@@ -42,8 +45,8 @@ public class ConfigurationRequest {
 	 *
 	 * @return List<Configuration>: The list of Configurations available
 	 */
-	public String findAll() {
-		return "IMAGE RESULTS";
+	public String findAll() throws SDKException {
+		return requestGet(url);
 	}
 
 	/**
@@ -53,8 +56,9 @@ public class ConfigurationRequest {
 	 *            : The id of the Configuration
 	 * @return Configuration: The Configuration selected
 	 */
-	public String findById(final String id) {
-		return "IMAGE RESULT";
+	public String findById(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return requestGet(url);
 	}
 
 	/**
@@ -66,8 +70,9 @@ public class ConfigurationRequest {
 	 *            : The id of the Configuration
 	 * @return Configuration The Configuration updated
 	 */
-	public String update(final File configuration, final String id) {
-		return "IMAGE UPDATED";
+	public String update(final File configuration, final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return requestPut(url, configuration);
 	}
 
 }

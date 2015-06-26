@@ -1,21 +1,23 @@
 package org.project.neutrino.nfvo.sdk.api.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.project.neutrino.nfvo.sdk.api.exception.SDKException;
 
 import java.io.File;
 
 /**
  * OpenBaton viminstance(datacenter)-related api requester.
  */
-@Component
-public class VimInstanceRequest {
-	
-//	private static Logger log = LoggerFactory.getLogger("SDKApi");
-	
-	@Autowired
-	private ConfigurableApplicationContext context;
+public class VimInstanceRequest extends Request {
+
+	/**
+	 * Create a VimInstance requester with a given url path
+	 *
+	 * @param path
+	 * 				the url path used for the api requests
+	 */
+	public VimInstanceRequest(final String url) {
+		super(url);
+	}
 
 	/**
 	 * Adds a new datacenter to the datacenter repository
@@ -24,8 +26,8 @@ public class VimInstanceRequest {
 	 *            : Image to add
 	 * @return datacenter: The datacenter filled with values from the core
 	 */
-	public String create(final File datacenter) {
-		return "IMAGE CREATED";
+	public String create(final File datacenter) throws SDKException {
+		return requestPost(url, datacenter);
 	}
 
 	/**
@@ -33,16 +35,17 @@ public class VimInstanceRequest {
 	 *
 	 * @param id: The Datacenter's id to be deleted
 	 */
-	public String delete(final String id) {
-		return "IMAGE CREATED";
+	public void delete(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		requestDelete(url);
 	}
 
 	/**
 	 * Returns the list of the Datacenters available
 	 * @return List<Datacenter>: The List of Datacenters available
 	 */
-	public String findAll() {
-		return "IMAGE RESULTS";
+	public String findAll() throws SDKException {
+		return requestGet(url);
 	}
 
 	/**
@@ -50,8 +53,9 @@ public class VimInstanceRequest {
 	 * @param id: The Datacenter's id selected
 	 * @return Datacenter: The Datacenter selected
 	 */
-	public String findById(final String id) {
-		return "IMAGE RESULT";
+	public String findById(final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return requestGet(url);
 	}
 
 	/**
@@ -63,8 +67,9 @@ public class VimInstanceRequest {
 	 *            : the id of the old datacenter
 	 * @return VimInstance: the VimInstance updated
 	 */
-	public String update(final File datacenter, final String id) {
-		return "IMAGE UPDATED";
+	public String update(final File datacenter, final String id) throws SDKException {
+		String url = this.url + "/" + id;
+		return requestPut(url, datacenter);
 	}
 
 }

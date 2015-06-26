@@ -2,10 +2,7 @@ package org.project.neutrino.nfvo.core.test;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFDependency;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.*;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualLinkRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -103,6 +100,11 @@ public class ApplicationTest {
 
 	@Bean(name = "networkRepository")
 	GenericRepository<Network> networkRepository() {
+		return mock(GenericRepository.class);
+	}
+
+	@Bean(name = "VNFFGDescriptorRepository")
+	GenericRepository<VNFForwardingGraphDescriptor> vnffgDescriptorRepository() {
 		return mock(GenericRepository.class);
 	}
 

@@ -41,10 +41,10 @@ public class NetworkServiceRecord /*implements Serializable*/{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> vlr;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private Set<VirtualNetworkFunctionRecord> vnfr;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private Set<VNFRecordDependency> vnf_dependency;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
