@@ -20,7 +20,11 @@ public class ConnectionPoint implements Serializable{
     protected String id = IdGenerator.createUUID();
 	@Version
 	protected int version = 0;
-	
+
+    protected String name;
+
+    protected String extId;
+
     /**
      *
      * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC address or the
@@ -49,4 +53,32 @@ public class ConnectionPoint implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionPoint{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", version='" + version +
+                ", type='" + type + '\'' +
+                ", extId='" + extId + '\'' +
+                '}';
+    }
+
 }
