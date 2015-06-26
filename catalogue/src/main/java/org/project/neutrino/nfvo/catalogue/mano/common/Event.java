@@ -13,5 +13,5 @@ public enum  Event {
   ALLOCATE,
   INSTALL,
     ERROR,
-  START;
+  START, RELEASE;
 }
