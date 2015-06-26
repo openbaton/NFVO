@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vnf-forwarding-graphs")
+@RequestMapping("/api/v1//vnf-forwarding-graphs")
 public class RestVNFFG {
 
 	//	TODO add log prints

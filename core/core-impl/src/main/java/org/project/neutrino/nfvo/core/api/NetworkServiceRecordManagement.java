@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -161,7 +162,7 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     }
 
     @Override
-    public void delete(String id) throws VimException, JMSException, NamingException, NotFoundException, ExecutionException, InterruptedException {
+    public void delete(String id) throws VimException, NotFoundException, NamingException, JMSException, InterruptedException, ExecutionException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
         List<Future<Void>> futures = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {

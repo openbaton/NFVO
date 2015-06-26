@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 				.authorizeRequests()
 //				.antMatchers("/**").permitAll()
-				.antMatchers("/ns-descriptors/**").authenticated().and().httpBasic()
+				.antMatchers("/api/v1/ns-descriptors/**").authenticated().and().httpBasic()
 				.realmName("OpenBaton").and().csrf().disable();
 	}
 

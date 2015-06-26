@@ -57,6 +57,6 @@ public interface NetworkServiceRecordManagement {
 	 * disabled Network Service Descriptor.
 	 * @param id
 	 */
-	void delete(String id) throws VimException;
+	void delete(String id) throws VimException, JMSException, NamingException, NotFoundException, ExecutionException, InterruptedException;
 
 }

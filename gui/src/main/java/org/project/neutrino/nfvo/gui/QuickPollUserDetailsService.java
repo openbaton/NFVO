@@ -7,7 +7,6 @@ import org.project.neutrino.nfvo.catalogue.security.User;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

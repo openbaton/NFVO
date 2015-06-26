@@ -1,14 +1,10 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
-
 package org.project.neutrino.nfvo.catalogue.mano.common;
 
 /**
  * Created by lto on 06/02/15.
  */
+
 public enum Event {
-	RELEASE, ALLOCATE, INSTALL, ERROR, START;
+	ALLOCATE, INSTALL, ERROR, START, RELEASE;
+
 }
