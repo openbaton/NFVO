@@ -15,12 +15,16 @@ import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -35,8 +39,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -53,10 +60,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-
 	@Autowired
 	private NetworkServiceRecordManagement nsrManagement;
-
 
 	@Autowired
 	@Qualifier("vimRepository")
@@ -73,9 +78,17 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	@Autowired
 	private NSDUtils nsdUtils;
 
+	@Autowired
+	public VimBroker vimBroker;
+
 	@Before
-	public void init() {
+	public void init() throws VimException{
 		MockitoAnnotations.initMocks(ApplicationTest.class);
+		ResourceManagement resourceManagement = mock(ResourceManagement.class);
+		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
+		Vim vim = mock(Vim.class);
+		when(vimBroker.getVim(anyString())).thenReturn(vim);
+		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
 		log.info("Starting test");
 	}
 
@@ -112,7 +125,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
-
 		exception.expect(NotFoundException.class);
 		nsrManagement.onboard(nsd_exp);
 	}
@@ -123,7 +135,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
 		}});
-
 		nsrManagement.onboard(nsd_exp);
 	}
 
