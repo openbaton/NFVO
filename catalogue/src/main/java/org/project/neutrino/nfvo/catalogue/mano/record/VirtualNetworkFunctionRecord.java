@@ -13,6 +13,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -138,6 +139,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     private String type;
 
     public VirtualNetworkFunctionRecord() {
+        this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
 
     public Set<AutoScalePolicy> getAuto_scale_policy() {
