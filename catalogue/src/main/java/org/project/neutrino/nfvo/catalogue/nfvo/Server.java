@@ -2,9 +2,12 @@ package org.project.neutrino.nfvo.catalogue.nfvo;
 
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
+import org.springframework.util.MultiValueMap;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by lto on 20/05/15.
@@ -25,7 +28,7 @@ public class Server {
     private String status;
     private String extendedStatus;
     private String extId;
-    private String ip;
+    private HashMap<String,List<String>> ips;
     private String floatingIp;
 
     @Temporal(TemporalType.DATE)
@@ -61,12 +64,12 @@ public class Server {
         return extId;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setIps(HashMap<String,List<String>> ips) {
+        this.ips = ips;
     }
 
-    public String getIp() {
-        return ip;
+    public HashMap<String,List<String>> getIps() {
+        return ips;
     }
 
     public Date getUpdated() {
@@ -122,7 +125,7 @@ public class Server {
                 ", extendedStatus='" + status + '\'' +
                 ", version=" + version +
                 ", extId='" + extId + '\'' +
-                ", ip='" + ip + '\'' +
+                ", ips='" + ips + '\'' +
                 ", floatingIp='" + floatingIp + '\'' +
                 ", created='" + created + '\'' +
                 ", updated='" + updated + '\'' +
