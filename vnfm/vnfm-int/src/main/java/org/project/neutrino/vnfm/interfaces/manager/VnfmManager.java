@@ -1,6 +1,7 @@
 package org.project.neutrino.vnfm.interfaces.manager;
 
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
@@ -24,4 +25,6 @@ public interface VnfmManager {
     VnfmSender getVnfmSender(String endpointType);
 
     void executeAction(CoreMessage message) throws VimException, JMSException, NamingException;
+
+    Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, NamingException, JMSException;
 }

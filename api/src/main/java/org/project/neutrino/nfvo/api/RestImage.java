@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/api/v1//images")
 public class RestImage {
 
 	//	TODO add log prints

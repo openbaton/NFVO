@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/virtual-link-descriptors	")
+@RequestMapping("/api/v1//virtual-link-descriptors	")
 public class RestVirtualLink {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());

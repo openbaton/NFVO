@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/configurations")
+@RequestMapping("/api/v1/configurations")
 public class RestConfiguration {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());

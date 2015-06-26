@@ -17,7 +17,7 @@ public class JmsRegister extends VnfmRegister {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    @JmsListener(destination = "vnfm-register", containerFactory = "myJmsContainerFactory")
+    @JmsListener(destination = "vnfm-register", containerFactory = "queueJmsContainerFactory")
     public void addManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
         if (endpoint.getEndpointType() == null || endpoint.getEndpointType().length() == 0){
             endpoint.setEndpoinType("jms");

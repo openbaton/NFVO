@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/ns-records")
+@RequestMapping("/api/v1/ns-records")
 public class RestNetworkServiceRecord {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -72,7 +72,7 @@ public class RestNetworkServiceRecord {
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable("id") String id) throws VimException {
+	public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException {
 		try {
 			networkServiceRecordManagement.delete(id);
 		} catch (NoResultException e) {

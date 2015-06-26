@@ -58,22 +58,14 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     @Async
     public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException, NamingException, JMSException {
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+            CoreMessage coreMessage = new CoreMessage();
+            coreMessage.setAction(Action.INSTATIATE);
+            coreMessage.setPayload(vnfr);
+
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getType());
             if (endpoint == null) {
                 throw new NotFoundException("VnfManager of type " + vnfr.getType() + " is not registered");
             }
-
-            CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setAction(Action.INSTATIATE);
-//            vnfr.setVdu(null);
-//            vnfr.setVirtual_link(null);
-//            vnfr.setConnected_external_virtual_link(null);
-//            vnfr.setAuto_scale_policy(null);
-//            vnfr.setConnection_point(null);
-//            vnfr.setDependency(null);
-//
-//            vnfr.setLifecycle_event(null);
-            coreMessage.setPayload(vnfr);
 
             /**
              *  TODO Here use an abstraction to call the particular vnfm_reg
@@ -92,7 +84,7 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     }
 
     @Override
-    @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
+    @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
     public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
         log.debug("Received: " + coreMessage);
 
@@ -152,6 +144,28 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
             case INSTATIATE:
                 break;
         }
+    }
+
+    @Override
+    @Async
+    public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, NamingException, JMSException {
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType());
+        if (endpoint == null) {
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " is not registered");
+        }
+        CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setAction(Action.RELEASE_RESOURCES);
+        coreMessage.setPayload(virtualNetworkFunctionRecord);
+        VnfmSender vnfmSender;
+        try {
+
+            vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+        } catch (BeansException e) {
+            throw new NotFoundException(e);
+        }
+
+        vnfmSender.sendCommand(coreMessage, endpoint);
+        return new AsyncResult<Void>(null);
     }
 
     @Override
