@@ -1,9 +1,5 @@
 package org.project.neutrino.nfvo.main;
 
-import java.io.File;
-
-import javax.jms.ConnectionFactory;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +15,9 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.util.FileSystemUtils;
 
+import javax.jms.ConnectionFactory;
+import java.io.File;
+
 /**
  * Created by lto on 16/04/15.
  */
@@ -33,13 +32,21 @@ public class Application {
 
 
     @Bean
-    JmsListenerContainerFactory<?> myJmsContainerFactory(ConnectionFactory connectionFactory) {
+    JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
         return factory;
     }
 
+    @Bean
+    JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setCacheLevelName("CACHE_CONNECTION");
+        factory.setConnectionFactory(connectionFactory);
+        factory.setPubSubDomain(true);
+        return factory;
+    }
 
     public static void main(String[] args) {
         // Clean out any ActiveMQ data from a previous run

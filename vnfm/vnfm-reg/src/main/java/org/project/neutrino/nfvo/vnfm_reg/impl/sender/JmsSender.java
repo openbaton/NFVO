@@ -23,7 +23,7 @@ import javax.naming.NamingException;
 public class JmsSender implements VnfmSender{
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    private String queueName = "core-vnfm-actions";
+    private String topicName = "core-vnfm-actions";
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -31,7 +31,7 @@ public class JmsSender implements VnfmSender{
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
 
-        log.debug("Sending message: " + coreMessage + " to Queue: " + queueName + " where selector is: type=\'" + endpoint.getEndpoint() + "\'");
+        log.debug("Sending message: " + coreMessage + " to Topic: " + topicName + " where selector is: type=\'" + endpoint.getEndpoint() + "\'");
         MessageCreator messageCreator = new MessageCreator() {
             @Override
             public Message createMessage(Session session) throws JMSException {
@@ -42,7 +42,7 @@ public class JmsSender implements VnfmSender{
             }
         };
 
-        jmsTemplate.send(queueName, messageCreator);
+        jmsTemplate.send(topicName, messageCreator);
 
     }
 }
