@@ -1,6 +1,9 @@
 package org.project.neutrino.nfvo.vim;
 
+import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFComponent;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
@@ -145,7 +148,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             log.debug("Network with id: " + network.getId() + " created successfully.");
         } catch (Exception e) {
             log.error("Network with id: " + network.getId() + " not created successfully.", e);
-            throw new VimException("Network with id: " + network.getId() + " not deleted successfully.");
+            throw new VimException("Network with id: " + network.getId() + " not created successfully.");
         }
         List<Subnet> createdSubnets = new ArrayList<Subnet>();
         for (Subnet subnet : network.getSubnets()) {
@@ -264,7 +267,11 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
-        List<String> networks = new ArrayList<String>(){{add("7e62608d-efaa-4891-8ea2-3d3f537559c1");}};
+        List<String> networks = new ArrayList<String>();
+        for (VNFComponent vnfc: vdu.getVnfc()) {
+            for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point())
+                networks.add(vnfdConnectionPoint.getExtId());
+        }
         log.trace(""+vnfr);
         log.trace("");
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
@@ -272,6 +279,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
+        //vnfr.getVnf_address().add(server.getIp());
         return new AsyncResult<>(server.getExtId());
     }
 
