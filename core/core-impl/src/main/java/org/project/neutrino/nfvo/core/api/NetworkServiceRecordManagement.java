@@ -3,10 +3,12 @@ package org.project.neutrino.nfvo.core.api;
 import org.project.neutrino.nfvo.catalogue.mano.common.Event;
 import org.project.neutrino.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.neutrino.nfvo.catalogue.mano.common.VNFRecordDependency;
+import org.project.neutrino.nfvo.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
@@ -67,6 +69,9 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     @Autowired
     private org.project.neutrino.nfvo.core.interfaces.ResourceManagement resourceManagement;
 
+    @Autowired
+    private org.project.neutrino.nfvo.core.interfaces.NetworkManagement networkManagement;
+
     // TODO fetch the NetworkServiceDescriptor from the DB
 
     @Override
@@ -114,6 +119,28 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
          */
         List<Future<String>> ids = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
+                if (internalVirtualLink.getConnectivity_type().equals("VXLAN")) {
+                    for (String connectionPointReference : internalVirtualLink.getConnection_points_references()) {
+                        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                            boolean networkExists = false;
+                            for (Network network : vdu.getVimInstance().getNetworks()) {
+                                if (network.getName().equals(connectionPointReference) || network.getExtId().equals(connectionPointReference)) {
+                                    networkExists = true;
+                                    NSRUtils.createConnectionsPoints(virtualNetworkFunctionRecord, vdu, network);
+                                    break;
+                                }
+                            }
+                            if (networkExists == false) {
+                                Network network = new Network();
+                                network.setName(connectionPointReference);
+                                network = networkManagement.add(vdu.getVimInstance(), network);
+                                NSRUtils.createConnectionsPoints(virtualNetworkFunctionRecord, vdu, network);
+                            }
+                        }
+                    }
+                }
+            }
             Set<Event> events = new HashSet<>();
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
