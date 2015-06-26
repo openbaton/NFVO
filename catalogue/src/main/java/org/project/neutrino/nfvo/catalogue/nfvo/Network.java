@@ -28,13 +28,6 @@ public class Network implements Serializable {
 
     public Network(){
         id = IdGenerator.createUUID();
-        name = "";
-        extId = "";
-        segmentationId = -1;
-        physicalNetworkName = "";
-        networkType = "";
-        external = false;
-        shared = false;
         subnets = new ArrayList<Subnet>();
     }
 
