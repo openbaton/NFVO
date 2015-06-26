@@ -9,6 +9,7 @@ import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
 import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
 import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -119,7 +122,7 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     }
 
     @Override
-    public void executeAction(CoreMessage message) throws VimException {
+    public void executeAction(CoreMessage message) throws VimException, JMSException, NamingException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
         switch (message.getAction()){
 
@@ -135,8 +138,16 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
                 break;
             case ALLOCATE_RESOURCES:
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                List<Future<String>> ids = new ArrayList<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
-                    resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
+                    ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
+
+                CoreMessage coreMessage = new CoreMessage();
+                coreMessage.setAction(Action.ALLOCATE_RESOURCES);
+                coreMessage.setPayload(ids.toString());
+
+                UtilsJMS.sendToQueue(coreMessage, "core-vnfm-actions");
+
                 break;
             case INSTATIATE:
                 break;

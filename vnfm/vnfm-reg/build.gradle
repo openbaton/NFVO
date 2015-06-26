@@ -1,7 +1,9 @@
+def springBootVersion = "1.2.4.RELEASE"
+
 dependencies {
     compile project(':catalogue')
     compile project(':repositories:repo-int')
     compile project(':core:core-int')
 
-    compile 'org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE'
+    compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
 }

@@ -263,7 +263,7 @@ public class RestNetworkServiceRecord {
 		return findVNFD(nsr.getVnf_dependency(), id_vnfr);
 	}
 
-	@RequestMapping(value = "{id}/vnfdependencies/{id_pnf}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
 			@PathVariable("id_vnfd") String id_vnfd) {
@@ -302,7 +302,7 @@ public class RestNetworkServiceRecord {
 	public VNFRecordDependency updateVNFD(
 			@RequestBody @Valid VNFRecordDependency vnfDependency,
 			@PathVariable("id") String id,
-			@PathVariable("id_pnf") String id_vnfd) {
+			@PathVariable("id_vnfd") String id_vnfd) {
 		NetworkServiceRecord nsr = null;
 		try {
 			nsr = networkServiceRecordManagement.query(id);

@@ -161,13 +161,29 @@ public class NetworkServiceRecordManagement implements org.project.neutrino.nfvo
     }
 
     @Override
-    public void delete(String id) throws VimException {
+    public void delete(String id) throws VimException, JMSException, NamingException, NotFoundException, ExecutionException, InterruptedException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
+        List<Future<Void>> futures = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
-            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                resourceManagement.release(virtualDeploymentUnit);
+            Set<Event> events = new HashSet<>();
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
+                events.add(lifecycleEvent.getEvent());
+                log.debug("found " + lifecycleEvent.getEvent());
+            }
+            if (!events.contains(Event.RELEASE))
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+                    resourceManagement.release(virtualDeploymentUnit);
+                }
+            else {
+                futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
             }
         }
+
+        for(Future<Void> result : futures){
+            result.get();
+            log.debug("Deleted VDU");
+        }
+
         nsrRepository.remove(networkServiceRecord);
     }
 }
