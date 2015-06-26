@@ -10,6 +10,7 @@ import org.project.neutrino.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -41,6 +42,7 @@ public class VNFComponent implements Serializable{
     private Set<VNFDConnectionPoint> connection_point;
 
     public VNFComponent() {
+        this.connection_point = new HashSet<VNFDConnectionPoint>();
     }
 
     public String getId() {
