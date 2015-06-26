@@ -3,6 +3,7 @@ package org.project.neutrino.nfvo.core.utils;
 import org.project.neutrino.nfvo.catalogue.mano.common.*;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.*;
 import org.project.neutrino.nfvo.catalogue.mano.record.*;
+import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
 import org.project.neutrino.nfvo.common.exceptions.BadFormatException;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
@@ -133,4 +134,24 @@ public class NSRUtils {
         }
         return false;
     }
+
+    public static void createConnectionsPoints(VirtualNetworkFunctionRecord vnfr, VirtualDeploymentUnit vdu, Network network) {
+        //Create ConnectionPoint for VNFR
+        ConnectionPoint connectionPoint = new ConnectionPoint();
+        connectionPoint.setName(network.getName());
+        connectionPoint.setExtId(network.getExtId());
+        connectionPoint.setType(network.getNetworkType());
+        vnfr.getConnection_point().add(connectionPoint);
+        //Create ConnectionPoint for VDU
+        VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
+        vnfdConnectionPoint.setVirtual_link_reference(network.getName());
+        vnfdConnectionPoint.setName(network.getName());
+        vnfdConnectionPoint.setExtId(network.getExtId());
+        vnfdConnectionPoint.setType(network.getNetworkType());
+        //Create VNFC for VDU
+        VNFComponent vnfComponent = new VNFComponent();
+        vnfComponent.getConnection_point().add(vnfdConnectionPoint);
+        vdu.getVnfc().add(vnfComponent);
+    }
+
 }
