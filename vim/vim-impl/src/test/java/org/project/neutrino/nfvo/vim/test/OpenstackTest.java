@@ -198,7 +198,7 @@ public class OpenstackTest {
         expImage = new MyNovaImage(definedImage.getExtId(), definedImage.getName(), new HashSet<Link>(), new Date(), new Date(), "", "", Image.Status.ACTIVE, 1, (int) definedImage.getMinDiskSpace(), (int) definedImage.getMinRam(), new ArrayList<BlockDeviceMapping>(), expImageResource, new HashMap<String, String>());
         //Server and Resources
         ServerExtendedStatus extStatus = new MyExtendedStatus("mocked_id","mocked_name",0);
-        expServer = new MyServer(definedServer.getExtId(), definedServer.getName(), new HashSet<Link>(), definedServer.getExtId(), "", "", definedServer.getUpdated(), definedServer.getCreated(), "", definedServer.getIp(), "mocked_ip6", org.jclouds.openstack.nova.v2_0.domain.Server.Status.fromValue(definedServer.getStatus()), expImage, expFlavor, "", "", mock(Multimap.class), new HashMap<String, String>(), extStatus, mock(ServerExtendedAttributes.class), "", "");
+        expServer = new MyServer(definedServer.getExtId(), definedServer.getName(), new HashSet<Link>(), definedServer.getExtId(), "", "", definedServer.getUpdated(), definedServer.getCreated(), "", "mocked_ip4", "mocked_ip6", org.jclouds.openstack.nova.v2_0.domain.Server.Status.fromValue(definedServer.getStatus()), expImage, expFlavor, "", "", mock(Multimap.class), new HashMap<String, String>(), extStatus, mock(ServerExtendedAttributes.class), "", "");
         ServerCreated serverCreated = mock(ServerCreated.class);
 
         //FloatingIP
@@ -339,7 +339,6 @@ public class OpenstackTest {
         Assert.assertEquals(definedServer.getExtId(), serverId);
         exception.expect(NullPointerException.class);
         openstackClient.getServerIdByName("not_existing_name");
-
     }
 
     @Test
@@ -556,8 +555,8 @@ public class OpenstackTest {
         vimInstance.setTenant("mocked_tenant");
         vimInstance.setImages(new ArrayList<NFVImage>() {{
             NFVImage nfvImage = new NFVImage();
-            nfvImage.setName("image_1234");
-            nfvImage.setExtId("ext_id");
+            nfvImage.setName("mocked_image_name");
+            nfvImage.setExtId("mocked_image_extId");
             add(nfvImage);
         }});
         return vimInstance;
@@ -595,7 +594,11 @@ public class OpenstackTest {
         server.setFlavor(definedFlavor);
         server.setStatus("ACTIVE");
         server.setExtendedStatus("mocked_extended_status");
-        server.setIp("mocked_ip");
+        HashMap<String, List<String>> ipMap = new HashMap<String, List<String>>();
+        LinkedList<String> ips = new LinkedList();
+        ips.add("mocked_ip");
+        ipMap.put("mocked_network", ips);
+        server.setIps(ipMap);
         server.setFloatingIp("mocked_floating_ip");
         server.setCreated(new Date());
         server.setUpdated(new Date());
