@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.vim.client.openstack;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import com.google.inject.Module;
 import org.jclouds.Constants;
 import org.jclouds.ContextBuilder;
@@ -30,6 +31,7 @@ import org.jclouds.openstack.neutron.v2.extensions.FloatingIPApi;
 import org.jclouds.openstack.neutron.v2.features.NetworkApi;
 import org.jclouds.openstack.neutron.v2.features.SubnetApi;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.domain.Address;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.RebootType;
 import org.jclouds.openstack.nova.v2_0.domain.SecurityGroup;
@@ -48,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import java.io.*;
 import java.util.*;
@@ -222,7 +225,15 @@ public class OpenstackClient implements ClientInterfaces {
             server.setName(jcloudsServer.getName());
             server.setStatus(jcloudsServer.getStatus().value());
             server.setExtendedStatus(jcloudsServer.getExtendedStatus().toString());
-            server.setIp(jcloudsServer.getAccessIPv4());
+            HashMap<String, List<String>> ipMap = new HashMap<String, List<String>>();
+            for (String key : jcloudsServer.getAddresses().keys()) {
+                List<String> ips = new ArrayList<String>();
+                for (Address address : jcloudsServer.getAddresses().get(key)) {
+                    ips.add(address.getAddr());
+                }
+                ipMap.put(key, ips);
+            }
+            server.setIps(ipMap);
             server.setCreated(jcloudsServer.getCreated());
             server.setUpdated(jcloudsServer.getUpdated());
             server.setImage(getImageById(jcloudsServer.getImage().getId()));
@@ -242,7 +253,15 @@ public class OpenstackClient implements ClientInterfaces {
             server.setName(jcloudsServer.getName());
             server.setStatus(jcloudsServer.getStatus().value());
             server.setExtendedStatus(jcloudsServer.getExtendedStatus().toString());
-            server.setIp(jcloudsServer.getAccessIPv4());
+            HashMap<String, List<String>> ipMap = new HashMap<String, List<String>>();
+            for (String key : jcloudsServer.getAddresses().keys()) {
+                List<String> ips = new ArrayList<String>();
+                for (Address address : jcloudsServer.getAddresses().get(key)) {
+                    ips.add(address.getAddr());
+                }
+                ipMap.put(key, ips);
+            }
+            server.setIps(ipMap);
             server.setCreated(jcloudsServer.getCreated());
             server.setUpdated(jcloudsServer.getUpdated());
             server.setImage(getImageById(jcloudsServer.getImage().getId()));
@@ -550,6 +569,7 @@ public class OpenstackClient implements ClientInterfaces {
     public Network createNetwork(String name, String networkType, boolean external, boolean shared, int segmentationId, String physicalNetworkName ) {
         NetworkApi networkApi = neutronApi.getNetworkApi(defaultZone);
         CreateNetwork createNetwork = CreateNetwork.createBuilder(name).networkType(NetworkType.fromValue(networkType)).external(external).shared(shared).segmentationId(segmentationId).physicalNetworkName(physicalNetworkName).build();
+        //CreateNetwork createNetwork = CreateNetwork.createBuilder(name).external(external).shared(shared).build();
         org.jclouds.openstack.neutron.v2.domain.Network jcloudsNetwork = networkApi.create(createNetwork);
         Network network = new Network();
         network.setName(jcloudsNetwork.getName());
@@ -614,8 +634,13 @@ public class OpenstackClient implements ClientInterfaces {
             network.setNetworkType(jcloudsNetwork.getNetworkType().toString());
             network.setShared(jcloudsNetwork.getShared());
             //network.setSubnets(jcloudsNetwork.getSubnets());
-            network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
-            network.setSegmentationId(jcloudsNetwork.getSegmentationId());
+            if (jcloudsNetwork.getPhysicalNetworkName() != null) {
+                network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
+            } else {
+                network.setPhysicalNetworkName("-");
+            }
+            if (jcloudsNetwork.getSegmentationId() != null)
+                network.setSegmentationId(jcloudsNetwork.getSegmentationId());
             return network;
         } catch (Exception e) {
             throw new NullPointerException("Network not found");
@@ -652,13 +677,16 @@ public class OpenstackClient implements ClientInterfaces {
             network.setName(jcloudsNetwork.getName());
             network.setExtId(jcloudsNetwork.getId());
             network.setExternal(jcloudsNetwork.getExternal());
-            if(jcloudsNetwork.getNetworkType() != null)
-            	network.setNetworkType(jcloudsNetwork.getNetworkType().toString());
+            network.setNetworkType(jcloudsNetwork.getNetworkType().toString());
             network.setShared(jcloudsNetwork.getShared());
             //network.setSubnets(jcloudsNetwork.getSubnets());
-            network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
-            if(jcloudsNetwork.getSegmentationId() != null)
-            	network.setSegmentationId(jcloudsNetwork.getSegmentationId());
+            if (jcloudsNetwork.getPhysicalNetworkName() != null) {
+                network.setPhysicalNetworkName(jcloudsNetwork.getPhysicalNetworkName());
+            } else {
+                network.setPhysicalNetworkName("-");
+            }
+            if (jcloudsNetwork.getSegmentationId() != null)
+                network.setSegmentationId(jcloudsNetwork.getSegmentationId());
             networks.add(network);
         }
         return networks;
