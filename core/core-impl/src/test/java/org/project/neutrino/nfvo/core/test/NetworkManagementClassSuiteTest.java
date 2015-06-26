@@ -14,8 +14,11 @@ import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;
 import org.project.neutrino.nfvo.catalogue.nfvo.Network;
 import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;
 import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.interfaces.NetworkManagement;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
+import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +32,12 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -48,13 +54,15 @@ public class NetworkManagementClassSuiteTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-
 	@Autowired
 	private NetworkManagement networkManagement;
 
 	@Autowired
 	@Qualifier("networkRepository")
 	private GenericRepository<Network> networkRepository;
+
+	@Autowired
+	public VimBroker vimBroker;
 
 	@Before
 	public void init() {
@@ -68,18 +76,18 @@ public class NetworkManagementClassSuiteTest {
 	}
 
 	@Test
-	public void networkManagementUpdateTest(){
-		Network network_exp = createNetwork();
-		when(networkRepository.find(anyString())).thenReturn(network_exp);
+	public void networkManagementUpdateTest() throws VimException{
+		Network network = createNetwork();
+		network.setName("UpdatedName");
+		network.setExternal(true);
+		Vim vim = vimBroker.getVim("mocked_vim");
+		when(vim.update(any(VimInstance.class), any(Network.class))).thenReturn(network);
 
-		Network network_new = createNetwork();
-		network_new.setName("UpdatedName");
-		network_new.setExternal(true);
-		network_exp = networkManagement.update(network_new, network_exp.getId());
+		Network updated_network = networkManagement.update(createVimInstance(), network);
 
-		Assert.assertEquals(network_exp.getName(), network_new.getName());
-		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+		Assert.assertEquals(updated_network.getName(), network.getName());
+		Assert.assertEquals(updated_network.getExtId(), network.getExtId());
+		Assert.assertEquals(updated_network.getExternal(), network.getExternal());
 	}
 
 	private Network createNetwork() {
@@ -107,10 +115,13 @@ public class NetworkManagementClassSuiteTest {
 	}
 
 	@Test
-	public void networkManagementAddTest(){
+	public void networkManagementAddTest() throws VimException{
 		Network network_exp = createNetwork();
 		when(networkRepository.create(any(Network.class))).thenReturn(network_exp);
-		Network network_new = networkManagement.add(network_exp);
+		Vim vim = vimBroker.getVim("mocked_vim");
+		when(vim.add(any(VimInstance.class), any(Network.class))).thenReturn(network_exp);
+
+		Network network_new = networkManagement.add(createVimInstance(), network_exp);
 
 		Assert.assertEquals(network_exp.getId(), network_new.getId());
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
@@ -136,10 +147,10 @@ public class NetworkManagementClassSuiteTest {
 	}
 
 	@Test
-	public void networkManagementDeleteTest(){
+	public void networkManagementDeleteTest() throws VimException{
 		Network network_exp = createNetwork();
 		when(networkRepository.find(network_exp.getId())).thenReturn(network_exp);
-		networkManagement.delete(network_exp.getId());
+		networkManagement.delete(createVimInstance(), network_exp);
 		when(networkRepository.find(network_exp.getId())).thenReturn(null);
 		Network network_new = networkManagement.query(network_exp.getId());
 		Assert.assertNull(network_new);
