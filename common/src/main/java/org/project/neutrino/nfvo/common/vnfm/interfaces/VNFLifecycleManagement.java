@@ -50,7 +50,7 @@ public interface VNFLifecycleManagement {
 	 * redundancy model) to a VNF instance.
 	 */
 	
-	void modify();
+	void modify(VirtualNetworkFunctionRecord vnfr);
 	
 	/**
 	 * This operation allows deploying a new 
