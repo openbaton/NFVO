@@ -47,7 +47,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
     public abstract void updateSoftware();
 
     @Override
-    public abstract void modify();
+    public abstract void modify(VirtualNetworkFunctionRecord vnfr);
 
     @Override
     public abstract void upgradeSoftware();
@@ -63,6 +63,9 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
             case ALLOCATE_RESOURCES:
                 break;
             case ERROR:
+                break;
+            case MODIFY:
+                this.modify((VirtualNetworkFunctionRecord) message.getPayload());
                 break;
             case RELEASE_RESOURCES:
                 break;
