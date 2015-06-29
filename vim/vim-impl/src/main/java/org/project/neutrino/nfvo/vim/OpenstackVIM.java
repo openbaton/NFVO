@@ -279,7 +279,11 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
-        //vnfr.getVnf_address().add(server.getIp());
+        for (String network : server.getIps().keySet()) {
+            for (String ip : server.getIps().get(network)) {
+                vnfr.getVnf_address().add(ip);
+            }
+        }
         return new AsyncResult<>(server.getExtId());
     }
 
