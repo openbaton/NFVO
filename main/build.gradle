@@ -6,7 +6,7 @@ dependencies {
 
     runtime project(':core')
     runtime project(':api')
-    runtime project(':gui')
+//    runtime project(':gui')
     runtime project(':cli')
     runtime project(':vim')
     runtime project(':repositories')

@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1/vim-instances")
+@RequestMapping("/api/v1/datacenters")
 public class RestVimInstances {
 
 //	TODO add log prints
