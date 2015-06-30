@@ -51,7 +51,8 @@ public class DependencyManagement implements org.project.neutrino.nfvo.core.inte
                         /**
                          * invoke on target the modify with the source information
                          */
-                        if (vnfRecordDependency.getSource().equals(virtualNetworkFunctionRecord.getId())){
+                        log.trace(vnfRecordDependency.getSource().getId() + " == " + virtualNetworkFunctionRecord.getId());
+                        if (vnfRecordDependency.getSource().getId().equals(virtualNetworkFunctionRecord.getId())){
                             CoreMessage coreMessage = new CoreMessage();
                             coreMessage.setAction(Action.MODIFY);
                             coreMessage.setPayload(virtualNetworkFunctionRecord);
