@@ -2,10 +2,6 @@ package org.project.neutrino.nfvo.sdk.api.rest;
 
 import org.project.neutrino.nfvo.sdk.api.util.PropertyReader;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * OpenBaton api requestor. Can be extended with security features to provide instances only only to granted requestors.
  * The Class is implemented in a static way to avoid any dependencies to spring and to create a corresponding small lib size.
@@ -31,7 +27,9 @@ public final class Requestor {
 //	TODO
 //	private static final VirtualLinkRequest virtualLinkRequest = new VirtualLinkRequest(propertyReader.getRestVirtualLinkPath());
 
-	// create a "static class" with a private constructor
+	/**
+	 * create a "static class" with a private constructor
+	 */
 	private Requestor() {};
 
 	/**

@@ -8,6 +8,7 @@ import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -24,7 +25,10 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(String endpointType);
 
-    void executeAction(CoreMessage message) throws VimException, JMSException, NamingException;
+    void executeAction(CoreMessage message) throws VimException, JMSException, NamingException, NotFoundException;
+
+    @Async
+    Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
 
     Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, NamingException, JMSException;
 }
