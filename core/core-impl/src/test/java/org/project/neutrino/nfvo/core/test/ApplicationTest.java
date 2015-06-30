@@ -8,13 +8,13 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualLinkRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
+import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.api.NetworkServiceDescriptorManagement;
-import org.project.neutrino.nfvo.core.api.NetworkServiceRecordManagement;
 import org.project.neutrino.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
 import org.project.neutrino.nfvo.core.utils.NSDUtils;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
-import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
 import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
 import org.project.neutrino.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.neutrino.vnfm.interfaces.manager.VnfmManager;
@@ -31,7 +31,6 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,6 +54,8 @@ public class ApplicationTest {
 		return vnfmManager;
 	}
 
+	@Bean
+	ClientInterfaces clientInterfaces(){return mock(ClientInterfaces.class);}
 
 	@Bean
 	GenericRepository<Configuration> configurationRepository(){
@@ -127,19 +128,16 @@ public class ApplicationTest {
 	ResourceManagement resourceManagement() { return mock(ResourceManagement.class); }
 
 	@Bean
-	VimBroker vimBroker() throws VimException {
-		VimBroker mock = mock(VimBroker.class);
-		//Vim vim = mock(Vim.class);
-		//when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
-		//when(mock.getVim(anyString())).thenReturn(vim());
-		return mock;
-	}
-
-	@Bean
 	Vim vim() throws VimException{
 		Vim vim = mock(Vim.class);
 		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
 		return vim;
+	}
+
+	@Bean
+	VimBroker vimBroker() throws VimException {
+		VimBroker mock = mock(VimBroker.class);
+		return mock;
 	}
 
 	public static void main(String[] argv) {
