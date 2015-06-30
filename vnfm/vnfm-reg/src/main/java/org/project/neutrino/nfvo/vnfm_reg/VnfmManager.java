@@ -9,7 +9,6 @@ import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
-import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
 import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
 import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException, NamingException, JMSException {
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
             CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setAction(Action.INSTATIATE);
+            coreMessage.setAction(Action.INSTANTIATE);
             coreMessage.setPayload(vnfr);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getType());
@@ -72,7 +71,6 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
              */
             VnfmSender vnfmSender;
             try {
-
                 vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
             } catch (BeansException e) {
                 throw new NotFoundException(e);
@@ -86,25 +84,10 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
     public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
-        log.debug("Received: " + coreMessage);
+        log.debug("CORE: Received: " + coreMessage);
 
-        try {
-            this.executeAction(coreMessage);
-        } catch (VimException e) {
-            log.error(e.getMessage());
-            VnfmSender vnfmSender;
-            try {
+        this.executeAction(coreMessage);
 
-                vnfmSender = this.getVnfmSender("jms");// we know it is jms, I'm in a jms receiver...
-            } catch (BeansException e2) {
-                throw new NotFoundException(e2);
-            }
-
-            CoreMessage errorMessage = new CoreMessage();
-            errorMessage.setAction(Action.ERROR);
-            errorMessage.setPayload("There was an error while deploying VMs");
-            vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(((VirtualNetworkFunctionRecord) coreMessage.getPayload()).getType()));
-        }
     }
 
     @Override
@@ -114,36 +97,92 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     }
 
     @Override
-    public void executeAction(CoreMessage message) throws VimException, JMSException, NamingException {
+    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+        VnfmSender vnfmSender;
+        try {
+            vnfmSender = this.getVnfmSender("jms");// we know it is jms, I'm in a jms receiver...
+        } catch (BeansException e2) {
+            throw new NotFoundException(e2);
+        }
         switch (message.getAction()){
 
-            case INSTATIATE_FINISH:
-                ApplicationEventNFVO event = new ApplicationEventNFVO(this, message.getAction());
-                log.debug("Publishing event: " + event);
-                publisher.publishEvent(event);
+            case INSTANTIATE_FINISH:
+                log.debug("INSTANTIATE_FINISH");
+                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
             case RELEASE_RESOURCES:
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
-                    resourceManagement.release(vdu);
+                    try {
+                        resourceManagement.release(vdu);
+                    } catch (VimException e) {
+
+                        e.printStackTrace();
+                        log.error(e.getMessage());
+
+                        CoreMessage errorMessage = new CoreMessage();
+                        errorMessage.setAction(Action.ERROR);
+                        errorMessage.setPayload("There was an error while deploying VMs");
+                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        return;
+                    }
                 break;
             case ALLOCATE_RESOURCES:
+                log.debug("ALLOCATE_RESOURCES");
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
                 List<Future<String>> ids = new ArrayList<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
-                    ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
+                    try {
+                        ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
+                    } catch (VimException e) {
+                        e.printStackTrace();
+                        log.error(e.getMessage());
+                        CoreMessage errorMessage = new CoreMessage();
+                        errorMessage.setAction(Action.ERROR);
+                        errorMessage.setPayload("There was an error while deploying VMs");
+                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        return;
+                    }
 
                 CoreMessage coreMessage = new CoreMessage();
-                coreMessage.setAction(Action.ALLOCATE_RESOURCES);
-                coreMessage.setPayload(ids.toString());
+                coreMessage.setAction(Action.INSTANTIATE);
+                coreMessage.setPayload(virtualNetworkFunctionRecord);
 
-                UtilsJMS.sendToQueue(coreMessage, "core-vnfm-actions");
-
+                vnfmSender.sendToTopic(coreMessage, "core-vnfm-actions", vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()).getEndpoint());
                 break;
-            case INSTATIATE:
+            case INSTANTIATE:
                 break;
         }
+
+        publishEvent(message);
+    }
+
+    private void publishEvent(CoreMessage message) {
+        ApplicationEventNFVO event = new ApplicationEventNFVO(this, message.getAction(), message.getPayload());
+        log.debug("Publishing event: " + event);
+        publisher.publishEvent(event);
+    }
+
+    @Override
+    @Async
+    public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getType());
+        if (endpoint == null) {
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " is not registered");
+        }
+        VnfmSender vnfmSender;
+        try {
+
+            vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+        } catch (BeansException e) {
+            throw new NotFoundException(e);
+        }
+
+        log.debug("Sending message " + coreMessage.getAction() + " to endpoint " + endpoint);
+        vnfmSender.sendCommand(coreMessage, endpoint);
+        return new AsyncResult<Void>(null);
     }
 
     @Override

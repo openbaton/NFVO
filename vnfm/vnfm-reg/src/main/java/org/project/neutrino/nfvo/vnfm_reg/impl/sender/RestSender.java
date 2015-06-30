@@ -25,6 +25,12 @@ public class RestSender implements VnfmSender{
 
     @Override
     public void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
-        log.debug("Sending message: " + coreMessage + " to Queue: vnfm-actions where selector is: type=\'" + endpoint.getEndpoint() + "\'");
+//        log.debug("Sending message: " + coreMessage + " to Queue: vnfm-actions where selector is: type=\'" + endpoint.getEndpoint() + "\'");
+        this.sendToTopic(coreMessage,"queue-name", endpoint.getEndpoint());
+    }
+
+    @Override
+    public void sendToTopic(CoreMessage coreMessage, String destinationQueueName, String selector) {
+        log.debug("Sending message: " + coreMessage + " to Queue: vnfm-actions where selector is: type=\'" + selector + "\'");
     }
 }

@@ -56,9 +56,9 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
     public abstract void terminate();
 
     protected void onAction(CoreMessage message) {
-        log.trace("Inside ONMESSAGE");
+        log.trace("VNFM: Received Message: " + message.getAction());
         switch (message.getAction()){
-            case INSTATIATE_FINISH:
+            case INSTANTIATE_FINISH:
                 break;
             case ALLOCATE_RESOURCES:
                 break;
@@ -69,7 +69,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
                 break;
             case RELEASE_RESOURCES:
                 break;
-            case INSTATIATE:
+            case INSTANTIATE:
                 this.instantiate((VirtualNetworkFunctionRecord) message.getPayload());
         }
     }
@@ -90,7 +90,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
 
 //        Thread.sleep(10000);
 //        CoreMessage coreMessage = new CoreMessage();
-//        coreMessage.setAction(Action.INSTATIATE_FINISH);
+//        coreMessage.setAction(Action.INSTANTIATE_FINISH);
 //        coreMessage.setObject(null);
 //        UtilsJMS.sendToQueue(coreMessage, "vnfm-core-actions");
     }
