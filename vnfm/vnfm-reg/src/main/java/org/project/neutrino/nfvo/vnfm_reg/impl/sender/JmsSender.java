@@ -54,6 +54,8 @@ public class JmsSender implements VnfmSender{
         };
         jmsTemplate.setPubSubDomain(true);
         jmsTemplate.setPubSubNoLocal(true);
+//        jmsTemplate.setExplicitQosEnabled(true);
+//        jmsTemplate.setDeliveryPersistent(true);
         jmsTemplate.send(destinationTopicName, messageCreator);
 
     }
