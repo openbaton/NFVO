@@ -4,10 +4,9 @@
   "vnfd":[
 	{
 	  "vendor":"fokus",
-	  "version":"0.1",
 	  "name":"vnf-dummy-1",
 	  "type":"dummy",
-	  "descriptor_version":"0.1-ALPHA",
+	  "version":"0.1-ALPHA",
 	  "vdu":[
 		{
 		  "vm_image":[
@@ -71,7 +70,6 @@
 	  "version":"0.1",
 	  "name":"vnf-dummy-2",
 	  "type":"dummy",
-	  "descriptor_version":"0.1-ALPHA",
 	  "vdu":[
 		{
 		  "vm_image":[

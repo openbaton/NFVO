@@ -2,6 +2,7 @@ package org.project.neutrino.nfvo.common.vnfm;
 
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.neutrino.nfvo.catalogue.nfvo.EndpointType;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.vnfm.interfaces.VNFLifecycleManagement;
 import org.project.neutrino.nfvo.common.vnfm.utils.UtilsJMS;
@@ -83,7 +84,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
         VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
-        vnfmManagerEndpoint.setEndpoinType("jms");
+        vnfmManagerEndpoint.setEndpointType(EndpointType.JMS);
         log.debug("Registering to queue: vnfm-register");
         UtilsJMS.sendToRegister(vnfmManagerEndpoint);
 

@@ -7,7 +7,6 @@
 			"version":"0.1",
 			"name":"vnf-dummy",
 			"type":"dummy",
-			"descriptor_version":"0.1-ALPHA",
 			"vdu":[
 				{
 					"vm_image":[

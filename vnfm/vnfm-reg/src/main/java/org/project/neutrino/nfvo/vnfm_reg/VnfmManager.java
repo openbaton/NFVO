@@ -3,10 +3,7 @@ package org.project.neutrino.nfvo.vnfm_reg;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.neutrino.nfvo.catalogue.nfvo.Action;
-import org.project.neutrino.nfvo.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
-import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.core.interfaces.ResourceManagement;
@@ -91,8 +88,8 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
     }
 
     @Override
-    public VnfmSender getVnfmSender(String endpointType) throws BeansException{
-        String senderName = endpointType + "Sender";
+    public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
+        String senderName = endpointType.toString().toLowerCase() + "Sender";
         return (VnfmSender) this.context.getBean(senderName);
     }
 
@@ -101,7 +98,7 @@ public class VnfmManager implements org.project.neutrino.vnfm.interfaces.manager
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
         VnfmSender vnfmSender;
         try {
-            vnfmSender = this.getVnfmSender("jms");// we know it is jms, I'm in a jms receiver...
+            vnfmSender = this.getVnfmSender(EndpointType.JMS);// we know it is jms, I'm in a jms receiver...
         } catch (BeansException e2) {
             throw new NotFoundException(e2);
         }
