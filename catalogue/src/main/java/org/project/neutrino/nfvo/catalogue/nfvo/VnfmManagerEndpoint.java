@@ -20,15 +20,15 @@ public class VnfmManagerEndpoint implements Serializable{
 
     private String type;
     private String endpoint;
-    private String endpoinType;
+    private EndpointType endpointType;
 
     public VnfmManagerEndpoint() {
     }
 
-    public VnfmManagerEndpoint(String type, String endpoint, String endpoinType) {
+    public VnfmManagerEndpoint(String type, String endpoint, EndpointType endpointType) {
         this.type = type;
         this.endpoint = endpoint;
-        this.endpoinType = endpoinType;
+        this.endpointType = endpointType;
     }
 
     public String getType() {
@@ -47,12 +47,29 @@ public class VnfmManagerEndpoint implements Serializable{
         this.endpoint = endpoint;
     }
 
-    public String getEndpointType() {
-        return endpoinType;
+    public int getVersion() {
+        return version;
     }
 
-    public void setEndpoinType(String endpoinType) {
-        this.endpoinType = endpoinType;
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public EndpointType getEndpointType() {
+        return endpointType;
+    }
+
+    public void setEndpointType(EndpointType endpointType) {
+        this.endpointType = endpointType;
+    }
+
+    public String getId() {
+
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
@@ -62,7 +79,7 @@ public class VnfmManagerEndpoint implements Serializable{
                 ", version=" + version +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", endpoinType='" + endpoinType + '\'' +
+                ", endpointType='" + endpointType + '\'' +
                 '}';
     }
 }

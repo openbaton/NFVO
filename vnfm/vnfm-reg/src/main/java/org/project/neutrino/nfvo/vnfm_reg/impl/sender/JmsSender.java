@@ -6,8 +6,6 @@ import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
@@ -29,9 +27,9 @@ public class JmsSender implements VnfmSender{
     @Autowired
     private JmsTemplate jmsTemplate;
 
-    @Autowired
-    @Qualifier("topicJmsContainerFactory")
-    private JmsListenerContainerFactory topicJmsContainerFactory;
+//    @Autowired
+//    @Qualifier("topicJmsContainerFactory")
+//    private JmsListenerContainerFactory topicJmsContainerFactory;
 
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) throws JMSException, NamingException {

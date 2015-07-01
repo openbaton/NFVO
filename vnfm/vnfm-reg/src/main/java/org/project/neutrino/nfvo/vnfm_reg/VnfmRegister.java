@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vnfm_reg;
 
+import org.project.neutrino.nfvo.catalogue.nfvo.EndpointType;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
@@ -31,7 +32,7 @@ public class VnfmRegister implements org.project.neutrino.vnfm.interfaces.regist
     }
 
 
-    protected void register(String type, String endpoint, String endpointType) {
+    protected void register(String type, String endpoint, EndpointType endpointType) {
         this.vnfmManagerEndpointRepository.create(new VnfmManagerEndpoint(type, endpoint, endpointType));
     }
 

@@ -7,7 +7,6 @@
 	  "vendor":"fokus",
 	  "version":"",
 	  "type":"dummy",
-	  "descriptor_version":"0.1-ALPHA",
 	  "vdu":[
 		{
 		  "vm_image":[

@@ -1,5 +1,6 @@
 package org.project.neutrino.nfvo.vnfm_reg.impl.register;
 
+import org.project.neutrino.nfvo.catalogue.nfvo.EndpointType;
 import org.project.neutrino.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.neutrino.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
@@ -19,8 +20,8 @@ public class JmsRegister extends VnfmRegister {
     @Override
     @JmsListener(destination = "vnfm-register", containerFactory = "queueJmsContainerFactory")
     public void addManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
-        if (endpoint.getEndpointType() == null || endpoint.getEndpointType().length() == 0){
-            endpoint.setEndpoinType("jms");
+        if (endpoint.getEndpointType() == null){
+            endpoint.setEndpointType(EndpointType.JMS);
         }
         log.debug("Received: " + endpoint);
         this.register(endpoint);
