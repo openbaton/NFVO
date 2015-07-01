@@ -28,6 +28,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected String type;
     protected String endpoint;
+    protected Properties properties;
 
     @Override
     public abstract void instantiate(VirtualNetworkFunctionRecord vnfr);
@@ -98,7 +99,7 @@ public abstract class AbstractVnfmJMS implements CommandLineRunner, VNFLifecycle
 
     private void loadProperties() {
             Resource resource = new ClassPathResource("conf.properties");
-            Properties properties = new Properties();
+        properties = new Properties();
         try {
             properties.load(resource.getInputStream());
         } catch (IOException e) {
