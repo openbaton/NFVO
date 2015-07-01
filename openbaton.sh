@@ -16,9 +16,9 @@ function start {
 }
 
 function compile_sdk {
-    cd sdk
+    cd ../sdk
     ./gradlew build -x test install
-    cd ..
+    cd -
 }
 
 function compile_nfvo {
@@ -60,9 +60,10 @@ if [ $# -eq 0 ]
         exit 1
 fi
 
-for var in "$@"
+declare -a cmds=($@)
+for (( i = 0; i <  ${#cmds[*]}; ++ i ))
 do
-    case $var in
+    case ${cmds[$i]} in
         "clean" )
             clean ;;
         "sc" )
@@ -71,10 +72,20 @@ do
             start ;;
         "start" )
             start ;;
-        "compile nfvo" )
-            compile_nfvo ;;
-        "compile sdk" )
-            compile_sdk ;;
+        "compile" )
+            if [ "nfvo" == ${cmds[$i+1]} ]
+            then
+                compile_nfvo
+                i=$i+1
+            elif [ "sdk" == ${cmds[$i+1]} ]
+            then
+                compile_sdk
+                i=$i+1
+            else
+                usage
+                end
+            fi
+            ;;
         "test" )
             tests ;;
         * )
