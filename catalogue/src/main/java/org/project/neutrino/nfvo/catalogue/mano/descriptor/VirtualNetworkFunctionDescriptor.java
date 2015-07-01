@@ -30,7 +30,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     /**
      * Version of the VNF Descriptor.
      * */
-    private String descriptor_version;
+//    private String descriptor_version;
     /**
      * This describes a set of elements related to a particular VDU
      * */
@@ -73,19 +73,15 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
 	@Override
 	public String toString() {
-		return "VirtualNetworkFunctionDescriptor [descriptor_version="
-				+ descriptor_version + ", vdu=" + vdu + ", virtual_link="
-				+ virtual_link + ", vdu_dependency=" + vdu_dependency
-				+ ", deployment_flavour=" + deployment_flavour
-				+ ", manifest_file=" + manifest_file
-				+ ", manifest_file_security=" + manifest_file_security
-				+ ", id=" + id + ", hb_version=" + hb_version + ", vendor="
-				+ vendor + ", version=" + version + ", vnffgd=" + vnffgd
-				+ ", vld=" + vld + ", lifecycle_event=" + lifecycle_event
-				+ ", monitoring_parameter=" + monitoring_parameter
-				+ ", service_deployment_flavour=" + service_deployment_flavour
-				+ ", auto_scale_policy=" + auto_scale_policy
-				+ ", connection_point=" + connection_point + "]";
+		return "VirtualNetworkFunctionDescriptor{" +
+				"vdu=" + vdu +
+				", virtual_link=" + virtual_link +
+				", vdu_dependency=" + vdu_dependency +
+				", deployment_flavour=" + deployment_flavour +
+				", manifest_file='" + manifest_file + '\'' +
+				", manifest_file_security=" + manifest_file_security +
+				", type='" + type + '\'' +
+				'}';
 	}
 
 	public VirtualNetworkFunctionDescriptor() {
@@ -110,16 +106,6 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     				throw new TypeConstraintException("Connection Point " + cp.getId() + " field must be an instance of " + ConnectionPoint.class.getCanonicalName());
         this.connection_point = connection_point;
     }
-
-	@Override
-	public String getVersion() {
-		return descriptor_version;
-	}
-
-	@Override
-	public void setVersion(String descriptor_version) {
-		this.descriptor_version = descriptor_version;
-	}
 
 	public Set<VirtualDeploymentUnit> getVdu() {
 		return vdu;

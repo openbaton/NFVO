@@ -3,6 +3,7 @@ package org.project.neutrino.vnfm.interfaces.manager;
 import org.project.neutrino.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.neutrino.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.neutrino.nfvo.catalogue.nfvo.EndpointType;
 import org.project.neutrino.nfvo.common.exceptions.NotFoundException;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.vnfm.interfaces.sender.VnfmSender;
@@ -23,7 +24,7 @@ public interface VnfmManager {
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
     void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
 
-    VnfmSender getVnfmSender(String endpointType);
+    VnfmSender getVnfmSender(EndpointType endpointType);
 
     void executeAction(CoreMessage message) throws VimException, JMSException, NamingException, NotFoundException;
 

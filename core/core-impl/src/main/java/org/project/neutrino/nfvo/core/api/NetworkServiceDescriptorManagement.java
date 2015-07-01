@@ -63,7 +63,7 @@ public class NetworkServiceDescriptorManagement implements org.project.neutrino.
         }
         log.trace("Persisted VNFDependencies");
 
-        nsdRepository.create(networkServiceDescriptor);
+        nsdRepository.create(x);
         log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;
     }
