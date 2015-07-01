@@ -121,6 +121,7 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.getLifecycle_event().addAll(vnfd.getLifecycle_event());
         virtualNetworkFunctionRecord.setVirtual_link(new HashSet<InternalVirtualLink>());
         virtualNetworkFunctionRecord.getVirtual_link().addAll(vnfd.getVirtual_link());
+        virtualNetworkFunctionRecord.setVnf_address(new HashSet<String>());
         virtualNetworkFunctionRecord.setStatus(Status.INITIAILZED);
         return virtualNetworkFunctionRecord;
     }
