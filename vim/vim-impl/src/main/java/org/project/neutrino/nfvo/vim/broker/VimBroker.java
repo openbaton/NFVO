@@ -39,20 +39,8 @@ public class VimBroker implements org.project.neutrino.nfvo.vim_interfaces.vim.V
 
     @Override
     public Quota getLeftQuota(VimInstance vimInstance) throws VimException{
-        Vim vim;
-        switch (vimInstance.getType()) {
-            case "test":
-                vim = (Vim) context.getBean("testVIM");
-                break;
-            case "openstack":
-                vim = (Vim) context.getBean("openstackVIM");
-                break;
-            case "amazon":
-                vim = (Vim) context.getBean("amazonVIM");
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
+        Vim vim = getVim(vimInstance.getType());
+
         Quota maximalQuota = vim.getQuota(vimInstance);
         Quota leftQuota = maximalQuota;
 
