@@ -395,19 +395,24 @@ public class OpenstackClient implements ClientInterfaces {
     }
 
     public NFVImage getImageById(String extId) {
-        ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        //ImageApi imageApi = this.glanceApi.getImageApi(this.defaultZone);
+        org.jclouds.openstack.nova.v2_0.features.ImageApi imageApi = this.novaApi.getImageApi(this.defaultZone);
         try {
-            ImageDetails jcloudsImage = imageApi.get(extId);
+            //ImageDetails jcloudsImage = imageApi.get(extId);
+            org.jclouds.openstack.nova.v2_0.domain.Image jcloudsImage = imageApi.get(extId);
             NFVImage image = new NFVImage();
             image.setExtId(jcloudsImage.getId());
             image.setName(jcloudsImage.getName());
-            image.setCreated(jcloudsImage.getCreatedAt());
-            image.setUpdated(jcloudsImage.getUpdatedAt());
+            image.setCreated(jcloudsImage.getCreated());
+            image.setUpdated(jcloudsImage.getUpdated());
             image.setMinDiskSpace(jcloudsImage.getMinDisk());
             image.setMinRam(jcloudsImage.getMinRam());
-            image.setIsPublic(jcloudsImage.isPublic());
-            image.setDiskFormat(jcloudsImage.getDiskFormat().toString().toUpperCase());
-            image.setContainerFormat(jcloudsImage.getContainerFormat().toString().toUpperCase());
+            image.setIsPublic(false);
+            image.setContainerFormat("not provided");
+            image.setDiskFormat("not provided");
+//            image.setIsPublic(jcloudsImage.isPublic());
+//            image.setDiskFormat(jcloudsImage.getDiskFormat().toString().toUpperCase());
+//            image.setContainerFormat(jcloudsImage.getContainerFormat().toString().toUpperCase());
             return image;
         } catch (NullPointerException e) {
             throw new NullPointerException("Image with extId: " + extId + " not found.");
