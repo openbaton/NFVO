@@ -6,7 +6,7 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
-import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;

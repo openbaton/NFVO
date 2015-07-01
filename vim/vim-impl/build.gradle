@@ -6,16 +6,9 @@ dependencies {
     compile project(':catalogue')
     compile project(':vim:vim-int')
 
-    compile ('org.apache.jclouds.driver:jclouds-slf4j:1.9.0')
-    compile ('org.apache.jclouds.driver:jclouds-sshj:1.9.0')
-    compile ('org.apache.jclouds.api:openstack-keystone:1.9.0')
-    compile ('org.apache.jclouds.api:openstack-nova:1.9.0')
-    compile ('org.apache.jclouds.api:openstack-swift:1.9.0')
-    compile ('org.apache.jclouds.api:openstack-cinder:1.9.0')
-    compile ('org.apache.jclouds.api:openstack-trove:1.9.0')
-    compile ('org.apache.jclouds.labs:openstack-glance:1.9.0')
-    compile ('org.apache.jclouds.labs:openstack-neutron:1.9.0')
-    compile ('org.apache.jclouds.labs:openstack-marconi:1.9.0')
+    compile 'org.project.openbaton:clients-int:0.1-SNAPSHOT'
+
+    runtime 'org.project.openbaton:clients-impl:0.1-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

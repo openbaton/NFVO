@@ -1,6 +1,5 @@
 package org.project.neutrino.nfvo.vim;
 
-import org.project.neutrino.nfvo.catalogue.mano.common.ConnectionPoint;
 import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFComponent;
 import org.project.neutrino.nfvo.catalogue.mano.descriptor.VNFDConnectionPoint;
@@ -9,7 +8,7 @@ import org.project.neutrino.nfvo.catalogue.mano.record.VirtualNetworkFunctionRec
 import org.project.neutrino.nfvo.catalogue.nfvo.*;
 import org.project.neutrino.nfvo.common.exceptions.VimException;
 import org.project.neutrino.nfvo.vim_interfaces.vim.Vim;
-import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
