@@ -11,4 +11,5 @@ dependencies {
     runtime 'org.project.openbaton:clients-impl:0.1-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'org.project.openbaton:clients-impl:0.1-SNAPSHOT'
 }
