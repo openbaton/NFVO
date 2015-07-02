@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 30/04/15.
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"org.project.openbaton", "org.project.neutrino"}, basePackageClasses = VimBroker.class)
+@ComponentScan(basePackages = {"org.project.openbaton"}, basePackageClasses = VimBroker.class)
 public class ApplicationTest {
 
     @Bean

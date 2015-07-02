@@ -16,7 +16,7 @@ import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.catalogue.nfvo.Network;
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VirtualLinkManagement;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

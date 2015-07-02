@@ -4,10 +4,10 @@ logging.level.org.jclouds=DEBUG
 
 # Level for loggers on classes inside the root package "de.fhg.fokus.ngni.osco" (and its
 # sub-packages)
-logging.level.org.project.neutrino.nfvo = TRACE
+logging.level.org.project.openbaton.nfvo = TRACE
 
 # jdbc.X
-spring.datasource.url=jdbc:mysql://localhost:3306/opensdncore
+spring.datasource.url=jdbc:mysql://localhost:3306/openbaton
 spring.datasource.username=root
 spring.datasource.password=<password>
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver

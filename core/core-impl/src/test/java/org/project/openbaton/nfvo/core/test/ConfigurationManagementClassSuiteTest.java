@@ -11,7 +11,7 @@ import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescri
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -6,7 +6,7 @@ import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRe
 import org.project.openbaton.nfvo.catalogue.nfvo.Action;
 import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
