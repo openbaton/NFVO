@@ -3,7 +3,7 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//import org.project.neutrino.nfvo.catalogue.security.User;
+//import User;
 //import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Qualifier;
