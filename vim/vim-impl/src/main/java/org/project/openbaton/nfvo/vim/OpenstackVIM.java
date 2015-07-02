@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -29,6 +30,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
+@ComponentScan(basePackages = "org.project.openbaton.clients")
 public class OpenstackVIM implements Vim {// TODO and so on...
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
