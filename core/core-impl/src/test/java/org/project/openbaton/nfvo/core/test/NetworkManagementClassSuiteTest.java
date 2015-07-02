@@ -13,7 +13,7 @@ import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFuncti
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.openbaton.nfvo.catalogue.nfvo.*;

@@ -10,7 +10,7 @@ import org.project.openbaton.nfvo.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.core.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

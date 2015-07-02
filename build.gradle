@@ -18,7 +18,7 @@ apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 
-mainClassName = 'org.project.neutrino.nfvo.main.Application'
+mainClassName = 'org.project.openbaton.nfvo.main.Application'
 
 
 def springBootVersion = "1.2.4.RELEASE"
@@ -91,7 +91,7 @@ test {
 
 // tag::jar[]
 jar {
-    baseName = 'neutrino'
+    baseName = 'openbaton'
     appendix = ''
     classifier = ''
 }
@@ -135,7 +135,7 @@ def getVersionName = { ->
 }
 
 task getVersion {
-    task -> println "Neutrino v$project.version"
+    task -> println "OpenBaton v$project.version"
 }
 
 //tag::uploadArchives[]

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="0.3-SNAPSHOT"
+version="0.4-SNAPSHOT"
 
 function start {
 
@@ -11,7 +11,7 @@ function start {
 
     if [ 0 -eq $? ]
         then
-            java -jar "build/libs/neutrino-$version.jar"
+            java -jar "build/libs/openbaton-$version.jar"
     fi
 }
 
