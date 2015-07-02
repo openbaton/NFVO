@@ -1,6 +1,6 @@
 package org.project.neutrino.nfvo.vim.test;
 
-import org.project.neutrino.nfvo.vim_interfaces.client_interfaces.ClientInterfaces;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 30/04/15.
  */
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {org.project.neutrino.nfvo.vim.client.openstack.OpenstackClient.class, org.project.neutrino.nfvo.vim.client.amazon.AmazonClient.class, org.project.neutrino.nfvo.vim.client.test.TestClient.class, org.project.neutrino.nfvo.vim.TestVIM.class})
+@ComponentScan(basePackages = {"org.project.openbaton", "org.project.neutrino"}, basePackageClasses = org.project.neutrino.nfvo.vim.broker.VimBroker.class)
 public class ApplicationTest {
 
     @Bean
