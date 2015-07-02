@@ -17,7 +17,7 @@ import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;

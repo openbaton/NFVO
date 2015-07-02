@@ -5,7 +5,7 @@ import org.project.openbaton.nfvo.catalogue.nfvo.Subnet;
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.catalogue.util.IdGenerator;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
