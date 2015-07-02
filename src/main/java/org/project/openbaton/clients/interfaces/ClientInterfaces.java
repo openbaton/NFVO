@@ -1,11 +1,11 @@
 package org.project.openbaton.clients.interfaces;
 
-import org.project.neutrino.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.neutrino.nfvo.catalogue.nfvo.*;
-import org.project.neutrino.nfvo.catalogue.nfvo.NFVImage;import org.project.neutrino.nfvo.catalogue.nfvo.Network;import org.project.neutrino.nfvo.catalogue.nfvo.Quota;import org.project.neutrino.nfvo.catalogue.nfvo.Server;import org.project.neutrino.nfvo.catalogue.nfvo.Subnet;import org.project.neutrino.nfvo.catalogue.nfvo.VimInstance;import org.project.neutrino.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.nfvo.catalogue.nfvo.*;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 import java.io.InputStream;
-import java.lang.String;import java.util.List;
+import java.util.List;
 
 /**
  * Created by lto on 12/05/15.
