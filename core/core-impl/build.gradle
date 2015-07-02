@@ -7,5 +7,5 @@ dependencies {
 
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-
+    testCompile 'org.project.openbaton:clients-int:0.1-SNAPSHOT'
 }
