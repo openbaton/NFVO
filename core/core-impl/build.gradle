@@ -5,9 +5,9 @@ dependencies {
     compile project(':vim:vim-int')
     compile project(':vnfm:vnfm-int')
 
-    compile 'org.project.openbaton:clients-int:0.2'
+    compile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
 
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-    testCompile 'org.project.openbaton:clients-int:0.2'
+    testCompile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
 }
