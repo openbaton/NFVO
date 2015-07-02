@@ -7,7 +7,7 @@ import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFuncti
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

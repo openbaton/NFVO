@@ -13,7 +13,7 @@ import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;

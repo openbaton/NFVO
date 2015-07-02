@@ -12,7 +12,7 @@ import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.neutrino.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
