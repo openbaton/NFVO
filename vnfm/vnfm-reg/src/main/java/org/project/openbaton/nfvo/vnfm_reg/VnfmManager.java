@@ -6,6 +6,7 @@ import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRe
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.slf4j.Logger;
@@ -49,6 +50,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Autowired
     private ResourceManagement resourceManagement;
+
+    @Autowired
+    @Qualifier("VNFRRepository")
+    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
 
     @Override
     @Async
@@ -107,6 +112,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             case INSTANTIATE_FINISH:
                 log.debug("INSTANTIATE_FINISH");
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
             case RELEASE_RESOURCES:
