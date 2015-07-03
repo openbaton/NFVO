@@ -1,0 +1,455 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>Data Centers</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a></li>
+            <li class="active"><i class="fa fa-tasks"></i>
+                Data Centers</li>
+        </ol>
+    </div>
+</div>
+<div class="row" >
+    <div class="col-lg-12">
+        <button id="btn_create_topology" class="btn btn-primary pull-right"
+                title="Create a new Data Center" data-toggle="modal" 
+                data-target="#modalDC" ng-click="createDataCenter()">Create Data Center</button>
+    </div>
+</div>
+<div class="row" >
+    <div class="col-lg-12 top-buffer">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
+        <div>
+            <table ng-if="datacenters.length > 0"class="table table-bordered table-striped table-hover tablesorter">
+                <thead>
+                    <tr>
+                        <th ng-click="predicate = 'id'; reverse = !reverse">ID <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+                        <th>Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="data in datacenters| orderBy:predicate:reverse">
+                        <td><a href="#datacenters/{{data.id}}">{{data.id}}</a></td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.type}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
+                                    Action <span class="caret"></span>
+                                </button> 
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href=""  ng-click="loadFormUpdate(data)">Update DataCenter</a></li>
+                                    <li><a href=""  ng-click="loadFormImage(data)">Update Images</a></li>
+                                    <li><a href=""  ng-click="loadFormSubnets(data)">Update Subnets</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href=""  ng-click="deleteData(data.id)">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="modal " id="modalUpdateImage" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="serviceLabel">Update Images</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" name="formDC" id="formModalL"> 
+
+                    <div  class="form-group" ng-repeat="(keyI,valueI) in upDatacenter.serviceImageId track by $index">
+                        <label for="city_" class="col-sm-4 control-label">{{keyI}}</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" name="{{keyI}}" class="form-control" ng-model="upDatacenter.serviceImageId[keyI]">
+                            <span class="input-group-addon">image &nbsp;
+                                <a href=""type="button"  data-toggle="modal" data-target="#modalAddImage">
+                                    <i class="fa fa-plus">&nbsp;</i>
+                                </a>
+                                <a href="" type="button"  ng-click="deleteImage(keyI)"> 
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div ng-show="emptyObj(upDatacenter.serviceImageId)">
+                        No Image found!<br/> 
+                        <a href="" style="display:inline;" type="button"  data-toggle="modal" data-target="#modalAddImage">
+                            <i class="fa fa-plus">&nbsp; Add a new one</i>
+                        </a>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Close</button>
+                    <button type="button" id="sendUpdateDC"
+                            class="btn btn-primary" ng-click="updateDC(upDatacenter)">Update Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.modal -->
+
+<div class="modal " id="modalDC" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Create Data Center</h4>
+            </div>
+            <div class="modal-body">
+                <tabset>
+                    <tab heading="Form">
+                        <br>
+                        <form class="form-horizontal" name="formDC" id="formModalL"> 
+                            <div class=" form-group">
+                                <label for="typeSelect" class="col-sm-4 control-label">type</label>
+                                <div class="input-group col-sm-6">
+                                    <select name="typeSelect" class="form-control " ng-model="selection" ng-options="item for item in dataSelect" ng-change="changeSelection(selection)" >
+                                    </select>
+                                </div>
+                            </div>
+                            <div  ng-repeat="(key,value) in datacenterJson track by $index">
+                                <div class="form-group" ng-if="key != 'serviceContainers' && key != 'location' && key != 'configuration' && key != 'switch'">
+                                    <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="{{key}}" class="form-control" ng-model="datacenterJson[key]">
+                                        <!--                            <p>{{value}}</p>-->
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-if="key == 'configuration'" ng-repeat="parameter in value.parameters track by $index">
+                                    <label for="{{parameter.config_key}}" class="col-sm-4 control-label">{{parameter.config_key}}</label>
+                                    <div class="col-sm-6 input-group"><input type="text" ng-model="datacenterJson.configuration.parameters[$index].config_value" class="form-control parameters" id="{{parameter.config_key}}"  >
+                                        <span class="input-group-addon">@</span>
+                                    </div>
+                                </div>
+
+                                <div  class="form-group" ng-if="key == 'location'">
+                                    <label for="city_" class="col-sm-4 control-label">city</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="city_" class="form-control" ng-model="datacenterJson.location.name" placeholder="Berlin">
+                                        <span class="input-group-addon">location</span>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group" ng-if="key == 'serviceContainers'" ng-repeat="(key2,value2) in value track by $index">
+                                    <label for="{{key}}" class="col-sm-4 control-label">{{key2}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="{{key}}" class="form-control" ng-model="datacenterJson.serviceContainers[key2]">
+                                        <span class="input-group-addon">{{key}}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-if="key == 'switch' && keyS != 'ports'" ng-repeat="(keyS,valueS) in value track by $index">
+                                    <label for="{{key}}" class="col-sm-4 control-label">{{keyS}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="{{key}}" class="form-control" ng-model="datacenterJson.switch[keyS]">
+                                        <span class="input-group-addon">{{key}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-if="keyS == 'ports'" ng-repeat="port in valueS track by $index">
+
+                                    <label for="capacity" class="col-sm-4 control-label">capacity</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="capacity" class="form-control" ng-model="datacenterJson.switch.ports[$index].capacity">
+                                        <span class="input-group-addon">capacity</span>
+                                    </div>
+                                    <label for="portId" class="col-sm-4 control-label">portId</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" name="portId" class="form-control" ng-model="datacenterJson.switch.ports[$index].portId">
+                                        <span class="input-group-addon">portId</span>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </form>
+                    </tab>
+
+                    <tab heading="Json">
+                        <form role="form" id="formJson">
+                            <div class="form-group">
+                                <br> <label for="jsonInputArea">Insert Your Json</label>
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)"id="jsonInputArea" class="form-control" rows="5"
+                                          placeholder="{ }"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="jsonInputFile">File input</label> 
+                                <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)" >
+                                <p class="help-block">Example: DataCenter.json </p>
+                            </div>
+                        </form>
+
+                    </tab>
+                </tabset>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="sendTemplate"
+                        class="btn btn-primary" ng-click="saveDataCenter(datacenterJson)">Create Data Center</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.modal -->
+
+<div class="modal " id="modalAddImage">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceLabel">Add ImageId</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" name="formDC" id="formModalL"> 
+
+                    <div  class="form-group" >
+                        <label for="key" class="col-sm-4 control-label">key</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" name="key" class="form-control" ng-model="imageAdd.key">
+                            <span class="input-group-addon">image</span>
+
+                        </div>
+
+                    </div>
+                    <div  class="form-group" >
+                        <label for="value" class="col-sm-4 control-label">value</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" name="value" class="form-control" ng-model="imageAdd.value">
+                            <span class="input-group-addon">image</span>
+
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="sendNewImage(imageAdd)"
+                        data-dismiss="modal">Add new Image</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.modal -->
+
+<div class="modal " id="modalUpdate" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="serviceLabel">Update Dacenters</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" name="formDC" id="formModalL"> 
+                    <div  ng-repeat="(key,value) in upDatacenter track by $index">
+                        <div class="form-group" ng-if="key != 'serviceContainers' && key != 'location' && key != 'configuration' && key != 'switch' && key != 'id' && key != 'type' && key != 'serviceImageId' && key != 'serviceContainers' && key != 'subnets'">
+                            <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="{{key}}" class="form-control" ng-model="upDatacenter[key]">
+                                <!--                            <p>{{value}}</p>-->
+                            </div>
+                        </div>
+                        <div class="form-group" ng-if="key == 'configuration'" ng-repeat="parameter in value.parameters track by $index">
+                            <label for="{{parameter.config_key}}" class="col-sm-4 control-label">{{parameter.config_key}}</label>
+                            <div class="col-sm-6 input-group"><input type="text" ng-model="upDatacenter.configuration.parameters[$index].config_value" class="form-control parameters" id="{{parameter.config_key}}"  >
+                                <span class="input-group-addon">@</span>
+                            </div>
+                        </div>
+
+
+                        <div  class="form-group" ng-if="key == 'location'">
+                            <label for="city_" class="col-sm-4 control-label">city</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="city_" class="form-control" ng-model="upDatacenter.location.name" placeholder="Berlin">
+                                <span class="input-group-addon">location</span>
+                            </div>
+
+                        </div>
+                        <div class="form-group" ng-if="key == 'serviceContainers'" ng-repeat="(key2,value2) in value track by $index">
+                            <label for="{{key}}" class="col-sm-4 control-label">{{key2}}</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="{{key}}" class="form-control" ng-model="upDatacenter.serviceContainers[key2]">
+                                <span class="input-group-addon">{{key}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-if="key == 'switch' && keyS != 'ports'" ng-repeat="(keyS,valueS) in value track by $index">
+                            <label for="{{key}}" class="col-sm-4 control-label">{{keyS}}</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="{{key}}" class="form-control" ng-model="upDatacenter.switch[keyS]">
+                                <span class="input-group-addon">{{key}}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-if="keyS == 'ports'" ng-repeat="port in valueS track by $index">
+
+                            <label for="capacity" class="col-sm-4 control-label">capacity</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="capacity" class="form-control" ng-model="upDatacenter.switch.ports[$index].capacity">
+                                <span class="input-group-addon">capacity</span>
+                            </div>
+                            <label for="portId" class="col-sm-4 control-label">portId</label>
+                            <div class="col-sm-6 input-group">
+                                <input type="text" name="portId" class="form-control" ng-model="upDatacenter.switch.ports[$index].portId">
+                                <span class="input-group-addon">portId</span>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="sendUpdateDC"
+                        class="btn btn-primary" ng-click="updateDC(upDatacenter)">Update Data Center</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal " id="modalUpdateSubnets" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="serviceLabel">Update Subnets</h4>
+            </div>
+            <div class="modal-body">
+                <div ng-show="upDatacenter.subnets.length === 0">
+                    No subnet found!<br/> 
+                    <a href="" style="display:inline;" type="button"  data-toggle="modal" data-target="#modalAddSub">
+                        <i class="fa fa-plus">&nbsp; Add a new one</i>
+                    </a>
+
+                </div>
+                <form class="form-horizontal" name="formDC" id="formModalL"> 
+                    <div ng-repeat="sub in upDatacenter.subnets track by $index" >
+
+                        <table id="tableServices" class="table" >
+                            <thead>
+                            <th>name</th>
+                            <th>extId</th>
+                            <th>startIp</th>
+                            <th>endIp</th>
+                            <th>cidr</th>
+                            <th>Action</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="text" name="{{upDatacenter.subnets[$index].name}}" class="form-control" ng-model="upDatacenter.subnets[$index].name">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{upDatacenter.subnets[$index].extId}}" class="form-control" ng-model="upDatacenter.subnets[$index].extId">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{upDatacenter.subnets[$index].startIp}}" class="form-control" ng-model="upDatacenter.subnets[$index].startIp">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" name="{{upDatacenter.subnets[$index].endIp}}" class="form-control" ng-model="upDatacenter.subnets[$index].endIp">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{upDatacenter.subnets[$index].cidr}}" class="form-control" ng-model="upDatacenter.subnets[$index].cidr">
+                                    </td>
+                                    <td>
+                                        <a href="" style="display:inline;" type="button"  data-toggle="modal" data-target="#modalAddSub">
+                                            <i class="fa fa-plus">&nbsp;</i>
+                                        </a>
+                                        <a href="" style="display:inline;" type="button"  ng-click="deleteSubnet($index)"> 
+                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <hr class="hr_title" >
+                    </div>     
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" id="sendUpdateDC"
+                        class="btn btn-primary" ng-click="updateDC(upDatacenter)">Update Subnets</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal " id="modalAddSub">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceLabel">Add ImageId</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" name="formDC" id="formModalL"> 
+                    <table id="tableServices" class="table" >
+                        <thead>
+                        <th>name</th>
+                        <th>extId</th>
+                        <th>startIp</th>
+                        <th>endIp</th>
+                        <th>cidr</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" name="{{subAdd.name}}" class="form-control" ng-model="subAdd.name">
+                                </td>
+                                <td>
+                                    <input type="text" name="{{subAdd.extId}}" class="form-control" ng-model="subAdd.extId">
+                                </td>
+                                <td>
+                                    <input type="text" name="{{subAdd.startIp}}" class="form-control" ng-model="subAdd.startIp">
+                                </td>
+
+                                <td>
+                                    <input type="text" name="{{subAdd.endIp}}" class="form-control" ng-model="subAdd.endIp">
+                                </td>
+                                <td>
+                                    <input type="text" name="{{subAdd.cidr}}" class="form-control" ng-model="subAdd.cidr">
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="addNewSub(subAdd)"
+                        data-dismiss="modal">Add new Image</button>
+            </div>
+        </div>
+    </div>
+</div>
