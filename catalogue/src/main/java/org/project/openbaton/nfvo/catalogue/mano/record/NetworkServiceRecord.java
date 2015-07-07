@@ -12,13 +12,15 @@ import org.project.openbaton.nfvo.catalogue.util.IdGenerator;
 import javax.persistence.*;
 import java.util.Set;
 
+import java.io.Serializable;
+
 /**
  * Created by lto on 06/02/15.
  *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class NetworkServiceRecord /*implements Serializable*/{
+public class NetworkServiceRecord implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

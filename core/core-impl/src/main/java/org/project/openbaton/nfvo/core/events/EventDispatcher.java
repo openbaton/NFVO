@@ -4,6 +4,7 @@ package org.project.openbaton.nfvo.core.events;
  * Created by lto on 03/06/15.
  */
 
+import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.nfvo.catalogue.nfvo.EventEndpoint;
@@ -80,8 +81,23 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
         for (EventEndpoint endpoint : endpoints){
             if (endpoint.getEvent().ordinal() == event.getAction().ordinal()){
-                log.debug("dispatching event to: " + endpoint);
-                sendEvent(endpoint, event);
+                if (endpoint.getVirtualNetworkFunctionId() != null){
+                    if (event.getPayload() instanceof VirtualNetworkFunctionRecord){
+                        if (((VirtualNetworkFunctionRecord) event.getPayload()).getId().equals(endpoint.getVirtualNetworkFunctionId())){
+                            sendEvent(endpoint,event);
+                        }
+                    }
+                }
+                else if (endpoint.getNetworkServiceId() != null){
+                    if (event.getPayload() instanceof NetworkServiceRecord){
+                        if (((NetworkServiceRecord) event.getPayload()).getId().equals(endpoint.getNetworkServiceId())){
+                            sendEvent(endpoint,event);
+                        }
+                    }
+                }else {
+                    log.debug("dispatching event to: " + endpoint);
+                    sendEvent(endpoint, event);
+                }
             }
         }
 

@@ -8,11 +8,12 @@ import org.project.openbaton.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Configuration {
+public class Configuration implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version

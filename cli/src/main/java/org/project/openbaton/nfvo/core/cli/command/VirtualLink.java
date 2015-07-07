@@ -1,8 +1,10 @@
 package org.project.openbaton.nfvo.core.cli.command;
 
-import org.project.openbaton.nfvo.sdk.Requestor;
-import org.project.openbaton.nfvo.sdk.api.exception.SDKException;
-import org.project.openbaton.nfvo.sdk.api.rest.VirtualLinkRequest;
+import com.google.gson.Gson;
+import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.project.openbaton.sdk.NFVORequestor;
+import org.project.openbaton.sdk.api.exception.SDKException;
+import org.project.openbaton.sdk.api.util.AbstractRestAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.core.CommandMarker;
@@ -10,7 +12,11 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
 /**
  * OpenBaton VirtualLinkDescriptor-related commands implementation using the spring-shell library.
@@ -19,6 +25,15 @@ import java.io.File;
 public class VirtualLink implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private NFVORequestor requestor = new NFVORequestor("1");
+	private AbstractRestAgent<VirtualLinkDescriptor> virtualLinkRequest;
+	private Gson mapper = new Gson();
+
+	@PostConstruct
+	private void init(){
+		virtualLinkRequest = requestor.getVirtualLinkAgent();
+	}
 
 	/**
 	 * Adds a new VirtualLinkDescriptor to the repository
@@ -31,12 +46,14 @@ public class VirtualLink implements CommandMarker {
 	public String create(
             @CliOption(key = { "virtualLinkDescriptorFile" }, mandatory = true, help = "The virtualLinkDescriptor json file") final File virtualLinkDescriptor) {
 		try {
-			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
-			return "VLD CREATED: " + virtualLinkRequest.create(virtualLinkDescriptor);
+			return "VLD CREATED: " + virtualLinkRequest.create(mapper.<VirtualLinkDescriptor>fromJson(new InputStreamReader(new FileInputStream(virtualLinkDescriptor)), VirtualLinkDescriptor.class));
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "VLD NOT CREATED";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	/**
@@ -48,7 +65,6 @@ public class VirtualLink implements CommandMarker {
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The virtualLinkDescriptor id") final String id) {
 		try {
-			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
 			virtualLinkRequest.delete(id);
 			return  "VLD DELETED";
 		} catch (SDKException e) {
@@ -66,7 +82,6 @@ public class VirtualLink implements CommandMarker {
 	public String findById(
             @CliOption(key = { "id" }, mandatory = true, help = "The virtualLinkDescriptor id") final String id) {
 		try {
-			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
 			if (id != null) {
 				return "FOUND VLD: " + virtualLinkRequest.findById(id);
 			} else {
@@ -75,7 +90,10 @@ public class VirtualLink implements CommandMarker {
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "VLD NOT FOUND";
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	/**
@@ -92,12 +110,14 @@ public class VirtualLink implements CommandMarker {
             @CliOption(key = { "virtualLinkDescriptorFile" }, mandatory = true, help = "The virtualLinkDescriptor json file") final File virtualLinkDescriptor,
             @CliOption(key = { "id" }, mandatory = true, help = "The virtualLinkDescriptor id") final String id) {
 		try {
-			VirtualLinkRequest virtualLinkRequest = Requestor.getVirtualLinkRequest();
-			return "VLD UPDATED: " + virtualLinkRequest.update(virtualLinkDescriptor, id);
+			return "VLD UPDATED: " + virtualLinkRequest.update(mapper.<VirtualLinkDescriptor>fromJson(new InputStreamReader(new FileInputStream(virtualLinkDescriptor)), VirtualLinkDescriptor.class), id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "VLD NOT UPDATED";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

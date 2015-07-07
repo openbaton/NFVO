@@ -1,9 +1,11 @@
 package org.project.openbaton.nfvo.core.cli.command;
 
 
-import org.project.openbaton.nfvo.sdk.Requestor;
-import org.project.openbaton.nfvo.sdk.api.exception.SDKException;
-import org.project.openbaton.nfvo.sdk.api.rest.VNFFGRequest;
+import com.google.gson.Gson;
+import org.project.openbaton.nfvo.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.project.openbaton.sdk.NFVORequestor;
+import org.project.openbaton.sdk.api.exception.SDKException;
+import org.project.openbaton.sdk.api.util.AbstractRestAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.core.CommandMarker;
@@ -11,7 +13,11 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
 /**
  * OpenBaton VNFFG-related commands implementation using the spring-shell library.
@@ -20,6 +26,15 @@ import java.io.File;
 public class VNFFG implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private NFVORequestor requestor = new NFVORequestor("1");
+	private AbstractRestAgent<VNFForwardingGraphDescriptor> vNFFGRequest;
+	private Gson mapper = new Gson();
+
+	@PostConstruct
+	private void init(){
+		vNFFGRequest = requestor.getVNFFGAgent();
+	}
 
 	/**
 	 * Adds a new VNF software VNFFG to the vnfForwardingGraphDescriptor repository
@@ -32,12 +47,14 @@ public class VNFFG implements CommandMarker {
 	public String create(
             @CliOption(key = { "vnfForwardingGraphDescriptorFile" }, mandatory = true, help = "The vnfForwardingGraphDescriptor json file") final File vnfForwardingGraphDescriptor) {
 		try {
-			VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
-			return "VNFFG CREATED: " + vNFFGRequest.create(vnfForwardingGraphDescriptor);
+			return "VNFFG CREATED: " + vNFFGRequest.create(mapper.<VNFForwardingGraphDescriptor>fromJson(new InputStreamReader(new FileInputStream(vnfForwardingGraphDescriptor)), VNFForwardingGraphDescriptor.class));
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "VNFFG NOT CREATED";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	/**
@@ -50,7 +67,6 @@ public class VNFFG implements CommandMarker {
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The vnfForwardingGraphDescriptor id") final String id) {
 		try {
-            VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
 			vNFFGRequest.delete(id);
 			return "VNFFG DELETED";
 		} catch (SDKException e) {
@@ -70,7 +86,6 @@ public class VNFFG implements CommandMarker {
 	public String findById(
             @CliOption(key = { "id" }, mandatory = true, help = "The vnfForwardingGraphDescriptor id") final String id) {
 		try {
-            VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
 			if (id != null) {
 				return "FOUND VNFFG: " + vNFFGRequest.findById(id);
 			} else {
@@ -79,7 +94,10 @@ public class VNFFG implements CommandMarker {
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "NO VNFFG FOUND";
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 	/**
 	 * Updates the VNF software vnfForwardingGraphDescriptor
@@ -95,12 +113,14 @@ public class VNFFG implements CommandMarker {
             @CliOption(key = { "vnfForwardingGraphDescriptorFile" }, mandatory = true, help = "The vnfForwardingGraphDescriptor json file") final File vnfForwardingGraphDescriptor,
             @CliOption(key = { "id" }, mandatory = true, help = "The vnfForwardingGraphDescriptor id") final String id) {
 		try {
-            VNFFGRequest vNFFGRequest = Requestor.getVNFFGRequest();
-            return "VNFFG UPDATED: " + vNFFGRequest.update(vnfForwardingGraphDescriptor, id);
+            return "VNFFG UPDATED: " + vNFFGRequest.update(mapper.<VNFForwardingGraphDescriptor>fromJson(new InputStreamReader(new FileInputStream(vnfForwardingGraphDescriptor)), VNFForwardingGraphDescriptor.class), id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "VNFFG NOT UPDATED";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

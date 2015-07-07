@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class Network implements Serializable {
     @Id
-    private String id;
+    private String id = IdGenerator.createUUID();;
     @Version
     private static int version = 0;
     private String name;
@@ -27,8 +27,6 @@ public class Network implements Serializable {
     private List<Subnet> subnets;
 
     public Network(){
-        id = IdGenerator.createUUID();
-        subnets = new ArrayList<Subnet>();
     }
 
     public void setId(String id) { this.id = id; }
@@ -115,22 +113,16 @@ public class Network implements Serializable {
 
     @Override
     public String toString() {
-        String subnetsString = "[";
-        for (Subnet subnet : subnets) {
-            subnetsString = subnetsString + ", " + subnet.toString();
-        }
-        subnetsString = "]";
         return "Network{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", version='" + version +
-            ", extId='" + extId + '\'' +
-            ", external='" + external + '\'' +
-            ", networkType='" + networkType + '\'' +
-            ", shared='" + shared + '\'' +
-            ", segmentationId='" + segmentationId + '\'' +
-            ", physicalNetworkName='" + physicalNetworkName + '\'' +
-            ", subnets='" + subnetsString + '\'' +
-            '}';
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", extId='" + extId + '\'' +
+                ", segmentationId=" + segmentationId +
+                ", physicalNetworkName='" + physicalNetworkName + '\'' +
+                ", networkType='" + networkType + '\'' +
+                ", external=" + external +
+                ", shared=" + shared +
+                ", subnets=" + subnets +
+                '}';
     }
 }
