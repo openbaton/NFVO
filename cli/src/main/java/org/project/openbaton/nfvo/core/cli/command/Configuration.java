@@ -1,8 +1,9 @@
 package org.project.openbaton.nfvo.core.cli.command;
 
-import org.project.openbaton.nfvo.sdk.Requestor;
-import org.project.openbaton.nfvo.sdk.api.exception.SDKException;
-import org.project.openbaton.nfvo.sdk.api.rest.ConfigurationRequest;
+import com.google.gson.Gson;
+import org.project.openbaton.sdk.NFVORequestor;
+import org.project.openbaton.sdk.api.exception.SDKException;
+import org.project.openbaton.sdk.api.util.AbstractRestAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.core.CommandMarker;
@@ -10,7 +11,11 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
 /**
  * OpenBaton configuration-related commands implementation using the spring-shell library.
@@ -19,6 +24,18 @@ import java.io.File;
 public class Configuration implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private NFVORequestor requestor = new NFVORequestor("1");
+	private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.nfvo.Configuration> configurationRequest;
+	private Gson mapper = new Gson();
+
+	@PostConstruct
+	private void init(){
+		configurationRequest = requestor.getConfigurationAgent();
+	}
+	private org.project.openbaton.nfvo.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
+		return mapper.<org.project.openbaton.nfvo.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.nfvo.catalogue.nfvo.Configuration.class);
+	}
 
 	/**
 	 * Adds a new Configuration to the Configurations repository
@@ -30,11 +47,13 @@ public class Configuration implements CommandMarker {
 	public String create(
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration) {
 		try {
-			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
-			return "CONFIGURATION CREATED: " + configurationRequest.create(configuration);
+			return "CONFIGURATION CREATED: " + configurationRequest.create(getObject(configuration));
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "CONFIGURATION NOT CREATED";
+			return "CONFIGURATION NOT CREATED: (" + e.getMessage() + " )";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "CONFIGURATION NOT CREATED: (" + e.getMessage() + " )";
 		}
 	}
 
@@ -48,7 +67,6 @@ public class Configuration implements CommandMarker {
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
 		try {
-			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
 			configurationRequest.delete(id);
 			return "CONFIGURATION DELETED";
 		} catch (SDKException e) {
@@ -68,7 +86,6 @@ public class Configuration implements CommandMarker {
 	public String findById(
             @CliOption(key = { "id" }, mandatory = false, help = "The configuration id to find.") final String id) {
 		try {
-			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
 			if (id != null) {
 				return "FOUND CONFIGURATION: " + configurationRequest.findById(id);
 			} else {
@@ -76,7 +93,10 @@ public class Configuration implements CommandMarker {
 			}
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "NO CONFIGURATION FOUND";
+			return "NO CONFIGURATION FOUND: (" + e.getMessage() + " )";
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return "NO CONFIGURATION FOUND: (" + e.getMessage() + " )";
 		}
 	}
 
@@ -94,11 +114,13 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration,
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
 		try {
-			ConfigurationRequest configurationRequest = Requestor.getConfigurationRequest();
-			return "CONFIGURATION UPDATED: " + configurationRequest.update(configuration, id);
+			return "CONFIGURATION UPDATED: " + configurationRequest.update(getObject(configuration), id);
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
-			return "CONFIGURATION NOT UPDATED";
+			return "CONFIGURATION NOT UPDATED: (" + e.getMessage() + " )";
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "CONFIGURATION NOT UPDATED: (" + e.getMessage() + " )";
 		}
 	}
 

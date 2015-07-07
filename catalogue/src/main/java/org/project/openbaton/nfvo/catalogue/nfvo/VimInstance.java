@@ -17,6 +17,9 @@ public class VimInstance implements Serializable{
     @Version
     private int version = 0;
 
+    public VimInstance() {
+    }
+
     private String name;
     private String authUrl;
     private String tenant;

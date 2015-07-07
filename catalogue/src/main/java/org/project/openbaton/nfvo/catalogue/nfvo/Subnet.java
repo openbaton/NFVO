@@ -21,6 +21,9 @@ public class Subnet implements Serializable {
     private String networkId;
     private String cidr;
 
+    public Subnet() {
+    }
+
     public String getId() { return id; }
 
     public void setId(String id) {
