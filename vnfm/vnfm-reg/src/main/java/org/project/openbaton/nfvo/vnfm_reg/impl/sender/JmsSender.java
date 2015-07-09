@@ -27,17 +27,12 @@ public class JmsSender implements VnfmSender{
     @Autowired
     private JmsTemplate jmsTemplate;
 
-//    @Autowired
-//    @Qualifier("topicJmsContainerFactory")
-//    private JmsListenerContainerFactory topicJmsContainerFactory;
-
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
         String topicName = "core-vnfm-actions";
         this.sendToTopic(coreMessage,topicName,endpoint.getEndpoint());
     }
 
-    @Override
     public void sendToTopic(final CoreMessage coreMessage, String destinationTopicName, final String selector) {
         log.debug("Sending message: " + coreMessage.getAction() + " to Topic: " + destinationTopicName + " where selector is: type=\'" + selector + "\'");
         log.trace("Sending message: " + coreMessage + " to Topic: " + destinationTopicName + " where selector is: type=\'" + selector + "\'");
@@ -52,8 +47,6 @@ public class JmsSender implements VnfmSender{
         };
         jmsTemplate.setPubSubDomain(true);
         jmsTemplate.setPubSubNoLocal(true);
-//        jmsTemplate.setExplicitQosEnabled(true);
-//        jmsTemplate.setDeliveryPersistent(true);
         jmsTemplate.send(destinationTopicName, messageCreator);
 
     }

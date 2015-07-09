@@ -3,12 +3,12 @@ package org.project.openbaton.nfvo.vnfm_reg;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -18,8 +18,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -31,26 +29,20 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 /**
- * Created by lto on 26/05/15.
+ * Created by lto on 08/07/15.
  */
 @Service
 @Scope
 public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware {
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ConfigurableApplicationContext context;
-
     @Autowired
     @Qualifier("vnfmRegister")
     private org.project.openbaton.vnfm.interfaces.register.VnfmRegister vnfmRegister;
-
     private ApplicationEventPublisher publisher;
-
     @Autowired
     private ResourceManagement resourceManagement;
-
     @Autowired
     @Qualifier("VNFRRepository")
     private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
@@ -83,14 +75,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         return new AsyncResult<Void>(null);
     }
 
-    @Override
-    @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
-    public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
-        log.debug("CORE: Received: " + coreMessage);
-
-        this.executeAction(coreMessage);
-
-    }
+//    @Override
+//    public abstract void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
 
     @Override
     public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
@@ -153,7 +139,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 coreMessage.setAction(Action.INSTANTIATE);
                 coreMessage.setPayload(virtualNetworkFunctionRecord);
 
-                vnfmSender.sendToTopic(coreMessage, "core-vnfm-actions", vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()).getEndpoint());
+                vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 break;
             case INSTANTIATE:
                 break;
