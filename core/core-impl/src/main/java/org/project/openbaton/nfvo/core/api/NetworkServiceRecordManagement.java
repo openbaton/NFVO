@@ -9,6 +9,7 @@ import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUni
 import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.catalogue.nfvo.Network;
+import org.project.openbaton.nfvo.catalogue.nfvo.Subnet;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
@@ -122,7 +123,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         List<Future<String>> ids = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
-                if (internalVirtualLink.getConnectivity_type().equals("VXLAN")) {
+                if (internalVirtualLink.getConnectivity_type().equals("LAN")) {
                     for (String connectionPointReference : internalVirtualLink.getConnection_points_references()) {
                         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                             boolean networkExists = false;
@@ -136,6 +137,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                             if (networkExists == false) {
                                 Network network = new Network();
                                 network.setName(connectionPointReference);
+                                network.setSubnets(new HashSet<Subnet>());
                                 network = networkManagement.add(vdu.getVimInstance(), network);
                                 NSRUtils.createConnectionsPoints(virtualNetworkFunctionRecord, vdu, network);
                             }

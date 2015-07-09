@@ -36,12 +36,6 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
         //Define Network if values are null or empty
         if (network.getName() == null || network.getName().isEmpty())
             network.setName(IdGenerator.createUUID());
-        if (network.getNetworkType() == null || network.getName().isEmpty())
-            network.setNetworkType("VXLAN");
-        if (network.getPhysicalNetworkName() == null || network.getPhysicalNetworkName().isEmpty())
-            network.setPhysicalNetworkName(null);
-        if (network.getSegmentationId() == 0)
-            network.setSegmentationId((int) Math.random() * 5000);
         if (network.getExternal() == null)
             network.setExternal(false);
         if (network.getShared() == null)
