@@ -12,5 +12,4 @@ import javax.naming.NamingException;
 public interface VnfmSender {
     void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) throws JMSException, NamingException;
 
-    void sendToTopic(CoreMessage coreMessage, String destinationQueueName, String selector);
 }

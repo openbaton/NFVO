@@ -32,6 +32,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private GenericRepository<NetworkServiceRecord> nsrRepository;
 
     @Autowired
+    @Qualifier("vnfmManager")
     private VnfmManager vnfmManager;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

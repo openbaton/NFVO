@@ -7,8 +7,6 @@ import org.project.openbaton.nfvo.catalogue.nfvo.EndpointType;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.annotation.Async;
 
 import javax.jms.JMSException;
@@ -20,9 +18,6 @@ import java.util.concurrent.Future;
  */
 public interface VnfmManager {
     Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException, NamingException, JMSException;
-
-    @JmsListener(destination = "vnfm-core-actions", containerFactory = "myJmsContainerFactory")
-    void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
