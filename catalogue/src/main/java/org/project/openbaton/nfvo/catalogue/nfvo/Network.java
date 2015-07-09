@@ -18,9 +18,6 @@ public class Network implements Serializable {
     private static int version = 0;
     private String name;
     private String extId;
-    private int segmentationId;
-    private String physicalNetworkName;
-    private String networkType;
     private Boolean external;
     private Boolean shared;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -51,14 +48,6 @@ public class Network implements Serializable {
         return extId;
     }
 
-    public void setNetworkType(String networkType) {
-        this.networkType = networkType;
-    }
-
-    public String getNetworkType() {
-        return networkType;
-    }
-
     public void setExternal(Boolean external) {
         this.external = external;
     }
@@ -73,22 +62,6 @@ public class Network implements Serializable {
 
     public Boolean getShared() {
         return shared;
-    }
-
-    public int getSegmentationId() {
-        return segmentationId;
-    }
-
-    public void setSegmentationId(int segmentationId) {
-        this.segmentationId = segmentationId;
-    }
-
-    public String getPhysicalNetworkName() {
-        return physicalNetworkName;
-    }
-
-    public void setPhysicalNetworkName(String physicalNetworkName) {
-        this.physicalNetworkName = physicalNetworkName;
     }
 
     public void setSubnets(Iterable<Subnet> subnets) {
@@ -117,9 +90,6 @@ public class Network implements Serializable {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", extId='" + extId + '\'' +
-                ", segmentationId=" + segmentationId +
-                ", physicalNetworkName='" + physicalNetworkName + '\'' +
-                ", networkType='" + networkType + '\'' +
                 ", external=" + external +
                 ", shared=" + shared +
                 ", subnets=" + subnets +
