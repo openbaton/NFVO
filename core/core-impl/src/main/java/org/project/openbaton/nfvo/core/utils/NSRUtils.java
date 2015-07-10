@@ -186,14 +186,14 @@ public class NSRUtils {
         ConnectionPoint connectionPoint = new ConnectionPoint();
         connectionPoint.setName(network.getName());
         connectionPoint.setExtId(network.getExtId());
-        connectionPoint.setType(network.getNetworkType());
+        connectionPoint.setType("LAN");
         vnfr.getConnection_point().add(connectionPoint);
         //Create ConnectionPoint for VDU
         VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
         vnfdConnectionPoint.setVirtual_link_reference(network.getName());
         vnfdConnectionPoint.setName(network.getName());
         vnfdConnectionPoint.setExtId(network.getExtId());
-        vnfdConnectionPoint.setType(network.getNetworkType());
+        vnfdConnectionPoint.setType("LAN");
         //Create VNFC for VDU
         VNFComponent vnfComponent = new VNFComponent();
         vnfComponent.getConnection_point().add(vnfdConnectionPoint);
