@@ -271,8 +271,20 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {
 			{
 				VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+				vdu.setVm_image(new HashSet<String>() {{
+					add("mocked_image");
+				}});
 				vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
 				vdu.setComputation_requirement("high_requirements");
+				vdu.setVnfc(new HashSet<VNFComponent>());
+				vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+				vdu.setMonitoring_parameter(new HashSet<String>() {
+					{
+						add("monitor1");
+						add("monitor2");
+						add("monitor3");
+					}
+				});
 				VimInstance vimInstance = new VimInstance();
 				vimInstance.setName("vim_instance");
 				vimInstance.setType("test");
@@ -309,7 +321,19 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 					{
 						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
 						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+						vdu.setVm_image(new HashSet<String>() {{
+							add("mocked_image");
+						}});
 						vdu.setComputation_requirement("high_requirements");
+						vdu.setVnfc(new HashSet<VNFComponent>());
+						vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+						vdu.setMonitoring_parameter(new HashSet<String>() {
+							{
+								add("monitor1");
+								add("monitor2");
+								add("monitor3");
+							}
+						});
 						VimInstance vimInstance = new VimInstance();
 						vimInstance.setName("vim_instance");
 						vimInstance.setType("test");
