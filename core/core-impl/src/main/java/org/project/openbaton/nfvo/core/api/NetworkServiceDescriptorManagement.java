@@ -46,7 +46,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * including any related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException, NotFoundException, BadFormatException {
+    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
