@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class VNFDNotFoundException extends RuntimeException {
 
 	public VNFDNotFoundException(String Id) {
-		super("Not foud Virtual Network Function Descriptor with id: " + Id);
+		super("Not found Virtual Network Function Descriptor with id: " + Id);
 	}
 }

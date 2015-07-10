@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class VNFDependencyNotFoundException extends RuntimeException {
 
 	public VNFDependencyNotFoundException(String Id) {
-		super("Not foud Virtual Network Function Dependency with id: " + Id);
+		super("Not found Virtual Network Function Dependency with id: " + Id);
 	}
 }

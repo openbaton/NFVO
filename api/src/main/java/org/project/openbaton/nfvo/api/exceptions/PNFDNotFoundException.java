@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class PNFDNotFoundException extends RuntimeException {
 
 	public PNFDNotFoundException(String Id) {
-		super("Not foud Physical Network Function Descriptor with id: " + Id);
+		super("Not found Physical Network Function Descriptor with id: " + Id);
 	}
 }
