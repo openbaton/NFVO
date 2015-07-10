@@ -103,7 +103,52 @@ public class NSRUtils {
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
 
         virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
-        virtualNetworkFunctionRecord.getVdu().addAll(vnfd.getVdu());
+        for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()){
+            VirtualDeploymentUnit vdu_new = new VirtualDeploymentUnit();
+            HashSet<VNFComponent> vnfComponents = new HashSet<>();
+            for (VNFComponent component:virtualDeploymentUnit.getVnfc()){
+                VNFComponent component_new = new VNFComponent();
+                HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
+                for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
+                    VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
+                    connectionPoint_new.setName(connectionPoint.getName());
+                    connectionPoint_new.setExtId(connectionPoint.getExtId());
+                    connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+                    connectionPoint_new.setType(connectionPoint.getType());
+                    connectionPoints.add(connectionPoint_new);
+                }
+                component_new.setConnection_point(connectionPoints);
+                vnfComponents.add(component_new);
+            }
+            vdu_new.setVnfc(vnfComponents);
+            HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
+            for (LifecycleEvent lifecycleEvent : virtualDeploymentUnit.getLifecycle_event()){
+                LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
+                lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
+                lifecycleEvent_new.setLifecycle_events(lifecycleEvent.getLifecycle_events());
+                lifecycleEvents.add(lifecycleEvent_new);
+            }
+            vdu_new.setLifecycle_event(lifecycleEvents);
+
+            vdu_new.setHostname(virtualDeploymentUnit.getHostname());
+            vdu_new.setHigh_availability(virtualDeploymentUnit.getHigh_availability());
+            vdu_new.setExtId(virtualDeploymentUnit.getExtId());
+            vdu_new.setComputation_requirement(virtualDeploymentUnit.getComputation_requirement());
+            vdu_new.setScale_in_out(virtualDeploymentUnit.getScale_in_out());
+            HashSet<String> monitoringParameters = new HashSet<>();
+            monitoringParameters.addAll(virtualDeploymentUnit.getMonitoring_parameter());
+            vdu_new.setMonitoring_parameter(monitoringParameters);
+            vdu_new.setVdu_constraint(virtualDeploymentUnit.getVdu_constraint());
+
+            HashSet<String> vmImages = new HashSet<>();
+            vmImages.addAll(virtualDeploymentUnit.getVm_image());
+            vdu_new.setVm_image(vmImages);
+
+            vdu_new.setVirtual_network_bandwidth_resource(virtualDeploymentUnit.getVirtual_network_bandwidth_resource());
+            vdu_new.setVirtual_memory_resource_element(virtualDeploymentUnit.getVirtual_memory_resource_element());
+            vdu_new.setVimInstance(virtualDeploymentUnit.getVimInstance());
+            virtualNetworkFunctionRecord.getVdu().add(vdu_new);
+        }
         virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
         virtualNetworkFunctionRecord.setConnection_point(new HashSet<ConnectionPoint>());
         virtualNetworkFunctionRecord.getConnection_point().addAll(vnfd.getConnection_point());
