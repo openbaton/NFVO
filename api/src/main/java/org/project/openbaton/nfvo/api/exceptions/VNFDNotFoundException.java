@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @SuppressWarnings("serial")
-@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Virtual Network Function Descriptor not found")
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class VNFDNotFoundException extends RuntimeException {
 
 	public VNFDNotFoundException(String Id) {
-		super("Not foud Virtual Network Function Descriptor with id: " + Id);
+		super("Not found Virtual Network Function Descriptor with id: " + Id);
 	}
 }

@@ -19,4 +19,73 @@ public class AutoScalePolicy implements Serializable{
 	private String id = IdGenerator.createUUID();
 	@Version
 	private int version = 0;
+
+	private String action;
+	private String metric;
+	private String statistic;
+	private String comparisonOperator;
+	private int period;
+	private int threshold;
+	private int cooldown;
+
+	public String getMetric() {
+		return metric;
+	}
+
+	public void setMetric(String metric) {
+		this.metric = metric;
+	}
+
+	public int getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(int period) {
+		this.period = period;
+	}
+
+	public int getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
+
+	public int getCooldown() {
+		return cooldown;
+	}
+
+	public void setCooldown(int cooldown) {
+		this.cooldown = cooldown;
+	}
+
+	public String getStatistic() {
+		return statistic;
+	}
+
+	public void setStatistic(String statistic) {
+		this.statistic = statistic;
+	}
+
+	public String getComparisonOperator() {
+		return comparisonOperator;
+	}
+
+	public void setComparisonOperator(String comparisonOperator) {
+		this.comparisonOperator = comparisonOperator;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getAction() {
+
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
 }

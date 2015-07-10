@@ -31,7 +31,7 @@ public class NSDUtils {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NoResultException, NotFoundException, BadFormatException {
+    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
 
         /**
          * Fetching VimInstances
@@ -45,15 +45,16 @@ public class NSDUtils {
             for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
                 String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId();
-
+                boolean fetched = false;
                 for(VimInstance vimInstance : vimInstances){
                     if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
                         vdu.setVimInstance(vimInstance);
                         log.debug("Found vimInstance: "+ vimInstance);
+                        fetched=true;
                         break;
                     }
                 }
-                if (vdu.getVimInstance() == null){
+                if (!fetched){
                     throw new NotFoundException("No VimInstance with name or id equals to " + name_id);
                 }
             }

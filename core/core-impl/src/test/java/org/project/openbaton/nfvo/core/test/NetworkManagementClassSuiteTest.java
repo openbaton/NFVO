@@ -94,9 +94,6 @@ public class NetworkManagementClassSuiteTest {
 		network.setName("network_name");
 		network.setExtId("ext_id");
 		network.setExternal(false);
-		network.setNetworkType("network_type");
-		network.setPhysicalNetworkName("physical_network_name");
-		network.setSegmentationId(0);
 		network.setShared(false);
 		network.setSubnets(new ArrayList<Subnet>() {{
 			add(createSubnet());
@@ -127,7 +124,6 @@ public class NetworkManagementClassSuiteTest {
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
 		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
 		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
-		Assert.assertEquals(network_exp.getSegmentationId(), network_new.getSegmentationId());
 	}
 
 	@Test
@@ -143,7 +139,6 @@ public class NetworkManagementClassSuiteTest {
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
 		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
 		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
-		Assert.assertEquals(network_exp.getSegmentationId(), network_new.getSegmentationId());
 	}
 
 	@Test
