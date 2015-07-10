@@ -56,13 +56,12 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
 		} catch (NotFoundException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new EntityNotFoundException(e.getMessage());
 		} catch (BadFormatException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new BadRequestException(e.getMessage());
 		}
-
 		return nsd;
 	}
 
@@ -79,7 +78,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			networkServiceDescriptorManagement.delete(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 
 		}
@@ -114,8 +113,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		return nsd;
@@ -158,8 +156,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		return nsd.getVnfd();
@@ -173,11 +170,9 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		return findVNF(nsd.getVnfd(), id_vfn);
 	}
 
@@ -190,10 +185,9 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
 				id_vfn);
 		nsd.getVnfd().remove(nDescriptor);
@@ -208,7 +202,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		nsd.getVnfd().add(vnfDescriptor);
@@ -225,7 +219,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 
@@ -255,8 +249,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		return nsd.getVnf_dependency();
@@ -270,8 +263,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 
@@ -287,7 +279,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 
@@ -304,7 +296,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		nsd.getVnf_dependency().add(vnfDependency);
@@ -322,10 +314,9 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		VNFDependency vDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
 		vDependency = vnfDependency;
 		nsd.getVnf_dependency().add(vDependency);
@@ -351,7 +342,7 @@ public class RestNetworkServiceDescriptor {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
 
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		return nsd.getPnfd();
@@ -378,10 +369,9 @@ public class RestNetworkServiceDescriptor {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
 
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		return findPNFD(nsd.getPnfd(), id_pnf);
 	}
 
@@ -403,10 +393,9 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		PhysicalNetworkFunctionDescriptor pDescriptor = findPNFD(nsd.getPnfd(),
 				id_pnf);
 		nsd.getVnfd().remove(pDescriptor);
@@ -432,7 +421,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		nsd.getPnfd().add(pDescriptor);
@@ -460,10 +449,9 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
-
 		PhysicalNetworkFunctionDescriptor pnfDescriptor = findPNFD(
 				nsd.getPnfd(), id_pnf);
 		pnfDescriptor = pDescriptor;
@@ -489,8 +477,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		return nsd.getNsd_security();
@@ -515,7 +502,7 @@ public class RestNetworkServiceDescriptor {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
 
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		if (!nsd.getNsd_security().getId().equals(id_s)) {
@@ -543,7 +530,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		if (!nsd.getNsd_security().getId().equals(id_s)) {
@@ -572,7 +559,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 		nsd.setNsd_security(security);
@@ -588,7 +575,7 @@ public class RestNetworkServiceDescriptor {
 		try {
 			nsd = networkServiceDescriptorManagement.query(id);
 		} catch (NoResultException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw new NSDNotFoundException(id);
 		}
 
