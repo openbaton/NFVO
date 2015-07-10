@@ -50,7 +50,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     /**
      * Represents the assurance parameter(s) and its requirement for each deployment flavour of the VNF being described, see clause 6.3.1.5.
      * */
-    @OneToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @OneToMany(cascade={/*CascadeType.PERSIST, CascadeType.MERGE*/CascadeType.ALL}, fetch = FetchType.EAGER)
     private Set<VNFDeploymentFlavour> deployment_flavour;
     /**
      * The VNF package may contain a file that lists all files in the package. This can be useful for auditing purposes or for enabling some security features on the package.
