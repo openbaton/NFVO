@@ -11,7 +11,7 @@ public class NSDNotFoundException extends RuntimeException {
 	private Errors errors;
 
 	public NSDNotFoundException(String Id, Errors errors) {
-		super("Not foud Network Service Descriptor with id: " + Id);
+		super("Not found Network Service Descriptor with id: " + Id);
 		this.setErrors(errors);
 	}
 
