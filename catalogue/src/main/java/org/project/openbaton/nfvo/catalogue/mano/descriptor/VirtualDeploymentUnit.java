@@ -78,7 +78,7 @@ public class VirtualDeploymentUnit implements Serializable{
     @ElementCollection(fetch=FetchType.EAGER)
     private Set<String> monitoring_parameter;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE /*TODO sure about this?*/})
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
     private VimInstance vimInstance;
     private String hostname;
 

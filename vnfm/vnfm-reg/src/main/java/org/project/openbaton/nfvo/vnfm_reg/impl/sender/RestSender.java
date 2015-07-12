@@ -6,9 +6,7 @@ import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -72,9 +70,6 @@ public class RestSender implements VnfmSender{
         headers.add("Accept", "*/*");
     }
 
-    @Autowired
-    private JmsTemplate jmsTemplate;
-
     @Override
     public void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
         this.sendToVnfm(coreMessage, endpoint.getEndpoint());
@@ -82,12 +77,10 @@ public class RestSender implements VnfmSender{
     }
 
     public void sendToVnfm(CoreMessage coreMessage, String url) {
-        log.debug("Sending message: " + coreMessage + " to url " + url );
 
-        if (!url.endsWith("/"))
-            url = url.concat("/");
-
-        this.post("core-vnfm-actions", mapper.toJson(coreMessage),url);
+        String json = mapper.toJson(coreMessage);
+        log.debug("Sending message: " + json + " to url " + url);
+        this.post("core-vnfm-actions", json,url);
 
     }
 }

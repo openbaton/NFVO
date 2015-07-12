@@ -36,10 +36,6 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
         //Define Network if values are null or empty
         if (network.getName() == null || network.getName().isEmpty())
             network.setName(IdGenerator.createUUID());
-        if (network.getExternal() == null)
-            network.setExternal(false);
-        if (network.getShared() == null)
-            network.setShared(false);
         if (network.getSubnets().size() == 0) {
             //Define Subnet
             Subnet subnet = new Subnet();

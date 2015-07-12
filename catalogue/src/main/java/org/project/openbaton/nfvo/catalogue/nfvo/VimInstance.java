@@ -5,7 +5,7 @@ import org.project.openbaton.nfvo.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 12/05/15.
@@ -30,31 +30,35 @@ public class VimInstance implements Serializable{
     private Location location;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> securityGroups;
+    private Set<String> securityGroups;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.PERSIST})
-    private List<DeploymentFlavour> flavours;
+    private Set<DeploymentFlavour> flavours;
 
     private String type;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<NFVImage> images;
+    private Set<NFVImage> images;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Network> networks;
+    private Set<Network> networks;
 
-    public List<DeploymentFlavour> getFlavours() {
-        return flavours;
-    }
-
-    public void setFlavours(List<DeploymentFlavour> flavours) {
-        this.flavours = flavours;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+    @Override
+    public String toString() {
+        return "VimInstance{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", authUrl='" + authUrl + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", keyPair='" + keyPair + '\'' +
+                ", location=" + location +
+                ", securityGroups=" + securityGroups +
+                ", flavours=" + flavours +
+                ", type='" + type + '\'' +
+                ", images=" + images +
+                ", networks=" + networks +
+                '}';
     }
 
     public String getId() {
@@ -73,36 +77,20 @@ public class VimInstance implements Serializable{
         this.version = version;
     }
 
-    public String getAuthUrl() {
-        return authUrl;
-    }
-
-    public void setAuthUrl(String authUrl) {
-        this.authUrl = authUrl;
-    }
-
-    public String getKeyPair() {
-        return keyPair;
-    }
-
-    public void setKeyPair(String keyPair) {
-        this.keyPair = keyPair;
-    }
-
-    public List<String> getSecurityGroups() {
-        return securityGroups;
-    }
-
-    public void setSecurityGroups(List<String> securityGroups) {
-        this.securityGroups = securityGroups;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAuthUrl() {
+        return authUrl;
+    }
+
+    public void setAuthUrl(String authUrl) {
+        this.authUrl = authUrl;
     }
 
     public String getTenant() {
@@ -129,6 +117,38 @@ public class VimInstance implements Serializable{
         this.password = password;
     }
 
+    public String getKeyPair() {
+        return keyPair;
+    }
+
+    public void setKeyPair(String keyPair) {
+        this.keyPair = keyPair;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Set<String> getSecurityGroups() {
+        return securityGroups;
+    }
+
+    public void setSecurityGroups(Set<String> securityGroups) {
+        this.securityGroups = securityGroups;
+    }
+
+    public Set<DeploymentFlavour> getFlavours() {
+        return flavours;
+    }
+
+    public void setFlavours(Set<DeploymentFlavour> flavours) {
+        this.flavours = flavours;
+    }
+
     public String getType() {
         return type;
     }
@@ -137,39 +157,19 @@ public class VimInstance implements Serializable{
         this.type = type;
     }
 
-    public void setImages(List<NFVImage> images) {
-        this.images = images;
-    }
-
-    public List<NFVImage> getImages() {
+    public Set<NFVImage> getImages() {
         return images;
     }
 
-    public void setNetworks(List<Network> networks) {
-        this.networks = networks;
+    public void setImages(Set<NFVImage> images) {
+        this.images = images;
     }
 
-    public List<Network> getNetworks() {
+    public Set<Network> getNetworks() {
         return networks;
     }
 
-    @Override
-    public String toString() {
-        return "VimInstance{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", authUrl='" + authUrl + '\'' +
-                ", tenant='" + tenant + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", keyPair='" + keyPair + '\'' +
-                ", location=" + location +
-                ", securityGroups=" + securityGroups +
-                ", flavours=" + flavours +
-                ", type='" + type + '\'' +
-                ", images=" + images +
-                ", networks=" + networks +
-                '}';
+    public void setNetworks(Set<Network> networks) {
+        this.networks = networks;
     }
 }

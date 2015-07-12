@@ -1,5 +1,7 @@
 package org.project.openbaton.nfvo.vnfm_reg;
 
+import org.project.openbaton.nfvo.catalogue.mano.common.Event;
+import org.project.openbaton.nfvo.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -37,12 +39,16 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ConfigurableApplicationContext context;
+
     @Autowired
     @Qualifier("vnfmRegister")
     private org.project.openbaton.vnfm.interfaces.register.VnfmRegister vnfmRegister;
+
     private ApplicationEventPublisher publisher;
+
     @Autowired
     private ResourceManagement resourceManagement;
+
     @Autowired
     @Qualifier("VNFRRepository")
     private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
@@ -113,7 +119,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
                         CoreMessage errorMessage = new CoreMessage();
                         errorMessage.setAction(Action.ERROR);
-                        errorMessage.setPayload("There was an error while deploying VMs");
+                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+                        lifecycleEvent.setEvent(Event.ERROR);
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                        errorMessage.setPayload(virtualNetworkFunctionRecord);
                         vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                         return;
                     }
@@ -130,7 +139,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         log.error(e.getMessage());
                         CoreMessage errorMessage = new CoreMessage();
                         errorMessage.setAction(Action.ERROR);
-                        errorMessage.setPayload("There was an error while deploying VMs");
+                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+                        lifecycleEvent.setEvent(Event.ERROR);
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                        errorMessage.setPayload(virtualNetworkFunctionRecord);
                         vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                         return;
                     }
