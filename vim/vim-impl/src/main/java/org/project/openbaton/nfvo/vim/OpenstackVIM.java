@@ -1,14 +1,14 @@
 package org.project.openbaton.nfvo.vim;
 
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Future;
 
 /**
@@ -151,7 +149,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             log.error("Network with id: " + network.getId() + " not created successfully.", e);
             throw new VimException("Network with id: " + network.getId() + " not created successfully.");
         }
-        List<Subnet> createdSubnets = new ArrayList<Subnet>();
+        Set<Subnet> createdSubnets = new HashSet<>();
         for (Subnet subnet : network.getSubnets()) {
             try {
                 Subnet createdSubnet = openstackClient.createSubnet(createdNetwork, subnet);
@@ -177,7 +175,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             log.error("Network with id: " + network.getId() + " not updated successfully.", e);
             throw new VimException("Network with id: " + network.getId() + " not updated successfully.");
         }
-        List<Subnet> updatedSubnets = new ArrayList<Subnet>();
+        Set<Subnet> updatedSubnets = new HashSet<Subnet>();
         List<String> updatedSubnetExtIds = new ArrayList<String>();
         for (Subnet subnet : network.getSubnets()) {
             if (subnet.getExtId()!=null){
@@ -277,7 +275,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         log.trace("");
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
         log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
-        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
+        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, Arrays.<String>asList((String[]) vimInstance.getSecurityGroups().toArray()), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
         for (String network : server.getIps().keySet()) {

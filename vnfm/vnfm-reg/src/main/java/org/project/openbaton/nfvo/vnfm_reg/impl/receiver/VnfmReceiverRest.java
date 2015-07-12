@@ -9,11 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -32,7 +28,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
     @Override
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException, VimException {
+    public void actionFinished(@RequestBody CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException, VimException {
         log.debug("CORE: Received: " + coreMessage);
         vnfmManager.executeAction(coreMessage);
 

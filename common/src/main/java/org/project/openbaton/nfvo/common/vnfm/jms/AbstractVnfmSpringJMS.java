@@ -2,7 +2,10 @@ package org.project.openbaton.nfvo.common.vnfm.jms;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.openbaton.nfvo.catalogue.mano.common.Event;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
+import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.nfvo.catalogue.nfvo.EndpointType;
+import org.project.openbaton.nfvo.catalogue.nfvo.VDUMessage;
+import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.vnfm.AbstractVnfm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,8 +17,8 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import javax.annotation.PreDestroy;
 import javax.jms.*;
-import javax.naming.NamingException;
 import java.io.Serializable;
 
 /**
@@ -32,6 +35,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     private boolean exit = false;
 
     protected String SELECTOR;
+    private VnfmManagerEndpoint vnfmManagerEndpoint;
 
     public String getSELECTOR() {
         return SELECTOR;
@@ -43,6 +47,17 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 
     @Autowired
     private JmsTemplate jmsTemplate;
+
+    @PreDestroy
+    public void shutdown(){
+        log.debug("PREDESTROY");
+        this.unregister(vnfmManagerEndpoint);
+    }
+
+    @Override
+    protected void unregister(VnfmManagerEndpoint endpoint) {
+        this.sendMessageToQueue("vnfm-unregister", endpoint);
+    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -87,12 +102,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         return jmsTemplate;
     }
 
-    protected void sendError(Exception e) throws JMSException, NamingException {
-        CoreMessage coreMessage = new CoreMessage();
-        coreMessage.setAction(Action.ERROR);
-        coreMessage.setPayload(e);
-        this.sendMessageToQueue("vnfm-core-actions", coreMessage);
-    }
+//    protected void sendError(Exception e) throws JMSException, NamingException {
+//        CoreMessage coreMessage = new CoreMessage();
+//        coreMessage.setAction(Action.ERROR);
+//        coreMessage.setPayload(e);
+//        this.sendMessageToQueue("vnfm-core-actions", coreMessage);
+//    }
 
     protected boolean sendAndReceiveMessage(String receiveFromQueueName, String sendToQueueName, final Serializable vduMessage) throws JMSException {
         sendMessageToQueue(sendToQueueName, vduMessage);
@@ -126,7 +141,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         this.setSELECTOR(this.getEndpoint());
         log.debug("SELECTOR: " + this.getEndpoint());
 
-        VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+        vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
         vnfmManagerEndpoint.setEndpointType(EndpointType.JMS);

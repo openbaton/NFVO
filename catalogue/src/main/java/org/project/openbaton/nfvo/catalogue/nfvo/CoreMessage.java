@@ -1,5 +1,7 @@
 package org.project.openbaton.nfvo.catalogue.nfvo;
 
+import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+
 import java.io.Serializable;
 
 /**
@@ -7,7 +9,7 @@ import java.io.Serializable;
  */
 public class CoreMessage implements Serializable{
     private Action action;
-    private Serializable payload;
+    private VirtualNetworkFunctionRecord payload;
 
     public Action getAction() {
         return action;
@@ -25,11 +27,11 @@ public class CoreMessage implements Serializable{
                 '}';
     }
 
-    public Serializable getPayload() {
+    public VirtualNetworkFunctionRecord getPayload() {
         return payload;
     }
 
-    public void setPayload(Serializable payload) {
+    public void setPayload(VirtualNetworkFunctionRecord payload) {
         this.payload = payload;
     }
 }
