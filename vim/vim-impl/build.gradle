@@ -1,16 +1,12 @@
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile project(':catalogue')
     compile project(':vim:vim-int')
 
-    compile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
+    compile 'org.project.openbaton:clients-int:0.3-SNAPSHOT'
 
-    runtime 'org.project.openbaton:clients-impl:0.2-SNAPSHOT'
+    runtime 'org.project.openbaton:clients-impl:0.3-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    testCompile 'org.project.openbaton:clients-impl:0.2-SNAPSHOT'
+    testCompile 'org.project.openbaton:clients-impl:0.3-SNAPSHOT'
 }

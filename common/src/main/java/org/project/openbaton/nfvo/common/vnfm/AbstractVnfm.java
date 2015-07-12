@@ -2,6 +2,7 @@ package org.project.openbaton.nfvo.common.vnfm;
 
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.vnfm.interfaces.VNFLifecycleManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,4 +102,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 this.instantiate((VirtualNetworkFunctionRecord) message.getPayload());
         }
     }
+
+    protected abstract void unregister(VnfmManagerEndpoint endpoint);
 }

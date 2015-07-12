@@ -1,8 +1,11 @@
 def springVersion = "4.1.6.RELEASE"
+def springBootVersion = "1.2.4.RELEASE"
 
 dependencies {
     compile project(':catalogue')
     compile "org.springframework:spring-web:" + springVersion
     compile 'com.google.code.gson:gson:2.3.1'
+//    compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
+//    compile 'javax.validation:validation-api:1.1.0.Final'
 
 }

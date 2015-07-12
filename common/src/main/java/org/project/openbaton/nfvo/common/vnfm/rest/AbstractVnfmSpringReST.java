@@ -7,12 +7,10 @@ import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.vnfm.AbstractVnfm;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PreDestroy;
 import java.io.Serializable;
 
 /**
@@ -23,6 +21,7 @@ import java.io.Serializable;
 @RequestMapping("/core-vnfm-actions")
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
+    protected final VnfmManagerEndpoint vnfmManagerEndpoint;
     protected String server = "localhost";
     protected String port = "8080";
     private String url = "http://" +server + ":" + port+ "/";
@@ -63,6 +62,16 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.headers = headers;
     }
 
+    @PreDestroy
+    public void shutdown(){
+        this.unregister(vnfmManagerEndpoint);
+    }
+
+    @Override
+    protected void unregister(VnfmManagerEndpoint endpoint){
+        this.post("/admin/v1/vnfm-unregister", mapper.toJson(endpoint));
+    }
+
     public AbstractVnfmSpringReST() {
         this.mapper = new Gson();
         this.rest = new RestTemplate();
@@ -73,7 +82,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         loadProperties();
         log.debug("SELECTOR: " + this.getEndpoint());
 
-        VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+        vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
         vnfmManagerEndpoint.setEndpointType(EndpointType.REST);
@@ -98,7 +107,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     protected void put(String path, String json) {
         HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity,String.class);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
 
@@ -118,8 +127,8 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     protected void register(VnfmManagerEndpoint endpoint){
         String json = mapper.toJson(endpoint);
-        log.debug("post on /admin/v1/vnfm_reg-register with json: " + json);
-        this.post("/admin/v1/vnfm_reg-register", mapper.toJson(endpoint));
+        log.debug("post on /admin/v1/vnfm-register with json: " + json);
+        this.post("/admin/v1/vnfm-register", mapper.toJson(endpoint));
     }
 
     protected void sendToCore(Serializable msg){
@@ -130,9 +139,10 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receive(CoreMessage message){
+    //TODO add the validation
+    public @ResponseBody String  receive(@RequestBody /*@Valid*/ CoreMessage message){
         log.debug("Received: " + message);
         this.onAction(message);
+        return "ack";
     }
-
 }

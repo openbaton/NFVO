@@ -14,16 +14,24 @@ import javax.validation.Valid;
  * Created by lto on 27/05/15.
  */
 @RestController
-@RequestMapping("/admin/v1/vnfm_reg-register")
+@RequestMapping("/admin/v1")
 public class RestRegister extends VnfmRegister {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void addManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
         log.debug("Received: " + endpoint);
         this.register(endpoint);
+    }
+
+    @Override
+    @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
+        log.debug("Unregistering endpoint: " + endpoint);
+        this.unregister(endpoint);
     }
 }

@@ -26,4 +26,13 @@ public class JmsRegister extends VnfmRegister {
         log.debug("Received: " + endpoint);
         this.register(endpoint);
     }
+
+    @Override
+    @JmsListener(destination = "vnfm-unregister", containerFactory = "queueJmsContainerFactory")
+    public void removeManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
+        log.debug("Unregistering: " + endpoint);
+        this.unregister(endpoint);
+    }
+
+
 }
