@@ -11,7 +11,7 @@ function start {
 
     if [ 0 -eq $? ]
         then
-            java -jar "build/libs/openbaton-$version.jar"
+            screen -S openbaton java -jar "build/libs/openbaton-$version.jar"
     fi
 }
 
