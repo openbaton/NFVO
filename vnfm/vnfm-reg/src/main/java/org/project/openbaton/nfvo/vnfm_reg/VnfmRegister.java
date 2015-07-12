@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,9 +43,13 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
     }
 
     @Override
-    public void addManagerEndpoint(VnfmManagerEndpoint endpoint){
+    public void addManagerEndpoint(VnfmManagerEndpoint endpoint) {
         throw new UnsupportedOperationException();
-    };
+    }
+
+    public void removeManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public VnfmManagerEndpoint getVnfm(String type) throws NotFoundException {
@@ -56,5 +61,16 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
             }
         }
         throw new NotFoundException("VnfManager of type " + type + " is not registered");
+    }
+
+    public void unregister(VnfmManagerEndpoint endpoint) {
+        List<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmManagerEndpointRepository.findAll();
+        for (VnfmManagerEndpoint vnfmManagerEndpoint: vnfmManagerEndpoints){
+            if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType().equals(endpoint.getType())){
+                this.vnfmManagerEndpointRepository.remove(endpoint);
+                return;
+            }
+        }
+        log.error("no VNFM found for endpoint: " + endpoint);
     }
 }

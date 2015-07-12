@@ -87,7 +87,7 @@ public class TestVIM implements Vim {
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
-        testClient.launchInstanceAndWait(vdu.getHostname(),vimInstance.getImages().get(0).getExtId(),"flavor","keypair",new ArrayList<String>(){{add("network_id");}}, new ArrayList<String>(){{add("secGroup_id");}}, "#userdate");
+        testClient.launchInstanceAndWait(vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair",new ArrayList<String>(){{add("network_id");}}, new ArrayList<String>(){{add("secGroup_id");}}, "#userdate");
         String id = IdGenerator.createUUID();
         log.debug("launched instance with id " + id);
         return new AsyncResult<String>(id);

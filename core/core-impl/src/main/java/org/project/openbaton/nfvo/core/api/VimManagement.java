@@ -1,9 +1,12 @@
 package org.project.openbaton.nfvo.core.api;
 
+import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
+import org.project.openbaton.nfvo.catalogue.nfvo.Network;
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 13/05/15.
@@ -68,8 +73,14 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
-        vimInstance.setImages(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
-        vimInstance.setNetworks(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
-        vimInstance.setFlavours(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        Set<NFVImage> images = new HashSet<>();
+        images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+        vimInstance.setImages(images);
+        Set<Network> networks = new HashSet<>();
+        networks.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+        vimInstance.setNetworks(networks);
+        Set<DeploymentFlavour> flavours = new HashSet<>();
+        flavours.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        vimInstance.setFlavours(flavours);
     }
 }
