@@ -1,8 +1,8 @@
 package org.project.openbaton.clients.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.common.catalogue.nfvo.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -21,7 +21,7 @@ public interface ClientInterfaces {
     List<Network> listNetworks();
     List<DeploymentFlavour> listFlavors();
 
-    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) throws VimException;
+    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) throws VimDriverException;
 
     void deleteServerByIdAndWait(String id);
     Network createNetwork(Network network);
@@ -35,7 +35,7 @@ public interface ClientInterfaces {
 
     boolean deleteImage(NFVImage image);
 
-    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) throws VimException;
+    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) throws VimDriverException;
 
     boolean deleteFlavor(String extId);
 
