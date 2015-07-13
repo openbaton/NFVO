@@ -1,14 +1,15 @@
 package org.project.openbaton.nfvo.api;
 
+import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.api.exceptions.NSDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.VNFDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.VNFDependencyNotFoundException;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFRecordDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.PhysicalNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
@@ -52,14 +53,14 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public NetworkServiceRecord create(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException {
 			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+	public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException {
 		return networkServiceRecordManagement.onboard(id);
 	}
 

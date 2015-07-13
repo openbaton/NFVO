@@ -1,12 +1,13 @@
 package org.project.openbaton.nfvo.api;
 
+import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.api.exceptions.*;
-import org.project.openbaton.nfvo.catalogue.mano.common.Security;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.common.Security;
+import org.project.openbaton.common.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
@@ -587,7 +588,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	NetworkServiceRecord createRecord(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException {
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, VimDriverException {
 			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 

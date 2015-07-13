@@ -1,6 +1,6 @@
 package org.project.openbaton.vnfm.interfaces.manager;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.springframework.jms.annotation.JmsListener;

@@ -1,0 +1,6 @@
+def springVersion = "4.1.6.RELEASE"
+def springBootVersion = "1.2.4.RELEASE"
+
+dependencies {
+
+}

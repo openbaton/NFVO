@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 import java.util.List;

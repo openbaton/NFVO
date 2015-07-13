@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.vim_interfaces.policy_management;
 
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.Policy;
+import org.project.openbaton.common.catalogue.mano.descriptor.Policy;
 
 import java.util.List;
 

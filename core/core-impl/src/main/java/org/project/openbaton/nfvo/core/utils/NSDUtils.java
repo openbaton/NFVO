@@ -1,10 +1,10 @@
 package org.project.openbaton.nfvo.core.utils;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.common.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 
 /**

@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.Configuration;
+import org.project.openbaton.common.catalogue.nfvo.Configuration;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.nfvo.catalogue.nfvo.EventEndpoint;
+import org.project.openbaton.common.catalogue.nfvo.ApplicationEventNFVO;
+import org.project.openbaton.common.catalogue.nfvo.EventEndpoint;
 
 import java.io.IOException;
 import java.util.concurrent.Future;

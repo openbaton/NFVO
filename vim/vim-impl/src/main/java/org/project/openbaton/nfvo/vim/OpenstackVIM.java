@@ -1,12 +1,13 @@
 package org.project.openbaton.nfvo.vim;
 
+import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VNFComponent;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
+import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.common.catalogue.mano.descriptor.VNFComponent;
+import org.project.openbaton.common.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.slf4j.Logger;
@@ -252,7 +253,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr) throws VimException {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         openstackClient.init(vimInstance);
