@@ -68,7 +68,7 @@ test {
 
 // tag::jar[]
 jar {
-    baseName = 'common'
+    baseName = 'catalogue'
     appendix = ''
     classifier = ''
 }
