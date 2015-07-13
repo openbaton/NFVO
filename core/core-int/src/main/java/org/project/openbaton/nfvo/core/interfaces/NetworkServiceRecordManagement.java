@@ -1,7 +1,8 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
@@ -22,14 +23,14 @@ public interface NetworkServiceRecordManagement {
 	 * validating a Network Service	Descriptor (NSD),
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException;
+	NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException;
 
 	/**
 	 * This operation allows submitting and
 	 * validating a Network Service	Descriptor (NSD),
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, JMSException, NamingException, BadFormatException;
+	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, JMSException, NamingException, BadFormatException, VimDriverException;
 
 	/**
 	 * This operation allows updating a Network 

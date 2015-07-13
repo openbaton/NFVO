@@ -1,8 +1,8 @@
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;

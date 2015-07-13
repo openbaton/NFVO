@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
+import org.project.openbaton.common.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

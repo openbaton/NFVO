@@ -26,15 +26,15 @@ public class NetworkServiceDescriptor implements CommandMarker {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NFVORequestor requestor = new NFVORequestor("1");
-    private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor> networkServiceDescriptorAgent;
+    private AbstractRestAgent<org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor> networkServiceDescriptorAgent;
     private Gson mapper = new Gson();
 
     @PostConstruct
     private void init(){
         networkServiceDescriptorAgent = requestor.getNetworkServiceDescriptorAgent();
     }
-    private org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor getObject(File networkServiceDescriptor) throws FileNotFoundException {
-        return mapper.<org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor>fromJson(new InputStreamReader(new FileInputStream(networkServiceDescriptor)), org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor.class);
+    private org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor getObject(File networkServiceDescriptor) throws FileNotFoundException {
+        return mapper.<org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor>fromJson(new InputStreamReader(new FileInputStream(networkServiceDescriptor)), org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor.class);
     }
 
 	/**

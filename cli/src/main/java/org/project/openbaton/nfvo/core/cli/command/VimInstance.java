@@ -23,7 +23,7 @@ public class VimInstance implements CommandMarker {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private NFVORequestor requestor = new NFVORequestor("1");
-    private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.nfvo.VimInstance> vimInstanceRequest;
+    private AbstractRestAgent<org.project.openbaton.common.catalogue.nfvo.VimInstance> vimInstanceRequest;
     private Gson mapper = new Gson();
 
     @PostConstruct
@@ -42,7 +42,7 @@ public class VimInstance implements CommandMarker {
             @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter) {
 
         try {
-			return "DATACENTER CREATED: " + vimInstanceRequest.create(mapper.<org.project.openbaton.nfvo.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), org.project.openbaton.nfvo.catalogue.nfvo.VimInstance.class));
+			return "DATACENTER CREATED: " + vimInstanceRequest.create(mapper.<org.project.openbaton.common.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), org.project.openbaton.common.catalogue.nfvo.VimInstance.class));
 		} catch (SDKException e) {
 			log.debug(e.getMessage());
 			return "DATACENTER NOT CREATED";
@@ -104,7 +104,7 @@ public class VimInstance implements CommandMarker {
 	@CliCommand(value = "viminstance update", help = "Updates the Datacenter")
 	public String update( @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter,     @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
         try {
-            return "DATACENTER UPDATED: " + vimInstanceRequest.update(mapper.<org.project.openbaton.nfvo.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), VimInstance.class), id);
+            return "DATACENTER UPDATED: " + vimInstanceRequest.update(mapper.<org.project.openbaton.common.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), VimInstance.class), id);
         } catch (SDKException e) {
             log.debug(e.getMessage());
             return "VIMINSTANCE NOT UPDATED";

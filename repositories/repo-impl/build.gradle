@@ -1,9 +1,6 @@
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile project(':catalogue')
+    compile 'org.project.openbaton:common:0.5-SNAPSHOT'
+
     compile project(':repositories:repo-int')
 
     compile('com.google.guava:guava:18.0')

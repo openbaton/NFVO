@@ -2,7 +2,7 @@ dependencies {
     compile 'org.apache.activemq:activemq-pool:5.9.0'
 
     compile project(':repositories:repo-int')
-    compile project(':catalogue')
+    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
 
     runtime project(':core')
     runtime project(':api')
