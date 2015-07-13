@@ -1,9 +1,9 @@
 package org.project.openbaton.vnfm.interfaces.manager;
 
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.nfvo.catalogue.nfvo.EndpointType;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.common.catalogue.nfvo.EndpointType;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;

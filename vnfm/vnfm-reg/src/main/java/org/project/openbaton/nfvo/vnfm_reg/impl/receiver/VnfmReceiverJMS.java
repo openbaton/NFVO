@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.vnfm_reg.impl.receiver;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmReceiver;

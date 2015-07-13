@@ -1,12 +1,10 @@
 include 'api'
 include 'cli'
-include 'catalogue'
-include 'common'
+include 'exceptions'
 include 'core', 'core:core-impl', 'core:core-int'
 include 'main'
 include 'vim', 'vim:vim-impl', 'vim:vim-int'
 include 'vnfm', 'vnfm:vnfm-int', 'vnfm:vnfm-reg'
 include 'repositories', 'repositories:repo-impl', 'repositories:repo-int'
 //include 'gui'
-//include 'vnfm-dummy'
 

@@ -26,15 +26,15 @@ public class Configuration implements CommandMarker {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private NFVORequestor requestor = new NFVORequestor("1");
-	private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.nfvo.Configuration> configurationRequest;
+	private AbstractRestAgent<org.project.openbaton.common.catalogue.nfvo.Configuration> configurationRequest;
 	private Gson mapper = new Gson();
 
 	@PostConstruct
 	private void init(){
 		configurationRequest = requestor.getConfigurationAgent();
 	}
-	private org.project.openbaton.nfvo.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
-		return mapper.<org.project.openbaton.nfvo.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.nfvo.catalogue.nfvo.Configuration.class);
+	private org.project.openbaton.common.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
+		return mapper.<org.project.openbaton.common.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.common.catalogue.nfvo.Configuration.class);
 	}
 
 	/**

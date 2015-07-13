@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
 /**
  * Created by mpa on 05/05/15.

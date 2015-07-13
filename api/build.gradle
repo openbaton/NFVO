@@ -1,9 +1,11 @@
 def springBootVersion = "1.2.4.RELEASE"
 
 dependencies {
+    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+
     compile project(':core:core-int')
     compile project(':vim:vim-int')
-    compile project(':common')
+
     compile("mysql:mysql-connector-java:5.1.35")
 
 

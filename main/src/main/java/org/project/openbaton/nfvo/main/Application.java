@@ -26,7 +26,7 @@ import java.io.File;
 @SpringBootApplication
 @EnableJms
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
-@EntityScan(basePackages="org.project.openbaton.nfvo.catalogue")
+@EntityScan(basePackages="org.project.openbaton.common.catalogue")
 @ComponentScan(basePackages = "org.project.openbaton.nfvo")
 public class Application {
 

@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.events.senders;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.nfvo.catalogue.nfvo.EventEndpoint;
+import org.project.openbaton.common.catalogue.nfvo.ApplicationEventNFVO;
+import org.project.openbaton.common.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

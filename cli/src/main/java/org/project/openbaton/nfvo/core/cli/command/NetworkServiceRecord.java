@@ -27,7 +27,7 @@ public class NetworkServiceRecord implements CommandMarker {
 
 
 	private NFVORequestor requestor = new NFVORequestor("1");
-	private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord> networkServiceRecordAgent;
+	private AbstractRestAgent<org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord> networkServiceRecordAgent;
 	private Gson mapper = new Gson();
 
 	@PostConstruct
@@ -57,8 +57,8 @@ public class NetworkServiceRecord implements CommandMarker {
 		return null;
 	}
 
-	private org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord getObject(File networkServiceDescriptor) throws FileNotFoundException {
-		return mapper.<org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord>fromJson(new InputStreamReader(new FileInputStream(networkServiceDescriptor)), org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord.class);
+	private org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord getObject(File networkServiceDescriptor) throws FileNotFoundException {
+		return mapper.<org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord>fromJson(new InputStreamReader(new FileInputStream(networkServiceDescriptor)), org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord.class);
 	}
 
 	/**
