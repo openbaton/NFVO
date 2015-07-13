@@ -1,0 +1,124 @@
+buildscript {
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+    }
+}
+plugins {
+    id 'net.researchgate.release' version '2.0.2'
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+def springBootVersion = '1.2.4.RELEASE'
+def springVersion = '4.1.7.RELEASE'
+
+allprojects {
+    task listmodules << { task -> println "\t * $task.project.name" }
+    //Put instructions for all projects
+    apply plugin: "java"
+    apply plugin: 'maven'
+    apply plugin: "jacoco"
+
+    test { finalizedBy jacocoTestReport }
+
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        compile 'org.springframework:spring-context:' + springVersion
+        compile("org.springframework.boot:spring-boot:" + springBootVersion)
+        compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
+        compile('org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion)
+
+        compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+
+        compile "org.springframework:spring-web:" + springVersion
+        compile 'org.springframework:spring-jms:' + springVersion
+
+        compile('org.apache.activemq:activemq-broker:5.11.1')
+        compile("javax.jms:javax.jms-api:2.0.1")
+        compile 'com.google.code.gson:gson:2.3.1'
+
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
+
+}
+
+subprojects {
+    //Put instructions for each sub project
+}
+
+
+// tag::repositories[]
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// end::repositories[]
+
+// Tasks
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+// tag::jar[]
+jar {
+    baseName = 'common'
+    appendix = ''
+    classifier = ''
+}
+// end::jar[]
+
+// tag::dependencies[]
+// end::dependencies[]
+
+// tag::wrapper[]
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+// end::wrapper[]
+
+// tag::install[]
+
+release {
+    failOnCommitNeeded = true	        // Fail the release process when there un-committed changes
+    failOnPublishNeeded = true	        // Fail when there are local commits that haven't been published upstream (DVCS support)
+    failOnSnapshotDependencies = false	// Fail when the project has dependencies on SNAPSHOT versions
+    failOnUnversionedFiles = true	    // Fail when files are found that are not under version control
+    failOnUpdateNeeded = true	        // Fail when the source needs to be updated, or there are changes available upstream that haven't been pulled
+    revertOnFail = true	                // When a failure occurs should the plugin revert it's changes to gradle.properties?
+}
+
+/*
+ * Gets the version name from the latest Git tag
+ */
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+task getVersion {
+    task -> println "OpenBaton v$project.version"
+}
+
+//tag::uploadArchives[]
+//end::uploadArchives[]
