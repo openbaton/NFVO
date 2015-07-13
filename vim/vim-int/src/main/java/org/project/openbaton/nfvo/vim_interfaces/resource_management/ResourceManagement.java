@@ -1,10 +1,11 @@
 package org.project.openbaton.nfvo.vim_interfaces.resource_management;
 
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.Quota;
-import org.project.openbaton.nfvo.catalogue.nfvo.Server;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.Quota;
+import org.project.openbaton.common.catalogue.nfvo.Server;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.springframework.scheduling.annotation.Async;
 
@@ -23,7 +24,7 @@ public interface ResourceManagement {
 	 * indicated by the consumer functional block.
 	 */
 	@Async
-	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
+	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 

@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.sdk.NFVORequestor;
 import org.project.openbaton.sdk.api.exception.SDKException;
 import org.project.openbaton.sdk.api.util.AbstractRestAgent;

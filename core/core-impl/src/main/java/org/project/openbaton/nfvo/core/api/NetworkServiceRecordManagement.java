@@ -1,15 +1,16 @@
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.Event;
-import org.project.openbaton.nfvo.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFRecordDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.InternalVirtualLink;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.Network;
-import org.project.openbaton.nfvo.catalogue.nfvo.Subnet;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.common.Event;
+import org.project.openbaton.common.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.common.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.common.catalogue.mano.descriptor.InternalVirtualLink;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.Network;
+import org.project.openbaton.common.catalogue.nfvo.Subnet;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
@@ -78,14 +79,14 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     // TODO fetch the NetworkServiceDescriptor from the DB
 
     @Override
-    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException {
+    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException {
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(nsd_id);
         return deployNSR(networkServiceDescriptor);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, JMSException, NamingException, BadFormatException {
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, JMSException, NamingException, BadFormatException, VimDriverException {
 
         /*
         Create NSR
@@ -94,7 +95,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         return deployNSR(networkServiceDescriptor);
     }
 
-    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, NamingException, JMSException {
+    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, NamingException, JMSException, VimDriverException {
         log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
 

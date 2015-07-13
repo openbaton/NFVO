@@ -1,7 +1,7 @@
 package org.project.openbaton.vnfm.interfaces.sender;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;

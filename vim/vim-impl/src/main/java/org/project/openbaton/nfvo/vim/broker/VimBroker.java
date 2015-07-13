@@ -1,9 +1,9 @@
 package org.project.openbaton.nfvo.vim.broker;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.nfvo.Quota;
-import org.project.openbaton.nfvo.catalogue.nfvo.Server;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.common.catalogue.nfvo.Quota;
+import org.project.openbaton.common.catalogue.nfvo.Server;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -32,6 +32,8 @@ allprojects {
 
     test { finalizedBy jacocoTestReport }
 
+    def openbatonVersion = '0.5-SNAPSHOT'
+
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
 
@@ -41,9 +43,12 @@ allprojects {
     }
 
     dependencies {
+
+        compile 'org.project.openbaton:catalogue:' + openbatonVersion
+
         compile("org.springframework.boot:spring-boot:" + springBootVersion)
         compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
-        compile('org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE')
+        compile('org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion)
         compile("org.springframework:spring-jms:4.1.6.RELEASE")
         compile('org.springframework:spring-orm:4.1.6.RELEASE')
 

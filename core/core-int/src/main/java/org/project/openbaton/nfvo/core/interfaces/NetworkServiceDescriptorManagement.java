@@ -1,12 +1,11 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 
-import java.util.List;
-
 import javax.persistence.NoResultException;
+import java.util.List;
 
 /**
  * Created by mpa on 30/04/15.

@@ -4,10 +4,10 @@ package org.project.openbaton.nfvo.core.events;
  * Created by lto on 03/06/15.
  */
 
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.nfvo.catalogue.nfvo.EventEndpoint;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.ApplicationEventNFVO;
+import org.project.openbaton.common.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.core.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;

@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
+import org.project.openbaton.common.catalogue.nfvo.NFVImage;
 import org.project.openbaton.sdk.NFVORequestor;
 import org.project.openbaton.sdk.api.exception.SDKException;
 import org.project.openbaton.sdk.api.util.AbstractRestAgent;
@@ -26,7 +26,7 @@ public class Image implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private NFVORequestor requestor = new NFVORequestor("1");
-	private AbstractRestAgent<org.project.openbaton.nfvo.catalogue.nfvo.NFVImage> imageAgent;
+	private AbstractRestAgent<org.project.openbaton.common.catalogue.nfvo.NFVImage> imageAgent;
 	private Gson mapper = new Gson();
 
 	@PostConstruct
@@ -34,7 +34,7 @@ public class Image implements CommandMarker {
 		imageAgent = requestor.getImageAgent();
 	}
 	private NFVImage getObject(File file) throws FileNotFoundException {
-		return mapper.<org.project.openbaton.nfvo.catalogue.nfvo.NFVImage>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.nfvo.catalogue.nfvo.NFVImage.class);
+		return mapper.<org.project.openbaton.common.catalogue.nfvo.NFVImage>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.common.catalogue.nfvo.NFVImage.class);
 	}
     /**
      * Adds a new VNF software Image to the image repository

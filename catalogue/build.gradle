@@ -1,7 +1,0 @@
-dependencies {
-    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.3'
-//    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3'
-//    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-    compile 'net.minidev:json-smart:1.0.9'
-}

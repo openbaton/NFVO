@@ -1,11 +1,12 @@
 package org.project.openbaton.nfvo.vnfm_reg;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.Event;
-import org.project.openbaton.nfvo.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.common.Event;
+import org.project.openbaton.common.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -135,6 +136,17 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     try {
                         ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
                     } catch (VimException e) {
+                        e.printStackTrace();
+                        log.error(e.getMessage());
+                        CoreMessage errorMessage = new CoreMessage();
+                        errorMessage.setAction(Action.ERROR);
+                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+                        lifecycleEvent.setEvent(Event.ERROR);
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                        errorMessage.setPayload(virtualNetworkFunctionRecord);
+                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        return;
+                    } catch (VimDriverException e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
                         CoreMessage errorMessage = new CoreMessage();

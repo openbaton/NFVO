@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.vnfm_reg;
 
-import org.project.openbaton.nfvo.catalogue.nfvo.EndpointType;
-import org.project.openbaton.nfvo.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.common.catalogue.nfvo.EndpointType;
+import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
