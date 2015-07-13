@@ -78,7 +78,7 @@ test {
 
 // tag::jar[]
 jar {
-    baseName = 'common'
+    baseName = 'vnfm-sdk'
     appendix = ''
     classifier = ''
 }
