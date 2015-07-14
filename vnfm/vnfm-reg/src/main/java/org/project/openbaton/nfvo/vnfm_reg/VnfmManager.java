@@ -1,15 +1,16 @@
 package org.project.openbaton.nfvo.vnfm_reg;
 
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.common.catalogue.mano.common.Event;
-import org.project.openbaton.common.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -43,12 +44,15 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Autowired
     @Qualifier("vnfmRegister")
-    private org.project.openbaton.vnfm.interfaces.register.VnfmRegister vnfmRegister;
+    private VnfmRegister vnfmRegister;
 
     private ApplicationEventPublisher publisher;
 
     @Autowired
     private ResourceManagement resourceManagement;
+
+    @Autowired
+    private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
     @Autowired
     @Qualifier("VNFRRepository")
@@ -92,7 +96,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     @Override
-    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException {
+    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException, VimException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
         VnfmSender vnfmSender;
         try {
@@ -101,7 +105,16 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             throw new NotFoundException(e2);
         }
         switch (message.getAction()){
+            case GRANT_OPERATION:
+                virtualNetworkFunctionRecord = message.getPayload();
+                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
 
+                    vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                }else {
+                    message.setAction(Action.ERROR);
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                }
+                break;
             case INSTANTIATE_FINISH:
                 log.debug("INSTANTIATE_FINISH");
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();

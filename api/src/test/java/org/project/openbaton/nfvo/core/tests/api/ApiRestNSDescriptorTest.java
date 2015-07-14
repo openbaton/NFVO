@@ -25,8 +25,16 @@ import org.project.openbaton.nfvo.api.RestNetworkServiceDescriptor;
 import org.project.openbaton.nfvo.api.exceptions.PNFDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.VNFDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.VNFDependencyNotFoundException;
+<<<<<<< HEAD
+import org.project.openbaton.catalogue.mano.common.Security;
+import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+=======
+>>>>>>> 1fe4f0d10746acdf01f0e14faa7760be701b1aa5
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

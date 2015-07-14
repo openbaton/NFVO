@@ -1,12 +1,12 @@
 package org.project.openbaton.nfvo.core.core;
 
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.Server;
-import org.project.openbaton.common.catalogue.nfvo.VimInstance;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Server;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

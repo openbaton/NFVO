@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.common.catalogue.mano.record.VirtualLinkRecord;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 
 import java.util.List;
 

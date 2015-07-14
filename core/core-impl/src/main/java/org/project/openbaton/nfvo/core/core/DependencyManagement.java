@@ -1,11 +1,11 @@
 package org.project.openbaton.nfvo.core.core;
 
-import org.project.openbaton.common.catalogue.mano.common.VNFRecordDependency;
-import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.Action;
-import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
