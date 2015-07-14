@@ -4,17 +4,17 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.catalogue.mano.common.*;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.LinkStatus;
-import org.project.openbaton.nfvo.catalogue.mano.record.VNFForwardingGraphRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualLinkRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
-import org.project.openbaton.nfvo.catalogue.nfvo.Network;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.common.catalogue.mano.common.*;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.common.catalogue.mano.record.LinkStatus;
+import org.project.openbaton.common.catalogue.mano.record.VNFForwardingGraphRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualLinkRecord;
+import org.project.openbaton.common.catalogue.nfvo.NFVImage;
+import org.project.openbaton.common.catalogue.nfvo.Network;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VirtualLinkManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
@@ -289,13 +289,13 @@ public class VirtualLinkManagementClassSuiteTest {
 		VimInstance vimInstance = new VimInstance();
 		vimInstance.setName("vim_instance");
 		vimInstance.setType("test");
-		vimInstance.setNetworks(new ArrayList<Network>() {{
+		vimInstance.setNetworks(new HashSet<Network>() {{
 			Network network = new Network();
 			network.setExtId("ext_id");
 			network.setName("network_name");
 			add(network);
 		}});
-		vimInstance.setFlavours(new ArrayList<DeploymentFlavour>() {{
+		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
 			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
 			deploymentFlavour.setExtId("ext_id_1");
 			deploymentFlavour.setFlavour_key("flavor_name");
@@ -306,7 +306,7 @@ public class VirtualLinkManagementClassSuiteTest {
 			deploymentFlavour.setFlavour_key("m1.tiny");
 			add(deploymentFlavour);
 		}});
-		vimInstance.setImages(new ArrayList<NFVImage>() {{
+		vimInstance.setImages(new HashSet<NFVImage>() {{
 			NFVImage image = new NFVImage();
 			image.setExtId("ext_id_1");
 			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
