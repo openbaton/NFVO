@@ -14,7 +14,7 @@ import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRe
 import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.catalogue.nfvo.Server;
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim.AmazonVIM;
 import org.project.openbaton.nfvo.vim.OpenstackVIM;
 import org.project.openbaton.nfvo.vim.TestVIM;

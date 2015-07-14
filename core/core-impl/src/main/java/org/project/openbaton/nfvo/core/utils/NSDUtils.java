@@ -1,12 +1,12 @@
 package org.project.openbaton.nfvo.core.utils;
 
-import org.project.openbaton.common.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.common.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.nfvo.exceptions.BadFormatException;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

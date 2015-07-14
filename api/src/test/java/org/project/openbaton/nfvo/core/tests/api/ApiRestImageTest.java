@@ -6,10 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.nfvo.api.RestImage;
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 

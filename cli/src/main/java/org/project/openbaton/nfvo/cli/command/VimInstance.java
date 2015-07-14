@@ -2,7 +2,7 @@ package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
 import org.project.openbaton.nfvo.api.RestVimInstances;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
  * OpenBaton viminstance(datacenter)-related commands implementation using the spring-shell library.
  */
 @Component
-public class VimInstance implements CommandMarker {
+public class VimInstance extends org.project.openbaton.catalogue.nfvo.VimInstance implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -41,7 +41,7 @@ public class VimInstance implements CommandMarker {
             @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter) {
 
         try {
-			return "DATACENTER CREATED: " + vimInstanceRequest.create(mapper.<org.project.openbaton.common.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), org.project.openbaton.common.catalogue.nfvo.VimInstance.class));
+			return "DATACENTER CREATED: " + vimInstanceRequest.create(mapper.<VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), org.project.openbaton.catalogue.nfvo.VimInstance.class));
 		} catch (FileNotFoundException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
@@ -92,7 +92,7 @@ public class VimInstance implements CommandMarker {
 	@CliCommand(value = "viminstance update", help = "Updates the Datacenter")
 	public String update( @CliOption(key = { "datacenterFile" }, mandatory = true, help = "The viminstance json file") final File datacenter,     @CliOption(key = { "id" }, mandatory = true, help = "The viminstance id") final String id) {
         try {
-            return "DATACENTER UPDATED: " + vimInstanceRequest.update(mapper.<org.project.openbaton.common.catalogue.nfvo.VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), VimInstance.class), id);
+            return "DATACENTER UPDATED: " + vimInstanceRequest.update(mapper.<VimInstance>fromJson(new InputStreamReader(new FileInputStream(datacenter)), VimInstance.class), id);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());

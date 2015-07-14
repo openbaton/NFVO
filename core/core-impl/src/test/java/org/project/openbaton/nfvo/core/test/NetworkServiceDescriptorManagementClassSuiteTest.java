@@ -15,7 +15,7 @@ import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.catalogue.nfvo.Network;
 import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;

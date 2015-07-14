@@ -2,7 +2,7 @@ package org.project.openbaton.nfvo.cli.command;
 
 
 import com.google.gson.Gson;
-import org.project.openbaton.common.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.openbaton.nfvo.api.RestVNFFG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
