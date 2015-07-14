@@ -1,8 +1,9 @@
 package org.project.openbaton.clients.interfaces;
 
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.common.catalogue.nfvo.*;
+import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+
 
 import java.io.InputStream;
 import java.util.List;
