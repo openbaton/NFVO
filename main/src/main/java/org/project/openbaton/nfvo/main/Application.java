@@ -53,9 +53,13 @@ public class Application {
         FileSystemUtils.deleteRecursively(new File("activemq-data"));
         Logger log = LoggerFactory.getLogger(Application.class);
 
-        log.info("Start Neutrino");
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-        log.info("Bye!");
+        log.info("Started OpenBaton");
+
+//        for (String name : context.getBeanDefinitionNames())
+//            log.debug(name);
+
+//        log.info("Bye!");
     }
     
   

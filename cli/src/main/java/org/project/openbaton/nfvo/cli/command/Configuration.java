@@ -1,17 +1,16 @@
-package org.project.openbaton.nfvo.core.cli.command;
+package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.sdk.NFVORequestor;
-import org.project.openbaton.sdk.api.exception.SDKException;
-import org.project.openbaton.sdk.api.util.AbstractRestAgent;
+import org.project.openbaton.nfvo.api.RestConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,18 +20,16 @@ import java.io.InputStreamReader;
  * OpenBaton configuration-related commands implementation using the spring-shell library.
  */
 @Component
+@Order
 public class Configuration implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private NFVORequestor requestor = new NFVORequestor("1");
-	private AbstractRestAgent<org.project.openbaton.common.catalogue.nfvo.Configuration> configurationRequest;
 	private Gson mapper = new Gson();
 
-	@PostConstruct
-	private void init(){
-		configurationRequest = requestor.getConfigurationAgent();
-	}
+	@Autowired
+	private RestConfiguration configurationRequest;
+
 	private org.project.openbaton.common.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
 		return mapper.<org.project.openbaton.common.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.common.catalogue.nfvo.Configuration.class);
 	}
@@ -48,9 +45,6 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "configurationFile" }, mandatory = true, help = "The configuration json file") final File configuration) {
 		try {
 			return "CONFIGURATION CREATED: " + configurationRequest.create(getObject(configuration));
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "CONFIGURATION NOT CREATED: (" + e.getMessage() + " )";
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return "CONFIGURATION NOT CREATED: (" + e.getMessage() + " )";
@@ -66,13 +60,8 @@ public class Configuration implements CommandMarker {
 	@CliCommand(value = "configuration delete", help = "Removes the VNF software Image from the Configurations repository")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
-		try {
 			configurationRequest.delete(id);
 			return "CONFIGURATION DELETED";
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "CONFIGURATION NOT DELETED";
-		}
 	}
 
 	/**
@@ -85,19 +74,11 @@ public class Configuration implements CommandMarker {
 	@CliCommand(value = "configuration find", help = "Returns the Configuration selected by id, or all if no id is given")
 	public String findById(
             @CliOption(key = { "id" }, mandatory = false, help = "The configuration id to find.") final String id) {
-		try {
 			if (id != null) {
 				return "FOUND CONFIGURATION: " + configurationRequest.findById(id);
 			} else {
 				return "FOUND CONFIGURATIONS: " + configurationRequest.findAll();
 			}
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "NO CONFIGURATION FOUND: (" + e.getMessage() + " )";
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return "NO CONFIGURATION FOUND: (" + e.getMessage() + " )";
-		}
 	}
 
 	/**
@@ -115,9 +96,6 @@ public class Configuration implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The configuration id") final String id) {
 		try {
 			return "CONFIGURATION UPDATED: " + configurationRequest.update(getObject(configuration), id);
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "CONFIGURATION NOT UPDATED: (" + e.getMessage() + " )";
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return "CONFIGURATION NOT UPDATED: (" + e.getMessage() + " )";
