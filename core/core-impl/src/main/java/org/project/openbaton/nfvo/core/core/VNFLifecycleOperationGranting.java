@@ -1,11 +1,11 @@
 package org.project.openbaton.nfvo.core.core;
 
-import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.Quota;
-import org.project.openbaton.common.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Quota;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -23,7 +23,7 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
     private VimBroker vimBroker;
 
     @Override
-    public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException{
+    public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
         //HashMap holds how many VDUs are deployed on a specific VimInstance
         HashMap<VimInstance,Integer> countVDUsOnVimInstances = new HashMap<>();
         //Count VDUs on a specific VimInstance

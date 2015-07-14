@@ -96,7 +96,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     @Override
-    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException {
+    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException, VimException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
         VnfmSender vnfmSender;
         try {
@@ -106,7 +106,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         }
         switch (message.getAction()){
             case GRANT_OPERATION:
-                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = message.getPayload();
                 if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
 
                     vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
