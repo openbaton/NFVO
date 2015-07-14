@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.common.catalogue.nfvo.Configuration;
+import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.common.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.nfvo.core.interfaces.NFVImageManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
