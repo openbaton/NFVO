@@ -1,5 +1,5 @@
 dependencies {
-    compile 'org.project.openbaton:common:0.5-SNAPSHOT'
+    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
 
     compile project(':repositories:repo-int')
 
