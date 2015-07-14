@@ -1,6 +1,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 /**
  * Created by mpa on 05/05/15.
@@ -15,5 +16,5 @@ public interface VNFLifecycleOperationGranting {
 	 * is parameterized in the operation.
 	 * @param virtualNetworkFunctionRecord
 	 */
-	boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
 }
