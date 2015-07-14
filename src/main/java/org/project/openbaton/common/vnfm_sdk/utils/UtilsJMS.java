@@ -1,6 +1,7 @@
 package org.project.openbaton.common.vnfm_sdk.utils;
 
-import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
+
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 
 import javax.jms.*;
 import javax.naming.Context;

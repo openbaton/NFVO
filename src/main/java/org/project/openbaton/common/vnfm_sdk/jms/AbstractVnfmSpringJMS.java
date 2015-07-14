@@ -1,11 +1,11 @@
 package org.project.openbaton.common.vnfm_sdk.jms;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.project.openbaton.common.catalogue.mano.common.Event;
-import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.common.catalogue.nfvo.EndpointType;
-import org.project.openbaton.common.catalogue.nfvo.VDUMessage;
-import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.VDUMessage;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
