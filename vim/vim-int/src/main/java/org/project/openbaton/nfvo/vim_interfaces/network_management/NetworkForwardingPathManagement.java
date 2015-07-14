@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.vim_interfaces.network_management;
 
-import org.project.openbaton.common.catalogue.mano.descriptor.NetworkForwardingPath;
+import org.project.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
 
 /**
  * Created by mpa on 30/04/15.

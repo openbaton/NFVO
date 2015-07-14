@@ -11,8 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.nfvo.api.RestConfiguration;
-import org.project.openbaton.nfvo.catalogue.nfvo.Configuration;
-import org.project.openbaton.nfvo.catalogue.nfvo.ConfigurationParameter;
+
+import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

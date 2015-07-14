@@ -4,19 +4,19 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.mano.common.HighAvailability;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.HighAvailability;
+import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ public class NetworkManagementClassSuiteTest {
 
 		Assert.assertEquals(updated_network.getName(), network.getName());
 		Assert.assertEquals(updated_network.getExtId(), network.getExtId());
-		Assert.assertEquals(updated_network.getExternal(), network.getExternal());
+		Assert.assertEquals(updated_network.isExternal(), network.isExternal());
 	}
 
 	private Network createNetwork() {
@@ -95,7 +95,7 @@ public class NetworkManagementClassSuiteTest {
 		network.setExtId("ext_id");
 		network.setExternal(false);
 		network.setShared(false);
-		network.setSubnets(new ArrayList<Subnet>() {{
+		network.setSubnets(new HashSet<Subnet>() {{
 			add(createSubnet());
 		}});
 		return network;
@@ -123,7 +123,7 @@ public class NetworkManagementClassSuiteTest {
 		Assert.assertEquals(network_exp.getId(), network_new.getId());
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
 		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+		Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class NetworkManagementClassSuiteTest {
 		Assert.assertEquals(network_exp.getId(), network_new.getId());
 		Assert.assertEquals(network_exp.getName(), network_new.getName());
 		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-		Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+		Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
 	}
 
 	@Test
@@ -341,13 +341,13 @@ public class NetworkManagementClassSuiteTest {
 		VimInstance vimInstance = new VimInstance();
 		vimInstance.setName("vim_instance");
 		vimInstance.setType("test");
-		vimInstance.setNetworks(new ArrayList<Network>() {{
+		vimInstance.setNetworks(new HashSet<Network>() {{
 			Network network = new Network();
 			network.setExtId("ext_id");
 			network.setName("network_name");
 			add(network);
 		}});
-		vimInstance.setFlavours(new ArrayList<DeploymentFlavour>() {{
+		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
 			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
 			deploymentFlavour.setExtId("ext_id_1");
 			deploymentFlavour.setFlavour_key("flavor_name");
@@ -358,7 +358,7 @@ public class NetworkManagementClassSuiteTest {
 			deploymentFlavour.setFlavour_key("m1.tiny");
 			add(deploymentFlavour);
 		}});
-		vimInstance.setImages(new ArrayList<NFVImage>() {{
+		vimInstance.setImages(new HashSet<NFVImage>() {{
 			NFVImage image = new NFVImage();
 			image.setExtId("ext_id_1");
 			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
