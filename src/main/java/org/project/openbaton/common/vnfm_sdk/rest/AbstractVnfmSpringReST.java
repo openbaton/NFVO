@@ -1,9 +1,9 @@
 package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
-import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.common.catalogue.nfvo.EndpointType;
-import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.*;

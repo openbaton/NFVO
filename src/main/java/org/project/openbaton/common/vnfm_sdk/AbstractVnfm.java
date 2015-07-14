@@ -1,8 +1,8 @@
 package org.project.openbaton.common.vnfm_sdk;
 
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.common.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

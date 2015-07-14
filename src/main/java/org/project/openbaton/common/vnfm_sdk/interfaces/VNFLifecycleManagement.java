@@ -1,6 +1,7 @@
 package org.project.openbaton.common.vnfm_sdk.interfaces;
 
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 
 /**
  * Created by mpa on 05/05/15.
