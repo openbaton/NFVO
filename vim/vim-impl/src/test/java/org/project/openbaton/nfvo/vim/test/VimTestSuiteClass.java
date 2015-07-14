@@ -6,14 +6,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.nfvo.catalogue.mano.record.Status;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
-import org.project.openbaton.nfvo.catalogue.nfvo.Server;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.common.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.common.catalogue.mano.record.Status;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.NFVImage;
+import org.project.openbaton.common.catalogue.nfvo.Server;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim.AmazonVIM;
 import org.project.openbaton.nfvo.vim.OpenstackVIM;
@@ -95,7 +96,7 @@ public class VimTestSuiteClass {
 
     @Ignore
     @Test
-    public void testVimOpenstack() throws VimException {
+    public void testVimOpenstack() throws VimDriverException, VimException {
         VirtualDeploymentUnit vdu = createVDU();
         VirtualNetworkFunctionRecord vnfr = createVNFR();
         ArrayList<String> networks = new ArrayList<>();
@@ -158,7 +159,7 @@ public class VimTestSuiteClass {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         VimInstance vimInstance = new VimInstance();
         vimInstance.setName("mock_vim_instance");
-        vimInstance.setImages(new ArrayList<NFVImage>() {{
+        vimInstance.setImages(new HashSet<NFVImage>() {{
             NFVImage nfvImage = new NFVImage();
             nfvImage.setName("image_1234");
             nfvImage.setExtId("ext_id");
@@ -174,7 +175,7 @@ public class VimTestSuiteClass {
         Set<String> vm_images = new HashSet<>();
         vm_images.add("image_1234");
         vdu.setVm_image(vm_images);
-        vimInstance.setFlavours(new ArrayList<DeploymentFlavour>());
+        vimInstance.setFlavours(new HashSet<DeploymentFlavour>());
         DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
         deploymentFlavour.setExtId("ext_id");
         deploymentFlavour.setFlavour_key("m1.small");
