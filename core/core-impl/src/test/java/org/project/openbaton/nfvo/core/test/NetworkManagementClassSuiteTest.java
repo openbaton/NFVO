@@ -11,7 +11,7 @@ import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescri
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.nfvo.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;

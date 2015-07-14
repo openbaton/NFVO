@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.common.catalogue.mano.descriptor.Policy;
+import org.project.openbaton.catalogue.mano.descriptor.Policy;
 import java.util.List;
 
 /**

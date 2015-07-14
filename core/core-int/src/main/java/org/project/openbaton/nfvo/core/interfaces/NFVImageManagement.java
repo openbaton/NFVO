@@ -1,6 +1,6 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.common.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 
 import java.util.List;
 

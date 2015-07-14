@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.nfvo.api.RestVimInstances;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VimManagement;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

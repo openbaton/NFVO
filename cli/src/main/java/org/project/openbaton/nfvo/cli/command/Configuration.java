@@ -30,8 +30,8 @@ public class Configuration implements CommandMarker {
 	@Autowired
 	private RestConfiguration configurationRequest;
 
-	private org.project.openbaton.common.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
-		return mapper.<org.project.openbaton.common.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.common.catalogue.nfvo.Configuration.class);
+	private org.project.openbaton.catalogue.nfvo.Configuration getObject(File file) throws FileNotFoundException {
+		return mapper.<org.project.openbaton.catalogue.nfvo.Configuration>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.catalogue.nfvo.Configuration.class);
 	}
 
 	/**
