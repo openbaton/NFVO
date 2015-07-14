@@ -26,10 +26,10 @@ public class NFVImage implements Serializable {
     private String diskFormat;
     private String containerFormat;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
 
     public NFVImage() {
