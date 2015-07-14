@@ -1,13 +1,17 @@
 package org.project.openbaton.nfvo.core.test;
 
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.nfvo.catalogue.mano.common.VNFRecordDependency;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.*;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualLinkRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.descriptor.*;
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
+
 import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -17,7 +21,6 @@ import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.project.openbaton.vnfm.interfaces.register.VnfmRegister;
-import org.project.openbaton.nfvo.catalogue.nfvo.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -128,7 +130,7 @@ public class ApplicationTest {
 	ResourceManagement resourceManagement() { return mock(ResourceManagement.class); }
 
 	@Bean
-	Vim vim() throws VimException{
+	Vim vim() throws VimDriverException, VimException{
 		Vim vim = mock(Vim.class);
 		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
 		return vim;

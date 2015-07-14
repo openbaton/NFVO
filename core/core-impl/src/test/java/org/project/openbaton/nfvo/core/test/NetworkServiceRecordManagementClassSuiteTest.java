@@ -4,13 +4,14 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.catalogue.mano.common.*;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.*;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.catalogue.nfvo.NFVImage;
-import org.project.openbaton.nfvo.catalogue.nfvo.Network;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.common.catalogue.mano.common.*;
+import org.project.openbaton.common.catalogue.mano.descriptor.*;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.common.catalogue.nfvo.NFVImage;
+import org.project.openbaton.common.catalogue.nfvo.Network;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
@@ -81,7 +82,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	public VimBroker vimBroker;
 
 	@Before
-	public void init() throws VimException{
+	public void init() throws VimException, VimDriverException{
 		MockitoAnnotations.initMocks(ApplicationTest.class);
 		ResourceManagement resourceManagement = mock(ResourceManagement.class);
 		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
@@ -120,7 +121,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
@@ -129,7 +130,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
 		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
@@ -138,7 +139,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
 		/**
 		 * Initial settings
 		 */
@@ -167,7 +168,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest4() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest4() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
 		/**
 		 * Initial settings
 		 */
@@ -350,13 +351,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		VimInstance vimInstance = new VimInstance();
 		vimInstance.setName("vim_instance");
 		vimInstance.setType("test");
-		vimInstance.setNetworks(new ArrayList<Network>() {{
+		vimInstance.setNetworks(new HashSet<Network>() {{
 			Network network = new Network();
 			network.setExtId("ext_id");
 			network.setName("network_name");
 			add(network);
 		}});
-		vimInstance.setFlavours(new ArrayList<DeploymentFlavour>() {{
+		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
 			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
 			deploymentFlavour.setExtId("ext_id_1");
 			deploymentFlavour.setFlavour_key("flavor_name");
@@ -367,7 +368,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 			deploymentFlavour.setFlavour_key("m1.tiny");
 			add(deploymentFlavour);
 		}});
-		vimInstance.setImages(new ArrayList<NFVImage>() {{
+		vimInstance.setImages(new HashSet<NFVImage>() {{
 			NFVImage image = new NFVImage();
 			image.setExtId("ext_id_1");
 			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
