@@ -1,4 +1,4 @@
-package org.project.openbaton.nfvo.core.cli.command;
+package org.project.openbaton.nfvo.cli.command;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

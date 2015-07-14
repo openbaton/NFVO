@@ -1,18 +1,17 @@
-package org.project.openbaton.nfvo.core.cli.command;
+package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
 import org.project.openbaton.common.catalogue.nfvo.NFVImage;
-import org.project.openbaton.sdk.NFVORequestor;
-import org.project.openbaton.sdk.api.exception.SDKException;
-import org.project.openbaton.sdk.api.util.AbstractRestAgent;
+import org.project.openbaton.nfvo.api.RestImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,17 +21,15 @@ import java.io.InputStreamReader;
  * OpenBaton image-related commands implementation using the spring-shell library.
  */
 @Component
+@Order
 public class Image implements CommandMarker {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private NFVORequestor requestor = new NFVORequestor("1");
-	private AbstractRestAgent<org.project.openbaton.common.catalogue.nfvo.NFVImage> imageAgent;
 	private Gson mapper = new Gson();
 
-	@PostConstruct
-	private void init(){
-		imageAgent = requestor.getImageAgent();
-	}
+	@Autowired
+	private RestImage imageAgent;
+
 	private NFVImage getObject(File file) throws FileNotFoundException {
 		return mapper.<org.project.openbaton.common.catalogue.nfvo.NFVImage>fromJson(new InputStreamReader(new FileInputStream(file)), org.project.openbaton.common.catalogue.nfvo.NFVImage.class);
 	}
@@ -49,9 +46,6 @@ public class Image implements CommandMarker {
 		// call the sdk image create function
 		try {
 			return "IMAGE CREATED: " + imageAgent.create(getObject(image));
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "IMAGE NOT CREATED";
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return "IMAGE NOT CREATED: ( " + e.getMessage() + " )";
@@ -67,13 +61,8 @@ public class Image implements CommandMarker {
 	@CliCommand(value = "image delete", help = "Removes the VNF software Image from the Image repository")
 	public String delete(
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
-		try {
 			imageAgent.delete(id);
 			return "IMAGE DELETED";
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "IMAGE NOT DELETED: ( " + e.getMessage() + " )";
-		}
 	}
 
 	/**
@@ -86,19 +75,11 @@ public class Image implements CommandMarker {
 	@CliCommand(value = "image find", help = "Returns the VNF software image selected by id, or all if no id is given")
 	public String findById(
             @CliOption(key = { "id" }, mandatory = false, help = "The image id") final String id) {
-		try {
 			if (id != null) {
 				return "FOUND IMAGE: " + imageAgent.findById(id);
 			} else {
 				return "FOUND IMAGES: " + imageAgent.findAll();
 			}
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "IMAGE NOT FOUND: ( " + e.getMessage() + " )";
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return "IMAGE NOT FOUND: ( " + e.getMessage() + " )";
-		}
 	}
 
     /**
@@ -116,12 +97,10 @@ public class Image implements CommandMarker {
             @CliOption(key = { "id" }, mandatory = true, help = "The image id") final String id) {
 		try {
 			return "IMAGE UPDATED: " + imageAgent.update(getObject(image), id);
-		} catch (SDKException e) {
-			log.debug(e.getMessage());
-			return "IMAGE NOT UPDATED: ( " + e.getMessage() + " )";
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			return "IMAGE NOT UPDATED: ( " + e.getMessage() + " )";
+			log.error(e.getLocalizedMessage());
+			return e.getMessage();
 		}
 	}
 

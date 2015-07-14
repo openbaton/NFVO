@@ -587,7 +587,7 @@ public class RestNetworkServiceDescriptor {
 
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	NetworkServiceRecord createRecord(
+	public NetworkServiceRecord createRecord(
 			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, VimDriverException {
 			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
