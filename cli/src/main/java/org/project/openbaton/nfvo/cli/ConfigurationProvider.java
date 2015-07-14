@@ -1,4 +1,4 @@
-package org.project.openbaton.nfvo.core.cli;
+package org.project.openbaton.nfvo.cli;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

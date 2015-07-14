@@ -23,7 +23,9 @@ targetCompatibility = 1.7
 mainClassName = 'SpringShellBridge'
 
 dependencies {
-    compile 'org.project.openbaton:sdk:0.4-SNAPSHOT'
+
+    compile project(':api')
+
 	compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
     compile 'com.google.code.gson:gson:2.3.1'
 }
