@@ -1,14 +1,14 @@
 package org.project.openbaton.nfvo.vnfm_reg;
 
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.common.catalogue.mano.common.Event;
-import org.project.openbaton.common.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -44,7 +44,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Autowired
     @Qualifier("vnfmRegister")
-    private org.project.openbaton.vnfm.interfaces.register.VnfmRegister vnfmRegister;
+    private VnfmRegister vnfmRegister;
 
     private ApplicationEventPublisher publisher;
 

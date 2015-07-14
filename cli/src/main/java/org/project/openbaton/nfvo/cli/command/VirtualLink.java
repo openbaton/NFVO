@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.nfvo.api.RestVirtualLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
