@@ -10,6 +10,7 @@ import org.project.openbaton.common.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -49,6 +50,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Autowired
     private ResourceManagement resourceManagement;
+
+    @Autowired
+    private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
     @Autowired
     @Qualifier("VNFRRepository")
@@ -101,7 +105,16 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             throw new NotFoundException(e2);
         }
         switch (message.getAction()){
+            case GRANT_OPERATION:
+                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
 
+                    vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                }else {
+                    message.setAction(Action.ERROR);
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                }
+                break;
             case INSTANTIATE_FINISH:
                 log.debug("INSTANTIATE_FINISH");
                 virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
