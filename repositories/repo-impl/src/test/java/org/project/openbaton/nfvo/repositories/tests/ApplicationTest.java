@@ -1,10 +1,10 @@
 package org.project.openbaton.nfvo.repositories.tests;
 
 import org.project.openbaton.nfvo.abstract_repositories.DatabaseRepository;
-import org.project.openbaton.nfvo.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.catalogue.mano.common.AbstractVirtualLink;
-import org.project.openbaton.nfvo.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.common.catalogue.nfvo.VimInstance;
+import org.project.openbaton.common.catalogue.mano.common.AbstractVirtualLink;
+import org.project.openbaton.common.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.nfvo.repositories.NSDRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
