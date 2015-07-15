@@ -268,7 +268,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
-        List<String> networks = new ArrayList<String>();
+        Set<String> networks = new HashSet<String>();
         for (VNFComponent vnfc: vdu.getVnfc()) {
             for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point())
                 networks.add(vnfdConnectionPoint.getExtId());
@@ -277,7 +277,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         log.trace("");
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
         log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
-        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, Arrays.<String>asList((String[]) vimInstance.getSecurityGroups().toArray()), "#userdata");
+        Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
         for (String network : server.getIps().keySet()) {
