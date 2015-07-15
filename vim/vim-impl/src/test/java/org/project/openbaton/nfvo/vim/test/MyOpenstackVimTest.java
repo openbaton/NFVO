@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.nfvo.vim.test;
 
 import org.junit.Assert;
@@ -5,14 +21,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.project.openbaton.common.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.common.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.common.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.common.catalogue.mano.record.Status;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.*;
 
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim.test.ApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
