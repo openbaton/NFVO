@@ -11,10 +11,10 @@ OpenBaton is an open source project providing a reference implementation of the 
 
 # VNFM
 
-### Version
-0.2
+# Version
+0.5
 
-### Installation
+# Installation
 
 ```sh
 $ git clone [git-repo-url] openbaton
@@ -22,7 +22,7 @@ $ cd openbaton
 $ ./openbaton.sh -i
 ```
 
-### Plugins
+# Plugins
 
 `openbaton` provides some plugins in order to interact with the most common cloud platforms available:
 * OpenStack
@@ -30,11 +30,11 @@ $ ./openbaton.sh -i
 * Amazon EC2
 * OpenNebula
 
-### Development
+# Development
 
 Want to contribute? Great!
 
-### Todo's
+# Todo's
 
 Write Tests
 Github saving overhaul
@@ -42,12 +42,10 @@ Code Commenting
 Night Mode
 
 
-News and Website
-----------------
+# News and Website
 Information about OpenBaton can be found on our website. Follow us on Twitter @[openbaton].
 
-License
-----
+# License
 
 [spring.io]:https://spring.io/
 [NFV MANO]:http://docbox.etsi.org/ISG/NFV/Open/Published/gs_NFV-MAN001v010101p%20-%20Management%20and%20Orchestration.pdf
