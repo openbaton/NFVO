@@ -37,8 +37,7 @@ public class ApiRestImageTest {
     }
 
     @Test
-    public void testImageFindAll() {
-
+    public void findAllImage() {
         log.info("" + mock.query());
         List<NFVImage> list = mock.query();
         when(mock.query()).thenReturn(list);
