@@ -8,6 +8,7 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.nfvo.api.RestNetworkServiceRecord;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,10 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
+        } catch (QuotaExceededException e) {
+            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
+            return e.getMessage();
         }
     }
 
@@ -135,6 +140,10 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
             log.error(e.getLocalizedMessage());
             return e.getMessage();
         } catch (VimDriverException e) {
+            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
+            return e.getMessage();
+        } catch (QuotaExceededException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();

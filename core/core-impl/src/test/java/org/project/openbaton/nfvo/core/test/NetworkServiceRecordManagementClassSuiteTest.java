@@ -5,15 +5,16 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.common.catalogue.mano.common.*;
-import org.project.openbaton.common.catalogue.mano.descriptor.*;
-import org.project.openbaton.common.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.common.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.common.catalogue.nfvo.NFVImage;
-import org.project.openbaton.common.catalogue.nfvo.Network;
-import org.project.openbaton.common.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
+import org.project.openbaton.catalogue.mano.common.*;
+import org.project.openbaton.catalogue.mano.descriptor.*;
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.nfvo.Network;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -121,7 +122,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
@@ -130,7 +131,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
 		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
@@ -139,7 +140,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
 		/**
 		 * Initial settings
 		 */
@@ -168,7 +169,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementOnboardTest4() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException {
+	public void nsrManagementOnboardTest4() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
 		/**
 		 * Initial settings
 		 */
