@@ -1,10 +1,8 @@
 package org.project.openbaton.common.vnfm_sdk.jms;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.catalogue.nfvo.VDUMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     private JmsTemplate jmsTemplate;
 
     @PreDestroy
-    public void shutdown(){
+    private void shutdown(){
         log.debug("PREDESTROY");
         this.unregister(vnfmManagerEndpoint);
     }
@@ -85,6 +83,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
                 this.onAction(message);
             }
         }catch(Exception e){
+            e.printStackTrace();
             log.warn("Exiting closing resources...");
         }
     }
@@ -98,26 +97,15 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         return message;
     }
 
-    public JmsTemplate getJmsTemplate() {
-        return jmsTemplate;
-    }
-
-//    protected void sendError(Exception e) throws JMSException, NamingException {
-//        CoreMessage coreMessage = new CoreMessage();
-//        coreMessage.setAction(Action.ERROR);
-//        coreMessage.setPayload(e);
-//        this.sendMessageToQueue("org.project.openbaton.common.vnfm-core-actions", coreMessage);
-//    }
-
-    protected boolean sendAndReceiveMessage(String receiveFromQueueName, String sendToQueueName, final Serializable vduMessage) throws JMSException {
+    protected Serializable sendAndReceiveMessage(String receiveFromQueueName, String sendToQueueName, final Serializable vduMessage) throws JMSException {
         sendMessageToQueue(sendToQueueName, vduMessage);
         ObjectMessage objectMessage = (ObjectMessage) jmsTemplate.receive(receiveFromQueueName);
         log.debug("Received: " + objectMessage.getObject());
-        VDUMessage answer = (VDUMessage) objectMessage.getObject();
-        if (answer.getLifecycleEvent().ordinal() != Event.ERROR.ordinal()){
-            return true;
-        }
-        return false;
+//        VDUMessage answer = (VDUMessage) objectMessage.getObject();
+//        if (answer.getLifecycleEvent().ordinal() != Event.ERROR.ordinal()){
+//            return true;
+//        }
+        return objectMessage.getObject();
     }
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {
@@ -129,7 +117,8 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
                 return objectMessage;
             }
         };
-
+        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate.setPubSubNoLocal(false);
         jmsTemplate.send(sendToQueueName, messageCreator);
     }
 
