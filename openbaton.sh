@@ -1,6 +1,41 @@
 #!/bin/bash
 
-version="0.5-SNAPSHOT"
+_version="0.5-SNAPSHOT"
+
+_base=/opt
+_openbaton_base="${_base}/openbaton"
+_message_queue_base="apache-activemq-5.11.1"
+
+
+function start_activemq_linux {
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+}
+
+function start_activemq_osx {
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
+}
+
+function check_activemq {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	ps -a | grep -v grep | grep activemq > /dev/null
+    	result=$?
+        if [ "${result}" -eq "0" ]; then
+         	echo "activemq service running, everything is fine"
+        else
+          	echo "activemq is not running, starting it:"
+            	start_activemq_linux
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+	ps aux | grep -v grep | grep activemq > /dev/null
+        result=$?
+         if [ "${result}" -eq "0" ]; then
+          	echo "activemq service running, everything is fine"
+         else
+           	echo "activemq is not running, starting it:"
+            	start_activemq_osx
+         fi
+    fi
+}
 
 function start {
 
@@ -9,9 +44,11 @@ function start {
             compile_nfvo
     fi
 
+    check_activemq
+
     if [ 0 -eq $? ]
         then
-            screen -S openbaton java -jar "build/libs/openbaton-$version.jar"
+            screen -S openbaton java -jar "build/libs/openbaton-$_version.jar"
     fi
 }
 
