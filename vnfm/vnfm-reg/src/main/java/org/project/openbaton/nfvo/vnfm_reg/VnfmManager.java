@@ -107,8 +107,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         switch (message.getAction()){
             case GRANT_OPERATION:
                 virtualNetworkFunctionRecord = message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
-
                     vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 }else {
                     message.setAction(Action.ERROR);
@@ -117,7 +117,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 break;
             case INSTANTIATE_FINISH:
                 log.debug("INSTANTIATE_FINISH");
-                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
