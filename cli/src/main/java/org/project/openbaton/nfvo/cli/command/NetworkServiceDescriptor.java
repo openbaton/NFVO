@@ -9,6 +9,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.nfvo.api.RestNetworkServiceDescriptor;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -490,6 +491,10 @@ public class NetworkServiceDescriptor implements CommandMarker {
             log.error(e.getLocalizedMessage());
             return e.getMessage();
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
+            return e.getMessage();
+        } catch (QuotaExceededException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
