@@ -7,6 +7,8 @@ import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,20 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
     @Autowired
     private VimBroker vimBroker;
 
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
         //HashMap holds how many VDUs are deployed on a specific VimInstance
         HashMap<VimInstance,Integer> countVDUsOnVimInstances = new HashMap<>();
         //Count VDUs on a specific VimInstance
+        log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            if (vdu.getExtId() != null)
+            log.debug("Found VDU with id: " + vdu.getId());
+            if (vdu.getExtId() != null) {
+                log.debug("VDU " + vdu.getHostname() + " is already deployed");
                 break;
+            }
             if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
                 countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + 1);
             } else {
@@ -37,8 +45,10 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
             }
         }
         //Check if enough resources are available for the deployment
+        log.debug("Checking if enough resources are available on the defined VimInstance.");
         for (VimInstance vimInstance : countVDUsOnVimInstances.keySet()) {
             Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
+            log.debug("Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
             //Fetch the Flavor for getting allocated resources needed
             DeploymentFlavour flavor = null;
             for (DeploymentFlavour currentFlavor : vimInstance.getFlavours()) {
@@ -52,12 +62,16 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
                 leftQuota.setInstances(leftQuota.getInstances() - 1);
                 leftQuota.setCores(leftQuota.getCores() - flavor.getVcpus());
                 leftQuota.setRam(leftQuota.getRam() - flavor.getRam());
+                log.debug("Left Quota on VimInstance " + vimInstance.getName() + " after considering VDU is " + leftQuota);
             }
             //If one value is negative, it is not possible to deploy the VNFR on (at least on one VimInstance) -> return false
-            if (leftQuota.getInstances() < 0 || leftQuota.getRam() < 0 || leftQuota.getCores() < 0)
+            if (leftQuota.getInstances() < 0 || leftQuota.getRam() < 0 || leftQuota.getCores() < 0) {
+                log.warn("Not enough resources are available to deploy VNFR " + virtualNetworkFunctionRecord.getName());
                 return false;
+            }
         }
         //If there are enough resources to deploy the VNFR on the VimInstance, return true
+        log.info("Enough resources are available for deploying VNFR " + virtualNetworkFunctionRecord.getName());
         return true;
     }
 }

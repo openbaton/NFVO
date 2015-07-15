@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -106,7 +107,7 @@ public class VimTestSuiteClass {
 
         Server server = new Server();
         server.setExtId(environment.getProperty("mocked_id"));
-        when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anyList(), anyList(), anyString())).thenReturn(server);
+        when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString())).thenReturn(server);
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);
