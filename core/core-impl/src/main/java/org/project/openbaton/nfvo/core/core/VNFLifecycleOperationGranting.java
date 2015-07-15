@@ -33,7 +33,7 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
         //Count VDUs on a specific VimInstance
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            log.debug("Found VDU: " + vdu.getHostname());
+            log.debug("Found VDU with id: " + vdu.getId());
             if (vdu.getExtId() != null) {
                 log.debug("VDU " + vdu.getHostname() + " is already deployed");
                 break;
