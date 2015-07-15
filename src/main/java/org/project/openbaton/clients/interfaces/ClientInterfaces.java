@@ -7,13 +7,14 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lto on 12/05/15.
  */
 public interface ClientInterfaces {
 
-    public Server launchInstance(String name, String image, String flavor, String keypair, List<String> network, List<String> secGroup, String userData);
+    public Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
     public void init(VimInstance vimInstance);
 
     List<NFVImage> listImages();
@@ -22,7 +23,7 @@ public interface ClientInterfaces {
     List<Network> listNetworks();
     List<DeploymentFlavour> listFlavors();
 
-    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, List<String> networks, List<String> securityGroups, String s) throws VimDriverException;
+    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException;
 
     void deleteServerByIdAndWait(String id);
     Network createNetwork(Network network);
