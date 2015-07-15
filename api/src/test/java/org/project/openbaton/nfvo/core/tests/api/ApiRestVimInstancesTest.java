@@ -36,8 +36,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterFindAll() {
-
+	public void findAllVimInstances() {
 		log.info("" + mock.query());
 		List<VimInstance> list = mock.query();
 		when(mock.query()).thenReturn(list);
@@ -45,7 +44,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterCreate() throws VimException {
+	public void createVimInstance() throws VimException {
 		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
@@ -59,7 +58,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterFindBy() {
+	public void findByIdVimInstance() {
 		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
@@ -70,7 +69,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterUpdate() throws VimException {
+	public void updateVimInstance() throws VimException {
 		VimInstance datacenter = new VimInstance();
 		datacenter.setId("123");
 		datacenter.setName("DC-1");
@@ -81,7 +80,7 @@ public class ApiRestVimInstancesTest {
 	}
 
 	@Test
-	public void testdatacenterDelete() {
+	public void deleteVimInstance() {
 		mock.delete("123");
 		restVimInstances.delete("123");
 	}
