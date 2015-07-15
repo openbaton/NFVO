@@ -35,7 +35,7 @@ public class ApiRestConfigurationTest {
 	}
 
 	@Test
-	public void testconfigurationFindAll() {
+	public void configurationFindAll() {
 
 		log.info("" + mock.query());
 		List<Configuration> list = mock.query();
@@ -44,7 +44,7 @@ public class ApiRestConfigurationTest {
 	}
 
 	@Test
-	public void testconfigurationCreate() {
+	public void configurationCreate() {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
@@ -59,7 +59,7 @@ public class ApiRestConfigurationTest {
 	}
 
 	@Test
-	public void testconfigurationFindBy() {
+	public void configurationFindBy() {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
@@ -72,7 +72,7 @@ public class ApiRestConfigurationTest {
 	}
 
 	@Test
-	public void testconfigurationUpdate() {
+	public void configurationUpdate() {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
@@ -85,7 +85,7 @@ public class ApiRestConfigurationTest {
 	}
 
 	@Test
-	public void testconfigurationDelete() {
+	public void configurationDelete() {
 		mock.delete("123");
 		restConfiguration.delete("123");
 	}
