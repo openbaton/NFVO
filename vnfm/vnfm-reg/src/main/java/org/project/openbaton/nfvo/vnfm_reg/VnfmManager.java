@@ -188,6 +188,14 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         return;
                     }
 
+		for (LifecycleEvent event :virtualNetworkFunctionRecord.getLifecycle_event()){
+                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()){
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
+                        virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
+                        break;
+                    }
+                }
+		
                 CoreMessage coreMessage = new CoreMessage();
                 coreMessage.setAction(Action.INSTANTIATE);
                 coreMessage.setPayload(virtualNetworkFunctionRecord);
