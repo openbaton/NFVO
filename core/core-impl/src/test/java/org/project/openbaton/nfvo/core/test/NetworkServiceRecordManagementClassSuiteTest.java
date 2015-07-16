@@ -19,22 +19,25 @@ package org.project.openbaton.nfvo.core.test;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
+import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
-import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -105,7 +108,11 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
 		Vim vim = mock(Vim.class);
 		when(vimBroker.getVim(anyString())).thenReturn(vim);
+		when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
 		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
+		VNFLifecycleOperationGranting vnfLifecycleOperationGranting = mock(VNFLifecycleOperationGranting.class);
+		when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
+
 		log.info("Starting test");
 	}
 
@@ -322,6 +329,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		nsr.getMonitoring_parameter().add("monitor3");
 		HashSet<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new HashSet<VirtualNetworkFunctionRecord>();
 		VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
+		virtualNetworkFunctionRecord.setName("mocked_vnfr_name");
 		virtualNetworkFunctionRecord
 				.setMonitoring_parameter(new HashSet<String>() {
 					{
@@ -397,6 +405,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 			add(image);
 		}});
 		return vimInstance;
+	}
+
+	private Quota createQuota() {
+		Quota quota = new Quota();
+		quota.setInstances(Integer.MAX_VALUE);
+		quota.setRam(Integer.MAX_VALUE);
+		quota.setCores(Integer.MAX_VALUE);
+		return quota;
 	}
 
 }
