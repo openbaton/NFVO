@@ -171,12 +171,13 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
             }
-            if (!events.contains(Event.ALLOCATE))
+            if (!events.contains(Event.ALLOCATE)) {
                 if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord) == false)
                     throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionRecord.getName());
-                for(VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    ids.add(resourceManagement.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord));
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord));
                 }
+            }
         }
 
         for(Future<String> id : ids){
