@@ -1,0 +1,17 @@
+
+rootProject.ext.execAndGetOutput = { String command ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+
+        exec {
+            workingDir rootProject.projectDir
+            commandLine command.split()
+            standardOutput = stdout
+        }
+
+        return stdout.toString().trim()
+    }
+    catch (Exception e) {
+        return null
+    }
+}
