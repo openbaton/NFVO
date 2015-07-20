@@ -1,0 +1,5 @@
+rootProject.name = 'openbaton-lib'
+
+include 'catalogue'
+include 'vim-drivers'
+include 'vnfm-sdk'
