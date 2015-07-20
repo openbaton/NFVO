@@ -47,9 +47,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -100,14 +97,14 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     // TODO fetch the NetworkServiceDescriptor from the DB
 
     @Override
-    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(nsd_id);
         return deployNSR(networkServiceDescriptor);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, JMSException, NamingException, BadFormatException, VimDriverException, QuotaExceededException {
+    public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
 
         /*
         Create NSR
@@ -116,7 +113,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         return deployNSR(networkServiceDescriptor);
     }
 
-    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, NamingException, JMSException, VimDriverException, QuotaExceededException {
+    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
         log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
 
@@ -217,7 +214,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     }
 
     @Override
-    public void delete(String id) throws VimException, NotFoundException, NamingException, JMSException, InterruptedException, ExecutionException {
+    public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
         List<Future<Void>> futures = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {

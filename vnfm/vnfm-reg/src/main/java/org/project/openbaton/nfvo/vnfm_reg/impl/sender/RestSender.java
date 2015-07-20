@@ -27,8 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 
 /**
  * Created by lto on 03/06/15.
@@ -87,7 +85,7 @@ public class RestSender implements VnfmSender{
     }
 
     @Override
-    public void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
+    public void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) {
         this.sendToVnfm(coreMessage, endpoint.getEndpoint());
 
     }

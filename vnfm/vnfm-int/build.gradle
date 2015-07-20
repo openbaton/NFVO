@@ -15,8 +15,10 @@
  */
 
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+    compile project(':catalogue')
     compile project(':exceptions')
+
+    compile 'org.springframework:spring-jms:' + springVersion
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

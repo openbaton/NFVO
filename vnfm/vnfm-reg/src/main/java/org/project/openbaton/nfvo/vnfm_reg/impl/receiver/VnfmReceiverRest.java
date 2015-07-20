@@ -27,8 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 
 /**
  * Created by lto on 26/05/15.
@@ -44,7 +42,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
     @Override
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void actionFinished(@RequestBody CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException, VimException {
+    public void actionFinished(@RequestBody CoreMessage coreMessage) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + coreMessage);
         vnfmManager.executeAction(coreMessage);
 

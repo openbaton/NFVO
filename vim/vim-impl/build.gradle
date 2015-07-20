@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
-    compile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
+    compile project(':catalogue')
+    compile project(':vim-drivers')
 
     compile project(':exceptions')
-    compile project(':vim:vim-int')
+    compile project(':vim-int')
 
-    runtime 'org.project.openbaton:clients-impl:0.2-SNAPSHOT'
+    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
 
-    testCompile 'org.project.openbaton:clients-impl:0.2-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+//  TODO put to testCompile
+    compile 'org.springframework:spring-test:' + springVersion
 }

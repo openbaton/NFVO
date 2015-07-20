@@ -15,5 +15,5 @@
  */
 
 dependencies {
-    runtime project(':vnfm:vnfm-reg')
+    runtime project(':vnfm-reg')
 }

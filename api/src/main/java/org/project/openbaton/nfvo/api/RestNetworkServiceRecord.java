@@ -39,8 +39,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -70,14 +68,14 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public NetworkServiceRecord create(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
 			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+	public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
 		return networkServiceRecordManagement.onboard(id);
 	}
 
@@ -90,7 +88,7 @@ public class RestNetworkServiceRecord {
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException {
+	public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NotFoundException{
 		try {
 			networkServiceRecordManagement.delete(id);
 		} catch (NoResultException e) {

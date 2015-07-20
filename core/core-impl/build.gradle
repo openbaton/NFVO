@@ -15,16 +15,23 @@
  */
 
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+    compile project(':catalogue')
 
-    compile project(':core:core-int')
-    compile project(':repositories:repo-int')
-    compile project(':vim:vim-int')
-    compile project(':vnfm:vnfm-int')
+    compile project(':core-int')
+    compile project(':repo-int')
+    compile project(':vim-int')
+    compile project(':vnfm-int')
 
-    compile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
+    compile project(':vim-drivers')
 
+    /**
+     * Spring dependencies
+     */
+    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'org.springframework:spring-jms:' + springVersion
+
+    compile 'javax.jms:javax.jms-api:2.0.1'
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-    testCompile 'org.project.openbaton:clients-int:0.2-SNAPSHOT'
+
 }
