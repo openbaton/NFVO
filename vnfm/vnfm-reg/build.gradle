@@ -17,13 +17,14 @@
 def springBootVersion = "1.2.4.RELEASE"
 
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+    compile project(':catalogue')
 
     compile project(':exceptions')
-    compile project(':repositories:repo-int')
-    compile project(':core:core-int')
+    compile project(':repo-int')
+    compile project(':core-int')
+
+    compile 'javax.jms:javax.jms-api:2.0.1'
+    compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
 
     compile 'com.google.code.gson:gson:2.3.1'
-
-    compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
 }

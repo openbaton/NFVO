@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    runtime project(':vim:vim-impl')
+    runtime project(':vim-impl')
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

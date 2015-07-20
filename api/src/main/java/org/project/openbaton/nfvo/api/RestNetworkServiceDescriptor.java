@@ -16,20 +16,20 @@
 
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.api.exceptions.*;
 import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.common.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.api.exceptions.*;
+import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
+import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
-import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
-import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.validation.Valid;
@@ -605,7 +604,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public NetworkServiceRecord createRecord(
-			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, VimDriverException, QuotaExceededException {
+			@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, VimException, NotFoundException, VimDriverException, QuotaExceededException {
 			return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 	}
 

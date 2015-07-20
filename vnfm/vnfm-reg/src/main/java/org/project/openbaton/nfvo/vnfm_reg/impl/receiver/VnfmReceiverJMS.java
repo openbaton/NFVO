@@ -28,9 +28,6 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-
 /**
  * Created by lto on 26/05/15.
  */
@@ -44,7 +41,7 @@ public class VnfmReceiverJMS implements VnfmReceiver {
 
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
-    public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException, VimException {
+    public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + coreMessage);
 
         vnfmManager.executeAction(coreMessage);
