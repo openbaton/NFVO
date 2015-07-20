@@ -20,6 +20,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,6 +41,23 @@ public class VimBroker implements org.project.openbaton.nfvo.vim_interfaces.vim.
 
     @Autowired
     private ConfigurableApplicationContext context;
+
+    private HashMap<String, ClientInterfaces> clientInterfaces;
+
+    @PostConstruct
+    private void init(){
+        this.clientInterfaces = new HashMap<>();
+    }
+
+    @Override
+    public void addClient(ClientInterfaces client, String type){
+        this.clientInterfaces.put(type, client);
+    }
+
+    @Override
+    public ClientInterfaces getClient(String type){
+        return this.clientInterfaces.get(type);
+    }
 
     @Override
     public Vim getVim(String type) {

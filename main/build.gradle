@@ -30,7 +30,7 @@ dependencies {
     runtime project(':core-impl')
     runtime project(':api')
 //    runtime project(':security')
-//    runtime project(':cli')
+    runtime project(':cli')
     runtime project(':vim-impl')
     runtime project(':repo-impl')
     runtime project(':vnfm-reg')

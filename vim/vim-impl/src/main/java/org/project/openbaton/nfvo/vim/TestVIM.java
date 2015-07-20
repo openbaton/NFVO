@@ -16,26 +16,26 @@
 
 package org.project.openbaton.nfvo.vim;
 
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.util.IdGenerator;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -49,10 +49,17 @@ public class TestVIM implements Vim {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    @Qualifier("testClient")
+//    @Autowired
+//    @Qualifier("testClient")
     private ClientInterfaces testClient;
 
+    @Autowired
+    private VimBroker vimBroker;
+
+    @PostConstruct
+    private void init(){
+        this.testClient = vimBroker.getClient("test");
+    }
 
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
