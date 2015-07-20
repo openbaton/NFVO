@@ -5,8 +5,7 @@ apply plugin: 'eclipse'
 
 version = '1.0'
 
-apply from: 'gradle/gradle/command.line.helper.gradle'
-apply from: 'gradle/gradle/git.helpers.gradle'
+apply from: 'gradle/gradle/helpers.gradle'
 
 project.ext {
     //------------------------------------------------//
