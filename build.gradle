@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+
+version = '1.0'
+
+apply from: 'gradle/gradle/helpers.gradle'
+
+project.ext {
+    //------------------------------------------------//
+    /**
+     * Spring Related Variables
+     */
+    springVersion = '4.1.7.RELEASE'
+    springBootVersion = '1.2.4.RELEASE'
+    //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * Application Related Version
+     */
+    applicationVersion = "0.6-alpha"
+    applicationVersionDebian = "1";
+
+    applicationRelease = isApplicationRelease()
+    applicationDate = new Date()
+    applicationRevision = getRevision()
+
+    applicationVersionSnapshot = (!applicationRelease) ? "+SNAPSHOT.${asUTC(applicationDate, 'yyMMddHHmm')}.git${applicationRevision}" : ""
+    applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
+    //------------------------------------------------//
+}
+
+apply from: 'gradle/gradle/application.java.gradle'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+}
