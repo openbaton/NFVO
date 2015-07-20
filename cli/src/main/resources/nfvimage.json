@@ -1,7 +1,0 @@
-{
-  "extId":"0.1",
-  "name":"testimage",
-  "minRam":512,
-  "minDiskSpace":10,
-  "minCPU":"supercpu"
-}
