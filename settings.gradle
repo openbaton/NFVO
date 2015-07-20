@@ -18,7 +18,7 @@ rootProject.projectDir = file('.')
 rootProject.name = 'openbaton'
 
 include 'api'
-//include 'cli'
+include 'cli'
 include 'exceptions'
 //include 'core'
 include 'core-impl', 'core-int'

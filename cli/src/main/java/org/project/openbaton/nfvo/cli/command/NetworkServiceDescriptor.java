@@ -17,11 +17,11 @@
 package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.common.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.api.RestNetworkServiceDescriptor;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
@@ -35,8 +35,6 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -486,15 +484,7 @@ public class NetworkServiceDescriptor implements CommandMarker {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
-        } catch (NamingException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
         } catch (VimException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
-        } catch (JMSException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
