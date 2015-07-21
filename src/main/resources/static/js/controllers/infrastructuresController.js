@@ -3,7 +3,7 @@ angular.module('app')
         .controller('InfrastructureCtrl', function($scope, $q, $compile, http, $routeParams, $route, $window, topologiesAPI, $timeout) {
 
 
-            loadTable();
+            //loadTable();
             $scope.isCollapsed = true;
             $scope.alerts = [];
             $scope.textTopologyJson = '';
@@ -124,7 +124,7 @@ angular.module('app')
             function drawTopologyDeployed(topology) {
                 var lines = [];
                 var links = http.get("/api/rest/admin/v2/links"),
-                        datacenters = http.get("/api/rest/admin/v2/datacenters"),
+                        datacenters = http.get("/api/rest/admin/v2/vim-instances"),
                         accesspoints = http.get("/api/rest/admin/v2/accesspoints"),
                         chains = http.get("/api/rest/crosslayer/v1/chains"),
                         switches = http.get("/api/rest/admin/v2/switches");
@@ -386,7 +386,7 @@ angular.module('app')
             var unitsInDc = 0;
             function paintDatacenter(node) {
 
-                var html = '<div id = "' + node.obj.id + '" class="dataC " ng-show="datacenters[' + $scope.datacenters.length + ']"><div class="vm" ng-repeat="unit in datacenters[' + $scope.datacenters.length + '].units"><div class="service" ng-repeat="service in unit.services">{{service.instanceName}}</div><div class="footer"><a href="#/topologies/' + $routeParams.topologyid + '/containers/{{unit.serviceContainerId}}">{{removeId(unit.hostname)}}</a></div></div><div class="footer"><a href="#/datacenters/' + node.obj.id + '">{{datacenters[' + $scope.datacenters.length + '].name}} : {{datacenters[' + $scope.datacenters.length + '].location.name}}</a></div></div>';
+                var html = '<div id = "' + node.obj.id + '" class="dataC " ng-show="vim-instances[' + $scope.datacenters.length + ']"><div class="vm" ng-repeat="unit in vim-instances[' + $scope.datacenters.length + '].units"><div class="service" ng-repeat="service in unit.services">{{service.instanceName}}</div><div class="footer"><a href="#/topologies/' + $routeParams.topologyid + '/containers/{{unit.serviceContainerId}}">{{removeId(unit.hostname)}}</a></div></div><div class="footer"><a href="#/vim-instances/' + node.obj.id + '">{{vim-instances[' + $scope.datacenters.length + '].name}} : {{vim-instances[' + $scope.datacenters.length + '].location.name}}</a></div></div>';
 
                 var element = angular.element(html);
                 $compile(element)($scope);

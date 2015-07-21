@@ -19,7 +19,7 @@
         <h2>Topology name: {{topologyShow.name}}</h2>
 
         <dl>
-            <!--<h4><a href="#/datacenters/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
+            <!--<h4><a href="#/vim-instances/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
             <div ng-repeat="(key,value) in topologyShow">
                 <div ng-if="key != 'serviceContainers' && key != 'policies' && key != 'locations' && key != 'version'">
                     <dt>{{key}}:</dt>

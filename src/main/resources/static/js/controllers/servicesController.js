@@ -10,7 +10,7 @@ app.controller('ServiceCtrl', function($scope, serviceAPI, $routeParams, http, $
         $scope.alerts.splice(index, 1);
     };
 
-    loadServicesTable();
+    //loadServicesTable();
 
 
 
