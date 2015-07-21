@@ -24,12 +24,15 @@ import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.catalogue.nfvo.InstallPluginEvent;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -46,9 +49,11 @@ import java.util.Map;
  * method.
  */
 @Component
-public class OpenbatonCLI implements CommandLineRunner {
+public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+    private ApplicationEventPublisher publisher;
+
 
     @Autowired
     @Qualifier("configurationRepository")
@@ -145,7 +150,9 @@ public class OpenbatonCLI implements CommandLineRunner {
         File dest = new File(new_filename);
         log.debug("newFileNAme: " + new_filename);
         FileUtils.copyFile(jar, dest);
-        //TODO sendEvent
+        InstallPluginEvent event = new InstallPluginEvent(this);
+        event.setPath(new_filename);
+        this.publisher.publishEvent(event);
         return true;
 
     }
@@ -172,5 +179,10 @@ public class OpenbatonCLI implements CommandLineRunner {
         } catch (Exception e) {
             openbatonCLI.log.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.publisher = applicationEventPublisher;
     }
 }
