@@ -1,11 +1,17 @@
+plugins {
+    id 'net.researchgate.release' version '2.1.2'
+}
+
+apply from: 'gradle/gradle/git.release.gradle'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-
-version = '1.0'
-
 apply from: 'gradle/gradle/helpers.gradle'
+version = '0.5-SNAPSHOT'
+
+apply from: 'gradle/gradle/command.line.helper.gradle'
+apply from: 'gradle/gradle/git.helpers.gradle'
 
 project.ext {
     //------------------------------------------------//
@@ -13,7 +19,7 @@ project.ext {
      * Spring Related Variables
      */
     springVersion = '4.1.7.RELEASE'
-    springBootVersion = '1.2.4.RELEASE'
+    springBootVersion = '1.2.5.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
