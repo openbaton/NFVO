@@ -30,5 +30,16 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.mockito:mockito-all:1.10.19'
 //  TODO put to testCompile
-    compile 'org.springframework:spring-test:' + springVersion
+    testCompile 'org.springframework:spring-test:' + springVersion
+
+    compile ('org.apache.jclouds.driver:jclouds-slf4j:1.9.0')
+    compile ('org.apache.jclouds.driver:jclouds-sshj:1.9.0')
+    compile ('org.apache.jclouds.api:openstack-keystone:1.9.0')
+    compile ('org.apache.jclouds.api:openstack-nova:1.9.0')
+    compile ('org.apache.jclouds.api:openstack-swift:1.9.0')
+    compile ('org.apache.jclouds.api:openstack-cinder:1.9.0')
+    compile ('org.apache.jclouds.api:openstack-trove:1.9.0')
+    compile ('org.apache.jclouds.labs:openstack-glance:1.9.0')
+    compile ('org.apache.jclouds.labs:openstack-neutron:1.9.0')
+    compile ('org.apache.jclouds.labs:openstack-marconi:1.9.0')
 }

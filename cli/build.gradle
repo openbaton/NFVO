@@ -18,7 +18,7 @@ dependencies {
 
     compile project(':api')
 
-    runtime project(':vim-impl')
+    compile project(':repo-int')
 
     compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
     compile 'com.google.code.gson:gson:2.3.1'
