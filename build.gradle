@@ -1,192 +1,54 @@
-buildscript {
-
-    repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
-    }
-}
 plugins {
-    id 'net.researchgate.release' version '2.0.2'
+    id 'net.researchgate.release' version '2.1.2'
 }
+
+apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'application'
-apply plugin: 'spring-boot'
+apply plugin: 'eclipse'
 
-mainClassName = 'org.project.openbaton.nfvo.main.Application'
+version = '0.5-SNAPSHOT'
 
+apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
+apply from: 'openbaton-libs/gradle/gradle/git.helpers.gradle'
 
-def springBootVersion = "1.2.4.RELEASE"
+project.ext {
+    //------------------------------------------------//
+    /**
+     * Spring Related Variables
+     */
+    springVersion = '4.1.7.RELEASE'
+    springBootVersion = '1.2.5.RELEASE'
+    //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * Application Related Version
+     */
+    applicationVersion = "0.6-alpha"
+    applicationVersionDebian = "1";
 
-allprojects {
-    task listmodules << { task -> println "\t * $task.project.name" }
-    //Put instructions for all projects
-    apply plugin: "java"
-    apply plugin: 'maven'
-    apply plugin: "jacoco"
+    applicationRelease = isApplicationRelease()
+    applicationDate = new Date()
+    applicationRevision = getRevision()
 
-    test { finalizedBy jacocoTestReport }
-
-    def openbatonVersion = '0.5-SNAPSHOT'
-
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
-    repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-
-    dependencies {
-
-        compile 'org.project.openbaton:catalogue:' + openbatonVersion
-
-        compile("org.springframework.boot:spring-boot:" + springBootVersion)
-        compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
-        compile('org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion)
-        compile("org.springframework:spring-jms:4.1.7.RELEASE")
-        compile('org.springframework:spring-orm:4.1.7.RELEASE')
-
-        compile("javax.jms:javax.jms-api:2.0.1")
-        compile('org.apache.activemq:activemq-broker:5.11.1')
-        compile('org.apache.activemq:activemq-kahadb-store:5.11.1')
-        compile("mysql:mysql-connector-java:5.1.35")
-        compile('org.hsqldb:hsqldb:2.3.2')
-        compile("org.hibernate:hibernate-entitymanager:4.3.10.Final")
-        compile("org.hibernate:hibernate-core:4.3.10.Final")
-        compile('commons-dbcp:commons-dbcp:1.4')
-
-        testCompile("org.springframework.boot:spring-boot-starter-data-jpa:" + springBootVersion)
-        testCompile('org.hsqldb:hsqldb:2.3.2')
-        testCompile("junit:junit:4.9")
-        testCompile("org.springframework:spring-test:4.1.6.RELEASE")
-        testCompile("org.mockito:mockito-core:1.9.5")
-    }
-
+    applicationVersionSnapshot = (!applicationRelease) ? "+SNAPSHOT.${asUTC(applicationDate, 'yyMMddHHmm')}.git${applicationRevision}" : ""
+    applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
+    //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * gradle Related Vars
+     */
+    mainClass = 'org.project.openbaton.nfvo.main.Application'
+    //------------------------------------------------//
 }
-
-subprojects {
-    //Put instructions for each sub project
-}
-
-
-/*
- * Copyright (c) 2015 Fraunhofer FOKUS
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-// tag::repositories[]
+apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
-
-// end::repositories[]
-
-// Tasks
-
-bootRun{
-    standardInput = System.in
-}
-
-test {
-    testLogging.showStandardStreams = true
-}
-
-// tag::jar[]
-jar {
-    baseName = 'openbaton'
-    appendix = ''
-    classifier = ''
-}
-// end::jar[]
-
-// tag::dependencies[]
 
 dependencies {
     compile project(':main')
 }
 
-// end::dependencies[]
-
-// tag::wrapper[]
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
-}
-// end::wrapper[]
-
-// tag::install[]
-
-release {
-    failOnCommitNeeded = true	        // Fail the release process when there un-committed changes
-    failOnPublishNeeded = true	        // Fail when there are local commits that haven't been published upstream (DVCS support)
-    failOnSnapshotDependencies = false	// Fail when the project has dependencies on SNAPSHOT versions
-    failOnUnversionedFiles = true	    // Fail when files are found that are not under version control
-    failOnUpdateNeeded = true	        // Fail when the source needs to be updated, or there are changes available upstream that haven't been pulled
-    revertOnFail = true	                // When a failure occurs should the plugin revert it's changes to gradle.properties?
-}
-
-/*
- * Gets the version name from the latest Git tag
- */
-def getVersionName = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
-
-task getVersion {
-    task -> println "OpenBaton v$project.version"
-}
-
-//tag::uploadArchives[]
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            addFilter('api') {artifact, file ->
-                artifact.name == 'api'
-            }
-            addFilter('catalogue') {artifact, file ->
-                artifact.name == 'catalogue'
-            }
-            addFilter('cli') {artifact, file ->
-                artifact.name == 'cli'
-            }
-            addFilter('core') {artifact, file ->
-                artifact.name == 'core'
-            }
-            addFilter('main') {artifact, file ->
-                artifact.name == 'main'
-            }
-            addFilter('repository') {artifact, file ->
-                artifact.name == 'repository'
-            }
-            addFilter('vim') {artifact, file ->
-                artifact.name == 'vim'
-            }
-        }
-    }
-}
-
-//end::uploadArchives[]
+apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'

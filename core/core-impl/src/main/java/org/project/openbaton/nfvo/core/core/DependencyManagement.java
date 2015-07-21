@@ -31,8 +31,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +51,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, JMSException, NamingException {
+    public void provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException{
         List<NetworkServiceRecord> nsrs = nsrRepository.findAll();
         for (NetworkServiceRecord nsr: nsrs){
             log.debug("Found NSR");

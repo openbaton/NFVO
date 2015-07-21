@@ -1,17 +1,20 @@
 # Security
 
-The Security in Openbaton is based on Outh2 provided by Spring. 
+The Security in Openbaton is based on Outh2 provided by [Spring Security]. 
 
-#How to get a token
+# How to get a token
 >For making any request over the rest API you shoul find a token. The request for retrieving a token is:
 
 ```sh
 curl -v -u openbatonOSClient:secret -X POST http://localhost:8080/oauth/token -H "Accept:application/json" -d "username=admin&password=admin&grant_type=password"
 ```
+
 >the answer from the orchestrator is:
+
 ```sh
 {"access_token":"d36b4941-5070-406e-a420-9ae7d16b5ddb","token_type":"bearer","refresh_token":"438edd63-190a-4afb-bb00-c0a5aed6a892","expires_in":43199,"scope":"read write"}
 ```
+
 >Well now you can make a real request to the Rest API:
 
 ```sh
@@ -34,3 +37,4 @@ and in the module **main** in the file **build.gradle**:
 
 
 
+[Spring Security]:http://projects.spring.io/spring-security-oauth/

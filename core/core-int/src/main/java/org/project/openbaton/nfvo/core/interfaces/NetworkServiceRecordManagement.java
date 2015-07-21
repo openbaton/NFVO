@@ -24,8 +24,6 @@ import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -40,14 +38,14 @@ public interface NetworkServiceRecordManagement {
 	 * validating a Network Service	Descriptor (NSD),
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, NamingException, VimException, JMSException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException;
+	NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException;
 
 	/**
 	 * This operation allows submitting and
 	 * validating a Network Service	Descriptor (NSD),
 	 * including any related VNFFGD and VLD.
 	 */
-	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, JMSException, NamingException, BadFormatException, VimDriverException, QuotaExceededException;
+	NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException;
 
 	/**
 	 * This operation allows updating a Network 
@@ -75,6 +73,6 @@ public interface NetworkServiceRecordManagement {
 	 * disabled Network Service Descriptor.
 	 * @param id
 	 */
-	void delete(String id) throws VimException, JMSException, NamingException, NotFoundException, ExecutionException, InterruptedException;
+	void delete(String id) throws VimException, NotFoundException, ExecutionException, InterruptedException;
 
 }
