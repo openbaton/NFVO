@@ -362,6 +362,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
                 ", vdu=" + vdu +
                 ", vendor='" + vendor + '\'' +
                 ", version='" + version + '\'' +
+                ", hb_version='" + hb_version + '\'' +
                 ", virtual_link=" + virtual_link +
 //                ", parent_ns=" + parent_ns +
                 ", descriptor_reference='" + descriptor_reference + '\'' +
