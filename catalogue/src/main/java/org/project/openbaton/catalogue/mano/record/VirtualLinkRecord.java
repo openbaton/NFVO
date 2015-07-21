@@ -28,7 +28,7 @@ public class VirtualLinkRecord implements Serializable{
     private String root_requirement;
     private String leaf_requirement;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
@@ -38,7 +38,7 @@ public class VirtualLinkRecord implements Serializable{
     /**
      * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
      private Set<String> connection;
     /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
@@ -62,7 +62,7 @@ public class VirtualLinkRecord implements Serializable{
      * Bandwidth allocated for each of the QoS options on this link
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> allocated_capacity;
     /**
      * Flag to report status of the VL (e.g. 0=Link down, 1= normal operation, 2= degraded operation, 3= Offline through management action)
@@ -76,7 +76,7 @@ public class VirtualLinkRecord implements Serializable{
      * TODO consider a notification framework
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
      * Record of significant VL lifecycle event (e.g. Creation, Configuration changes)
@@ -89,7 +89,7 @@ public class VirtualLinkRecord implements Serializable{
      * TODO consider a stream to a file
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> audit_log;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree
