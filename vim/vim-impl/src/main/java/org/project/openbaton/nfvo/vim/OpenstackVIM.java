@@ -60,7 +60,9 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @PostConstruct
     private void init(){
-        this.openstackClient = vimBroker.getClient("openstack");
+        ClientInterfaces client = vimBroker.getClient("openstack");
+        log.debug("Found Client " + client);
+        this.openstackClient = client;
     }
 
     @Override
@@ -345,6 +347,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @Override
     public List<NFVImage> queryImages(VimInstance vimInstance) {
+        log.trace("Openstack client is: " + openstackClient);
         openstackClient.init(vimInstance);
         return openstackClient.listImages();
     }
