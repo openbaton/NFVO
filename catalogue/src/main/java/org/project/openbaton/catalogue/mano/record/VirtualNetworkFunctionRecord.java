@@ -49,7 +49,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
     private String deployment_flavour_key;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
 
     /**
@@ -125,7 +125,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      * */
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent)
