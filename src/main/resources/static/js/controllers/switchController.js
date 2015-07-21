@@ -3,29 +3,29 @@ angular.module('app').
         controller('SwitchCtrl', function($scope, $routeParams, http, $interval, $q) {
 
 
-            loadTableSwitches();
-            loadTableSwitch();
-            loadTableFlow();
+            //loadTableSwitches();
+            //loadTableSwitch();
+            //loadTableFlow();
             $scope.alerts = [];
             var portUsed = [];
-            http.get('/api/rest/admin/v2/links').success(function(response) {
-
-                $scope.links = response;
-            });
-            http.get('/api/rest/admin/v2/locations').success(function(response) {
-
-                $scope.locations = response;
-            });
-
-
-            http.get('/api/rest/admin/v2/switches').success(function(response) {
-                $scope.switchesTarget = response;
-                http.get('/api/rest/admin/v2/datacenters').success(function(response) {
-                    _.each(response, function(datacenter) {
-                        $scope.switchesTarget.push(datacenter.switch);
-                    });
-                });
-            });
+            //http.get('/api/rest/admin/v2/links').success(function(response) {
+            //
+            //    $scope.links = response;
+            //});
+            //http.get('/api/rest/admin/v2/locations').success(function(response) {
+            //
+            //    $scope.locations = response;
+            //});
+            //
+            //
+            //http.get('/api/rest/admin/v2/switches').success(function(response) {
+            //    $scope.switchesTarget = response;
+            //    http.get('/api/rest/admin/v2/vim-instances').success(function(response) {
+            //        _.each(response, function(datacenter) {
+            //            $scope.switchesTarget.push(datacenter.switch);
+            //        });
+            //    });
+            //});
 
 
             $interval(loadTableFlow, 5000);

@@ -26,8 +26,8 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
 
     $scope.services = [];
     $scope.serviceEdit = {};
-    $scope.locations = serviceAPI.getLocations();
-    $scope.locationsS = serviceAPI.getLocations();
+    //$scope.locations = serviceAPI.getLocations();
+    //$scope.locationsS = serviceAPI.getLocations();
 
     $scope.servicesToPost = [];
     $scope.policies = [];
@@ -54,7 +54,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
     ];
 
 
-    inizializeVariables();
+    //inizializeVariables();
 
     //Reload the topology's table
 //    $interval(loadTableTopology, 10000);
@@ -72,7 +72,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
     };
 
 
-    loadItems();
+    //loadItems();
     function loadItems() {
 
         if (angular.isUndefined($cookieStore.get('items')))
