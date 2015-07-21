@@ -123,6 +123,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
+                    message.setPayload(virtualNetworkFunctionRecord);
+                    log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
                     vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 }else {
                     message.setAction(Action.ERROR);
@@ -132,11 +134,12 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             case INSTANTIATE_FINISH:
                 log.debug("INSTANTIATE_FINISH");
                 virtualNetworkFunctionRecord = message.getPayload();
+                log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
             case RELEASE_RESOURCES:
-                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = message.getPayload();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
                         resourceManagement.release(vdu);
