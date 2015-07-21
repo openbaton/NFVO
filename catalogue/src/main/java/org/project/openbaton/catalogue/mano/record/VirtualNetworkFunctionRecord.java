@@ -60,7 +60,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * Active monitoring parameters
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
     /**
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
