@@ -196,6 +196,9 @@ public class TestVIM implements Vim {
 
     @Override
     public Quota getQuota(VimInstance vimInstance) {
-        return null;
+        if (testClient == null){
+            init();
+        }
+        return this.testClient.getQuota();
     }
 }
