@@ -22,7 +22,7 @@
             <h2><dt>Service Type:
                 {{serviceSelected.serviceType}}</dt></h2>
             <dl>
-                <!--<h4><a href="#/datacenters/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
+                <!--<h4><a href="#/vim-instances/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
                 <div ng-repeat="(key,value) in serviceSelected track by key">
                     <div ng-if="key !== 'configuration' && key !== 'version' && key !== 'serviceType'">
                         <dt>{{key}}:</dt>

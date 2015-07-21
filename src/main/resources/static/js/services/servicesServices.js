@@ -8,7 +8,7 @@ angular.module('app').factory('serviceAPI', function(http, $q) {
      */
     services.getLocations = function() {
         var locations = [];
-        http.get('/api/rest/admin/v2/datacenters').success(function(response) {
+        http.get('/api/rest/admin/v2/vim-instances').success(function(response) {
             for (var i = 0; i < response.length; i++)
                 locations.push(response[i].location.name);
         });

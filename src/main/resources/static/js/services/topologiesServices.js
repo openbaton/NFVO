@@ -14,7 +14,7 @@ angular.module('app')
             topologies.getTopologyD3 = function(showChains, chainId) {
                 var lines = [];
                 var links = http.get("/api/rest/admin/v2/links"),
-                        datacenters = http.get("/api/rest/admin/v2/datacenters"),
+                        datacenters = http.get("/api/rest/admin/v2/vim-instances"),
                         accesspoints = http.get("/api/rest/admin/v2/accesspoints"),
                         chains = http.get("/api/rest/crosslayer/v1/chains"),
                         switches = http.get("/api/rest/admin/v2/switches");
@@ -503,7 +503,7 @@ angular.module('app')
 
             function returnDiv(obj) {
                 if (obj.typeJs === 'datacenters')
-                    return '<b><a href="#datacenters/' + obj.id + '">Datacenter: ' + obj.name + '</a></b>' +
+                    return '<b><a href="#vim-instances/' + obj.id + '">Datacenter: ' + obj.name + '</a></b>' +
                             '<br/>switch: ' + obj.switch.dpid + '::' + obj.switch.ip +
                             '<br/>ports: ' + obj.switch.ports.length +
                             '<br/>type: ' + obj.type;

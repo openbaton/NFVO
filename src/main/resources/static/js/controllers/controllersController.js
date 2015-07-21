@@ -3,8 +3,8 @@ angular.module('app').
         controller('ControllerCtrl', function($scope, http, serviceAPI, $routeParams) {
 
          
-            loadTable();
-            loadController();
+            //loadTable();
+            //loadController();
             $scope.controller = {
                 "ip": "192.168.2.102",
                 "tcpPort": 345,

@@ -20,9 +20,10 @@ require({
         tables: 'tablesorter/tables',
         tablesorter: 'tablesorter/jquery.tablesorter',
         httpService: "services/httpService",
+        authService:"services/authService",
         servicesServices: "services/servicesServices",
         servicesController: "controllers/servicesController",
-        dataCenterController: "controllers/dataCenterController",
+        vimInstanceController: "controllers/vimInstanceController",
         topologiesServices: "services/topologiesServices",
         topologyController: "controllers/topologyController",
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
@@ -93,13 +94,16 @@ require({
         ui_bootstrap: {
             deps: ['angular']
         },
+        authService:{
+            deps:['app']
+        },
         servicesServices: {
             deps: ['app']
         },
         topologyController: {
             deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologiesServices', 'angular_cookies']
         },
-        dataCenterController: {
+        vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService']
         },
         switchController: {
@@ -118,7 +122,7 @@ require({
             deps: ['app', 'servicesServices', 'httpService', 'topologiesServices']
         },
         indexController: {
-            deps: ['app', 'httpService', 'servicesServices', 'morris']
+            deps: ['app', 'httpService', 'servicesServices', 'morris','authService']
         },
         httpService: {
             deps: ['app']
@@ -143,7 +147,7 @@ require({
     'servicesController',
     'servicesController',
     'topologyController',
-    'dataCenterController',
+    'vimInstanceController',
     'switchController',
     'infrastructuresController',
     'controllersController',
