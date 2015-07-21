@@ -37,6 +37,45 @@ function check_activemq {
     fi
 }
 
+function start_mysql_osx {
+    sudo /usr/local/mysql/support-files/mysql.server start
+}
+
+function start_mysql_linux {
+    sudo service mysql start
+}
+
+
+function check_mysql {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	resul=$(pgrep mysql | wc -l);
+        if [ "${result}" -eq "0" ]; then
+                read -p "mysql is down, would you like to start it ([y]/n):" yn
+		case $yn in
+			[Yy]* ) start_mysql_linux ; break;;
+			[Nn]* ) echo "you can't proceed withuot having mysql up and running" 
+				exit;;
+			* ) start_mysql_linux;;
+		esac
+        else
+                echo "mysql is already running.."
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+	mysqladmin status
+	result=$?
+        if [ "${result}" -eq "0" ]; then
+                echo "mysql service running..."
+        else
+                read -p "mysql is down, would you like to start it ([y]/n):" yn
+                case $yn in
+                        [Yy]* ) start_mysql_osx ; break;;
+                        [Nn]* ) exit;;
+                        * ) start_mysql_osx;;
+                esac
+        fi
+    fi
+}
+
 function start {
 
     if [ ! -d build/  ]
@@ -45,7 +84,7 @@ function start {
     fi
 
     check_activemq
-
+    check_mysql
     if [ 0 -eq $? ]
         then
             screen -S openbaton java -jar "build/libs/openbaton-$_version.jar"
@@ -73,8 +112,6 @@ function usage {
     echo -e "Usage:\n\t ./openbaton.sh <option>\n\t"
     echo -e "where option is"
     echo -e "\t\t * compile"
-    echo -e "\t\t\t\t * sdk"
-    echo -e "\t\t\t\t * nfvo"
     echo -e "\t\t * start"
     echo -e "\t\t * test"
     echo -e "\t\t * clean"
@@ -104,19 +141,7 @@ do
         "start" )
             start ;;
         "compile" )
-            if [ "nfvo" == ${cmds[$i+1]} ]
-            then
-                compile_nfvo
-                i=$i+1
-            elif [ "sdk" == ${cmds[$i+1]} ]
-            then
-                compile_sdk
-                i=$i+1
-            else
-                usage
-                end
-            fi
-            ;;
+            compile_nfvo ;;
         "test" )
             tests ;;
         * )
