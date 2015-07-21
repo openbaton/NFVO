@@ -44,9 +44,6 @@ class SystemStartup implements CommandLineRunner {
     @Qualifier("configurationRepository")
     private GenericRepository<Configuration> configurationRepository;
 
-//    @Autowired
-//    DefaultMessageListenerContainer defaultMessageListenerContainer;
-
     @Override
     public void run(String... args) throws Exception {
         log.info("Initializing NEUTRINO");
@@ -62,9 +59,9 @@ class SystemStartup implements CommandLineRunner {
         Configuration c = new Configuration();
 
         c.setName("system");
-        c.setParameters(new ArrayList<ConfigurationParameter>());
+        c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
-        configurationRepository.create(c);
+//        configurationRepository.create(c);
 
         /**
          * Adding properties from file
@@ -73,7 +70,7 @@ class SystemStartup implements CommandLineRunner {
             ConfigurationParameter cp = new ConfigurationParameter();
             cp.setKey((String) entry.getKey());
             cp.setValue((String) entry.getValue());
-            c.getParameters().add(cp);
+            c.getConfigurationParameters().add(cp);
         }
 
         /**
@@ -95,10 +92,10 @@ class SystemStartup implements CommandLineRunner {
                 }
             }
             log.trace("");
-            c.getParameters().add(cp);
+            c.getConfigurationParameters().add(cp);
         }
 
-//        configurationRepository.create(c);
+        configurationRepository.create(c);
 
     }
 }
