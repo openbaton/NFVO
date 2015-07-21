@@ -44,9 +44,6 @@ class SystemStartup implements CommandLineRunner {
     @Qualifier("configurationRepository")
     private GenericRepository<Configuration> configurationRepository;
 
-//    @Autowired
-//    DefaultMessageListenerContainer defaultMessageListenerContainer;
-
     @Override
     public void run(String... args) throws Exception {
         log.info("Initializing NEUTRINO");
@@ -62,18 +59,18 @@ class SystemStartup implements CommandLineRunner {
         Configuration c = new Configuration();
 
         c.setName("system");
-        c.setParameters(new ArrayList<ConfigurationParameter>());
+        c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
-        configurationRepository.create(c);
+//        configurationRepository.create(c);
 
         /**
          * Adding properties from file
          */
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setKey((String) entry.getKey());
+            cp.setConfKey((String) entry.getKey());
             cp.setValue((String) entry.getValue());
-            c.getParameters().add(cp);
+            c.getConfigurationParameters().add(cp);
         }
 
         /**
@@ -86,7 +83,7 @@ class SystemStartup implements CommandLineRunner {
             ConfigurationParameter cp = new ConfigurationParameter();
             log.trace("Display name: "+ netint.getDisplayName());
             log.trace("Name: "+ netint.getName());
-            cp.setKey("ip-" + netint.getName().replaceAll("\\s",""));
+            cp.setConfKey("ip-" + netint.getName().replaceAll("\\s",""));
             Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
             for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                 if (inetAddress.getHostAddress().contains(".")) {
@@ -95,10 +92,10 @@ class SystemStartup implements CommandLineRunner {
                 }
             }
             log.trace("");
-            c.getParameters().add(cp);
+            c.getConfigurationParameters().add(cp);
         }
 
-//        configurationRepository.create(c);
+        configurationRepository.create(c);
 
     }
 }
