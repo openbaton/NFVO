@@ -19,14 +19,14 @@ public class Configuration implements Serializable{
 
     // TODO think at cascade type
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<ConfigurationParameter> parameters;
+    private Set<ConfigurationParameter> configurationParameters;
 
     @Override
     public String toString() {
         return "Configuration{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", parameters=" + parameters +
+                ", configurationParameters=" + configurationParameters +
                 ", name='" + name + '\'' +
                 '}';
     }
@@ -49,12 +49,12 @@ public class Configuration implements Serializable{
         this.version = version;
     }
 
-    public Set<ConfigurationParameter> getParameters() {
-        return parameters;
+    public Set<ConfigurationParameter> getConfigurationParameters() {
+        return configurationParameters;
     }
 
-    public void setParameters(Set<ConfigurationParameter> parameters) {
-        this.parameters = parameters;
+    public void setConfigurationParameters(Set<ConfigurationParameter> configurationParameters) {
+        this.configurationParameters = configurationParameters;
     }
 
     public void setName(String name) {
