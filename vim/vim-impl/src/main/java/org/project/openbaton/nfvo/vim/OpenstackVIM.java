@@ -16,27 +16,27 @@
 
 package org.project.openbaton.nfvo.vim;
 
-import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-
+import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -51,9 +51,17 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    @Qualifier("openstackClient")
+    //    @Autowired
+//    @Qualifier("openstackClient")
     private ClientInterfaces openstackClient;
+
+    @Autowired
+    private VimBroker vimBroker;
+
+    @PostConstruct
+    private void init(){
+        this.openstackClient = vimBroker.getClient("openstack");
+    }
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
@@ -320,7 +328,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         return openstackClient.listServer();
     }
 
-//     TODO choose the right image (DONE)
+    //     TODO choose the right image (DONE)
     private String chooseImage(Collection<String> vm_images, VimInstance vimInstance) throws VimException {
         openstackClient.init(vimInstance);
         if (vm_images != null && vm_images.size() > 0) {
