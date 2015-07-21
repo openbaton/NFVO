@@ -15,13 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
-import java.util.jar.JarFile;
 
 /**
  * Created by lto on 21/07/15.
@@ -50,9 +47,12 @@ public class PluginInstaller implements CommandLineRunner {
             log.trace("path is: " + path);
             ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
 
-            URL url;
-            url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/test/TestClient.class");
-            String type = "test";
+            URL url = null;
+            String type = null;
+            if (url == null) {
+                url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/test/TestClient.class");
+                type = "test";
+            }
             if (url == null){
                 url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/openstack/OpenstackClient.class");
                 type = "openstack";
@@ -65,8 +65,7 @@ public class PluginInstaller implements CommandLineRunner {
                 throw new PluginInstallException("No ClientInterfaces known were found");
 
             log.trace("URL: " + url.toString());
-            JarURLConnection connection = (JarURLConnection) url.openConnection();
-            JarFile file = connection.getJarFile();
+            log.trace("type is: " + type);
             switch (type){
                 case "test":
                     Class c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.test.TestClient");
@@ -75,6 +74,10 @@ public class PluginInstaller implements CommandLineRunner {
                     vimBroker.addClient(instance, type);
                     break;
                 case "openstack":
+                    c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.openstack.OpenstackClient");
+                    instance = (ClientInterfaces) c.newInstance();
+                    log.debug("instance: " + instance);
+                    vimBroker.addClient(instance, type);
                     break;
                 case "amazon":
                     break;
@@ -88,8 +91,6 @@ public class PluginInstaller implements CommandLineRunner {
         } catch (InstantiationException e) {
             throw new PluginInstallException(e);
         } catch (IllegalAccessException e) {
-            throw new PluginInstallException(e);
-        } catch (IOException e) {
             throw new PluginInstallException(e);
         }
     }
