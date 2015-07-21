@@ -68,7 +68,7 @@ class SystemStartup implements CommandLineRunner {
          */
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setKey((String) entry.getKey());
+            cp.setConfKey((String) entry.getKey());
             cp.setValue((String) entry.getValue());
             c.getConfigurationParameters().add(cp);
         }
@@ -83,7 +83,7 @@ class SystemStartup implements CommandLineRunner {
             ConfigurationParameter cp = new ConfigurationParameter();
             log.trace("Display name: "+ netint.getDisplayName());
             log.trace("Name: "+ netint.getName());
-            cp.setKey("ip-" + netint.getName().replaceAll("\\s",""));
+            cp.setConfKey("ip-" + netint.getName().replaceAll("\\s",""));
             Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
             for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                 if (inetAddress.getHostAddress().contains(".")) {
