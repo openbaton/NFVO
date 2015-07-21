@@ -16,7 +16,7 @@ public class ConfigurationParameter {
     @Version
     private int version;
 
-    private String key;
+    private String confKey;
     private String value;
 
     public String getId() {
@@ -35,12 +35,12 @@ public class ConfigurationParameter {
         this.version = version;
     }
 
-    public String getKey() {
-        return key;
+    public String getConfKey() {
+        return confKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setConfKey(String confKey) {
+        this.confKey = confKey;
     }
 
     public String getValue() {
@@ -56,7 +56,7 @@ public class ConfigurationParameter {
         return "ConfigurationParameter{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", key='" + key + '\'' +
+                ", confKey='" + confKey + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }
