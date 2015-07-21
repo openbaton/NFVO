@@ -15,8 +15,8 @@
  */
 
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
-    compile project(':repositories:repo-int')
+    compile project(':repo-int')
+    compile project(':catalogue')
     compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
     compile("org.springframework.security:spring-security-core:4.0.1.RELEASE")
     compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE")

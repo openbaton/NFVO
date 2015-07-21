@@ -42,8 +42,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -76,7 +74,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     @Async
-    public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException, NamingException, JMSException {
+    public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException {
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.INSTANTIATE);
@@ -112,7 +110,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     @Override
-    public void executeAction(CoreMessage message) throws JMSException, NamingException, NotFoundException, VimException {
+    public void executeAction(CoreMessage message) throws VimException, NotFoundException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
         VnfmSender vnfmSender;
         try {
@@ -188,6 +186,14 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         return;
                     }
 
+		for (LifecycleEvent event :virtualNetworkFunctionRecord.getLifecycle_event()){
+                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()){
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
+                        virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
+                        break;
+                    }
+                }
+
                 CoreMessage coreMessage = new CoreMessage();
                 coreMessage.setAction(Action.INSTANTIATE);
                 coreMessage.setPayload(virtualNetworkFunctionRecord);
@@ -209,7 +215,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     @Async
-    public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException {
+    public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getType());
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " is not registered");
@@ -229,7 +235,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     @Async
-    public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, NamingException, JMSException {
+    public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType());
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " is not registered");

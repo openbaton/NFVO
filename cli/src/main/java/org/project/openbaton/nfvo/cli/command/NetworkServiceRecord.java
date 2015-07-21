@@ -17,10 +17,10 @@
 package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.api.RestNetworkServiceRecord;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
@@ -34,8 +34,6 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -88,14 +86,6 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
-        } catch (NamingException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
-        } catch (JMSException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
         } catch (VimDriverException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
@@ -135,15 +125,7 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
-        } catch (NamingException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
         } catch (VimException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
-        } catch (JMSException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
@@ -188,15 +170,7 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();
-        } catch (NamingException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
         } catch (NotFoundException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-            return e.getMessage();
-        } catch (JMSException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
             return e.getMessage();

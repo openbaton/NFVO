@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    runtime project(':repositories:repo-impl')
+    runtime project(':repo-impl')
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

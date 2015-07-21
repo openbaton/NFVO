@@ -1,0 +1,5 @@
+
+dependencies {
+    compile project(':catalogue')
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}

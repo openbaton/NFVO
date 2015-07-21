@@ -30,7 +30,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import javax.naming.NamingException;
 
 /**
  * Created by lto on 03/06/15.
@@ -44,7 +43,7 @@ public class JmsSender implements VnfmSender{
     private JmsTemplate jmsTemplate;
 
     @Override
-    public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) throws JMSException, NamingException {
+    public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) {
         String topicName = "core-vnfm-actions";
         this.sendToTopic(coreMessage,topicName,endpoint.getEndpoint());
     }

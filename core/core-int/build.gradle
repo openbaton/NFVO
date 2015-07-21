@@ -15,8 +15,8 @@
  */
 
 dependencies {
-    compile 'org.project.openbaton:catalogue:0.5-SNAPSHOT'
+    compile project(':catalogue')
 
-    compile project(':vim:vim-int')
-    compile project(':vnfm:vnfm-int')
+    compile project(':vim-int')
+    compile project(':vnfm-int')
 }

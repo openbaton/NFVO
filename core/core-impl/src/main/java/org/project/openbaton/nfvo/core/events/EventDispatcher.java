@@ -24,9 +24,9 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.core.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +36,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
 
@@ -68,10 +66,6 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
                 try {
                     dependencyManagement.provisionDependencies(vnfr);
                 } catch (NotFoundException e) {
-                    e.printStackTrace();
-                } catch (JMSException e) {
-                    e.printStackTrace();
-                } catch (NamingException e) {
                     e.printStackTrace();
                 }
                 break;
