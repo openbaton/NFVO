@@ -1,14 +1,14 @@
 <div class="row">
     <div class="col-lg-12">
         <h1>
-            Data Center
+            VIM instance
             <small>Information</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>
                     Overview</a></li>
-            <li><a href="#datacenters"><i class="fa fa-tasks"></i>
-                    Data Centers</a></li>
+            <li><a href="#vim-instances"><i class="fa fa-tasks"></i>
+                    VIM instances</a></li>
             <li class="active"><i class="fa fa-bar-chart-o"></i>
                 {{datacenter.name}}</li>
         </ol>
@@ -19,7 +19,7 @@
         <h3>Datacenter Name: {{datacenter.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco" class="fa fa-refresh"></i></h3></a>
         <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
         <dl>
-            <!--<h4><a href="#/datacenters/{{datacenter.id}}/networks" >Networks<i class=""></i></a></h4>-->
+            <!--<h4><a href="#/vim-instances/{{datacenter.id}}/networks" >Networks<i class=""></i></a></h4>-->
             <div ng-repeat="(key,value) in datacenter">
                 <div ng-if="key != 'location' && key != 'configuration' && key != 'serviceImageId' && key != 'switch' && key != 'subnets' && key != 'serviceContainers'">
                     <dt>{{key}}:</dt>
@@ -290,7 +290,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">JSON of Data Center: {{datacenter.name}}</h4>
+                <h4 class="modal-title" id="myModalLabel">JSON of VIM instance: {{datacenter.name}}</h4>
             </div>
             <div class="modal-body">
                 <pre id="json">{{datacenterJSON}}</pre>
