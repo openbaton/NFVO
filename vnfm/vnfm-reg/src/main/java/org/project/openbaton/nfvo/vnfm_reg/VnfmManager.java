@@ -136,6 +136,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = message.getPayload();
                 log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                message.setPayload(virtualNetworkFunctionRecord);
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
             case RELEASE_RESOURCES:
@@ -189,7 +190,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         return;
                     }
 
-		for (LifecycleEvent event :virtualNetworkFunctionRecord.getLifecycle_event()){
+                for (LifecycleEvent event :virtualNetworkFunctionRecord.getLifecycle_event()){
                     if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()){
                         virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
                         virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
