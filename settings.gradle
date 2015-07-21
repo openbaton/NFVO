@@ -1,4 +1,4 @@
-rootProject.name = 'openbaton-lib'
+rootProject.name = 'openbaton-libs'
 
 include 'catalogue'
 include 'vim-drivers'
