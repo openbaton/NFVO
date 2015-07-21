@@ -50,7 +50,7 @@ public class ConfigurationManagement implements org.project.openbaton.nfvo.core.
     public Configuration update(Configuration configuration_new, String id) {
         Configuration old = configurationRepository.find(id);
         old.setName(configuration_new.getName());
-        old.setParameters(configuration_new.getParameters());
+        old.setConfigurationParameters(configuration_new.getConfigurationParameters());
         return old;
 
     }
