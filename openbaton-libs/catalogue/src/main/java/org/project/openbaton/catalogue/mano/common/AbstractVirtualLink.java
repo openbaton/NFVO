@@ -39,13 +39,13 @@ public abstract class AbstractVirtualLink implements Serializable{
     /**
      * QoS options available on the VL, e.g. latency, jitter, etc.
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> test_access;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree.

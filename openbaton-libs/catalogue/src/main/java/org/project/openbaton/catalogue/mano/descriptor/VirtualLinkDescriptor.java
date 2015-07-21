@@ -11,10 +11,7 @@ import org.project.openbaton.catalogue.mano.common.Security;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * Created by lto on 06/02/15.
@@ -39,7 +36,7 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
     /**
      * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> connection;
     /**
      * This is a signature of vld to prevent tampering. The particular hash algorithm used to compute the signature,

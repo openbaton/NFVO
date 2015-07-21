@@ -60,7 +60,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * Active monitoring parameters
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
     /**
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
@@ -105,7 +105,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * interface on this VNF
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
     /**
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
@@ -119,7 +119,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * TODO maybe passing to a notification framework
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
@@ -135,7 +135,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * Generic placeholder for input information related to VNF orchestration and management policies to be applied
      * during runtime of a specific VNF instance (e.g. for VNF prioritization, etc.)
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
     private String name;
 
@@ -362,6 +362,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
                 ", vdu=" + vdu +
                 ", vendor='" + vendor + '\'' +
                 ", version='" + version + '\'' +
+                ", hb_version='" + hb_version + '\'' +
                 ", virtual_link=" + virtual_link +
 //                ", parent_ns=" + parent_ns +
                 ", descriptor_reference='" + descriptor_reference + '\'' +
