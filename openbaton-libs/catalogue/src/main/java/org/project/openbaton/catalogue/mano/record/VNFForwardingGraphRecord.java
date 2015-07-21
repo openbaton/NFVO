@@ -54,7 +54,7 @@ public class VNFForwardingGraphRecord implements Serializable{
      * Listing of systems that have registered to received notifications of status changes
      * */
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
      * Record of significant VNFFG lifecycle events (e.g. creation, configuration changes)

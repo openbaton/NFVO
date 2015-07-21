@@ -187,6 +187,7 @@ public class VirtualDeploymentUnit implements Serializable{
     public String toString() {
         return "VirtualDeploymentUnit{" +
                 "id='" + id + '\'' +
+                ", extId=" + extId +
                 ", version=" + version +
                 ", vm_image=" + vm_image +
                 ", computation_requirement='" + computation_requirement + '\'' +
