@@ -60,7 +60,7 @@ public class PhysicalNetworkFunctionRecord {
      * The network addresses (e.g. VLAN, IP) configured for the management access and all other external connection
      * interfaces on this PNF
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> pnf_address;
 
     public PhysicalNetworkFunctionRecord() {
