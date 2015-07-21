@@ -21,24 +21,24 @@ import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.apache.commons.io.FileUtils;
+import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
-import java.util.jar.JarFile;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing
@@ -51,7 +51,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private VimBroker vimBroker;
+    @Qualifier("configurationRepository")
+    private GenericRepository<Configuration> configurationRepository;
 
     private static final Character mask = '*';
 
@@ -91,11 +92,11 @@ public class OpenbatonCLI implements CommandLineRunner {
         List<Completer> completors = new LinkedList<>();
         completors.add(new StringsCompleter(helpCommandList.keySet()));
         completors.add(new FileNameCompleter());
-        completors.add(new StringsCompleter(new ArrayList<String>(){{
-            add("test");
-            add("openstack");
-            add("amazon");
-        }}));
+//        completors.add(new StringsCompleter(new ArrayList<String>(){{
+//            add("test");
+//            add("openstack");
+//            add("amazon");
+//        }}));
         reader.addCompleter(new ArgumentCompleter(completors));
         reader.setPrompt("\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
         while ((line = reader.readLine()) != null) {
@@ -119,47 +120,34 @@ public class OpenbatonCLI implements CommandLineRunner {
         }
     }
 
-    private boolean installPlugin(String line) {
+    private boolean installPlugin(String line) throws IOException {
         String path = line.split(" ")[1];
-        String type = line.split(" ")[2];
         File jar = new File(path);
         if (!jar.exists())
             return false;
 
-        ClassLoader parent = ClassUtils.getDefaultClassLoader();
         path = jar.getAbsolutePath();
-        try {
-            log.debug("path is: " + path);
-            ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
+        log.debug("path is: " + path);
 
-            URL url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/test/TestClient.class");
-            System.out.println("URL: " + url.toString());
-            JarURLConnection connection = (JarURLConnection) url.openConnection();
-            JarFile file = connection.getJarFile();
-            switch (type){
-                case "test":
-                    Class c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.test.TestClient");
-                    ClientInterfaces instance = (ClientInterfaces) c.newInstance();
-                    log.debug("instance: " + instance);
-                    vimBroker.addClient(instance, type);
+        String installPath = null;
+
+        for (Configuration c : configurationRepository.findAll()){
+            if (c.getName().equals("system")){
+                for (ConfigurationParameter cp : c.getConfigurationParameters()){
+                    if (cp.getConfKey().equals("plugin-installation-dir")){
+                        installPath = cp.getValue();
+                        break;
+                    }
+                }
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return false;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
+        String new_filename = installPath + jar.getName();
+        File dest = new File(new_filename);
+        log.debug("newFileNAme: " + new_filename);
+        FileUtils.copyFile(jar, dest);
+        //TODO sendEvent
         return true;
+
     }
 
     public static void usage() {
