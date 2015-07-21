@@ -7,10 +7,8 @@ package org.project.openbaton.catalogue.nfvo;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Configuration implements Serializable{
@@ -21,7 +19,7 @@ public class Configuration implements Serializable{
 
     // TODO think at cascade type
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<ConfigurationParameter> parameters;
+    private Set<ConfigurationParameter> parameters;
 
     @Override
     public String toString() {
@@ -51,13 +49,11 @@ public class Configuration implements Serializable{
         this.version = version;
     }
 
-    public List<ConfigurationParameter> getParameters() {
-    	if(parameters==null)
-			parameters = new ArrayList<ConfigurationParameter>();
+    public Set<ConfigurationParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<ConfigurationParameter> parameters) {
+    public void setParameters(Set<ConfigurationParameter> parameters) {
         this.parameters = parameters;
     }
 
