@@ -52,14 +52,8 @@ function start {
     fi
 }
 
-function compile_sdk {
-    cd ../sdk
-    ./gradlew build -x test install
-    cd -
-}
 
 function compile_nfvo {
-    compile_sdk
     ./gradlew build -x test install
 }
 
