@@ -20,6 +20,7 @@ public class VNFPackage {
     private String name;
 
     private String extId;
+    private NFVImage image;
 
     public VNFPackage() {
     }
@@ -63,6 +64,15 @@ public class VNFPackage {
                 ", version=" + version +
                 ", name='" + name + '\'' +
                 ", extId='" + extId + '\'' +
+                ", image=" + image +
                 '}';
+    }
+
+    public void setImage(NFVImage image) {
+        this.image = image;
+    }
+
+    public NFVImage getImage() {
+        return image;
     }
 }
