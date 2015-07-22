@@ -2,9 +2,7 @@ package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 /**
  * Created by lto on 22/07/15.
@@ -20,6 +18,8 @@ public class VNFPackage {
     private String name;
 
     private String extId;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private NFVImage image;
 
     public VNFPackage() {

@@ -14,15 +14,18 @@ import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -39,6 +42,14 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
     @Autowired
     private NSDUtils nsdUtils;
+
+    @Autowired
+    @Qualifier("vnfPackageRepository")
+    private GenericRepository<VNFPackage> vnfPackageRepository;
+
+    @Autowired
+    @Qualifier("VNFDRepository")
+    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
 
     @Autowired
     private VimBroker vimBroker;
@@ -68,9 +79,8 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 String individualFile = entry.getName();
                 log.debug("file inside tar: " + individualFile);
                 File entryFile = (entry).getFile();
-                log.debug("entryFile is: " + entryFile);
+                log.trace("entryFile is: " + entryFile);
                 log.debug("entry size is: " + entry.getSize() + " much more different from getRealSize: " + entry.getRealSize());
-//                log.debug("file path is: " + entryFile.getAbsolutePath());
                 if (individualFile.endsWith(".json")) {
                 /*this must be the vnfd*/
                 /*and has to be onboarded in the catalogue*/
@@ -92,14 +102,20 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         image.setIsPublic(isPublic);
         image.setMinDiskSpace(minDisk);
         image.setMinRam(minRam);
+        List<String> vimInstances = new ArrayList<>();
         for (VirtualDeploymentUnit vdu: virtualNetworkFunctionDescriptor.getVdu()){
-            Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-            image = vim.add(vdu.getVimInstance(), image, imageStream);
-            vdu.setVm_image(new HashSet<String>());
-            vdu.getVm_image().add(image.getName());
+            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we did't already upload it
+                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                image = vim.add(vdu.getVimInstance(), image, imageStream);
+                vdu.setVm_image(new HashSet<String>());
+                vdu.getVm_image().add(image.getName());
+                vimInstances.add(vdu.getVimInstance().getId());
+            }
         }
         vnfPackage.setImage(image);
         myTarFile.close();
+        vnfdRepository.create(virtualNetworkFunctionDescriptor);
+        vnfPackageRepository.create(vnfPackage);
         return vnfPackage;
     }
 
@@ -115,21 +131,26 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public VNFPackage update(String id, VNFPackage pack_new) {
-        return pack_new;
+        VNFPackage old = vnfPackageRepository.find(id);
+        old.setName(pack_new.getName());
+        old.setExtId(pack_new.getExtId());
+        old.setImage(pack_new.getImage());
+        return old;
     }
 
     @Override
     public VNFPackage query(String id) {
-        return null;
+        return vnfPackageRepository.find(id);
     }
 
     @Override
     public List<VNFPackage> query() {
-        return null;
+        return vnfPackageRepository.findAll();
     }
 
     @Override
     public void delete(String id) {
-
+        //TODO remove image in the VIM
+        vnfPackageRepository.remove(vnfPackageRepository.find(id));
     }
 }
