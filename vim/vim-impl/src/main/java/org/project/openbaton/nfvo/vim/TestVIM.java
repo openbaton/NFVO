@@ -84,7 +84,7 @@ public class TestVIM implements Vim {
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
-        throw new UnsupportedOperationException();
+        return this.testClient.addImage(image,inputStream);
     }
 
     @Override

@@ -18,6 +18,8 @@ package org.project.openbaton.nfvo.api;
 
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.interfaces.VNFPackageManagement;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +46,10 @@ public class RestVNFPackage {
 	 * 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody VNFPackage onboard(@RequestParam("name") String name,  @RequestParam("file") MultipartFile file) throws IOException {
+	public @ResponseBody VNFPackage onboard(@RequestParam("name") String name, @RequestParam("diskFormat") String diskFormat, @RequestParam("containerFormat") String containerFormat, @RequestParam("minDisk") int minDisk, @RequestParam("minRam") int minRam, @RequestParam("isPublic") boolean isPublic,  @RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException {
 		if (!file.isEmpty()) {
 			byte[] bytes = file.getBytes();
-			return vnfPackageManagement.onboard(bytes, name);
+			return vnfPackageManagement.onboard(bytes, name, diskFormat, containerFormat, minDisk, minRam, isPublic);
 		}
 		else throw new IOException("File is empty!");
 	}

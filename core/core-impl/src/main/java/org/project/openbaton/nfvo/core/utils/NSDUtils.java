@@ -51,27 +51,30 @@ public class NSDUtils {
         /**
          * Fetching VimInstances
          */
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            fetchVimInstances(vnfd);
+        }
+    }
+
+    public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException {
         List<VimInstance> vimInstances = vimRepository.findAll();
         if (vimInstances.size() == 0){
             throw new NotFoundException("No VimInstances in the Database");
         }
+        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
-        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-            for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-
-                String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId();
-                boolean fetched = false;
-                for(VimInstance vimInstance : vimInstances){
-                    if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
-                        vdu.setVimInstance(vimInstance);
-                        log.debug("Found vimInstance: "+ vimInstance);
-                        fetched=true;
-                        break;
-                    }
+            String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId();
+            boolean fetched = false;
+            for(VimInstance vimInstance : vimInstances){
+                if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
+                    vdu.setVimInstance(vimInstance);
+                    log.debug("Found vimInstance: "+ vimInstance);
+                    fetched=true;
+                    break;
                 }
-                if (!fetched){
-                    throw new NotFoundException("No VimInstance with name or id equals to " + name_id);
-                }
+            }
+            if (!fetched){
+                throw new NotFoundException("No VimInstance with name or id equals to " + name_id);
             }
         }
     }
@@ -111,4 +114,5 @@ public class NSDUtils {
             }
         }
     }
+
 }
