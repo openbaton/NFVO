@@ -17,8 +17,9 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface VNFPackageManagement {
 	 * @param pack
 	 * @param name
 	 */
-	VNFPackage onboard(byte[] pack, String name) throws IOException;
+	VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException;
 
 	/**
 	 * This operation allows disabling the 

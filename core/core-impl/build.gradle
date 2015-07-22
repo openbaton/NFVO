@@ -35,5 +35,7 @@ dependencies {
     compile 'javax.jms:javax.jms-api:2.0.1'
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+    compile 'com.google.code.gson:gson:2.3.1'
+
 
 }
