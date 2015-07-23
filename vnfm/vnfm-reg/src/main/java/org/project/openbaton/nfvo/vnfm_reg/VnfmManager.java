@@ -43,6 +43,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -140,10 +141,12 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
             case RELEASE_RESOURCES:
+                log.debug("RELEASE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
-                        resourceManagement.release(vdu);
+                        if (vdu.getExtId() != null)
+                            resourceManagement.release(vdu);
                     } catch (VimException e) {
 
                         e.printStackTrace();
@@ -158,6 +161,18 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                         return;
                     }
+                LifecycleEvent lifecycleEventToRemove = null;
+                if(virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
+                    virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+                for (LifecycleEvent tmpLifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
+                    if (tmpLifecycleEvent.getEvent().equals(Event.RELEASE)) {
+                        lifecycleEventToRemove = tmpLifecycleEvent;
+                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEventToRemove);
+                        virtualNetworkFunctionRecord.getLifecycle_event().remove(lifecycleEventToRemove);
+                        break;
+                    }
+                }
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case ALLOCATE_RESOURCES:
                 log.debug("ALLOCATE_RESOURCES");
