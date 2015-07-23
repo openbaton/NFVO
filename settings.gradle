@@ -29,9 +29,10 @@ include 'vim-impl', 'vim-int'
 include 'vnfm-int', 'vnfm-reg'
 //include 'repositories'
 include 'repo-impl', 'repo-int'
-//include 'security'
+include 'security'
 include 'catalogue'
 include 'vim-drivers'
+include 'dashboard'
 
 
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')
