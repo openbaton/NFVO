@@ -62,6 +62,7 @@ public interface VNFLifecycleManagement {
 	/**
 	 * This operation allows terminating gracefully
 	 * or forcefully a previously created VNF instance.
+	 * @param virtualNetworkFunctionRecord
 	 */
-	void terminate();
+	void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

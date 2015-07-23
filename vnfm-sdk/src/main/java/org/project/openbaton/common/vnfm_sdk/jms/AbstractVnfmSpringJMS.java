@@ -69,7 +69,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
-//        factory.setConcurrency("1");
+        factory.setConcurrency("5 ");
         factory.setPubSubDomain(true);
         factory.setClientId(SELECTOR + "-" + Math.random());
         factory.setSubscriptionDurable(true);
