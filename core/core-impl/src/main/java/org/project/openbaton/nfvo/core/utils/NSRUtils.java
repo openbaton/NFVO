@@ -191,7 +191,28 @@ public class NSRUtils {
         }
         virtualNetworkFunctionRecord.setLifecycle_event(lifecycleEvents);
         virtualNetworkFunctionRecord.setVirtual_link(new HashSet<InternalVirtualLink>());
-        virtualNetworkFunctionRecord.getVirtual_link().addAll(vnfd.getVirtual_link());
+        HashSet<InternalVirtualLink> internalVirtualLinks = new HashSet<>();
+        for (InternalVirtualLink internalVirtualLink : vnfd.getVirtual_link()){
+            InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
+            internalVirtualLink_new.setLeaf_requirement(internalVirtualLink.getLeaf_requirement());
+            internalVirtualLink_new.setRoot_requirement(internalVirtualLink.getRoot_requirement());
+            internalVirtualLink_new.setConnection_points_references(new HashSet<String>());
+            for (String conn : internalVirtualLink.getConnection_points_references()){
+                internalVirtualLink_new.getConnection_points_references().add(conn);
+            }
+            internalVirtualLink_new.setQos(new HashSet<String>());
+            for (String qos : internalVirtualLink.getQos()){
+                internalVirtualLink_new.getQos().add(qos);
+            }
+            internalVirtualLink_new.setTest_access(new HashSet<String>());
+            for (String test : internalVirtualLink.getTest_access()){
+                internalVirtualLink_new.getTest_access().add(test);
+            }
+            internalVirtualLink_new.setConnectivity_type(internalVirtualLink.getConnectivity_type());
+            internalVirtualLinks.add(internalVirtualLink_new);
+        }
+        virtualNetworkFunctionRecord.getVirtual_link().addAll(internalVirtualLinks);
+
         virtualNetworkFunctionRecord.setVnf_address(new HashSet<String>());
         virtualNetworkFunctionRecord.setStatus(Status.INITIAILZED);
         return virtualNetworkFunctionRecord;
