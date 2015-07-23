@@ -17,7 +17,6 @@ import org.springframework.jms.core.MessageCreator;
 
 import javax.annotation.PreDestroy;
 import javax.jms.*;
-import javax.xml.soap.Text;
 import java.io.Serializable;
 
 /**
@@ -69,7 +68,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
-//        factory.setConcurrency("1");
+        factory.setConcurrency("5 ");
         factory.setPubSubDomain(true);
         factory.setClientId(SELECTOR + "-" + Math.random());
         factory.setSubscriptionDurable(true);
