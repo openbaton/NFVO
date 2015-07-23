@@ -70,7 +70,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract void terminate();
+    public abstract void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -97,6 +97,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 this.modify((VirtualNetworkFunctionRecord) message.getPayload());
                 break;
             case RELEASE_RESOURCES:
+                this.terminate((VirtualNetworkFunctionRecord) message.getPayload());
                 break;
             case INSTANTIATE:
                 this.instantiate((VirtualNetworkFunctionRecord) message.getPayload());
