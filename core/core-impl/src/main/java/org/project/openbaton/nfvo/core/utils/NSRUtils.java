@@ -179,7 +179,17 @@ public class NSRUtils {
 
         virtualNetworkFunctionRecord.setDescriptor_reference(vnfd.getId());
         virtualNetworkFunctionRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
-        virtualNetworkFunctionRecord.getLifecycle_event().addAll(vnfd.getLifecycle_event());
+        HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
+        for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()){
+            LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
+            lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
+            lifecycleEvent_new.setLifecycle_events(new HashSet<String>());
+            for (String event : lifecycleEvent.getLifecycle_events()){
+                lifecycleEvent_new.getLifecycle_events().add(event);
+            }
+            lifecycleEvents.add(lifecycleEvent_new);
+        }
+        virtualNetworkFunctionRecord.setLifecycle_event(lifecycleEvents);
         virtualNetworkFunctionRecord.setVirtual_link(new HashSet<InternalVirtualLink>());
         virtualNetworkFunctionRecord.getVirtual_link().addAll(vnfd.getVirtual_link());
         virtualNetworkFunctionRecord.setVnf_address(new HashSet<String>());
