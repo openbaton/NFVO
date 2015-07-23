@@ -17,6 +17,7 @@ import org.springframework.jms.core.MessageCreator;
 
 import javax.annotation.PreDestroy;
 import javax.jms.*;
+import javax.xml.soap.Text;
 import java.io.Serializable;
 
 /**
@@ -106,6 +107,32 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 //            return true;
 //        }
         return objectMessage.getObject();
+    }
+
+    protected String sendAndReceiveStringMessage(String receiveFromQueueName, String sendToQueueName, final String stringMessage) throws JMSException {
+        log.debug("Sending message: " + stringMessage + " to Queue: " + sendToQueueName);
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                TextMessage textMessage = session.createTextMessage(stringMessage);
+                return textMessage;
+            }
+        };
+        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate.setPubSubNoLocal(false);
+
+        jmsTemplate.send(sendToQueueName, messageCreator);
+        TextMessage textMessage = (TextMessage) jmsTemplate.receive(receiveFromQueueName);
+
+        jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.setPubSubNoLocal(true);
+        String answer = textMessage.getText();
+        log.debug("Received: " + answer);
+        // check errors
+        /*if (answer.equals("error")){
+            return null;
+        }*/
+        return answer;
     }
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {
