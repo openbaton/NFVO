@@ -5,7 +5,7 @@
         compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
         compile('org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion)
 
-	compile project(':catalogue')
+	    compile project(':catalogue')
 
         compile "org.springframework:spring-web:" + springVersion
         compile 'org.springframework:spring-jms:' + springVersion
