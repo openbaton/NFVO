@@ -7,9 +7,11 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.BoundedInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,8 +58,9 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
     private VimBroker vimBroker;
 
     @Override
-    public VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException {
+    public VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException, SQLException {
         VNFPackage vnfPackage = new VNFPackage();
+        vnfPackage.setScripts(new HashSet<Script>());
         vnfPackage.setName(name);
 
         ByteArrayInputStream imageStream = null;
@@ -72,6 +76,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
         BoundedInputStream boundedInputStream;
         FileInputStream imageInputStream = null;
+        File folderScripts = null;
         TarArchiveEntry entry;
         while ((entry = (TarArchiveEntry)myTarFile.getNextEntry()) != null) {
             /* Get the name of the file */
@@ -92,6 +97,13 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 /*and has to be upladed to the RIGHT vim*/
                     File imageFile = entryFile;
                     log.debug("imageFile is: " + imageFile);
+                }else if (individualFile.endsWith(".sh")){
+                    boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
+                    Script script = new Script();
+                    script.setName(individualFile);
+                    byte[] data = IOUtils.toByteArray(boundedInputStream);
+                    script.setPayload(data);
+                    vnfPackage.getScripts().add(script);
                 }
             }
         }
@@ -113,8 +125,10 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
             }
         }
         vnfPackage.setImage(image);
+
         myTarFile.close();
         vnfdRepository.create(virtualNetworkFunctionDescriptor);
+        log.debug("Persisting " + vnfPackage);
         vnfPackageRepository.create(vnfPackage);
         return vnfPackage;
     }

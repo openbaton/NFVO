@@ -3,6 +3,7 @@ package org.project.openbaton.catalogue.nfvo;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by lto on 22/07/15.
@@ -21,6 +22,9 @@ public class VNFPackage {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private NFVImage image;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Script> scripts;
 
     public VNFPackage() {
     }
@@ -57,6 +61,14 @@ public class VNFPackage {
         this.extId = extId;
     }
 
+    public Set<Script> getScripts() {
+        return scripts;
+    }
+
+    public void setScripts(Set<Script> scripts) {
+        this.scripts = scripts;
+    }
+
     @Override
     public String toString() {
         return "VNFPackage{" +
@@ -65,6 +77,7 @@ public class VNFPackage {
                 ", name='" + name + '\'' +
                 ", extId='" + extId + '\'' +
                 ", image=" + image +
+                ", scripts=" + scripts +
                 '}';
     }
 

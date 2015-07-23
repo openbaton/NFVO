@@ -21,6 +21,7 @@ import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public interface VNFPackageManagement {
 	 * @param pack
 	 * @param name
 	 */
-	VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException;
+	VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException, SQLException;
 
 	/**
 	 * This operation allows disabling the 
