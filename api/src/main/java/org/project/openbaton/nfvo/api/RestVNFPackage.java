@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -46,7 +47,7 @@ public class RestVNFPackage {
 	 * 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody VNFPackage onboard(@RequestParam("name") String name, @RequestParam("diskFormat") String diskFormat, @RequestParam("containerFormat") String containerFormat, @RequestParam("minDisk") int minDisk, @RequestParam("minRam") int minRam, @RequestParam("isPublic") boolean isPublic,  @RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException {
+	public @ResponseBody VNFPackage onboard(@RequestParam("name") String name, @RequestParam("diskFormat") String diskFormat, @RequestParam("containerFormat") String containerFormat, @RequestParam("minDisk") int minDisk, @RequestParam("minRam") int minRam, @RequestParam("isPublic") boolean isPublic,  @RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
 		if (!file.isEmpty()) {
 			byte[] bytes = file.getBytes();
 			return vnfPackageManagement.onboard(bytes, name, diskFormat, containerFormat, minDisk, minRam, isPublic);
