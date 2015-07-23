@@ -227,6 +227,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             if (!events.contains(Event.RELEASE))
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     resourceManagement.release(virtualDeploymentUnit);
+                    nsrRepository.remove(networkServiceRecord);
                 }
             else {
                 futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
@@ -237,7 +238,5 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             result.get();
             log.debug("Deleted VDU");
         }
-
-        nsrRepository.remove(networkServiceRecord);
     }
 }
