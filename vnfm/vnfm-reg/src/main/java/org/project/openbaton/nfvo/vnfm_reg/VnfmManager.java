@@ -140,6 +140,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 message.setPayload(virtualNetworkFunctionRecord);
                 log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
                 break;
+            case ERROR:
+                break;
             case RELEASE_RESOURCES:
                 log.debug("RELEASE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
@@ -220,6 +222,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 break;
             case INSTANTIATE:
+                break;
+            case MODIFY:
+                break;
+            case RELEASE_RESOURCES_FINISH:
+                virtualNetworkFunctionRecord = message.getPayload();
+                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+                log.debug("No merge needed, should be already removed");
                 break;
         }
 
