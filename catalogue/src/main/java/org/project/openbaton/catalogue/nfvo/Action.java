@@ -10,5 +10,5 @@ public enum Action {
     ERROR,
     RELEASE_RESOURCES,
     INSTANTIATE,
-    MODIFY;
+    MODIFY, RELEASE_RESOURCES_FINISH;
 }
