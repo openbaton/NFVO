@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -64,27 +65,24 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 
     @Bean
     JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
-        log.debug("type=\"" + SELECTOR + "\"");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("5 ");
+        factory.setConcurrency("1");
         factory.setPubSubDomain(true);
-        factory.setClientId(SELECTOR + "-" + Math.random());
         factory.setSubscriptionDurable(true);
+        factory.setClientId(""+ Thread.currentThread().getId());
         return factory;
     }
 
-    private void onMessage(String destination, String selector) throws JMSException {
-        try {
-            while (!exit) {
-                CoreMessage message = receiveCoreMessage(destination, selector);
-                log.trace("VNFM-DUMMY: received " + message);
-                this.onAction(message);
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-            log.warn("Exiting closing resources...");
+    @JmsListener(destination = "core-vnfm-actions", containerFactory = "topicJmsContainerFactory")
+    private void onMessage(Message msg) throws JMSException {
+
+        log.debug("Received MSG of type: " + msg.getStringProperty("type"));
+        if (msg.getStringProperty("type").equals(this.SELECTOR)) {
+            CoreMessage message = (CoreMessage) ((ObjectMessage)msg).getObject();
+            log.trace("VNFM-DUMMY: received " + message);
+            this.onAction(message);
         }
     }
 
@@ -146,6 +144,8 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         jmsTemplate.setPubSubDomain(false);
         jmsTemplate.setPubSubNoLocal(false);
         jmsTemplate.send(sendToQueueName, messageCreator);
+        jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.setPubSubNoLocal(true);
     }
 
     @Override
@@ -165,7 +165,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
 
 
-        onMessage("core-vnfm-actions", this.SELECTOR);
+        //onMessage("core-vnfm-actions", this.SELECTOR);
 
     }
 }
