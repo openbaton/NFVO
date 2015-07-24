@@ -37,5 +37,7 @@ dependencies {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'com.google.code.gson:gson:2.3.1'
 
-
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'org.springframework:spring-test:' + springVersion
+    testCompile 'junit:junit:4.12'
 }
