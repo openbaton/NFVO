@@ -227,7 +227,12 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             if (!events.contains(Event.RELEASE))
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     resourceManagement.release(virtualDeploymentUnit);
-                    nsrRepository.remove(networkServiceRecord);
+                    /**
+                     * removing here the NSR is:
+                     *  1) not correct form logic point of view since there could be n VDU and we cannot remove n times the NSR
+                     *  2) not working since it is inside a loop of VDU that is contained into VNFR that is contained into NSR so it is not ready to be remove
+                     */
+
                 }
             else {
                 futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
@@ -238,5 +243,12 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             result.get();
             log.debug("Deleted VDU");
         }
+
+        /**
+         * I think that the NSR should be removed from the NFVO anyway from the catalogue.
+         * The VNFM is in charge of releasing resources. The NFVO will receive a notification whether this operation
+         * went well or not. But still the NSR should be removed from the DB.
+         */
+        nsrRepository.remove(networkServiceRecord);
     }
 }
