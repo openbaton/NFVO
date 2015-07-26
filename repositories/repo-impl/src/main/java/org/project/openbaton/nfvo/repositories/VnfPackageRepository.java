@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-def springBootVersion = "1.2.4.RELEASE"
+package org.project.openbaton.nfvo.repositories;
 
-dependencies {
+import org.project.openbaton.nfvo.abstract_repositories.DatabaseRepository;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-    compile project(':catalogue')
-    compile project(':core-int')
-    compile project(':vim-int')
-
-    compile("mysql:mysql-connector-java:5.1.35")
-
-    compile("org.springframework.boot:spring-boot-starter-websocket:" + springBootVersion)
-
-    testCompile("com.jayway.jsonpath:json-path-assert:2.0.0")
-    testCompile("org.mockito:mockito-all:1.10.19")
-    testCompile("junit:junit:4.12")
+/**
+ * Created by lto on 30/04/15.
+ */
+@Repository
+@Transactional(readOnly = true)
+@Scope("singleton")
+public class VnfPackageRepository<VNFPackage> extends DatabaseRepository<VNFPackage> {
 }

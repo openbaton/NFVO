@@ -68,7 +68,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
-//        factory.setConcurrency("1");
+        factory.setConcurrency("5 ");
         factory.setPubSubDomain(true);
         factory.setClientId(SELECTOR + "-" + Math.random());
         factory.setSubscriptionDurable(true);
@@ -106,6 +106,32 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 //            return true;
 //        }
         return objectMessage.getObject();
+    }
+
+    protected String sendAndReceiveStringMessage(String receiveFromQueueName, String sendToQueueName, final String stringMessage) throws JMSException {
+        log.debug("Sending message: " + stringMessage + " to Queue: " + sendToQueueName);
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                TextMessage textMessage = session.createTextMessage(stringMessage);
+                return textMessage;
+            }
+        };
+        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate.setPubSubNoLocal(false);
+
+        jmsTemplate.send(sendToQueueName, messageCreator);
+        TextMessage textMessage = (TextMessage) jmsTemplate.receive(receiveFromQueueName);
+
+        jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.setPubSubNoLocal(true);
+        String answer = textMessage.getText();
+        log.debug("Received: " + answer);
+        // check errors
+        /*if (answer.equals("error")){
+            return null;
+        }*/
+        return answer;
     }
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {

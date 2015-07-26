@@ -30,7 +30,7 @@ public class NetworkServiceRecord implements Serializable{
     /**
      * Monitoring parameter used in this instance.
      * */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
      private Set<String> monitoring_parameter;
     /**
      * References the nsd:service_deployment_flavour used to instantiate this Network Service instance.

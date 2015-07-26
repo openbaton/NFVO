@@ -376,6 +376,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     public void release(VirtualDeploymentUnit vdu) {
         openstackClient.init(vdu.getVimInstance());
         openstackClient.deleteServerByIdAndWait(vdu.getExtId());
+        vdu.setExtId(null);
     }
 
     @Override
