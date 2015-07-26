@@ -25,20 +25,18 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.VimException;
-
 import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.project.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -55,7 +53,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@SpringBootApplication
+@org.springframework.context.annotation.Configuration
 @ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
 @EnableJms
 public class ApplicationTest {
@@ -106,10 +104,11 @@ public class ApplicationTest {
 	}
 
 	@Bean(name = "VNFDRepository")
-	GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository() {
-		return mock(GenericRepository.class);
+	GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository() { return mock(GenericRepository.class); }
+	@Bean(name = "vnfPackageRepository")
+	GenericRepository<VNFPackage> vnfPackageRepository() { return mock(GenericRepository.class); }
 
-	}@Bean(name = "VNFRRepository")
+	@Bean(name = "VNFRRepository")
 	GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository() {
 		return mock(GenericRepository.class);
 	}

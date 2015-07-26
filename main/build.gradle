@@ -30,8 +30,14 @@ dependencies {
     runtime project(':core-impl')
     runtime project(':api')
 //    runtime project(':security')
+    runtime project(':dashboard')
     runtime project(':cli')
     runtime project(':vim-impl')
     runtime project(':repo-impl')
     runtime project(':vnfm-reg')
+
+    testCompile 'org.springframework:spring-test:' + springVersion
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    testCompile 'org.hsqldb:hsqldb:2.3.2'
 }

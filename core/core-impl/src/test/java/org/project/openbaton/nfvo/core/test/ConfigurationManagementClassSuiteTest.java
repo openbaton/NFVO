@@ -87,9 +87,9 @@ public class ConfigurationManagementClassSuiteTest {
 		Configuration configuration_new = createConfigutation();
 		configuration_new.setName("UpdatedName");
 		ConfigurationParameter configurationParameter = new ConfigurationParameter();
-		configurationParameter.setKey("new_key");
+		configurationParameter.setConfKey("new_key");
 		configurationParameter.setValue("new_value");
-		configuration_new.getParameters().add(configurationParameter);
+		configuration_new.getConfigurationParameters().add(configurationParameter);
 		configuration_exp = configurationManagement.update(configuration_new, configuration_exp.getId());
 
 		assertEqualsConfiguration(configuration_exp, configuration_new);
@@ -99,9 +99,10 @@ public class ConfigurationManagementClassSuiteTest {
 	private void assertEqualsConfiguration(Configuration configuration_exp, Configuration configuration_new) {
 		Assert.assertEquals(configuration_exp.getName(), configuration_new.getName());
 		int i = 0;
-		for (ConfigurationParameter configurationParameter : configuration_exp.getParameters()){
-			Assert.assertEquals(configurationParameter.getKey(),configuration_new.getParameters().get(i).getKey());
-			Assert.assertEquals(configurationParameter.getValue(),configuration_new.getParameters().get(i).getValue());
+		for (ConfigurationParameter configurationParameter : configuration_exp.getConfigurationParameters()){
+			ConfigurationParameter[] parameters = new ConfigurationParameter[10];
+			Assert.assertEquals(configurationParameter.getConfKey(), configuration_new.getConfigurationParameters().toArray(parameters)[i].getConfKey());
+			Assert.assertEquals(configurationParameter.getValue(),configuration_new.getConfigurationParameters().toArray(parameters)[i].getValue());
 			i++;
 		}
 	}
@@ -109,9 +110,9 @@ public class ConfigurationManagementClassSuiteTest {
 	private Configuration createConfigutation() {
 		Configuration configuration = new Configuration();
 		configuration.setName("configuration_name");
-		configuration.setParameters(new ArrayList<ConfigurationParameter>(){{
+		configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>() {{
 			ConfigurationParameter configurationParameter = new ConfigurationParameter();
-			configurationParameter.setKey("key");
+			configurationParameter.setConfKey("key");
 			configurationParameter.setValue("value");
 			add(configurationParameter);
 		}});

@@ -32,6 +32,7 @@ include 'repo-impl', 'repo-int'
 //include 'security'
 include 'catalogue'
 include 'vim-drivers'
+include 'dashboard'
 
 
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')

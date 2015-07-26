@@ -16,6 +16,12 @@
 
 package org.project.openbaton.nfvo.core.interfaces;
 
+import org.project.openbaton.catalogue.nfvo.VNFPackage;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
+
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -27,8 +33,10 @@ public interface VNFPackageManagement {
 	/**
 	 * This operation allows submitting and 
 	 * validating the VNF Package.
+	 * @param pack
+	 * @param name
 	 */
-	void onboard();
+	VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException, SQLException;
 
 	/**
 	 * This operation allows disabling the 
@@ -46,18 +54,23 @@ public interface VNFPackageManagement {
 	/**
 	 * This operation allows updating 
 	 * the VNF Package.
+	 * @param id
+	 * @param pack_new
 	 */
-	void update();
+	VNFPackage update(String id, VNFPackage pack_new);
+
+	VNFPackage query(String id);
 
 	/**
 	 * This operation is used to query 
 	 * information on VNF Packages.
 	 */
-	List<String> query();
+	List<VNFPackage> query();
 
 	/**
 	 * This operation is used to remove a
 	 * disabled VNF Package.
+	 * @param id
 	 */
-	void delete();
+	void delete(String id);
 }

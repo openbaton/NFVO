@@ -16,23 +16,23 @@
 
 package org.project.openbaton.nfvo.core.tests.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.api.RestConfiguration;
-
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.nfvo.api.RestConfiguration;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 
 public class ApiRestConfigurationTest {
@@ -64,9 +64,10 @@ public class ApiRestConfigurationTest {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
-		parameters.setKey("test_key");
+		parameters.setConfKey("test_key");
 		parameters.setValue("test_value");
-		configuration.getParameters().add(parameters);
+		configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+		configuration.getConfigurationParameters().add(parameters);
 		configuration.setName("configuration_test");
 		when(mock.add(configuration)).thenReturn(configuration);
 		log.info("" + restConfiguration.create(configuration));
@@ -79,9 +80,10 @@ public class ApiRestConfigurationTest {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
-		parameters.setKey("test_key");
+		parameters.setConfKey("test_key");
 		parameters.setValue("test_value");
-		configuration.getParameters().add(parameters);
+		configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+		configuration.getConfigurationParameters().add(parameters);
 		configuration.setName("configuration_test");
 		when(mock.query(configuration.getId())).thenReturn(configuration);
 		assertEquals(configuration, restConfiguration.findById(configuration.getId()));
@@ -92,9 +94,10 @@ public class ApiRestConfigurationTest {
 		Configuration configuration = new Configuration();
 		configuration.setId("123");
 		ConfigurationParameter parameters = new ConfigurationParameter();
-		parameters.setKey("test_key");
+		parameters.setConfKey("test_key");
 		parameters.setValue("test_value");
-		configuration.getParameters().add(parameters);
+		configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+		configuration.getConfigurationParameters().add(parameters);
 		configuration.setName("configuration_test");
 		when(mock.update(configuration, configuration.getId())).thenReturn(configuration);
 		assertEquals(configuration, restConfiguration.update(configuration, configuration.getId()));

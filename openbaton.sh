@@ -8,11 +8,11 @@ _message_queue_base="apache-activemq-5.11.1"
 
 
 function start_activemq_linux {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+    ${_openbaton_base}/${_message_queue_base}/bin/activemq start
 }
 
 function start_activemq_osx {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
+    ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
 }
 
 function check_activemq {
