@@ -14,8 +14,6 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-import org.springframework.jms.support.destination.DestinationResolver;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
 
 import javax.annotation.PreDestroy;
 import javax.jms.*;
@@ -65,17 +63,10 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     }
 
     @Bean
-    DestinationResolver destinationResolver() {
-        return new JndiDestinationResolver();
-    }
-
-
-    @Bean
-    JmsListenerContainerFactory<?> jmsListenerContainerFactory() {
+    JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_AUTO");
-        factory.setConnectionFactory(connectionFactory());
-        factory.setDestinationResolver(destinationResolver());
+        factory.setConnectionFactory(connectionFactory);
         factory.setConcurrency("5");
         return factory;
     }
