@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -20,6 +22,17 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected String endpoint;
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+    protected VnfmManagerEndpoint vnfmManagerEndpoint;
+
+    @PreDestroy
+    private void shutdown(){
+        this.unregister(vnfmManagerEndpoint);
+    }
+
+    @PostConstruct
+    private void init(){
+        setup();
+    }
 
     public String getType() {
         return type;
@@ -94,15 +107,17 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case ERROR:
                 break;
             case MODIFY:
-                this.modify((VirtualNetworkFunctionRecord) message.getPayload());
+                this.modify(message.getPayload());
                 break;
             case RELEASE_RESOURCES:
-                this.terminate((VirtualNetworkFunctionRecord) message.getPayload());
+                this.terminate(message.getPayload());
                 break;
             case INSTANTIATE:
-                this.instantiate((VirtualNetworkFunctionRecord) message.getPayload());
+                this.instantiate(message.getPayload());
         }
     }
 
     protected abstract void unregister(VnfmManagerEndpoint endpoint);
+
+    protected abstract void setup();
 }
