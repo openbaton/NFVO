@@ -45,7 +45,7 @@ public class JmsSender implements VnfmSender{
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) {
         String topicName = "core-vnfm-actions";
-        this.sendToQueue(coreMessage, topicName, endpoint.getEndpoint());
+        this.sendToQueue(coreMessage, endpoint.getType());
     }
 
     public void sendToQueue(final CoreMessage coreMessage, String type) {
