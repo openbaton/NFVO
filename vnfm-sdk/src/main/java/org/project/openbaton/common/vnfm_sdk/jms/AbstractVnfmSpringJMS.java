@@ -60,12 +60,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     }
 
     @Bean
-    private ConnectionFactory connectionFactory() {
+    ConnectionFactory connectionFactory() {
         return new ActiveMQConnectionFactory();
     }
 
     @Bean
-    private DestinationResolver destinationResolver() {
+    DestinationResolver destinationResolver() {
         return new JndiDestinationResolver();
     }
 
