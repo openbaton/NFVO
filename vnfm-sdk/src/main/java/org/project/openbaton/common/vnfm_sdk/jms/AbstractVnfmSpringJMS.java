@@ -6,17 +6,16 @@ import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import javax.annotation.PreDestroy;
 import javax.jms.*;
 import java.io.Serializable;
 
@@ -25,8 +24,7 @@ import java.io.Serializable;
  */
 
 @SpringBootApplication
-@EnableJms
-public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements CommandLineRunner {
+public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
     @Autowired
     protected JmsListenerContainerFactory topicJmsContainerFactory;
@@ -34,11 +32,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     private boolean exit = false;
 
     protected String SELECTOR;
-    private VnfmManagerEndpoint vnfmManagerEndpoint;
 
-    public String getSELECTOR() {
-        return SELECTOR;
-    }
 
     public void setSELECTOR(String SELECTOR) {
         this.SELECTOR = SELECTOR;
@@ -47,16 +41,9 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     @Autowired
     private JmsTemplate jmsTemplate;
 
-    @PreDestroy
-    private void shutdown(){
-        log.debug("PREDESTROY");
-        this.unregister(vnfmManagerEndpoint);
-    }
 
-    @Override
-    protected void unregister(VnfmManagerEndpoint endpoint) {
-        this.sendMessageToQueue("vnfm-unregister", endpoint);
-    }
+    @Autowired
+    private JmsListenerContainerFactory<?> jmsListenerContainerFactory;
 
     @Bean
     ConnectionFactory connectionFactory() {
@@ -72,68 +59,26 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         return factory;
     }
 
-//    @Bean
-//    JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setCacheLevelName("CACHE_CONNECTION");
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setConcurrency("1");
-//        factory.setPubSubDomain(true);
-//        factory.setSubscriptionDurable(true);
-//        factory.setClientId(""+ Thread.currentThread().getId());
-//        return factory;
-//    }
-
-    @JmsListener(destination = "core-dummy-actions", containerFactory = "jmsListenerContainerFactory")
-    private void onMessage(CoreMessage message) throws JMSException {
-        log.trace("VNFM-DUMMY: received " + message);
-        this.onAction(message);
+    @Override
+    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+        registrar.setContainerFactory(jmsListenerContainerFactory);
+        SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+        endpoint.setDestination("core-" + this.type + "-actions");
+        endpoint.setMessageListener(this);
+        endpoint.setId(String.valueOf(Thread.currentThread().getId()));
+        registrar.registerEndpoint(endpoint);
     }
 
-    private CoreMessage receiveCoreMessage(String destination, String selector) throws JMSException {
-        jmsTemplate.setPubSubDomain(true);
-        jmsTemplate.setPubSubNoLocal(true);
-        CoreMessage message = (CoreMessage) ((ObjectMessage) jmsTemplate.receiveSelected(destination, "type = \'" + selector + "\'")).getObject();
-        jmsTemplate.setPubSubDomain(false);
-        jmsTemplate.setPubSubNoLocal(false);
-        return message;
-    }
-
-    protected Serializable sendAndReceiveMessage(String receiveFromQueueName, String sendToQueueName, final Serializable vduMessage) throws JMSException {
-        sendMessageToQueue(sendToQueueName, vduMessage);
-        ObjectMessage objectMessage = (ObjectMessage) jmsTemplate.receive(receiveFromQueueName);
-        log.debug("Received: " + objectMessage.getObject());
-//        VDUMessage answer = (VDUMessage) objectMessage.getObject();
-//        if (answer.getLifecycleEvent().ordinal() != Event.ERROR.ordinal()){
-//            return true;
-//        }
-        return objectMessage.getObject();
-    }
-
-    protected String sendAndReceiveStringMessage(String receiveFromQueueName, String sendToQueueName, final String stringMessage) throws JMSException {
-        log.debug("Sending message: " + stringMessage + " to Queue: " + sendToQueueName);
-        MessageCreator messageCreator = new MessageCreator() {
-            @Override
-            public Message createMessage(Session session) throws JMSException {
-                TextMessage textMessage = session.createTextMessage(stringMessage);
-                return textMessage;
+        public void onMessage(Message message) {
+            CoreMessage msg = null;
+            try {
+                msg = (CoreMessage) ((ObjectMessage) message).getObject();
+            } catch (JMSException e) {
+                e.printStackTrace();
+                System.exit(1);
             }
-        };
-        jmsTemplate.setPubSubDomain(false);
-        jmsTemplate.setPubSubNoLocal(false);
-
-        jmsTemplate.send(sendToQueueName, messageCreator);
-        TextMessage textMessage = (TextMessage) jmsTemplate.receive(receiveFromQueueName);
-
-        jmsTemplate.setPubSubDomain(true);
-        jmsTemplate.setPubSubNoLocal(true);
-        String answer = textMessage.getText();
-        log.debug("Received: " + answer);
-        // check errors
-        /*if (answer.equals("error")){
-            return null;
-        }*/
-        return answer;
+        log.trace("VNFM: received " + msg);
+        this.onAction(msg);
     }
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {
@@ -148,14 +93,10 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         jmsTemplate.setPubSubDomain(false);
         jmsTemplate.setPubSubNoLocal(false);
         jmsTemplate.send(sendToQueueName, messageCreator);
-        jmsTemplate.setPubSubDomain(true);
-        jmsTemplate.setPubSubNoLocal(true);
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        //TODO initialize and register
-
+    protected void setup() {
         loadProperties();
         this.setSELECTOR(this.getEndpoint());
         log.debug("SELECTOR: " + this.getEndpoint());
@@ -167,6 +108,10 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 
         log.debug("Registering to queue: vnfm-register");
         sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+    }
 
+    @Override
+    protected void unregister(VnfmManagerEndpoint endpoint) {
+        this.sendMessageToQueue("vnfm-unregister", endpoint);
     }
 }
