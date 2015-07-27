@@ -93,7 +93,7 @@ function start {
 
 
 function compile_nfvo {
-    ./gradlew build -x test install
+    ./gradlew build -x test 
 }
 
 function tests {
