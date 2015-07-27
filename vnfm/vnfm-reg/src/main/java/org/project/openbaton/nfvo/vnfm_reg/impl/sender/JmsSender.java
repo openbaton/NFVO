@@ -49,6 +49,9 @@ public class JmsSender implements VnfmSender{
     }
 
     public void sendToQueue(final CoreMessage coreMessage, String type) {
+        String destinationName = "core-" + type + "-actions";
+        log.debug("Sending message: " + coreMessage.getAction() + " to Topic: " + destinationName);
+        log.trace("Sending message: " + coreMessage + " to Topic: " + destinationName);
         MessageCreator messageCreator = new MessageCreator() {
             @Override
             public Message createMessage(Session session) throws JMSException {
@@ -57,7 +60,7 @@ public class JmsSender implements VnfmSender{
             }
         };
 
-        jmsTemplate.send("core-" + type + "-actions", messageCreator);
+        jmsTemplate.send(destinationName, messageCreator);
     }
     public void sendToTopic(final CoreMessage coreMessage, String destinationTopicName, final String selector) {
         log.debug("Sending message: " + coreMessage.getAction() + " to Topic: " + destinationTopicName + " where selector is: type=\'" + selector + "\'");
