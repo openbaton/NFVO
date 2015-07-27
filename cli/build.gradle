@@ -14,30 +14,6 @@
  * limitations under the License.
  */
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-	maven { url "http://repo.springsource.org/lib-release" }
-}
-buildscript {
-    repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
-    }
-}
-
-apply plugin: "spring-boot"
-apply plugin: "java"
-apply plugin: 'maven'
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-mainClassName = 'SpringShellBridge'
-
 dependencies {
 
     compile project(':api')
