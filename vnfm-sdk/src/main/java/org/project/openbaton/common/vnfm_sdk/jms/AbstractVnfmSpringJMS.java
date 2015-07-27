@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -65,9 +66,9 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     @Bean
     JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setCacheLevelName("CACHE_AUTO");
+        factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("5");
+        factory.setConcurrency("15");
         return factory;
     }
 
@@ -83,12 +84,8 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 //        return factory;
 //    }
 
-    //    @JmsListener(destination = "core-vnfm-actions", containerFactory = "queueJmsContainerFactory")
-    private void onMessage() throws JMSException {
-
-        Message msg = jmsTemplate.receive("core-" + this.type + "-actions");
-
-        CoreMessage message = (CoreMessage) ((ObjectMessage)msg).getObject();
+    @JmsListener(destination = "core-dummy-actions", containerFactory = "jmsListenerContainerFactory")
+    private void onMessage(CoreMessage message) throws JMSException {
         log.trace("VNFM-DUMMY: received " + message);
         this.onAction(message);
     }
@@ -171,11 +168,5 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         log.debug("Registering to queue: vnfm-register");
         sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
 
-        try {
-            while (true)
-                onMessage();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 }
