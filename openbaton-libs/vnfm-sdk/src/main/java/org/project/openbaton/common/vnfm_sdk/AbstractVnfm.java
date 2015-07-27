@@ -112,8 +112,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case RELEASE_RESOURCES:
                 this.terminate(message.getPayload());
                 break;
+            case GRANT_OPERATION:
             case INSTANTIATE:
                 this.instantiate(message.getPayload());
+            case RELEASE_RESOURCES_FINISH:
+                break;
         }
     }
 
