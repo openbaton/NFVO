@@ -46,7 +46,7 @@ class SystemStartup implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("Initializing NEUTRINO");
+        log.info("Initializing OpenBaton");
 
 //        defaultMessageListenerContainer.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONNECTION);
 
