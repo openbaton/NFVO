@@ -10,11 +10,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.jms.support.destination.DestinationResolver;
+import org.springframework.jms.support.destination.JndiDestinationResolver;
 
 import javax.annotation.PreDestroy;
 import javax.jms.*;
@@ -59,16 +60,23 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
     }
 
     @Bean
-    ConnectionFactory connectionFactory() {
+    private ConnectionFactory connectionFactory() {
         return new ActiveMQConnectionFactory();
     }
 
     @Bean
-    JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+    private DestinationResolver destinationResolver() {
+        return new JndiDestinationResolver();
+    }
+
+
+    @Bean
+    JmsListenerContainerFactory<?> jmsListenerContainerFactory() {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setCacheLevelName("CACHE_CONNECTION");
-        factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("15");
+        factory.setCacheLevelName("CACHE_AUTO");
+        factory.setConnectionFactory(connectionFactory());
+        factory.setDestinationResolver(destinationResolver());
+        factory.setConcurrency("5");
         return factory;
     }
 
@@ -84,8 +92,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
 //        return factory;
 //    }
 
-    @JmsListener(destination = "core-dummy-actions", containerFactory = "jmsListenerContainerFactory")
-    private void onMessage(CoreMessage message) throws JMSException {
+    //    @JmsListener(destination = "core-vnfm-actions", containerFactory = "queueJmsContainerFactory")
+    private void onMessage() throws JMSException {
+
+        Message msg = jmsTemplate.receive("core-" + this.type + "-actions");
+
+        CoreMessage message = (CoreMessage) ((ObjectMessage)msg).getObject();
         log.trace("VNFM-DUMMY: received " + message);
         this.onAction(message);
     }
@@ -168,5 +180,11 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Comm
         log.debug("Registering to queue: vnfm-register");
         sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
 
+        try {
+            while (true)
+                onMessage();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
