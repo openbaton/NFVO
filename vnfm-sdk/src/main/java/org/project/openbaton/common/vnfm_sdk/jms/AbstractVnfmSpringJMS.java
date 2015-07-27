@@ -65,6 +65,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
         endpoint.setDestination("core-" + this.type + "-actions");
         endpoint.setMessageListener(this);
+        endpoint.setConcurrency("15");
         endpoint.setId(String.valueOf(Thread.currentThread().getId()));
         registrar.registerEndpoint(endpoint);
     }
