@@ -41,7 +41,7 @@ task openbatonDeb(type: Deb, dependsOn: [jar, installDist]){
     release '1'
     os = LINUX
 
-    configurationFile('/etc/default/openbaton')
+    configurationFile('/etc/openbaton/openbaton.properties')
     postInstall file('gradle/gradle/scripts/debian/postinst')
 
     into openbatonInstallDir
@@ -55,6 +55,7 @@ task openbatonDeb(type: Deb, dependsOn: [jar, installDist]){
         fileType CONFIG | NOREPLACE
         into 'conf'
     }
+    from('etc/openbaton.properties'){ into '/etc/openbaton/'}
     from('gradle/gradle/scripts/openbaton.sh')
     from('build/install/openbaton/bin/openbaton'){into 'bin'}
     from('gradle/gradle/scripts/openbaton.conf') {into '/etc/init/'}
