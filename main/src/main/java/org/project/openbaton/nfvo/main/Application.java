@@ -113,10 +113,6 @@ public class Application {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         log.info("Started OpenBaton");
 
-//        for (String name : context.getBeanDefinitionNames())
-//            log.debug(name);
-
-//        log.info("Bye!");
     }
     
   
