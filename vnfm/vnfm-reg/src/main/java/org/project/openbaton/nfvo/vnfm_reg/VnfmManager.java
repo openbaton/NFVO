@@ -101,9 +101,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         return new AsyncResult<Void>(null);
     }
 
-//    @Override
-//    public abstract void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
-
     @Override
     public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
         String senderName = endpointType.toString().toLowerCase() + "Sender";
@@ -124,6 +121,11 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
+                    LifecycleEvent lifecycleEvent = new LifecycleEvent();
+                    lifecycleEvent.setEvent(Event.GRANTED);
+                    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
+                        virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+                    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                     message.setPayload(virtualNetworkFunctionRecord);
                     log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
                     vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
@@ -178,7 +180,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 break;
             case ALLOCATE_RESOURCES:
                 log.debug("ALLOCATE_RESOURCES");
-                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = message.getPayload();
                 List<Future<String>> ids = new ArrayList<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {

@@ -128,8 +128,10 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     private boolean installPlugin(String line) throws IOException {
         String path = line.split(" ")[1];
         File jar = new File(path);
-        if (!jar.exists())
+        if (!jar.exists() || jar.isDirectory()) {
+            log.error(jar.getAbsolutePath() + " doesn't exists or is not a plugin.");
             return false;
+        }
 
         path = jar.getAbsolutePath();
         log.debug("path is: " + path);
