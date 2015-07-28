@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+ext {
+    debianDistribution = (applicationRelease) ? "release" : "snapshot"
+    debianVersionExtension = ("snapshot".equals(debianDistribution)) ? "~${applicationVersionDebian}" : ""
+    debianApplicationVersionFull = "${applicationVersionFull}".replaceAll("-", ".") + debianVersionExtension
+    openbatonInstallDir = "/opt/openbaton"
+
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-ospackage-plugin:2.2.6'
+    }
+}
+
+apply plugin: 'os-package'
+
+task openbatonDeb(type: Deb, dependsOn: [jar, installDist]){
+    packageName = 'openbaton'
+    version = debianApplicationVersionFull
+    release '1'
+    os = LINUX
+
+    configurationFile('/etc/default/openbaton')
+
+    into openbatonInstallDir
+
+    from(jar.outputs.files) {
+        into 'lib'
+    }
+    from('lib') {
+        into 'lib'
+    }
+    from('main/src/main/resources') {
+        fileType CONFIG | NOREPLACE
+        into 'conf'
+    }
+    from('build/install/openbaton/bin') {
+        exclude '**/*.bat'
+        into 'bin'
+    }
+    link('/usr/bin/openbaton',openbatonInstallDir + '/bin/openbaton')
+
+}

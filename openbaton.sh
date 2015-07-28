@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_version="0.5-SNAPSHOT"
+_version="0.6-SNAPSHOT"
 
 _base=/opt
 _openbaton_base="${_base}/openbaton"
