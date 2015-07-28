@@ -15,17 +15,20 @@
  */
 plugins {
     id 'net.researchgate.release' version '2.1.2'
+    id "nebula.os-package" version "2.2.6"
+
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-//version = '0.5-SNAPSHOT'
-
-apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
 apply from: 'openbaton-libs/gradle/gradle/git.helpers.gradle'
+apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
 
+/**
+ * Project settings
+ */
 project.ext {
     //------------------------------------------------//
     /**
@@ -45,7 +48,7 @@ project.ext {
     applicationDate = new Date()
     applicationRevision = getRevision()
 
-    applicationVersionSnapshot = (!applicationRelease) ? "+SNAPSHOT.${asUTC(applicationDate, 'yyMMddHHmm')}.git${applicationRevision}" : ""
+    applicationVersionSnapshot = (!applicationRelease) ? "+SNAPSHOT.${asUTC(applicationDate, 'yyyyMMdd')}.git${applicationRevision}" : ""
     applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
     //------------------------------------------------//
     //------------------------------------------------//
@@ -55,7 +58,12 @@ project.ext {
     mainClass = 'org.project.openbaton.nfvo.main.Application'
     //------------------------------------------------//
 }
+
 apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
+apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
+apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
+
+apply from: 'gradle/gradle/packaging.debian.gradle'
 
 repositories {
     mavenCentral()
@@ -65,5 +73,3 @@ dependencies {
     compile project(':main')
 }
 
-apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
-apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'

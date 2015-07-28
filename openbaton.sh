@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_version="0.5-SNAPSHOT"
+_version="0.6-SNAPSHOT"
 
 _base=/opt
 _openbaton_base="${_base}/openbaton"
@@ -8,11 +8,11 @@ _message_queue_base="apache-activemq-5.11.1"
 
 
 function start_activemq_linux {
-    ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
 }
 
 function start_activemq_osx {
-    ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
 }
 
 function check_activemq {
@@ -91,9 +91,15 @@ function start {
     fi
 }
 
+function stop {
+    if ! screen -list | grep "openbaton"; then
+	screen -S openbaton -p 0 -X stuff "exit$(printf \\r)"
+    fi
+}
+
 
 function compile_nfvo {
-    ./gradlew build -x test install
+    ./gradlew build -x test 
 }
 
 function tests {
@@ -113,6 +119,7 @@ function usage {
     echo -e "where option is"
     echo -e "\t\t * compile"
     echo -e "\t\t * start"
+    echo -e "\t\t * stop"
     echo -e "\t\t * test"
     echo -e "\t\t * clean"
 }
@@ -140,6 +147,8 @@ do
             start ;;
         "start" )
             start ;;
+        "stop" )
+            stop ;;
         "compile" )
             compile_nfvo ;;
         "test" )
