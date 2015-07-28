@@ -126,6 +126,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
                     LifecycleEvent lifecycleEvent = new LifecycleEvent();
                     lifecycleEvent.setEvent(Event.GRANTED);
+                    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
+                        virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
                     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                     message.setPayload(virtualNetworkFunctionRecord);
                     log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
