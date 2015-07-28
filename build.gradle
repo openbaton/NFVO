@@ -73,5 +73,3 @@ dependencies {
     compile project(':main')
 }
 
-apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
-apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
