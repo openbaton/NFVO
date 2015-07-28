@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.core.test.reositories;
+package org.project.openbaton.nfvo.core.test;
 
 
 import org.junit.After;
