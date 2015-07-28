@@ -2,9 +2,10 @@
 
 _base=/opt
 _openbaton_base="${_base}/openbaton"
+_openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start {
-    screen -S openbaton ${_openbaton_base}/bin/openbaton
+    screen -S openbaton "${_openbaton_base}/bin/openbaton --spring.config.location=file:${_openbaton_config_file}"
 }
 
 function stop {
