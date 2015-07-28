@@ -65,7 +65,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void query();
 
     @Override
-    public abstract void scale();
+    public abstract void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void checkInstantiationFeasibility();
@@ -84,6 +84,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     @Override
     public abstract void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+    public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -104,7 +106,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case ALLOCATE_RESOURCES:
                 break;
+            case SCALE:
+                this.scale(message.getPayload());
+                break;
             case ERROR:
+                handleError(message.getPayload());
                 break;
             case MODIFY:
                 this.modify(message.getPayload());
