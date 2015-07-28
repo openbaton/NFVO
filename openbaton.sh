@@ -80,7 +80,7 @@ function start {
 
     if [ ! -d build/  ]
         then
-            compile_nfvo
+            compile
     fi
 
     check_activemq
@@ -92,13 +92,19 @@ function start {
 }
 
 function stop {
-    if ! screen -list | grep "openbaton"; then
-	screen -S openbaton -p 0 -X stuff "exit$(printf \\r)"
+    if screen -list | grep "openbaton"; then
+	    screen -S openbaton -p 0 -X stuff "exit$(printf \\r)"
+    fi
+}
+
+function kill {
+    if screen -list | grep "openbaton"; then
+	    screen -X -S openbaton kill
     fi
 }
 
 
-function compile_nfvo {
+function compile {
     ./gradlew build -x test 
 }
 
@@ -121,6 +127,7 @@ function usage {
     echo -e "\t\t * start"
     echo -e "\t\t * stop"
     echo -e "\t\t * test"
+    echo -e "\t\t * kill"
     echo -e "\t\t * clean"
 }
 
@@ -143,14 +150,16 @@ do
             clean ;;
         "sc" )
             clean
-            compile_nfvo
+            compile
             start ;;
         "start" )
             start ;;
         "stop" )
             stop ;;
         "compile" )
-            compile_nfvo ;;
+            compile ;;
+        "kill" )
+            kill ;;
         "test" )
             tests ;;
         * )
