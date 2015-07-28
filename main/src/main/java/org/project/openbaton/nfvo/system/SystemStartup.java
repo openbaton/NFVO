@@ -28,6 +28,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.*;
@@ -50,9 +53,9 @@ class SystemStartup implements CommandLineRunner {
 
 //        defaultMessageListenerContainer.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONNECTION);
 
-        ClassPathResource classPathResource = new ClassPathResource("openbaton.properties");
+        InputStream is = new FileInputStream("/etc/openbaton/openbaton.properties");
         Properties properties = new Properties();
-        properties.load(classPathResource.getInputStream());
+        properties.load(is);
 
         log.debug("Config Values are: " + properties.values());
 

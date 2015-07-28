@@ -5,7 +5,7 @@ _version="0.6-SNAPSHOT"
 _base=/opt
 _openbaton_base="${_base}/openbaton"
 _message_queue_base="apache-activemq-5.11.1"
-
+_openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
     sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
@@ -87,7 +87,7 @@ function start {
     check_mysql
     if [ 0 -eq $? ]
         then
-            screen -S openbaton java -jar "build/libs/openbaton-$_version.jar"
+            screen -S openbaton java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     fi
 }
 
@@ -133,7 +133,6 @@ function usage {
 
 ##
 #   MAIN
-#   TODO start activemq and/or define application.properties
 ##
 
 if [ $# -eq 0 ]
