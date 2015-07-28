@@ -1,5 +1,8 @@
 *.class
+
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
+
 *.zip
 *.java.hsp
 *.sonarj

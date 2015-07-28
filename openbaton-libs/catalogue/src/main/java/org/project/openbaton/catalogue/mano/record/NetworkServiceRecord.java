@@ -63,8 +63,7 @@ public class NetworkServiceRecord implements Serializable{
     /**
      * The reference to the Network Service Descriptor used to instantiate this Network Service.
      * */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-     private NFVEntityDescriptor descriptor_reference;
+     private String descriptor_reference;
     /**
      * Resource reservation information identification (potentially per individual VIM) for NFVI resources reserved for this NS instance.
      * TODO: find an appropriate type for this field
@@ -202,11 +201,11 @@ public class NetworkServiceRecord implements Serializable{
         this.pnfr = pnfr;
     }
 
-    public NFVEntityDescriptor getDescriptor_reference() {
+    public String getDescriptor_reference() {
         return descriptor_reference;
     }
 
-    public void setDescriptor_reference(NFVEntityDescriptor descriptor_reference) {
+    public void setDescriptor_reference(String descriptor_reference) {
         this.descriptor_reference = descriptor_reference;
     }
 
