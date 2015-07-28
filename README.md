@@ -22,13 +22,18 @@ $ cd openbaton
 $ ./openbaton.sh -i
 ```
 
+## Debian package
+
+
+
 # Plugins
 
 `openbaton` provides some plugins in order to interact with the most common cloud platforms available:
 * OpenStack
-* CloudStack
 * Amazon EC2
-* OpenNebula
+
+## How to install a plugin
+
 
 # Development
 
