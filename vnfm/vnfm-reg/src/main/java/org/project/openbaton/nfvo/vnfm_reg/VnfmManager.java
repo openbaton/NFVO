@@ -101,9 +101,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         return new AsyncResult<Void>(null);
     }
 
-//    @Override
-//    public abstract void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, NamingException, JMSException;
-
     @Override
     public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
         String senderName = endpointType.toString().toLowerCase() + "Sender";
@@ -181,7 +178,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 break;
             case ALLOCATE_RESOURCES:
                 log.debug("ALLOCATE_RESOURCES");
-                virtualNetworkFunctionRecord = (VirtualNetworkFunctionRecord) message.getPayload();
+                virtualNetworkFunctionRecord = message.getPayload();
                 List<Future<String>> ids = new ArrayList<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
