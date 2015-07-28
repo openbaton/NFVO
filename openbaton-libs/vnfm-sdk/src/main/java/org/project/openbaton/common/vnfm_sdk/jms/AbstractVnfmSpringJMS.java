@@ -55,7 +55,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_AUTO");
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("5");
+        factory.setConcurrency("15");
         return factory;
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
             e.printStackTrace();
             System.exit(1);
         }
-    	log.trace("VNFM: received " + msg);
+        log.trace("VNFM: received " + msg);
         this.onAction(msg);
     }
 
@@ -116,3 +116,4 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         this.sendMessageToQueue("vnfm-unregister", endpoint);
     }
 }
+
