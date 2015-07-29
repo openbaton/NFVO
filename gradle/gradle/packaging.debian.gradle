@@ -41,24 +41,25 @@ task openbatonDeb(type: Deb, dependsOn: [jar, installDist]){
     release '1'
     os = LINUX
 
-    configurationFile('/etc/default/openbaton')
+    configurationFile('/etc/openbaton/openbaton.properties')
+    postInstall file('gradle/gradle/scripts/debian/postinst')
 
     into openbatonInstallDir
 
     from(jar.outputs.files) {
         into 'lib'
     }
-    from('lib') {
-        into 'lib'
-    }
+    from('build/install/openbaton/lib') {into 'lib'}
+
     from('main/src/main/resources') {
         fileType CONFIG | NOREPLACE
         into 'conf'
     }
-    from('build/install/openbaton/bin') {
-        exclude '**/*.bat'
-        into 'bin'
-    }
-    link('/usr/bin/openbaton',openbatonInstallDir + '/bin/openbaton')
+    from('etc/openbaton.properties'){ into '/etc/openbaton/'}
+    from('gradle/gradle/scripts/openbaton.sh')
+    from('build/install/openbaton/bin/openbaton'){into 'bin'}
+    from('gradle/gradle/scripts/openbaton.conf') {into '/etc/init/'}
+
+    link('/etc/init.d/openbaton', '/lib/init/upstart-job')
 
 }

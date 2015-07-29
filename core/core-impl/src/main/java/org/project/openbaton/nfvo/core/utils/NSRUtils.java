@@ -37,6 +37,7 @@ public class NSRUtils {
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
         log.debug("" + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
+        networkServiceRecord.setDescriptor_reference(networkServiceDescriptor.getId());
         networkServiceRecord.setName(networkServiceDescriptor.getName());
         networkServiceRecord.setVendor(networkServiceDescriptor.getVendor());
         networkServiceRecord.setMonitoring_parameter(new HashSet<String>());
