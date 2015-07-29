@@ -1,6 +1,8 @@
 #!/bin/bash
 
-_version="0.6-SNAPSHOT"
+source gradle.properties
+
+_version=${version}
 
 _base=/opt
 _openbaton_base="${_base}/openbaton"
