@@ -41,7 +41,7 @@ project.ext {
     /**
      * Application Related Version
      */
-    applicationVersion = "0.6-alpha"
+    applicationVersion = version
     applicationVersionDebian = "1";
 
     applicationRelease = isApplicationRelease()
