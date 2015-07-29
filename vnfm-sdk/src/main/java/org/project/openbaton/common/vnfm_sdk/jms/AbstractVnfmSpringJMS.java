@@ -117,3 +117,4 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         this.sendMessageToQueue("vnfm-unregister", endpoint);
     }
 }
+
