@@ -70,14 +70,15 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         registrar.registerEndpoint(endpoint);
     }
 
-        public void onMessage(Message message) {
-            CoreMessage msg = null;
-            try {
-                msg = (CoreMessage) ((ObjectMessage) message).getObject();
-            } catch (JMSException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
+    @Override
+    public void onMessage(Message message) {
+        CoreMessage msg = null;
+        try {
+            msg = (CoreMessage) ((ObjectMessage) message).getObject();
+        } catch (JMSException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         log.trace("VNFM: received " + msg);
         this.onAction(msg);
     }
