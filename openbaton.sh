@@ -1,11 +1,13 @@
 #!/bin/bash
 
-_version="0.6-SNAPSHOT"
+source gradle.properties
+
+_version=${version}
 
 _base=/opt
 _openbaton_base="${_base}/openbaton"
 _message_queue_base="apache-activemq-5.11.1"
-
+_openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
     sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
@@ -80,25 +82,31 @@ function start {
 
     if [ ! -d build/  ]
         then
-            compile_nfvo
+            compile
     fi
 
     check_activemq
     check_mysql
     if [ 0 -eq $? ]
         then
-            screen -S openbaton java -jar "build/libs/openbaton-$_version.jar"
+            screen -S openbaton java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     fi
 }
 
 function stop {
-    if ! screen -list | grep "openbaton"; then
-	screen -S openbaton -p 0 -X stuff "exit$(printf \\r)"
+    if screen -list | grep "openbaton"; then
+	    screen -S openbaton -p 0 -X stuff "exit$(printf \\r)"
+    fi
+}
+
+function kill {
+    if screen -list | grep "openbaton"; then
+	    screen -X -S openbaton kill
     fi
 }
 
 
-function compile_nfvo {
+function compile {
     ./gradlew build -x test 
 }
 
@@ -121,12 +129,12 @@ function usage {
     echo -e "\t\t * start"
     echo -e "\t\t * stop"
     echo -e "\t\t * test"
+    echo -e "\t\t * kill"
     echo -e "\t\t * clean"
 }
 
 ##
 #   MAIN
-#   TODO start activemq and/or define application.properties
 ##
 
 if [ $# -eq 0 ]
@@ -143,14 +151,16 @@ do
             clean ;;
         "sc" )
             clean
-            compile_nfvo
+            compile
             start ;;
         "start" )
             start ;;
         "stop" )
             stop ;;
         "compile" )
-            compile_nfvo ;;
+            compile ;;
+        "kill" )
+            kill ;;
         "test" )
             tests ;;
         * )

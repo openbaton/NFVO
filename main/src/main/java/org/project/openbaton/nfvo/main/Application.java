@@ -54,40 +54,6 @@ import java.util.jar.JarFile;
 @ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
 public class Application {
 
-//    @Scheduled(fixedRate = 30000)
-    private void contexrLoaderTask() {
-        try {
-            ClassLoader parent = ClassUtils.getDefaultClassLoader();
-            System.out.println("Parent: " + parent);
-            ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file:///opt/tmp/nfvo/plugins/clients-impl-0.2-SNAPSHOT.jar"), new URL("file:///opt/tmp/nfvo/plugins/jclouds-core-1.9.0.jar")/*, new URL("file:///opt/tmp/nfvo/openbaton-libs/vim-drivers/build/libs/vim-drivers-0.6-alpha.jar")*/}, parent);
-            System.out.println("ClassLoader: " + classLoader);
-
-            URL url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/openstack/OpenstackClient.class");
-            System.out.println("URL: " + url.toString());
-            JarURLConnection connection = (JarURLConnection) url.openConnection();
-            JarFile file = connection.getJarFile();
-            Class c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.openstack.OpenstackClient");
-            ClientInterfaces instance = (ClientInterfaces) c.newInstance();
-            System.out.println("Class: " + c);
-            System.out.println("ClassName: " + c.getName());
-            System.out.println("Instance: " + instance);
-            String jarPath = file.getName();
-            System.out.println(jarPath);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     @Bean
     JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -113,10 +79,6 @@ public class Application {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         log.info("Started OpenBaton");
 
-//        for (String name : context.getBeanDefinitionNames())
-//            log.debug(name);
-
-//        log.info("Bye!");
     }
     
   
