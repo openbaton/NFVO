@@ -78,15 +78,17 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<InternalVirtualLink> virtual_link;
-//    @JsonIgnore
 
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @XmlTransient
-//    private transient NetworkServiceRecord parent_ns;
+    /**
+     * The nsr id
+     */
+    private String  parent_ns_id;
+
     /**
      * The reference to the VNFD used to instantiate this VNF
      * */
     private String descriptor_reference;
+
     /**
      * The identification of the VNFM entity managing this VNF
      * TODO probably it is better to have a reference than a string pointing to the id
@@ -99,7 +101,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> connected_external_virtual_link;
-
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
      * interface on this VNF
@@ -107,11 +108,23 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
+
     /**
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
+     *
+     * Implementation thoughts:
+     * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
+     * so for what concerns the VNFR, the state are:
+     *
+     * * Null) A VNF Instance does not exist and is about to be created.
+     * * Instantiated Not Configured) VNF Instance does exist but is not configured for service.
+     * * Instantiated Configured - Inactive) A VNF Instance is configured for service.
+     * * Instantiated Configured - Active) A VNF Instance that participates in service.
+     * * Terminated) A VNF Instance has ceased to exist.
+     *
+     * but the Null and the Instantiated since when the VNFR is created will be ready to serve.
      * */
-
     @Enumerated(EnumType.STRING)
     private Status status;
     /**
@@ -138,8 +151,15 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
     private String name;
-
     private String type;
+
+    public String getParent_ns_id() {
+        return parent_ns_id;
+    }
+
+    public void setParent_ns_id(String parent_ns_id) {
+        this.parent_ns_id = parent_ns_id;
+    }
 
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
@@ -251,14 +271,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     public void setVirtual_link(Set<InternalVirtualLink> virtual_link) {
         this.virtual_link = virtual_link;
     }
-
-//    public NetworkServiceRecord getParent_ns() {
-//        return parent_ns;
-//    }
-//
-//    public void setParent_ns(NetworkServiceRecord parent_ns) {
-//        this.parent_ns = parent_ns;
-//    }
 
     public String getDescriptor_reference() {
         return descriptor_reference;

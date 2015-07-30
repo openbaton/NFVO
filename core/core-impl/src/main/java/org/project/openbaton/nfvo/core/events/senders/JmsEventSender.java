@@ -57,15 +57,9 @@ public class JmsEventSender implements EventSender{
             @Override
             public Message createMessage(Session session) throws JMSException {
                 ObjectMessage objectMessage = session.createObjectMessage(event);
-//                log.trace("SELECTOR: type=\'"+ selector+ "\'");
-//                objectMessage.setStringProperty("type", selector );
                 return objectMessage;
             }
         };
-//        jmsTemplate.setPubSubDomain(true);
-//        jmsTemplate.setPubSubNoLocal(true);
-//        jmsTemplate.setExplicitQosEnabled(true);
-//        jmsTemplate.setDeliveryPersistent(true);
         jmsTemplate.send(endpoint.getEndpoint(), messageCreator);
 
         return new AsyncResult<>(null);

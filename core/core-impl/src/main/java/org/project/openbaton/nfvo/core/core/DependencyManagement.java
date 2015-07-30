@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,31 +50,31 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException{
-        List<NetworkServiceRecord> nsrs = nsrRepository.findAll();
-        for (NetworkServiceRecord nsr: nsrs){
-            log.debug("Found NSR");
-            for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()){
-                /**
-                 * looking for the VirtualNetworkFunctionRecord
-                 */
-                if (vnfr.getId().equals(virtualNetworkFunctionRecord.getId())){
-                    Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
-                    log.debug("Found VNF; there are " + vnfRecordDependencies.size() + " dependencies");
-                    for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
-                        /**
-                         * invoke on target the modify with the source information
-                         */
-                        log.trace(vnfRecordDependency.getSource().getId() + " == " + virtualNetworkFunctionRecord.getId());
-                        if (vnfRecordDependency.getSource().getId().equals(virtualNetworkFunctionRecord.getId())){
-                            CoreMessage coreMessage = new CoreMessage();
-                            coreMessage.setAction(Action.MODIFY);
-                            coreMessage.setPayload(virtualNetworkFunctionRecord);
-                            vnfmManager.modify(vnfRecordDependency.getTarget(), coreMessage);
-                        }
+    public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException{
+        int numDependencies = 0;
+        NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        log.debug("Found NSR");
+        for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()){
+            /**
+             * looking for the VirtualNetworkFunctionRecord
+             */
+            if (vnfr.getId().equals(virtualNetworkFunctionRecord.getId())){
+                Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+                log.debug("Found VNF; there are " + vnfRecordDependencies.size() + " dependencies");
+                for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
+                    /**
+                     * invoke on target the modify with the source information
+                     */
+                    log.trace(vnfRecordDependency.getSource().getId() + " == " + virtualNetworkFunctionRecord.getId());
+                    if (vnfRecordDependency.getSource().getId().equals(virtualNetworkFunctionRecord.getId())){
+                        CoreMessage coreMessage = new CoreMessage();
+                        coreMessage.setAction(Action.MODIFY);
+                        coreMessage.setPayload(virtualNetworkFunctionRecord);
+                        vnfmManager.modify(vnfRecordDependency.getTarget(), coreMessage);
+                        numDependencies++;
                     }
-                    return;
                 }
+                return numDependencies;
             }
         }
         throw new NotFoundException("There is a big error. No NetworkServiceRecord found containing VirtualNetworkFunctionRecord with id " + virtualNetworkFunctionRecord.getId());
