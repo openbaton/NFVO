@@ -7,6 +7,10 @@ import java.io.Serializable;
 /**
  * Created by lto on 03/06/15.
  */
+
+/**
+ * The internal Event containing the action that triggered this and the payload of the event
+ */
 public class ApplicationEventNFVO extends ApplicationEvent {
     private Action action;
     private Serializable payload;
