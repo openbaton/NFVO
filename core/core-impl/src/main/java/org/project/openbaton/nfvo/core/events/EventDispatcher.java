@@ -42,6 +42,13 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This class implements the interface {@Link org.project.openbaton.nfvo.core.interfaces.EventDispatcher} so is in charge
+ * of handling the de/registration of a EventEndpoint.
+ *
+ * Moreover receives also internal events and dispatchs them to the external applications.
+ *
+ */
 @Service
 @Scope
 @EnableJms
