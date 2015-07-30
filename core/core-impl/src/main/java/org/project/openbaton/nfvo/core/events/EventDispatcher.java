@@ -24,7 +24,6 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.core.core.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -57,9 +56,6 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private DependencyManagement dependencyManagement;
-
-    @Autowired
     @Qualifier("eventEndpointRepository")
     private GenericRepository<EventEndpoint> eventEndpointRepository;
 
@@ -74,12 +70,6 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
                 VirtualNetworkFunctionRecord vnfr = (VirtualNetworkFunctionRecord) event.getPayload();
                 log.trace("Instantiate is finished for VNFR: " + vnfr);
                 log.debug("Instantiate is finished for VNFR: " + vnfr.getName());
-                log.debug("Calling dependency management for VNFR: " + vnfr.getName());
-                try {
-                    dependencyManagement.provisionDependencies(vnfr);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                }
                 break;
             case ALLOCATE_RESOURCES:
                 break;
@@ -127,7 +117,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
     private void sendEvent(EventEndpoint endpoint, ApplicationEventNFVO event) {
         EventSender sender = (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
-        log.debug("Sender is: " + sender.getClass().getSimpleName());
+        log.trace("Sender is: " + sender.getClass().getSimpleName());
         try {
             sender.send(endpoint, event);
         } catch (IOException e) {

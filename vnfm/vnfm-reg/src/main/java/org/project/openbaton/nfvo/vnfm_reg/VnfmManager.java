@@ -16,18 +16,19 @@
 
 package org.project.openbaton.nfvo.vnfm_reg;
 
-import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,6 +66,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     private VnfmRegister vnfmRegister;
 
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private DependencyManagement dependencyManagement;
 
     @Autowired
     private ResourceManagement resourceManagement;
@@ -144,10 +149,23 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("NFVO: instantiate finish");
                 virtualNetworkFunctionRecord = message.getPayload();
                 log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 message.setPayload(virtualNetworkFunctionRecord);
-                log.info("Instantiation is finished for vnfr: " +virtualNetworkFunctionRecord.getName());
+                log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+                log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
+                int dep = 0;
+                try {
+                    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
+                } catch (NotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (dep == 0){
+                    log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
+                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                }
                 break;
             case ERROR:
                 break;
@@ -236,8 +254,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("NFVO: MODIFY finish");
                 virtualNetworkFunctionRecord = message.getPayload();
                 log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                log.debug("Status is: " + virtualNetworkFunctionRecord.getStatus());
                 break;
             case RELEASE_RESOURCES_FINISH:
                 virtualNetworkFunctionRecord = message.getPayload();
@@ -252,17 +271,28 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     private void checkNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+
         if (virtualNetworkFunctionRecord == null)
             return;
 
-        NetworkServiceRecord networkServiceRecord = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        log.debug("The nsr id is: " + virtualNetworkFunctionRecord.getParent_ns_id());
 
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
-            if (vnfr.getStatus().ordinal() != Status.ACTIVE.ordinal()){
+        NetworkServiceRecord networkServiceRecord;
+        try {
+            networkServiceRecord = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        } catch (NoResultException e) {
+            log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
+            return;
+        }
+        log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
+
+        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+            log.debug("VNFR " + vnfr.getName() + " is in state: " + vnfr.getStatus());
+            if (vnfr.getStatus().ordinal() != Status.ACTIVE.ordinal()) {
                 return;
             }
         }
-
+        log.debug("Setting NSR status to ACTIVE");
         networkServiceRecord.setStatus(Status.ACTIVE);
         publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
     }
