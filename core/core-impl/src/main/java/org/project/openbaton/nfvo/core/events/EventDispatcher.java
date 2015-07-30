@@ -34,13 +34,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
-@Component
+@Service
+@Scope
+@EnableJms
 class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.project.openbaton.nfvo.core.interfaces.EventDispatcher {
+
+    @Override
+    @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
+    public void register(@Payload EventEndpoint endpoint){
+        eventEndpointRepository.create(endpoint);
+    }
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -115,18 +127,13 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
     private void sendEvent(EventEndpoint endpoint, ApplicationEventNFVO event) {
         EventSender sender = (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
-
+        log.debug("Sender is: " + sender.getClass().getSimpleName());
         try {
             sender.send(endpoint, event);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Error while dispatching event " + event);
         }
-    }
-
-    @Override
-    public void register(EventEndpoint endpoint){
-        eventEndpointRepository.create(endpoint);
     }
 
     @Override
