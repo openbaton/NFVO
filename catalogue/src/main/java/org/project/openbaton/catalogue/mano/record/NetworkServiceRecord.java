@@ -77,8 +77,17 @@ public class NetworkServiceRecord implements Serializable{
     private String runtime_policy_info;
     /**
      * Flag to report status of the Network Service.
+     *
+     * Implementation thoughts:
+     * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
+     * so for what concerns the NSR, the state are:
+     *
+     * * Instantiated Configured - Inactive) A NSR Instance is created not ready for service.
+     * * Instantiated Configured - Active) A NSR Instance is ready to serve.
+     * * Terminated) A NSR has ceased to exist.
+     *
+     * the Null doesn't exist since when the NSR is created will be already in configuration process.
      * */
-
     @Enumerated(EnumType.STRING)
      private Status status;
     /**
