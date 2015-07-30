@@ -67,9 +67,8 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
         log.debug("Received event: " + event);
         switch (event.getAction()){
             case INSTANTIATE_FINISH:
-                VirtualNetworkFunctionRecord vnfr = (VirtualNetworkFunctionRecord) event.getPayload();
-                log.trace("Instantiate is finished for VNFR: " + vnfr);
-                log.debug("Instantiate is finished for VNFR: " + vnfr.getName());
+                log.trace("Instantiate is finished for " + event.getPayload().toString());
+                log.debug("Instantiate is finished for a: " + event.getPayload().getClass().getSimpleName());
                 break;
             case ALLOCATE_RESOURCES:
                 break;
