@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.core.interfaces;
 
+import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 
@@ -31,6 +32,8 @@ import org.project.openbaton.nfvo.exceptions.NotFoundException;
  */
 public interface EventDispatcher {
     void register(EventEndpoint endpoint);
+
+    void dispatchEvent(ApplicationEventNFVO event);
 
     void unregister(String name) throws NotFoundException;
 }
