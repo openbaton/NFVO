@@ -5,6 +5,5 @@ package org.project.openbaton.catalogue.mano.common;
  */
 
 public enum Event {
-	GRANTED, ALLOCATE, INSTALL, START, RELEASE, ERROR
-
+	GRANTED, ALLOCATE, INSTALL, START, SCALE, RELEASE, ERROR
 }
