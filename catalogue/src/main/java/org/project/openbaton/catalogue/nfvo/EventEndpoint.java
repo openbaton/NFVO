@@ -2,11 +2,10 @@ package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
  * Created by lto on 01/07/15.
@@ -19,8 +18,10 @@ public class EventEndpoint implements Serializable{
     private int version = 0;
 
     private String name;
+
     private String networkServiceId;
     private String virtualNetworkFunctionId;
+
     private EndpointType type;
     private String endpoint;
     private Action event;
