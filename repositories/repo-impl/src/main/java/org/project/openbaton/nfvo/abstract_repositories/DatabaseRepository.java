@@ -69,7 +69,7 @@ public abstract class DatabaseRepository<T> implements GenericRepository {
 	}
 
 	@Override
-	public Object find(String id) throws NoResultException {
+	public T find(String id) throws NoResultException {
 		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
 		};
 		Type type = typeToken.getType();
@@ -77,9 +77,10 @@ public abstract class DatabaseRepository<T> implements GenericRepository {
 		Object o = entityManager.createQuery(
 				"FROM " + type.toString() + " WHERE id=\'" + id + "\'")
 				.getSingleResult();
+
+		log.debug("Obtained object is: " + o.getClass().getSimpleName());
 		if (o == null)
-			throw new NoResultException(type.toString() + " with " + id
-					+ " not found");
+			throw new NoResultException(type.toString() + " with " + id	+ " not found");
 		return (T) o;
 	}
 }
