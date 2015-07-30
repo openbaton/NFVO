@@ -126,6 +126,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     }
 
     @Override
+    @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String name) throws NotFoundException {
         for (EventEndpoint endpoint: eventEndpointRepository.findAll()){
             if (endpoint.getName().equals(name)){
