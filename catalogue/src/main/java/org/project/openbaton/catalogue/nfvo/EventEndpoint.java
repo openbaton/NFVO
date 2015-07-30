@@ -10,6 +10,15 @@ import java.io.Serializable;
 /**
  * Created by lto on 01/07/15.
  */
+
+/**
+ * This class represents a Event Endpoint. When an external application want to receive events regarding a particular
+ * entity it is necessary to send this object to the right URL or queue.
+ *
+ * This object contains:
+ *  * name) must be unique, used for removing a event
+ *  * type)
+ */
 @Entity
 public class EventEndpoint implements Serializable{
     @Id

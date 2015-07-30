@@ -104,6 +104,7 @@ public class NetworkServiceRecord implements Serializable{
      * TODO: maybe a pointer to a file?
      * */
     private String audit_log;
+    
     private String name;
 
     public String getId() {
