@@ -37,6 +37,7 @@ public class ApplicationEventNFVO extends ApplicationEvent {
     public String toString() {
         return "ApplicationEventNFVO{" +
                 "action=" + action +
+                ", payload=" + payload.getClass().getSimpleName() +
                 '}';
     }
 }
