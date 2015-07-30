@@ -15,20 +15,26 @@ public enum Status {
  /**
   * Instantiated - Not Configured
   */
- INITIAILZED,
+ INITIAILZED (0),
 
  /**
   * Inactive - Configured
   */
- INACTIVE,
+ INACTIVE (1),
 
  /**
   * Active - Configured
   */
- ACTIVE,
+ ACTIVE (2),
 
  /**
   * Terminated
   */
- TERMINATED
+ TERMINATED (3);
+
+ private int value;
+
+ Status(int value) {
+  this.value = value;
+ }
 }

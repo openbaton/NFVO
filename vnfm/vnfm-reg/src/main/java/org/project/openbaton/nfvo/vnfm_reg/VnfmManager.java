@@ -204,7 +204,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case ALLOCATE_RESOURCES:
-                log.debug("ALLOCATE_RESOURCES");
+                log.debug("NFVO: ALLOCATE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
                 List<Future<String>> ids = new ArrayList<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
@@ -253,30 +253,32 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             case MODIFY:
                 log.debug("NFVO: MODIFY finish");
                 virtualNetworkFunctionRecord = message.getPayload();
-                log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+                log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                log.debug("Status is: " + virtualNetworkFunctionRecord.getStatus());
+                log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
                 break;
             case RELEASE_RESOURCES_FINISH:
                 virtualNetworkFunctionRecord = message.getPayload();
                 log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
-                log.debug("No merge needed, should be already removed");
+                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
         }
 
-        checkNSRStatus(virtualNetworkFunctionRecord);
-
         publishEvent(message);
+
+        findAndSetNSRStatus(virtualNetworkFunctionRecord);
     }
 
-    private void checkNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
         if (virtualNetworkFunctionRecord == null)
             return;
 
         log.debug("The nsr id is: " + virtualNetworkFunctionRecord.getParent_ns_id());
 
+        Status status = Status.TERMINATED;
         NetworkServiceRecord networkServiceRecord;
         try {
             networkServiceRecord = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
@@ -288,13 +290,20 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
             log.debug("VNFR " + vnfr.getName() + " is in state: " + vnfr.getStatus());
-            if (vnfr.getStatus().ordinal() != Status.ACTIVE.ordinal()) {
-                return;
+            if (status.ordinal() > vnfr.getStatus().ordinal()) {
+                status = vnfr.getStatus();
             }
         }
-        log.debug("Setting NSR status to ACTIVE");
-        networkServiceRecord.setStatus(Status.ACTIVE);
-        publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+
+        log.debug("Setting NSR status to: " + status);
+        networkServiceRecord.setStatus(status);
+
+        if (status.ordinal() == Status.ACTIVE.ordinal())
+            publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+        else if (status.ordinal() == Status.TERMINATED.ordinal()) {
+            publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
+            nsrRepository.remove(networkServiceRecord);
+        }
     }
 
     private void publishEvent(CoreMessage message) {
