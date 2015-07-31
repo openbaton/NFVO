@@ -70,6 +70,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         registrar.registerEndpoint(endpoint);
     }
 
+    @Override
     public void onMessage(Message message) {
         CoreMessage msg = null;
         try {
