@@ -16,12 +16,12 @@
 
 package org.project.openbaton.nfvo.core.events.senders;
 
+import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
@@ -49,16 +49,15 @@ public class RestEventSender implements EventSender {
     @Async
     public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) throws IOException {
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        ObjectMapper mapper = new ObjectMapper();
-        String body = mapper.writeValueAsString(event);
+        String json = "{action:'" + event.getAction() +"',payload:'" + new Gson().toJson(event.getPayload()) +"'}";
+        String body = json;
+
+        log.debug("body is: " + body);
+
         log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
-//        URI uri = new URI(endpoint.getEndpoint());
         HttpPost request = new HttpPost(endpoint.getEndpoint());
         request.addHeader("content-type", "application/json");
         request.addHeader("accept", "application/json");
-//        body = body.replaceAll("\\t", "");
-//        body = body.replaceAll("\\n", "");
-//        body = body.replaceAll(" ", "");
         log.trace("With body: " + body);
         StringEntity params = new StringEntity(body);
         request.setEntity(params);
