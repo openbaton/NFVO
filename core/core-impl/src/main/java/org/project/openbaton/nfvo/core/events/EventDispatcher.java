@@ -24,7 +24,6 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.core.core.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -34,18 +33,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
-@Component
+/**
+ * This class implements the interface {@Link org.project.openbaton.nfvo.core.interfaces.EventDispatcher} so is in charge
+ * of handling the de/registration of a EventEndpoint.
+ *
+ * Moreover receives also internal events and dispatches them to the external applications.
+ *
+ */
+@Service
+@Scope
+@EnableJms
 class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.project.openbaton.nfvo.core.interfaces.EventDispatcher {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Override
+    @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
+    public void register(@Payload EventEndpoint endpoint){
+        eventEndpointRepository.create(endpoint);
+    }
 
-    @Autowired
-    private DependencyManagement dependencyManagement;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("eventEndpointRepository")
@@ -59,15 +74,8 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
         log.debug("Received event: " + event);
         switch (event.getAction()){
             case INSTANTIATE_FINISH:
-                VirtualNetworkFunctionRecord vnfr = (VirtualNetworkFunctionRecord) event.getPayload();
-                log.trace("Instantiate is finished for VNFR: " + vnfr);
-                log.debug("Instantiate is finished for VNFR: " + vnfr.getName());
-                log.debug("Calling dependency management for VNFR: " + vnfr.getName());
-                try {
-                    dependencyManagement.provisionDependencies(vnfr);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                }
+                log.trace("Instantiate is finished for " + event.getPayload().toString());
+                log.debug("Instantiate is finished for a: " + event.getPayload().getClass().getSimpleName());
                 break;
             case ALLOCATE_RESOURCES:
                 break;
@@ -84,7 +92,8 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
         dispatchEvent(event);
     }
 
-    private void dispatchEvent(ApplicationEventNFVO event){
+    @Override
+    public void dispatchEvent(ApplicationEventNFVO event){
         log.debug("dispatching event to the world!!!");
 
         List<EventEndpoint> endpoints = eventEndpointRepository.findAll();
@@ -115,7 +124,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
     private void sendEvent(EventEndpoint endpoint, ApplicationEventNFVO event) {
         EventSender sender = (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
-
+        log.trace("Sender is: " + sender.getClass().getSimpleName());
         try {
             sender.send(endpoint, event);
         } catch (IOException e) {
@@ -125,11 +134,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     }
 
     @Override
-    public void register(EventEndpoint endpoint){
-        eventEndpointRepository.create(endpoint);
-    }
-
-    @Override
+    @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String name) throws NotFoundException {
         for (EventEndpoint endpoint: eventEndpointRepository.findAll()){
             if (endpoint.getName().equals(name)){

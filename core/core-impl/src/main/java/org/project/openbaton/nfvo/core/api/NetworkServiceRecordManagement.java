@@ -16,7 +16,6 @@
 
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
@@ -24,20 +23,25 @@ import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.Subnet;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.project.openbaton.nfvo.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.openbaton.nfvo.core.utils.NSRUtils;
-import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
-import org.project.openbaton.nfvo.exceptions.VimException;
-import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.project.openbaton.nfvo.core.utils.NSDUtils;
+import org.project.openbaton.nfvo.core.utils.NSRUtils;
+import org.project.openbaton.nfvo.exceptions.BadFormatException;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
+import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +66,9 @@ import java.util.concurrent.Future;
 public class NetworkServiceRecordManagement implements org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private EventDispatcher publisher;
 
     @Autowired
     @Qualifier("NSRRepository")
@@ -218,23 +225,21 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
         List<Future<Void>> futures = new ArrayList<>();
+        boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
             Set<Event> events = new HashSet<>();
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
                 log.debug("found " + lifecycleEvent.getEvent());
             }
-            if (!events.contains(Event.RELEASE))
+            if (!events.contains(Event.RELEASE)) {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     resourceManagement.release(virtualDeploymentUnit);
-                    /**
-                     * removing here the NSR is:
-                     *  1) not correct form logic point of view since there could be n VDU and we cannot remove n times the NSR
-                     *  2) not working since it is inside a loop of VDU that is contained into VNFR that is contained into NSR so it is not ready to be remove
-                     */
-
                 }
+                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+            }
             else {
+                release = true;
                 futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
             }
         }
@@ -249,6 +254,11 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * The VNFM is in charge of releasing resources. The NFVO will receive a notification whether this operation
          * went well or not. But still the NSR should be removed from the DB.
          */
-        nsrRepository.remove(networkServiceRecord);
+        if (!release) {
+            ApplicationEventNFVO event = new ApplicationEventNFVO(this, Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
+            log.debug("Publishing event: " + event);
+            publisher.dispatchEvent(event);
+            nsrRepository.remove(networkServiceRecord);
+        }
     }
 }
