@@ -61,7 +61,7 @@ public class RestEvent {
 	 */
 	@RequestMapping(value = "{name}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void unregister(@PathVariable("id") String name) throws NotFoundException {
+	public void unregister(@PathVariable("name") String name) throws NotFoundException {
 		eventDispatcher.unregister(name);
 	}
 
