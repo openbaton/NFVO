@@ -37,7 +37,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.validation.Valid;
 import java.util.Collection;
@@ -584,7 +583,7 @@ public class RestNetworkServiceDescriptor {
 		return security;
 	}
 
-	@RequestMapping(value = "{id}/vnfdescriptors/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Security updateSecurity(@RequestBody @Valid Security security,
 			@PathVariable("id") String id, @PathVariable("id_s") String id_s) {
