@@ -49,8 +49,8 @@ public class RestEvent {
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public void register(@RequestBody @Valid EventEndpoint endpoint) {
-		 eventDispatcher.register(endpoint);
+	public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint) {
+		 return eventDispatcher.register(endpoint);
 	}
 
 	/**
@@ -59,10 +59,10 @@ public class RestEvent {
 	 * @param name
 	 *            : The Image's id to be deleted
 	 */
-	@RequestMapping(value = "{name}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void unregister(@PathVariable("name") String name) throws NotFoundException {
-		eventDispatcher.unregister(name);
+	public void unregister(@PathVariable("id") String id) throws NotFoundException {
+		eventDispatcher.unregister(id);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)

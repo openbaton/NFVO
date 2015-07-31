@@ -56,8 +56,8 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
     @Override
     @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
-    public void register(@Payload EventEndpoint endpoint){
-        eventEndpointRepository.create(endpoint);
+    public EventEndpoint register(@Payload EventEndpoint endpoint){
+        return eventEndpointRepository.create(endpoint);
     }
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -135,14 +135,8 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
 
     @Override
     @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
-    public void unregister(String name) throws NotFoundException {
-        for (EventEndpoint endpoint: eventEndpointRepository.findAll()){
-            if (endpoint.getName().equals(name)){
-                eventEndpointRepository.remove(endpoint);
-                return;
-            }
-        }
-        throw new NotFoundException("EventEndpoint with name " + name + " not found");
+    public void unregister(String id) throws NotFoundException {
+        eventEndpointRepository.remove(eventEndpointRepository.find(id));
     }
 
 }
