@@ -46,7 +46,7 @@ public class NSRUtils {
         networkServiceRecord.getAuto_scale_policy().addAll(networkServiceDescriptor.getAuto_scale_policy());
         networkServiceRecord.setVnfr(new HashSet<VirtualNetworkFunctionRecord>());
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd);
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd, networkServiceRecord.getId());
 //            virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
         }
@@ -80,7 +80,7 @@ public class NSRUtils {
                 pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
             }
         networkServiceRecord.setPnfr(pnfrs);
-        networkServiceRecord.setStatus(Status.INITIAILZED);
+        networkServiceRecord.setStatus(Status.INACTIVE);
         networkServiceRecord.setVnffgr(new HashSet<VNFForwardingGraphRecord>());
 //      TODO translate them from descriptors to records
 //        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
@@ -106,8 +106,9 @@ public class NSRUtils {
         return physicalNetworkFunctionRecord;
     }
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String nsr_id) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
+        virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
