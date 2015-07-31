@@ -115,7 +115,17 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.getMonitoring_parameter().addAll(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
         virtualNetworkFunctionRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
-        virtualNetworkFunctionRecord.getAuto_scale_policy().addAll(vnfd.getAuto_scale_policy());
+        for (AutoScalePolicy autoScalePolicy : vnfd.getAuto_scale_policy()) {
+            AutoScalePolicy newAutoScalePolicy = new AutoScalePolicy();
+            newAutoScalePolicy.setAction(autoScalePolicy.getAction());
+            newAutoScalePolicy.setComparisonOperator(autoScalePolicy.getComparisonOperator());
+            newAutoScalePolicy.setCooldown(autoScalePolicy.getCooldown());
+            newAutoScalePolicy.setMetric(autoScalePolicy.getMetric());
+            newAutoScalePolicy.setPeriod(autoScalePolicy.getPeriod());
+            newAutoScalePolicy.setStatistic(autoScalePolicy.getStatistic());
+            newAutoScalePolicy.setThreshold(autoScalePolicy.getThreshold());
+            virtualNetworkFunctionRecord.getAuto_scale_policy().add(newAutoScalePolicy);
+        }
 
         // TODO mange the VirtualLinks and links...
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
