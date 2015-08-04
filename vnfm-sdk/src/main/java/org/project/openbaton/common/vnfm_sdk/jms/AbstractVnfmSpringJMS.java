@@ -1,6 +1,7 @@
 package org.project.openbaton.common.vnfm_sdk.jms;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -114,5 +115,17 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Override
     protected void unregister(VnfmManagerEndpoint endpoint) {
         this.sendMessageToQueue("vnfm-unregister", endpoint);
+    }
+
+    @Override
+    protected void sendToNfvo(final VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage(virtualNetworkFunctionRecord);
+                return objectMessage;
+            }
+        };
+        jmsTemplate.send(this.type + "core-actions", messageCreator);
     }
 }
