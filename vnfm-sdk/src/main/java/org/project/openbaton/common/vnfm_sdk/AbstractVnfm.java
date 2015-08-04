@@ -1,6 +1,7 @@
 package org.project.openbaton.common.vnfm_sdk;
 
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
@@ -126,12 +127,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case RELEASE_RESOURCES_FINISH:
                 break;
         }
+
+
         if (virtualNetworkFunctionRecord != null){
-            sendToNfvo(virtualNetworkFunctionRecord);
+            sendToNfvo(message.getAction(), virtualNetworkFunctionRecord);
         }
     }
 
-    protected abstract void sendToNfvo(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract void sendToNfvo(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected abstract void unregister(VnfmManagerEndpoint endpoint);
 
