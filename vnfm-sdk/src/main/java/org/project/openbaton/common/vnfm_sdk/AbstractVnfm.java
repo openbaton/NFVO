@@ -24,6 +24,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
+    protected static final String nfvoQueue = "vnfm-core-actions";
 
     @PreDestroy
     private void shutdown(){
@@ -130,6 +131,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
 
         if (virtualNetworkFunctionRecord != null){
+            log.debug("send to NFVO");
             sendToNfvo(message.getAction(), virtualNetworkFunctionRecord);
         }
     }
