@@ -1,6 +1,8 @@
 package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -87,7 +89,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
         vnfmManagerEndpoint.setEndpointType(EndpointType.REST);
 
-        log.debug("Registering to vnfm_sdk-register");
+        log.debug("Registering to vnfm-register");
         register(vnfmManagerEndpoint);
     }
 
@@ -127,22 +129,29 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     protected void register(VnfmManagerEndpoint endpoint){
         String json = mapper.toJson(endpoint);
-        log.debug("post on /admin/v1/vnfm_sdk-register with json: " + json);
-        this.post("/admin/v1/vnfm_sdk-register", mapper.toJson(endpoint));
+        log.debug("post on /admin/v1/vnfm-register with json: " + json);
+        this.post("/admin/v1/vnfm-register", mapper.toJson(endpoint));
     }
 
     protected void sendToCore(Serializable msg){
         String json = mapper.toJson(msg);
-        log.debug("post on vnfm_sdk-core-actions with json: " + json);
-        this.post("/admin/v1/vnfm_sdk-core-actions", json);
+        log.debug("post on " + this.type + "-core-actions with json: " + json);
+        this.post("/admin/v1/" + this.type + "-core-actions", json);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     //TODO add the validation
-    public @ResponseBody String  receive(@RequestBody /*@Valid*/ CoreMessage message){
+    public void  receive(@RequestBody /*@Valid*/ CoreMessage message){
         log.debug("Received: " + message);
         this.onAction(message);
-        return "ack";
+    }
+
+    @Override
+    protected void sendToNfvo(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        final CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setPayload(virtualNetworkFunctionRecord);
+        coreMessage.setAction(action);
+        sendToCore(coreMessage);
     }
 }

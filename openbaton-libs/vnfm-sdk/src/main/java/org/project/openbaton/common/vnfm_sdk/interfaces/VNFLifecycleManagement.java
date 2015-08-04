@@ -13,7 +13,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows creating a VNF instance.
 	 * @param vnfr
 	 */
-	void instantiate(VirtualNetworkFunctionRecord vnfr);
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord vnfr);
 	
 	/**
 	 * This operation allows retrieving 
@@ -51,7 +51,7 @@ public interface VNFLifecycleManagement {
 	 * redundancy model) to a VNF instance.
 	 */
 	
-	void modify(VirtualNetworkFunctionRecord vnfr);
+	VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord vnfr);
 	
 	/**
 	 * This operation allows deploying a new 
@@ -64,5 +64,5 @@ public interface VNFLifecycleManagement {
 	 * or forcefully a previously created VNF instance.
 	 * @param virtualNetworkFunctionRecord
 	 */
-	void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }
