@@ -25,7 +25,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows scaling 
 	 * (out/in, up/down) a VNF instance.
 	 */
-	void scale();
+	void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows verifying if 

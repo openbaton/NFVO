@@ -7,10 +7,10 @@
 package org.project.openbaton.catalogue.mano.record;
 
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -19,7 +19,7 @@ import java.util.Set;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class PhysicalNetworkFunctionRecord {
+public class PhysicalNetworkFunctionRecord implements Serializable{
 
     @Id
     private String id = IdGenerator.createUUID();
@@ -31,14 +31,12 @@ public class PhysicalNetworkFunctionRecord {
     /**
      * The reference for the record of the NS instance (nsr:id) that this PNF instance is part of
      * */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-     private NetworkServiceRecord parent_ns;
+     private String  parent_ns_id;
     /**
      * The reference to the version of PNFD (pnfd:version) used to instantiate this PNF
      * */
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private PhysicalNetworkFunctionDescriptor descriptor_reference;
+    private String descriptor_reference;
     /**
      * References to the records of VNFFG instances to which this PNF is participating
      * */
@@ -106,19 +104,19 @@ public class PhysicalNetworkFunctionRecord {
         this.connection_point = connection_point;
     }
 
-    public NetworkServiceRecord getParent_ns() {
-        return parent_ns;
+    public String  getParent_ns_id() {
+        return parent_ns_id;
     }
 
-    public void setParent_ns(NetworkServiceRecord parent_ns) {
-        this.parent_ns = parent_ns;
+    public void setParent_ns_id(String  parent_ns_id) {
+        this.parent_ns_id = parent_ns_id;
     }
 
-    public PhysicalNetworkFunctionDescriptor getDescriptor_reference() {
+    public String getDescriptor_reference() {
         return descriptor_reference;
     }
 
-    public void setDescriptor_reference(PhysicalNetworkFunctionDescriptor descriptor_reference) {
+    public void setDescriptor_reference(String  descriptor_reference) {
         this.descriptor_reference = descriptor_reference;
     }
 
