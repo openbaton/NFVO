@@ -12,5 +12,29 @@ package org.project.openbaton.catalogue.mano.record;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 public enum Status {
- INITIAILZED
+ /**
+  * Instantiated - Not Configured
+  */
+ INITIAILZED (0),
+
+ /**
+  * Inactive - Configured
+  */
+ INACTIVE (1),
+
+ /**
+  * Active - Configured
+  */
+ ACTIVE (2),
+
+ /**
+  * Terminated
+  */
+ TERMINATED (3);
+
+ private int value;
+
+ Status(int value) {
+  this.value = value;
+ }
 }
