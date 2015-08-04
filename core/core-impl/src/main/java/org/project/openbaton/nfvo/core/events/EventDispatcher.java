@@ -106,6 +106,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
                 if (endpoint.getVirtualNetworkFunctionId() != null){
                     if (event.getPayload() instanceof VirtualNetworkFunctionRecord){
                         if (((VirtualNetworkFunctionRecord) event.getPayload()).getId().equals(endpoint.getVirtualNetworkFunctionId())){
+                            log.debug("dispatching event to: " + endpoint);
                             sendEvent(endpoint,event);
                         }
                     }
@@ -113,6 +114,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
                 else if (endpoint.getNetworkServiceId() != null){
                     if (event.getPayload() instanceof NetworkServiceRecord){
                         if (((NetworkServiceRecord) event.getPayload()).getId().equals(endpoint.getNetworkServiceId())){
+                            log.debug("dispatching event to: " + endpoint);
                             sendEvent(endpoint,event);
                         }
                     }

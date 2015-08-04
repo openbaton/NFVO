@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -35,7 +36,7 @@ import java.util.List;
 @Transactional
 public abstract class DatabaseRepository<T> implements GenericRepository {
 
-	@PersistenceContext
+	@PersistenceContext(type = PersistenceContextType.TRANSACTION)
 	protected EntityManager entityManager;
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());

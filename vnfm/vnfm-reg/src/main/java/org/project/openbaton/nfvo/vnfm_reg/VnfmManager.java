@@ -151,37 +151,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 break;
             case RELEASE_RESOURCES:
                 virtualNetworkFunctionRecord = message.getPayload();
-                log.debug("RELEASE_RESOURCES");
-                log.debug("Released resources finish for VNFR: " + virtualNetworkFunctionRecord.getName());
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
-                    try {
-                        if (vdu.getExtId() != null)
-                            resourceManagement.release(vdu);
-                    } catch (VimException e) {
-
-                        e.printStackTrace();
-                        log.error(e.getMessage());
-
-                        CoreMessage errorMessage = new CoreMessage();
-                        errorMessage.setAction(Action.ERROR);
-                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
-                        lifecycleEvent.setEvent(Event.ERROR);
-                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                        errorMessage.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
-                        return;
-                    }
-                LifecycleEvent lifecycleEventToRemove = null;
-                if(virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
-                    virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
-                for (LifecycleEvent tmpLifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
-                    if (tmpLifecycleEvent.getEvent().equals(Event.RELEASE)) {
-                        lifecycleEventToRemove = tmpLifecycleEvent;
-                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEventToRemove);
-                        virtualNetworkFunctionRecord.getLifecycle_event().remove(lifecycleEventToRemove);
-                        break;
-                    }
-                }
+                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
@@ -250,6 +220,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
                     virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                    message.setPayload(virtualNetworkFunctionRecord);
                 }
                 break;
             case MODIFY:
@@ -327,7 +298,8 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
-
+        networkServiceRecord = nsrRepository.merge(networkServiceRecord);
+//        log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal())
             publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
         else if (status.ordinal() == Status.TERMINATED.ordinal()) {

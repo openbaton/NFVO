@@ -44,14 +44,13 @@ public class JmsSender implements VnfmSender{
 
     @Override
     public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) {
-        String topicName = "core-vnfm-actions";
         this.sendToQueue(coreMessage, endpoint.getType());
     }
 
     public void sendToQueue(final CoreMessage coreMessage, String type) {
         String destinationName = "core-" + type + "-actions";
-        log.debug("Sending message: " + coreMessage.getAction() + " to Topic: " + destinationName);
-        log.trace("Sending message: " + coreMessage + " to Topic: " + destinationName);
+        log.debug("Sending message: " + coreMessage.getAction() + " to Queue: " + destinationName);
+        log.trace("Sending message: " + coreMessage + " to Queue: " + destinationName);
         MessageCreator messageCreator = new MessageCreator() {
             @Override
             public Message createMessage(Session session) throws JMSException {
