@@ -146,32 +146,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 }
                 break;
             case INSTANTIATE_FINISH:
-                log.debug("NFVO: instantiate finish");
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                message.setPayload(virtualNetworkFunctionRecord);
-                log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
-                log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
-                int dep = 0;
-                try {
-                    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                if (dep == 0){
-                    log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
-                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                }
                 break;
             case ERROR:
                 break;
             case RELEASE_RESOURCES:
-                log.debug("RELEASE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
+                log.debug("RELEASE_RESOURCES");
+                log.debug("Released resources finish for VNFR: " + virtualNetworkFunctionRecord.getName());
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
                         if (vdu.getExtId() != null)
@@ -201,6 +182,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         break;
                     }
                 }
+                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case ALLOCATE_RESOURCES:
@@ -249,6 +231,26 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 break;
             case INSTANTIATE:
+                log.debug("NFVO: instantiate finish");
+                virtualNetworkFunctionRecord = message.getPayload();
+                log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+                virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                message.setPayload(virtualNetworkFunctionRecord);
+                log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+                log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
+                int dep = 0;
+                try {
+                    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
+                } catch (NotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (dep == 0){
+                    log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
+                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                }
                 break;
             case MODIFY:
                 log.debug("NFVO: MODIFY finish");
@@ -259,10 +261,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
                 break;
             case RELEASE_RESOURCES_FINISH:
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
-                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case SCALE_UP_FINISHED: {
                     log.debug("NFVO: SCALE_UP_FINISHED");

@@ -95,10 +95,13 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     @Override
     public void dispatchEvent(ApplicationEventNFVO event){
         log.debug("dispatching event to the world!!!");
+        log.debug("event is: " + event);
+        log.trace("payload is: " + event.getPayload());
 
         List<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 
         for (EventEndpoint endpoint : endpoints){
+            log.debug("Checking endpoint: " + endpoint);
             if (endpoint.getEvent().ordinal() == event.getAction().ordinal()){
                 if (endpoint.getVirtualNetworkFunctionId() != null){
                     if (event.getPayload() instanceof VirtualNetworkFunctionRecord){
