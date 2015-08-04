@@ -271,7 +271,7 @@ public class NetworkManagementClassSuiteTest {
 		}
 
 		@Override
-		public void release(VirtualDeploymentUnit vdu) throws VimException {
+		public Future<Void> release(VirtualDeploymentUnit vdu) throws VimException {
 
 		}
 

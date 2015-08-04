@@ -27,6 +27,7 @@ import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -107,8 +108,8 @@ public class AmazonVIM implements Vim {
     }
 
     @Override
-    public void release(VirtualDeploymentUnit vdu) {
-
+    public Future<Void> release(VirtualDeploymentUnit vdu) {
+        return new AsyncResult<>(null);
     }
 
     @Override

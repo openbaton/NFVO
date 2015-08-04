@@ -36,10 +36,7 @@ import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
-import org.project.openbaton.nfvo.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.*;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
@@ -222,8 +219,10 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     }
 
     @Override
-    public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException {
+    public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
+        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal())
+            throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
         List<Future<Void>> futures = new ArrayList<>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
@@ -234,13 +233,13 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
             if (!events.contains(Event.RELEASE)) {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    resourceManagement.release(virtualDeploymentUnit);
+                    futures.add(resourceManagement.release(virtualDeploymentUnit));
                 }
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
             }
             else {
                 release = true;
-                futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
+                vnfmManager.release(virtualNetworkFunctionRecord);
             }
         }
 

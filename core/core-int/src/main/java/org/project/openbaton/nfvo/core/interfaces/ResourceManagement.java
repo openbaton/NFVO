@@ -81,7 +81,7 @@ public interface ResourceManagement {
 	 * instantiated virtualised resource. This operation frees 
 	 * resources and returns them to the NFVI resource pool.
 	 */
-	void release(VirtualDeploymentUnit vdu) throws VimException;
+	Future<Void> release(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 
