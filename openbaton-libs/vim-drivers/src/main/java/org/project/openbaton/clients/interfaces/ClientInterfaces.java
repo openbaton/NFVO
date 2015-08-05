@@ -56,4 +56,6 @@ public interface ClientInterfaces {
     Network getNetworkById(String id);
 
     Quota getQuota();
+
+    String getType();
 }
