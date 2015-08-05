@@ -127,6 +127,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 virtualNetworkFunctionRecord = this.instantiate(message.getPayload());
             case RELEASE_RESOURCES_FINISH:
                 break;
+            case SCALE_UP_FINISHED:
+                break;
+            case SCALE_DOWN_FINISHED:
+                break;
         }
 
 
