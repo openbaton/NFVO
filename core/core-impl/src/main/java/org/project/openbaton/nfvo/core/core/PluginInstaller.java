@@ -21,6 +21,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,54 +45,18 @@ public class PluginInstaller implements CommandLineRunner {
     private GenericRepository<Configuration> configurationRepository;
 
 
-    public void installVimDriverPlugin(String path) throws PluginInstallException {
+    public void installVimDriverPlugin(String path, List<String> classes) throws PluginInstallException {
 
-        File jar = new File(path);
-        if (!jar.exists())
-            throw new PluginInstallException(path + " does not exist");
-
-        ClassLoader parent = ClassUtils.getDefaultClassLoader();
-        path = jar.getAbsolutePath();
         try {
-            log.trace("path is: " + path);
-            ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
+            ClassLoader classLoader = getClassLoader(path);
 
-            URL url = null;
-            String type = null;
-            if (url == null) {
-                url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/test/TestClient.class");
-                type = "test";
-            }
-            if (url == null){
-                url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/openstack/OpenstackClient.class");
-                type = "openstack";
-            }
-            if (url == null){
-                url = classLoader.getResource("org/project/openbaton/clients/interfaces/client/amazon/AmazonClient.class");
-                type = "amazon";
-            }
-            if (url == null)
-                throw new PluginInstallException("No ClientInterfaces known were found");
-
-            log.trace("URL: " + url.toString());
-            log.trace("type is: " + type);
-            switch (type){
-                case "test":
-                    Class c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.test.TestClient");
+            for (String clazz: classes){
+                log.debug("Loading class: " +clazz);
+                    Class c = classLoader.loadClass(clazz);
                     ClientInterfaces instance = (ClientInterfaces) c.newInstance();
                     log.debug("instance: " + instance);
-                    vimBroker.addClient(instance, type);
-                    break;
-                case "openstack":
-                    c = classLoader.loadClass("org.project.openbaton.clients.interfaces.client.openstack.OpenstackClient");
-                    instance = (ClientInterfaces) c.newInstance();
-                    log.debug("instance: " + instance);
-                    vimBroker.addClient(instance, type);
-                    break;
-                case "amazon":
-                    break;
-                default:
-                    throw new PluginInstallException("No type found");
+                    log.debug("of type: " + instance);
+                    vimBroker.addClient(instance, instance.getType());
             }
         } catch (MalformedURLException e) {
             throw new PluginInstallException(e);
@@ -103,37 +69,28 @@ public class PluginInstaller implements CommandLineRunner {
         }
     }
 
-    public void installMonitoringPlugin(String path) throws PluginInstallException {
+    public ClassLoader getClassLoader(String path) throws PluginInstallException, MalformedURLException {
         File jar = new File(path);
         if (!jar.exists())
             throw new PluginInstallException(path + " does not exist");
-
         ClassLoader parent = ClassUtils.getDefaultClassLoader();
         path = jar.getAbsolutePath();
+        log.trace("path is: " + path);
+        return new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
+    }
+
+    public void installMonitoringPlugin(String path, List<String> classes) throws PluginInstallException {
+
         try {
-            log.trace("path is: " + path);
-            ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
+            ClassLoader classLoader = getClassLoader(path);
 
-            URL url = null;
-            String type = null;
-            if (url == null){
-                url = classLoader.getResource("org/project/openbaton/monitoring/agent/SmartDummyMonitoringAgent.class");
-                type = "dummy";
-            }
-            if (url == null)
-                throw new PluginInstallException("No ClientInterfaces known were found");
-
-            log.trace("URL: " + url.toString());
-            log.trace("type is: " + type);
-            switch (type){
-                case "dummy":
-                    Class c = classLoader.loadClass("org.project.openbaton.monitoring.agent.SmartDummyMonitoringAgent");
-                    ResourcePerformanceManagement agent = (ResourcePerformanceManagement) c.newInstance();
-                    log.debug("instance: " + agent);
-                    monitoringBroker.addAgent(agent, type);
-                    break;
-                default:
-                    throw new PluginInstallException("No type found");
+            for (String clazz : classes) {
+                log.debug("Loading class: " + clazz);
+                Class c = classLoader.loadClass(clazz);
+                ResourcePerformanceManagement agent = (ResourcePerformanceManagement) c.newInstance();
+                log.debug("instance: " + agent);
+                log.debug("of type: " + agent.getType());
+                monitoringBroker.addAgent(agent, agent.getType());
             }
         } catch (MalformedURLException e) {
             throw new PluginInstallException(e);
@@ -150,7 +107,7 @@ public class PluginInstaller implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         List<Configuration> configurations = configurationRepository.findAll();
-
+        List<String> classes = new ArrayList<>();
         String installFolderPath = null;
         Configuration system = null;
         for (Configuration c : configurations) {
@@ -163,7 +120,9 @@ public class PluginInstaller implements CommandLineRunner {
         for (ConfigurationParameter cp : system.getConfigurationParameters()) {
             if (cp.getConfKey().equals("vim-plugin-installation-dir")) {
                 installFolderPath = cp.getValue();
-                break;
+            }
+            if (cp.getConfKey().equals("vim-classes")){
+                classes = Arrays.asList(cp.getValue().split(";"));
             }
         }
 
@@ -175,7 +134,7 @@ public class PluginInstaller implements CommandLineRunner {
             for (File f : files) {
                 String path = f.getAbsolutePath();
                 if (path.endsWith(".jar")) {
-                    this.installVimDriverPlugin(path);
+                    this.installVimDriverPlugin(path, classes);
                 }
             }
         }
@@ -183,7 +142,9 @@ public class PluginInstaller implements CommandLineRunner {
         for (ConfigurationParameter cp : system.getConfigurationParameters()) {
             if (cp.getConfKey().equals("monitoring-plugin-installation-dir")) {
                 installFolderPath = cp.getValue();
-                break;
+            }
+            if (cp.getConfKey().equals("monitoring-classes")){
+                classes = Arrays.asList(cp.getValue().split(";"));
             }
         }
 
@@ -195,7 +156,7 @@ public class PluginInstaller implements CommandLineRunner {
             for (File f : files) {
                 String path = f.getAbsolutePath();
                 if (path.endsWith(".jar")) {
-                    this.installMonitoringPlugin(path);
+                    this.installMonitoringPlugin(path, classes);
                 }
             }
         }
