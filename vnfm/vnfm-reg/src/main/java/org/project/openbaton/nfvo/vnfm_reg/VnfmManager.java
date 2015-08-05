@@ -243,33 +243,40 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
                 break;
+            case RELEASE_RESOURCES_FINISH:
+                virtualNetworkFunctionRecord = message.getPayload();
+                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
+            case SCALING:
+                log.debug("NFVO: SCALING");
+                VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
+                virtualNetworkFunctionRecord.setStatus(Status.SCALING);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
             case SCALE_UP_FINISHED: {
-                log.debug("NFVO: SCALE_UP_FINISHED");
-                VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
-                List<String> existingVDUs = new ArrayList<String>();
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                    existingVDUs.add(vdu.getId());
-                }
-                for (VirtualDeploymentUnit vdu : scaledUpVirtualNetworkFunctionRecord.getVdu()) {
-                    if (!existingVDUs.contains(vdu.getId())) {
-                        virtualNetworkFunctionRecord.getVdu().add(vdu);
+                    log.debug("NFVO: SCALE_UP_FINISHED");
+                    VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
+                    virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
+                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                    List<String> existingVDUs = new ArrayList<String>();
+                    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                        existingVDUs.add(vdu.getId());
                     }
                 }
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             }
             case SCALE_DOWN_FINISHED: {
-                log.debug("NFVO: SCALE_DOWN_FINISHED");
-                VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
-                List<String> existingVDUs = new ArrayList<String>();
-                for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
-                    existingVDUs.add(vdu.getId());
-                }
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                    if (!existingVDUs.contains(vdu.getId())) {
-                        virtualNetworkFunctionRecord.getVdu().remove(vdu);
+                    log.debug("NFVO: SCALE_DOWN_FINISHED");
+                    VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
+                    virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
+                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                    List<String> existingVDUs = new ArrayList<String>();
+                    for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
+                        existingVDUs.add(vdu.getId());
                     }
                 }
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
