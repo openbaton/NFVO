@@ -6,15 +6,13 @@
 
 package org.project.openbaton.catalogue.mano.descriptor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.NFVEntityDescriptor;
 import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +67,10 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      * */
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Security> manifest_file_security;
+	@Column(nullable = false)
 	private String type;
+	@JsonIgnore
+	private String endpoint;
 
 	@Override
 	public String toString() {
@@ -87,11 +88,20 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 	public VirtualNetworkFunctionDescriptor() {
     }
 
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
+
 	@Override
     public Set<ConnectionPoint> getConnection_point() {
         return connection_point;
     }
 
+	@JsonIgnore
     public Set<VNFDConnectionPoint> getVNFDConnection_point() {
     	Set<VNFDConnectionPoint> res = new HashSet<>();
     	for (ConnectionPoint cp : connection_point)
