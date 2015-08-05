@@ -145,8 +145,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
                 }
                 break;
-            case INSTANTIATE_FINISH:
-                break;
             case ERROR:
                 break;
             case RELEASE_RESOURCES:
@@ -154,6 +152,12 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
+                    log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
+                    this.resourceManagement.release(virtualDeploymentUnit);
+                }
+
                 break;
             case ALLOCATE_RESOURCES:
                 log.debug("NFVO: ALLOCATE_RESOURCES");
@@ -230,8 +234,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
-                break;
-            case RELEASE_RESOURCES_FINISH:
                 break;
             case SCALE_UP_FINISHED: {
                     log.debug("NFVO: SCALE_UP_FINISHED");

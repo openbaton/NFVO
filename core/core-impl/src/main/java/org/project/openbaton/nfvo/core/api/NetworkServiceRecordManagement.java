@@ -221,8 +221,10 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
-        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal())
+
+        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
             throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
+
         List<Future<Void>> futures = new ArrayList<>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
