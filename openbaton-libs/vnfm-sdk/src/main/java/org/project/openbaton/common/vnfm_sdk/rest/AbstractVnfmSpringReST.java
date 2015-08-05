@@ -1,8 +1,6 @@
 package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -148,10 +146,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
     }
 
     @Override
-    protected void sendToNfvo(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        final CoreMessage coreMessage = new CoreMessage();
-        coreMessage.setPayload(virtualNetworkFunctionRecord);
-        coreMessage.setAction(action);
+    protected void sendToNfvo(CoreMessage coreMessage) {
         sendToCore(coreMessage);
     }
 }

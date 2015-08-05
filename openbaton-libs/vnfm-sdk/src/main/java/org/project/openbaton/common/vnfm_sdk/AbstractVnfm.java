@@ -1,7 +1,6 @@
 package org.project.openbaton.common.vnfm_sdk;
 
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
@@ -61,7 +60,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     }
 
     @Override
-    public abstract VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord vnfr);
+    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void query();
@@ -79,13 +78,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord vnfr);
+    public abstract CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
 
     @Override
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
@@ -104,10 +103,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected void onAction(CoreMessage message) {
         log.trace("VNFM: Received Message: " + message.getAction());
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
+        CoreMessage coreMessage = null;
         switch (message.getAction()){
-            case INSTANTIATE_FINISH:
-                break;
             case ALLOCATE_RESOURCES:
                 break;
             case SCALE:
@@ -117,15 +114,17 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 handleError(message.getPayload());
                 break;
             case MODIFY:
-                virtualNetworkFunctionRecord = this.modify(message.getPayload());
+                coreMessage = this.modify(message.getPayload());
                 break;
             case RELEASE_RESOURCES:
-                virtualNetworkFunctionRecord = this.terminate(message.getPayload());
+                coreMessage = this.terminate(message.getPayload());
                 break;
             case GRANT_OPERATION:
             case INSTANTIATE:
-                virtualNetworkFunctionRecord = this.instantiate(message.getPayload());
-            case RELEASE_RESOURCES_FINISH:
+                coreMessage = this.instantiate(message.getPayload());
+            case SCALE_UP_FINISHED:
+                break;
+            case SCALE_DOWN_FINISHED:
                 break;
             case SCALE_UP_FINISHED:
                 break;
@@ -134,13 +133,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         }
 
 
-        if (virtualNetworkFunctionRecord != null){
+        if (coreMessage != null){
             log.debug("send to NFVO");
-            sendToNfvo(message.getAction(), virtualNetworkFunctionRecord);
+            sendToNfvo(coreMessage);
         }
     }
 
-    protected abstract void sendToNfvo(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract void sendToNfvo(CoreMessage coreMessage);
 
     protected abstract void unregister(VnfmManagerEndpoint endpoint);
 
