@@ -67,7 +67,8 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     private final static Map<String, String> helpCommandList = new HashMap<String, String>(){{
         put("help", "Print the usage");
         put("exit", "Exit the application");
-        put("install", "install plugin");
+        put("installVim", "install vim driver plugin");
+        put("installMonitor", "install monitoring plugin");
         put("print properties", "print all the properties");
     }};
 
@@ -116,8 +117,11 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             if (line.equalsIgnoreCase("help")) {
                 usage();
             }else
-            if (line.startsWith("install ")) {
-                installPlugin(line);
+            if (line.startsWith("installVim ")) {
+                installPlugin(line, "vim");
+            }else
+            if (line.startsWith("installMonitor ")) {
+                installPlugin(line, "monitor");
             }else
             if (line.equalsIgnoreCase("")) {
                 continue;
@@ -125,7 +129,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
     }
 
-    private boolean installPlugin(String line) throws IOException {
+    private boolean installPlugin(String line, String type) throws IOException {
         String path = line.split(" ")[1];
         File jar = new File(path);
         if (!jar.exists() || jar.isDirectory()) {
@@ -141,10 +145,16 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         for (Configuration c : configurationRepository.findAll()){
             if (c.getName().equals("system")){
                 for (ConfigurationParameter cp : c.getConfigurationParameters()){
-                    if (cp.getConfKey().equals("plugin-installation-dir")){
+                    if (type.equals("vim"))
+                    if (cp.getConfKey().equals("vim-plugin-installation-dir")){
                         installPath = cp.getValue();
                         break;
                     }
+                    else if (type.equals("monitor"))
+                        if (cp.getConfKey().equals("monitoring-plugin-installation-dir")){
+                            installPath = cp.getValue();
+                            break;
+                        }
                 }
             }
         }
@@ -154,6 +164,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         FileUtils.copyFile(jar, dest);
         InstallPluginEvent event = new InstallPluginEvent(this);
         event.setPath(new_filename);
+        event.setType(type);
         this.publisher.publishEvent(event);
         return true;
 
