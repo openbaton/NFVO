@@ -23,6 +23,7 @@ import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -57,8 +58,13 @@ public class TestVIM implements Vim {
     private VimBroker vimBroker;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         this.testClient = vimBroker.getClient("test");
+        if (testClient ==null) {
+            log.error("Plugin Test Vim Drivers not found. Have you installed it?");
+            NotFoundException notFoundException = new NotFoundException("Plugin Test Vim Drivers not found. Have you installed it?");
+            throw new RuntimeException(notFoundException);
+        }
     }
 
     @Override
@@ -197,9 +203,6 @@ public class TestVIM implements Vim {
 
     @Override
     public Quota getQuota(VimInstance vimInstance) {
-        if (testClient == null){
-            init();
-        }
         return this.testClient.getQuota();
     }
 }
