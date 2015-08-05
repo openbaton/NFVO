@@ -7,6 +7,7 @@ public enum Action {
     GRANT_OPERATION,
     ALLOCATE_RESOURCES,
     SCALE,
+    SCALING,
     ERROR,
     RELEASE_RESOURCES,
     INSTANTIATE,
