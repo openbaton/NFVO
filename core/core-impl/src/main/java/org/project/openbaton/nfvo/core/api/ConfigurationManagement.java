@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,5 +64,16 @@ public class ConfigurationManagement implements org.project.openbaton.nfvo.core.
     @Override
     public Configuration query(String id) {
         return configurationRepository.find(id);
+    }
+
+    @Override
+    public Configuration queryByName(String name) throws NotFoundException {
+        List<Configuration> configurations = query();
+        for (Configuration configuration: configurations){
+            if (configuration.getName().equals(name)){
+                return configuration;
+            }
+        }
+        throw new NotFoundException("Configuration with name " + name + " not found");
     }
 }
