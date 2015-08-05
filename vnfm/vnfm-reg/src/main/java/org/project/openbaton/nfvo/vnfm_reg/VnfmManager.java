@@ -250,7 +250,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case SCALING:
-                log.debug("NFVO: SCALE_UP_FINISHED");
+                log.debug("NFVO: SCALING");
                 VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
                 virtualNetworkFunctionRecord.setStatus(Status.SCALING);
