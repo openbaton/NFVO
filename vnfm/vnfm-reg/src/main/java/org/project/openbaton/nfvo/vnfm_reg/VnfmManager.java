@@ -92,9 +92,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             coreMessage.setAction(Action.INSTANTIATE);
             coreMessage.setPayload(vnfr);
 
-            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getType());
+            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
             if (endpoint == null) {
-                throw new NotFoundException("VnfManager of type " + vnfr.getType() + " is not registered");
+                throw new NotFoundException("VnfManager of type " + vnfr.getType() + " (endpoint = " + vnfr.getEndpoint() + ") is not registered");
             }
 
             /**
@@ -139,10 +139,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                     message.setPayload(virtualNetworkFunctionRecord);
                     log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 } else {
                     message.setAction(Action.ERROR);
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 }
                 break;
             case ERROR:
@@ -180,7 +180,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         lifecycleEvent.setEvent(Event.ERROR);
                         virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                         errorMessage.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                         return;
                     } catch (VimDriverException e) {
                         e.printStackTrace();
@@ -192,7 +192,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                         message.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                         error = true;
 //                        return;
                     }
@@ -209,7 +209,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     CoreMessage coreMessage = new CoreMessage();
                     coreMessage.setAction(Action.INSTANTIATE);
                     coreMessage.setPayload(virtualNetworkFunctionRecord);
-                    vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                    vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 }
                 break;
             case INSTANTIATE:
@@ -331,9 +331,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     @Async
     public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException {
-        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getType());
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getEndpoint());
         if (endpoint == null) {
-            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " is not registered");
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " (endpoint = " + virtualNetworkFunctionRecordDest.getEndpoint() + ") is not registered");
         }
         VnfmSender vnfmSender;
         try {
@@ -351,9 +351,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     @Async
     public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
-        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType());
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
         if (endpoint == null) {
-            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " is not registered");
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
         }
         CoreMessage coreMessage = new CoreMessage();
         coreMessage.setAction(Action.RELEASE_RESOURCES);
