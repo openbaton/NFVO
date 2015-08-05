@@ -25,10 +25,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.Subnet;
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
@@ -82,6 +79,9 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Autowired
     @Qualifier("VNFRDependencyRepository")
     private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
     @Autowired
     private NSDUtils nsdUtils;
@@ -222,8 +222,23 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
 
-        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
-            throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
+        Configuration configuration = configurationManagement.queryByName("system");
+
+        boolean checkStatus = true;
+
+        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters()){
+            if (configurationParameter.getConfKey().equals("delete-on-all-status")){
+                if (configurationParameter.getValue().equalsIgnoreCase("true")){
+                    checkStatus = false;
+                    break;
+                }
+            }
+        }
+
+        if (checkStatus){
+            if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
+                throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
+        }
 
         List<Future<Void>> futures = new ArrayList<>();
         boolean release = false;
