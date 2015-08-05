@@ -44,7 +44,7 @@ public class PluginInstaller implements CommandLineRunner {
 
 
     public void installVimDriverPlugin(String path) throws PluginInstallException {
-        
+
         File jar = new File(path);
         if (!jar.exists())
             throw new PluginInstallException(path + " does not exist");
