@@ -6,6 +6,7 @@
 
 package org.project.openbaton.catalogue.mano.record;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -49,8 +50,14 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * */
     private String deployment_flavour_key;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    /**
+     * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
+     * */
+    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
+
+    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
+    private Set<LifecycleEvent> lifecycle_event_history;
 
     /**
      * A language attribute may be specified to identify default localisation/language
@@ -66,8 +73,9 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
      * */
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VirtualDeploymentUnit> vdu;
+
     private String vendor;
 
     private String version;
@@ -88,7 +96,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * The reference to the VNFD used to instantiate this VNF
      * */
     private String descriptor_reference;
-
     /**
      * The identification of the VNFM entity managing this VNF
      * TODO probably it is better to have a reference than a string pointing to the id
@@ -101,6 +108,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> connected_external_virtual_link;
+
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
      * interface on this VNF
@@ -108,7 +116,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
-
     /**
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
@@ -135,12 +142,6 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
-     * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
-     * */
-
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    private Set<LifecycleEvent> lifecycle_event_history;
-    /**
      * Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent)
      * */
     private String audit_log;
@@ -152,6 +153,17 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     private Set<String> runtime_policy_info;
     private String name;
     private String type;
+
+    @JsonIgnore
+    private String endpoint;
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
     public String getParent_ns_id() {
         return parent_ns_id;
