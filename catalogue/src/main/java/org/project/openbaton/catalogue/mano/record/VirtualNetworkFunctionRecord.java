@@ -6,6 +6,7 @@
 
 package org.project.openbaton.catalogue.mano.record;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -152,6 +153,17 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     private Set<String> runtime_policy_info;
     private String name;
     private String type;
+
+    @JsonIgnore
+    private String endpoint;
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
     public String getParent_ns_id() {
         return parent_ns_id;
