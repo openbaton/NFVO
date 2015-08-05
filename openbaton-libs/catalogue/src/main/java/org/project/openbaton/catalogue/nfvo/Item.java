@@ -21,6 +21,8 @@ public class Item {
     private String hostExtId;
 
     private String vduId;
+    private String lastValue;
+    private String value;
 
     public Item() {
     }
@@ -74,5 +76,21 @@ public class Item {
 
     public void setVduId(String vduId) {
         this.vduId = vduId;
+    }
+
+    public void setLastValue(String lastValue) {
+        this.lastValue = lastValue;
+    }
+
+    public String getLastValue() {
+        return lastValue;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }
