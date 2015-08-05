@@ -112,6 +112,10 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
+        if (vnfd.getEndpoint() != null)
+            virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
+        else
+            virtualNetworkFunctionRecord.setEndpoint(vnfd.getType());
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
         virtualNetworkFunctionRecord.getMonitoring_parameter().addAll(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
