@@ -23,6 +23,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
+    protected static final String nfvoQueue = "vnfm-core-actions";
 
     @PreDestroy
     private void shutdown(){
@@ -59,7 +60,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     }
 
     @Override
-    public abstract void instantiate(VirtualNetworkFunctionRecord vnfr);
+    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void query();
@@ -77,13 +78,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract void modify(VirtualNetworkFunctionRecord vnfr);
+    public abstract CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
 
     @Override
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
@@ -99,11 +100,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         this.endpoint = (String) properties.get("endpoint");
         this.type = (String) properties.get("type");
     }
+
     protected void onAction(CoreMessage message) {
         log.trace("VNFM: Received Message: " + message.getAction());
+        CoreMessage coreMessage = null;
         switch (message.getAction()){
-            case INSTANTIATE_FINISH:
-                break;
             case ALLOCATE_RESOURCES:
                 break;
             case SCALE:
@@ -113,18 +114,28 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 handleError(message.getPayload());
                 break;
             case MODIFY:
-                this.modify(message.getPayload());
+                coreMessage = this.modify(message.getPayload());
                 break;
             case RELEASE_RESOURCES:
-                this.terminate(message.getPayload());
+                coreMessage = this.terminate(message.getPayload());
                 break;
             case GRANT_OPERATION:
             case INSTANTIATE:
-                this.instantiate(message.getPayload());
-            case RELEASE_RESOURCES_FINISH:
+                coreMessage = this.instantiate(message.getPayload());
+            case SCALE_UP_FINISHED:
+                break;
+            case SCALE_DOWN_FINISHED:
                 break;
         }
+
+
+        if (coreMessage != null){
+            log.debug("send to NFVO");
+            sendToNfvo(coreMessage);
+        }
     }
+
+    protected abstract void sendToNfvo(CoreMessage coreMessage);
 
     protected abstract void unregister(VnfmManagerEndpoint endpoint);
 

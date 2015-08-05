@@ -116,5 +116,18 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     protected void unregister(VnfmManagerEndpoint endpoint) {
         this.sendMessageToQueue("vnfm-unregister", endpoint);
     }
+
+    @Override
+    protected void sendToNfvo(final CoreMessage coreMessage) {
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage(coreMessage);
+                return objectMessage;
+            }
+        };
+        log.debug("Sending to vnfm-core-actions message: " + coreMessage);
+        jmsTemplate.send(nfvoQueue, messageCreator);
+    }
 }
 
