@@ -145,8 +145,9 @@ public class TestVIM implements Vim {
     }
 
     @Override
-    public void release(VirtualDeploymentUnit vdu) {
-
+    @Async
+    public Future<Void> release(VirtualDeploymentUnit vdu) {
+        return new AsyncResult<>(null);
     }
 
     @Override

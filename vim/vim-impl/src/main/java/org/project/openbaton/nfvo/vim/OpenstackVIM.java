@@ -373,10 +373,12 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     }
 
     @Override
-    public void release(VirtualDeploymentUnit vdu) {
+    @Async
+    public Future<Void> release(VirtualDeploymentUnit vdu) {
         openstackClient.init(vdu.getVimInstance());
         openstackClient.deleteServerByIdAndWait(vdu.getExtId());
         vdu.setExtId(null);
+        return new AsyncResult<>(null);
     }
 
     @Override

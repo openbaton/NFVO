@@ -16,21 +16,15 @@
 
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.api.exceptions.NSDNotFoundException;
-import org.project.openbaton.nfvo.api.exceptions.PNFDNotFoundException;
-import org.project.openbaton.nfvo.api.exceptions.VNFDNotFoundException;
-import org.project.openbaton.nfvo.api.exceptions.VNFDependencyNotFoundException;
 import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.nfvo.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.api.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.openbaton.nfvo.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +89,9 @@ public class RestNetworkServiceRecord {
 			log.error(e.getMessage());
 			throw new NSDNotFoundException(id);
 
+		} catch (WrongStatusException e) {
+			e.printStackTrace();
+			throw new StateException(id);
 		}
 	}
 

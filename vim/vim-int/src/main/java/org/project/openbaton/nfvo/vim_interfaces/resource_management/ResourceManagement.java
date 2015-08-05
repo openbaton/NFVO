@@ -91,7 +91,7 @@ public interface ResourceManagement {
 	 * resources and returns them to the NFVI resource pool.
 	 * @param vdu
 	 */
-	void release(VirtualDeploymentUnit vdu) throws VimException;
+	Future<Void> release(VirtualDeploymentUnit vdu) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 

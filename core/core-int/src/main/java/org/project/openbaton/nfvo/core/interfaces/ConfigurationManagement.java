@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -59,4 +60,5 @@ public interface ConfigurationManagement {
      */
     Configuration query(String id);
 
+    Configuration queryByName(String system) throws NotFoundException;
 }
