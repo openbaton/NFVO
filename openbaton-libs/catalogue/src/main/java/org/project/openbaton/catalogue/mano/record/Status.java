@@ -40,17 +40,7 @@ public enum Status {
  /**
   * Terminated
   */
- TERMINATED (4),
-
- /*
- * Scaling
- */
- SCALING(5),
-
- /*
-  * Cooldown
-  */
- COOLDOWN(6);
+ TERMINATED (5);
 
  private int value;
 
