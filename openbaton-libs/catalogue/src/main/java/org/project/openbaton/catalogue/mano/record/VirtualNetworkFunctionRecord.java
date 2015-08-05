@@ -72,7 +72,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
      * */
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VirtualDeploymentUnit> vdu;
 
     private String vendor;
