@@ -19,3 +19,5 @@ include 'vnfm-sdk'
  * limitations under the License.
  */
 
+include 'monitoring'
+
