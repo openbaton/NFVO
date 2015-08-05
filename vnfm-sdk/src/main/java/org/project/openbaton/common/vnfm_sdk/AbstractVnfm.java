@@ -126,6 +126,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case SCALE_DOWN_FINISHED:
                 break;
+            case SCALE_UP_FINISHED:
+                break;
+            case SCALE_DOWN_FINISHED:
+                break;
         }
 
 
