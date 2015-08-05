@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class InstallPluginEvent extends ApplicationEvent {
     private String path;
+    private String type;
 
     /**
      * Create a new ApplicationEvent.
@@ -23,5 +24,13 @@ public class InstallPluginEvent extends ApplicationEvent {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 }
