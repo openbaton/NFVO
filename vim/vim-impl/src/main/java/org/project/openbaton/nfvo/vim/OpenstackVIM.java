@@ -24,6 +24,7 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -59,10 +60,16 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     private VimBroker vimBroker;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         ClientInterfaces client = vimBroker.getClient("openstack");
+        if (client==null) {
+            log.error("Plugin Openstack Vim Drivers not found. Have you installed it?");
+            NotFoundException notFoundException = new NotFoundException("Plugin Openstack Vim Drivers not found. Have you installed it?");
+            throw new RuntimeException(notFoundException);
+        }
         log.debug("Found Client " + client);
         this.openstackClient = client;
+
     }
 
     @Override

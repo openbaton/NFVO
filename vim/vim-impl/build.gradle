@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
     compile project(':catalogue')
+    compile project(':monitoring')
     compile project(':vim-drivers')
 
     compile project(':exceptions')
