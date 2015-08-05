@@ -52,15 +52,18 @@ public class PluginInstaller implements CommandLineRunner {
 
             for (String clazz: classes){
                 log.debug("Loading class: " +clazz);
-                    Class c = classLoader.loadClass(clazz);
-                    ClientInterfaces instance = (ClientInterfaces) c.newInstance();
-                    log.debug("instance: " + instance);
-                    log.debug("of type: " + instance);
-                    vimBroker.addClient(instance, instance.getType());
+                Class c = null;
+                try {
+                    c = classLoader.loadClass(clazz);
+                } catch (ClassNotFoundException e) {
+                    continue;
+                }
+                ClientInterfaces instance = (ClientInterfaces) c.newInstance();
+                log.debug("instance: " + instance);
+                log.debug("of type: " + instance);
+                vimBroker.addClient(instance, instance.getType());
             }
         } catch (MalformedURLException e) {
-            throw new PluginInstallException(e);
-        } catch (ClassNotFoundException e) {
             throw new PluginInstallException(e);
         } catch (InstantiationException e) {
             throw new PluginInstallException(e);
