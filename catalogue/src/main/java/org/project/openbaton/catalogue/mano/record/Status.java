@@ -27,25 +27,21 @@ public enum Status {
   */
  INACTIVE (2),
 
+ /*
+ * Scaling
+ */
+ SCALING(3),
+
  /**
   * Active - Configured
   */
- ACTIVE (3),
+ ACTIVE (4),
 
  /**
   * Terminated
   */
- TERMINATED (4),
+ TERMINATED (5);
 
- /*
-  * Scaling
-  */
- SCALING(5),
-
- /*
-  * Cooldown
-  */
- COOLDOWN(6);
 
  private int value;
 
