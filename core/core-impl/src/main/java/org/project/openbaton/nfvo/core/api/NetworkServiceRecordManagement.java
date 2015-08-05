@@ -25,10 +25,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.Subnet;
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
@@ -36,10 +33,7 @@ import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
-import org.project.openbaton.nfvo.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.*;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
@@ -85,6 +79,9 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Autowired
     @Qualifier("VNFRDependencyRepository")
     private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
     @Autowired
     private NSDUtils nsdUtils;
@@ -222,8 +219,27 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     }
 
     @Override
-    public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException {
+    public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
+
+        Configuration configuration = configurationManagement.queryByName("system");
+
+        boolean checkStatus = true;
+
+        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters()){
+            if (configurationParameter.getConfKey().equals("delete-on-all-status")){
+                if (configurationParameter.getValue().equalsIgnoreCase("true")){
+                    checkStatus = false;
+                    break;
+                }
+            }
+        }
+
+        if (checkStatus){
+            if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
+                throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
+        }
+
         List<Future<Void>> futures = new ArrayList<>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
@@ -234,13 +250,13 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
             if (!events.contains(Event.RELEASE)) {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    resourceManagement.release(virtualDeploymentUnit);
+                    futures.add(resourceManagement.release(virtualDeploymentUnit));
                 }
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
             }
             else {
                 release = true;
-                futures.add(vnfmManager.release(virtualNetworkFunctionRecord));
+                vnfmManager.release(virtualNetworkFunctionRecord);
             }
         }
 
