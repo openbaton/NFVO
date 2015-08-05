@@ -36,4 +36,6 @@ public interface ResourcePerformanceManagement {
 	 * measurement results on virtualised resources.
 	 */
 	void notifyResults();
+
+	String getType();
 }

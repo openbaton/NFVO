@@ -42,6 +42,7 @@ public enum Status {
   */
  TERMINATED (5);
 
+
  private int value;
 
  Status(int value) {
