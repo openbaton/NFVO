@@ -391,19 +391,19 @@ public class NetworkServiceDescriptor implements CommandMarker {
         return "FOUND SECURITIES: " + networkServiceDescriptorAgent.getSecurity(id);
     }
 
-    /**
-     * Return the Security with the id_s
-     *
-     * @param id   : The NSD id
-     * @param id_s : The Security id
-     * @return Security: The Security selected by id_s
-     */
-    @CliCommand(value = "networkServiceDescriptor getSecurity", help = "Return the Security with the id_s")
-    public String getSecurity(
-            @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
-            @CliOption(key = {"id_s"}, mandatory = true, help = "The security id") final String id_s) {
-        return "FOUND SECURITY: " + networkServiceDescriptorAgent.getSecurity(id, id_s);
-    }
+//    /**
+//     * Return the Security with the id_s
+//     *
+//     * @param id   : The NSD id
+//     * @param id_s : The Security id
+//     * @return Security: The Security selected by id_s
+//     */
+//    @CliCommand(value = "networkServiceDescriptor getSecurity", help = "Return the Security with the id_s")
+//    public String getSecurity(
+//            @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
+//            @CliOption(key = {"id_s"}, mandatory = true, help = "The security id") final String id_s) {
+//        return "FOUND SECURITY: " + networkServiceDescriptorAgent.getSecurity(id, id_s);
+//    }
 
     /**
      * Delete the Security with the id_s

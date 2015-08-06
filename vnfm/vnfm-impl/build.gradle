@@ -25,6 +25,7 @@ dependencies {
 
     compile 'javax.jms:javax.jms-api:2.0.1'
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
+    compile "org.springframework:spring-core:" + springVersion
 
     compile 'com.google.code.gson:gson:2.3.1'
 }

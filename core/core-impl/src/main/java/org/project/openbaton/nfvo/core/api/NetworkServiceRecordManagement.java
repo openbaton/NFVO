@@ -143,7 +143,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
-        List<Future<String>> ids = new ArrayList<>();
+        List<String> ids = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
                 if (internalVirtualLink.getConnectivity_type().equals("LAN")) {
@@ -181,8 +181,8 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
         }
 
-        for(Future<String> id : ids){
-            log.debug("Created VDU with id: " + id.get());
+        for(String id : ids){
+            log.debug("Created VDU with id: " + id);
         }
 
         /**

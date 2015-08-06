@@ -26,10 +26,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -39,7 +37,7 @@ import java.util.*;
 /**
  * Created by lto on 12/05/15.
  */
-@Component
+@Service
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 class SystemStartup implements CommandLineRunner {
 
@@ -52,8 +50,6 @@ class SystemStartup implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Initializing OpenBaton");
 
-//        defaultMessageListenerContainer.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONNECTION);
-
         InputStream is = new FileInputStream("/etc/openbaton/openbaton.properties");
         Properties properties = new Properties();
         properties.load(is);
@@ -65,7 +61,6 @@ class SystemStartup implements CommandLineRunner {
         c.setName("system");
         c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
-//        configurationRepository.create(c);
 
         /**
          * Adding properties from file

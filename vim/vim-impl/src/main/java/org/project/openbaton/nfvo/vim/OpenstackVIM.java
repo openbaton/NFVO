@@ -306,10 +306,8 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point())
                 networks.add(vnfdConnectionPoint.getExtId());
         }
-        log.trace(""+vnfr);
-        log.trace("");
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
-        log.trace("Params: " + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
+        log.trace("Params are: hostname:" + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server = openstackClient.launchInstanceAndWait(vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
         vdu.setExtId(server.getExtId());
@@ -383,6 +381,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Async
     public Future<Void> release(VirtualDeploymentUnit vdu) {
         openstackClient.init(vdu.getVimInstance());
+        log.debug("Removing VM with ext id: " + vdu.getExtId());
         openstackClient.deleteServerByIdAndWait(vdu.getExtId());
         vdu.setExtId(null);
         return new AsyncResult<>(null);
