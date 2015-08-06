@@ -14,6 +14,11 @@ import java.util.Set;
  */
 public interface ClientInterfaces {
 
+	/**
+	 * This version must match the version of the plugin...
+	 */
+	String interfaceVersion = "1.0";
+	
     public Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
     public void init(VimInstance vimInstance);
 
