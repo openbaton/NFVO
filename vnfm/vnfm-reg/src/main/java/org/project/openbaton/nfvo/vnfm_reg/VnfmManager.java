@@ -253,17 +253,22 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("NFVO: SCALING");
                 VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(Status.SCALING);
+                virtualNetworkFunctionRecord.setStatus(scalingVirtualNetworkFunctionRecord.getStatus());
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case SCALE_UP_FINISHED:
                 log.debug("NFVO: SCALE_UP_FINISHED");
                 VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                virtualNetworkFunctionRecord.setStatus(scaledUpVirtualNetworkFunctionRecord.getStatus());
                 List<String> existingVDUs = new ArrayList<String>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                     existingVDUs.add(vdu.getId());
+                }
+                for (VirtualDeploymentUnit vdu : scaledUpVirtualNetworkFunctionRecord.getVdu()) {
+                    if (!existingVDUs.contains(vdu.getId())) {
+                        virtualNetworkFunctionRecord.getVdu().add(vdu);
+                    }
                 }
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
@@ -271,10 +276,15 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("NFVO: SCALE_DOWN_FINISHED");
                 VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                virtualNetworkFunctionRecord.setStatus(scaledDownVirtualNetworkFunctionRecord.getStatus());
                 existingVDUs = new ArrayList<String>();
                 for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
                     existingVDUs.add(vdu.getId());
+                }
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                    if (!existingVDUs.contains(vdu.getId())) {
+                        virtualNetworkFunctionRecord.getVdu().remove(vdu);
+                    }
                 }
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
