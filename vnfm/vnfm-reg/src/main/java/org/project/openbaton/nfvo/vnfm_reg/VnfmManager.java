@@ -92,9 +92,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             coreMessage.setAction(Action.INSTANTIATE);
             coreMessage.setPayload(vnfr);
 
-            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getType());
+            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
             if (endpoint == null) {
-                throw new NotFoundException("VnfManager of type " + vnfr.getType() + " is not registered");
+                throw new NotFoundException("VnfManager of type " + vnfr.getType() + " (endpoint = " + vnfr.getEndpoint() + ") is not registered");
             }
 
             /**
@@ -127,11 +127,11 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         } catch (BeansException e2) {
             throw new NotFoundException(e2);
         }
-        switch (message.getAction()){
+        switch (message.getAction()) {
             case GRANT_OPERATION:
                 virtualNetworkFunctionRecord = message.getPayload();
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)){
+                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
                     LifecycleEvent lifecycleEvent = new LifecycleEvent();
                     lifecycleEvent.setEvent(Event.GRANTED);
                     if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
@@ -139,13 +139,17 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                     message.setPayload(virtualNetworkFunctionRecord);
                     log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                    vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
-                }else {
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                } else {
                     message.setAction(Action.ERROR);
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 }
                 break;
             case ERROR:
+                virtualNetworkFunctionRecord = message.getPayload();
+                log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
+                virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case RELEASE_RESOURCES:
                 virtualNetworkFunctionRecord = message.getPayload();
@@ -153,7 +157,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
 
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
                     this.resourceManagement.release(virtualDeploymentUnit);
                 }
@@ -163,6 +167,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 log.debug("NFVO: ALLOCATE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
                 List<Future<String>> ids = new ArrayList<>();
+                boolean error = false;
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
                         ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
@@ -175,34 +180,37 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         lifecycleEvent.setEvent(Event.ERROR);
                         virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                         errorMessage.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                         return;
                     } catch (VimDriverException e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
-                        CoreMessage errorMessage = new CoreMessage();
-                        errorMessage.setAction(Action.ERROR);
+                        message.setAction(Action.ERROR);
                         LifecycleEvent lifecycleEvent = new LifecycleEvent();
                         lifecycleEvent.setEvent(Event.ERROR);
                         virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                        errorMessage.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
-                        return;
+                        virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+                        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                        message.setPayload(virtualNetworkFunctionRecord);
+                        vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                        error = true;
+//                        return;
                     }
 
-                for (LifecycleEvent event :virtualNetworkFunctionRecord.getLifecycle_event()){
-                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()){
+                for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
+                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
                         virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
                         virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
                         break;
                     }
                 }
 
-                CoreMessage coreMessage = new CoreMessage();
-                coreMessage.setAction(Action.INSTANTIATE);
-                coreMessage.setPayload(virtualNetworkFunctionRecord);
-
-                vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType()));
+                if (!error) {
+                    CoreMessage coreMessage = new CoreMessage();
+                    coreMessage.setAction(Action.INSTANTIATE);
+                    coreMessage.setPayload(virtualNetworkFunctionRecord);
+                    vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                }
                 break;
             case INSTANTIATE:
                 log.debug("NFVO: instantiate finish");
@@ -220,7 +228,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                     e.printStackTrace();
                     return;
                 }
-                if (dep == 0){
+                if (dep == 0) {
                     log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
                     virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
@@ -235,38 +243,41 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
                 break;
-            case SCALE_UP_FINISHED: {
-                    log.debug("NFVO: SCALE_UP_FINISHED");
-                    VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
-                    virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
-                    List<String> existingVDUs = new ArrayList<String>();
-                    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                        existingVDUs.add(vdu.getId());
-                    }
-                    for (VirtualDeploymentUnit vdu : scaledUpVirtualNetworkFunctionRecord.getVdu()) {
-                        if (!existingVDUs.contains(vdu.getId())) {
-                            virtualNetworkFunctionRecord.getVdu().add(vdu);
-                        }
-                    }
-                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                    break;
+            case RELEASE_RESOURCES_FINISH:
+                virtualNetworkFunctionRecord = message.getPayload();
+                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
+            case SCALING:
+                log.debug("NFVO: SCALING");
+                VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
+                virtualNetworkFunctionRecord.setStatus(Status.SCALING);
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
+            case SCALE_UP_FINISHED:
+                log.debug("NFVO: SCALE_UP_FINISHED");
+                VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
+                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                List<String> existingVDUs = new ArrayList<String>();
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                    existingVDUs.add(vdu.getId());
                 }
-            case SCALE_DOWN_FINISHED: {
-                    log.debug("NFVO: SCALE_DOWN_FINISHED");
-                    VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
-                    virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
-                    List<String> existingVDUs = new ArrayList<String>();
-                    for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
-                        existingVDUs.add(vdu.getId());
-                    }
-                    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                        if (!existingVDUs.contains(vdu.getId())) {
-                            virtualNetworkFunctionRecord.getVdu().remove(vdu);
-                        }
-                    }
-                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                    break;
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
+            case SCALE_DOWN_FINISHED:
+                log.debug("NFVO: SCALE_DOWN_FINISHED");
+                VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
+                virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
+                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                existingVDUs = new ArrayList<String>();
+                for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
+                    existingVDUs.add(vdu.getId());
                 }
+                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                break;
         }
 
         publishEvent(message);
@@ -323,9 +334,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     @Async
     public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException {
-        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getType());
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getEndpoint());
         if (endpoint == null) {
-            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " is not registered");
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " (endpoint = " + virtualNetworkFunctionRecordDest.getEndpoint() + ") is not registered");
         }
         VnfmSender vnfmSender;
         try {
@@ -343,9 +354,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     @Async
     public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
-        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getType());
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
         if (endpoint == null) {
-            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " is not registered");
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
         }
         CoreMessage coreMessage = new CoreMessage();
         coreMessage.setAction(Action.RELEASE_RESOURCES);

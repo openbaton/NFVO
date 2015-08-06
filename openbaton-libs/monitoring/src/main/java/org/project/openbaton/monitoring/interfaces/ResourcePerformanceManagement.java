@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.vim_interfaces.resource_management;
+package org.project.openbaton.monitoring.interfaces;
+
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.nfvo.Item;
 
 /**
  * Created by mpa on 30/04/15.
@@ -26,11 +29,13 @@ public interface ResourcePerformanceManagement {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	void getMeasurementResults();
-	
+	Item getMeasurementResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period);
+
 	/**
 	 * This operation allows providing notifications with performance
 	 * measurement results on virtualised resources.
 	 */
 	void notifyResults();
+
+	String getType();
 }

@@ -20,39 +20,33 @@ rootProject.name = 'openbaton'
 include 'api'
 include 'cli'
 include 'exceptions'
-//include 'core'
 include 'core-impl', 'core-int'
 include 'main'
-//include 'vim'
 include 'vim-impl', 'vim-int'
-//include 'vnfm'
 include 'vnfm-int', 'vnfm-reg'
-//include 'repositories'
 include 'repo-impl', 'repo-int'
 //include 'security'
 include 'catalogue'
+include 'monitoring'
 include 'vim-drivers'
 include 'dashboard'
 
 
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')
+project(':monitoring').projectDir = file('openbaton-libs/monitoring')
 project(':vim-drivers').projectDir = file('openbaton-libs/vim-drivers')
 
 project(':exceptions').projectDir = file('exceptions')
 project(':dashboard').projectDir = file('dashboard')
 
-//project(':core').projectDir = file('core')
 project(':core-impl').projectDir = file('core/core-impl')
 project(':core-int').projectDir = file('core/core-int')
-//project(':vim').projectDir = file('vim')
 project(':vim-int').projectDir = file('vim/vim-int')
 project(':vim-impl').projectDir = file('vim/vim-impl')
 project(':main').projectDir = file('main')
 project(':api').projectDir = file('api')
-//project(':vnfm').projectDir = file('vnfm')
 project(':vnfm-reg').projectDir = file('vnfm/vnfm-reg')
 project(':vnfm-int').projectDir = file('vnfm/vnfm-int')
-//project(':repositories').projectDir = file('repositories')
 project(':repo-impl').projectDir = file('repositories/repo-impl')
 project(':repo-int').projectDir = file('repositories/repo-int')
 
