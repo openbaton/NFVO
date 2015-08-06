@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
+import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.exceptions.PluginInstallException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
@@ -30,6 +33,7 @@ import java.util.List;
  */
 @Service
 @Scope
+@Order(value = Ordered.LOWEST_PRECEDENCE)
 public class PluginInstaller implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -41,9 +45,7 @@ public class PluginInstaller implements CommandLineRunner {
     private MonitoringBroker monitoringBroker;
 
     @Autowired
-    @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationRepository;
-
+    private ConfigurationManagement configurationManagement;
 
     public void installVimDriverPlugin(String path, List<String> classes) throws PluginInstallException {
 
@@ -109,16 +111,10 @@ public class PluginInstaller implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        List<Configuration> configurations = configurationRepository.findAll();
         List<String> classes = new ArrayList<>();
         String installFolderPath = null;
-        Configuration system = null;
-        for (Configuration c : configurations) {
-            if (c.getName().equals("system")) {
-                system = c;
-                break;
-            }
-        }
+        Configuration system = configurationManagement.queryByName("system");
+
 
         for (ConfigurationParameter cp : system.getConfigurationParameters()) {
             if (cp.getConfKey().equals("vim-plugin-installation-dir")) {
