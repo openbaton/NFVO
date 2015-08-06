@@ -19,7 +19,6 @@ public interface ClientInterfaces {
      */
     String interfaceVersion = "1.0";
 	
-
     Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
     void init(VimInstance vimInstance);
 
