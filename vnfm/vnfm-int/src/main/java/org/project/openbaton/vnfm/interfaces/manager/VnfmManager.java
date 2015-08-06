@@ -31,6 +31,8 @@ import java.util.concurrent.Future;
  * Created by lto on 26/05/15.
  */
 public interface VnfmManager {
+    void init();
+
     Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException;
 
     VnfmSender getVnfmSender(EndpointType endpointType);

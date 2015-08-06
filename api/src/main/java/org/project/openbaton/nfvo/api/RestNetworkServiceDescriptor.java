@@ -499,34 +499,34 @@ public class RestNetworkServiceDescriptor {
 		return nsd.getNsd_security();
 	}
 
-	/**
-	 * Returns the Security with the id_s
-	 * 
-	 * @param id
-	 *            : The NSD id
-	 * @param id_s
-	 *            : The Security id
-	 * @return Security: The Security selected by id_s
-	 * @ 
-	 */
-	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.ACCEPTED)
-	public Security getSecurity(@PathVariable("id") String id,
-			@PathVariable("id_s") String id_s)  {
-		NetworkServiceDescriptor nsd = null;
-		try {
-			nsd = networkServiceDescriptorManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage(), e);
-			throw new NSDNotFoundException(id);
-		}
-		if (!nsd.getNsd_security().getId().equals(id_s)) {
-			log.error("Security with id: " + id_s + " not found.");
-			throw new NSDNotFoundException(id_s);
-		}
-		return nsd.getNsd_security();
-	}
+//	/**
+//	 * Returns the Security with the id_s
+//	 *
+//	 * @param id
+//	 *            : The NSD id
+//	 * @param id_s
+//	 *            : The Security id
+//	 * @return Security: The Security selected by id_s
+//	 * @
+//	 */
+//	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseStatus(HttpStatus.ACCEPTED)
+//	public Security getSecurity(@PathVariable("id") String id,
+//			@PathVariable("id_s") String id_s)  {
+//		NetworkServiceDescriptor nsd = null;
+//		try {
+//			nsd = networkServiceDescriptorManagement.query(id);
+//		} catch (NoResultException e) {
+//
+//			log.error(e.getMessage(), e);
+//			throw new NSDNotFoundException(id);
+//		}
+//		if (!nsd.getNsd_security().getId().equals(id_s)) {
+//			log.error("Security with id: " + id_s + " not found.");
+//			throw new NSDNotFoundException(id_s);
+//		}
+//		return nsd.getNsd_security();
+//	}
 
 	/**
 	 * Deletes the Security with the id_s
