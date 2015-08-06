@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ import java.util.*;
  * Created by lto on 12/05/15.
  */
 @Component
-@Order(value = 1)
+@Order(value = Ordered.HIGHEST_PRECEDENCE)
 class SystemStartup implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
