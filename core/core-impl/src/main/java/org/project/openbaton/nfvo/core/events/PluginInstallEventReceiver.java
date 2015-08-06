@@ -18,8 +18,12 @@ public class PluginInstallEventReceiver implements ApplicationListener<InstallPl
 
     @Override
     public void onApplicationEvent(InstallPluginEvent event) {
+
         try {
-            pluginInstaller.installPlugin(event.getPath());
+            if (event.getType().equals("vim"))
+                pluginInstaller.installVimDriverPlugin(event.getPath(), event.getClasses());
+            else if (event.getType().equals("monitor"))
+                pluginInstaller.installMonitoringPlugin(event.getPath(), event.getClasses());
         } catch (PluginInstallException e) {
             //TODO do something here
             e.printStackTrace();
