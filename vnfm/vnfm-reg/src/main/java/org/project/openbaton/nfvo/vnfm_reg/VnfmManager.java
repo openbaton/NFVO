@@ -49,6 +49,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -270,6 +271,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         virtualNetworkFunctionRecord.getVdu().add(vdu);
                     }
                 }
+                Set<String> new_addresses = new HashSet<>();
+                for (String ip : scaledUpVirtualNetworkFunctionRecord.getVnf_address()) {
+                    if (!virtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
+                        new_addresses.add(ip);
+                    }
+                }
+                virtualNetworkFunctionRecord.getVnf_address().addAll(new_addresses);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
             case SCALE_DOWN_FINISHED:
@@ -281,11 +289,20 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
                     existingVDUs.add(vdu.getId());
                 }
+                Set<VirtualDeploymentUnit> removedVdus = new HashSet<>();
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                     if (!existingVDUs.contains(vdu.getId())) {
-                        virtualNetworkFunctionRecord.getVdu().remove(vdu);
+                        removedVdus.add(vdu);
                     }
                 }
+                virtualNetworkFunctionRecord.getVdu().removeAll(removedVdus);
+                Set<String> old_addresses = new HashSet<>();
+                for (String ip : virtualNetworkFunctionRecord.getVnf_address()) {
+                    if (!scaledDownVirtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
+                        old_addresses.add(ip);
+                    }
+                }
+                virtualNetworkFunctionRecord.getVnf_address().removeAll(old_addresses);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
                 break;
         }
