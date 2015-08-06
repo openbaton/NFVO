@@ -23,25 +23,34 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.catalogue.util.EventFinishEvent;
 import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -49,7 +58,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -57,10 +66,9 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope
-public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware {
+@Order(value = Ordered.LOWEST_PRECEDENCE)
+public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishEvent>, CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private ConfigurableApplicationContext context;
 
     @Autowired
     @Qualifier("vnfmRegister")
@@ -68,8 +76,18 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     private ApplicationEventPublisher publisher;
 
+    private ThreadPoolTaskExecutor asyncExecutor;
+
+    private SyncTaskExecutor serialExecutor;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
+
     @Autowired
     private DependencyManagement dependencyManagement;
+
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
     @Autowired
     private ResourceManagement resourceManagement;
@@ -84,6 +102,42 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Autowired
     @Qualifier("NSRRepository")
     private GenericRepository<NetworkServiceRecord> nsrRepository;
+
+    @Override
+    public void init() {
+        /**
+         * Asynchronous thread executor configuration
+         */
+        Configuration system = null;
+        try {
+            system = configurationManagement.queryByName("system");
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.asyncExecutor = new ThreadPoolTaskExecutor();
+        this.asyncExecutor.setMaxPoolSize(30);
+        this.asyncExecutor.setQueueCapacity(30);
+        this.asyncExecutor.setKeepAliveSeconds(30);
+
+        for (ConfigurationParameter configurationParameter : system.getConfigurationParameters()){
+            if (configurationParameter.getConfKey().equals("vmanager-executor-max-pool-size")) {
+                this.asyncExecutor.setMaxPoolSize(Integer.parseInt(configurationParameter.getValue()));
+            }
+            if (configurationParameter.getConfKey().equals("vmanager-executor-queue-capacity")) {
+                this.asyncExecutor.setQueueCapacity(Integer.parseInt(configurationParameter.getValue()));
+            }
+            if (configurationParameter.getConfKey().equals("vmanager-keep-alive")) {
+                this.asyncExecutor.setKeepAliveSeconds(Integer.parseInt(configurationParameter.getValue()));
+            }
+
+        }
+
+        this.asyncExecutor.initialize();
+
+        this.serialExecutor = new SyncTaskExecutor();
+
+    }
 
     @Override
     @Async
@@ -121,6 +175,26 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     public void executeAction(CoreMessage message) throws VimException, NotFoundException {
+
+//        for (String s: context.getBeanDefinitionNames()){
+//            log.debug(s);
+//        }
+
+        String beanName = message.getAction().toString().replace("_", "").toLowerCase() + "Task";
+        log.debug("Looking for bean called: " + beanName);
+        AbstractTask task = (AbstractTask) context.getBean(beanName);
+
+        task.setAction(message.getAction());
+        task.setVirtualNetworkFunctionRecord(message.getPayload());
+
+        if (task.isAsync()){
+            asyncExecutor.submit(task);
+        }else
+            serialExecutor.execute(task);
+
+    }
+
+    public void executeTask(CoreMessage message) throws VimException, NotFoundException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
         VnfmSender vnfmSender;
         try {
@@ -167,7 +241,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             case ALLOCATE_RESOURCES:
                 log.debug("NFVO: ALLOCATE_RESOURCES");
                 virtualNetworkFunctionRecord = message.getPayload();
-                List<Future<String>> ids = new ArrayList<>();
+                List<String> ids = new ArrayList<>();
                 boolean error = false;
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
                     try {
@@ -196,6 +270,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                         vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                         error = true;
 //                        return;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
                     }
 
                 for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
@@ -403,5 +481,17 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
+    }
+
+    @Override
+    public void onApplicationEvent(EventFinishEvent event) {
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getVirtualNetworkFunctionRecord();
+        publishEvent(event.getAction(), virtualNetworkFunctionRecord);
+        findAndSetNSRStatus(virtualNetworkFunctionRecord);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        init();
     }
 }

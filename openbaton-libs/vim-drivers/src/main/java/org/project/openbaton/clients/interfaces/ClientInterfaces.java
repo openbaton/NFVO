@@ -14,8 +14,10 @@ import java.util.Set;
  */
 public interface ClientInterfaces {
 
-    public Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
-    public void init(VimInstance vimInstance);
+    long serialVersionId = -1L;
+
+    Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
+    void init(VimInstance vimInstance);
 
     List<NFVImage> listImages();
 

@@ -24,6 +24,7 @@ import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.exceptions.VimException;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -36,7 +37,7 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	Future<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException;
+	String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
