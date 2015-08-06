@@ -26,6 +26,11 @@ import org.project.openbaton.catalogue.nfvo.Item;
 public interface ResourcePerformanceManagement {
 	
 	/**
+	 * This version must match the version of the plugin...
+	 */
+	String interfaceVersion = "1.0";
+	
+	/**
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
