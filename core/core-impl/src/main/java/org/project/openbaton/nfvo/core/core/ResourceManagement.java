@@ -23,11 +23,14 @@ import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -36,14 +39,17 @@ import java.util.concurrent.Future;
 @Service
 @Scope
 public class ResourceManagement implements org.project.openbaton.nfvo.core.interfaces.ResourceManagement {
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
 
     @Override
-    public Future<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException {
+    public String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-        return vim.allocate(virtualDeploymentUnit,virtualNetworkFunctionRecord);
+        log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
+        return vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord).get();
     }
 
     @Override

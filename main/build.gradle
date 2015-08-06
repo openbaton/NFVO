@@ -34,7 +34,8 @@ dependencies {
     runtime project(':cli')
     runtime project(':vim-impl')
     runtime project(':repo-impl')
-    runtime project(':vnfm-reg')
+    runtime project(':vnfm-impl')
+    compile project(':vnfm-int')
 
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'junit:junit:4.12'
