@@ -6,13 +6,11 @@ import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.exceptions.PluginInstallException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
@@ -49,36 +47,38 @@ public class PluginInstaller implements CommandLineRunner {
     private ConfigurationManagement configurationManagement;
 
     public void installVimDriverPlugin(String path, List<String> classes) throws PluginInstallException {
-
         try {
             ClassLoader classLoader = getClassLoader(path);
 
+            boolean found=false;
+
             for (String clazz: classes){
                 log.debug("Loading class: " +clazz);
-                Class c = null;
+                Class c;
                 try {
                     c = classLoader.loadClass(clazz);
-                } catch (ClassNotFoundException e) {
+                }catch (ClassNotFoundException e){
                     continue;
                 }
+                found=true;
 
-                Field f = null;
-				try {
-					f = c.getField("interfaceVersion");
-				} catch (NoSuchFieldException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-                if(((String) f.get (c)).equals(ClientInterfaces.interfaceVersion.toString())){
-                log.debug("Correct interface Version");	
-                ClientInterfaces instance = (ClientInterfaces) c.newInstance();
-                log.debug("instance: " + instance);
-                log.debug("of type: " + instance);
-                vimBroker.addClient(instance, instance.getType());
+                Field f;
+                try {
+                    f = c.getField("interfaceVersion");
+                } catch (NoSuchFieldException e) {
+                    throw new PluginInstallException("No valid Plugin found");
+                }
+                if(f.get(c).equals(ClientInterfaces.interfaceVersion)){
+                    log.debug("Correct interface Version");
+                    ClientInterfaces instance = (ClientInterfaces) c.newInstance();
+                    log.debug("instance: " + instance);
+                    log.debug("of type: " + instance);
+                    vimBroker.addClient(instance, instance.getType());
                 }else
-               	throw new PluginInstallException("The interface Version are different");
+                    throw new PluginInstallException("The interface Version are different: required: " + ClientInterfaces.interfaceVersion + ", provided: " + f.get(c));
             }
+            if (!found)
+                throw new PluginInstallException("No valid Plugin found");
         } catch (MalformedURLException e) {
             throw new PluginInstallException(e);
         } catch (InstantiationException e) {
@@ -86,8 +86,8 @@ public class PluginInstaller implements CommandLineRunner {
         } catch (IllegalAccessException e) {
             throw new PluginInstallException(e);
         } catch (SecurityException e) {
-        	throw new PluginInstallException(e);
-		}
+            throw new PluginInstallException(e);
+        }
     }
 
     public ClassLoader getClassLoader(String path) throws PluginInstallException, MalformedURLException {
@@ -104,18 +104,36 @@ public class PluginInstaller implements CommandLineRunner {
 
         try {
             ClassLoader classLoader = getClassLoader(path);
-
+            boolean found = false;
             for (String clazz : classes) {
-                log.debug("Loading class: " + clazz);
-                Class c = classLoader.loadClass(clazz);
-                ResourcePerformanceManagement agent = (ResourcePerformanceManagement) c.newInstance();
-                log.debug("instance: " + agent);
-                log.debug("of type: " + agent.getType());
-                monitoringBroker.addAgent(agent, agent.getType());
+                log.debug("Loading class: " + clazz + " on path " + path);
+                Class c ;
+
+                try {
+                    c = classLoader.loadClass(clazz);
+                }catch (ClassNotFoundException e){
+                    continue;
+                }
+                found=true;
+
+                Field f;
+                try {
+                    f = c.getField("interfaceVersion");
+                } catch (NoSuchFieldException e) {
+                    throw new PluginInstallException("Not a valid plugin");
+                }
+
+                if(f.get(c).equals(ResourcePerformanceManagement.interfaceVersion)) {
+                    ResourcePerformanceManagement agent = (ResourcePerformanceManagement) c.newInstance();
+                    log.debug("instance: " + agent);
+                    log.debug("of type: " + agent.getType());
+                    monitoringBroker.addAgent(agent, agent.getType());
+                }else
+                    throw new PluginInstallException("The interface Version are different: required: " + ClientInterfaces.interfaceVersion + ", provided: " + f.get(c));
             }
+            if (!found)
+                throw new PluginInstallException("No valid Plugin found");
         } catch (MalformedURLException e) {
-            throw new PluginInstallException(e);
-        } catch (ClassNotFoundException e) {
             throw new PluginInstallException(e);
         } catch (InstantiationException e) {
             throw new PluginInstallException(e);
