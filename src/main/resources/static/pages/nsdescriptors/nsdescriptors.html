@@ -21,7 +21,7 @@
 <div class="row">
     <div class="col-lg-12 top-buffer">
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
-        <div class="table-responsive" ng-if="templates.length > 0">
+        <div class="table-responsive" ng-if="nsdescriptors.length > 0">
 
             <table
                 class="table table-bordered table-striped table-hover tablesorter"
@@ -35,8 +35,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="template in templates| orderBy:predicate:reverse">
-                        <td><a href="#templates/{{template.id}}" ng-click="showData(template)">{{template.id}}</a></td>
+                    <tr ng-repeat="template in nsdescriptors| orderBy:predicate:reverse">
+                        <td><a href="#nsdescriptors/{{template.id}}" ng-click="showData(template)">{{template.id}}</a></td>
                         <td>{{template.name}}</td>
                         <td>{{template.topology.name}}</td>
                         <td>
@@ -300,119 +300,217 @@
 </div>
 <!-- /.modal -->
 
-<div class="modal " id="modalT">
+
+<!-- /#page-wrapper -->
+<div class="modal" id="modalT" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="serviceFormLabel">Create Template</h4>
+                <!--                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;</button>-->
+                <h4 class="modal-title" id="serviceFormLabel">Create Topology</h4>
             </div>
-
             <div class="modal-body">
-                <div class="tab-pane active" id="form-div">
-                    <form class="form-horizontal" role="form" name="formTemplate">
-                        <div class="form-group" ng-class="{ 'has-error' : formTemplate.nameTemplate.$invalid  }">
-                            <label for="nameTemplate" class="col-sm-4 control-label">Name Template</label>
-                            <div class="col-sm-5" >
-                                <input type="text" class="form-control" id="template.name" name="nameTemplate" 
-                                       ng-model="template.name" placeholder="Template" required>
-                                <p ng-show="formTemplate.nameTemplate.$invalid" class="help-block">Name is required.</p>
+                <tabset>
+                    <tab heading="Form">
+                        <br>
+                        <form class="form-horizontal" role="form" name="formForm" novalidate>
+                            <div class="form-group" ng-class="{ 'has-error' : formForm.Name.$invalid  }">
+                                <label for="Name" class="col-sm-4 control-label">Name
+                                    Topology</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="Name" name="Name"
+                                           ng-model="data.name" placeholder="Topology" value="" required>
+                                    <p ng-show="formForm.Name.$invalid" class="help-block">Name is required.</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group" ng-class="{ 'has-error' : formTemplate.nameTopology.$invalid  }">
-                            <label for="nameTopology" class="col-sm-4 control-label">Name
-                                Topology</label>
-                            <div class="col-sm-5">
-                                <input type="text" class="form-control" id="nameTopology" name="nameTopology"
-                                       ng-model="topology.name" placeholder="Topology" value="" required>
-                                <p ng-show="formTemplate.nameTopology.$invalid" class="help-block">Name is required.</p>
-                            </div>
-                        </div>
-                        <div class="form-group" ng-class="{ 'has-error' : selectedOneLocation }">
-                            <label for="checkboxDiv" class="col-sm-4 control-label">Locations</label>
-                            <div id="checkboxDiv" >
-                                <div class="col-sm-8 input-group" >
-                                    <div class="checkbox" ng-repeat="location in locations">
-                                        <label>
-                                            <input type="checkbox" value="{{location}}"  ng-model="locationChecked[location]" ng-change="selectedLocations(location)" >
-                                            {{location}}
-                                        </label>
+                            <div class="form-group" ng-class="{ 'has-error' : selectedOneLocation }">
+                                <label for="checkboxDiv" class="col-sm-4 control-label">Location</label>
+                                <div id="checkboxDiv" >
+                                    <div class="col-sm-8 input-group" >
+                                        <div class="checkbox" ng-repeat="location in locations track by $index">
+                                            <label>
+                                                <input type="checkbox" value="{{location}}"  ng-model="locationChecked[location]" ng-change="selectedLocations(location)" >
+                                                {{location}}
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-
+                                <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">One Location is required.</p>
                             </div>
-                            <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">One Location is required.</p>
-                        </div>
-                        <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}" data-toggle="modal" data-target="#addContainerModal">Add Container</button>
-
-                        <hr>
-                        <div class="well well-lg" ng-show="topology.serviceContainers[$index]" ng-repeat="serviceContainer in topology.serviceContainers track by $index">
-                            <div class="row pull-right">
-                                <a title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
-                            </div>
-                            <div class="row">
-                                <div>
-                                    <b>Container:</b>{{serviceContainer.containerName}} 
-                                    :: <b>min:</b>{{serviceContainer.minNumInst}} 
-                                    :: <b>max:</b>{{serviceContainer.maxNumInst}}
-                                    :: <b>flavour:</b>{{serviceContainer.flavour}}
-                                    <br/>
-                                    <div>
-                                        <b>images:</b>
-                                        <span ng-repeat="(k,v) in serviceContainer.images">
-                                            {{k}}: {{v}}<span ng-if="!$last">,</span>
-
-                                        </span>
+                            <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}" data-toggle="modal" data-target="#addContainerModal">Add Container</button>
+                            <hr>
+                            <div collapse="">
+                                <div class="well well-lg" ng-show="data.serviceContainers[$index]" ng-repeat="serviceContainer in data.serviceContainers track by $index">
+                                    <div class="row pull-right">
+                                        <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>
                                     </div>
-                                    <div>
-                                        <b>subnets:</b>&nbsp;
-                                        <span ng-repeat="sub in serviceContainer.subnets">
-                                            <span ng-repeat="(k,v) in sub">
-                                                <span ng-repeat="obj in v">
-                                                    {{obj.name}}<span ng-show="!$last">, </span>
+                                    <div class="row">
+                                        <div>
+                                            <b>Container:</b> {{serviceContainer.containerName}}
+                                            :: <b>min:</b> {{serviceContainer.minNumInst}}
+                                            :: <b>max:</b> {{serviceContainer.maxNumInst}}
+                                            :: <b>flavour:</b> {{serviceContainer.flavour}}
+                                            <br/>
+                                            <div>
+                                                <b>images:</b>
+                                                <span ng-repeat="(k,v) in serviceContainer.images">
+                                                    {{k}}: {{v}}<span ng-if="!$last">,</span>
+
                                                 </span>
-                                            </span>
-                                        </span>
+                                            </div>
+                                            <div>
+                                                <b>subnets:</b>&nbsp;
+                                                <span ng-repeat="sub in serviceContainer.subnets">
+                                                    <span ng-repeat="(k,v) in sub">
+                                                        <span ng-repeat="obj in v">
+                                                            {{obj.name}}<span ng-show="!$last">, </span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <table id="tableServices" class="table" >
+                                        <thead>
+                                        <th>Service Name</th>
+                                        <th>Service Type</th>
+                                        <th>Require</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="service in serviceContainer.services track by $index">
+                                            <td>{{service.instanceName}}</td>
+                                            <td>{{service.serviceType}}</td>
+                                            <td>{{service.requires}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row pull-right">
+                                        <a href="" title="Add a new Service Instance" ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
                                     </div>
                                 </div>
                             </div>
-                            <br/>
-                            <table id="tableServices" class="table" >
-                                <thead>
-                                <th>Service Name</th>
-                                <th>Service Type</th>
-                                <th>Require</th>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="service in serviceContainer.services track by $index">
-                                        <td>{{service.instanceName}}</td>
-                                        <td>{{service.serviceType}}</td>
-                                        <td>{{service.requires}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="row pull-right">
-                                <a href="" title="Add a new Service Instance" ng-click="addInstance(topology.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
+                        </form>
 
+
+                        <div id="inputTemplateForm" class="inputTemplate"
+                             ng-show="toggle">
+
+                            <div class="form-group form-horizontal ">
+                                <label for="nameTemplate" class="col-sm-4 control-label">Name
+                                    Template</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="nameTemplate" name="nameTemplate"
+                                           ng-model="template.name" placeholder="Name Template" value="">
+
+                                </div>
                             </div>
-                        </div> 
-                    </form>
 
-                </div>
+                        </div>
 
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input id="checkTemplate" type="checkbox"
+                                       ng-model="toggle"
+                                       ng-click="toggleF()">
+                                Create Template?
+                            </label>
+                        </div>
+
+                    </tab>
+                    <tab heading="Json">
+                        <form role="form" id="formJson">
+                            <div class="form-group">
+                                <br> <label for="jsonInputArea">Insert Your Json</label>
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)"id="jsonInputArea" class="form-control" rows="5"
+                                          placeholder="{ }"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="jsonInputFile">File input</label>
+                                <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)" >
+                                <p class="help-block">Example: Topology.json </p>
+                            </div>
+                        </form>
+                        <table>
+                            <tr>
+                                <td class="container row">
+                                    <div id="inputTemplateJson" class="col-sm-12 inputTemplate"
+                                         style="display: none;">
+                                        <div class="form-group ">
+                                            <label for="nameTemplate">Name Template</label> <input
+                                                type="text" class="form-control" id="nameTemplate"
+                                                placeholder="Template">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nameTemplate">flavour</label> <input type="text"
+                                                                                             class="form-control" id="inputFlavorTemplate"
+                                                                                             value="m1.small" placeholder="m1.small">
+                                        </div>
+
+                                    </div>
+                                <td></td>
+                                <div class="checkbox pull-right">
+                                    <!--                                <label><input id="checkTemplatej" type="checkbox"
+                                                                                  onclick="toggle('#inputTemplateJson', this)">Create
+                                                                        a Template?</label>-->
+                                </div>
+                            </tr>
+                            </td>
+                        </table>
+                    </tab>
+                    <tab heading="XML">
+                        <form role="form" id="formXML">
+                            <div class="form-group">
+                                <br> <label for="xmlInputArea">Insert Your XML</label>
+                                <textarea ng-model="xmlInputArea" ng-change="changeTextXML(xmlInputArea)" id="xmlInputArea" class="form-control" rows="5"
+                                          placeholder="<Definitions></Definitions>"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="xmlInputFile">File input</label>
+                                <input type="file" id="xmlInputFile" onchange="angular.element(this).scope().setFile(this)" >
+                                <p class="help-block">Example: Load your File Topology.xml</p>
+                            </div>
+                        </form>
+                        <table>
+                            <tr>
+                                <td class="container row">
+                                    <div id="inputTemplateXML" class="col-sm-12 inputTemplate"
+                                         style="display: none;">
+                                        <div class="form-group ">
+                                            <label for="nameTemplate">Name Template</label> <input
+                                                type="text" class="form-control" id="nameTemplate"
+                                                placeholder="Template">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nameTemplate">flavour</label> <input type="text"
+                                                                                             class="form-control" id="inputFlavorTemplate"
+                                                                                             value="m1.small" placeholder="m1.small">
+                                        </div>
+
+                                    </div>
+                                <td></td>
+                                <div class="checkbox pull-right">
+
+                                </div>
+
+                            </tr>
+                            </td>
+                        </table>
+                    </tab>
+                </tabset>
             </div>
             <div class="modal-footer">
-                <button type="button" id="closeT" class="btn btn-default"
+                <button type="button" id="closeModal" class="btn btn-default"
+                        ng-click="cleanModal()"
                         data-dismiss="modal">Close</button>
-                <button type="button" id="" ng-disabled="formTemplate.$invalid || selectedOneLocation"
-                        ng-click="sendTemplate(template, topology)"
-                        class="btn btn-primary">Create Template</button>
+                <button type="button" id="sendTopology"
+                        ng-click="sendTopology()" class="btn btn-primary">Send Topology</button>
             </div>
+
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
+
 </div>
 
 <div class="modal" id="modalPolicy">

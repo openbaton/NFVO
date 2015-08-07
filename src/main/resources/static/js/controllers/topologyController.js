@@ -2,7 +2,7 @@
 
 var app = angular.module('app').controller('TopologyCtrl', function($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
 
-    var urlT = '/api/v1/ns-descriptors';
+    var urlT = 'http://localhost:8080/api/v1/ns-descriptors';
 
 //    $('li').removeClass('active');
 //    if ($window.location.hash === '#/templates')
@@ -19,7 +19,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
 
 //    loadinfoTopology();
 //    loadTableService();
-//    loadTableTopology();
+    loadTableTopology();
 //    loadSelect();
 //    loadUnits();
 
@@ -507,7 +507,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
 
     $scope.sendTopology = function() {
 
-        $scope.topology.locations = serviceAPI.returnKeys($scope.locationChecked, true);
+
         $('.modal').modal('hide');
         var postTopology;
         var sendOk = true;
@@ -645,7 +645,7 @@ var app = angular.module('app').controller('TopologyCtrl', function($scope, $com
     $scope.showServices = function() {
         $scope.selectedTopology = $scope.topologyShow;
         console.log($scope.topologyShow);
-        $window.location.href = '#/topologies/' + $scope.topologyShow.id + '/graph';
+        $window.location.href = '#/nsrecords/' + $scope.topologyShow.id + '/graph';
 
 
 
