@@ -9,7 +9,7 @@ buildscript {
 apply plugin: com.github.rholder.gradle.GradleOneJarPlugin
 
 task oneJar(type: OneJar, overwrite: true) {
-    mainClass = theMainClass
+    mainClass = 'no-main-class'
 	archiveName = rootProject.name + '-' + version + '-openbatonPlugin.jar'
 }
 
