@@ -17,7 +17,6 @@
 package org.project.openbaton.nfvo.core.events.senders;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -49,27 +48,24 @@ public class RestEventSender implements EventSender {
     @Override
     @Async
     public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) throws IOException {
-        try {
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            Gson mapper = new GsonBuilder().create();
-            String json = "{action:'" + event.getAction() + "',payload:'" + mapper.toJson(event.getPayload()) + "'}";
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        String json = "{action:'" + event.getAction() +"',payload:'" + new Gson().toJson(event.getPayload()) +"'}";
+        String body = json;
 
-            log.debug("body is: " + json);
+        log.debug("body is: " + body);
 
-            log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
-            HttpPost request = new HttpPost(endpoint.getEndpoint());
-            request.addHeader("content-type", "application/json");
-            request.addHeader("accept", "application/json");
-            log.trace("With body: " + json);
-            StringEntity params = new StringEntity(json);
-            request.setEntity(params);
-            HttpResponse response = httpClient.execute(request);
-            if (response.getEntity().getContentLength() != 0) {
-            } else {
+        log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
+        HttpPost request = new HttpPost(endpoint.getEndpoint());
+        request.addHeader("content-type", "application/json");
+        request.addHeader("accept", "application/json");
+        log.trace("With body: " + body);
+        StringEntity params = new StringEntity(body);
+        request.setEntity(params);
+        HttpResponse response = httpClient.execute(request);
+        if (response.getEntity().getContentLength() != 0) {
+        }
+        else{
 
-            }
-        }catch (Exception e){
-            e.printStackTrace();
         }
         return new AsyncResult<>(null);
     }
