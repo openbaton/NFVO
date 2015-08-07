@@ -36,7 +36,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
 //
 //    });
 
-//    http.get('/api/rest/orchestrator/v2/topologies/').success(function(data) {
+//    http.get('/api/rest/orchestrator/v2/nsrecords/').success(function(data) {
 //        $scope.numberTopologies = data.length;
 //
 //        var numUinit = 0;

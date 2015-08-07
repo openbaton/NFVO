@@ -20,43 +20,43 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/services/serviceinfo.html',
                 controller: 'ServiceCtrl'
             }).
-            when('/templates', {
-                templateUrl: 'pages/templates.html',
+            when('/nsdescriptors', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/templates/:templateid', {
-                templateUrl: 'pages/templateinfo.html',
+            when('/nsdescriptors/:nsdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies', {
-                templateUrl: 'pages/topologies/topologies.html',
+            when('/nsrecords', {
+                templateUrl: 'pages/nsrecords/nsrecords.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies/:topologyid', {
-                templateUrl: 'pages/topologies/topologyinfo.html',
+            when('/nsrecords/:nsrecordId', {
+                templateUrl: 'pages/nsrecords/nsrecordinfo.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies/:topologyid/graph', {
-                templateUrl: 'pages/topologies/graph.html',
+            when('/nsrecords/:nsrecordId/graph', {
+                templateUrl: 'pages/nsrecords/graph.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
+            when('/nsrecords/:nsrecordId/containers/:containerId', {
+                templateUrl: 'pages/nsrecords/unitsinfo.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies/:topologyid/services/:serviceId', {
-                templateUrl: 'pages/topologies/serviceinstance.html',
+            when('/nsrecords/:nsrecordId/services/:serviceId', {
+                templateUrl: 'pages/nsrecords/serviceinstance.html',
                 controller: 'TopologyCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId/units/', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
+            when('/nsrecords/:nsrecordId/containers/:containerId/units/', {
+                templateUrl: 'pages/nsrecords/unitsinfo.html',
                 controller: 'TopologyCtrl'
             }).
             when('/infrastructures', {
                 templateUrl: 'pages/infrastructures/infrastructures.html',
                 controller: 'InfrastructureCtrl'
             }).
-            when('/deployed/:topologyid', {
+            when('/deployed/:nsrecordId', {
                 templateUrl: 'pages/infrastructures/deployed.html',
                 controller: 'InfrastructureCtrl'
             }).

@@ -7,7 +7,7 @@
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>
                     Overview</a></li>
-            <li><a href="#topologies"><i class="fa fa-cloud-upload"></i>
+            <li><a href="#nsrecords"><i class="fa fa-cloud-upload"></i>
                     Topologies</a></li>
             <li class="active"><i class="fa fa-cloud-upload"></i>
                 {{topologyShow.name}}</li>
@@ -58,7 +58,7 @@
             </thead>
             <tbody id="serviceTable">
                 <tr ng-repeat="serviceContainer in topologyShow.serviceContainers| orderBy:predicate:reverse">
-                    <td><a href="#topologies/{{topologyId}}/containers/{{serviceContainer.id}}">{{serviceContainer.id}}</a></td>
+                    <td><a href="#nsrecords/{{nsrecordId}}/containers/{{serviceContainer.id}}">{{serviceContainer.id}}</a></td>
                     <td>{{serviceContainer.containerName}}</td>
                     <td>{{serviceContainer.state}}</td>
 

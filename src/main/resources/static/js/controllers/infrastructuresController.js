@@ -113,7 +113,7 @@ angular.module('app')
             function populate() {
                 if (!angular.isUndefined($routeParams.topologyid) && $window.location.hash.match("^#/deployed/")) {
                     console.log($routeParams.topologyid);
-                    http.syncGet("/api/rest/orchestrator/v2/topologies/" + $routeParams.topologyid).then(function(topology) {
+                    http.syncGet("/api/rest/orchestrator/v2/nsrecords/" + $routeParams.topologyid).then(function(topology) {
                         drawTopologyDeployed(topology);
                     });
                 }
@@ -386,7 +386,7 @@ angular.module('app')
             var unitsInDc = 0;
             function paintDatacenter(node) {
 
-                var html = '<div id = "' + node.obj.id + '" class="dataC " ng-show="vim-instances[' + $scope.datacenters.length + ']"><div class="vm" ng-repeat="unit in vim-instances[' + $scope.datacenters.length + '].units"><div class="service" ng-repeat="service in unit.services">{{service.instanceName}}</div><div class="footer"><a href="#/topologies/' + $routeParams.topologyid + '/containers/{{unit.serviceContainerId}}">{{removeId(unit.hostname)}}</a></div></div><div class="footer"><a href="#/vim-instances/' + node.obj.id + '">{{vim-instances[' + $scope.datacenters.length + '].name}} : {{vim-instances[' + $scope.datacenters.length + '].location.name}}</a></div></div>';
+                var html = '<div id = "' + node.obj.id + '" class="dataC " ng-show="vim-instances[' + $scope.datacenters.length + ']"><div class="vm" ng-repeat="unit in vim-instances[' + $scope.datacenters.length + '].units"><div class="service" ng-repeat="service in unit.services">{{service.instanceName}}</div><div class="footer"><a href="#/nsrecords/' + $routeParams.topologyid + '/containers/{{unit.serviceContainerId}}">{{removeId(unit.hostname)}}</a></div></div><div class="footer"><a href="#/vim-instances/' + node.obj.id + '">{{vim-instances[' + $scope.datacenters.length + '].name}} : {{vim-instances[' + $scope.datacenters.length + '].location.name}}</a></div></div>';
 
                 var element = angular.element(html);
                 $compile(element)($scope);

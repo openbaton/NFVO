@@ -11,7 +11,7 @@
 var myApp = angular.module('app');
 myApp.controller('DragDropCtrl', function($scope, http, serviceAPI, $routeParams, $cookieStore, $window, $timeout) {
 
-    var urlT = '/api/rest/orchestrator/v2/topologies/';
+    var urlT = '/api/rest/orchestrator/v2/nsrecords/';
     var url = '/api/rest/orchestrator/v2/services/';
 
 
@@ -311,9 +311,9 @@ myApp.controller('DragDropCtrl', function($scope, http, serviceAPI, $routeParams
         console.log($scope.topology);
         http.post(urlT, $scope.topology)
             .success(function(response) {
-//                    $window.location.href = '#/topologies';
+//                    $window.location.href = '#/nsrecords';
                 showOk('Created Topology: <b>' + $scope.topology.name + '</b>. ' + JSON.stringify(response));
-                $timeout($window.location.href = '#/topologies', 10000);
+                $timeout($window.location.href = '#/nsrecords', 10000);
 
             })
             .error(function(data, status) {
