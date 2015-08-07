@@ -38,6 +38,7 @@ import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.exceptions.WrongStatusException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -55,6 +56,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -138,7 +140,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	}
 
 	@Test
-	public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException {
+	public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
 		NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
 		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
 		nsrManagement.delete(nsd_exp.getId());
