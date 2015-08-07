@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -58,10 +59,23 @@ public class PluginInstaller implements CommandLineRunner {
                 } catch (ClassNotFoundException e) {
                     continue;
                 }
+
+                Field f = null;
+				try {
+					f = c.getField("interfaceVersion");
+				} catch (NoSuchFieldException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+                if(((String) f.get (c)).equals(ClientInterfaces.interfaceVersion.toString())){
+                log.debug("Correct interface Version");	
                 ClientInterfaces instance = (ClientInterfaces) c.newInstance();
                 log.debug("instance: " + instance);
                 log.debug("of type: " + instance);
                 vimBroker.addClient(instance, instance.getType());
+                }else
+               	throw new PluginInstallException("The interface Version are different");
             }
         } catch (MalformedURLException e) {
             throw new PluginInstallException(e);
@@ -69,7 +83,9 @@ public class PluginInstaller implements CommandLineRunner {
             throw new PluginInstallException(e);
         } catch (IllegalAccessException e) {
             throw new PluginInstallException(e);
-        }
+        } catch (SecurityException e) {
+        	throw new PluginInstallException(e);
+		}
     }
 
     public ClassLoader getClassLoader(String path) throws PluginInstallException, MalformedURLException {
