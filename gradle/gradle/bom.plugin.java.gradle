@@ -1,18 +1,27 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
-    }
-}
-apply plugin: com.github.rholder.gradle.GradleOneJarPlugin
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//    }
+//    dependencies {
+//        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+//    }
+//}
+//apply plugin: com.github.rholder.gradle.GradleOneJarPlugin
+//
+//task oneJar(type: OneJar, overwrite: true) {
+//    mainClass = 'no-main-class'
+//	archiveName = rootProject.name + '-' + version + '-openbatonPlugin.jar'
+//}
 
-task oneJar(type: OneJar, overwrite: true) {
-    mainClass = 'no-main-class'
-	archiveName = rootProject.name + '-' + version + '-openbatonPlugin.jar'
+task oneJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Openbaton vim driver test plugin',
+                'Implementation-Version': version,
+                'Main-Class': pluginClass
+    }
+    baseName = project.name + '-openbaton-plugin'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 build.dependsOn oneJar
-
-project.tasks.remove(jar)
