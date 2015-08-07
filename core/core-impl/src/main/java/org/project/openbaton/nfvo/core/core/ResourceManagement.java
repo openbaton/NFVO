@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
  * Created by lto on 11/06/15.
  */
 @Service
-@Scope
+@Scope("prototype")
 public class ResourceManagement implements org.project.openbaton.nfvo.core.interfaces.ResourceManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
