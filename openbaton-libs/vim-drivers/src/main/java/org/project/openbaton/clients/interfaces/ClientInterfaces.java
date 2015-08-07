@@ -14,8 +14,6 @@ import java.util.Set;
  */
 public interface ClientInterfaces {
 
-    long serialVersionId = -1L;
-
     Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
     void init(VimInstance vimInstance);
 

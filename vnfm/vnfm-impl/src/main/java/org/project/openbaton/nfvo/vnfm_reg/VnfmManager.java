@@ -16,15 +16,11 @@
 
 package org.project.openbaton.nfvo.vnfm_reg;
 
-import org.project.openbaton.catalogue.mano.common.Event;
-import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -55,17 +51,13 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
  * Created by lto on 08/07/15.
  */
 @Service
-@Scope
+@Scope("singleton")
 @Order(value = Ordered.LOWEST_PRECEDENCE)
 public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishEvent>, CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -194,201 +186,201 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     }
 
-    public void executeTask(CoreMessage message) throws VimException, NotFoundException {
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
-        VnfmSender vnfmSender;
-        try {
-            vnfmSender = this.getVnfmSender(EndpointType.JMS);// we know it is jms, I'm in a jms receiver...
-        } catch (BeansException e2) {
-            throw new NotFoundException(e2);
-        }
-        switch (message.getAction()) {
-            case GRANT_OPERATION:
-                virtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
-                    LifecycleEvent lifecycleEvent = new LifecycleEvent();
-                    lifecycleEvent.setEvent(Event.GRANTED);
-                    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
-                        virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
-                    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                    message.setPayload(virtualNetworkFunctionRecord);
-                    log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                } else {
-                    message.setAction(Action.ERROR);
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                }
-                break;
-            case ERROR:
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
-                virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                break;
-            case RELEASE_RESOURCES:
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
-                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
-                    this.resourceManagement.release(virtualDeploymentUnit);
-                }
-
-                break;
-            case ALLOCATE_RESOURCES:
-                log.debug("NFVO: ALLOCATE_RESOURCES");
-                virtualNetworkFunctionRecord = message.getPayload();
-                List<String> ids = new ArrayList<>();
-                boolean error = false;
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
-                    try {
-                        ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
-                    } catch (VimException e) {
-                        e.printStackTrace();
-                        log.error(e.getMessage());
-                        CoreMessage errorMessage = new CoreMessage();
-                        errorMessage.setAction(Action.ERROR);
-                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
-                        lifecycleEvent.setEvent(Event.ERROR);
-                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                        errorMessage.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                        return;
-                    } catch (VimDriverException e) {
-                        e.printStackTrace();
-                        log.error(e.getMessage());
-                        message.setAction(Action.ERROR);
-                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
-                        lifecycleEvent.setEvent(Event.ERROR);
-                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                        virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-                        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                        message.setPayload(virtualNetworkFunctionRecord);
-                        vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                        error = true;
+//    public void executeTask(CoreMessage message) throws VimException, NotFoundException {
+//        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
+//        VnfmSender vnfmSender;
+//        try {
+//            vnfmSender = this.getVnfmSender(EndpointType.JMS);// we know it is jms, I'm in a jms receiver...
+//        } catch (BeansException e2) {
+//            throw new NotFoundException(e2);
+//        }
+//        switch (message.getAction()) {
+//            case GRANT_OPERATION:
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
+//                    LifecycleEvent lifecycleEvent = new LifecycleEvent();
+//                    lifecycleEvent.setEvent(Event.GRANTED);
+//                    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
+//                        virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+//                    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+//                    message.setPayload(virtualNetworkFunctionRecord);
+//                    log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+//                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+//                } else {
+//                    message.setAction(Action.ERROR);
+//                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+//                }
+//                break;
+//            case ERROR:
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
+//                virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                break;
+//            case RELEASE_RESOURCES:
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+//                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//
+//                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+//                    log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
+//                    this.resourceManagement.release(virtualDeploymentUnit);
+//                }
+//
+//                break;
+//            case ALLOCATE_RESOURCES:
+//                log.debug("NFVO: ALLOCATE_RESOURCES");
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                List<String> ids = new ArrayList<>();
+//                boolean error = false;
+//                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
+//                    try {
+//                        ids.add(resourceManagement.allocate(vdu, virtualNetworkFunctionRecord));
+//                    } catch (VimException e) {
+//                        e.printStackTrace();
+//                        log.error(e.getMessage());
+//                        CoreMessage errorMessage = new CoreMessage();
+//                        errorMessage.setAction(Action.ERROR);
+//                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+//                        lifecycleEvent.setEvent(Event.ERROR);
+//                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+//                        errorMessage.setPayload(virtualNetworkFunctionRecord);
+//                        vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
 //                        return;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
-                for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
-                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
-                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
-                        virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
-                        break;
-                    }
-                }
-
-                if (!error) {
-                    CoreMessage coreMessage = new CoreMessage();
-                    coreMessage.setAction(Action.INSTANTIATE);
-                    coreMessage.setPayload(virtualNetworkFunctionRecord);
-                    vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                }
-                break;
-            case INSTANTIATE:
-                log.debug("NFVO: instantiate finish");
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                message.setPayload(virtualNetworkFunctionRecord);
-                log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
-                log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
-                int dep = 0;
-                try {
-                    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                if (dep == 0) {
-                    log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
-                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                    message.setPayload(virtualNetworkFunctionRecord);
-                }
-                break;
-            case MODIFY:
-                log.debug("NFVO: MODIFY finish");
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
-                break;
-            case RELEASE_RESOURCES_FINISH:
-                virtualNetworkFunctionRecord = message.getPayload();
-                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
-                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                break;
-            case SCALING:
-                log.debug("NFVO: SCALING");
-                VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(scalingVirtualNetworkFunctionRecord.getStatus());
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                break;
-            case SCALE_UP_FINISHED:
-                log.debug("NFVO: SCALE_UP_FINISHED");
-                VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(scaledUpVirtualNetworkFunctionRecord.getStatus());
-                List<String> existingVDUs = new ArrayList<String>();
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                    existingVDUs.add(vdu.getId());
-                }
-                for (VirtualDeploymentUnit vdu : scaledUpVirtualNetworkFunctionRecord.getVdu()) {
-                    if (!existingVDUs.contains(vdu.getId())) {
-                        virtualNetworkFunctionRecord.getVdu().add(vdu);
-                    }
-                }
-                Set<String> new_addresses = new HashSet<>();
-                for (String ip : scaledUpVirtualNetworkFunctionRecord.getVnf_address()) {
-                    if (!virtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
-                        new_addresses.add(ip);
-                    }
-                }
-                virtualNetworkFunctionRecord.getVnf_address().addAll(new_addresses);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                break;
-            case SCALE_DOWN_FINISHED:
-                log.debug("NFVO: SCALE_DOWN_FINISHED");
-                VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
-                virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
-                virtualNetworkFunctionRecord.setStatus(scaledDownVirtualNetworkFunctionRecord.getStatus());
-                existingVDUs = new ArrayList<String>();
-                for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
-                    existingVDUs.add(vdu.getId());
-                }
-                Set<VirtualDeploymentUnit> removedVdus = new HashSet<>();
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                    if (!existingVDUs.contains(vdu.getId())) {
-                        removedVdus.add(vdu);
-                    }
-                }
-                virtualNetworkFunctionRecord.getVdu().removeAll(removedVdus);
-                Set<String> old_addresses = new HashSet<>();
-                for (String ip : virtualNetworkFunctionRecord.getVnf_address()) {
-                    if (!scaledDownVirtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
-                        old_addresses.add(ip);
-                    }
-                }
-                virtualNetworkFunctionRecord.getVnf_address().removeAll(old_addresses);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                break;
-        }
-
-        publishEvent(message);
-
-        findAndSetNSRStatus(virtualNetworkFunctionRecord);
-    }
+//                    } catch (VimDriverException e) {
+//                        e.printStackTrace();
+//                        log.error(e.getMessage());
+//                        message.setAction(Action.ERROR);
+//                        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+//                        lifecycleEvent.setEvent(Event.ERROR);
+//                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+//                        virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+//                        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                        message.setPayload(virtualNetworkFunctionRecord);
+//                        vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+//                        error = true;
+////                        return;
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    } catch (ExecutionException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
+//                    if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
+//                        virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
+//                        virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
+//                        break;
+//                    }
+//                }
+//
+//                if (!error) {
+//                    CoreMessage coreMessage = new CoreMessage();
+//                    coreMessage.setAction(Action.INSTANTIATE);
+//                    coreMessage.setPayload(virtualNetworkFunctionRecord);
+//                    vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+//                }
+//                break;
+//            case INSTANTIATE:
+//                log.debug("NFVO: instantiate finish");
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+//                virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                message.setPayload(virtualNetworkFunctionRecord);
+//                log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+//                log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
+//                int dep = 0;
+//                try {
+//                    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
+//                } catch (NotFoundException e) {
+//                    e.printStackTrace();
+//                    return;
+//                }
+//                if (dep == 0) {
+//                    log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
+//                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+//                    virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                    message.setPayload(virtualNetworkFunctionRecord);
+//                }
+//                break;
+//            case MODIFY:
+//                log.debug("NFVO: MODIFY finish");
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+//                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
+//                break;
+//            case RELEASE_RESOURCES_FINISH:
+//                virtualNetworkFunctionRecord = message.getPayload();
+//                log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+//                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                break;
+//            case SCALING:
+//                log.debug("NFVO: SCALING");
+//                VirtualNetworkFunctionRecord scalingVirtualNetworkFunctionRecord = message.getPayload();
+//                virtualNetworkFunctionRecord = vnfrRepository.find(scalingVirtualNetworkFunctionRecord.getId());
+//                virtualNetworkFunctionRecord.setStatus(scalingVirtualNetworkFunctionRecord.getStatus());
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                break;
+//            case SCALE_UP_FINISHED:
+//                log.debug("NFVO: SCALE_UP_FINISHED");
+//                VirtualNetworkFunctionRecord scaledUpVirtualNetworkFunctionRecord = message.getPayload();
+//                virtualNetworkFunctionRecord = vnfrRepository.find(scaledUpVirtualNetworkFunctionRecord.getId());
+//                virtualNetworkFunctionRecord.setStatus(scaledUpVirtualNetworkFunctionRecord.getStatus());
+//                List<String> existingVDUs = new ArrayList<String>();
+//                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+//                    existingVDUs.add(vdu.getId());
+//                }
+//                for (VirtualDeploymentUnit vdu : scaledUpVirtualNetworkFunctionRecord.getVdu()) {
+//                    if (!existingVDUs.contains(vdu.getId())) {
+//                        virtualNetworkFunctionRecord.getVdu().add(vdu);
+//                    }
+//                }
+//                Set<String> new_addresses = new HashSet<>();
+//                for (String ip : scaledUpVirtualNetworkFunctionRecord.getVnf_address()) {
+//                    if (!virtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
+//                        new_addresses.add(ip);
+//                    }
+//                }
+//                virtualNetworkFunctionRecord.getVnf_address().addAll(new_addresses);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                break;
+//            case SCALE_DOWN_FINISHED:
+//                log.debug("NFVO: SCALE_DOWN_FINISHED");
+//                VirtualNetworkFunctionRecord scaledDownVirtualNetworkFunctionRecord = message.getPayload();
+//                virtualNetworkFunctionRecord = vnfrRepository.find(scaledDownVirtualNetworkFunctionRecord.getId());
+//                virtualNetworkFunctionRecord.setStatus(scaledDownVirtualNetworkFunctionRecord.getStatus());
+//                existingVDUs = new ArrayList<String>();
+//                for (VirtualDeploymentUnit vdu : scaledDownVirtualNetworkFunctionRecord.getVdu()) {
+//                    existingVDUs.add(vdu.getId());
+//                }
+//                Set<VirtualDeploymentUnit> removedVdus = new HashSet<>();
+//                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+//                    if (!existingVDUs.contains(vdu.getId())) {
+//                        removedVdus.add(vdu);
+//                    }
+//                }
+//                virtualNetworkFunctionRecord.getVdu().removeAll(removedVdus);
+//                Set<String> old_addresses = new HashSet<>();
+//                for (String ip : virtualNetworkFunctionRecord.getVnf_address()) {
+//                    if (!scaledDownVirtualNetworkFunctionRecord.getVnf_address().contains(ip)) {
+//                        old_addresses.add(ip);
+//                    }
+//                }
+//                virtualNetworkFunctionRecord.getVnf_address().removeAll(old_addresses);
+//                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+//                break;
+//        }
+//
+//        publishEvent(message);
+//
+//        findAndSetNSRStatus(virtualNetworkFunctionRecord);
+//    }
 
     private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
