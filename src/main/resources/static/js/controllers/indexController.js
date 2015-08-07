@@ -1,6 +1,5 @@
-
 var app = angular.module('app');
-app.controller('IndexCtrl', function($scope,$cookieStore,$location,AuthService) {
+app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService) {
     $('#side-menu').metisMenu();
 
     $scope.logged = $cookieStore.get('logged');
@@ -11,7 +10,7 @@ app.controller('IndexCtrl', function($scope,$cookieStore,$location,AuthService) 
      * Checks if the user is logged
      * @returns {unresolved}
      */
-    $scope.loggedF = function() {
+    $scope.loggedF = function () {
         return $scope.logged;
     };
 
@@ -27,7 +26,7 @@ app.controller('IndexCtrl', function($scope,$cookieStore,$location,AuthService) 
      * Delete the session of the user
      * @returns {undefined}
      */
-    $scope.logout = function() {
+    $scope.logout = function () {
         AuthService.logout();
         $window.location.reload();
     };
@@ -64,17 +63,16 @@ app.controller('IndexCtrl', function($scope,$cookieStore,$location,AuthService) 
  *
  */
 
-app.controller('LoginController', function($scope, AuthService, Session, $rootScope, $location, $cookieStore) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore) {
     $scope.currentUser = null;
     $scope.URL = 'http://localhost:8080';
     $scope.credential = {
         "username": '',
         "password": '',
-        "grant_type":"password"
+        "grant_type": "password"
     };
 
-    if (angular.isUndefined($cookieStore.get('logged')))
-    {
+    if (angular.isUndefined($cookieStore.get('logged'))) {
         $scope.logged = false;
         $rootScope.logged = false;
     }
@@ -86,12 +84,15 @@ app.controller('LoginController', function($scope, AuthService, Session, $rootSc
     }
     $location.replace();
     console.log($scope.logged);
-    $scope.loggedF = function() {
+    $scope.loggedF = function () {
         return $scope.logged;
     };
 
 
-
+    $scope.checkSecurity = function () {
+        console.log($scope.logged);
+        console.log($http.get(URL + "/oauth/token"))
+    };
 
     /**
      * Calls the AuthService Service for making the login on Keystone
@@ -99,7 +100,7 @@ app.controller('LoginController', function($scope, AuthService, Session, $rootSc
      * @param {type} credential
      * @returns {undefined}
      */
-    $scope.login = function(credential) {
+    $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
         $scope.logged = Session.logged;
         $scope.loginError = !$scope.logged;
