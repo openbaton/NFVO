@@ -38,7 +38,7 @@ public class VNFComponent implements Serializable{
 	/**
      * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
      * */
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VNFDConnectionPoint> connection_point;
 
     public VNFComponent() {
