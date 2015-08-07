@@ -39,8 +39,8 @@
 
 <body >
 
-<div  id="wrapper" ng-controller="LoginController">
-
+<div  id="wrapper"  ng-controller="LoginController">
+    <div ng-init="checkSecurity()"></div>
     <div ng-if="!loggedF()" ng-include="'login.html'"></div>
     <div ng-if="loggedF()" ng-include="'menu.html'"></div>
 </div>

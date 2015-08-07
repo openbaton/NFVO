@@ -8,27 +8,42 @@ angular.module('app').factory('AuthService', function($http, Session, $location,
     var clientId = "openbatonOSClient";
     var clientPass = "secret";
 
-    authService.login = function(credentials, URL) {
+    function loginPost(credentials, URL) {
         console.log(credentials);
-        var basic ="Basic " + btoa(clientId + ":" + clientPass);
+        var basic = "Basic " + btoa(clientId + ":" + clientPass);
         return $http({
             method: 'POST',
-            url:URL + '/oauth/token',
+            url: URL + '/oauth/token',
             headers: {
                 "Authorization": basic,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: "username="+credentials.username+"&password="+credentials.password+"&grant_type="+credentials.grant_type})
-            .then(function(res) {
+            data: "username=" + credentials.username + "&password=" + credentials.password + "&grant_type=" + credentials.grant_type
+        })
+            .then(function (res) {
                 console.log(res);
                 Session.create(URL, res.data.access_token, credentials.username, true);
                 $location.path("/");
 //                    $window.location.href = '#/dashboard';
 
                 $window.location.reload();
-                return ;
+                return;
             });
+    }
+
+    authService.login = function(credentials, URL) {
+        $http({
+            method: 'POST',
+            url: URL + '/oauth/token',
+        }).success(
+console.log("SUCCESS")
+        ).error(
+            console.log("ERROR")
+
+        );
+        return loginPost(credentials, URL);
     };
+
 
     authService.setServcies = function(servicesFromScope) {
 //        console.log(servicesFromScope);
