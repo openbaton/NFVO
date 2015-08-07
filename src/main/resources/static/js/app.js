@@ -80,7 +80,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/vim-instances/vim-instances.html',
                 controller: 'vimInstanceCtrl'
             }).
-            when('/vim-instances/:vim-instanceId', {
+            when('/vim-instances/:vimInstanceId', {
                 templateUrl: 'pages/vim-instances/vim-instanceinfo.html',
                 controller: 'vimInstanceCtrl'
             }).

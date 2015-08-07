@@ -63,7 +63,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
  *
  */
 
-app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
     $scope.URL = 'http://localhost:8080';
     $scope.credential = {
@@ -90,8 +90,19 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 
     $scope.checkSecurity = function () {
-        console.log($scope.logged);
-        console.log($http.get(URL + "/oauth/token"))
+        console.log($scope.URL + "/oauth/token");
+        $http.get($scope.URL + "/oauth/token")
+            .success(function (data) {
+                console.log(data);
+            })
+            .error(function (data, status) {
+                if (status == 404) {
+                    AuthService.loginGuest($scope.URL);
+                }
+                console.info((status == 404) );
+                console.error('Repos error', status, data);
+            })
+
     };
 
     /**
