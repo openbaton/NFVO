@@ -7,7 +7,10 @@
 package org.project.openbaton.catalogue.mano.descriptor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.project.openbaton.catalogue.mano.common.*;
+import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.project.openbaton.catalogue.mano.common.NFVEntityDescriptor;
+import org.project.openbaton.catalogue.mano.common.Security;
+import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
