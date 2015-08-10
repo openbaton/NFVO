@@ -23,8 +23,11 @@ import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -34,6 +37,11 @@ import java.util.Set;
  * Created by lto on 11/05/15.
  */
 public class NSRUtils {
+
+    @Autowired
+    @Qualifier("VNFDRepository")
+    private static GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+
     private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
         log.debug("" + networkServiceDescriptor);
@@ -48,7 +56,6 @@ public class NSRUtils {
         networkServiceRecord.setVnfr(new HashSet<VirtualNetworkFunctionRecord>());
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd, networkServiceRecord.getId());
-//            virtualNetworkFunctionRecord.setParent_ns(networkServiceRecord);
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
         }
         //TODO set dependencies!!! (DONE)

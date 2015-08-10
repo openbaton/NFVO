@@ -104,6 +104,14 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     byte[] data = IOUtils.toByteArray(boundedInputStream);
                     script.setPayload(data);
                     vnfPackage.getScripts().add(script);
+                }else if (individualFile.equals("scripts")){
+                    boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
+                    String scriptLink = new BufferedReader(new InputStreamReader(boundedInputStream)).readLine();
+                    vnfPackage.setScriptsLink(scriptLink);
+                }else if (individualFile.equals("image")){
+                    boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
+                    String imageLink = new BufferedReader(new InputStreamReader(boundedInputStream)).readLine();
+                    vnfPackage.setImageLink(imageLink);
                 }
             }
         }
@@ -116,10 +124,11 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         image.setMinRam(minRam);
         List<String> vimInstances = new ArrayList<>();
         for (VirtualDeploymentUnit vdu: virtualNetworkFunctionDescriptor.getVdu()){
-            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we did't already upload it
+            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
                 Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
                 image = vim.add(vdu.getVimInstance(), image, imageStream);
-                vdu.setVm_image(new HashSet<String>());
+                if (vdu.getVm_image() == null)
+                    vdu.setVm_image(new HashSet<String>());
                 vdu.getVm_image().add(image.getName());
                 vimInstances.add(vdu.getVimInstance().getId());
             }
@@ -127,6 +136,8 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         vnfPackage.setImage(image);
 
         myTarFile.close();
+
+        virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfdRepository.create(virtualNetworkFunctionDescriptor);
         log.debug("Persisting " + vnfPackage);
         vnfPackageRepository.create(vnfPackage);
