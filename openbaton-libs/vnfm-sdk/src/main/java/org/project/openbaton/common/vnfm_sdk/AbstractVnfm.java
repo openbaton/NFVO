@@ -143,11 +143,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case INSTANTIATE_FINISH:
                 break;
             case CONFIGURE:
-                coreMessage = configure();
-                break;
-            case START:
-                coreMessage = start();
-                break;
+                coreMessage = configure(message.getPayload());
         }
 
 
@@ -157,116 +153,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         }
     }
 
-    protected abstract CoreMessage start();
-
-    protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event){
-        for(LifecycleEvent lce : events)
-            if(lce.getEvent().ordinal() == event.ordinal()){
-                return lce;
-            }
-        return null;
-    }
-
-    /**
-     * This method can be used when an Event is processed and concluded in the main Class of the VNFM
-     *
-     * @param virtualNetworkFunctionRecord the VNFR
-     * @param event the EVENT to be put in the history
-     */
-    protected void updateVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event){
-        for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event())
-            if (lifecycleEvent.getEvent().ordinal() == event.ordinal()) {
-                virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                break;
-            }
-        changeStatus(virtualNetworkFunctionRecord,event);
-    }
-
-    /**
-     * This method is used when a command is executed in the EMS, in order to put the executed command in history
-     * lifecycle events. In case of error is easy to understand what was the last command correctly executed.
-     *
-     * @param vnfr the VNFR
-     * @param event the EVENT containing the command
-     * @param command the command executed
-     */
-    protected void updateVnfr(VirtualNetworkFunctionRecord vnfr, Event event,String command){
-        if(vnfr==null || event==null || command==null || command.isEmpty())
-            throw new NullPointerException("One of the arguments is null or the command is empty");
-
-        //Change vnfr status if the current command is the last script of the current event.
-        LifecycleEvent currentEvent= getLifecycleEvent(vnfr,event,false);
-        String lastScript=null;
-        while(currentEvent.getLifecycle_events().iterator().hasNext())
-            lastScript=currentEvent.getLifecycle_events().iterator().next();
-        if(lastScript.equalsIgnoreCase(command))
-            changeStatus(vnfr,currentEvent.getEvent());
-
-        //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
-        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr,Event.CONFIGURE,false)==null)
-            changeStatus(vnfr,Event.CONFIGURE);
-
-        //set the command in the history event
-        LifecycleEvent historyEvent = getLifecycleEvent(vnfr,event,true);
-        if(historyEvent!=null)
-            historyEvent.getLifecycle_events().add(command);
-            // If the history event doesn't exist create it
-        else{
-            LifecycleEvent newLce = new LifecycleEvent();
-            newLce.setEvent(event);
-            newLce.setLifecycle_events(new LinkedHashSet<String>());
-            newLce.getLifecycle_events().add(command);
-            vnfr.getLifecycle_event_history().add(newLce);
-        }
-    }
-
-    private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
-        switch (event){
-            case RESET:
-                break;
-            case ERROR:vnfr.setStatus(Status.ERROR);
-                break;
-            case INSTANTIATE: vnfr.setStatus(Status.INITIAILZED);
-                break;
-            case GRANTED:
-                break;
-            case ALLOCATE:
-                break;
-            case CONFIGURE: vnfr.setStatus(Status.INACTIVE);
-                break;
-            case SCALE:
-                break;
-            case SCALE_OUT:
-                break;
-            case SCALE_IN:
-                break;
-            case SCALE_UP:
-                break;
-            case SCALE_DOWN:
-                break;
-            case UPDATE:
-                break;
-            case UPDATE_ROLLBACK:
-                break;
-            case UPGRADE:
-                break;
-            case UPGRADE_ROLLBACK:
-                break;
-            case START: vnfr.setStatus(Status.ACTIVE);
-                break;
-            case STOP: vnfr.setStatus(Status.INACTIVE);
-                break;
-            case RELEASE:
-                break;
-            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
-                break;
-        }
-
-    }
-
-    protected abstract void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
-
-    protected abstract CoreMessage configure();
+    protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected abstract void sendToNfvo(CoreMessage coreMessage);
 
