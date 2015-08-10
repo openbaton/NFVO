@@ -13,6 +13,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -156,6 +157,9 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @JsonIgnore
     private String endpoint;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private VNFPackage vnfPackage;
 
     public String getEndpoint() {
         return endpoint;
@@ -401,5 +405,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public VNFPackage getVnfPackage() {
+        return vnfPackage;
+    }
+
+    public void setVnfPackage(VNFPackage vnfPackage) {
+        this.vnfPackage = vnfPackage;
     }
 }

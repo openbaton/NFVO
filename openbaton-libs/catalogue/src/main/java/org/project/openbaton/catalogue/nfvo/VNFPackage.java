@@ -20,6 +20,9 @@ public class VNFPackage {
 
     private String extId;
 
+    private String imageLink;
+    private String scriptsLink;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private NFVImage image;
 
@@ -27,6 +30,36 @@ public class VNFPackage {
     private Set<Script> scripts;
 
     public VNFPackage() {
+    }
+
+    @Override
+    public String toString() {
+        return "VNFPackage{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", extId='" + extId + '\'' +
+                ", imageLink='" + imageLink + '\'' +
+                ", scriptsLink='" + scriptsLink + '\'' +
+                ", image=" + image +
+                ", scripts=" + scripts +
+                '}';
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
+
+    public String getScriptsLink() {
+        return scriptsLink;
+    }
+
+    public void setScriptsLink(String scriptsLink) {
+        this.scriptsLink = scriptsLink;
     }
 
     public String getId() {
@@ -67,18 +100,6 @@ public class VNFPackage {
 
     public void setScripts(Set<Script> scripts) {
         this.scripts = scripts;
-    }
-
-    @Override
-    public String toString() {
-        return "VNFPackage{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", extId='" + extId + '\'' +
-                ", image=" + image +
-                ", scripts=" + scripts +
-                '}';
     }
 
     public void setImage(NFVImage image) {

@@ -175,8 +175,11 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException {
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
             CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setAction(Action.INSTANTIATE);
             coreMessage.setPayload(vnfr);
+            if (vnfr.getVnfPackage() == null)
+                coreMessage.setAction(Action.INSTANTIATE);
+            else
+                coreMessage.setAction(Action.CONFIGURE);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
             if (endpoint == null) {

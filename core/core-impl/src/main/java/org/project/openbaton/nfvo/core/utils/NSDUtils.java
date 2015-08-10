@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,10 +45,38 @@ public class NSDUtils {
     @Qualifier("vimRepository")
     private GenericRepository<VimInstance> vimRepository;
 
+    @Autowired
+    @Qualifier("VNFDRepository")
+    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
 
+        /**
+         * Fetching VNFD
+         */
+        List<VirtualNetworkFunctionDescriptor> vnfdToAdd = new ArrayList<>();
+        int size = networkServiceDescriptor.getVnfd().size();
+        for (int i=0; i< size; i++) {
+            VirtualNetworkFunctionDescriptor vnfd = (VirtualNetworkFunctionDescriptor) networkServiceDescriptor.getVnfd().toArray()[i];
+            log.debug("The VNFD to fetch is: " + vnfd.getName());
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll()) {
+                log.debug("Checking: " + virtualNetworkFunctionDescriptor.getName());
+                if (vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())) {
+                    networkServiceDescriptor.getVnfd().remove(vnfd);
+                    vnfdToAdd.add(virtualNetworkFunctionDescriptor);
+                    log.debug("Found VNFD: " + vnfd.getName() + " of type: " + vnfd.getType());
+                    break;
+                }
+            }
+        }
+
+
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdToAdd){
+            networkServiceDescriptor.getVnfd().add(virtualNetworkFunctionDescriptor);
+        }
         /**
          * Fetching VimInstances
          */

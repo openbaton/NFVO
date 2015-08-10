@@ -42,8 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -98,16 +96,16 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Autowired
     private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
 
-    // TODO fetch the NetworkServiceDescriptor from the DB
-
+    // TODO fetch the NetworkServiceDescriptor from the DB (DONE)
     @Override
     public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(nsd_id);
         return deployNSR(networkServiceDescriptor);
     }
 
+    // TODO Removed propagation because I don't remeber why I put it, if it works should be completely removed
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
 
         /*
