@@ -24,7 +24,7 @@ public class VNFPackage implements Serializable{
     private String imageLink;
     private String scriptsLink;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true)
     private NFVImage image;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
