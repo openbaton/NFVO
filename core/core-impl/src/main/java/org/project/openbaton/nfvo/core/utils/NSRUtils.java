@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -195,12 +196,12 @@ public class NSRUtils {
         }
 
         virtualNetworkFunctionRecord.setDescriptor_reference(vnfd.getId());
-        virtualNetworkFunctionRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
+        virtualNetworkFunctionRecord.setLifecycle_event(new LinkedHashSet<LifecycleEvent>());
         HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()){
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new HashSet<String>());
+            lifecycleEvent_new.setLifecycle_events(new LinkedHashSet<String>());
             for (String event : lifecycleEvent.getLifecycle_events()){
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }
