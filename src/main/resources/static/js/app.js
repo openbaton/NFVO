@@ -22,35 +22,35 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             }).
             when('/nsdescriptors', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsdCtrl'
             }).
             when('/nsdescriptors/:nsdescriptorId', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsdCtrl'
             }).
             when('/nsrecords', {
                 templateUrl: 'pages/nsrecords/nsrecords.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/nsrecords/:nsrecordId', {
                 templateUrl: 'pages/nsrecords/nsrecordinfo.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/nsrecords/:nsrecordId/graph', {
                 templateUrl: 'pages/nsrecords/graph.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/nsrecords/:nsrecordId/containers/:containerId', {
                 templateUrl: 'pages/nsrecords/unitsinfo.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/nsrecords/:nsrecordId/services/:serviceId', {
                 templateUrl: 'pages/nsrecords/serviceinstance.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/nsrecords/:nsrecordId/containers/:containerId/units/', {
                 templateUrl: 'pages/nsrecords/unitsinfo.html',
-                controller: 'TopologyCtrl'
+                controller: 'NsrCtrl'
             }).
             when('/infrastructures', {
                 templateUrl: 'pages/infrastructures/infrastructures.html',
