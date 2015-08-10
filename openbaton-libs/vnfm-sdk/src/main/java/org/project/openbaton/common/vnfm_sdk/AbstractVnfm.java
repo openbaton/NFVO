@@ -110,6 +110,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case SCALE:
                 this.scale(message.getPayload());
                 break;
+            case SCALING:
+                break;
             case ERROR:
                 coreMessage = handleError(message.getPayload());
                 break;
@@ -126,6 +128,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case SCALE_DOWN_FINISHED:
                 break;
+            case RELEASE_RESOURCES_FINISH:
+                break;
+            case INSTANTIATE_FINISH:
+                break;
+            case CONFIGURE:
+                coreMessage = configure(message.getPayload());
         }
 
 
@@ -134,6 +142,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             sendToNfvo(coreMessage);
         }
     }
+
+    protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected abstract void sendToNfvo(CoreMessage coreMessage);
 
