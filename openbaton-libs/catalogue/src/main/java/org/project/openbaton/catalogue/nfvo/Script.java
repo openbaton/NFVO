@@ -7,12 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
  * Created by lto on 23/07/15.
  */
 @Entity
-public class Script {
+public class Script implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version

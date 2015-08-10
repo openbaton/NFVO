@@ -20,6 +20,8 @@ import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.Network;
+import org.project.openbaton.catalogue.nfvo.Script;
+import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
@@ -120,6 +122,27 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
+
+        if (vnfd.getVnfPackage() != null) {
+            VNFPackage vnfPackage = new VNFPackage();
+            vnfPackage.setImageLink(vnfd.getVnfPackage().getImageLink());
+            vnfPackage.setScriptsLink(vnfd.getVnfPackage().getScriptsLink());
+            vnfPackage.setName(vnfd.getVnfPackage().getName());
+
+            //TODO check for ordering
+            vnfPackage.setScripts(new HashSet<Script>());
+
+            for (Script script : vnfd.getVnfPackage().getScripts()) {
+                Script s = new Script();
+                s.setName(script.getName());
+                s.setPayload(script.getPayload());
+                vnfPackage.getScripts().add(s);
+            }
+
+            vnfPackage.setImage(vnfd.getVnfPackage().getImage());
+            vnfPackage.setExtId(vnfd.getVnfPackage().getExtId());
+            virtualNetworkFunctionRecord.setVnfPackage(vnfPackage);
+        }
         if (vnfd.getEndpoint() != null)
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
         else
