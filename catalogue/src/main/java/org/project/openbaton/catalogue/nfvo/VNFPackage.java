@@ -3,13 +3,14 @@ package org.project.openbaton.catalogue.nfvo;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * Created by lto on 22/07/15.
  */
 @Entity
-public class VNFPackage {
+public class VNFPackage implements Serializable{
 
     @Id
     private String id = IdGenerator.createUUID();
@@ -23,7 +24,7 @@ public class VNFPackage {
     private String imageLink;
     private String scriptsLink;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true)
     private NFVImage image;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
