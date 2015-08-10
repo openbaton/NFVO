@@ -5,10 +5,15 @@ package org.project.openbaton.catalogue.nfvo;
  */
 public enum Action {
     GRANT_OPERATION,
-    INSTANTIATE_FINISH,
     ALLOCATE_RESOURCES,
+    SCALE,
+    SCALING,
     ERROR,
     RELEASE_RESOURCES,
     INSTANTIATE,
-    MODIFY;
+    MODIFY,
+    SCALE_UP_FINISHED,
+    SCALE_DOWN_FINISHED,
+    RELEASE_RESOURCES_FINISH,
+    INSTANTIATE_FINISH;
 }

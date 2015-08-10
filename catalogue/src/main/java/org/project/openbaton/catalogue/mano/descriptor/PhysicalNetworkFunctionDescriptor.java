@@ -7,17 +7,12 @@
 package org.project.openbaton.catalogue.mano.descriptor;
 
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.catalogue.mano.common.Security;
+import org.project.openbaton.catalogue.util.IdGenerator;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Version;
 
 /**
  * Created by lto on 06/02/15.
@@ -26,7 +21,7 @@ import javax.persistence.Version;
  *
  */
 @Entity
-public class PhysicalNetworkFunctionDescriptor {
+public class PhysicalNetworkFunctionDescriptor implements Serializable{
 
     /**
      * The ID (e.g. name) of this PNFD.

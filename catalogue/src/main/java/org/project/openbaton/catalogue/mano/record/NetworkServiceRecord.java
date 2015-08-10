@@ -63,8 +63,7 @@ public class NetworkServiceRecord implements Serializable{
     /**
      * The reference to the Network Service Descriptor used to instantiate this Network Service.
      * */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-     private NFVEntityDescriptor descriptor_reference;
+     private String descriptor_reference;
     /**
      * Resource reservation information identification (potentially per individual VIM) for NFVI resources reserved for this NS instance.
      * TODO: find an appropriate type for this field
@@ -78,8 +77,17 @@ public class NetworkServiceRecord implements Serializable{
     private String runtime_policy_info;
     /**
      * Flag to report status of the Network Service.
+     *
+     * Implementation thoughts:
+     * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
+     * so for what concerns the NSR, the state are:
+     *
+     * * Instantiated Configured - Inactive) A NSR Instance is created not ready for service.
+     * * Instantiated Configured - Active) A NSR Instance is ready to serve.
+     * * Terminated) A NSR has ceased to exist.
+     *
+     * the Null doesn't exist since when the NSR is created will be already in configuration process.
      * */
-
     @Enumerated(EnumType.STRING)
      private Status status;
     /**
@@ -96,6 +104,7 @@ public class NetworkServiceRecord implements Serializable{
      * TODO: maybe a pointer to a file?
      * */
     private String audit_log;
+    
     private String name;
 
     public String getId() {
@@ -202,11 +211,11 @@ public class NetworkServiceRecord implements Serializable{
         this.pnfr = pnfr;
     }
 
-    public NFVEntityDescriptor getDescriptor_reference() {
+    public String getDescriptor_reference() {
         return descriptor_reference;
     }
 
-    public void setDescriptor_reference(NFVEntityDescriptor descriptor_reference) {
+    public void setDescriptor_reference(String descriptor_reference) {
         this.descriptor_reference = descriptor_reference;
     }
 

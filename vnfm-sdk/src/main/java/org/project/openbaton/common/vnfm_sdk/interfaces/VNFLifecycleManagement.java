@@ -2,6 +2,7 @@ package org.project.openbaton.common.vnfm_sdk.interfaces;
 
 
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
 
 /**
  * Created by mpa on 05/05/15.
@@ -11,9 +12,9 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param vnfr
+	 * @param virtualNetworkFunctionRecord
 	 */
-	void instantiate(VirtualNetworkFunctionRecord vnfr);
+	CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows retrieving 
@@ -25,7 +26,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows scaling 
 	 * (out/in, up/down) a VNF instance.
 	 */
-	void scale();
+	void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows verifying if 
@@ -51,7 +52,7 @@ public interface VNFLifecycleManagement {
 	 * redundancy model) to a VNF instance.
 	 */
 	
-	void modify(VirtualNetworkFunctionRecord vnfr);
+	CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
 	
 	/**
 	 * This operation allows deploying a new 
@@ -64,5 +65,5 @@ public interface VNFLifecycleManagement {
 	 * or forcefully a previously created VNF instance.
 	 * @param virtualNetworkFunctionRecord
 	 */
-	void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }
