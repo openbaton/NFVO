@@ -83,18 +83,59 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         this.onAction(msg);
     }
 
+
     protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {
         log.debug("Sending message: " + vduMessage + " to Queue: " + sendToQueueName);
-        MessageCreator messageCreator = new MessageCreator() {
-            @Override
-            public Message createMessage(Session session) throws JMSException {
-                ObjectMessage objectMessage = session.createObjectMessage(vduMessage);
-                return objectMessage;
-            }
-        };
+
+        MessageCreator messageCreator;
+
+        if (vduMessage instanceof java.lang.String )
+            messageCreator =getTextMessageCreator((String) vduMessage);
+        else
+            messageCreator = getObjectMessageCreator(vduMessage);
+
         jmsTemplate.setPubSubDomain(false);
         jmsTemplate.setPubSubNoLocal(false);
         jmsTemplate.send(sendToQueueName, messageCreator);
+    }
+
+    private MessageCreator getTextMessageCreator(final String string) {
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                TextMessage objectMessage = session.createTextMessage(string);
+                return objectMessage;
+            }
+        };
+        return messageCreator;
+    }
+
+    private MessageCreator getObjectMessageCreator(final Serializable message) {
+        MessageCreator messageCreator = new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage(message);
+                return objectMessage;
+            }
+        };
+        return messageCreator;
+    }
+
+    /**
+     * This method should be used for receiving text message from EMS
+     *
+     * resp = {
+     *      'output': out,          // the output of the command
+     *      'err': err,             // the error outputs of the commands
+     *      'status': status        // the exit status of the command
+     * }
+     *
+     * @param queueName
+     * @return
+     * @throws JMSException
+     */
+    protected String receiveTextFromQueue(String queueName) throws JMSException {
+        return ((TextMessage)this.jmsTemplate.receive(queueName)).getText();
     }
 
     @Override
