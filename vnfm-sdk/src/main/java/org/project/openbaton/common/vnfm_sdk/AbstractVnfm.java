@@ -75,7 +75,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void query();
 
     @Override
-    public abstract void scale();
+    public abstract void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void checkInstantiationFeasibility();
