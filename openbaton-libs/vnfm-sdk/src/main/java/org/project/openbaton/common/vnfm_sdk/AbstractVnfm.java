@@ -154,6 +154,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             sendToNfvo(coreMessage);
         }
     }
+
+    protected abstract CoreMessage start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
     private LifecycleEvent getLifecycleEvent(VirtualNetworkFunctionRecord vnfr,Event event,boolean history){
         if(history){
             for( LifecycleEvent lce : vnfr.getLifecycle_event_history())
@@ -198,6 +201,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
         switch (event){
+            case GRANTED:
+                break;
+            case ALLOCATE:
+                break;
+            case INSTALL:
+                break;
+            case SCALE:
+                break;
+            case RELEASE:
+                break;
+            case ERROR:
+                break;
             case INSTANTIATE: vnfr.setStatus(Status.INITIAILZED);
                 break;
             case TERMINATE: vnfr.setStatus(Status.TERMINATED);
@@ -207,6 +222,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case START: vnfr.setStatus(Status.ACTIVE);
                 break;
             case STOP: vnfr.setStatus(Status.INACTIVE);
+                break;
+            case SCALE_OUT:
+                break;
+            case SCALE_IN:
+                break;
+            case SCALE_UP:
+                break;
+            case SCALE_DOWN:
                 break;
             case UPDATE:
                 break;
