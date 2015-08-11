@@ -1,10 +1,12 @@
 package org.project.openbaton.common.vnfm_sdk.jms;
 
+import com.google.gson.JsonObject;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
+import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
+import javax.jms.IllegalStateException;
 import java.io.Serializable;
 
 /**
@@ -136,6 +139,29 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
      */
     protected String receiveTextFromQueue(String queueName) throws JMSException {
         return ((TextMessage)this.jmsTemplate.receive(queueName)).getText();
+    }
+
+    @Override
+    protected void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
+        this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
+
+        String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
+
+        log.debug("Received from EMS ("+vduHostname+"): " + response);
+
+        if(response==null) {
+            throw new NullPointerException("Response from EMS is null");
+        }
+
+        JsonObject jsonObject = parser.fromJson(response,JsonObject.class);
+
+        if(jsonObject.get("status").getAsInt()==0){
+            log.debug("Output from EMS ("+vduHostname+") is: " + jsonObject.get("output").getAsString());
+        }
+        else{
+            log.error(jsonObject.get("err").getAsString());
+            throw new VnfmSdkException("EMS ("+vduHostname+") had the following error: "+jsonObject.get("err").getAsString());
+        }
     }
 
     @Override
