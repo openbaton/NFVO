@@ -19,6 +19,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
+import javax.jms.IllegalStateException;
 import java.io.Serializable;
 
 /**
