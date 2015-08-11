@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
@@ -157,15 +159,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected abstract CoreMessage start();
 
-    private LifecycleEvent getLifecycleEvent(VirtualNetworkFunctionRecord vnfr,Event event,boolean history){
-        if(history){
-            for( LifecycleEvent lce : vnfr.getLifecycle_event_history())
-                if(lce.getEvent()==event){
-                    return lce;
-                }
-        }
-        else for( LifecycleEvent lce : vnfr.getLifecycle_event())
-            if(lce.getEvent()==event){
+    protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event){
+        for(LifecycleEvent lce : events)
+            if(lce.getEvent().ordinal() == event.ordinal()){
                 return lce;
             }
         return null;
@@ -218,6 +214,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         else{
             LifecycleEvent newLce = new LifecycleEvent();
             newLce.setEvent(event);
+            newLce.setLifecycle_events(new LinkedHashSet<String>());
             newLce.getLifecycle_events().add(command);
             vnfr.getLifecycle_event_history().add(newLce);
         }
@@ -299,6 +296,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws VnfmSdkException, JMSException {
         executeActionOnEMS(emsEndpoint, command);
-        updateVnfr(vnfr, event, command);
+        try {
+            updateVnfr(vnfr, event, command);
+            log.debug("Updated VNFR");
+        }catch (NullPointerException e){
+            throw new VnfmSdkException(e);
+        }
     }
 }
