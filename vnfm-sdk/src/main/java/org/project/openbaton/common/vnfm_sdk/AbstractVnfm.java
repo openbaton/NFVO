@@ -19,6 +19,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
@@ -157,43 +159,38 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected abstract CoreMessage start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    private LifecycleEvent getLifecycleEvent(VirtualNetworkFunctionRecord vnfr,Event event,boolean history){
-        if(history){
-            for( LifecycleEvent lce : vnfr.getLifecycle_event_history())
-                if(lce.getEvent()==event){
-                    return lce;
-                }
-        }
-        else for( LifecycleEvent lce : vnfr.getLifecycle_event())
-                    if(lce.getEvent()==event){
-                        return lce;
-                    }
+    protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event){
+        for(LifecycleEvent lce : events)
+            if(lce.getEvent().ordinal() == event.ordinal()){
+                return lce;
+            }
         return null;
     }
-    protected void updateVnfr(VirtualNetworkFunctionRecord vnfr, Event event,String command){
+    protected void updateVnfr(VirtualNetworkFunctionRecord vnfr, Event event,String command) throws NullPointerException{
         if(vnfr==null || event==null || command==null || command.isEmpty())
             throw new NullPointerException("One of the arguments is null or the command is empty");
 
         //Change vnfr status if the current command is the last script of the current event.
-        LifecycleEvent currentEvent= getLifecycleEvent(vnfr,event,false);
-        String lastScript=null;
-        while(currentEvent.getLifecycle_events().iterator().hasNext())
-            lastScript=currentEvent.getLifecycle_events().iterator().next();
+        LifecycleEvent currentEvent= getLifecycleEvent(vnfr.getLifecycle_event(),event);
+        String lastScript = (String) currentEvent.getLifecycle_events().toArray()[currentEvent.getLifecycle_events().size() - 1];
+        log.debug("Last script is: " + lastScript);
+
         if(lastScript.equalsIgnoreCase(command))
             changeStatus(vnfr,currentEvent.getEvent());
 
         //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
-        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr,Event.CONFIGURE,false)==null)
+        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
             changeStatus(vnfr,Event.CONFIGURE);
 
         //set the command in the history event
-        LifecycleEvent historyEvent = getLifecycleEvent(vnfr,event,true);
+        LifecycleEvent historyEvent = getLifecycleEvent(vnfr.getLifecycle_event_history(),event);
         if(historyEvent!=null)
             historyEvent.getLifecycle_events().add(command);
-        // If the history event doesn't exist create it
+            // If the history event doesn't exist create it
         else{
             LifecycleEvent newLce = new LifecycleEvent();
             newLce.setEvent(event);
+            newLce.setLifecycle_events(new LinkedHashSet<String>());
             newLce.getLifecycle_events().add(command);
             vnfr.getLifecycle_event_history().add(newLce);
         }
@@ -257,6 +254,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws VnfmSdkException, JMSException {
         executeActionOnEMS(emsEndpoint, command);
-        updateVnfr(vnfr, event, command);
+        try {
+            updateVnfr(vnfr, event, command);
+            log.debug("Updated VNFR");
+        }catch (NullPointerException e){
+            throw new VnfmSdkException(e);
+        }
     }
 }
