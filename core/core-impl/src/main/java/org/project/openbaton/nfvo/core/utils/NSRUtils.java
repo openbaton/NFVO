@@ -83,7 +83,7 @@ public class NSRUtils {
         }
 
         networkServiceRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
-        networkServiceRecord.getLifecycle_event().addAll(networkServiceDescriptor.getLifecycle_event());
+//        networkServiceRecord.getLifecycle_event().addAll(networkServiceDescriptor.getLifecycle_event());
         Set<PhysicalNetworkFunctionRecord> pnfrs = new HashSet<PhysicalNetworkFunctionRecord>();
         if(networkServiceDescriptor.getPnfd() != null)
             for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()){

@@ -8,16 +8,13 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
-import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -90,7 +86,15 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 /*this must be the vnfd*/
                 /*and has to be onboarded in the catalogue*/
                     boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
-                    virtualNetworkFunctionDescriptor = mapper.fromJson(new InputStreamReader(boundedInputStream), VirtualNetworkFunctionDescriptor.class);
+                    String json = convertStreamToString(boundedInputStream);
+                    log.trace("Content of json is: " + json);
+                    try {
+                        virtualNetworkFunctionDescriptor = mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
                     nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor);
                 } else if (individualFile.endsWith(".ovf")) {
                 /*this must be the image*/
@@ -115,33 +119,39 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 }
             }
         }
-        NFVImage image = new NFVImage();
-        image.setName(name);
-        image.setContainerFormat(containerFromat);
-        image.setDiskFormat(diskFormat);
-        image.setIsPublic(isPublic);
-        image.setMinDiskSpace(minDisk);
-        image.setMinRam(minRam);
-        List<String> vimInstances = new ArrayList<>();
-        for (VirtualDeploymentUnit vdu: virtualNetworkFunctionDescriptor.getVdu()){
-            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                image = vim.add(vdu.getVimInstance(), image, imageStream);
-                if (vdu.getVm_image() == null)
-                    vdu.setVm_image(new HashSet<String>());
-                vdu.getVm_image().add(image.getName());
-                vimInstances.add(vdu.getVimInstance().getId());
-            }
-        }
-        vnfPackage.setImage(image);
+//        NFVImage image = new NFVImage();
+//        image.setName(name);
+//        image.setContainerFormat(containerFromat);
+//        image.setDiskFormat(diskFormat);
+//        image.setIsPublic(isPublic);
+//        image.setMinDiskSpace(minDisk);
+//        image.setMinRam(minRam);
+//        List<String> vimInstances = new ArrayList<>();
+//        for (VirtualDeploymentUnit vdu: virtualNetworkFunctionDescriptor.getVdu()){
+//            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
+//                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+//                image = vim.add(vdu.getVimInstance(), image, imageStream);
+//                if (vdu.getVm_image() == null)
+//                    vdu.setVm_image(new HashSet<String>());
+//                vdu.getVm_image().add(image.getName());
+//                vimInstances.add(vdu.getVimInstance().getId());
+//            }
+//        }
+//        vnfPackage.setImage(image);
 
         myTarFile.close();
 
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfdRepository.create(virtualNetworkFunctionDescriptor);
-        log.debug("Persisting " + vnfPackage);
+        log.trace("Persisted " + virtualNetworkFunctionDescriptor);
         vnfPackageRepository.create(vnfPackage);
+        log.debug("Persisted " + vnfPackage);
         return vnfPackage;
+    }
+
+    private static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     @Override
