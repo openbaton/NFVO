@@ -1,7 +1,12 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
+import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +16,27 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class ModifyTask extends AbstractTask {
+
+    @Autowired
+    @Qualifier("vnfmRegister")
+    private VnfmRegister vnfmRegister;
+
+
     @Override
     protected void doWork() throws Exception {
+        VnfmSender vnfmSender;
+        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+
         log.debug("NFVO: MODIFY finish");
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+//        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
+
+        CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setAction(Action.START);
+        coreMessage.setPayload(virtualNetworkFunctionRecord);
+        vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 
     @Override

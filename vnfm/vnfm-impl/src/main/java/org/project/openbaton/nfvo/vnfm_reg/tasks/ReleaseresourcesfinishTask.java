@@ -1,6 +1,5 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ public class ReleaseresourcesfinishTask extends AbstractTask {
     @Override
     protected void doWork() throws Exception {
         log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
-        virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+//        virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
     }
 
