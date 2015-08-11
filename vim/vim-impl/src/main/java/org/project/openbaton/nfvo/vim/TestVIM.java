@@ -178,7 +178,7 @@ public class TestVIM implements Vim {
 
     @Override
     public Network add(VimInstance vimInstance, Network network) throws VimException {
-        throw new UnsupportedOperationException();
+        return network;
     }
 
     @Override
