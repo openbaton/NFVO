@@ -7,10 +7,7 @@
 package org.project.openbaton.catalogue.mano.descriptor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.project.openbaton.catalogue.mano.common.NFVEntityDescriptor;
-import org.project.openbaton.catalogue.mano.common.Security;
-import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
@@ -35,6 +32,10 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      * */
      @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualDeploymentUnit> vdu;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	protected Set<LifecycleEvent> lifecycle_event;
+
     /**
      * Represents the type of network connectivity mandated by the VNF vendor between two or more Connection Point
      * */
@@ -79,6 +80,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 	public String toString() {
 		return "VirtualNetworkFunctionDescriptor{" +
 				"vdu=" + vdu +
+				", lifecycle_event=" + lifecycle_event +
 				", virtual_link=" + virtual_link +
 				", vdu_dependency=" + vdu_dependency +
 				", deployment_flavour=" + deployment_flavour +
@@ -185,5 +187,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
 	public VNFPackage getVnfPackage() {
 		return vnfPackage;
+	}
+	public Set<LifecycleEvent> getLifecycle_event() {
+		return lifecycle_event;
+	}
+	public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
+		this.lifecycle_event = lifecycle_event;
 	}
 }
