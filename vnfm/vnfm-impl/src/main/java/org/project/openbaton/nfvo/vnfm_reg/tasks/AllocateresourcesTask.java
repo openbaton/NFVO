@@ -77,7 +77,7 @@ public class AllocateresourcesTask extends AbstractTask {
         for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
             if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
-                virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
+//                virtualNetworkFunctionRecord.getLifecycle_event().remove(event);
                 break;
             }
         }
