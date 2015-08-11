@@ -295,6 +295,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws VnfmSdkException, JMSException {
         executeActionOnEMS(emsEndpoint, command);
-        updateVnfr(vnfr, event, command);
+        try {
+            updateVnfr(vnfr, event, command);
+            log.debug("Updated VNFR");
+        }catch (NullPointerException e){
+            throw new VnfmSdkException(e);
+        }
     }
 }
