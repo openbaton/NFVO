@@ -43,8 +43,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	protected Set<VNFForwardingGraphDescriptor> vnffgd;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected Set<VirtualLinkDescriptor> vld;
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	protected Set<LifecycleEvent> lifecycle_event;
+
 	/**
 	 *
 	 * Represents a monitoring parameter which can be tracked for this NS. These can be network service metrics that are tracked for the
@@ -121,12 +120,6 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	}
 	public void setVld(Set<VirtualLinkDescriptor> vld) {
 		this.vld = vld;
-	}
-	public Set<LifecycleEvent> getLifecycle_event() {
-		return lifecycle_event;
-	}
-	public void setLifecycle_event(Set<LifecycleEvent> lifecycle_event) {
-		this.lifecycle_event = lifecycle_event;
 	}
 	public Set<String> getMonitoring_parameter() {
 		return monitoring_parameter;
