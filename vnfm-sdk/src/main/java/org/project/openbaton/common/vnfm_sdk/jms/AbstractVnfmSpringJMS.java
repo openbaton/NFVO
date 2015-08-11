@@ -19,6 +19,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
+import javax.jms.IllegalStateException;
 import java.io.Serializable;
 
 /**
@@ -137,8 +138,33 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
+    protected void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
         this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
+
+        String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
+
+        log.debug("Received from EMS ("+vduHostname+"): " + response);
+
+        if(response==null) {
+            throw new NullPointerException("Response from EMS is null");
+        }
+
+        JsonObject jsonObject = parser.fromJson(response,JsonObject.class);
+
+        if(jsonObject.get("status").getAsInt()==0){
+            log.debug("Output from EMS ("+vduHostname+") is: " + jsonObject.get("output").getAsString());
+        }
+        else{
+            log.error(jsonObject.get("err").getAsString());
+            throw new VnfmSdkException("EMS ("+vduHostname+") had the following error: "+jsonObject.get("err").getAsString());
+        }
+    }
+
+    @Override
+    protected void setup() {
+        loadProperties();
+        this.setSELECTOR(this.getEndpoint());
+        log.debug("SELECTOR: " + this.getEndpoint());
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
