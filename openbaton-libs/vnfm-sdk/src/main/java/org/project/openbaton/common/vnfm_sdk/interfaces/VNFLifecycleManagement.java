@@ -12,9 +12,8 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param virtualNetworkFunctionRecord
 	 */
-	CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	CoreMessage instantiate();
 	
 	/**
 	 * This operation allows retrieving 
@@ -26,7 +25,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows scaling 
 	 * (out/in, up/down) a VNF instance.
 	 */
-	void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	void scale();
 	
 	/**
 	 * This operation allows verifying if 
@@ -52,7 +51,7 @@ public interface VNFLifecycleManagement {
 	 * redundancy model) to a VNF instance.
 	 */
 	
-	CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
+	CoreMessage modify();
 	
 	/**
 	 * This operation allows deploying a new 
@@ -63,7 +62,6 @@ public interface VNFLifecycleManagement {
 	/**
 	 * This operation allows terminating gracefully
 	 * or forcefully a previously created VNF instance.
-	 * @param virtualNetworkFunctionRecord
 	 */
-	CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	CoreMessage terminate();
 }

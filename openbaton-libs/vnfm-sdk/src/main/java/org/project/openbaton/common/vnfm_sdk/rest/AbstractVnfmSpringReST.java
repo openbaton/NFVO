@@ -64,11 +64,11 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     @PreDestroy
     public void shutdown(){
-        this.unregister(vnfmManagerEndpoint);
+        this.unregister();
     }
 
     @Override
-    protected void unregister(VnfmManagerEndpoint endpoint){
+    protected void unregister(){
         this.post("/admin/v1/vnfm_sdk-unregister", mapper.toJson(endpoint));
     }
 
@@ -88,7 +88,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         vnfmManagerEndpoint.setEndpointType(EndpointType.REST);
 
         log.debug("Registering to vnfm-register");
-        register(vnfmManagerEndpoint);
+        register();
     }
 
     protected String get(String path) {
@@ -125,7 +125,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.status = status;
     }
 
-    protected void register(VnfmManagerEndpoint endpoint){
+    protected void register(){
         String json = mapper.toJson(endpoint);
         log.debug("post on /admin/v1/vnfm-register with json: " + json);
         this.post("/admin/v1/vnfm-register", mapper.toJson(endpoint));
