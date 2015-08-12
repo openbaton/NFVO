@@ -47,7 +47,7 @@ public class InstantiateTask extends AbstractTask {
             return;
         }
         if (dep == 0) {
-            log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, setting status to ACTIVE");
+            log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
 //            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
 //            virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
             CoreMessage coreMessage = new CoreMessage();
