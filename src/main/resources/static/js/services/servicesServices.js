@@ -171,13 +171,13 @@ angular.module('app').factory('serviceAPI', function(http, $q) {
      *
      * @returns {Array}
      */
-    services.getRelations = function() {
-        var relations = [];
-        http.get('/api/rest/orchestrator/v2/relations').success(function(data, status) {
-            relations = data;
-        });
-        return relations;
-    };
+    //services.getRelations = function() {
+    //    var relations = [];
+    //    http.get('/api/rest/orchestrator/v2/relations').success(function(data, status) {
+    //        relations = data;
+    //    });
+    //    return relations;
+    //};
     /** Set lat and lon in the dataJson by city
      *
      * @param {type} city

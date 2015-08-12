@@ -2,7 +2,7 @@ angular.module('app')
         .factory('topologiesAPI', function(http, $q, serviceAPI) {
 
             var topologies = {};
-            var relations = serviceAPI.getRelations();
+            //var relations = serviceAPI.getRelations();
             /*
              * Function for drawing the infrastructure topology
              * 
@@ -689,33 +689,33 @@ angular.module('app')
 
 
 
-                function catalogueRelForJsPlumb(topology) {
-
-                    var catRel = [];
-                    http.syncGet('/api/rest/orchestrator/v2/relations').then(function(response) {
-                        _.each(response, function(r) {
-                            $('.unit').each(function(i) {
-                                var id = this.id;
-                                var s = r.source;
-                                var t = r.target;
-                                if (id == r.source || id == r.target)
-                                {
-                                    if (!checkExist(catRel, r)) {
-                                        catRel.push(r);
-                                        jsPlumb.connect({
-                                            source: $('#' + r.source),
-                                            target: $('#' + r.target),
-                                            anchor: "Continuous"
-                                        });
-                                    }
-                                }
-                            });
-//                  
-                        });
-
-                    });
-                    return catRel;
-                }
+//                function catalogueRelForJsPlumb(topology) {
+//
+//                    var catRel = [];
+//                    http.syncGet('/api/rest/orchestrator/v2/relations').then(function(response) {
+//                        _.each(response, function(r) {
+//                            $('.unit').each(function(i) {
+//                                var id = this.id;
+//                                var s = r.source;
+//                                var t = r.target;
+//                                if (id == r.source || id == r.target)
+//                                {
+//                                    if (!checkExist(catRel, r)) {
+//                                        catRel.push(r);
+//                                        jsPlumb.connect({
+//                                            source: $('#' + r.source),
+//                                            target: $('#' + r.target),
+//                                            anchor: "Continuous"
+//                                        });
+//                                    }
+//                                }
+//                            });
+////
+//                        });
+//
+//                    });
+//                    return catRel;
+//                }
 
 
                 function returnServiceId(id, topology) {

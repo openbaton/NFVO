@@ -17,6 +17,39 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         {active: false}
     ];
 
+    $scope.addVNFD = function () {
+        $http.get('descriptors/vnfd/vnfd.json')
+            .then(function (res) {
+                console.log(res.data);
+                $scope.vnfdCreate = angular.copy(res.data);
+            });
+        $('#addEditVNDF').modal('show');
+    };
+
+    $scope.editVNFD = function (vnfd,index) {
+        $scope.vnfdCreate = vnfd;
+        $scope.vnfdEditIndex=index;
+        $('#addEditVNDF').modal('show');
+    };
+
+    $scope.addVNDtoNSD = function () {
+        $('#addEditVNDF').modal('hide');
+        if(!angular.isUndefined($scope.vnfdEditIndex)) {
+            $scope.nsdCreate.vnfd.splice($scope.vnfdEditIndex, 1);
+            delete $scope.vnfdEditIndex;
+        }
+        $scope.nsdCreate.vnfd.push(angular.copy($scope.vnfdCreate));
+    };
+
+    $scope.deleteVNFD = function (index) {
+        $scope.nsdCreate.vnfd.splice(index, 1);
+    };
+
+    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies.json')
+        .then(function (res) {
+            console.log(res.data);
+            $scope.nsdCreate = angular.copy(res.data);
+        });
 
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
@@ -117,7 +150,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.toggle = false;
         $scope.file !== '';
         //        $scope.services = [];
-        loadSelect();
     };
 
 
@@ -135,7 +167,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.deleteNSD = function (data) {
-        http.delete(url + data.id)
+        http.delete(url + '/' + data.id)
             .success(function (response) {
                 showOk('Deleted Network Service Descriptor with id: ' + data.id);
                 loadTable();
@@ -146,7 +178,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.launch = function (data) {
-        http.post(urlRecord +'/', data)
+        http.post(urlRecord + '/', data)
             .success(function (response) {
                 showOk('Created Network Service Record from Descriptor with id: ' + data.id);
             })

@@ -127,8 +127,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     };
 
 
-
-
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
         return string;
@@ -145,7 +143,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
 
     $scope.deleteNSR = function (data) {
-        http.delete(url + data.id)
+        http.delete(url + '/' + data.id)
             .success(function (response) {
                 showOk('Network Service Record deleted!');
                 loadTable();
@@ -173,7 +171,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
     function loadTable() {
         //if (!$('#jsonInfo').hasClass('in'))
-        if (angular.isUndefined($routeParams.nsrecordd))
+        if (angular.isUndefined($routeParams.nsrecordId))
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsrecords = response;
