@@ -18,8 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
@@ -230,8 +228,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case GRANTED:
                 break;
             case ALLOCATE:
-                break;
-            case INSTALL:
                 break;
             case SCALE:
                 break;
