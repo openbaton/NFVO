@@ -19,7 +19,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
-import javax.jms.IllegalStateException;
 import java.io.Serializable;
 
 /**
@@ -143,7 +142,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
-        log.debug("Received from EMS ("+vduHostname+"): " + response);
+        log.debug("Received from EMS (" + vduHostname + "): " + response);
 
         if(response==null) {
             throw new NullPointerException("Response from EMS is null");
