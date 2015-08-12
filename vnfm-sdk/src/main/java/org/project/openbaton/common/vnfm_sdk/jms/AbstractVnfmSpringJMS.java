@@ -19,7 +19,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
-import javax.jms.IllegalStateException;
 import java.io.Serializable;
 
 /**
@@ -29,7 +28,13 @@ import java.io.Serializable;
 @SpringBootApplication
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
-    private Gson parser=new GsonBuilder().setPrettyPrinting().create();
+    @Autowired
+    protected JmsListenerContainerFactory topicJmsContainerFactory;
+
+    private boolean exit = false;
+
+    protected String SELECTOR;
+    private Gson parser = new GsonBuilder().create();
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -137,7 +142,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
-        log.debug("Received from EMS (" + vduHostname + "): " + response);
+        log.debug("Received from EMS ("+vduHostname+"): " + response);
 
         if(response==null) {
             throw new NullPointerException("Response from EMS is null");
@@ -155,12 +160,6 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected void register() {
-        log.debug("Registering to queue: vnfm-register");
-        sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
-    }
-
-    @Override
     protected void unregister() {
         this.sendMessageToQueue("vnfm-unregister", vnfmManagerEndpoint);
     }
@@ -168,6 +167,11 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Override
     protected void sendToNfvo(final CoreMessage coreMessage) {
         sendMessageToQueue(nfvoQueue,coreMessage);
+    }
+
+    @Override
+    protected void register() {
+        this.sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
     }
 }
 
