@@ -1,12 +1,11 @@
 package org.project.openbaton.common.vnfm_sdk;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
@@ -31,11 +30,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     protected static final String nfvoQueue = "vnfm-core-actions";
-    protected Gson parser=new GsonBuilder().setPrettyPrinting().create();
+    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     @PreDestroy
     private void shutdown(){
-        this.unregister(vnfmManagerEndpoint);
+        this.unregister();
     }
 
     @PostConstruct
@@ -68,13 +67,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     }
 
     @Override
-    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage instantiate();
 
     @Override
     public abstract void query();
 
     @Override
-    public abstract void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract void scale();
 
     @Override
     public abstract void checkInstantiationFeasibility();
@@ -86,15 +85,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
+    public abstract CoreMessage modify();
 
     @Override
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage terminate();
 
-    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage handleError();
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -111,27 +110,28 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected void onAction(CoreMessage message) {
         log.trace("VNFM: Received Message: " + message.getAction());
+        this.virtualNetworkFunctionRecord = message.getPayload();
         CoreMessage coreMessage = null;
         switch (message.getAction()){
             case ALLOCATE_RESOURCES:
                 break;
             case SCALE:
-                this.scale(message.getPayload());
+                this.scale();
                 break;
             case SCALING:
                 break;
             case ERROR:
-                coreMessage = handleError(message.getPayload());
+                coreMessage = handleError();
                 break;
             case MODIFY:
-                coreMessage = this.modify(message.getPayload());
+                coreMessage = this.modify();
                 break;
             case RELEASE_RESOURCES:
-                coreMessage = this.terminate(message.getPayload());
+                coreMessage = this.terminate();
                 break;
             case GRANT_OPERATION:
             case INSTANTIATE:
-                coreMessage = this.instantiate(message.getPayload());
+                coreMessage = this.instantiate();
             case SCALE_UP_FINISHED:
                 break;
             case SCALE_DOWN_FINISHED:
@@ -141,10 +141,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case INSTANTIATE_FINISH:
                 break;
             case CONFIGURE:
-                coreMessage = configure(message.getPayload());
+                coreMessage = configure();
                 break;
             case START:
-                coreMessage = start(message.getPayload());
+                coreMessage = start();
                 break;
         }
 
@@ -155,7 +155,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         }
     }
 
-    protected abstract CoreMessage start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract CoreMessage start();
 
     private LifecycleEvent getLifecycleEvent(VirtualNetworkFunctionRecord vnfr,Event event,boolean history){
         if(history){
@@ -165,11 +165,35 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 }
         }
         else for( LifecycleEvent lce : vnfr.getLifecycle_event())
-                    if(lce.getEvent()==event){
-                        return lce;
-                    }
+            if(lce.getEvent()==event){
+                return lce;
+            }
         return null;
     }
+
+    /**
+     * This method can be used when an Event is processed and concluded in the main Class of the VNFM
+     *
+     * @param virtualNetworkFunctionRecord the VNFR
+     * @param event the EVENT to be put in the history
+     */
+    protected void updateVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event){
+        for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event())
+            if (lifecycleEvent.getEvent().ordinal() == event.ordinal()) {
+                virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                break;
+            }
+        changeStatus(virtualNetworkFunctionRecord,event);
+    }
+
+    /**
+     * This method is used when a command is executed in the EMS, in order to put the executed command in history
+     * lifecycle events. In case of error is easy to understand what was the last command correctly executed.
+     *
+     * @param vnfr the VNFR
+     * @param event the EVENT containing the command
+     * @param command the command executed
+     */
     protected void updateVnfr(VirtualNetworkFunctionRecord vnfr, Event event,String command){
         if(vnfr==null || event==null || command==null || command.isEmpty())
             throw new NullPointerException("One of the arguments is null or the command is empty");
@@ -190,7 +214,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         LifecycleEvent historyEvent = getLifecycleEvent(vnfr,event,true);
         if(historyEvent!=null)
             historyEvent.getLifecycle_events().add(command);
-        // If the history event doesn't exist create it
+            // If the history event doesn't exist create it
         else{
             LifecycleEvent newLce = new LifecycleEvent();
             newLce.setEvent(event);
@@ -247,13 +271,31 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected abstract void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
-    protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract CoreMessage configure();
 
     protected abstract void sendToNfvo(CoreMessage coreMessage);
 
-    protected abstract void unregister(VnfmManagerEndpoint endpoint);
+    /**
+     * This method unregister the VNFM in the NFVO
+     */
+    protected abstract void unregister();
+    /**
+     * This method register the VNFM to the NFVO sending the right endpoint
+     */
+    protected abstract void register();
 
-    protected abstract void setup();
+    /**
+     * This method setups the VNFM and then register it to the NFVO. We recommend to not change this method or at least
+     * to override calling super()
+     */
+    protected void setup(){
+        loadProperties();
+        vnfmManagerEndpoint = new VnfmManagerEndpoint();
+        vnfmManagerEndpoint.setType(this.type);
+        vnfmManagerEndpoint.setEndpoint(this.endpoint);
+        vnfmManagerEndpoint.setEndpointType(EndpointType.JMS);
+        register();
+    }
 
     protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws VnfmSdkException, JMSException {
         executeActionOnEMS(emsEndpoint, command);
