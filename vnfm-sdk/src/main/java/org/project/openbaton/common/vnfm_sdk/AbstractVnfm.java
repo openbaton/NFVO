@@ -195,7 +195,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             throw new NullPointerException("One of the arguments is null or the command is empty");
 
         //Change vnfr status if the current command is the last script of the current event.
-        LifecycleEvent currentEvent= getLifecycleEvent(vnfr,event,false);
+        LifecycleEvent currentEvent= getLifecycleEvent(vnfr.getLifecycle_event(),event);
         String lastScript=null;
         while(currentEvent.getLifecycle_events().iterator().hasNext())
             lastScript=currentEvent.getLifecycle_events().iterator().next();
@@ -203,11 +203,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             changeStatus(vnfr,currentEvent.getEvent());
 
         //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
-        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr,Event.CONFIGURE,false)==null)
+        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
             changeStatus(vnfr,Event.CONFIGURE);
 
         //set the command in the history event
-        LifecycleEvent historyEvent = getLifecycleEvent(vnfr,event,true);
+        LifecycleEvent historyEvent = getLifecycleEvent(vnfr.getLifecycle_event_history(),event);
         if(historyEvent!=null)
             historyEvent.getLifecycle_events().add(command);
             // If the history event doesn't exist create it
