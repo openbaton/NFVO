@@ -222,27 +222,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
         switch (event){
+            case RESET:
+                break;
+            case ERROR:vnfr.setStatus(Status.ERROR);
+                break;
+            case INSTANTIATE: vnfr.setStatus(Status.INITIAILZED);
+                break;
             case GRANTED:
                 break;
             case ALLOCATE:
                 break;
-            case INSTALL:
-                break;
-            case SCALE:
-                break;
-            case RELEASE:
-                break;
-            case ERROR:
-                break;
-            case INSTANTIATE: vnfr.setStatus(Status.INITIAILZED);
-                break;
-            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
-                break;
             case CONFIGURE: vnfr.setStatus(Status.INACTIVE);
                 break;
-            case START: vnfr.setStatus(Status.ACTIVE);
-                break;
-            case STOP: vnfr.setStatus(Status.INACTIVE);
+            case SCALE:
                 break;
             case SCALE_OUT:
                 break;
@@ -260,7 +252,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case UPGRADE_ROLLBACK:
                 break;
-            case RESET:
+            case START: vnfr.setStatus(Status.ACTIVE);
+                break;
+            case STOP: vnfr.setStatus(Status.INACTIVE);
+                break;
+            case RELEASE:
+                break;
+            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
                 break;
         }
 
