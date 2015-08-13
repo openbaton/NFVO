@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.exceptions;
+package org.project.openbaton.nfvo.common.exceptions;
 
 /**
- * Created by lto on 20/05/15.
+ * Created by lto on 26/05/15.
  */
-public class VimException extends Exception {
-    public VimException(String s) {
-        super(s);
+public class NotFoundException extends Exception {
+    public NotFoundException(String msg){
+        super(msg);
+    }
+
+    public NotFoundException(Throwable e) {
+        super(e);
     }
 }

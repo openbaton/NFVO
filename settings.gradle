@@ -19,7 +19,7 @@ rootProject.name = 'openbaton'
 
 include 'api'
 include 'cli'
-include 'exceptions'
+include 'common'
 include 'core-impl', 'core-int'
 include 'main'
 include 'vim-impl', 'vim-int'
@@ -37,7 +37,7 @@ project(':catalogue').projectDir = file('openbaton-libs/catalogue')
 project(':monitoring').projectDir = file('openbaton-libs/monitoring')
 project(':vim-drivers').projectDir = file('openbaton-libs/vim-drivers')
 
-project(':exceptions').projectDir = file('exceptions')
+project(':common').projectDir = file('common')
 project(':dashboard').projectDir = file('dashboard')
 
 project(':core-impl').projectDir = file('core/core-impl')

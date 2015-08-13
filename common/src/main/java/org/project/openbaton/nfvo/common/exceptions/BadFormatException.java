@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.exceptions;
+package org.project.openbaton.nfvo.common.exceptions;
 
 /**
- * Created by lto on 26/05/15.
+ * Created by lto on 08/06/15.
  */
-public class NotFoundException extends Exception {
-    public NotFoundException(String msg){
-        super(msg);
+public class BadFormatException extends Throwable {
+    public BadFormatException(String s) {
+        super(s);
     }
-
-    public NotFoundException(Throwable e) {
-        super(e);
+    public BadFormatException(Throwable t){
+        super(t);
     }
 }

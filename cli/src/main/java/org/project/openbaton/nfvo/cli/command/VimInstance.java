@@ -18,7 +18,7 @@ package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
 import org.project.openbaton.nfvo.api.RestVimInstances;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
