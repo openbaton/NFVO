@@ -110,7 +110,6 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 				+ nsd_security + ", id=" + id + ", hb_version=" + hb_version
 				+ ", vendor=" + vendor + ", version=" + version + ", vnffgd="
 				+ vnffgd + ", vld=" + vld + ", lifecycle_event="
-				+ lifecycle_event + ", monitoring_parameter="
 				+ monitoring_parameter + ", service_deployment_flavour="
 				+ service_deployment_flavour + ", auto_scale_policy="
 				+ auto_scale_policy + ", connection_point=" + connection_point
