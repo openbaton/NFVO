@@ -160,6 +160,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
+    private String task;
 
     public String getEndpoint() {
         return endpoint;
@@ -413,5 +414,13 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     public void setVnfPackage(VNFPackage vnfPackage) {
         this.vnfPackage = vnfPackage;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+    }
+
+    public String getTask() {
+        return task;
     }
 }
