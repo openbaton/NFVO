@@ -23,8 +23,8 @@ import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.api.exceptions.*;
+import org.project.openbaton.nfvo.common.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.openbaton.nfvo.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

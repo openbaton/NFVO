@@ -13,26 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.project.openbaton.nfvo.exceptions;
-
-/**
- * Created by lto on 23/06/15.
- */
-public class VnfmException extends Exception {
-    public VnfmException() {
-        super();
-    }
-
-    public VnfmException(String message) {
-        super(message);
-    }
-
-    public VnfmException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public VnfmException(Throwable cause) {
-        super(cause);
-    }
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'javax.jms:javax.jms-api:2.0.1'
+    compile "org.springframework:spring-jms:" + springVersion
 }

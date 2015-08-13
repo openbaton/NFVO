@@ -3,7 +3,7 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;

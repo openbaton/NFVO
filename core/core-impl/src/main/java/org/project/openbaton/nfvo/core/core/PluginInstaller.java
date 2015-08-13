@@ -5,7 +5,7 @@ import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.project.openbaton.nfvo.exceptions.PluginInstallException;
+import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
 import org.project.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;

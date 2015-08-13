@@ -1,4 +1,4 @@
-package org.project.openbaton.nfvo.exceptions;
+package org.project.openbaton.nfvo.common.exceptions;
 
 /**
  * Created by lto on 21/07/15.
