@@ -29,7 +29,7 @@ public class ModifyTask extends AbstractTask {
 
         log.debug("NFVO: MODIFY finish");
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-//        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+        log.debug("STATE IS: " + virtualNetworkFunctionRecord.getStatus());
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
 
