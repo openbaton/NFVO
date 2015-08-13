@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.nfvo.PluginMessage;
 import org.project.openbaton.nfvo.common.interfaces.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -15,11 +16,15 @@ import java.lang.reflect.Method;
 @Scope
 public class PluginAgent implements org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
+
+
+
 	@Autowired
 	private Sender sender;
 
-	@Override
-    public void invokeMethod(Method method, Class inter, Object... parameters)
+
+    @Override
+    public <T> T invokeMethod(Method method, Class inter, Object... parameters)
 	{
 		PluginMessage message = null;
         String destination;
@@ -37,11 +42,27 @@ public class PluginAgent implements org.project.openbaton.nfvo.common.interfaces
 			message = createMessageFromParameters(method.getName(), parameters);
 		}
 
+        //call a method of the plugin
         sender.send(destination,message);
-		
+
+        addManagerEndpoint
+
+
+
+        return null;
 	}
-	
-	private PluginMessage createMessageFromParameters(String methodName, Object[] parameters)
+
+    @JmsListener(destination = "vnfm-register", containerFactory = "queueJmsContainerFactory")
+    public void addManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
+        if (endpoint.getEndpointType() == null){
+            endpoint.setEndpointType(EndpointType.JMS);
+        }
+        log.debug("Received: " + endpoint);
+        this.register(endpoint);
+    }
+
+
+    private PluginMessage createMessageFromParameters(String methodName, Object[] parameters)
 	{
 		
 		String message = null;
