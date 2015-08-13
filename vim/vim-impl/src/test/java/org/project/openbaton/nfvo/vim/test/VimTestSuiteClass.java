@@ -30,7 +30,7 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.vim.AmazonVIM;
 import org.project.openbaton.nfvo.vim.OpenstackVIM;
@@ -55,7 +55,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;

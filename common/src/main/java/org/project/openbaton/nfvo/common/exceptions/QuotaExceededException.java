@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.exceptions;
+package org.project.openbaton.nfvo.common.exceptions;
 
 /**
  * Created by lto on 08/06/15.
  */
-public class BadFormatException extends Throwable {
-    public BadFormatException(String s) {
+public class QuotaExceededException extends Throwable {
+    public QuotaExceededException(String s) {
         super(s);
     }
-    public BadFormatException(Throwable t){
+    public QuotaExceededException(Throwable t){
         super(t);
     }
 }

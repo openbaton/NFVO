@@ -45,8 +45,8 @@ import org.project.openbaton.nfvo.api.exceptions.VNFDNotFoundException;
 import org.project.openbaton.nfvo.api.exceptions.VNFDependencyNotFoundException;
 
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
-import org.project.openbaton.nfvo.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

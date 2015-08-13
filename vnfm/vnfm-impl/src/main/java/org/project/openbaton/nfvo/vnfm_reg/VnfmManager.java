@@ -25,8 +25,8 @@ import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -203,7 +203,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
-        String senderName = endpointType.toString().toLowerCase() + "Sender";
+        String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
         return (VnfmSender) this.context.getBean(senderName);
     }
 

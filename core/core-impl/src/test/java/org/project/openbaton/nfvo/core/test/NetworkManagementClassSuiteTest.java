@@ -20,7 +20,7 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;

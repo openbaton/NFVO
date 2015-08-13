@@ -18,7 +18,7 @@ package org.project.openbaton.nfvo.vim_interfaces.image_management;
 
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 import java.io.InputStream;
 import java.util.List;

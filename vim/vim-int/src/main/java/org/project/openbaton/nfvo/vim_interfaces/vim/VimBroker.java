@@ -19,7 +19,7 @@ package org.project.openbaton.nfvo.vim_interfaces.vim;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 /**
  * Created by lto on 20/05/15.
