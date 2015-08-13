@@ -76,15 +76,15 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
 
-    protected void sendMessageToQueue(String sendToQueueName, final Serializable vduMessage) {
-        log.debug("Sending message: " + vduMessage + " to Queue: " + sendToQueueName);
+    protected void sendMessageToQueue(String sendToQueueName, final Serializable message) {
+        log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
 
         MessageCreator messageCreator;
 
-        if (vduMessage instanceof java.lang.String )
-            messageCreator =getTextMessageCreator((String) vduMessage);
+        if (message instanceof java.lang.String )
+            messageCreator =getTextMessageCreator((String) message);
         else
-            messageCreator = getObjectMessageCreator(vduMessage);
+            messageCreator = getObjectMessageCreator(message);
 
         jmsTemplate.setPubSubDomain(false);
         jmsTemplate.setPubSubNoLocal(false);

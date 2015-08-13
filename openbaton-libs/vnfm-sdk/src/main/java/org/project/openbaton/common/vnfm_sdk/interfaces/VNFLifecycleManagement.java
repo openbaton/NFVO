@@ -12,8 +12,9 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
+	 * @param virtualNetworkFunctionRecord
 	 */
-	CoreMessage instantiate();
+	CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows retrieving 
@@ -49,9 +50,10 @@ public interface VNFLifecycleManagement {
 	 * This operation allows making structural changes 
 	 * (e.g. configuration, topology, behavior, 
 	 * redundancy model) to a VNF instance.
+	 * @param virtualNetworkFunctionRecord
 	 */
 	
-	CoreMessage modify();
+	CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows deploying a new 
@@ -62,6 +64,7 @@ public interface VNFLifecycleManagement {
 	/**
 	 * This operation allows terminating gracefully
 	 * or forcefully a previously created VNF instance.
+	 * @param virtualNetworkFunctionRecord
 	 */
-	CoreMessage terminate();
+	CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }
