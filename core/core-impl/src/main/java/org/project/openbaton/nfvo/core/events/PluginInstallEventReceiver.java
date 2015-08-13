@@ -2,7 +2,7 @@ package org.project.openbaton.nfvo.core.events;
 
 import org.project.openbaton.catalogue.nfvo.InstallPluginEvent;
 import org.project.openbaton.nfvo.core.core.PluginInstaller;
-import org.project.openbaton.nfvo.exceptions.PluginInstallException;
+import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;

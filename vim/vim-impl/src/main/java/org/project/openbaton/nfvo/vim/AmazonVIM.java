@@ -21,7 +21,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;

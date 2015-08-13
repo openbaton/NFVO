@@ -25,7 +25,7 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

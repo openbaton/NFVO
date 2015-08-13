@@ -20,8 +20,8 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.exceptions.VimException;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 

@@ -19,7 +19,7 @@ def springBootVersion = "1.2.4.RELEASE"
 dependencies {
     compile project(':catalogue')
 
-    compile project(':exceptions')
+    compile project(':common')
     compile project(':repo-int')
     compile project(':core-int')
 
