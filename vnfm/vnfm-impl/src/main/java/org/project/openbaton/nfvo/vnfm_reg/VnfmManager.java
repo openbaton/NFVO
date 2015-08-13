@@ -210,12 +210,15 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     @Override
     public void executeAction(CoreMessage message) throws VimException, NotFoundException {
 
-        String beanName = message.getAction().toString().replace("_", "").toLowerCase() + "Task";
+        String actionName = message.getAction().toString().replace("_", "").toLowerCase();
+        String beanName = actionName + "Task";
         log.debug("Looking for bean called: " + beanName);
         AbstractTask task = (AbstractTask) context.getBean(beanName);
 
         task.setAction(message.getAction());
-        task.setVirtualNetworkFunctionRecord(message.getPayload());
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getPayload();
+        virtualNetworkFunctionRecord.setTask(actionName);
+        task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
         if (task.isAsync()){
             asyncExecutor.submit(task);
