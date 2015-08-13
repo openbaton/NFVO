@@ -17,6 +17,34 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         {active: false}
     ];
 
+    $scope.addVDU = function () {
+        $http.get('descriptors/vnfd/vdu.json')
+            .then(function (res) {
+                console.log(res.data);
+                $scope.vduCreate = angular.copy(res.data);
+            });
+        $('#addEditVDU').modal('show');
+    };
+
+    $scope.editVDU = function (vnfd, index) {
+        $scope.vduCreate = vnfd;
+        $scope.vduEditIndex = index;
+        $('#addEditVDU').modal('show');
+    };
+
+    $scope.addVDUtoVND = function () {
+        $('#addEditVDU').modal('hide');
+        if (!angular.isUndefined($scope.vduEditIndex)) {
+            $scope.vnfdCreate.vnfd.splice($scope.vduEditIndex, 1);
+            delete $scope.vduEditIndex;
+        }
+        $scope.vnfdCreate.vdu.push(angular.copy($scope.vduCreate));
+    };
+
+    $scope.deleteVDU = function (index) {
+        $scope.vnfdCreate.vdu.splice(index, 1);
+    };
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
@@ -26,15 +54,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $('#addEditVNDF').modal('show');
     };
 
-    $scope.editVNFD = function (vnfd,index) {
+    $scope.editVNFD = function (vnfd, index) {
         $scope.vnfdCreate = vnfd;
-        $scope.vnfdEditIndex=index;
+        $scope.vnfdEditIndex = index;
         $('#addEditVNDF').modal('show');
     };
 
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
-        if(!angular.isUndefined($scope.vnfdEditIndex)) {
+        if (!angular.isUndefined($scope.vnfdEditIndex)) {
             $scope.nsdCreate.vnfd.splice($scope.vnfdEditIndex, 1);
             delete $scope.vnfdEditIndex;
         }
@@ -163,7 +191,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.isEmpty = function (obj) {
-        return angular.equals({}, obj);
+        if (angular.equals({}, obj))
+            return true;
+        else if (angular.equals([], obj))
+            return true;
+        else return false;
     };
 
     $scope.deleteNSD = function (data) {

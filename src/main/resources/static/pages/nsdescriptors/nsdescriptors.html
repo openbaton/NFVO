@@ -112,17 +112,51 @@
     </div>
 </div>
 
-<div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="addEditVDU" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add/Edit a Virtual Network Function Descriptor</h4>
+                <h4 class="modal-title">Add/Edit a Virtual Deployment Unit</h4>
 
             </div>
             <div class="modal-body">
-                <form role="form" id="formJson">
-                    {{vnfdCreate}}
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in vduCreate"
+                         ng-if="key!='vimInstance' && key!='lifecycle_event' && key!='monitoring_parameter'
+                         && key!='vm_image'&& key!='vnfc'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="vduCreate[key]"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vimInstance" class="col-sm-4 control-label">vimInstance</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="vimInstance" name="{{key}}"
+                                   ng-model="vduCreate['vimInstance']['name']"/>
+                        </div>
+
+
+                    </div>
+                    <tabset>
+                        <tab heading="lifecycle_event">
+                            {{vduCreate.lifecycle_event}}
+                        </tab>
+                        <tab heading="monitoring_parameter">
+                            {{vduCreate.monitoring_parameter}}
+                        </tab>
+                        <tab heading="vm_image">
+                            {{vduCreate.vm_image}}
+                        </tab>
+                        <tab heading="vnfc">
+                            {{vduCreate.vnfc}}
+                        </tab>
+                    </tabset>
+
                 </form>
 
             </div>
@@ -130,89 +164,13 @@
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">Close
                 </button>
-                <button type="button" id="editAddNVNFD"
-                        ng-click="addVNDtoNSD()" class="btn btn-primary">Save VNFD
+                <button type="button" id="editAddVDU"
+                        ng-click="addVDUtoVND()" class="btn btn-primary">Save VDU
                 </button>
             </div>
         </div>
     </div>
 </div>
-<!--
-
-<div class="modal" id="modalPolicy">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="serviceLabel">Create a Policy for Service {{serviceEdit.serviceType}}</h4>
-            </div>
-            <div class="modal-body">
-                <h3 class="">Alert</h3>
-
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class=" ">Item</label>
-                        <select name="typeSelect" class="form-control modal-select" ng-model="policy.alert.item"
-                                ng-init="policy.alert.item = items[0]"
-                                ng-options="items as items.itemKey for items in items| orderBy:'itemKey':false"></select>
-                        <span class="help-block" ng-show="policy.alert.item">{{policy.alert.item.name}}</span>
-                    </div>
-
-                    <div class=" col-sm-2">
-                        <label class="">sign</label>
-                        <select name="typeSelect" class="form-control modal-select"
-                                ng-init="policy.alert.sign = signs[0]" ng-model="policy.alert.sign"
-                                ng-options="signs as signs for signs in signs| orderBy:'signs':false"></select>
-                    </div>
-                    <div class="col-sm-2">
-                        <label class=" ">Value</label>
-                        <input type="number" class="form-control" ng-model="policy.alert.value">
-                    </div>
-                    <div class="col-sm-2 pull-right" style="margin-right: 50px">
-                        <label class="">Period</label> {{policy.alert.period}}
-                        <input class="" type="range" min="0" max="100" ng-model="policy.alert.period"
-                               ng-init="policy.alert.period = '60'" size="20" id="periodAlert"/>
-
-                        &lt;!&ndash;                        <input type="number" class="form-control"  ng-model="policy.alert.period" >&ndash;&gt;
-                    </div>
-                </div>
-                <hr/>
-                <h3 class="">Action</h3>
-
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class=" ">Type</label>
-                        <select name="typeSelect" class="form-control modal-select"
-                                ng-init="policy.action.actionType = types[0]" ng-model="policy.action.actionType"
-                                ng-options="types as types for types in types| orderBy:'types':false"></select>
-                    </div>
-
-                    <div class=" col-sm-2">
-                        <label class="">Num. unit</label> {{policy.action.unit}}
-                        &lt;!&ndash;<input type="number" class="form-control"  ng-model="policy.action.unit" >&ndash;&gt;
-                        <input type="range" min="0" max="10" ng-model="policy.action.unit"
-                               ng-init="policy.action.unit = '1'" size="10" id="unitAction"/>
-                    </div>
-                    <div class="col-sm-2 pull-right" style="margin-right: 50px">
-                        <label class=" ">Period</label> {{policy.action.period}}
-                        <input class="" type="range" min="0" max="100" ng-model="policy.action.period"
-                               ng-init="policy.action.period = '60'" size="20" id="periodAction"/>
-                        &lt;!&ndash;<input type="number" class="form-control"  ng-model="policy.action.period" >&ndash;&gt;
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close
-                </button>
-                <button type="button" id="addPolicy" class="btn btn-primary" ng-click="addPolicy(serviceContainer)">Add
-                    Policy
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
--->
 
 <div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -223,8 +181,77 @@
 
             </div>
             <div class="modal-body">
-                <form role="form" id="formJson">
-                    {{vnfdCreate}}
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in vnfdCreate"
+                         ng-if="key!='auto_scale_policy' && key!='connection_point' && key!='connection_point'
+                         && key!='monitoring_parameter' && key!='vdu'&& key!='vdu_dependency'
+                         && key!='deployment_flavour' && key!='lifecycle_event'&& key!='virtual_link'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="vnfdCreate[key]"/>
+                        </div>
+
+
+                    </div>
+                    <tabset>
+                        <tab heading="auto_scale_policy">
+                            {{vnfdCreate.auto_scale_policy}}
+                        </tab>
+                        <tab heading="connection_point">
+                            {{vnfdCreate.connection_point}}
+                        </tab>
+                        <tab heading="connection_point">
+                            {{vnfdCreate.deployment_flavour}}
+                        </tab>
+                        <tab heading="monitoring_parameter">
+                            {{vnfdCreate.monitoring_parameter}}
+                        </tab>
+                        <!---->
+                        <tab heading="vdu">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="col-lg-11">Virtual Descriptor Unit </h4>
+                                    <a href="" title="Add a New VDU" ng-click="addVDU()">
+                                        <i class="fa fa-plus-square"> Add </i></a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
+                                     ng-repeat="vdu in vnfdCreate.vdu track by $index">
+
+                                    <div class="row">
+                                        <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value)">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
+                                        <div class="pull-right">
+                                            <a href="" title="Edit VDU" ng-click="editVDU(vdu,$index)">
+                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
+                                            <a href="" title="Delete VDU" ng-click="deleteVDU($index)">
+                                                <i class="fa fa-trash-o"> </i></a>
+                                        </div>
+
+                                    </div>
+                                    <hr class="hr_title"/>
+                                </div>
+                            </div>
+                        </tab>
+                        <tab heading="vdu_dependency">
+                            {{vnfdCreate.vdu_dependency}}
+                        </tab>
+                        <tab heading="deployment_flavour">
+                            {{vnfdCreate.deployment_flavour}}
+                        </tab>
+                        <tab heading="lifecycle_event">
+                            {{vnfdCreate.lifecycle_event}}
+                        </tab>
+                        <tab heading="virtual_link">
+                            {{vnfdCreate.virtual_link}}
+                        </tab>
+                    </tabset>
+                    <!--{{vnfdCreate}}-->
                 </form>
 
             </div>
@@ -251,20 +278,50 @@
             <div class="modal-body">
 
                 <form role="form" class="form-horizontal" id="formForm">
+                    <br/>
+
+                    <div class="form-group" ng-repeat="(key,value) in nsdCreate"
+                         ng-if="key!='vnfd' && key!='vnfd' && key!='auto_scale_policy' && key!='connection_point' && key!='lifecycle_event'
+                          && key!='monitoring_parameter' && key!='pnfd' && key!='service_deployment_flavour' && key!='vnf_dependency'
+                         && key!='vnffgd' && key!='vld'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="nsdCreate[key]"/>
+                        </div>
+                    </div>
                     <tabset>
-                        <tab heading="Info">
-                            <br/>
 
-                            <div class="form-group" ng-repeat="(key,value) in nsdCreate" ng-if="key!='vnfd'">
-                                <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
-
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="{{key}}" name="{{key}}"
-                                           ng-model="nsdCreate[key]"/>
-                                </div>
-                            </div>
-
+                        <tab heading="auto_scale_policy">
+                            {{nsdCreate.auto_scale_policy}}
                         </tab>
+                        <tab heading="connection_point">
+                            {{nsdCreate.connection_point}}
+                        </tab>
+                        <tab heading="lifecycle_event">
+                            {{nsdCreate.lifecycle_event}}
+                        </tab>
+                        <tab heading="monitoring_parameter">
+                            {{nsdCreate.monitoring_parameter}}
+                        </tab>
+                        <tab heading="pnfd">
+                            {{nsdCreate.pnfd}}
+                        </tab>
+                        <tab heading="service_deployment_flavour">
+                            {{nsdCreate.service_deployment_flavour}}
+                        </tab>
+                        <tab heading="vnf_dependency">
+                            {{nsdCreate.vnf_dependency}}
+                        </tab>
+
+                        <tab heading="vnffgd">
+                            {{nsdCreate.vnffgd}}
+                        </tab>
+                        <tab heading="vld">
+                            {{nsdCreate.vld}}
+                        </tab>
+
                         <tab heading="VNFDescriptors">
                             <div class="">
                                 <div class="">
@@ -279,17 +336,19 @@
                                      ng-repeat="vnfd in nsdCreate.vnfd track by $index">
 
                                     <div class="row">
-                                        <div class="">
-                                            {{vnfd}}
-                                        </div>
+                                        <spam ng-repeat="(key,value) in vnfd" ng-if="!isEmpty(value)">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
                                         <div class="pull-right">
                                             <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
                                                 <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
                                             <a href="" title="Delete VNFD" ng-click="deleteVNFD($index)">
                                                 <i class="fa fa-trash-o"> </i></a>
                                         </div>
-                                    </div>
 
+                                    </div>
+                                    <hr class="hr_title"/>
                                 </div>
                             </div>
                         </tab>
