@@ -3,7 +3,6 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.project.openbaton.nfvo.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -40,12 +39,8 @@ public class InstantiateTask extends AbstractTask {
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep = 0;
-        try {
-            dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
+        dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
+        log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
 //            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
