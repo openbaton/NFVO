@@ -13,11 +13,17 @@
 //	archiveName = rootProject.name + '-' + version + '-openbatonPlugin.jar'
 //}
 
+dependencies {
+    compile project(':plugin-sdk')
+}
+
+ext.mainClass = "org.project.openbaton.plugin.main.spring.SpringPlugin"
+
 task oneJar(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'Openbaton vim driver test plugin',
                 'Implementation-Version': version,
-                'Main-Class': pluginClass
+                'Main-Class': mainClass
     }
     baseName = project.name + '-openbaton-plugin'
     doFirst {
