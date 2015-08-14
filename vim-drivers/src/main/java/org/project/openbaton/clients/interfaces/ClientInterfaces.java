@@ -18,48 +18,48 @@ public interface ClientInterfaces {
      */
     String interfaceVersion = "1.0";
 	
-    Server launchInstance(String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
-    void init(VimInstance vimInstance);
+    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
+//    void init(VimInstance vimInstance);
 
-    List<NFVImage> listImages();
+    List<NFVImage> listImages(VimInstance vimInstance);
 
-    List<Server> listServer();
-    List<Network> listNetworks();
-    List<DeploymentFlavour> listFlavors();
+    List<Server> listServer(VimInstance vimInstance);
+    List<Network> listNetworks(VimInstance vimInstance);
+    List<DeploymentFlavour> listFlavors(VimInstance vimInstance);
 
-    Server launchInstanceAndWait(String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException;
+    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException;
 
     void deleteServerByIdAndWait(String id);
-    Network createNetwork(Network network);
-    DeploymentFlavour addFlavor(DeploymentFlavour deploymentFlavour);
+    Network createNetwork(VimInstance vimInstance, Network network);
+    DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour);
 
-    NFVImage addImage(NFVImage image, InputStream inputStream);
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, InputStream inputStream);
 
-    NFVImage updateImage(NFVImage image);
+    NFVImage updateImage(VimInstance vimInstance, NFVImage image);
 
-    NFVImage copyImage(NFVImage image, InputStream inputStream);
+    NFVImage copyImage(VimInstance vimInstance, NFVImage image, InputStream inputStream);
 
-    boolean deleteImage(NFVImage image);
+    boolean deleteImage(VimInstance vimInstance, NFVImage image);
 
-    DeploymentFlavour updateFlavor(DeploymentFlavour deploymentFlavour) throws VimDriverException;
+    DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException;
 
-    boolean deleteFlavor(String extId);
+    boolean deleteFlavor(VimInstance vimInstance, String extId);
 
-    Subnet createSubnet(Network createdNetwork, Subnet subnet);
+    Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet);
 
-    Network updateNetwork(Network network);
+    Network updateNetwork(VimInstance vimInstance, Network network);
 
-    Subnet updateSubnet(Network updatedNetwork, Subnet subnet);
+    Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet);
 
-    List<String> getSubnetsExtIds(String network_extId);
+    List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId);
 
-    boolean deleteSubnet(String existingSubnetExtId);
+    boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId);
 
-    boolean deleteNetwork(String extId);
+    boolean deleteNetwork(VimInstance vimInstance, String extId);
 
-    Network getNetworkById(String id);
+    Network getNetworkById(VimInstance vimInstance, String id);
 
-    Quota getQuota();
+    Quota getQuota(VimInstance vimInstance);
 
-    String getType();
+    String getType(VimInstance vimInstance);
 }
