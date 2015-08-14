@@ -11,16 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.jms.JMSException;
+import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 
 /**
  * Created by lto on 13/08/15.
  */
 public abstract class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
-	@Autowired
-	@Qualifier("pluginEndpointRepository")
-	private GenericRepository<PluginEndpoint> pluginEndpointRepository;
+    @Autowired
+    @Qualifier("pluginEndpointRepository")
+    private GenericRepository<PluginEndpoint> pluginEndpointRepository;
     @Autowired
     private AgentBroker agentBroker;
 
@@ -32,30 +34,43 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
         PluginMessage message = null;
 
-		Class<?>[] pType =  method.getParameterTypes();
-
-		if(pType.length == parameters.length)
-		{
-			message = createMessageFromParameters(method.getName(), parameters);
-		}
+        Class<?>[] pType = method.getParameterTypes();
+        log.debug("Method name is " + method.getName());
+        log.trace("Method is " + method.toString());
+        log.debug("interface is: " + inter);
+        Method interfaceMethod = getInterfaceMethod(inter, method.getName());
+         log.debug(interfaceMethod.getParameterTypes().length +" == "+parameters.length);
+//        if (pType.length == parameters.length) {
+            message = createMessageFromParameters(method.getName(), parameters, inter);
+//        }
 
         //call a method of the plugin
         agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
 
         PluginAnswer answer = null;
         try {
-            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint());
+            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint() + "-nfvo");
         } catch (JMSException e) {
             e.printStackTrace();
             throw new PluginInvokeException(e);
         }
 
         return (T) answer.getAnswer();
-	}
+    }
+
+    private Method getInterfaceMethod(Class inter, String name) throws NotFoundException {
+        for (Method m : inter.getMethods()){
+            if (m.getName().equals(name)){
+                return m;
+            }
+        }
+        throw new NotFoundException("no method found with name " + name);
+    }
 
     private PluginEndpoint getEndpoint(String classname, String type) throws NotFoundException {
-        for (PluginEndpoint endpoint :pluginEndpointRepository.findAll()){
-            if (endpoint.getType().equals(type) && endpoint.getInterfaceClass().equals(classname)){
+        for (PluginEndpoint endpoint : pluginEndpointRepository.findAll()) {
+            log.debug("" + endpoint.getType() + " == " + type + " && " + endpoint.getInterfaceClass() + " == " + classname);
+            if (endpoint.getType().equals(type) && endpoint.getInterfaceClass().equals(classname)) {
                 return endpoint;
             }
         }
@@ -63,24 +78,24 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
     }
 
     @Override
-	public void register(PluginEndpoint endpoint) {
-		log.debug("Registering endpoint: " + endpoint);
+    public void register(PluginEndpoint endpoint) {
+        log.debug("Registering endpoint: " + endpoint);
         pluginEndpointRepository.create(endpoint);
-	}
+    }
 
-	
-    private PluginMessage createMessageFromParameters(String methodName, Object[] parameters)
-	{
-		
-		String message = null;
-		
-		for(int i=0; i<parameters.length;i++)
-		{
-			message += parameters[i].toString();
-		}
-		
-		
-		return null;
-		
-	}
+
+    private PluginMessage createMessageFromParameters(String methodName, Object[] parameters, Class inter) {
+        PluginMessage message = new PluginMessage();
+        message.setMethodName(methodName);
+        message.setParameters(new LinkedList<Serializable>());
+        message.setInterfaceClass(inter);
+
+        for (int i = 0; i < parameters.length; i++) {
+            message.getParameters().add((Serializable) parameters[i]);
+        }
+
+        log.debug("Message is: " + message);
+
+        return message;
+    }
 }
