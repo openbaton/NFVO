@@ -26,15 +26,9 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
     @Override
     public <T> T invokeMethod(Method method, Class inter, String type, Object... parameters) throws NotFoundException, PluginInvokeException {
-        String destination;
         PluginEndpoint endpoint = getEndpoint(inter.getSimpleName(), type);
 
-        log.debug("Destination is: " + endpoint.get);
-        destination = "vim-driver-plugin";
-
-        else {
-            throw new RuntimeException("No plugin interface found"); //TODO chose a good exception!
-        }
+        log.debug("Destination is: " + endpoint.getEndpoint());
 
         PluginMessage message = null;
 
@@ -46,11 +40,11 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 		}
 
         //call a method of the plugin
-        agentBroker.getSender(endpoint.getEndpointType()).send(destination, message);
+        agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
 
         PluginAnswer answer = null;
         try {
-            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(destination);
+            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint());
         } catch (JMSException e) {
             e.printStackTrace();
             throw new PluginInvokeException(e);
