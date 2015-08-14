@@ -10,6 +10,8 @@ public class PluginMessage implements Serializable{
 
     private String methodName;
 
+    private Class interfaceClass;
+
     private Collection<Serializable> parameters;
 
     public String getMethodName() {
@@ -32,7 +34,16 @@ public class PluginMessage implements Serializable{
     public String toString() {
         return "PluginMessage{" +
                 "methodName='" + methodName + '\'' +
+                ", interfaceClass=" + interfaceClass.getSimpleName() +
                 ", parameters=" + parameters +
                 '}';
+    }
+
+    public Class getInterfaceClass() {
+        return interfaceClass;
+    }
+
+    public void setInterfaceClass(Class interfaceClass) {
+        this.interfaceClass = interfaceClass;
     }
 }
