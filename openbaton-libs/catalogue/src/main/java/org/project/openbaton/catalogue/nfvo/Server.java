@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by lto on 20/05/15.
  */
 @Entity
-public class Server {
+public class Server implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version
