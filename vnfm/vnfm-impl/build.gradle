@@ -24,6 +24,7 @@ dependencies {
     compile project(':core-int')
     compile project(':vnfm-int')
 
+
     compile 'javax.jms:javax.jms-api:2.0.1'
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
     compile "org.springframework:spring-core:" + springVersion
