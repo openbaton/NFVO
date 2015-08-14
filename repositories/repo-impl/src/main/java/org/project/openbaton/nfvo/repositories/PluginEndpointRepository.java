@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-def springBootVersion = "1.2.4.RELEASE"
+package org.project.openbaton.nfvo.repositories;
 
-dependencies {
-    compile project(':catalogue')
+import org.project.openbaton.nfvo.abstract_repositories.DatabaseRepository;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-    compile project(':common')
-    compile project(':repo-int')
-    compile project(':core-int')
-    compile project(':vnfm-int')
+/**
+ * Created by lto on 30/04/15.
+ */
+@Repository
+@Transactional(readOnly = true)
+@Scope("singleton")
+public class PluginEndpointRepository<PluginEndpoint> extends DatabaseRepository<PluginEndpoint> {
 
-    compile 'javax.jms:javax.jms-api:2.0.1'
-    compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
-    compile "org.springframework:spring-core:" + springVersion
-
-    compile 'com.google.code.gson:gson:2.3.1'
 }

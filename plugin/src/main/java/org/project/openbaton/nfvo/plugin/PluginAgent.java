@@ -1,12 +1,24 @@
 package org.project.openbaton.nfvo.plugin;
 
+import org.project.openbaton.catalogue.nfvo.PluginAnswer;
+import org.project.openbaton.catalogue.nfvo.PluginEndpoint;
 import org.project.openbaton.catalogue.nfvo.PluginMessage;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
+import org.project.openbaton.nfvo.common.interfaces.Receiver;
 import org.project.openbaton.nfvo.common.interfaces.Sender;
+import org.project.openbaton.nfvo.common.utils.AgentBroker;
+import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
 import java.lang.reflect.Method;
 
 /**
@@ -14,18 +26,17 @@ import java.lang.reflect.Method;
  */
 @Service
 @Scope
-public class PluginAgent implements org.project.openbaton.nfvo.common.interfaces.PluginAgent {
-
-
-
+public class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
 	@Autowired
-	private Sender sender;
-
+	@Qualifier("pluginEndpointRepository")
+	private GenericRepository<PluginEndpoint> pluginEndpointRepository;
+    @Autowired
+    private AgentBroker agentBroker;
 
     @Override
-    public <T> T invokeMethod(Method method, Class inter, Object... parameters)
-	{
+    public <T> T invokeMethod(Method method, Class inter, Object... parameters) throws NotFoundException, PluginInvokeException {
+        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName());
 		PluginMessage message = null;
         String destination;
         if (inter.getSimpleName().equals("ClientInterfaces"))
@@ -43,23 +54,35 @@ public class PluginAgent implements org.project.openbaton.nfvo.common.interfaces
 		}
 
         //call a method of the plugin
-        sender.send(destination,message);
+        agentBroker.getSender(endpoint.getEndpointType()).send(destination, message);
 
-        addManagerEndpoint
+        PluginAnswer answer = null;
+        try {
+            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(destination);
+        } catch (JMSException e) {
+            e.printStackTrace();
+            throw new PluginInvokeException(e);
+        }
 
-
-
-        return null;
+        return (T) answer.getAnswer();
 	}
 
-    @JmsListener(destination = "vnfm-register", containerFactory = "queueJmsContainerFactory")
-    public void addManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
-        if (endpoint.getEndpointType() == null){
-            endpoint.setEndpointType(EndpointType.JMS);
+    private PluginEndpoint getEndpoint(String type) throws NotFoundException {
+        for (PluginEndpoint endpoint :pluginEndpointRepository.findAll()){
+            if (endpoint.getType().equals(type)){
+                return endpoint;
+            }
         }
-        log.debug("Received: " + endpoint);
-        this.register(endpoint);
+        throw new NotFoundException("No plugin endpoint found");
     }
+
+    @Override
+	public void register(PluginEndpoint endpoint) {
+		pluginEndpointRepository.create(endpoint);
+	}
+
+	
+	
 
 
     private PluginMessage createMessageFromParameters(String methodName, Object[] parameters)
