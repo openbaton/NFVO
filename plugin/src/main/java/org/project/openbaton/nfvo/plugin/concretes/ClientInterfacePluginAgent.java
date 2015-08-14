@@ -67,7 +67,7 @@ public class ClientInterfacePluginAgent extends PluginAgent {
     public Void deleteServerByIdAndWait(String type, VimInstance vimInstance, String id) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class,type, vimInstance, id);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, id);
     }
 
     public Network createNetwork(String type, VimInstance vimInstance, Network network) throws NotFoundException, PluginInvokeException {
