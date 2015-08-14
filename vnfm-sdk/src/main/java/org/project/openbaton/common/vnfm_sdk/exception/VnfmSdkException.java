@@ -15,4 +15,8 @@ public class VnfmSdkException extends Exception {
     public VnfmSdkException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public VnfmSdkException(Throwable e) {
+        super(e);
+    }
 }
