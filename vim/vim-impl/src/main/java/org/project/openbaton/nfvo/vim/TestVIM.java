@@ -52,7 +52,6 @@ public class TestVIM implements Vim {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-//    @Qualifier("testClient")
     private ClientInterfacePluginAgent testClient;
 
     @Autowired
@@ -144,7 +143,11 @@ public class TestVIM implements Vim {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {
-            testClient.launchInstanceAndWait(vimInstance.getType(), vimInstance,vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair",new HashSet<String>(){{add("network_id");}}, new HashSet<String>(){{add("secGroup_id");}}, "#userdate");
+            HashSet<String> networks = new HashSet<>();
+            networks.add("network_id");
+            HashSet<String> securityGroups = new HashSet<String>();
+            securityGroups.add("secGroup_id");
+            testClient.launchInstanceAndWait(vimInstance.getType(), vimInstance,vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair", networks, securityGroups, "#userdate");
         } catch (NotFoundException e) {
             e.printStackTrace();
             throw new VimException(e);
