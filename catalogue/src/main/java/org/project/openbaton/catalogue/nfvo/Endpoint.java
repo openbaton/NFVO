@@ -18,6 +18,7 @@ public abstract class Endpoint implements Serializable {
 
     protected String type;
     protected EndpointType endpointType;
+    protected String endpoint;
 
     public String getType() {
         return type;
@@ -52,4 +53,11 @@ public abstract class Endpoint implements Serializable {
         this.id = id;
     }
 
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
 }
