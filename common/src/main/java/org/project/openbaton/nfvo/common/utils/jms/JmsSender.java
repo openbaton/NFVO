@@ -1,11 +1,13 @@
-package org.project.openbaton.nfvo.common.interfaces.concretes;
+package org.project.openbaton.nfvo.common.utils.jms;
 
 import org.project.openbaton.nfvo.common.interfaces.Sender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Service;
 
 import javax.jms.*;
 import java.io.Serializable;
@@ -13,6 +15,8 @@ import java.io.Serializable;
 /**
  * Created by tce on 13.08.15.
  */
+@Service
+@Scope
 public class JmsSender implements Sender {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
