@@ -9,8 +9,6 @@ import javax.persistence.Entity;
 public class VnfmManagerEndpoint extends Endpoint{
 
 
-    private String endpoint;
-
 
     public VnfmManagerEndpoint() {
     }
@@ -19,15 +17,6 @@ public class VnfmManagerEndpoint extends Endpoint{
         this.type = type;
         this.endpoint = endpoint;
         this.endpointType = endpointType;
-    }
-
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
     }
 
 
