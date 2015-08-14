@@ -26,7 +26,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows scaling 
 	 * (out/in, up/down) a VNF instance.
 	 */
-	void scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	void scale();
 	
 	/**
 	 * This operation allows verifying if 
@@ -50,9 +50,10 @@ public interface VNFLifecycleManagement {
 	 * This operation allows making structural changes 
 	 * (e.g. configuration, topology, behavior, 
 	 * redundancy model) to a VNF instance.
+	 * @param virtualNetworkFunctionRecord
 	 */
 	
-	CoreMessage modify(VirtualNetworkFunctionRecord vnfr);
+	CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	
 	/**
 	 * This operation allows deploying a new 

@@ -13,21 +13,27 @@
 //	archiveName = rootProject.name + '-' + version + '-openbatonPlugin.jar'
 //}
 
-task oneJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Openbaton vim driver test plugin',
-                'Implementation-Version': version,
-                'Main-Class': pluginClass
-    }
-    baseName = project.name + '-openbaton-plugin'
-    doFirst {
-        from(configurations.compile.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
-            exclude 'META-INF/*.SF'
-            exclude 'META-INF/*.DSA'
-            exclude 'META-INF/*.RSA'
-        }
-    }
-    with jar
+dependencies {
+    compile project(':plugin')
 }
 
-build.dependsOn oneJar
+ext.mainClass = "org.project.openbaton.plugin.main.spring.SpringPlugin"
+
+//task oneJar(type: Jar) {
+//    manifest {
+//        attributes 'Implementation-Title': 'Openbaton vim driver test plugin',
+//                'Implementation-Version': version,
+//                'Main-Class': mainClass
+//    }
+//    baseName = project.name + '-openbaton-plugin'
+//    doFirst {
+//        from(configurations.compile.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
+//            exclude 'META-INF/*.SF'
+//            exclude 'META-INF/*.DSA'
+//            exclude 'META-INF/*.RSA'
+//        }
+//    }
+//    with jar
+//}
+//
+//build.dependsOn oneJar

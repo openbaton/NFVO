@@ -7,7 +7,6 @@ package org.project.openbaton.catalogue.mano.common;
 public enum Event {
 	GRANTED,
 	ALLOCATE,
-	INSTALL,
 	SCALE,
 	RELEASE,
 	ERROR,
