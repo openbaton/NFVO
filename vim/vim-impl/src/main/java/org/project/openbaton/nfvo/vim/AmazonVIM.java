@@ -108,7 +108,7 @@ public class AmazonVIM implements Vim {
     }
 
     @Override
-    public Future<Void> release(VirtualDeploymentUnit vdu) {
+    public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) {
         return new AsyncResult<>(null);
     }
 

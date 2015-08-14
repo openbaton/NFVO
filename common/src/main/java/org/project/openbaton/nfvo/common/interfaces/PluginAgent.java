@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.common.interfaces;
 
 import org.project.openbaton.catalogue.nfvo.PluginEndpoint;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
 import org.springframework.jms.annotation.JmsListener;
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  */
 public abstract class PluginAgent {
 
-    public abstract <T> T invokeMethod(Method method, Class inter, Object... parameters) throws NotFoundException, PluginInvokeException;
+    public abstract <T> T invokeMethod(Method method, Class inter, String vimInstance, Object... parameters) throws NotFoundException, PluginInvokeException;
 
     public abstract void register(PluginEndpoint endpoint);
 
