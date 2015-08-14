@@ -46,5 +46,4 @@ public class PluginMessage implements Serializable{
     public void setInterfaceClass(Class interfaceClass) {
         this.interfaceClass = interfaceClass;
     }
-
 }
