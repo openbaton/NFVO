@@ -51,7 +51,7 @@ public class TestVIM implements Vim {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-//    @Autowired
+    @Autowired
 //    @Qualifier("testClient")
     private ClientInterfacePluginAgent testClient;
 
