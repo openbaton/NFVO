@@ -12,7 +12,7 @@ public class PluginEndpoint extends Endpoint{
 
     @Override
     public String toString() {
-        return "VnfmManagerEndpoint{" +
+        return "PluginEndpoint{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", type='" + type + '\'' +
