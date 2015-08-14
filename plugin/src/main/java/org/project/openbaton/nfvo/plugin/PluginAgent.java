@@ -27,16 +27,15 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
     @Override
     public <T> T invokeMethod(Method method, Class inter, String type, Object... parameters) throws NotFoundException, PluginInvokeException {
         String destination;
-        if (inter.getSimpleName().equals("ClientInterfaces")) {
-            destination = "vim-driver-plugin";
-        }
-        else if (inter.getSimpleName().equals("ResourcePerformanceManagement")) {
-            destination = "monitor-plugin";
-        }
+        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName(), type);
+
+        log.debug("Destination is: " + endpoint.get);
+        destination = "vim-driver-plugin";
+
         else {
             throw new RuntimeException("No plugin interface found"); //TODO chose a good exception!
         }
-        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName(), type);
+
         PluginMessage message = null;
 
 		Class<?>[] pType =  method.getParameterTypes();
@@ -71,13 +70,11 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
     @Override
 	public void register(PluginEndpoint endpoint) {
-		pluginEndpointRepository.create(endpoint);
+		log.debug("Registering endpoint: " + endpoint);
+        pluginEndpointRepository.create(endpoint);
 	}
 
 	
-	
-
-
     private PluginMessage createMessageFromParameters(String methodName, Object[] parameters)
 	{
 		

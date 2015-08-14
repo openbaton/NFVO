@@ -18,20 +18,13 @@ package org.project.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.nfvo.common.interfaces.concretes.JmsSender;
+import org.project.openbaton.nfvo.common.utils.jms.JmsSender;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 /**
  * Created by lto on 03/06/15.
