@@ -10,11 +10,8 @@ public class PluginMessage implements Serializable{
 
     private String methodName;
 
-<<<<<<< HEAD
-=======
     private Class interfaceClass;
 
->>>>>>> a81c5dc2b82498e1215db09286a48045d96b9a20
     private Collection<Serializable> parameters;
 
     public String getMethodName() {
@@ -37,11 +34,6 @@ public class PluginMessage implements Serializable{
     public String toString() {
         return "PluginMessage{" +
                 "methodName='" + methodName + '\'' +
-<<<<<<< HEAD
-                ", parameters=" + parameters +
-                '}';
-    }
-=======
                 ", interfaceClass=" + interfaceClass.getSimpleName() +
                 ", parameters=" + parameters +
                 '}';
@@ -54,6 +46,4 @@ public class PluginMessage implements Serializable{
     public void setInterfaceClass(Class interfaceClass) {
         this.interfaceClass = interfaceClass;
     }
-
->>>>>>> a81c5dc2b82498e1215db09286a48045d96b9a20
 }
