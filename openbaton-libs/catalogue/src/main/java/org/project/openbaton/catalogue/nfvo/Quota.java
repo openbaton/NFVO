@@ -3,12 +3,13 @@ package org.project.openbaton.catalogue.nfvo;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 20/05/15.
  */
 @Entity
-public class Quota {
+public class Quota implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version
