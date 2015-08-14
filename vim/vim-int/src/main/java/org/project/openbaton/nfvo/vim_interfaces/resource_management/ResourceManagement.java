@@ -90,8 +90,9 @@ public interface ResourceManagement {
 	 * instantiated virtualised resource. This operation frees 
 	 * resources and returns them to the NFVI resource pool.
 	 * @param vdu
+	 * @param vimInstance
 	 */
-	Future<Void> release(VirtualDeploymentUnit vdu) throws VimException;
+	Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 
@@ -129,5 +130,5 @@ public interface ResourceManagement {
 	 * This operations return the maximal Quotas allowed to allocate.
 	 * @return quota
 	 */
-	Quota getQuota(VimInstance vimInstance);
+	Quota getQuota(VimInstance vimInstance) throws VimException;
 }

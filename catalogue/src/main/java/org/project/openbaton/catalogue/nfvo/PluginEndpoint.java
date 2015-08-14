@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 @Entity
 public class PluginEndpoint extends Endpoint{
 
+    private String interfaceClass;
+
     @Override
     public String toString() {
         return "VnfmManagerEndpoint{" +
@@ -16,5 +18,13 @@ public class PluginEndpoint extends Endpoint{
                 ", type='" + type + '\'' +
                 ", endpointType='" + endpointType + '\'' +
                 '}';
+    }
+
+    public String getInterfaceClass() {
+        return interfaceClass;
+    }
+
+    public void setInterfaceClass(String interfaceClass) {
+        this.interfaceClass = interfaceClass;
     }
 }

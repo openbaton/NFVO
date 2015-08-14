@@ -23,4 +23,12 @@ public class VimException extends Exception {
     public VimException(String s) {
         super(s);
     }
+
+    public VimException(Throwable cause) {
+        super(cause);
+    }
+
+    public VimException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

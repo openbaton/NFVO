@@ -22,9 +22,10 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.nfvo.plugin.concretes.ClientInterfacePluginAgent;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -52,19 +53,19 @@ public class TestVIM implements Vim {
 
 //    @Autowired
 //    @Qualifier("testClient")
-    private ClientInterfaces testClient;
+    private ClientInterfacePluginAgent testClient;
 
     @Autowired
     private VimBroker vimBroker;
 
     @PostConstruct
     private void init() {
-        this.testClient = vimBroker.getClient("test");
-        if (testClient ==null) {
-            log.error("Plugin Test Vim Drivers not found. Have you installed it?");
-            NotFoundException notFoundException = new NotFoundException("Plugin Test Vim Drivers not found. Have you installed it?");
-            throw new RuntimeException(notFoundException);
-        }
+//        this.testClient = vimBroker.getClient("test");
+//        if (testClient ==null) {
+//            log.error("Plugin Test Vim Drivers not found. Have you installed it?");
+//            NotFoundException notFoundException = new NotFoundException("Plugin Test Vim Drivers not found. Have you installed it?");
+//            throw new RuntimeException(notFoundException);
+//        }
     }
 
     @Override
@@ -83,14 +84,30 @@ public class TestVIM implements Vim {
     }
 
     @Override
-    public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) {
-        return testClient.listFlavors();
+    public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
+        try {
+            return testClient.listFlavors(vimInstance.getType(), vimInstance);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
-        return this.testClient.addImage(image,inputStream);
+        try {
+            return this.testClient.addImage(vimInstance.getType(), vimInstance, image,inputStream);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 
     @Override
@@ -104,8 +121,16 @@ public class TestVIM implements Vim {
     }
 
     @Override
-    public List<NFVImage> queryImages(VimInstance vimInstance) {
-        return testClient.listImages();
+    public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
+        try {
+            return testClient.listImages(vimInstance.getType(), vimInstance);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 
     @Override
@@ -115,19 +140,35 @@ public class TestVIM implements Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimDriverException {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
-        testClient.launchInstanceAndWait(vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair",new HashSet<String>(){{add("network_id");}}, new HashSet<String>(){{add("secGroup_id");}}, "#userdate");
+        try {
+            testClient.launchInstanceAndWait(vimInstance.getType(), vimInstance,vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair",new HashSet<String>(){{add("network_id");}}, new HashSet<String>(){{add("secGroup_id");}}, "#userdate");
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
         String id = IdGenerator.createUUID();
         log.debug("launched instance with id " + id);
         return new AsyncResult<String>(id);
     }
 
     @Override
-    public List<Server> queryResources(VimInstance vimInstance) {
+    public List<Server> queryResources(VimInstance vimInstance) throws VimException {
 
-        return testClient.listServer();
+        try {
+            return testClient.listServer(vimInstance.getType(), vimInstance);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 
     @Override
@@ -152,7 +193,7 @@ public class TestVIM implements Vim {
 
     @Override
     @Async
-    public Future<Void> release(VirtualDeploymentUnit vdu) {
+    public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) {
         return new AsyncResult<>(null);
     }
 
@@ -193,7 +234,15 @@ public class TestVIM implements Vim {
 
     @Override
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
-        return this.testClient.listNetworks();
+        try {
+            return this.testClient.listNetworks(vimInstance.getType(), vimInstance);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 
     @Override
@@ -202,7 +251,15 @@ public class TestVIM implements Vim {
     }
 
     @Override
-    public Quota getQuota(VimInstance vimInstance) {
-        return this.testClient.getQuota();
+    public Quota getQuota(VimInstance vimInstance) throws VimException {
+        try {
+            return this.testClient.getQuota(vimInstance.getType(), vimInstance);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (PluginInvokeException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        }
     }
 }
