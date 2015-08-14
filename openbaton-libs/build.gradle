@@ -18,7 +18,7 @@ project.ext {
     /**
      * Spring Related Variables
      */
-    springVersion = '4.1.7.RELEASE'
+    springVersion = '4.2.0.RELEASE'
     springBootVersion = '1.2.5.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
