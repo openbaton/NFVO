@@ -20,6 +20,7 @@ dependencies {
     compile project(':vim-drivers')
 
     compile project(':common')
+    compile project(':plugin')
     compile project(':vim-int')
 
     compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion

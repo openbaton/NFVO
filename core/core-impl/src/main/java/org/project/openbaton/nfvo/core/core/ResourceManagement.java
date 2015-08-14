@@ -80,7 +80,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-        return vim.release(virtualDeploymentUnit);
+        return vim.release(virtualDeploymentUnit, virtualDeploymentUnit.getVimInstance());
     }
 
     @Override

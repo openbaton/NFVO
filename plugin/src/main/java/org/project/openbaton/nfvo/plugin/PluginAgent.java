@@ -3,29 +3,19 @@ package org.project.openbaton.nfvo.plugin;
 import org.project.openbaton.catalogue.nfvo.PluginAnswer;
 import org.project.openbaton.catalogue.nfvo.PluginEndpoint;
 import org.project.openbaton.catalogue.nfvo.PluginMessage;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
-import org.project.openbaton.nfvo.common.interfaces.Receiver;
-import org.project.openbaton.nfvo.common.interfaces.Sender;
 import org.project.openbaton.nfvo.common.utils.AgentBroker;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import java.lang.reflect.Method;
 
 /**
  * Created by lto on 13/08/15.
  */
-@Service
-@Scope
 public abstract class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
 	@Autowired
@@ -35,16 +25,19 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
     private AgentBroker agentBroker;
 
     @Override
-    public <T> T invokeMethod(Method method, Class inter, Object... parameters) throws NotFoundException, PluginInvokeException {
-        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName());
-		PluginMessage message = null;
+    public <T> T invokeMethod(Method method, Class inter, String type, Object... parameters) throws NotFoundException, PluginInvokeException {
         String destination;
-        if (inter.getSimpleName().equals("ClientInterfaces"))
+        if (inter.getSimpleName().equals("ClientInterfaces")) {
             destination = "vim-driver-plugin";
-        else if (inter.getSimpleName().equals("ResourcePerformanceManagement"))
+        }
+        else if (inter.getSimpleName().equals("ResourcePerformanceManagement")) {
             destination = "monitor-plugin";
-        else
+        }
+        else {
             throw new RuntimeException("No plugin interface found"); //TODO chose a good exception!
+        }
+        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName(), type);
+        PluginMessage message = null;
 
 		Class<?>[] pType =  method.getParameterTypes();
 
@@ -67,9 +60,9 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
         return (T) answer.getAnswer();
 	}
 
-    private PluginEndpoint getEndpoint(String type) throws NotFoundException {
+    private PluginEndpoint getEndpoint(String classname, String type) throws NotFoundException {
         for (PluginEndpoint endpoint :pluginEndpointRepository.findAll()){
-            if (endpoint.getType().equals(type)){
+            if (endpoint.getType().equals(type) && endpoint.getInterfaceClass().equals(classname)){
                 return endpoint;
             }
         }
