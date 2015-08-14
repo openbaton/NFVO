@@ -29,7 +29,7 @@ public interface ClientInterfaces {
 
     Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException;
 
-    void deleteServerByIdAndWait(String id, VimInstance vimInstance);
+    void deleteServerByIdAndWait(VimInstance vimInstance, String id);
     Network createNetwork(VimInstance vimInstance, Network network);
     DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour);
 
