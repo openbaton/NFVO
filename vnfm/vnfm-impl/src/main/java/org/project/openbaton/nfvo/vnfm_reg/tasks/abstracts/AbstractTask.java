@@ -86,7 +86,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     }
 
     protected VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
-        String senderName = endpointType.toString().toLowerCase() + "Sender";
+        String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
         return (VnfmSender) this.context.getBean(senderName);
     }
 }
