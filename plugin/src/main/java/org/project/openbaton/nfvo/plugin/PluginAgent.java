@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  */
 @Service
 @Scope
-public class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
+public abstract class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
 	@Autowired
 	@Qualifier("pluginEndpointRepository")
