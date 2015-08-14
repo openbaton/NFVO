@@ -34,135 +34,135 @@ public class ClientInterfacePluginAgent extends PluginAgent {
 //        return this.invokeMethod(this.getClass().getMethod("listImages"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<Server> listServer(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
 //        return this.invokeMethod(this.getClass().getMethod("listServers"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<Network> listNetworks(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
 //        return this.invokeMethod(this.getClass().getMethod("listNetworks"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<DeploymentFlavour> listFlavors(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
 //        return this.invokeMethod(this.getClass().getMethod("listNetworks"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public Server launchInstanceAndWait(String type, VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException, NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, hostname, image, extId, keyPair, networks, securityGroups, s);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, hostname, image, extId, keyPair, networks, securityGroups, s);
     }
 
     public Void deleteServerByIdAndWait(String type, VimInstance vimInstance, String id) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class,type, id);
+        return this.invokeMethod(method, ClientInterfaces.class,type, vimInstance, id);
     }
 
     public Network createNetwork(String type, VimInstance vimInstance, Network network) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, network);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, network);
     }
 
     public DeploymentFlavour addFlavor(String type, VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, deploymentFlavour);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, deploymentFlavour);
     }
 
     public NFVImage addImage(String type, VimInstance vimInstance, NFVImage image, InputStream inputStream) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, image, inputStream);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, image, inputStream);
     }
 
     public NFVImage updateImage(String type, VimInstance vimInstance, NFVImage image) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, image);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, image);
     }
 
     public NFVImage copyImage(String type, VimInstance vimInstance, NFVImage image, InputStream inputStream) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, image, inputStream);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, image, inputStream);
     }
 
     public boolean deleteImage(String type, VimInstance vimInstance, NFVImage image) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, image);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, image);
     }
 
     public DeploymentFlavour updateFlavor(String type, VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException, NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, deploymentFlavour);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, deploymentFlavour);
     }
 
     public boolean deleteFlavor(String type, VimInstance vimInstance, String extId) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, extId);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, extId);
     }
 
     public Subnet createSubnet(String type, VimInstance vimInstance, Network createdNetwork, Subnet subnet) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, createdNetwork, subnet);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, createdNetwork, subnet);
     }
 
     public Network updateNetwork(String type, VimInstance vimInstance, Network network) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, network);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, network);
     }
 
     public Subnet updateSubnet(String type, VimInstance vimInstance, Network updatedNetwork, Subnet subnet) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, updatedNetwork, subnet);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, updatedNetwork, subnet);
     }
 
     public List<String> getSubnetsExtIds(String type, VimInstance vimInstance, String network_extId) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, network_extId);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, network_extId);
     }
 
     public boolean deleteSubnet(String type, VimInstance vimInstance, String existingSubnetExtId) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, existingSubnetExtId);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, existingSubnetExtId);
     }
 
     public boolean deleteNetwork(String type, VimInstance vimInstance, String extId) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, extId);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, extId);
     }
 
     public Network getNetworkById(String type, VimInstance vimInstance, String id) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type, id);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance, id);
     }
 
     public Quota getQuota(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
-        return this.invokeMethod(method, ClientInterfaces.class, type);
+        return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 }
