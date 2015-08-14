@@ -1,4 +1,4 @@
-package org.project.openbaton.nfvo.common.interfaces.concretes;
+package org.project.openbaton.nfvo.common.utils.jms;
 
 import org.project.openbaton.nfvo.common.interfaces.Receiver;
 import org.slf4j.Logger;
