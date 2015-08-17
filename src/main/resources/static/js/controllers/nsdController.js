@@ -73,6 +73,51 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreate.vnfd.splice(index, 1);
     };
 
+    $scope.storeNSDF = function (nsdCreate) {
+        $('#addEditVNDF').modal('hide');
+        console.log(nsdCreate)
+    };
+
+    $scope.saveValueVMI = function (newValue) {
+        console.log(newValue);
+        $scope.vduCreate.vm_image.push(newValue);
+    };
+
+    $scope.deleteVMI = function (index) {
+        $scope.vduCreate.vm_image.splice(index, 1);
+    };
+
+    $scope.saveValueMP = function (newValue) {
+        console.log(newValue);
+        $scope.vduCreate.monitoring_parameter.push(newValue);
+    };
+
+    $scope.deleteMP = function (index) {
+        $scope.vduCreate.monitoring_parameter.splice(index, 1);
+    };
+    $scope.saveValueMPfromVNFD = function (newValue) {
+        console.log(newValue);
+        $scope.vnfdCreate.monitoring_parameter.push(newValue);
+    };
+
+    $scope.deleteMPfromVNFD = function (index) {
+        $scope.vnfdCreate.monitoring_parameter.splice(index, 1);
+    };
+
+    $scope.saveValueMPfromNSD = function (newValue) {
+        console.log(newValue);
+        $scope.nsdCreate.monitoring_parameter.push(newValue);
+    };
+
+    $scope.deleteMPfromNSD = function (index) {
+        $scope.nsdCreate.monitoring_parameter.splice(index, 1);
+    };
+
+    $scope.addDepFlavour = function () {
+        $scope.depFlavor = angular.copy($scope.vnfdCreate.deployment_flavour[0]);
+        $('#modaladdDepFlavour').modal('show');
+    };
+
     $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies.json')
         .then(function (res) {
             console.log(res.data);
