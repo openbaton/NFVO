@@ -1,4 +1,3 @@
-
 rootProject.ext.execAndGetOutput = { String command ->
     try {
         def stdout = new ByteArrayOutputStream()
