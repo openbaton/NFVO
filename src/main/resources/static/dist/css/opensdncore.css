@@ -266,6 +266,9 @@ svg {
 #addEditVDU {
     z-index: 1042;
 }
+#modaladdDepFlavour{
+    z-index: 1043;
+}
 
 .line {
     /*background: transparent;*/
@@ -723,3 +726,39 @@ h4 > a, h4 > a:hover {
         height: 100%;
     }
 }
+
+.modal-backdrop {
+    bottom: 0;
+}
+
+.cut-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    max-width: 80px;
+    /*white-space: nowrap;*/
+    /*width: 100%;*/
+}
+/*span>.input-group-btn{*/
+    /*padding-left: 0px;*/
+/*}*/
+
+.input-group .form-control:first-child {
+    width: 90%;
+     left: 0px;
+}
+/*.fa {*/
+    /*display: inline-block;*/
+    /*font: normal normal normal 14px/1 FontAwesome;*/
+    /*font-size: inherit;*/
+    /*text-rendering: auto;*/
+    /*-webkit-font-smoothing: antialiased;*/
+    /*-moz-osx-font-smoothing: grayscale;*/
+/*}*/
+
+/*.input-group-btn > .btn {*/
+    /*position: relative;*/
+    /*padding-left: -20px;*/
+/*}*/
