@@ -85,7 +85,8 @@ public class PluginInstaller implements CommandLineRunner {
 
 
         try {
-            String command = "screen -d -m -S openbaton -p 0 -X screen -t " + pluginName + " java -jar " + path;
+            //screen -S openbaton -p 0 -X screen -t  openstack-plugin exec java -jar /opt/openbaton/openstack-plugin/build/libs/openstack-driver-0.5-SNAPSHOT.jar
+            String command = "screen -S openbaton -p 0 -X screen -t " + pluginName + " java -jar " + path;
             log.debug("Running command: " + command);
             Process plugin = Runtime.getRuntime().exec(command);
             this.processes.put(pluginName, plugin);
@@ -198,45 +199,48 @@ public class PluginInstaller implements CommandLineRunner {
             if (cp.getConfKey().equals("vim-plugin-installation-dir")) {
                 installFolderPath = cp.getValue();
             }
-            if (cp.getConfKey().equals("vim-classes")){
+            if (cp.getConfKey().equals("vim-classes")) {
                 classes = Arrays.asList(cp.getValue().split(";"));
             }
         }
-
+        File[] files;
         File folder = new File(installFolderPath);
+        if (folder != null) {
+            files = folder.listFiles();
 
-        File[] files = folder.listFiles();
-
-        if (files.length > 0) {
-            for (File f : files) {
-                String path = f.getAbsolutePath();
-                if (path.endsWith(".jar")) {
-                    this.installVimPlugin(path, classes);
+            if (files.length > 0) {
+                for (File f : files) {
+                    String path = f.getAbsolutePath();
+                    if (path.endsWith(".jar")) {
+                        this.installVimPlugin(path, classes);
+                    }
                 }
             }
-        }
+        } else
+            log.error("Folder " + installFolderPath + " not found");
 
         for (ConfigurationParameter cp : system.getConfigurationParameters()) {
             if (cp.getConfKey().equals("monitoring-plugin-installation-dir")) {
                 installFolderPath = cp.getValue();
             }
-            if (cp.getConfKey().equals("monitoring-classes")){
+            if (cp.getConfKey().equals("monitoring-classes")) {
                 classes = Arrays.asList(cp.getValue().split(";"));
             }
         }
 
         folder = new File(installFolderPath);
+        if (folder != null) {
+            files = folder.listFiles();
 
-        files = folder.listFiles();
-
-        if (files.length > 0) {
-            for (File f : files) {
-                String path = f.getAbsolutePath();
-                if (path.endsWith(".jar")) {
-                    this.installMonitoringPlugin(path, classes);
+            if (files.length > 0) {
+                for (File f : files) {
+                    String path = f.getAbsolutePath();
+                    if (path.endsWith(".jar")) {
+                        this.installMonitoringPlugin(path, classes);
+                    }
                 }
             }
-        }
-
+        } else
+            log.error("Folder " + installFolderPath + " not found");
     }
 }

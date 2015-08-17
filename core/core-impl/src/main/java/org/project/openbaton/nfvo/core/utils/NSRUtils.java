@@ -262,7 +262,7 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.getVirtual_link().addAll(internalVirtualLinks);
 
         virtualNetworkFunctionRecord.setVnf_address(new HashSet<String>());
-        virtualNetworkFunctionRecord.setStatus(Status.INITIAILZED);
+        virtualNetworkFunctionRecord.setStatus(Status.INITIALIZED);
         return virtualNetworkFunctionRecord;
     }
 
