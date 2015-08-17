@@ -1,12 +1,11 @@
-
-    dependencies {
-        compile 'org.springframework:spring-context:' + springVersion
+dependencies {
+    compile 'org.springframework:spring-context:' + springVersion
 //        compile("org.springframework.boot:spring-boot:" + springBootVersion)
 //        compile("org.springframework.boot:spring-boot-starter-logging:" + springBootVersion)
 //        compile('org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion)
-	    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-        compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.3'
-        compile 'net.minidev:json-smart:1.0.9'
-    }
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.3'
+    compile 'net.minidev:json-smart:1.0.9'
+}
 
 
