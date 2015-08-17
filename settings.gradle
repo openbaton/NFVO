@@ -52,7 +52,6 @@ project(':vnfm-int').projectDir = file('vnfm/vnfm-int')
 project(':repo-impl').projectDir = file('repositories/repo-impl')
 project(':repo-int').projectDir = file('repositories/repo-int')
 
-
 //File nfvoDir = file('.')
 //String nfvoName = nfvoDir.name
 //

@@ -48,19 +48,7 @@ import java.util.*;
 @Component
 public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
-    private ApplicationEventPublisher publisher;
-
-
-    @Autowired
-    @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationRepository;
-
     private static final Character mask = '*';
-
-    private static void exit(int status) {
-        System.exit(status);
-    }
     private final static Map<String, String> helpCommandList = new HashMap<String, String>(){{
         put("help", "Print the usage");
         put("exit", "Exit the application");
@@ -68,11 +56,43 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         put("installMonitor", "install monitoring plugin");
         put("print properties", "print all the properties");
     }};
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
+    private ApplicationEventPublisher publisher;
+    @Autowired
+    @Qualifier("configurationRepository")
+    private GenericRepository<Configuration> configurationRepository;
+
+    private static void exit(int status) {
+        System.exit(status);
+    }
+
+      public static void usage() {
+        System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
+        System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
+        System.out.println("Available commands are");
+        for (Object entry : helpCommandList.entrySet()) {
+            System.out.println("\t" + ((Map.Entry)entry).getKey() + ":\t" + ((Map.Entry)entry).getValue());
+        }
+        System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
+    }
 
     /**
-	 * When running in spring boot application this implements the CommandLineRunner 
+     * Base start as a single module
+     *
+     * @param args
+     *            parameters for starting the shell and bootstrap
+     */
+    public static void main(String[] args) {
+        OpenbatonCLI openbatonCLI = new OpenbatonCLI();
+        try {
+            openbatonCLI.run(args);
+        } catch (Exception e) {
+            openbatonCLI.log.error(e.getMessage(), }
+
+  /**
+	 * When running in spring boot application this implements the CommandLineRunner
 	 * and is executed after all the spring-shell components were loaded.
-	 * 
+	 *
 	 * @param args
 	 *            parameters for starting the shell and bootstrap
 	 */
@@ -126,7 +146,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
     }
 
-    private boolean installPlugin(String line, String type) throws IOException {
+  private boolean installPlugin(String line, String type) throws IOException {
         String path = line.split(" ")[1];
         List<String > classes = new ArrayList<>();
         File jar = new File(path);
@@ -172,30 +192,9 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         this.publisher.publishEvent(event);
         return true;
 
-    }
+    e);
 
-    public static void usage() {
-        System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
-        System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
-        System.out.println("Available commands are");
-        for (Object entry : helpCommandList.entrySet()) {
-            System.out.println("\t" + ((Map.Entry)entry).getKey() + ":\t" + ((Map.Entry)entry).getValue());
-        }
-        System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
-    }
-    /**
-     * Base start as a single module
-     *
-     * @param args
-     *            parameters for starting the shell and bootstrap
-     */
-    public static void main(String[] args) {
-        OpenbatonCLI openbatonCLI = new OpenbatonCLI();
-        try {
-            openbatonCLI.run(args);
-        } catch (Exception e) {
-            openbatonCLI.log.error(e.getMessage(), e);
-        }
+       }
     }
 
     @Override
