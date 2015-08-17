@@ -59,25 +59,25 @@ public class PluginInstaller implements CommandLineRunner {
         /**
          * Checking version
          */
-        String pluginName;
-        try {
-            Class c = getClass(path, classes);
-
-            Field field = getField(c);
-
-            Object interfaceVersion = field.get(c);
-            if (!interfaceVersion.equals(ClientInterfaces.interfaceVersion)) {
-                throw new PluginInstallException("The interface Version are different: required: " + ClientInterfaces.interfaceVersion + ", provided: " + interfaceVersion);
-            }
-
-            pluginName = c.getSimpleName();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            throw new PluginInstallException(e);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new PluginInstallException(e);
-        }
+        String pluginName = "plugin-vim-drivers";
+//        try {
+//            Class c = getClass(path, classes);
+//
+//            Field field = getField(c);
+//
+//            Object interfaceVersion = field.get(c);
+//            if (!interfaceVersion.equals(ClientInterfaces.interfaceVersion)) {
+//                throw new PluginInstallException("The interface Version are different: required: " + ClientInterfaces.interfaceVersion + ", provided: " + interfaceVersion);
+//            }
+//
+//            pluginName = c.getSimpleName();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//            throw new PluginInstallException(e);
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//            throw new PluginInstallException(e);
+//        }
 
         /**
          * Run it into the screen session
@@ -156,25 +156,25 @@ public class PluginInstaller implements CommandLineRunner {
         /**
          * Checking version
          */
-        String pluginName;
-        try {
-            Class c = getClass(path, classes);
-
-            Field field = getField(c);
-
-            Object interfaceVersion = field.get(c);
-            if (!interfaceVersion.equals(ResourcePerformanceManagement.interfaceVersion)) {
-                throw new PluginInstallException("The interface Version are different: required: " + ResourcePerformanceManagement.interfaceVersion + ", provided: " + interfaceVersion);
-            }
-
-            pluginName = c.getSimpleName();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            throw new PluginInstallException(e);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new PluginInstallException(e);
-        }
+        String pluginName = "plugin-monitoring";
+//        try {
+//            Class c = getClass(path, classes);
+//
+//            Field field = getField(c);
+//
+//            Object interfaceVersion = field.get(c);
+//            if (!interfaceVersion.equals(ResourcePerformanceManagement.interfaceVersion)) {
+//                throw new PluginInstallException("The interface Version are different: required: " + ResourcePerformanceManagement.interfaceVersion + ", provided: " + interfaceVersion);
+//            }
+//
+//            pluginName = c.getSimpleName();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//            throw new PluginInstallException(e);
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//            throw new PluginInstallException(e);
+//        }
 
         /**
          * Run it into the screen session
