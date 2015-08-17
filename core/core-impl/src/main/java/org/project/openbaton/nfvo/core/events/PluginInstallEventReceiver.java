@@ -21,7 +21,7 @@ public class PluginInstallEventReceiver implements ApplicationListener<InstallPl
 
         try {
             if (event.getType().equals("vim"))
-                pluginInstaller.installVimDriverPlugin(event.getPath(), event.getClasses());
+                pluginInstaller.installVimPlugin(event.getPath(), event.getClasses());
             else if (event.getType().equals("monitor"))
                 pluginInstaller.installMonitoringPlugin(event.getPath(), event.getClasses());
         } catch (PluginInstallException e) {
