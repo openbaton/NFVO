@@ -28,7 +28,7 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
     @Override
     public <T> T invokeMethod(Method method, Class inter, String type, Object... parameters) throws NotFoundException, PluginInvokeException {
-        PluginEndpoint endpoint = getEndpoint(inter.getSimpleName(), type);
+        PluginEndpoint endpoint = getEndpoint(inter.getName(), type);
 
         log.debug("Destination is: " + endpoint.getEndpoint());
 
