@@ -13,6 +13,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
@@ -27,11 +28,11 @@ import java.util.Set;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualNetworkFunctionRecord implements Serializable{
+public class VirtualNetworkFunctionRecord implements Serializable {
 
     /**
      * ID of the VNF instance
-     * */
+     */
     @Id
     private String id = IdGenerator.createUUID();
     @Version
@@ -48,12 +49,12 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
-     * */
+     */
     private String deployment_flavour_key;
 
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
-     * */
+     */
     @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
 
@@ -62,17 +63,17 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     /**
      * A language attribute may be specified to identify default localisation/language
-     * */
+     */
     private String localization;
     /**
      * Active monitoring parameters
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
     /**
      * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
-     * */
+     */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VirtualDeploymentUnit> vdu;
@@ -83,7 +84,7 @@ public class VirtualNetworkFunctionRecord implements Serializable{
 
     /**
      * Internal Virtual Links instances used in this VNF
-     * */
+     */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<InternalVirtualLink> virtual_link;
@@ -91,21 +92,21 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     /**
      * The nsr id
      */
-    private String  parent_ns_id;
+    private String parent_ns_id;
 
     /**
      * The reference to the VNFD used to instantiate this VNF
-     * */
+     */
     private String descriptor_reference;
     /**
      * The identification of the VNFM entity managing this VNF
      * TODO probably it is better to have a reference than a string pointing to the id
-     * */
+     */
     private String vnfm_id;
     /**
      * Reference to a VLR (vlr:id) used for the management access path or other internal and external connection
      * interface configured for use by this VNF instance
-     * */
+     */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> connected_external_virtual_link;
@@ -113,43 +114,46 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
      * interface on this VNF
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
     /**
+     * <p>
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
-     *
+     * <p/>
+     * <p>
      * Implementation thoughts:
      * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
      * so for what concerns the VNFR, the state are:
-     *
+     * <p/>
+     * <p>
      * * Null) A VNF Instance does not exist and is about to be created.
      * * Instantiated Not Configured) VNF Instance does exist but is not configured for service.
      * * Instantiated Configured - Inactive) A VNF Instance is configured for service.
      * * Instantiated Configured - Active) A VNF Instance that participates in service.
      * * Terminated) A VNF Instance has ceased to exist.
-     *
      * but the Null and the Instantiated since when the VNFR is created will be ready to serve.
-     * */
+     * <p/>
+     */
     @Enumerated(EnumType.STRING)
     private Status status;
     /**
      * Listing of systems that have registered to received notifications of status changes
      * TODO maybe passing to a notification framework
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
      * Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent)
-     * */
+     */
     private String audit_log;
     /**
      * Generic placeholder for input information related to VNF orchestration and management policies to be applied
      * during runtime of a specific VNF instance (e.g. for VNF prioritization, etc.)
-     * */
+     */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
     private String name;
@@ -161,6 +165,14 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
     private String task;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration requires;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration provides;
+
+    public VirtualNetworkFunctionRecord() {
+        this.lifecycle_event = new HashSet<LifecycleEvent>();
+    }
 
     public String getEndpoint() {
         return endpoint;
@@ -178,27 +190,23 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.parent_ns_id = parent_ns_id;
     }
 
-    public VirtualNetworkFunctionRecord() {
-        this.lifecycle_event = new HashSet<LifecycleEvent>();
-    }
-
     public Set<AutoScalePolicy> getAuto_scale_policy() {
         return auto_scale_policy;
     }
 
+    public void setAuto_scale_policy(Set<AutoScalePolicy> auto_scale_policy) {
+        this.auto_scale_policy = auto_scale_policy;
+    }
+
     /**
      * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
-     * */
+     */
     public int getHb_version() {
         return hb_version;
     }
 
     public void setHb_version(int hb_version) {
         this.hb_version = hb_version;
-    }
-
-    public void setAuto_scale_policy(Set<AutoScalePolicy> auto_scale_policy) {
-        this.auto_scale_policy = auto_scale_policy;
     }
 
     public Set<ConnectionPoint> getConnection_point() {
@@ -380,32 +388,53 @@ public class VirtualNetworkFunctionRecord implements Serializable{
     @Override
     public String toString() {
         return "VirtualNetworkFunctionRecord{" +
-                "auto_scale_policy=" + auto_scale_policy +
+                "id='" + id + '\'' +
+                ", hb_version=" + hb_version +
+                ", auto_scale_policy=" + auto_scale_policy +
                 ", connection_point=" + connection_point +
                 ", dependency=" + dependency +
-                ", deployment_flavour_key=" + deployment_flavour_key +
-                ", id='" + id + '\'' +
+                ", deployment_flavour_key='" + deployment_flavour_key + '\'' +
                 ", lifecycle_event=" + lifecycle_event +
+                ", lifecycle_event_history=" + lifecycle_event_history +
                 ", localization='" + localization + '\'' +
                 ", monitoring_parameter=" + monitoring_parameter +
                 ", vdu=" + vdu +
                 ", vendor='" + vendor + '\'' +
                 ", version='" + version + '\'' +
-                ", hb_version='" + hb_version + '\'' +
                 ", virtual_link=" + virtual_link +
-//                ", parent_ns=" + parent_ns +
+                ", parent_ns_id='" + parent_ns_id + '\'' +
                 ", descriptor_reference='" + descriptor_reference + '\'' +
                 ", vnfm_id='" + vnfm_id + '\'' +
                 ", connected_external_virtual_link=" + connected_external_virtual_link +
                 ", vnf_address=" + vnf_address +
                 ", status=" + status +
                 ", notification=" + notification +
-                ", lifecycle_event_history=" + lifecycle_event_history +
                 ", audit_log='" + audit_log + '\'' +
                 ", runtime_policy_info=" + runtime_policy_info +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
+                ", endpoint='" + endpoint + '\'' +
+                ", vnfPackage=" + vnfPackage +
+                ", task='" + task + '\'' +
+                ", requires=" + requires +
+                ", provides=" + provides +
                 '}';
+    }
+
+    public Configuration getRequires() {
+        return requires;
+    }
+
+    public void setRequires(Configuration requires) {
+        this.requires = requires;
+    }
+
+    public Configuration getProvides() {
+        return provides;
+    }
+
+    public void setProvides(Configuration provides) {
+        this.provides = provides;
     }
 
     public VNFPackage getVnfPackage() {
@@ -416,11 +445,11 @@ public class VirtualNetworkFunctionRecord implements Serializable{
         this.vnfPackage = vnfPackage;
     }
 
-    public void setTask(String task) {
-        this.task = task;
-    }
-
     public String getTask() {
         return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
     }
 }
