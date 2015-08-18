@@ -79,6 +79,38 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
     @Override
     public void register(PluginEndpoint endpoint) {
+        /**
+         * Check endpoint version!
+         */
+        log.debug("Checking endpoint version");
+        try {
+            Class cl = Class.forName(endpoint.getInterfaceClass());
+            Object interfaceVersion = cl.getField("interfaceVersion").get(cl);
+            if (!interfaceVersion.equals(endpoint.getInterfaceVersion())){
+                log.error("Wrong Version: required: " + interfaceVersion + ", provided: " + endpoint.getInterfaceVersion());
+                //TODO send back error!
+                PluginMessage message = new PluginMessage();
+                message.setMethodName("ERROR");
+                message.setInterfaceClass(cl);
+                message.setParameters(new LinkedList<Serializable>());
+                message.getParameters().add("Wrong Version: required: " + interfaceVersion + ", provided: " + endpoint.getInterfaceVersion());
+                agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
+                return;
+            }
+        } catch (ClassNotFoundException e) {
+            log.error("Interface Class " + endpoint.getInterfaceClass() + " not found");
+            return;
+        } catch (NoSuchFieldException e) {
+            log.error("Wrong interface " + endpoint.getInterfaceClass());
+            return;
+        } catch (IllegalAccessException e) {
+            log.error("Wrong interface " + endpoint.getInterfaceClass());
+            return;
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            log.error("Sender not found", e);
+            return;
+        }
         log.debug("Registering endpoint: " + endpoint);
         pluginEndpointRepository.create(endpoint);
     }
