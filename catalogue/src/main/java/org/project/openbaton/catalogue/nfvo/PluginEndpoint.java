@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 public class PluginEndpoint extends Endpoint{
 
     private String interfaceClass;
+    private String interfaceVersion;
 
     @Override
     public String toString() {
@@ -26,5 +27,13 @@ public class PluginEndpoint extends Endpoint{
 
     public void setInterfaceClass(String interfaceClass) {
         this.interfaceClass = interfaceClass;
+    }
+
+    public void setInterfaceVersion(String interfaceVersion) {
+        this.interfaceVersion = interfaceVersion;
+    }
+
+    public String getInterfaceVersion() {
+        return interfaceVersion;
     }
 }
