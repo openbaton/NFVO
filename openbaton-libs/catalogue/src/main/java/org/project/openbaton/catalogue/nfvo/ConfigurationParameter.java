@@ -5,12 +5,13 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
  * Created by lto on 18/05/15.
  */
 @Entity
-public class ConfigurationParameter {
+public class ConfigurationParameter implements Serializable{
     @Id
     private String id = IdGenerator.createUUID();
     @Version
