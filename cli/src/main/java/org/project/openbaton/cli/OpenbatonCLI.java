@@ -87,7 +87,9 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         try {
             openbatonCLI.run(args);
         } catch (Exception e) {
-            openbatonCLI.log.error(e.getMessage(), }
+            openbatonCLI.log.error(e.getMessage());
+        }
+    }
 
   /**
 	 * When running in spring boot application this implements the CommandLineRunner
@@ -192,10 +194,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         this.publisher.publishEvent(event);
         return true;
 
-    e);
-
        }
-    }
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
