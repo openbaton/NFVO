@@ -83,6 +83,12 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
         pluginEndpointRepository.create(endpoint);
     }
 
+    @Override
+    public void unregister(PluginEndpoint endpoint) {
+        log.debug("Unregistering endpoint: " + endpoint);
+        pluginEndpointRepository.remove(endpoint);
+    }
+
 
     private PluginMessage createMessageFromParameters(String methodName, Object[] parameters, Class inter) {
         PluginMessage message = new PluginMessage();
