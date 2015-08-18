@@ -21,8 +21,15 @@ public abstract class PluginAgent {
 
     public abstract void register(PluginEndpoint endpoint);
 
+    public abstract void unregister(PluginEndpoint endpoint);
+
     @JmsListener(destination = "plugin-register", containerFactory = "queueJmsContainerFactory")
     public void addManagerEndpoint(@Payload PluginEndpoint endpoint) {
         this.register(endpoint);
+    }
+
+    @JmsListener(destination = "plugin-unregister", containerFactory = "queueJmsContainerFactory")
+    public void removeManagerEndpoint(@Payload PluginEndpoint endpoint) {
+        this.unregister(endpoint);
     }
 }
