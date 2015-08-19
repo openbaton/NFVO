@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,8 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
-import org.project.openbaton.catalogue.nfvo.Configuration;
-import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.catalogue.nfvo.InstallPluginEvent;
+import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.nfvo.common.utils.AgentBroker;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -47,6 +47,13 @@ import java.util.*;
  */
 @Component
 public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
+
+    @Autowired
+    @Qualifier("pluginEndpointRepository")
+    private GenericRepository<PluginEndpoint> pluginEndpointRepository;
+
+    @Autowired
+    private AgentBroker agentBroker;
 
     private static final Character mask = '*';
     private final static Map<String, String> helpCommandList = new HashMap<String, String>(){{
@@ -66,7 +73,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         System.exit(status);
     }
 
-      public static void usage() {
+    public static void usage() {
         System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
         System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
         System.out.println("Available commands are");
@@ -80,7 +87,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
      * Base start as a single module
      *
      * @param args
-     *            parameters for starting the shell and bootstrap
+     * parameters for starting the shell and bootstrap
      */
     public static void main(String[] args) {
         OpenbatonCLI openbatonCLI = new OpenbatonCLI();
@@ -91,19 +98,19 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
     }
 
-  /**
-	 * When running in spring boot application this implements the CommandLineRunner
-	 * and is executed after all the spring-shell components were loaded.
-	 *
-	 * @param args
-	 *            parameters for starting the shell and bootstrap
-	 */
+    /**
+     * When running in spring boot application this implements the CommandLineRunner
+     * and is executed after all the spring-shell components were loaded.
+     *
+     * @param args
+     * parameters for starting the shell and bootstrap
+     */
     @Override
     public void run(String... args) throws Exception {
 
-//		Bootstrap bootstrap = new Bootstrap();
-//        List<String> argumentList = new ArrayList<String>(Arrays.asList(args));
-//        bootstrap.main(argumentList.toArray(new String[0]));
+// Bootstrap bootstrap = new Bootstrap();
+// List<String> argumentList = new ArrayList<String>(Arrays.asList(args));
+// bootstrap.main(argumentList.toArray(new String[0]));
 
         ConsoleReader reader = null;
         try {
@@ -117,17 +124,27 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         List<Completer> completors = new LinkedList<>();
         completors.add(new StringsCompleter(helpCommandList.keySet()));
         completors.add(new FileNameCompleter());
-//        completors.add(new StringsCompleter(new ArrayList<String>(){{
-//            add("test");
-//            add("openstack");
-//            add("amazon");
-//        }}));
+// completors.add(new StringsCompleter(new ArrayList<String>(){{
+// add("test");
+// add("openstack");
+// add("amazon");
+// }}));
         reader.addCompleter(new ArgumentCompleter(completors));
         reader.setPrompt("\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
         while ((line = reader.readLine()) != null) {
             out.flush();
             line = line.trim();
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
+
+                for (PluginEndpoint endpoint : pluginEndpointRepository.findAll()){
+                    PluginMessage message = new PluginMessage();
+                    message.setMethodName("CLOSE");
+                    message.setInterfaceClass(Class.forName(endpoint.getInterfaceClass()));
+                    message.setParameters(new LinkedList<Serializable>());
+                    message.getParameters().add("shutting down the NFVO");
+                    agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
+                }
+
                 exit(0);
             }else
             if (line.equalsIgnoreCase("cls")) {
@@ -148,7 +165,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
     }
 
-  private boolean installPlugin(String line, String type) throws IOException {
+    private boolean installPlugin(String line, String type) throws IOException {
         String path = line.split(" ")[1];
         List<String > classes = new ArrayList<>();
         File jar = new File(path);
@@ -194,10 +211,11 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         this.publisher.publishEvent(event);
         return true;
 
-       }
+    }
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
     }
 }
+
