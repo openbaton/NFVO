@@ -360,8 +360,8 @@ table.dataTable thead .sorting:after {
 }
 
 select.form-control.ng-valid.ng-dirty {
-    width: 90%;
-    right: -15px;
+    /*width: 90%;*/
+    /*right: -15px;*/
 }
 
 /*span.input-group-addon {
@@ -370,8 +370,8 @@ select.form-control.ng-valid.ng-dirty {
 }*/
 
 .input-group .form-control:first-child {
-    width: 90%;
-    left: 15px;
+    /*width: 90%;*/
+    /*left: 15px;*/
 }/*
 
 .input-group-addon:last-child {

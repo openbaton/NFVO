@@ -60,6 +60,12 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $('#addEditVNDF').modal('show');
     };
 
+    $scope.editDF = function (df, index) {
+        $scope.depFlavor = df;
+        $scope.dfEditIndex = index;
+        $('#modaladdDepFlavour').modal('show');
+    };
+
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
         if (!angular.isUndefined($scope.vnfdEditIndex)) {
@@ -74,8 +80,16 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.storeNSDF = function (nsdCreate) {
-        $('#addEditVNDF').modal('hide');
+        $('#modalForm').modal('hide');
         console.log(nsdCreate)
+        http.post(url, nsdCreate)
+            .success(function (response) {
+                showOk('Network Service Descriptors stored!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                showError(status, data);
+            });
     };
 
     $scope.saveValueVMI = function (newValue) {
@@ -113,9 +127,56 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreate.monitoring_parameter.splice(index, 1);
     };
 
+    $scope.saveValueCVDU = function (newValue) {
+        console.log(newValue);
+        $scope.depFlavor.costituent_vdu.push(newValue);
+    };
+
+    $scope.deleteCVDU = function (index) {
+        $scope.depFlavor.costituent_vdu.splice(index, 1);
+    };
+
+    $scope.saveValueDFC = function (newValue) {
+        console.log(newValue);
+        $scope.depFlavor.df_constraint.push(newValue);
+    };
+
+    $scope.deleteDFC = function (index) {
+        $scope.depFlavor.df_constraint.splice(index, 1);
+    };
+    $scope.deleteVNFDep = function (index) {
+        $scope.nsdCreate.vnf_dependency.splice(index, 1);
+    };
+
+    $scope.deleteDF = function (index) {
+        $scope.vnfdCreate.deployment_flavour.splice(index, 1);
+    };
+
     $scope.addDepFlavour = function () {
-        $scope.depFlavor = angular.copy($scope.vnfdCreate.deployment_flavour[0]);
+        $http.get('descriptors/vnfd/deployment_flavour.json')
+            .then(function (res) {
+                console.log(res.data);
+                $scope.depFlavor = angular.copy(res.data);
+            });
         $('#modaladdDepFlavour').modal('show');
+    };
+
+    $scope.addVNFDependencies = function () {
+        $('#modalVNFDependencies').modal('show');
+    };
+
+    $scope.source_target = {'source': {'name': ''}, 'target': {'name': ''}};
+    $scope.addVNFDep = function () {
+        $scope.nsdCreate.vnf_dependency.push(angular.copy($scope.source_target))
+        $('#modalVNFDependencies').modal('hide');
+    };
+    $scope.storeDepFlavour = function () {
+        $('#modaladdDepFlavour').modal('hide');
+        if (!angular.isUndefined($scope.dfEditIndex)) {
+            $scope.vnfdCreate.deployment_flavour.splice($scope.dfEditIndex, 1);
+            delete $scope.dfEditIndex;
+        }
+        $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
     };
 
     $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies.json')
@@ -277,18 +338,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
-    };
-
-
-    $scope.deleteTemplate = function (template) {
-        http.delete('/api/rest/admin/v2/templates/' + template.id)
-            .success(function (response) {
-                showOk('Template deleted!');
-                loadTableTemplate();
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
     };
 
 
