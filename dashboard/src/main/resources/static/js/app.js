@@ -20,43 +20,43 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/services/serviceinfo.html',
                 controller: 'ServiceCtrl'
             }).
-            when('/templates', {
-                templateUrl: 'pages/templates.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
+                controller: 'NsdCtrl'
             }).
-            when('/templates/:templateid', {
-                templateUrl: 'pages/templateinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors/:nsdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
+                controller: 'NsdCtrl'
             }).
-            when('/topologies', {
-                templateUrl: 'pages/topologies/topologies.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords', {
+                templateUrl: 'pages/nsrecords/nsrecords.html',
+                controller: 'NsrCtrl'
             }).
-            when('/topologies/:topologyid', {
-                templateUrl: 'pages/topologies/topologyinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords/:nsrecordId', {
+                templateUrl: 'pages/nsrecords/nsrecordinfo.html',
+                controller: 'NsrCtrl'
             }).
-            when('/topologies/:topologyid/graph', {
-                templateUrl: 'pages/topologies/graph.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords/:nsrecordId/graph', {
+                templateUrl: 'pages/nsrecords/graph.html',
+                controller: 'NsrCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords/:nsrecordId/containers/:containerId', {
+                templateUrl: 'pages/nsrecords/unitsinfo.html',
+                controller: 'NsrCtrl'
             }).
-            when('/topologies/:topologyid/services/:serviceId', {
-                templateUrl: 'pages/topologies/serviceinstance.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords/:nsrecordId/services/:serviceId', {
+                templateUrl: 'pages/nsrecords/serviceinstance.html',
+                controller: 'NsrCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId/units/', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsrecords/:nsrecordId/containers/:containerId/units/', {
+                templateUrl: 'pages/nsrecords/unitsinfo.html',
+                controller: 'NsrCtrl'
             }).
             when('/infrastructures', {
                 templateUrl: 'pages/infrastructures/infrastructures.html',
                 controller: 'InfrastructureCtrl'
             }).
-            when('/deployed/:topologyid', {
+            when('/deployed/:nsrecordId', {
                 templateUrl: 'pages/infrastructures/deployed.html',
                 controller: 'InfrastructureCtrl'
             }).
@@ -80,7 +80,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/vim-instances/vim-instances.html',
                 controller: 'vimInstanceCtrl'
             }).
-            when('/vim-instances/:vim-instanceId', {
+            when('/vim-instances/:vimInstanceId', {
                 templateUrl: 'pages/vim-instances/vim-instanceinfo.html',
                 controller: 'vimInstanceCtrl'
             }).

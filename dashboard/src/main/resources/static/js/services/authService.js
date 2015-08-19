@@ -30,62 +30,15 @@ angular.module('app').factory('AuthService', function($http, Session, $location,
             });
     };
 
-    authService.setServcies = function(servicesFromScope) {
-//        console.log(servicesFromScope);
-
-        services = servicesFromScope;
-        return services;
-    };
-    authService.getServcies = function() {
-        if (angular.isUndefined(services))
-            authService.getListOfServices();
-        return services;
+    authService.loginGuest = function(URL) {
+        Session.create(URL,'', 'guest', true);
+        $location.path("/");
+        $window.location.reload();
+        return ;
     };
 
-    authService.getListOfServices = function() {
-        var url = $cookieStore.get('URL');
-        var deferred = $q.defer();
-        http.get(url + ':35357/v2.0/OS-KSADM/services').
-            then(function(data, status) {
-                var status = status;
-//                    services = data;
-                services = data.data;
-//                    console.log(services);
 
-                http.get(url + ':35357/v2.0/endpoints').
-                    then(function(data, status) {
-                        var status = status;
-                        var endpoints = data.data;
-//                                console.log(endpoints);
 
-                        angular.forEach(services, function(value, key) {
-                            services = value;
-                            delete services[key];
-//                                    console.log(services);
-                            angular.forEach(services, function(service, index) {
-                                angular.forEach(endpoints.endpoints, function(endpoint) {
-                                    if (service.id === endpoint.service_id) {
-                                        console.log(service.id === endpoint.service_id);
-                                        service.endpoint = endpoint;
-                                    }
-                                });
-
-                            });
-                        });
-                        deferred.resolve(services);
-                        deferred.promise.then(function(data, status) {
-//                                    console.log(data);
-                            authService.setServcies(data);
-
-                        });
-
-//                                deferred.resolve(data);
-                    });
-            });
-
-        return;
-
-    };
 
     authService.isAuthenticated = function() {
         return !!Session.userName;

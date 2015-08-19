@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1>
-            NSR <small>List of Network Service Records</small>
+            Network Service Records <small>List of NSRs</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>
@@ -22,32 +22,32 @@
 <div class="row">
     <div class="col-lg-12 top-buffer">
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
-        <div class="table-responsive" ng-if="topologies.length > 0">
+        <div class="table-responsive" ng-if="nsrecords.length > 0">
             <table id="topologyTable"
                    class="table table-bordered table-striped table-hover tablesorter">
                 <thead>
                     <tr>
                         <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'name'; reverse = !reverse">Topology Name <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
                         <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
                         <th>Actions <i class="fa"></i></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="topology in topologies| orderBy:predicate:reverse">
+                    <tr ng-repeat="data in nsrecords| orderBy:predicate:reverse">
 
-                        <td><a popover="Show Info for this Topology" popover-placement="right" popover-trigger="mouseenter" href="#topologies/{{topology.id}}">{{topology.id}}</a></td>
-                        <td>{{topology.name}}</td>
-                        <td>{{topology.state}}</td>
+                        <td><a popover="Show Info for this Topology" popover-placement="right" popover-trigger="mouseenter" href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.state}}</td>
 
                         <td>
                             <div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action <span class="caret"></span></button> 
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="" ng-click="addServiceContainer(topology)">Add Service</a></li>
-                                    <li><a href=""  ng-click="cleanTopology(topology)">Clean</a></li>
-                                    <!--<li><a href=""  ng-click="startTopology(topology)">Start</a></li>-->
+                                    <li><a href="" ng-click="addServiceContainer(data)">Add Service</a></li>
+                                    <li><a href=""  ng-click="cleanTopology(data)">Clean</a></li>
+                                    <!--<li><a href=""  ng-click="startTopology(data)">Start</a></li>-->
                                     <li class="divider"></li>
-                                    <li><a  href=""  ng-click="deleteTopology(topology)">Delete</a></li>
+                                    <li><a  href=""  ng-click="deleteNSR(data)">Delete</a></li>
                                 </ul>
                             </div>
                         </td>
@@ -78,7 +78,7 @@
                                     Topology</label>
                                 <div class="col-sm-5">
                                     <input type="text" class="form-control" id="Name" name="Name"
-                                           ng-model="topology.name" placeholder="Topology" value="" required>
+                                           ng-model="data.name" placeholder="Topology" value="" required>
                                     <p ng-show="formForm.Name.$invalid" class="help-block">Name is required.</p>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                             <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}" data-toggle="modal" data-target="#addContainerModal">Add Container</button>
                             <hr>
                             <div collapse="">
-                                <div class="well well-lg" ng-show="topology.serviceContainers[$index]" ng-repeat="serviceContainer in topology.serviceContainers track by $index">
+                                <div class="well well-lg" ng-show="data.serviceContainers[$index]" ng-repeat="serviceContainer in data.serviceContainers track by $index">
                                     <div class="row pull-right">
                                         <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
                                     </div>
@@ -145,7 +145,7 @@
                                         </tbody>
                                     </table>
                                     <div class="row pull-right">
-                                        <a href="" title="Add a new Service Instance" ng-click="addInstance(topology.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
+                                        <a href="" title="Add a new Service Instance" ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
                                     </div>
                                 </div> 
                             </div>
@@ -522,10 +522,10 @@
                 <h4 class="modal-title" id="serviceFormLabel">Add Service Container</h4>
             </div>
             <div class="modal-body">
-                <button ng-if="topology.serviceContainers.length == 0" class="btn btn-default" data-toggle="modal"
+                <button ng-if="data.serviceContainers.length == 0" class="btn btn-default" data-toggle="modal"
                         data-target="#addContainerModal" >Add Container</button>
                 <form class="form-horizontal" role="form" id="formAddService">
-                    <div class="well well-lg" ng-show="topology.serviceContainers[$index]" ng-repeat="container in topology.serviceContainers track by $index">
+                    <div class="well well-lg" ng-show="data.serviceContainers[$index]" ng-repeat="container in data.serviceContainers track by $index">
                         <div class="row pull-right">
                             <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
                         </div>
@@ -573,7 +573,7 @@
                             </tbody>
                         </table>
                         <div class="row pull-right">
-                            <a href="" title="Add a new Service Instance" ng-click="addInstance(topology.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
+                            <a href="" title="Add a new Service Instance" ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
 
                         </div>
                     </div> 

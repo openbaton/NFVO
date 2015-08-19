@@ -3703,7 +3703,7 @@ tbody.collapse.in {
 }
 .input-group {
     position: relative;
-    display: table;
+    /*display: table;*/
     border-collapse: separate;
 }
 .input-group[class*="col-"] {
@@ -3713,7 +3713,7 @@ tbody.collapse.in {
 }
 .input-group .form-control {
     position: relative;
-    z-index: 2;
+    /*z-index: 2;*/
     float: left;
     width: 100%;
     margin-bottom: 0;
@@ -5700,7 +5700,7 @@ button.close {
     border: 0;
 }
 .modal-open {
-    overflow: hidden;
+    overflow: scroll;
 }
 .modal {
     position: fixed;
@@ -5710,7 +5710,7 @@ button.close {
     left: 0;
     z-index: 1040;
     display: none;
-    overflow: hidden;
+    overflow: scroll;
     -webkit-overflow-scrolling: touch;
     outline: 0;
 }
