@@ -205,7 +205,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             changeStatus(vnfr,currentEvent.getEvent());
 
         //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
-        if(vnfr.getStatus()==Status.INITIAILZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
+        if(vnfr.getStatus()==Status.INITIALIZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
             changeStatus(vnfr,Event.CONFIGURE);
 
         //set the command in the history event
@@ -228,7 +228,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case ERROR:vnfr.setStatus(Status.ERROR);
                 break;
-            case INSTANTIATE: vnfr.setStatus(Status.INITIAILZED);
+            case INSTANTIATE: vnfr.setStatus(Status.INITIALIZED);
                 break;
             case GRANTED:
                 break;
@@ -266,7 +266,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     }
 
-    protected abstract void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
+    protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
     protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
