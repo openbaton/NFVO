@@ -28,7 +28,13 @@ import java.io.Serializable;
 @SpringBootApplication
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
-    private Gson parser=new GsonBuilder().setPrettyPrinting().create();
+    @Autowired
+    protected JmsListenerContainerFactory topicJmsContainerFactory;
+
+    private boolean exit = false;
+
+    protected String SELECTOR;
+    protected Gson parser = new GsonBuilder().create();
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -131,12 +137,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected void executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
+    protected String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
         this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
-        log.debug("Received from EMS (" + vduHostname + "): " + response);
+        log.debug("Received from EMS ("+vduHostname+"): " + response);
 
         if(response==null) {
             throw new NullPointerException("Response from EMS is null");
@@ -145,18 +151,18 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         JsonObject jsonObject = parser.fromJson(response,JsonObject.class);
 
         if(jsonObject.get("status").getAsInt()==0){
-            log.debug("Output from EMS ("+vduHostname+") is: " + jsonObject.get("output").getAsString());
+            try {
+                log.debug("Output from EMS ("+vduHostname+") is: " + jsonObject.get("output"));
+            }catch (Exception e){
+                e.printStackTrace();
+                throw e;
+            }
         }
         else{
             log.error(jsonObject.get("err").getAsString());
             throw new VnfmSdkException("EMS ("+vduHostname+") had the following error: "+jsonObject.get("err").getAsString());
         }
-    }
-
-    @Override
-    protected void register() {
-        log.debug("Registering to queue: vnfm-register");
-        sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+        return response;
     }
 
     @Override
@@ -167,6 +173,11 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Override
     protected void sendToNfvo(final CoreMessage coreMessage) {
         sendMessageToQueue(nfvoQueue,coreMessage);
+    }
+
+    @Override
+    protected void register() {
+        this.sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
     }
 }
 
