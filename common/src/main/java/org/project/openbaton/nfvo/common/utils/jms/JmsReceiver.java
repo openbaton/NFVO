@@ -26,8 +26,8 @@ public class JmsReceiver implements Receiver {
     private JmsTemplate jmsTemplate;
 
     @Override
-    public Serializable receive(String destination) throws JMSException {
-        Message message = jmsTemplate.receive(destination);
+    public Serializable receive(String destination, String selector) throws JMSException {
+        Message message = jmsTemplate.receiveSelected(destination, selector);
         if (message instanceof ObjectMessage)
             return ((ObjectMessage)message).getObject();
         else
