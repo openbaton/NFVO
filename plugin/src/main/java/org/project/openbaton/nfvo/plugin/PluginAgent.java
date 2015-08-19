@@ -3,6 +3,7 @@ package org.project.openbaton.nfvo.plugin;
 import org.project.openbaton.catalogue.nfvo.PluginAnswer;
 import org.project.openbaton.catalogue.nfvo.PluginEndpoint;
 import org.project.openbaton.catalogue.nfvo.PluginMessage;
+import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
 import org.project.openbaton.nfvo.common.utils.AgentBroker;
@@ -44,12 +45,14 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
             message = createMessageFromParameters(method.getName(), parameters, inter);
 //        }
 
+        message.setSelector(IdGenerator.createUUID());
+
         //call a method of the plugin
         agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
 
         PluginAnswer answer = null;
         try {
-            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint() + "-nfvo");
+            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint() + "-nfvo", "selector = '" + message.getSelector() + "'");
         } catch (JMSException e) {
             e.printStackTrace();
             throw new PluginInvokeException(e);
