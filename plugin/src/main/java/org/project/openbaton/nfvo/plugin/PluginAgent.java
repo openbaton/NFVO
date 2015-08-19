@@ -52,7 +52,7 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
 
         PluginAnswer answer = null;
         try {
-            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint() + "-nfvo", message.getSelector());
+            answer = (PluginAnswer) agentBroker.getReceiver(endpoint.getEndpointType()).receive(endpoint.getEndpoint() + "-nfvo", "selector = '" + message.getSelector() + "'");
         } catch (JMSException e) {
             e.printStackTrace();
             throw new PluginInvokeException(e);
