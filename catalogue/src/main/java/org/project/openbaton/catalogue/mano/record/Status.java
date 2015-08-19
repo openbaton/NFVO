@@ -18,29 +18,33 @@ public enum Status {
   */
  ERROR(0),
  /**
+  * Null -
+  */
+ NULL (1),
+ /**
   * Instantiated - Not Configured
   */
- INITIALIZED (1),
+ INITIALIZED (2),
 
  /**
   * Inactive - Configured
   */
- INACTIVE (2),
+ INACTIVE (3),
 
  /*
  * Scaling
  */
- SCALING(3),
+ SCALING(4),
 
  /**
   * Active - Configured
   */
- ACTIVE (4),
+ ACTIVE (5),
 
  /**
   * Terminated
   */
- TERMINATED (5);
+ TERMINATED (6);
 
 
  private int value;

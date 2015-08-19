@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
@@ -30,7 +32,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     protected static final String nfvoQueue = "vnfm-core-actions";
-    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+//    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     @PreDestroy
     private void shutdown(){
@@ -67,7 +69,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     }
 
     @Override
-    public abstract CoreMessage instantiate();
+    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void query();
@@ -85,15 +87,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract CoreMessage modify();
+    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     @Override
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract CoreMessage terminate();
+    public abstract CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    public abstract CoreMessage handleError();
+    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -111,7 +113,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected void onAction(CoreMessage message) {
         log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         log.trace("VNFM: Received Message: " + message.getAction());
-        this.virtualNetworkFunctionRecord = message.getPayload();
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
         CoreMessage coreMessage = null;
         switch (message.getAction()){
             case ALLOCATE_RESOURCES:
@@ -122,17 +124,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case SCALING:
                 break;
             case ERROR:
-                coreMessage = handleError();
+                coreMessage = handleError(virtualNetworkFunctionRecord);
                 break;
             case MODIFY:
-                coreMessage = this.modify();
+                coreMessage = this.modify(virtualNetworkFunctionRecord);
                 break;
             case RELEASE_RESOURCES:
-                coreMessage = this.terminate();
+                coreMessage = this.terminate(virtualNetworkFunctionRecord);
                 break;
             case GRANT_OPERATION:
             case INSTANTIATE:
-                coreMessage = this.instantiate();
+                coreMessage = this.instantiate(virtualNetworkFunctionRecord);
+                break;
             case SCALE_UP_FINISHED:
                 break;
             case SCALE_DOWN_FINISHED:
@@ -142,10 +145,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             case INSTANTIATE_FINISH:
                 break;
             case CONFIGURE:
-                coreMessage = configure();
+                coreMessage = configure(virtualNetworkFunctionRecord);
                 break;
             case START:
-                coreMessage = start();
+                coreMessage = start(virtualNetworkFunctionRecord);
                 break;
         }
 
@@ -156,7 +159,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         }
     }
 
-    protected abstract CoreMessage start();
+    protected abstract CoreMessage start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event){
         for(LifecycleEvent lce : events)
@@ -265,7 +268,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
     protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
-    protected abstract CoreMessage configure();
+    protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected abstract void sendToNfvo(CoreMessage coreMessage);
 
