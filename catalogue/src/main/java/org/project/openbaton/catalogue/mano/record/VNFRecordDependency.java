@@ -1,6 +1,5 @@
-package org.project.openbaton.catalogue.mano.common;
+package org.project.openbaton.catalogue.mano.record;
 
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;

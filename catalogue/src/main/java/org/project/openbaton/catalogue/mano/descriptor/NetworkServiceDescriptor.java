@@ -8,7 +8,6 @@ package org.project.openbaton.catalogue.mano.descriptor;
 
 import org.project.openbaton.catalogue.mano.common.NFVEntityDescriptor;
 import org.project.openbaton.catalogue.mano.common.Security;
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
 
 import javax.persistence.*;
 import java.util.HashSet;

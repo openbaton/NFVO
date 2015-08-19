@@ -1,11 +1,11 @@
 package org.project.openbaton.catalogue.security;
 
+import org.project.openbaton.catalogue.util.IdGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.project.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 @Table(name = "USERS")
