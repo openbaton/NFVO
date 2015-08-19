@@ -25,7 +25,8 @@ require({
         servicesController: "controllers/servicesController",
         vimInstanceController: "controllers/vimInstanceController",
         topologiesServices: "services/topologiesServices",
-        topologyController: "controllers/topologyController",
+        nsdController: "controllers/nsdController",
+        nsrController: "controllers/nsrController",
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
         indexController: "controllers/indexController",
         dragDropController: "controllers/dragDropController",
@@ -100,7 +101,10 @@ require({
         servicesServices: {
             deps: ['app']
         },
-        topologyController: {
+        nsdController: {
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologiesServices', 'angular_cookies']
+        },
+        nsrController: {
             deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologiesServices', 'angular_cookies']
         },
         vimInstanceController: {
@@ -146,7 +150,8 @@ require({
     'indexController',
     'servicesController',
     'servicesController',
-    'topologyController',
+    'nsdController',
+    'nsrController',
     'vimInstanceController',
     'switchController',
     'infrastructuresController',

@@ -1,0 +1,1031 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Network Service Descriptors
+            <small>List of NSDs</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                NSDs
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+                title="Create a new Network Service Descriptor" data-toggle="modal"
+                data-target="#modalFile">Create NSD File
+        </button>
+        <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
+                title="Create a new Network Service Descriptor" data-toggle="modal"
+                ng-style="{'margin-right':'20px'}"
+                data-target="#modalForm">Create NSD Form
+        </button>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-if="nsdescriptors.length > 0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">NSD Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="nsd in nsdescriptors| orderBy:predicate:reverse">
+                    <td><a href="#nsdescriptors/{{nsd.id}}" ng-click="showData(nsd)">{{nsd.id}}</a></td>
+                    <td>{{nsd.name}}</td>
+                    <td>{{nsd.vendor}}</td>
+                    <td>{{nsd.version}}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                       ng-click="launch(nsd)">Launch</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li><a href="" ng-click="deleteNSD(nsd)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Save a Network Service Descriptor</h4>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" id="formJson">
+                    <div class="form-group">
+                        <br> <label for="jsonInputArea">Insert Your Json</label>
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson"
+                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+                                          class="form-control" rows="5"
+                                          placeholder="{ }"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jsonInputFile">File input</label>
+                        <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)">
+
+                        <p class="help-block">Example: NetworkServiceDescriptor.json </p>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="storeNSD"
+                        ng-click="sendFile()" class="btn btn-primary">Store NSD
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addEditVDU" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit a Virtual Deployment Unit</h4>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in vduCreate"
+                         ng-if="key!='vimInstance' && key!='lifecycle_event' && key!='monitoring_parameter'
+                         && key!='vm_image'&& key!='vnfc'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="vduCreate[key]"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vimInstance" class="col-sm-4 control-label">vimInstance</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="vimInstance" name="{{key}}"
+                                   ng-model="vduCreate['vimInstance']['name']"/>
+                        </div>
+
+
+                    </div>
+                    <tabset>
+                        <tab heading="lifecycle_event">
+                            {{vduCreate.lifecycle_event}}
+                        </tab>
+                        <tab heading="monitoring_parameter">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Monitoring Parameters
+                                            <a class="pull-right" title="Add a New Monitoring Prameter" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueMP(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3"
+                                ng-repeat="mp in vduCreate.monitoring_parameter track by $index">
+                                <li>{{mp}} <a href="" ng-click="deleteMP($index)"><i class="fa fa-trash-o"></i></a></li>
+                            </ul>
+                            <!--{{vduCreate.monitoring_parameter}}-->
+                        </tab>
+                        <tab heading="vm_image">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Virtual Machine Images
+                                            <a class="pull-right" title="Add a New VMI" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueVMI(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3" ng-repeat="vmi in vduCreate.vm_image track by $index">
+                                <li>{{vmi}} <a href="" ng-click="deleteVMI($index)"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                            </ul>
+                            <!--{{vduCreate.vm_image}}-->
+                        </tab>
+                        <tab heading="vnfc">
+                            {{vduCreate.vnfc}}
+                        </tab>
+                    </tabset>
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="editAddVDU"
+                        ng-click="addVDUtoVND()" class="btn btn-primary">Save VDU
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modaladdDepFlavour" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit a Deployment Unit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="form4" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in depFlavor"
+                         ng-if="key!='df_constraint' && key!='costituent_vdu'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="depFlavor[key]"/>
+                        </div>
+                    </div>
+                    <tabset>
+                        <tab heading="df_constraint">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Costituent VDU
+                                            <a class="pull-right" title="Add a New costituent_vdu" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueDFC(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3" ng-repeat="dfc in depFlavor.df_constraint track by $index">
+                                <li>{{dfc}} <a href="" ng-click="deleteDFC($index)"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                            </ul>
+                            <!--{{depFlavor.costituent_vdu}}-->
+
+                        </tab>
+                        <tab heading="costituent_vdu">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">DF Constraint
+                                            <a class="pull-right" title="Add a New df_constraint" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueCVDU(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3" ng-repeat="c_vdu in depFlavor.costituent_vdu track by $index">
+                                <li>{{c_vdu}} <a href="" ng-click="deleteCVDU($index)"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                            </ul>
+                            <!--{{depFlavor.costituent_vdu}}-->
+                        </tab>
+                    </tabset>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="storeDF"
+                        ng-click="storeDepFlavour()" class="btn btn-primary">Store DFlavour
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit a Virtual Network Function Descriptor</h4>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in vnfdCreate"
+                         ng-if="key!='auto_scale_policy' && key!='connection_point' && key!='connection_point'
+                         && key!='monitoring_parameter' && key!='vdu'&& key!='vdu_dependency'
+                         && key!='deployment_flavour' && key!='lifecycle_event'&& key!='virtual_link'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="vnfdCreate[key]"/>
+                        </div>
+
+
+                    </div>
+                    <tabset>
+                        <tab class="" heading="auto_scale_policy">
+                            {{vnfdCreate.auto_scale_policy}}
+                        </tab>
+                        <tab class=" " heading="connection_point">
+                            {{vnfdCreate.connection_point}}
+                        </tab>
+                        <tab class="" heading="connection_point">
+                            {{vnfdCreate.connection_point}}
+                        </tab>
+                        <tab class="" heading="monitoring_parameter">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Monitoring Parameters
+                                            <a class="pull-right" title="Add a New Monitoring Prameter" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueMPfromVNFD(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3"
+                                ng-repeat="mp in vnfdCreate.monitoring_parameter track by $index">
+                                <li>{{mp}} <a href="" ng-click="deleteMPfromVNFD($index)"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                            </ul>
+                            <!--{{vnfdCreate.monitoring_parameter}}-->
+                        </tab>
+                        <!---->
+                        <tab class="" heading="vdu">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Virtual Descriptor Unit
+                                            <a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
+                                     ng-repeat="vdu in vnfdCreate.vdu track by $index">
+
+                                    <div class="row">
+                                        <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value)">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
+                                        <div class="pull-right">
+                                            <a href="" title="Edit VDU" ng-click="editVDU(vdu,$index)">
+                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
+                                            <a href="" title="Delete VDU" ng-click="deleteVDU($index)">
+                                                <i class="fa fa-trash-o"> </i></a>
+                                        </div>
+
+                                    </div>
+                                    <hr class="hr_title"/>
+                                </div>
+                            </div>
+                        </tab>
+                        <tab class="" heading="vdu_dependency">
+                            {{vnfdCreate.vdu_dependency}}
+                        </tab>
+                        <tab class="" heading="deployment_flavour">
+                            <h4 class="">
+                                <div class="col-lg-12">Deployment Flavour
+                                    <a class="pull-right" title="Add a New Deployment Flavour" href=""
+                                       ng-click="addDepFlavour()">
+                                        <i class="fa fa-plus-square"> Add </i></a></div>
+                            </h4>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <div class="row">
+                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
+                                     ng-repeat="df in vnfdCreate.deployment_flavour track by $index">
+
+                                    <div class="row">
+                                        <spam ng-repeat="(key,value) in df" ng-if="!isEmpty(value)">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
+                                        <div class="pull-right">
+                                            <a href="" title="Edit this Deployment Flavour"
+                                               ng-click="editDF(df,$index)">
+                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
+                                            <a href="" title="Delete this Deployment Flavour"
+                                               ng-click="deleteDF($index)">
+                                                <i class="fa fa-trash-o"> </i></a>
+                                        </div>
+
+                                    </div>
+                                    <hr class="hr_title"/>
+                                </div>
+                            </div>
+                            <!--{{vnfdCreate.deployment_flavour}}-->
+                        </tab>
+                        <tab class="" heading="lifecycle_event">
+                            {{vnfdCreate.lifecycle_event}}
+                        </tab>
+                        <tab class="" heading="virtual_link">
+                            {{vnfdCreate.virtual_link}}
+                        </tab>
+                    </tabset>
+                    <!--{{vnfdCreate}}-->
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="editAddNVNFD"
+                        ng-click="addVNDtoNSD()" class="btn btn-primary">Save VNFD
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create a Network Service Descriptor</h4>
+
+            </div>
+            <div class="modal-body">
+
+                <form role="form" class="form-horizontal" id="formForm">
+                    <br/>
+
+                    <div class="form-group" ng-repeat="(key,value) in nsdCreate"
+                         ng-if="key!='vnfd' && key!='vnfd' && key!='auto_scale_policy' && key!='connection_point' && key!='lifecycle_event'
+                          && key!='monitoring_parameter' && key!='pnfd' && key!='service_deployment_flavour' && key!='vnf_dependency'
+                         && key!='vnffgd' && key!='vld'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="nsdCreate[key]"/>
+                        </div>
+                    </div>
+
+
+                    <tabset>
+
+                        <tab heading="auto_scale_policy">
+                            {{nsdCreate.auto_scale_policy}}
+                        </tab>
+                        <tab heading="connection_point">
+                            {{nsdCreate.connection_point}}
+                        </tab>
+                        <tab heading="lifecycle_event">
+                            {{nsdCreate.lifecycle_event}}
+                        </tab>
+                        <tab heading="monitoring_parameter">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Monitoring Parameters
+                                            <a class="pull-right" title="Add a New Monitoring Prameter" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group input-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-7">
+                                            <div ng-init="newValue=''">
+                                                <input type="text" class="form-control" id="newValue" name="newValue"
+                                                       ng-model="newValue"/>
+                                            </div>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueMPfromNSD(newValue)">
+                                                    <i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+
+                            <ul class="col-lg-offset-3"
+                                ng-repeat="mp in nsdCreate.monitoring_parameter track by $index">
+                                <li>{{mp}} <a href="" ng-click="deleteMPfromNSD($index)"><i
+                                        class="fa fa-trash-o"></i></a></li>
+                            </ul>
+                            <!--{{nsdCreate.monitoring_parameter}}-->
+                        </tab>
+                        <tab heading="pnfd">
+                            {{nsdCreate.pnfd}}
+                        </tab>
+                        <tab heading="service_deployment_flavour">
+
+                            {{nsdCreate.service_deployment_flavour}}
+                        </tab>
+                        <tab heading="vnf_dependency">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Virtual Network Function Dependencies
+                                            <a class="pull-right " title="Add a New VNFDependencies"
+                                               href=""
+                                               ng-click="addVNFDependencies()">
+
+                                                <i class="fa fa-plus-square"> Add </i></a>
+                                        </div>
+                                    </h4>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <ul class="col-lg-offset-3"
+                                ng-repeat="vnfdep in nsdCreate.vnf_dependency track by $index">
+                                <li><b>source</b>: {{vnfdep.source.name}}, <b>target</b>: {{vnfdep.target.name}} <a
+                                        href="" ng-click="deleteVNFDep($index)"><i
+                                        class="fa fa-trash-o"></i></a></li>
+                            </ul>
+                            <!--{{nsdCreate.vnf_dependency}}-->
+                        </tab>
+
+                        <tab heading="vnffgd">
+                            {{nsdCreate.vnffgd}}
+                        </tab>
+                        <tab heading="vld">
+                            {{nsdCreate.vld}}
+                        </tab>
+
+                        <tab heading="VNFDescriptors">
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Virtual Network Function Descriptors
+                                            <a class="pull-right" title="Add a New VNFD" href="" ng-click="addVNFD()">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+
+                            <div class="row">
+                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
+                                     ng-repeat="vnfd in nsdCreate.vnfd track by $index">
+
+                                    <div class="row">
+                                        <spam ng-repeat="(key,value) in vnfd" ng-if="!isEmpty(value) && key !='vdu'">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
+                                    </div>
+                                    <div class="row">
+                                        <spam ng-repeat=" vdu in vnfd.vdu" ng-if="!isEmpty(value)">
+                                            <b>vdu</b>:
+                                            <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value) && value!=''">
+                                                {{key}}: {{value}}
+                                                <spam ng-if="!$last">,</spam>
+                                            </spam>
+                                        </spam>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="pull-right">
+                                            <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
+                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
+                                            <a href="" title="Delete VNFD" ng-click="deleteVNFD($index)">
+                                                <i class="fa fa-trash-o"> </i></a>
+                                        </div>
+                                    </div>
+                                    <hr class="hr_title"/>
+                                </div>
+                            </div>
+                        </tab>
+                    </tabset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="storeNSDF"
+                        ng-click="storeNSDF(nsdCreate)" class="btn btn-primary">Store NSD
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalVNFDependencies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add a Virtual Network Function Dependencie</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" id="form5">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label class="control-label"
+                                   ng-init="">Source</label>
+                            <select name="typeSelect" class="form-control modal-select"
+                                    ng-model="source_target.source.name"
+
+                                    ng-options="vnfd.name as vnfd.name for vnfd in nsdCreate.vnfd | orderBy:'name':false"
+                                    ng-change="">
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="control-label"
+                                   ng-init="">Target</label>
+                            <select name="typeSelect" class="form-control modal-select"
+                                    ng-model="source_target.target.name"
+                                    ng-options="vnfd.name as vnfd.name for vnfd in nsdCreate.vnfd | orderBy:'name':false"
+                                    ng-change="">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id=""
+                        ng-click="addVNFDep()" class="btn btn-primary">Add VNFD
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--
+<div class="" ng-if="expose[datacenter.name][subnets.name].expose">
+    <label class="control-label" ng-init="expose[datacenter.name][subnets.name].floatingIP = floatingIPsNET[0]">Floating
+        IP</label>
+    <select name="typeSelect" class="form-control modal-select"
+            ng-model="expose[datacenter.name][subnets.name].floatingIP"
+            ng-options="ip for ip in floatingIPsNET | orderBy:'ip':false"
+            ng-change="updateFloatingIPs(datacenter, expose[datacenter.name][subnets.name].floatingIP)"></select>
+    <span ng-if="expose[datacenter.name][subnets.name].floatingIP" class="help-block">Selected Floating IP: <b>{{expose[datacenter.name][subnets.name].floatingIP}}</b></span>
+
+</div>-->
+
+
+<!--
+
+&lt;!&ndash; /#page-wrapper &ndash;&gt;
+<div class="modal" id="modalT">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                &lt;!&ndash;                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;</button>&ndash;&gt;
+                <h4 class="modal-title" id="serviceFormLabel">Create Topology</h4>
+            </div>
+            <div class="modal-body">
+                <tabset>
+                    <tab heading="Form">
+                        <br>
+
+                        <form class="form-horizontal" role="form" name="formForm" novalidate>
+                            <div class="form-group" ng-class="{ 'has-error' : formForm.Name.$invalid  }">
+                                <label for="Name" class="col-sm-4 control-label">Name
+                                    Topology</label>
+
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="Name" name="Name"
+                                           ng-model="data.name" placeholder="Topology" value="" required>
+
+                                    <p ng-show="formForm.Name.$invalid" class="help-block">Name is required.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : selectedOneLocation }">
+                                <label for="checkboxDiv" class="col-sm-4 control-label">Location</label>
+
+                                <div id="checkboxDiv">
+                                    <div class="col-sm-8 input-group">
+                                        <div class="checkbox" ng-repeat="location in locations track by $index">
+                                            <label>
+                                                <input type="checkbox" value="{{location}}"
+                                                       ng-model="locationChecked[location]"
+                                                       ng-change="selectedLocations(location)">
+                                                {{location}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">
+                                    One Location is required.</p>
+                            </div>
+                            <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}"
+                                    data-toggle="modal" data-target="#addContainerModal">Add Container
+                            </button>
+                            <hr>
+                            <div collapse="">
+                                <div class="well well-lg" ng-show="data.serviceContainers[$index]"
+                                     ng-repeat="serviceContainer in data.serviceContainers track by $index">
+                                    <div class="row pull-right">
+                                        <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">
+                                            <i class="fa fa-trash-o"> Delete </i></a>
+                                    </div>
+                                    <div class="row">
+                                        <div>
+                                            <b>Container:</b> {{serviceContainer.containerName}}
+                                            :: <b>min:</b> {{serviceContainer.minNumInst}}
+                                            :: <b>max:</b> {{serviceContainer.maxNumInst}}
+                                            :: <b>flavour:</b> {{serviceContainer.flavour}}
+                                            <br/>
+
+                                            <div>
+                                                <b>images:</b>
+                                                <span ng-repeat="(k,v) in serviceContainer.images">
+                                                    {{k}}: {{v}}<span ng-if="!$last">,</span>
+
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <b>subnets:</b>&nbsp;
+                                                <span ng-repeat="sub in serviceContainer.subnets">
+                                                    <span ng-repeat="(k,v) in sub">
+                                                        <span ng-repeat="obj in v">
+                                                            {{obj.name}}<span ng-show="!$last">, </span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <table id="tableServices" class="table">
+                                        <thead>
+                                        <th>Service Name</th>
+                                        <th>Service Type</th>
+                                        <th>Require</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="service in serviceContainer.services track by $index">
+                                            <td>{{service.instanceName}}</td>
+                                            <td>{{service.serviceType}}</td>
+                                            <td>{{service.requires}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row pull-right">
+                                        <a href="" title="Add a new Service Instance"
+                                           ng-click="addInstance(data.serviceContainers[$index])"> <i
+                                                class="fa fa-plus-circle"> Add Instance</i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <div id="inputTemplateForm" class="inputTemplate"
+                             ng-show="toggle">
+
+                            <div class="form-group form-horizontal ">
+                                <label for="nameTemplate" class="col-sm-4 control-label">Name
+                                    Template</label>
+
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="nameTemplate" name="nameTemplate"
+                                           ng-model="template.name" placeholder="Name Template" value="">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input id="checkTemplate" type="checkbox"
+                                       ng-model="toggle"
+                                       ng-click="toggleF()">
+                                Create Template?
+                            </label>
+                        </div>
+
+                    </tab>
+                    <tab heading="Json">
+                        <form role="form" id="formJson">
+                            <div class="form-group">
+                                <br> <label for="jsonInputArea">Insert Your Json</label>
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson"
+                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+                                          class="form-control" rows="5"
+                                          placeholder="{ }"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="jsonInputFile">File input</label>
+                                <input type="file" id="jsonInputFile"
+                                       onchange="angular.element(this).scope().setFile(this)">
+
+                                <p class="help-block">Example: Topology.json </p>
+                            </div>
+                        </form>
+                        <table>
+                            <tr>
+                                <td class="container row">
+                                    <div id="inputTemplateJson" class="col-sm-12 inputTemplate"
+                                         style="display: none;">
+                                        <div class="form-group ">
+                                            <label for="nameTemplate">Name Template</label> <input
+                                                type="text" class="form-control" id="nameTemplate"
+                                                placeholder="Template">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nameTemplate">flavour</label> <input type="text"
+                                                                                             class="form-control"
+                                                                                             id="inputFlavorTemplate"
+                                                                                             value="m1.small"
+                                                                                             placeholder="m1.small">
+                                        </div>
+
+                                    </div>
+                                <td></td>
+                                <div class="checkbox pull-right">
+                                    &lt;!&ndash;                                <label><input id="checkTemplatej" type="checkbox"
+                                                                                  onclick="toggle('#inputTemplateJson', this)">Create
+                                                                        a Template?</label>&ndash;&gt;
+                                </div>
+                            </tr>
+                            </td>
+                        </table>
+                    </tab>
+                    <tab heading="XML">
+                        <form role="form" id="formXML">
+                            <div class="form-group">
+                                <br> <label for="xmlInputArea">Insert Your XML</label>
+                                <textarea ng-model="xmlInputArea" ng-change="changeTextXML(xmlInputArea)"
+                                          id="xmlInputArea" class="form-control" rows="5"
+                                          placeholder="<Definitions></Definitions>"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="xmlInputFile">File input</label>
+                                <input type="file" id="xmlInputFile"
+                                       onchange="angular.element(this).scope().setFile(this)">
+
+                                <p class="help-block">Example: Load your File Topology.xml</p>
+                            </div>
+                        </form>
+                        <table>
+                            <tr>
+                                <td class="container row">
+                                    <div id="inputTemplateXML" class="col-sm-12 inputTemplate"
+                                         style="display: none;">
+                                        <div class="form-group ">
+                                            <label for="nameTemplate">Name Template</label> <input
+                                                type="text" class="form-control" id="nameTemplate"
+                                                placeholder="Template">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nameTemplate">flavour</label> <input type="text"
+                                                                                             class="form-control"
+                                                                                             id="inputFlavorTemplate"
+                                                                                             value="m1.small"
+                                                                                             placeholder="m1.small">
+                                        </div>
+
+                                    </div>
+                                <td></td>
+                                <div class="checkbox pull-right">
+
+                                </div>
+
+                            </tr>
+                            </td>
+                        </table>
+                    </tab>
+                </tabset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        ng-click="cleanModal()"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="sendTopology"
+                        ng-click="sendTopology()" class="btn btn-primary">Send Topology
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+-->
