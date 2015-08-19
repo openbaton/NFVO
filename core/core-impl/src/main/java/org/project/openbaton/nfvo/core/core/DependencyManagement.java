@@ -16,7 +16,7 @@
 
 package org.project.openbaton.nfvo.core.core;
 
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;

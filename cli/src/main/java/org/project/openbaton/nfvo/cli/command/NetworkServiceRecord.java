@@ -17,7 +17,7 @@
 package org.project.openbaton.nfvo.cli.command;
 
 import com.google.gson.Gson;
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;

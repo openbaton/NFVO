@@ -16,8 +16,8 @@
 
 package org.project.openbaton.nfvo.core.test;
 
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;

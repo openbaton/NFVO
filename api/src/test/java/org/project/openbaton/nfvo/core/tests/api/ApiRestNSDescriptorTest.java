@@ -33,7 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.Security;
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 
 
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;

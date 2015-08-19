@@ -16,7 +16,7 @@
 
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
@@ -68,15 +68,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         log.trace("Fetched Data");
 
-        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
-            vnfdRepository.create(vnfd);
+//        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
+//            vnfdRepository.create(vnfd);
 
         log.trace("Persisting VNFDependencies");
         nsdUtils.fetchDependencies(networkServiceDescriptor);
-        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()){
-            log.trace(""+ vnfDependency.getSource());
-            vnfDependencyRepository.create(vnfDependency);
-        }
+//        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()){
+//            log.trace(""+ vnfDependency.getSource());
+//            vnfDependencyRepository.create(vnfDependency);
+//        }
         log.trace("Persisted VNFDependencies");
 
         nsdRepository.create(networkServiceDescriptor);

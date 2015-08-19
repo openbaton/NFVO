@@ -16,7 +16,7 @@
 
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;

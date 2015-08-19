@@ -16,7 +16,7 @@
 
 package org.project.openbaton.nfvo.core.utils;
 
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;

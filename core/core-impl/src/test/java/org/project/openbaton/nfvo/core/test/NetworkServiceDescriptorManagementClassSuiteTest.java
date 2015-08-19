@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
-import org.project.openbaton.catalogue.mano.common.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
