@@ -45,7 +45,7 @@ public class GrantoperationTask extends AbstractTask {
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
             message = new CoreMessage();
             message.setAction(Action.GRANT_OPERATION);
-            message.setPayload(virtualNetworkFunctionRecord);
+            message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
             vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         } else {

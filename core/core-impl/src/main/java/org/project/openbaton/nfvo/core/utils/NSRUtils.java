@@ -87,7 +87,7 @@ public class NSRUtils {
                 pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
             }
         networkServiceRecord.setPnfr(pnfrs);
-        networkServiceRecord.setStatus(Status.INACTIVE);
+        networkServiceRecord.setStatus(Status.NULL);
         networkServiceRecord.setVnffgr(new HashSet<VNFForwardingGraphRecord>());
 //      TODO translate them from descriptors to records
 //        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
@@ -287,7 +287,7 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.getVirtual_link().addAll(internalVirtualLinks);
 
         virtualNetworkFunctionRecord.setVnf_address(new HashSet<String>());
-        virtualNetworkFunctionRecord.setStatus(Status.INITIALIZED);
+        virtualNetworkFunctionRecord.setStatus(Status.NULL);
         return virtualNetworkFunctionRecord;
     }
 

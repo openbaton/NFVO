@@ -49,10 +49,14 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     @Autowired
     @Qualifier("vnfmManager")
     private VnfmManager vnfmManager;
+
+    @Autowired
+    private org.project.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException {
+    public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
         int numDependencies = 0;
         NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
         Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
@@ -60,15 +64,25 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             log.debug("Found VNF; there are " + vnfRecordDependencies.size() + " dependencies");
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
-                /**
-                 * invoke on target the modify with the source information
-                 */
-                log.trace(vnfRecordDependency.getSource().getId() + " == " + virtualNetworkFunctionRecord.getId());
-                if (vnfRecordDependency.getSource().getId().equals(virtualNetworkFunctionRecord.getId())){
-                    CoreMessage coreMessage = new CoreMessage();
-                    coreMessage.setAction(Action.MODIFY);
-                    coreMessage.setPayload(virtualNetworkFunctionRecord);
-                    vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
+                log.trace(vnfRecordDependency.getTarget().getId() + " == " + virtualNetworkFunctionRecord.getId());
+                if (vnfRecordDependency.getTarget().getId().equals(virtualNetworkFunctionRecord.getId())){
+                    /**
+                     * Check the source:
+                     *
+                     * wait for the source to be initialized
+                     */
+                    if (vnfRecordDependency.getSource().getStatus().ordinal() < Status.INITIALIZED.ordinal()){
+                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getSource().getId(),vnfRecordDependency);
+                    }else {
+                        /**
+                         * or Send directly the modify command
+                         */
+                        CoreMessage coreMessage = new CoreMessage();
+                        coreMessage.setAction(Action.MODIFY);
+                        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                        coreMessage.setDependency(vnfRecordDependency);
+                        vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
+                    }
                     numDependencies++;
                 }
             }

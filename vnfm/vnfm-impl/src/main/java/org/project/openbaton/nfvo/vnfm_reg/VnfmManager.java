@@ -175,7 +175,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException {
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
             CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setPayload(vnfr);
+            coreMessage.setVirtualNetworkFunctionRecord(vnfr);
             if (vnfr.getVnfPackage() == null)
                 coreMessage.setAction(Action.INSTANTIATE);
             else
@@ -216,7 +216,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         AbstractTask task = (AbstractTask) context.getBean(beanName);
 
         task.setAction(message.getAction());
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getPayload();
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setTask(actionName);
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
@@ -266,7 +266,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     private void publishEvent(CoreMessage message) {
-        publishEvent(message.getAction(), message.getPayload());
+        publishEvent(message.getAction(), message.getVirtualNetworkFunctionRecord());
     }
 
     private void publishEvent(Action action, Serializable payload) {
@@ -304,7 +304,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         }
         CoreMessage coreMessage = new CoreMessage();
         coreMessage.setAction(Action.RELEASE_RESOURCES);
-        coreMessage.setPayload(virtualNetworkFunctionRecord);
+        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         VnfmSender vnfmSender;
         try {
 

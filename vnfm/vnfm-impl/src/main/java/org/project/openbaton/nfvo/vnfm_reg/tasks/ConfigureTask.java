@@ -38,7 +38,7 @@ public class ConfigureTask extends AbstractTask {
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
         CoreMessage message = new CoreMessage();
         message.setAction(Action.INSTANTIATE);
-        message.setPayload(virtualNetworkFunctionRecord);
+        message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 }

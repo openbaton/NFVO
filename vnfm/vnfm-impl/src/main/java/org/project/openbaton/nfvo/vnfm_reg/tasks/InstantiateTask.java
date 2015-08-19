@@ -3,6 +3,7 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
+import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -25,6 +26,7 @@ public class InstantiateTask extends AbstractTask {
 
     @Autowired
     private DependencyManagement dependencyManagement;
+    private DependencyQueuer dependencyQueuer;
 
     @Override
     protected void doWork() throws Exception {
@@ -34,20 +36,19 @@ public class InstantiateTask extends AbstractTask {
 
         log.debug("NFVO: instantiate finish");
         log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-//        virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+        log.info("Releasing waiting VNFRs");
+        dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getId());
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep = 0;
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
-//            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-//            virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.START);
-            coreMessage.setPayload(virtualNetworkFunctionRecord);
+            coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
     }

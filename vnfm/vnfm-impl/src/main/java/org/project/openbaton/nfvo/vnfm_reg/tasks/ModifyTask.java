@@ -35,7 +35,7 @@ public class ModifyTask extends AbstractTask {
 
         CoreMessage coreMessage = new CoreMessage();
         coreMessage.setAction(Action.START);
-        coreMessage.setPayload(virtualNetworkFunctionRecord);
+        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 
