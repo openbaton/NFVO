@@ -56,7 +56,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                errorMessage.setPayload(virtualNetworkFunctionRecord);
+                errorMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 error = true;
             } catch (VimDriverException e) {
@@ -69,7 +69,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                 virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
-                message.setPayload(virtualNetworkFunctionRecord);
+                message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 error = true;
             }
@@ -92,7 +92,7 @@ public class AllocateresourcesTask extends AbstractTask {
             for (VirtualDeploymentUnit virtualDeploymentUnit: virtualNetworkFunctionRecord.getVdu()){
                 log.debug(">---< The unit ext id is: " + virtualDeploymentUnit.getExtId());
             }
-            coreMessage.setPayload(virtualNetworkFunctionRecord);
+            coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
     }

@@ -113,7 +113,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     protected void onAction(CoreMessage message) {
         log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         log.trace("VNFM: Received Message: " + message.getAction());
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getPayload();
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
         CoreMessage coreMessage = null;
         switch (message.getAction()){
             case ALLOCATE_RESOURCES:
