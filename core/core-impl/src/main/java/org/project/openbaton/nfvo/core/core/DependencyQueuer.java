@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -29,6 +31,11 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, BlockingDeque<VNFRecordDependency>> queues;
+
+    @PostConstruct
+    private void init(){
+        this.queues = new HashMap<>();
+    }
 
     @Override
     public void waitForVNFR(String vnfrSourceId, VNFRecordDependency dependency) throws InterruptedException, NotFoundException {
