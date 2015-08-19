@@ -4,12 +4,13 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by lto on 08/06/15.
  */
 @Entity
-public class VNFRecordDependency implements Serializable{
+public class VNFRecordDependency implements Serializable {
 
     @Id
     private String id = IdGenerator.createUUID();
@@ -21,6 +22,9 @@ public class VNFRecordDependency implements Serializable{
     @OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionRecord target;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> parameters;
+
     public VNFRecordDependency() {
     }
 
@@ -29,9 +33,18 @@ public class VNFRecordDependency implements Serializable{
         return "VNFRecordDependency{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", source=" + source.getName() +
-                ", target=" + target.getName() +
+                ", source=" + source.getName() + "(" + source.getId() + ")" +
+                ", target=" + target + "(" + target.getId() + ")" +
+                ", parameters=" + parameters +
                 '}';
+    }
+
+    public Set<String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Set<String> parameters) {
+        this.parameters = parameters;
     }
 
     public String getId() {
