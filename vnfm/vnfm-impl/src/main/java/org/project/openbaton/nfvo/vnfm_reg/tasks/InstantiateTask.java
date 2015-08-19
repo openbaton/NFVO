@@ -26,6 +26,8 @@ public class InstantiateTask extends AbstractTask {
 
     @Autowired
     private DependencyManagement dependencyManagement;
+    @Autowired
+    
     private DependencyQueuer dependencyQueuer;
 
     @Override
