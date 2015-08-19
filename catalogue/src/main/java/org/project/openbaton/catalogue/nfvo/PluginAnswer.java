@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class PluginAnswer implements Serializable{
     private Serializable answer;
+    private String selector;
 
     public Serializable getAnswer() {
         return answer;
@@ -21,5 +22,13 @@ public class PluginAnswer implements Serializable{
         return "PluginAnswer{" +
                 "answer=" + answer +
                 '}';
+    }
+
+    public void setSelector(String selector) {
+        this.selector = selector;
+    }
+
+    public String getSelector() {
+        return selector;
     }
 }
