@@ -1,5 +1,5 @@
 buildscript {
-    repositories {
+    repositories{
         mavenCentral()
     }
     dependencies {
@@ -10,7 +10,7 @@ apply plugin: org.springframework.boot.gradle.SpringBootPlugin
 
 mainClassName = mainClass
 jar {
-    from('./src/main/resources') {
+    from ('./src/main/resources') {
         include 'META-INF/services'
     }
 }

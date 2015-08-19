@@ -15,34 +15,34 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- * <p/>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFComponent implements Serializable {
+public class VNFComponent implements Serializable{
     /**
      * Unique VNFC identification within the namespace of a specific VNF.
-     */
+     * */
     @Id
-    private String id = IdGenerator.createUUID();
+	private String id= IdGenerator.createUUID();
     @Version
     private int version = 0;
-    /**
+    public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	/**
      * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+     * */
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VNFDConnectionPoint> connection_point;
 
     public VNFComponent() {
         this.connection_point = new HashSet<VNFDConnectionPoint>();
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     public String getId() {
