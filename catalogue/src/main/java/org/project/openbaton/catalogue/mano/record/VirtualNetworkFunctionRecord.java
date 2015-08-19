@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.nfvo.Configuration;
