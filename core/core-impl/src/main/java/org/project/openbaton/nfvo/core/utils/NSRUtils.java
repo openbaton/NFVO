@@ -19,10 +19,7 @@ package org.project.openbaton.nfvo.core.utils;
 import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.*;
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.Script;
-import org.project.openbaton.catalogue.nfvo.VNFPackage;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -122,6 +119,34 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
+
+        Configuration requires = new Configuration();
+        requires.setName("requires");
+        requires.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+        virtualNetworkFunctionRecord.setRequires(requires);
+
+        if (vnfd.getRequires() != null){
+            for (String key : vnfd.getRequires()){
+                ConfigurationParameter configurationParameter = new ConfigurationParameter();
+                log.debug("Adding " + key + " to requires");
+                configurationParameter.setConfKey(key);
+                virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
+            }
+        }
+
+        Configuration provides = new Configuration();
+        provides.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+        provides.setName("provides");
+        virtualNetworkFunctionRecord.setProvides(provides);
+
+        if (vnfd.getProvides() != null){
+            for (String key : vnfd.getProvides()){
+                ConfigurationParameter configurationParameter = new ConfigurationParameter();
+                log.debug("Adding " + key + " to provides");
+                configurationParameter.setConfKey(key);
+                virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(configurationParameter);
+            }
+        }
 
         if (vnfd.getVnfPackage() != null) {
             VNFPackage vnfPackage = new VNFPackage();

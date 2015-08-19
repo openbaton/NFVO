@@ -43,10 +43,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -184,13 +181,23 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         }
 
         /**
-         * TODO start the VNF installation process:
-         *  *) call the VNFMRegister
-         *      *) the Register knows that all the VNFMs are available
-         *      *) the Register knows which protocol to use per VNFM
-         *
-         *  for instance...
+         * now check for the requires pointing to the nfvo
          */
+
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+            for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()){
+                log.debug("Checking parameter: " + configurationParameter.getConfKey());
+                if (configurationParameter.getConfKey().startsWith("nfvo:")){ //the parameters known from the nfvo
+                    String[] params = configurationParameter.getConfKey().split("\\:");
+                    for (ConfigurationParameter configurationParameterSystem : configurationManagement.queryByName("system").getConfigurationParameters()){
+                        if (configurationParameterSystem.getConfKey().equals(params[1])){
+                            log.debug("Found parameter: " + configurationParameterSystem);
+                            configurationParameter.setValue(configurationParameterSystem.getValue());
+                        }
+                    }
+                }
+            }
+        }
 
         vnfmManager.deploy(networkServiceRecord);
 
