@@ -78,6 +78,9 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> provides;
 
+    @JsonIgnore
+    private boolean cyclicDependency;
+
     public VirtualNetworkFunctionDescriptor() {
     }
 
@@ -121,6 +124,14 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public boolean hasCyclicDependency() {
+        return cyclicDependency;
+    }
+
+    public void setCyclicDependency(boolean cyclicDependency) {
+        this.cyclicDependency = cyclicDependency;
     }
 
     @Override
