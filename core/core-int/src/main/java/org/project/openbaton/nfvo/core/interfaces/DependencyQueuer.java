@@ -10,4 +10,8 @@ public interface DependencyQueuer {
     void waitForVNFR(String vnfrSourceId, VNFRecordDependency dependency) throws InterruptedException, NotFoundException;
 
     void releaseVNFR(String vnfrId) throws NotFoundException;
+
+    boolean resolvedDependencies(String networkServiceId);
+
+    int calculateDependencies(String virtualNetworkFunctionRecordId);
 }

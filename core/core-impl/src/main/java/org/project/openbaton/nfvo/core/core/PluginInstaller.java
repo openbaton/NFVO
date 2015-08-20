@@ -2,8 +2,6 @@ package org.project.openbaton.nfvo.core.core;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
 import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
@@ -60,35 +58,20 @@ public class PluginInstaller implements CommandLineRunner {
          * Checking version
          */
         String pluginName = "plugin-vim-drivers";
-//        try {
-//            Class c = getClass(path, classes);
-//
-//            Field field = getField(c);
-//
-//            Object interfaceVersion = field.get(c);
-//            if (!interfaceVersion.equals(ClientInterfaces.interfaceVersion)) {
-//                throw new PluginInstallException("The interface Version are different: required: " + ClientInterfaces.interfaceVersion + ", provided: " + interfaceVersion);
-//            }
-//
-//            pluginName = c.getSimpleName();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//            throw new PluginInstallException(e);
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//            throw new PluginInstallException(e);
-//        }
 
         /**
          * Run it into the screen session
          */
-
-
         try {
             //screen -S openbaton -p 0 -X screen -t  openstack-plugin exec java -jar /opt/openbaton/openstack-plugin/build/libs/openstack-driver-0.5-SNAPSHOT.jar
             String command = "screen -S openbaton -p 0 -X screen -t " + pluginName + " java -jar " + path;
             log.debug("Running command: " + command);
+
             Process plugin = Runtime.getRuntime().exec(command);
+            Runtime.getRuntime().exec("screen -p 0");
+
+//           Runtime.getRuntime().exec("screen -d openbaton");
+//            Runtime.getRuntime().exec("screen -r openbaton -p 0");
             this.processes.put(pluginName, plugin);
             BufferedReader stdError = new BufferedReader(new InputStreamReader(plugin.getErrorStream()));
             String s;
@@ -157,30 +140,14 @@ public class PluginInstaller implements CommandLineRunner {
          * Checking version
          */
         String pluginName = "plugin-monitoring";
-//        try {
-//            Class c = getClass(path, classes);
-//
-//            Field field = getField(c);
-//
-//            Object interfaceVersion = field.get(c);
-//            if (!interfaceVersion.equals(ResourcePerformanceManagement.interfaceVersion)) {
-//                throw new PluginInstallException("The interface Version are different: required: " + ResourcePerformanceManagement.interfaceVersion + ", provided: " + interfaceVersion);
-//            }
-//
-//            pluginName = c.getSimpleName();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//            throw new PluginInstallException(e);
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//            throw new PluginInstallException(e);
-//        }
-
         /**
          * Run it into the screen session
          */
         try {
             Process plugin = Runtime.getRuntime().exec("screen -S openbaton -p 0 -X screen -t " + pluginName + " java -jar " + path);
+            Runtime.getRuntime().exec("screen -p 0");
+//         Runtime.getRuntime().exec("screen -d openbaton");
+//            Runtime.getRuntime().exec("screen -r -p 0");
             this.processes.put(pluginName, plugin);
         } catch (IOException e) {
             e.printStackTrace();
@@ -205,7 +172,7 @@ public class PluginInstaller implements CommandLineRunner {
         }
         File[] files;
         File folder = new File(installFolderPath);
-        if (folder != null) {
+        if (folder != null || !folder.exists()) {
             files = folder.listFiles();
 
             if (files.length > 0) {
@@ -229,7 +196,7 @@ public class PluginInstaller implements CommandLineRunner {
         }
 
         folder = new File(installFolderPath);
-        if (folder != null) {
+        if (folder != null || !folder.exists()) {
             files = folder.listFiles();
 
             if (files.length > 0) {
