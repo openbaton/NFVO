@@ -16,6 +16,10 @@
 
 package org.project.openbaton.nfvo.core.utils;
 
+import org.jgrapht.alg.cycle.DirectedSimpleCycles;
+import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedPseudograph;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -112,6 +116,11 @@ public class NSDUtils {
         /**
          * Fetching dependencies
          */
+        DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
+
+        for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+            g.addVertex(vnfd.getName());
+        }
 
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
@@ -129,6 +138,7 @@ public class NSDUtils {
                     vnfDependency.setSource(virtualNetworkFunctionDescriptor);
                     sourceFound = true;
                     log.trace("Found " + virtualNetworkFunctionDescriptor);
+
                 }
                 else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())){
                     vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
@@ -141,6 +151,18 @@ public class NSDUtils {
                 String name = sourceFound ? target.getName() : source.getName();
                 throw new NotFoundException(name + " was not found in the NetworkServiceDescriptor");
             }
+
+            g.addEdge(source.getName(),target.getName());
+        }
+
+        DirectedSimpleCycles<String,DefaultEdge> dsc = new SzwarcfiterLauerSimpleCycles(g);
+        List<List<String>> cycles = dsc.findSimpleCycles();
+
+        for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+            for(List<String> cycle : cycles)
+                if(cycle.contains(vnfd.getName())) {
+                    vnfd.setCyclicDependency(true);break;
+                }
         }
     }
 
