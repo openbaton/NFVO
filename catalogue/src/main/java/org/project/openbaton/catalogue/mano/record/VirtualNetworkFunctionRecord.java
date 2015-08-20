@@ -168,6 +168,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration provides;
 
+    @JsonIgnore
+    private boolean cyclicDependency;
+
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
@@ -178,6 +181,14 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public boolean hasCyclicDependency() {
+        return cyclicDependency;
+    }
+
+    public void setCyclicDependency(boolean cyclicDependency) {
+        this.cyclicDependency = cyclicDependency;
     }
 
     public String getParent_ns_id() {
