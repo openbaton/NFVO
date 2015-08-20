@@ -24,6 +24,7 @@ public class VNFRecordDependency implements Serializable {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> parameters;
+    private Status status;
 
     public VNFRecordDependency() {
     }
@@ -77,5 +78,13 @@ public class VNFRecordDependency implements Serializable {
 
     public void setTarget(VirtualNetworkFunctionRecord target) {
         this.target = target;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }

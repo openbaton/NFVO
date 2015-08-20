@@ -38,7 +38,7 @@ public class VnfmReceiverJMS implements VnfmReceiver {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory", concurrency = "20")
+    @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory", concurrency = "1")
     public void actionFinished(@Payload CoreMessage coreMessage) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + coreMessage);
 

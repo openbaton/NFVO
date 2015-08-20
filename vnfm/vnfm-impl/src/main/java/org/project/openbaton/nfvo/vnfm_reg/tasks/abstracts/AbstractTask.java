@@ -1,9 +1,12 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -35,6 +38,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     protected Action action;
 
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    protected VNFRecordDependency dependency;
 
     public Action getAction() {
         return action;
@@ -56,9 +60,13 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     @Qualifier("VNFRRepository")
     protected GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
 
+    @Autowired
+    private DependencyQueuer dependencyQueuer;
+
 
     @Override
     public void run() {
+        changeStatus();
         try {
             this.doWork();
         } catch (Exception e) {
@@ -88,5 +96,59 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     protected VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
         String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
         return (VnfmSender) this.context.getBean(senderName);
+    }
+
+    protected void changeStatus() {
+        log.debug("Action is: " + action);
+        Status status = null;
+        switch (action){
+            case ALLOCATE_RESOURCES:
+                status = Status.NULL;
+                break;
+            case SCALE:
+                break;
+            case SCALING:
+                break;
+            case ERROR:
+                status = Status.ERROR;
+                break;
+            case MODIFY:
+                if (dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId())) {
+                    status = Status.INACTIVE;
+                }else {
+                    status = virtualNetworkFunctionRecord.getStatus();
+                }
+                break;
+            case RELEASE_RESOURCES:
+                status = Status.TERMINATED;
+                break;
+            case GRANT_OPERATION:
+                status = Status.NULL;
+                break;
+            case INSTANTIATE:
+                status = Status.INITIALIZED;
+                break;
+            case SCALE_UP_FINISHED:
+                break;
+            case SCALE_DOWN_FINISHED:
+                break;
+            case RELEASE_RESOURCES_FINISH:
+                status = Status.TERMINATED;
+                break;
+            case INSTANTIATE_FINISH:
+                status = Status.INITIALIZED;
+                break;
+            case CONFIGURE:
+                break;
+            case START:
+                status = Status.ACTIVE;
+                break;
+        }
+        virtualNetworkFunctionRecord.setStatus(status);
+        log.debug("Changing status of VNFR: " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) to " + status);
+    }
+
+    public void setDependency(VNFRecordDependency dependency) {
+        this.dependency = dependency;
     }
 }
