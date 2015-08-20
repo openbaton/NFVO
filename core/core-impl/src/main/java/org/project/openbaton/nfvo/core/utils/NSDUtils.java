@@ -16,13 +16,14 @@
 
 package org.project.openbaton.nfvo.core.utils;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,9 @@ public class NSDUtils {
     @Autowired
     @Qualifier("VNFDRepository")
     private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -112,7 +116,6 @@ public class NSDUtils {
         /**
          * Fetching dependencies
          */
-
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
             VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
@@ -142,6 +145,9 @@ public class NSDUtils {
                 throw new NotFoundException(name + " was not found in the NetworkServiceDescriptor");
             }
         }
+        // TODO check circular dependencies
+        // if yes set a configuration parameter in configuration
+
     }
 
 }
