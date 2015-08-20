@@ -98,7 +98,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         return (VnfmSender) this.context.getBean(senderName);
     }
 
-    private void changeStatus() {
+    protected void changeStatus() {
         log.debug("Action is: " + action);
         Status status = null;
         switch (action){
@@ -113,7 +113,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.ERROR;
                 break;
             case MODIFY:
-                if (dependencyQueuer.calculateDependencies(virtualNetworkFunctionRecord.getId()) == 0) {
+                if (dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId())) {
                     status = Status.INACTIVE;
                 }else {
                     status = virtualNetworkFunctionRecord.getStatus();

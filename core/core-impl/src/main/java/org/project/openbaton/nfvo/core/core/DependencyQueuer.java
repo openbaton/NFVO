@@ -104,12 +104,17 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     }
 
     @Override
-    public synchronized boolean resolvedDependencies(String networkServiceId){
+    public synchronized boolean areMyDepResolved(String networkServiceId, String virtualNetworkFunctionRecordId){
         NetworkServiceRecord networkServiceRecord = networkServiceRecordManagement.query(networkServiceId);
 
         for (VNFRecordDependency dependency : networkServiceRecord.getVnf_dependency()){
-            if (vnfrDependencyRepository.find(dependency.getId()).getStatus().ordinal() != Status.ACTIVE.ordinal())
-                return false;
+            if (dependency.getTarget().getId().equals(virtualNetworkFunctionRecordId)) {
+                Status status = vnfrDependencyRepository.find(dependency.getId()).getStatus();
+
+                log.debug("Dependency source: " + dependency.getSource().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + status);
+                if (status.ordinal() != Status.ACTIVE.ordinal())
+                    return false;
+            }
         }
 
         return true;
