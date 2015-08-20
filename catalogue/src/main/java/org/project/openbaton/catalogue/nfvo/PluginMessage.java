@@ -13,6 +13,7 @@ public class PluginMessage implements Serializable{
     private Class interfaceClass;
 
     private Collection<Serializable> parameters;
+    private String selector;
 
     public String getMethodName() {
         return methodName;
@@ -45,5 +46,13 @@ public class PluginMessage implements Serializable{
 
     public void setInterfaceClass(Class interfaceClass) {
         this.interfaceClass = interfaceClass;
+    }
+
+    public void setSelector(String selector) {
+        this.selector = selector;
+    }
+
+    public String getSelector() {
+        return selector;
     }
 }
