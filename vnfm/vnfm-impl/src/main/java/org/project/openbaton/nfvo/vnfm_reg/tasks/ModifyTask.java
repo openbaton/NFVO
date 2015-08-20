@@ -39,16 +39,18 @@ public class ModifyTask extends AbstractTask {
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         dependency.setStatus(Status.ACTIVE);
         dependency = vnfrDependencyRepository.merge(dependency);
+        log.debug("Dependency source: " + dependency.getSource().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + dependency.getStatus());
+        changeStatus();
         virtualNetworkFunctionRecord = vnfrRepository.find(virtualNetworkFunctionRecord.getId());
-        if (dependencyQueuer.resolvedDependencies(virtualNetworkFunctionRecord.getParent_ns_id()))
+        boolean resolvedDependencies = dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId());
+        if (resolvedDependencies)
             virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         log.debug("NFVO: MODIFY finish");
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        log.debug("STATE IS: " + virtualNetworkFunctionRecord.getStatus());
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
-        if (virtualNetworkFunctionRecord.getStatus().ordinal() > Status.INITIALIZED.ordinal()) {
+        if (resolvedDependencies) {
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.START);
             coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);

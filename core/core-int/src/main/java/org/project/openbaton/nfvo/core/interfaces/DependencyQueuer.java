@@ -11,7 +11,7 @@ public interface DependencyQueuer {
 
     void releaseVNFR(String vnfrId) throws NotFoundException;
 
-    boolean resolvedDependencies(String networkServiceId);
+    boolean areMyDepResolved(String networkServiceId, String virtualNetworkFunctionRecordId);
 
     int calculateDependencies(String virtualNetworkFunctionRecordId);
 }
