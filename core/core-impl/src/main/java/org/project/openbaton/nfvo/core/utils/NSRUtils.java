@@ -61,7 +61,7 @@ public class NSRUtils {
         networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
         for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
             VNFRecordDependency vnfDependency_new = new VNFRecordDependency();
-
+            vnfDependency_new.setStatus(Status.INITIALIZED);
 
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
                 log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());

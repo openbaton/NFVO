@@ -23,7 +23,6 @@ public class InstantiateTask extends AbstractTask {
     @Qualifier("vnfmRegister")
     private VnfmRegister vnfmRegister;
 
-
     @Autowired
     private DependencyManagement dependencyManagement;
     @Autowired
@@ -39,11 +38,12 @@ public class InstantiateTask extends AbstractTask {
         log.debug("NFVO: instantiate finish");
         log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+        log.trace("now Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
         log.info("Releasing waiting VNFRs");
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getId());
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
-        int dep = 0;
+        int dep;
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {

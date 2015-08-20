@@ -59,9 +59,9 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
         int numDependencies = 0;
         NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
-        Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
         log.debug("Found NSR");
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+            Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
             log.debug("Found VNF; there are " + vnfRecordDependencies.size() + " dependencies");
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
                 log.trace(vnfRecordDependency.getTarget().getId() + " == " + virtualNetworkFunctionRecord.getId());
@@ -71,8 +71,9 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                      *
                      * wait for the source to be initialized
                      */
+                    log.debug("Source VNFR " + vnfRecordDependency.getSource().getName() + " ( " + vnfRecordDependency.getSource().getId() + " ) is in state: " + vnfRecordDependency.getSource().getStatus());
                     if (vnfRecordDependency.getSource().getStatus().ordinal() < Status.INITIALIZED.ordinal()){
-                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getSource().getId(),vnfRecordDependency);
+                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getTarget().getId(),vnfRecordDependency);
                     }else {
                         /**
                          * or Send directly the modify command
@@ -86,6 +87,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                     numDependencies++;
                 }
             }
+            log.debug("Found " + numDependencies + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
             return numDependencies;
         }
         else return -1;
