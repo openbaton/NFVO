@@ -1,6 +1,7 @@
 package org.project.openbaton.common.vnfm_sdk.interfaces;
 
 
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 
@@ -51,9 +52,10 @@ public interface VNFLifecycleManagement {
 	 * (e.g. configuration, topology, behavior, 
 	 * redundancy model) to a VNF instance.
 	 * @param virtualNetworkFunctionRecord
+	 * @param dependency
 	 */
 	
-	CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
 	
 	/**
 	 * This operation allows deploying a new 
