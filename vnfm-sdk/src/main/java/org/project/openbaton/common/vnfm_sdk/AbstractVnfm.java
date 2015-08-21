@@ -2,6 +2,7 @@ package org.project.openbaton.common.vnfm_sdk;
 
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
@@ -86,7 +87,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
 
     @Override
     public abstract void upgradeSoftware();
@@ -126,7 +127,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 coreMessage = handleError(virtualNetworkFunctionRecord);
                 break;
             case MODIFY:
-                coreMessage = this.modify(virtualNetworkFunctionRecord);
+                coreMessage = this.modify(virtualNetworkFunctionRecord, message.getDependency());
                 break;
             case RELEASE_RESOURCES:
                 coreMessage = this.terminate(virtualNetworkFunctionRecord);
