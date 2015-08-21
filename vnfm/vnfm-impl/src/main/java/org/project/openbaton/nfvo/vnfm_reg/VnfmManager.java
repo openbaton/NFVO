@@ -221,16 +221,18 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         task.setDependency(message.getDependency());
 
-        if (task.isAsync()){
-            asyncExecutor.submit(task);
-        }else
-            serialExecutor.execute(task);
+        log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-        log.debug("Queue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
+//        if (!virtualNetworkFunctionRecord.hasCyclicDependency()){
+            asyncExecutor.submit(task);
+//        }else
+//            serialExecutor.execute(task);
+
+        log.debug("AsyncQueue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
 
     }
 
-    private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    private /*synchronized*/ void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
         if (virtualNetworkFunctionRecord == null)
             return;
@@ -257,7 +259,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
         networkServiceRecord = nsrRepository.merge(networkServiceRecord);
-//        log.debug("Now the status is: " + networkServiceRecord.getStatus());
+        log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal())
             publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
         else if (status.ordinal() == Status.TERMINATED.ordinal()) {

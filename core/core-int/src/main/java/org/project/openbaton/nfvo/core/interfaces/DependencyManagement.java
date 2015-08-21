@@ -25,4 +25,6 @@ import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
  */
 public interface DependencyManagement {
     int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, InterruptedException;
+
+    void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

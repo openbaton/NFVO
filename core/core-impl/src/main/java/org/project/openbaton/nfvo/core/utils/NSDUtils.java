@@ -167,7 +167,8 @@ public class NSDUtils {
         for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             for(List<String> cycle : cycles)
                 if(cycle.contains(vnfd.getName())) {
-                    vnfd.setCyclicDependency(true);break;
+                    vnfd.setCyclicDependency(true);
+                    break;
                 }
         }
     }
@@ -185,7 +186,9 @@ public class NSDUtils {
             boolean contained = false;
             for (VNFDependency newDependency: newDependencies){
                 if (newDependency.getTarget().getId().equals(oldDependency.getTarget().getId()) && newDependency.getSource().getId().equals(oldDependency.getSource().getId())){
-                    newDependency.getParameters().addAll(oldDependency.getParameters());
+                    log.debug("Old is: " + oldDependency);
+                    if (oldDependency.getParameters() != null)
+                        newDependency.getParameters().addAll(oldDependency.getParameters());
                     contained = true;
                 }
             }
@@ -194,6 +197,7 @@ public class NSDUtils {
                 newDependency.setSource(oldDependency.getSource());
                 newDependency.setTarget(oldDependency.getTarget());
                 newDependency.setParameters(new HashSet<String>());
+                log.debug("Old is: " + oldDependency);
                 if (oldDependency.getParameters() != null)
                     newDependency.getParameters().addAll(oldDependency.getParameters());
                 newDependencies.add(newDependency);

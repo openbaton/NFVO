@@ -21,7 +21,9 @@ import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.DependencyParameters;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -58,6 +61,10 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     @Autowired
     @Qualifier("VNFRRepository")
     private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+
+    @Autowired
+    @Qualifier("VNFRDependencyRepository")
+    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
 
     @Override
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
@@ -89,6 +96,31 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
             return 0;
         }
         else return -1;
+    }
+
+    @Override
+    public synchronized void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+            Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+            for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
+                vnfRecordDependency = vnfrDependencyRepository.find(vnfRecordDependency.getId());
+                for (Map.Entry<String, DependencyParameters> entry : vnfRecordDependency.getParameters().entrySet()) {
+                    if (entry.getKey().equals(virtualNetworkFunctionRecord.getType())) {
+                        for (Map.Entry<String, String> keyValueDep : entry.getValue().getParameters().entrySet()) {
+                            for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
+                                if (cp.getConfKey().equals(keyValueDep.getKey())){
+                                    keyValueDep.setValue(cp.getValue());
+                                    break;
+                                }
+                            }
+                        }
+                        vnfrDependencyRepository.merge(vnfRecordDependency);
+                    }
+                }
+                log.debug("Filled parameterd for depedendency target = " + vnfRecordDependency.getTarget().getName() + " with parameters: " + vnfRecordDependency.getParameters());
+            }
+        }
     }
 
     private Set<String> getNotInitializedVnfrSource(Set<String> ids) {
