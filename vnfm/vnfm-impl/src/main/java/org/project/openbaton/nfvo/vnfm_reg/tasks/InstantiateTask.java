@@ -41,7 +41,7 @@ public class InstantiateTask extends AbstractTask {
         log.trace("now Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
         log.info("Releasing waiting VNFRs");
-        dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName());
+        dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getId());
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep;
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
