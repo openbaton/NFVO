@@ -221,9 +221,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         task.setDependency(message.getDependency());
 
-//        if (task.isAsync()){
-//            asyncExecutor.submit(task);
-//        }else
+        if (task.isAsync()){
+            asyncExecutor.submit(task);
+        }else
             serialExecutor.execute(task);
 
         log.debug("Queue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
