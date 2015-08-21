@@ -123,7 +123,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
         log.trace("Persisting VNFDependencies");
         for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
-            log.trace("" + vnfrDependency.getSource());
+            log.trace("" + vnfrDependency.getSources());
             vnfrDependencyRepository.create(vnfrDependency);
         }
         log.trace("Persisted VNFDependencies");

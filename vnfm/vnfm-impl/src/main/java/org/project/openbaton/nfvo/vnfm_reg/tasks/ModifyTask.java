@@ -39,7 +39,7 @@ public class ModifyTask extends AbstractTask {
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         dependency.setStatus(Status.ACTIVE);
         dependency = vnfrDependencyRepository.merge(dependency);
-        log.debug("Dependency source: " + dependency.getSource().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + dependency.getStatus());
+//        log.debug("Dependency source: " + dependency.getSources().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + dependency.getStatus());
         changeStatus();
         virtualNetworkFunctionRecord = vnfrRepository.find(virtualNetworkFunctionRecord.getId());
         boolean resolvedDependencies = dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId());

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -59,25 +60,7 @@ public class NSRUtils {
         }
         //TODO set dependencies!!! (DONE)
         networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
-        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
-            VNFRecordDependency vnfDependency_new = new VNFRecordDependency();
-            vnfDependency_new.setStatus(Status.INITIALIZED);
-
-            for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
-                log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
-                if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
-                    vnfDependency_new.setSource(virtualNetworkFunctionRecord);
-                }
-                else if (vnfDependency.getTarget().getName().equals(virtualNetworkFunctionRecord.getName())){
-                    vnfDependency_new.setTarget(virtualNetworkFunctionRecord);
-                }
-            }
-
-            if (vnfDependency_new.getSource() == null || vnfDependency_new.getTarget() == null){
-                throw new BadFormatException("No available VNFR found in NSR for dependency: " +vnfDependency);
-            }
-            networkServiceRecord.getVnf_dependency().add(vnfDependency_new);
-        }
+        setDependencies(networkServiceDescriptor, networkServiceRecord);
 
         networkServiceRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
 //        networkServiceRecord.getLifecycle_event().addAll(networkServiceDescriptor.getLifecycle_event());
@@ -99,6 +82,64 @@ public class NSRUtils {
             }
         }
         return networkServiceRecord;
+    }
+
+    private static void setDependencies(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws BadFormatException {
+        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
+
+            boolean found = false;
+            for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()){
+                if (vnfRecordDependency.getTarget().getId().equals(vnfDependency.getTarget().getId())){ // if there is a vnfRecordDepenendency with the same target
+
+                    // I find the source
+                    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+
+                        log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
+
+                        if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
+                            vnfRecordDependency.getSources().add(virtualNetworkFunctionRecord);
+                            vnfRecordDependency.getParameters().put(virtualNetworkFunctionRecord.getId(), vnfDependency.getParameters());
+                        }
+                    }
+
+                    found = true;
+                }
+
+            }
+            if (!found){ // there is not yet a vnfrDepenency with this target, I add it
+                VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
+                vnfRecordDependency.setStatus(Status.INITIALIZED);
+                vnfRecordDependency.setParameters(new HashMap<String, Set<String>>());
+            }
+
+
+
+
+
+
+
+
+
+
+
+//            VNFRecordDependency vnfDependency_new = new VNFRecordDependency();
+//            vnfDependency_new.setStatus(Status.INITIALIZED);
+//
+//            for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+//                log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
+//                if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
+//                    vnfDependency_new.setSources(virtualNetworkFunctionRecord);
+//                }
+//                else if (vnfDependency.getTarget().getName().equals(virtualNetworkFunctionRecord.getName())){
+//                    vnfDependency_new.setTarget(virtualNetworkFunctionRecord);
+//                }
+//            }
+//
+//            if (vnfDependency_new.getSources() == null || vnfDependency_new.getTarget() == null){
+//                throw new BadFormatException("No available VNFR found in NSR for dependency: " +vnfDependency);
+//            }
+//            networkServiceRecord.getVnf_dependency().add(vnfDependency_new);
+//        }
     }
 
     public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
