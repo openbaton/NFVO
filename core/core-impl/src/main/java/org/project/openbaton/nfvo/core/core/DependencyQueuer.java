@@ -58,6 +58,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
 
     @Override
     public synchronized void releaseVNFR(String vnfrSourceId) throws NotFoundException {
+        List<String> dependencyIdToBeRemoved = new ArrayList<>();
         log.debug("Doing release for VNFR id: " + vnfrSourceId);
         for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
             String dependencyId = entry.getKey();
@@ -73,7 +74,15 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                     VirtualNetworkFunctionRecord target = vnfrRepository.find(vnfRecordDependency.getTarget().getId());
                     coreMessage.setVirtualNetworkFunctionRecord(target);
                     vnfmManager.modify(target, coreMessage);
-                    queues.remove(dependencyId);
+                    dependencyIdToBeRemoved.add(dependencyId);
+                }
+            }
+        }
+
+        for (String depIdToRem : dependencyIdToBeRemoved){
+            for (String depId: queues.keySet()) {
+                if (depIdToRem.equals(depId)) {
+                    queues.remove(depId);
                     break;
                 }
             }
