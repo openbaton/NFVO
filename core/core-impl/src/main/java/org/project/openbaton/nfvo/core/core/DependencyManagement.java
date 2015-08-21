@@ -55,7 +55,6 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
-        int numDependencies = 0;
         NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
         log.debug("Found NSR");
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
@@ -64,29 +63,15 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
                 log.trace(vnfRecordDependency.getTarget().getId() + " == " + virtualNetworkFunctionRecord.getId());
                 if (vnfRecordDependency.getTarget().getId().equals(virtualNetworkFunctionRecord.getId())){
-                    /**
-                     * Check the source:
-                     *
-                     * wait for the source to be initialized
-                     */
-//                    log.debug("Source VNFR " + vnfRecordDependency.getSources().getName() + " ( " + vnfRecordDependency.getSources().getId() + " ) is in state: " + vnfRecordDependency.getSources().getStatus());
-//                    if (vnfRecordDependency.getSources().getStatus().ordinal() < Status.INITIALIZED.ordinal()){
-//                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getTarget().getId(),vnfRecordDependency);
-//                    }else {
-//                        /**
-//                         * or Send directly the modify command
-//                         */
-//                        CoreMessage coreMessage = new CoreMessage();
-//                        coreMessage.setAction(Action.MODIFY);
-//                        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-//                        coreMessage.setDependency(vnfRecordDependency);
-//                        vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
-//                    }
-                    numDependencies++;
+                    int dep = vnfRecordDependency.getParameters().keySet().size();
+                    log.debug("Found " + dep + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
+                    //waiting for them to finish
+                    dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), vnfRecordDependency.getNameType().keySet());
+                    return dep;
                 }
             }
-            log.debug("Found " + numDependencies + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
-            return numDependencies;
+            log.debug("Found 0 for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
+            return 0;
         }
         else return -1;
     }

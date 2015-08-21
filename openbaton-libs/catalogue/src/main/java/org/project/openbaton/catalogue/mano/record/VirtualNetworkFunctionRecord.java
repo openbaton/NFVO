@@ -43,9 +43,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<VNFRecordDependency> dependency;
-
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
      */
@@ -227,14 +224,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.connection_point = connection_point;
     }
 
-    public Set<VNFRecordDependency> getDependency() {
-        return dependency;
-    }
-
-    public void setDependency(Set<VNFRecordDependency> dependency) {
-        this.dependency = dependency;
-    }
-
     public String getDeployment_flavour_key() {
         return deployment_flavour_key;
     }
@@ -402,7 +391,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 ", hb_version=" + hb_version +
                 ", auto_scale_policy=" + auto_scale_policy +
                 ", connection_point=" + connection_point +
-                ", dependency=" + dependency +
                 ", deployment_flavour_key='" + deployment_flavour_key + '\'' +
                 ", lifecycle_event=" + lifecycle_event +
                 ", lifecycle_event_history=" + lifecycle_event_history +
