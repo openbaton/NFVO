@@ -120,7 +120,6 @@ public class NSRUtils {
             }
             if (!found) { // there is not yet a vnfrDepenency with this target, I add it
                 VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
-                vnfRecordDependency.setStatus(Status.INITIALIZED);
                 vnfRecordDependency.setNameType(new HashMap<String, String>());
                 vnfRecordDependency.setParameters(new HashMap<String, DependencyParameters>());
                 for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {

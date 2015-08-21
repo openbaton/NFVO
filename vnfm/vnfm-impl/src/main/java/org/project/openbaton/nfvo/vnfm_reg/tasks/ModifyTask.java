@@ -34,8 +34,8 @@ public class ModifyTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        dependency.setStatus(Status.ACTIVE);
-        dependency = vnfrDependencyRepository.merge(dependency);
+//        dependency.setStatus(Status.ACTIVE);
+//        dependency = vnfrDependencyRepository.merge(dependency);
 
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         log.debug("NFVO: MODIFY finish");
