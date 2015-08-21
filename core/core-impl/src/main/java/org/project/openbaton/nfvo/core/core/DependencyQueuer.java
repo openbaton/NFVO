@@ -37,7 +37,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, List<String>> queues;
+    private Map<String, Set<String>> queues;
     @Autowired
     private NetworkServiceRecordManagement networkServiceRecordManagement;
 
@@ -47,23 +47,24 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     }
 
     @Override
-    public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceNames) throws InterruptedException, NotFoundException {
+    public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds) throws InterruptedException, NotFoundException {
         if (queues.get(targetDependencyId) == null) {
-            queues.put(targetDependencyId, new ArrayList<String>());
+            queues.put(targetDependencyId, new HashSet<String>());
         }
-        log.debug("Adding to the queue: " + sourceNames + ", dependency: " + targetDependencyId);
-        for (String name : sourceNames)
+        log.debug("Adding to the queue: " + sourceIds + ", dependency: " + targetDependencyId);
+        for (String name : sourceIds)
             queues.get(targetDependencyId).add(name);
     }
 
     @Override
-    public synchronized void releaseVNFR(String vnfrSourceName) throws NotFoundException {
-        log.debug("Doing release for VNFR id: " + vnfrSourceName);
-        for (Map.Entry<String, List<String>> entry : queues.entrySet()) {
+    public synchronized void releaseVNFR(String vnfrSourceId) throws NotFoundException {
+        log.debug("Doing release for VNFR id: " + vnfrSourceId);
+        for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
             String dependencyId = entry.getKey();
-            List<String> sourceList = entry.getValue();
-            if (sourceList.contains(vnfrSourceName)) {
-                sourceList.remove(vnfrSourceName);
+            Set<String> sourceList = entry.getValue();
+            log.debug("Dependency " + dependencyId + " contains " + sourceList.size() + " dependencies: " + sourceList);
+            if (sourceList.contains(vnfrSourceId)) {
+                sourceList.remove(vnfrSourceId);
                 if (sourceList.size() == 0) {
                     CoreMessage coreMessage = new CoreMessage();
                     coreMessage.setAction(Action.MODIFY);

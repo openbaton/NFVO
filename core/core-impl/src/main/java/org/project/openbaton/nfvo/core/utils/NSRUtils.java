@@ -103,7 +103,7 @@ public class NSRUtils {
                         log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
 
                         if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
-                            vnfRecordDependency.getNameType().put(virtualNetworkFunctionRecord.getName(), virtualNetworkFunctionRecord.getType());
+                            vnfRecordDependency.getIdType().put(virtualNetworkFunctionRecord.getId(), virtualNetworkFunctionRecord.getType());
                             DependencyParameters dependencyParameters = new DependencyParameters();
                             dependencyParameters.setParameters(new HashMap<String, String>());
                             for (String key:vnfDependency.getParameters()) {
@@ -120,12 +120,12 @@ public class NSRUtils {
             }
             if (!found) { // there is not yet a vnfrDepenency with this target, I add it
                 VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
-                vnfRecordDependency.setNameType(new HashMap<String, String>());
+                vnfRecordDependency.setIdType(new HashMap<String, String>());
                 vnfRecordDependency.setParameters(new HashMap<String, DependencyParameters>());
                 for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
 
                     if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
-                        vnfRecordDependency.getNameType().put(virtualNetworkFunctionRecord.getName(), virtualNetworkFunctionRecord.getType());
+                        vnfRecordDependency.getIdType().put(virtualNetworkFunctionRecord.getId(), virtualNetworkFunctionRecord.getType());
                         DependencyParameters dependencyParameters = new DependencyParameters();
                         dependencyParameters.setParameters(new HashMap<String, String>());
                         for (String key:vnfDependency.getParameters()) {

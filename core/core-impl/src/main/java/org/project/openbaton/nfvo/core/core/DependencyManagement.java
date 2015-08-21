@@ -52,21 +52,30 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private org.project.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    @Qualifier("VNFRRepository")
+    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
 
     @Override
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
         NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
-        log.debug("Found NSR");
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
-            log.debug("Found VNF; there are " + vnfRecordDependencies.size() + " dependencies");
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies){
                 log.trace(vnfRecordDependency.getTarget().getId() + " == " + virtualNetworkFunctionRecord.getId());
                 if (vnfRecordDependency.getTarget().getId().equals(virtualNetworkFunctionRecord.getId())){
-                    int dep = vnfRecordDependency.getParameters().keySet().size();
-                    log.debug("Found " + dep + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
+                    int dep = 0;
                     //waiting for them to finish
-                    dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), vnfRecordDependency.getNameType().keySet());
+                    for(String sourceId : vnfRecordDependency.getIdType().keySet()){
+                        log.debug("Looking for VNFR id: " + sourceId);
+                        VirtualNetworkFunctionRecord virtualNetworkFunctionRecordSource = vnfrRepository.find(sourceId);
+                        log.debug("Found VNFR: " + virtualNetworkFunctionRecordSource.getName() + " ( " + virtualNetworkFunctionRecordSource.getId() + " ) that is in status " + virtualNetworkFunctionRecordSource.getStatus());
+                        if (virtualNetworkFunctionRecordSource.getStatus().ordinal() < Status.INITIALIZED.ordinal()) {
+                            dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), vnfRecordDependency.getIdType().keySet());
+                            dep++;
+                        }
+                    }
+                    log.debug("Found " + dep + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
                     return dep;
                 }
             }

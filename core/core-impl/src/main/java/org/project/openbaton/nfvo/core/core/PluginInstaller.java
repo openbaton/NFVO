@@ -68,7 +68,7 @@ public class PluginInstaller implements CommandLineRunner {
             log.debug("Running command: " + command);
 
             Process plugin = Runtime.getRuntime().exec(command);
-            Runtime.getRuntime().exec("screen -p 0");
+//            Runtime.getRuntime().exec("screen -p 0");
 
 //           Runtime.getRuntime().exec("screen -d openbaton");
 //            Runtime.getRuntime().exec("screen -r openbaton -p 0");
@@ -145,7 +145,7 @@ public class PluginInstaller implements CommandLineRunner {
          */
         try {
             Process plugin = Runtime.getRuntime().exec("screen -S openbaton -p 0 -X screen -t " + pluginName + " java -jar " + path);
-            Runtime.getRuntime().exec("screen -p 0");
+//            Runtime.getRuntime().exec("screen -p 0");
 //         Runtime.getRuntime().exec("screen -d openbaton");
 //            Runtime.getRuntime().exec("screen -r -p 0");
             this.processes.put(pluginName, plugin);
