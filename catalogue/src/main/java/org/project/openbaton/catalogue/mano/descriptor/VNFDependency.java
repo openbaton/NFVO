@@ -23,6 +23,7 @@ import java.util.Set;
  * Orchestrator.*/
 @Entity
 public class VNFDependency implements Serializable {
+
 	@Id
 	private String id = IdGenerator.createUUID();
 	@Version
@@ -41,7 +42,6 @@ public class VNFDependency implements Serializable {
     }
 
     public VirtualNetworkFunctionDescriptor getSource() {
-
         return source;
     }
 
@@ -56,6 +56,7 @@ public class VNFDependency implements Serializable {
 	public void setParameters(Set<String> parameters) {
 		this.parameters = parameters;
 	}
+
     public VirtualNetworkFunctionDescriptor getTarget() {
         return target;
     }
@@ -75,7 +76,9 @@ public class VNFDependency implements Serializable {
 	@Override
 	public String toString() {
 		return "VNFDependency [id=" + id + ", version=" + version + ", source="
-				+ (source == null ? source : source.getName()) + ", target=" + (target == null ? target : target.getName())  + "]";
+				+ (source == null ? source : source.getName()) + ", target=" + (target == null ? target : target.getName()) +
+				", parameters=" + parameters +
+				"]";
 	}
 
 
