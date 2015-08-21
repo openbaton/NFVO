@@ -4,8 +4,6 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
@@ -68,15 +66,15 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
         for (BlockingDeque<VNFRecordDependency> qs : queues.values()) {
             List<VNFRecordDependency> dependenciesToBeRemoved = new ArrayList<>();
             for (VNFRecordDependency dependency: qs) {
-                if (dependency.getSource().getId().equals(vnfrSourceId)) {
-                    CoreMessage coreMessage = new CoreMessage();
-                    coreMessage.setAction(Action.MODIFY);
-                    coreMessage.setDependency(vnfrDependencyRepository.find(dependency.getId()));
-                    VirtualNetworkFunctionRecord target = vnfrRepository.find(dependency.getTarget().getId());
-                    coreMessage.setVirtualNetworkFunctionRecord(target);
-                    vnfmManager.modify(target, coreMessage);
-                    dependenciesToBeRemoved.add(dependency);
-                }
+//                if (dependency.getSources().getId().equals(vnfrSourceId)) {
+//                    CoreMessage coreMessage = new CoreMessage();
+//                    coreMessage.setAction(Action.MODIFY);
+//                    coreMessage.setDependency(vnfrDependencyRepository.find(dependency.getId()));
+//                    VirtualNetworkFunctionRecord target = vnfrRepository.find(dependency.getTarget().getId());
+//                    coreMessage.setVirtualNetworkFunctionRecord(target);
+//                    vnfmManager.modify(target, coreMessage);
+//                    dependenciesToBeRemoved.add(dependency);
+//                }
             }
             for (VNFRecordDependency dependencyToRemove : dependenciesToBeRemoved){
                 for (VNFRecordDependency dependency : qs){
@@ -111,7 +109,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
             if (dependency.getTarget().getId().equals(virtualNetworkFunctionRecordId)) {
                 Status status = vnfrDependencyRepository.find(dependency.getId()).getStatus();
 
-                log.debug("Dependency source: " + dependency.getSource().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + status);
+//                log.debug("Dependency source: " + dependency.getSources().getName() + " target: " + dependency.getTarget().getName() + " is in status: " + status);
                 if (status.ordinal() != Status.ACTIVE.ordinal())
                     return false;
             }

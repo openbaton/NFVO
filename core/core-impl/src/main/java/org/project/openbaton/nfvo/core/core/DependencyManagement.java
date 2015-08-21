@@ -16,12 +16,10 @@
 
 package org.project.openbaton.nfvo.core.core;
 
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -71,19 +69,19 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                      *
                      * wait for the source to be initialized
                      */
-                    log.debug("Source VNFR " + vnfRecordDependency.getSource().getName() + " ( " + vnfRecordDependency.getSource().getId() + " ) is in state: " + vnfRecordDependency.getSource().getStatus());
-                    if (vnfRecordDependency.getSource().getStatus().ordinal() < Status.INITIALIZED.ordinal()){
-                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getTarget().getId(),vnfRecordDependency);
-                    }else {
-                        /**
-                         * or Send directly the modify command
-                         */
-                        CoreMessage coreMessage = new CoreMessage();
-                        coreMessage.setAction(Action.MODIFY);
-                        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                        coreMessage.setDependency(vnfRecordDependency);
-                        vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
-                    }
+//                    log.debug("Source VNFR " + vnfRecordDependency.getSources().getName() + " ( " + vnfRecordDependency.getSources().getId() + " ) is in state: " + vnfRecordDependency.getSources().getStatus());
+//                    if (vnfRecordDependency.getSources().getStatus().ordinal() < Status.INITIALIZED.ordinal()){
+//                        dependencyQueuer.waitForVNFR(vnfRecordDependency.getTarget().getId(),vnfRecordDependency);
+//                    }else {
+//                        /**
+//                         * or Send directly the modify command
+//                         */
+//                        CoreMessage coreMessage = new CoreMessage();
+//                        coreMessage.setAction(Action.MODIFY);
+//                        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+//                        coreMessage.setDependency(vnfRecordDependency);
+//                        vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
+//                    }
                     numDependencies++;
                 }
             }

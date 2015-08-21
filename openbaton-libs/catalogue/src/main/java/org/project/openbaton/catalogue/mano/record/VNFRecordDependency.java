@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -17,13 +18,14 @@ public class VNFRecordDependency implements Serializable {
     @Version
     private int version = 0;
 
-    @OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
-    private VirtualNetworkFunctionRecord source;
+    @OneToMany(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
+    private Set<VirtualNetworkFunctionRecord> sources;
+
     @OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionRecord target;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> parameters;
+    private Map<String ,Set<String>> parameters;
     private Status status;
 
     public VNFRecordDependency() {
@@ -31,20 +33,25 @@ public class VNFRecordDependency implements Serializable {
 
     @Override
     public String toString() {
+        String srcs = "";
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : sources) {
+            srcs += virtualNetworkFunctionRecord.getName() + "(" + virtualNetworkFunctionRecord.getId() + "), ";
+        }
+        srcs = srcs.substring(0,srcs.length() - 3);
         return "VNFRecordDependency{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", source=" + source.getName() + "(" + source.getId() + ")" +
+                ", sources={" + srcs + "}" +
                 ", target=" + target + "(" + target.getId() + ")" +
                 ", parameters=" + parameters +
                 '}';
     }
 
-    public Set<String> getParameters() {
+    public Map<String ,Set<String>> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Set<String> parameters) {
+    public void setParameters(Map<String ,Set<String>> parameters) {
         this.parameters = parameters;
     }
 
@@ -64,12 +71,12 @@ public class VNFRecordDependency implements Serializable {
         this.version = version;
     }
 
-    public VirtualNetworkFunctionRecord getSource() {
-        return source;
+    public Set<VirtualNetworkFunctionRecord> getSources() {
+        return sources;
     }
 
-    public void setSource(VirtualNetworkFunctionRecord source) {
-        this.source = source;
+    public void setSources(Set<VirtualNetworkFunctionRecord> sources) {
+        this.sources = sources;
     }
 
     public VirtualNetworkFunctionRecord getTarget() {
