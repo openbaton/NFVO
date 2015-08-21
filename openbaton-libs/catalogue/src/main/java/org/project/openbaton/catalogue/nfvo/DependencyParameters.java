@@ -3,13 +3,14 @@ package org.project.openbaton.catalogue.nfvo;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by lto on 21/08/15.
  */
 @Entity
-public class DependencyParameters {
+public class DependencyParameters implements Serializable{
 
     @Id
     private String id = IdGenerator.createUUID();
