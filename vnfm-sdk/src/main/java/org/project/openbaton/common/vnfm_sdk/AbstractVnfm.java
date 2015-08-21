@@ -2,7 +2,7 @@ package org.project.openbaton.common.vnfm_sdk;
 
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
@@ -87,7 +87,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
     public abstract void updateSoftware();
 
     @Override
-    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
 
     @Override
     public abstract void upgradeSoftware();
@@ -127,7 +127,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 coreMessage = handleError(virtualNetworkFunctionRecord);
                 break;
             case MODIFY:
-                coreMessage = this.modify(virtualNetworkFunctionRecord);
+                coreMessage = this.modify(virtualNetworkFunctionRecord, message.getDependency());
                 break;
             case RELEASE_RESOURCES:
                 coreMessage = this.terminate(virtualNetworkFunctionRecord);
@@ -154,6 +154,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 
         log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         if (coreMessage != null){
+            coreMessage.setDependency(message.getDependency());
             log.debug("send to NFVO");
             sendToNfvo(coreMessage);
         }
@@ -181,7 +182,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 break;
             }
-        changeStatus(virtualNetworkFunctionRecord,event);
+//        changeStatus(virtualNetworkFunctionRecord,event);
     }
 
     /**
@@ -201,12 +202,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         String lastScript = (String) currentEvent.getLifecycle_events().toArray()[currentEvent.getLifecycle_events().size() - 1];
         log.debug("Last script is: " + lastScript);
 
-        if(lastScript.equalsIgnoreCase(command))
-            changeStatus(vnfr,currentEvent.getEvent());
-
-        //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
-        if(vnfr.getStatus()==Status.INITIALIZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
-            changeStatus(vnfr,Event.CONFIGURE);
+//        if(lastScript.equalsIgnoreCase(command))
+//            changeStatus(vnfr,currentEvent.getEvent());
+//
+//        //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
+//        if(vnfr.getStatus()==Status.INITIALIZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
+//            changeStatus(vnfr,Event.CONFIGURE);
 
         //set the command in the history event
         LifecycleEvent historyEvent = getLifecycleEvent(vnfr.getLifecycle_event_history(),event);
@@ -222,49 +223,49 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         }
     }
 
-    private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
-        switch (event){
-            case RESET:
-                break;
-            case ERROR:vnfr.setStatus(Status.ERROR);
-                break;
-            case INSTANTIATE: vnfr.setStatus(Status.INITIALIZED);
-                break;
-            case GRANTED:
-                break;
-            case ALLOCATE:
-                break;
-            case CONFIGURE: vnfr.setStatus(Status.INACTIVE);
-                break;
-            case SCALE:
-                break;
-            case SCALE_OUT:
-                break;
-            case SCALE_IN:
-                break;
-            case SCALE_UP:
-                break;
-            case SCALE_DOWN:
-                break;
-            case UPDATE:
-                break;
-            case UPDATE_ROLLBACK:
-                break;
-            case UPGRADE:
-                break;
-            case UPGRADE_ROLLBACK:
-                break;
-            case START: vnfr.setStatus(Status.ACTIVE);
-                break;
-            case STOP: vnfr.setStatus(Status.INACTIVE);
-                break;
-            case RELEASE:
-                break;
-            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
-                break;
-        }
-
-    }
+//    private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
+//        switch (event){
+//            case RESET:
+//                break;
+//            case ERROR:vnfr.setStatus(Status.ERROR);
+//                break;
+//            case INSTANTIATE: vnfr.setStatus(Status.INITIALIZED);
+//                break;
+//            case GRANTED:
+//                break;
+//            case ALLOCATE:
+//                break;
+//            case CONFIGURE: vnfr.setStatus(Status.INACTIVE);
+//                break;
+//            case SCALE:
+//                break;
+//            case SCALE_OUT:
+//                break;
+//            case SCALE_IN:
+//                break;
+//            case SCALE_UP:
+//                break;
+//            case SCALE_DOWN:
+//                break;
+//            case UPDATE:
+//                break;
+//            case UPDATE_ROLLBACK:
+//                break;
+//            case UPGRADE:
+//                break;
+//            case UPGRADE_ROLLBACK:
+//                break;
+//            case START: vnfr.setStatus(Status.ACTIVE);
+//                break;
+//            case STOP: vnfr.setStatus(Status.INACTIVE);
+//                break;
+//            case RELEASE:
+//                break;
+//            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
+//                break;
+//        }
+//
+//    }
 
     protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
