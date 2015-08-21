@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Created by lto on 13/05/15.
  */
@@ -116,11 +115,15 @@ public class NSDUtils {
         /**
          * Fetching dependencies
          */
+
         DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
+        //Add a vertex to the graph for each vnfd
         for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             g.addVertex(vnfd.getName());
         }
+
+        mergeMultipleDependency(networkServiceDescriptor);
 
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
@@ -151,18 +154,44 @@ public class NSDUtils {
                 String name = sourceFound ? target.getName() : source.getName();
                 throw new NotFoundException(name + " was not found in the NetworkServiceDescriptor");
             }
-
+            // Add an edge to the graph
             g.addEdge(source.getName(),target.getName());
         }
 
+        // Get simple cycles
         DirectedSimpleCycles<String,DefaultEdge> dsc = new SzwarcfiterLauerSimpleCycles(g);
         List<List<String>> cycles = dsc.findSimpleCycles();
-
+        // Set cyclicDependency param to the vnfd
         for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             for(List<String> cycle : cycles)
                 if(cycle.contains(vnfd.getName())) {
                     vnfd.setCyclicDependency(true);break;
                 }
+        }
+    }
+    /**
+     * MergeMultipleDependency
+     *
+     * Merge two VNFDependency (A and B), where source and target are equals, in only one (C).
+     * C contains the parameters of A and B.     *
+     */
+    private void mergeMultipleDependency(NetworkServiceDescriptor networkServiceDescriptor) {
+        // For each VNFDependency (external) get the source and target
+        for(VNFDependency vnfDependencyExternal : networkServiceDescriptor.getVnf_dependency()){
+            String source = vnfDependencyExternal.getSource().getName();
+            String target = vnfDependencyExternal.getTarget().getName();
+            // For each VNFDependency (internal) check if source and target are equals to the external
+            for(VNFDependency vnfDependencyInternal:networkServiceDescriptor.getVnf_dependency()){
+                if(source.equalsIgnoreCase(vnfDependencyInternal.getSource().getName()) &&
+                        target.equalsIgnoreCase(vnfDependencyInternal.getTarget().getName())){
+                    // Copy each internal's parameter in the external
+                    for(String parameter : vnfDependencyInternal.getParameters()){
+                        vnfDependencyExternal.getParameters().add(parameter);
+                    }
+                    // delete internal from the NetworkServiceDescriptor
+                    networkServiceDescriptor.getVnf_dependency().remove(vnfDependencyInternal);
+                }
+            }
         }
     }
 
