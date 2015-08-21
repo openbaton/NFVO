@@ -27,8 +27,8 @@ public class VNFRecordDependency implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, String> nameType;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 
     public VNFRecordDependency() {
     }
@@ -49,7 +49,6 @@ public class VNFRecordDependency implements Serializable {
                 ", target=" + target.getName() + " ( " + target.getId() + ")" +
                 ", parameters=" + parameters +
                 ", nameType=" + nameType +
-                ", status=" + status +
                 '}';
     }
 
@@ -85,11 +84,11 @@ public class VNFRecordDependency implements Serializable {
         this.target = target;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+//    public Status getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Status status) {
+//        this.status = status;
+//    }
 }
