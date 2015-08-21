@@ -1,12 +1,11 @@
 package org.project.openbaton.catalogue.mano.common;
 
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.DependencyParameters;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by lto on 08/06/15.
@@ -25,34 +24,43 @@ public class VNFRecordDependency implements Serializable {
     @OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionRecord target;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Map<String, DependencyParameters> parameters;
+
     @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String ,Set<String>> parameters;
+    private Map<String, String> nameType;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     public VNFRecordDependency() {
     }
 
+    public Map<String, String> getNameType() {
+        return nameType;
+    }
+
+    public void setNameType(Map<String, String> nameType) {
+        this.nameType = nameType;
+    }
+
     @Override
     public String toString() {
-        String srcs = "";
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : sources) {
-            srcs += virtualNetworkFunctionRecord.getName() + "(" + virtualNetworkFunctionRecord.getId() + "), ";
-        }
-        srcs = srcs.substring(0,srcs.length() - 3);
         return "VNFRecordDependency{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", sources={" + srcs + "}" +
-                ", target=" + target + "(" + target.getId() + ")" +
+                ", target=" + target.getName() + " ( " + target.getId() + ")" +
                 ", parameters=" + parameters +
+                ", nameType=" + nameType +
+                ", status=" + status +
                 '}';
     }
 
-    public Map<String ,Set<String>> getParameters() {
+    public Map<String, DependencyParameters> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String ,Set<String>> parameters) {
+    public void setParameters(Map<String, DependencyParameters> parameters) {
         this.parameters = parameters;
     }
 
@@ -72,14 +80,6 @@ public class VNFRecordDependency implements Serializable {
         this.version = version;
     }
 
-    public Set<VirtualNetworkFunctionRecord> getSources() {
-        return sources;
-    }
-
-    public void setSources(Set<VirtualNetworkFunctionRecord> sources) {
-        this.sources = sources;
-    }
-
     public VirtualNetworkFunctionRecord getTarget() {
         return target;
     }
@@ -88,11 +88,11 @@ public class VNFRecordDependency implements Serializable {
         this.target = target;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
