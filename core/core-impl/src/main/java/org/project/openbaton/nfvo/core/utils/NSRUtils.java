@@ -129,6 +129,7 @@ public class NSRUtils {
                         DependencyParameters dependencyParameters = new DependencyParameters();
                         dependencyParameters.setParameters(new HashMap<String, String>());
                         for (String key:vnfDependency.getParameters()) {
+                            log.debug("Adding parameter to dependency: " + key);
                             dependencyParameters.getParameters().put(key,"");
                         }
                         vnfRecordDependency.getParameters().put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
@@ -137,7 +138,7 @@ public class NSRUtils {
                     if (virtualNetworkFunctionRecord.getName().equals(vnfDependency.getTarget().getName()))
                         vnfRecordDependency.setTarget(virtualNetworkFunctionRecord);
                 }
-                log.debug("Adding dependency" + vnfRecordDependency);
+                log.debug("Adding dependency " + vnfRecordDependency);
                 networkServiceRecord.getVnf_dependency().add(vnfRecordDependency);
             }
         }
@@ -167,6 +168,7 @@ public class NSRUtils {
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
+        virtualNetworkFunctionRecord.setCyclicDependency(vnfd.hasCyclicDependency());
 
         Configuration requires = new Configuration();
         requires.setName("requires");

@@ -38,6 +38,7 @@ public class InstantiateTask extends AbstractTask {
         log.debug("NFVO: instantiate finish");
         log.trace("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+        dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
         log.trace("now Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
         log.info("Releasing waiting VNFRs");
