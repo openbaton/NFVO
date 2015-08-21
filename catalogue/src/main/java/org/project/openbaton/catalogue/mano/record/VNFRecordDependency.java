@@ -25,7 +25,7 @@ public class VNFRecordDependency implements Serializable {
     private Map<String, DependencyParameters> parameters;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> nameType;
+    private Map<String, String> idType;
 
 //    @Enumerated(EnumType.STRING)
 //    private Status status;
@@ -33,12 +33,12 @@ public class VNFRecordDependency implements Serializable {
     public VNFRecordDependency() {
     }
 
-    public Map<String, String> getNameType() {
-        return nameType;
+    public Map<String, String> getIdType() {
+        return idType;
     }
 
-    public void setNameType(Map<String, String> nameType) {
-        this.nameType = nameType;
+    public void setIdType(Map<String, String> idType) {
+        this.idType = idType;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class VNFRecordDependency implements Serializable {
                 ", version=" + version +
                 ", target=" + target.getName() + " ( " + target.getId() + ")" +
                 ", parameters=" + parameters +
-                ", nameType=" + nameType +
+                ", idType=" + idType +
                 '}';
     }
 
