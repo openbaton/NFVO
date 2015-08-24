@@ -180,7 +180,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 coreMessage.setAction(Action.INSTANTIATE);
             else
                 coreMessage.setAction(Action.CONFIGURE);
-
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
             if (endpoint == null) {
                 throw new NotFoundException("VnfManager of type " + vnfr.getType() + " (endpoint = " + vnfr.getEndpoint() + ") is not registered");
