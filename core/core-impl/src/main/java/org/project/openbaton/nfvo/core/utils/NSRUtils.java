@@ -31,10 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lto on 11/05/15.
@@ -104,8 +101,13 @@ public class NSRUtils {
 
                         if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
                             vnfRecordDependency.getIdType().put(virtualNetworkFunctionRecord.getId(), virtualNetworkFunctionRecord.getType());
-                            DependencyParameters dependencyParameters = new DependencyParameters();
-                            dependencyParameters.setParameters(new HashMap<String, String>());
+
+                            DependencyParameters dependencyParameters=vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
+                            //If there are no dependencyParameter of that type
+                            if(dependencyParameters==null) {
+                                dependencyParameters = new DependencyParameters();
+                                dependencyParameters.setParameters(new HashMap<String, String>());
+                            }
                             for (String key:vnfDependency.getParameters()) {
                                 dependencyParameters.getParameters().put(key, "");
                             }
@@ -143,10 +145,16 @@ public class NSRUtils {
             }
         }
 
-        log.debug("New dependency are:");
+        /*log.debug("New dependency are:");
         for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
-            log.debug("" + vnfRecordDependency);
-        }
+            log.debug("Target: " + vnfRecordDependency.getTarget().getName());
+            for(Map.Entry<String, DependencyParameters> entry : vnfRecordDependency.getParameters().entrySet()){
+                log.debug("Vnfr type: " + entry.getKey());
+                for(Map.Entry<String, String> entryDependency : entry.getValue().getParameters().entrySet()){
+                    log.debug("Parameters (key=value) "+entryDependency.toString());
+                }
+            }
+        }*/
 
     }
 
@@ -218,8 +226,9 @@ public class NSRUtils {
             vnfPackage.setExtId(vnfd.getVnfPackage().getExtId());
             virtualNetworkFunctionRecord.setVnfPackage(vnfPackage);
         }
-        if (vnfd.getEndpoint() != null)
+        if (vnfd.getEndpoint() != null) {
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
+        }
         else
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getType());
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());

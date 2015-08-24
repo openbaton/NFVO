@@ -103,23 +103,26 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
         NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
                 vnfRecordDependency = vnfrDependencyRepository.find(vnfRecordDependency.getId());
-                for (Map.Entry<String, DependencyParameters> entry : vnfRecordDependency.getParameters().entrySet()) {
-                    if (entry.getKey().equals(virtualNetworkFunctionRecord.getType())) {
-                        for (Map.Entry<String, String> keyValueDep : entry.getValue().getParameters().entrySet()) {
-                            for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
-                                if (cp.getConfKey().equals(keyValueDep.getKey())){
-                                    keyValueDep.setValue(cp.getValue());
-                                    break;
-                                }
+
+                DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
+                if(dp!=null){
+                    for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
+                        for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
+                            if (cp.getConfKey().equals(keyValueDep.getKey())){
+                                log.debug("Filling parameter "+keyValueDep.getKey()+" with value: "+cp.getValue());
+                                keyValueDep.setValue(cp.getValue());
+                                break;
                             }
                         }
-                        vnfrDependencyRepository.merge(vnfRecordDependency);
                     }
+                    vnfrDependencyRepository.merge(vnfRecordDependency);
                 }
-                log.debug("Filled parameterd for depedendency target = " + vnfRecordDependency.getTarget().getName() + " with parameters: " + vnfRecordDependency.getParameters());
+                //log.debug("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget().getName() + " with parameters: " + vnfRecordDependency.getParameters());
             }
+
         }
     }
 

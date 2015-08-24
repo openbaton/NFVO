@@ -7,6 +7,7 @@
 package org.project.openbaton.catalogue.mano.descriptor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 
@@ -121,7 +122,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     public String getEndpoint() {
         return endpoint;
     }
-
+    @JsonProperty(required = true)
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
