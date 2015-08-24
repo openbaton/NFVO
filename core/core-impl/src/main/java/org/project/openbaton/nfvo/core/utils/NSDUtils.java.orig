@@ -16,10 +16,14 @@
 
 package org.project.openbaton.nfvo.core.utils;
 
+<<<<<<< HEAD
+=======
 import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
+>>>>>>> graph
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -27,6 +31,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +41,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 /**
  * Created by lto on 13/05/15.
  */
@@ -54,6 +56,9 @@ public class NSDUtils {
     @Autowired
     @Qualifier("VNFDRepository")
     private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -118,6 +123,8 @@ public class NSDUtils {
         /**
          * Fetching dependencies
          */
+<<<<<<< HEAD
+=======
 
         DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
@@ -128,6 +135,7 @@ public class NSDUtils {
 
         mergeMultipleDependency(networkServiceDescriptor);
 
+>>>>>>> graph
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
             VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
@@ -144,6 +152,7 @@ public class NSDUtils {
                     vnfDependency.setSource(virtualNetworkFunctionDescriptor);
                     sourceFound = true;
                     log.trace("Found " + virtualNetworkFunctionDescriptor);
+
                 }
                 else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())){
                     vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
@@ -167,8 +176,7 @@ public class NSDUtils {
         for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
             for(List<String> cycle : cycles)
                 if(cycle.contains(vnfd.getName())) {
-                    vnfd.setCyclicDependency(true);
-                    break;
+                    vnfd.setCyclicDependency(true);break;
                 }
         }
     }
@@ -179,33 +187,26 @@ public class NSDUtils {
      * C contains the parameters of A and B.     *
      */
     private void mergeMultipleDependency(NetworkServiceDescriptor networkServiceDescriptor) {
-
-        Set<VNFDependency> newDependencies = new HashSet<>();
-
-        for (VNFDependency oldDependency : networkServiceDescriptor.getVnf_dependency()){
-            boolean contained = false;
-            for (VNFDependency newDependency: newDependencies){
-                if (newDependency.getTarget().getId().equals(oldDependency.getTarget().getId()) && newDependency.getSource().getId().equals(oldDependency.getSource().getId())){
-                    log.debug("Old is: " + oldDependency);
-                    if (oldDependency.getParameters() != null)
-                        newDependency.getParameters().addAll(oldDependency.getParameters());
-                    contained = true;
+        // For each VNFDependency (external) get the source and target
+        for(VNFDependency vnfDependencyExternal : networkServiceDescriptor.getVnf_dependency()){
+            String source = vnfDependencyExternal.getSource().getName();
+            String target = vnfDependencyExternal.getTarget().getName();
+            // For each VNFDependency (internal) check if source and target are equals to the external
+            for(VNFDependency vnfDependencyInternal:networkServiceDescriptor.getVnf_dependency()){
+                if(source.equalsIgnoreCase(vnfDependencyInternal.getSource().getName()) &&
+                        target.equalsIgnoreCase(vnfDependencyInternal.getTarget().getName())){
+                    // Copy each internal's parameter in the external
+                    for(String parameter : vnfDependencyInternal.getParameters()){
+                        vnfDependencyExternal.getParameters().add(parameter);
+                    }
+                    // delete internal from the NetworkServiceDescriptor
+                    networkServiceDescriptor.getVnf_dependency().remove(vnfDependencyInternal);
                 }
             }
-            if (!contained){
-                VNFDependency newDependency = new VNFDependency();
-                newDependency.setSource(oldDependency.getSource());
-                newDependency.setTarget(oldDependency.getTarget());
-                newDependency.setParameters(new HashSet<String>());
-                log.debug("Old is: " + oldDependency);
-                if (oldDependency.getParameters() != null)
-                    newDependency.getParameters().addAll(oldDependency.getParameters());
-                newDependencies.add(newDependency);
-            }
         }
+        // TODO check circular dependencies
+        // if yes set a configuration parameter in configuration
 
-        log.debug("New dependencies are: " + newDependencies);
-        networkServiceDescriptor.setVnf_dependency(newDependencies);
     }
 
 }

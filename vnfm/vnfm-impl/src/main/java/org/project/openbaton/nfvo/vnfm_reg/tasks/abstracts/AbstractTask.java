@@ -113,11 +113,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.ERROR;
                 break;
             case MODIFY:
-                if (dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId())) {
-                    status = Status.INACTIVE;
-                }else {
-                    status = virtualNetworkFunctionRecord.getStatus();
-                }
+                 status = Status.INACTIVE;
                 break;
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;

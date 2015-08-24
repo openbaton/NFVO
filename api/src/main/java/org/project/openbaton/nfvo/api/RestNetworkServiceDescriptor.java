@@ -69,6 +69,7 @@ public class RestNetworkServiceDescriptor {
 	@ResponseStatus(HttpStatus.CREATED)
 	public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) {
 		NetworkServiceDescriptor nsd = null;
+		log.debug("Just Received: " + networkServiceDescriptor.getVnf_dependency());
 		try {
 			nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
 		} catch (NotFoundException e) {
