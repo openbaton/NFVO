@@ -64,9 +64,7 @@ public class NSDUtils {
          * Fetching VNFD
          */
         List<VirtualNetworkFunctionDescriptor> vnfdToAdd = new ArrayList<>();
-        int size = networkServiceDescriptor.getVnfd().size();
-        for (int i=0; i< size; i++) {
-            VirtualNetworkFunctionDescriptor vnfd = (VirtualNetworkFunctionDescriptor) networkServiceDescriptor.getVnfd().toArray()[i];
+        for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd()) {
             log.debug("The VNFD to fetch is: " + vnfd.getName());
             for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll()) {
                 log.debug("Checking: " + virtualNetworkFunctionDescriptor.getName());
