@@ -103,7 +103,7 @@ function stop {
 
 function kill {
     if screen -list | grep "openbaton"; then
-	    screen -X -S openbaton kill
+	    screen -ls | grep openbaton | cut -d. -f1 | awk '{print $1}' | xargs kill
     fi
 }
 
