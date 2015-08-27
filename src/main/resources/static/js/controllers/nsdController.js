@@ -73,6 +73,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             delete $scope.vnfdEditIndex;
         }
         $scope.nsdCreate.vnfd.push(angular.copy($scope.vnfdCreate));
+        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
+        console.log('heigh: ' + height + 'px');
+        $(".modal-backdrop").height(height)
     };
 
     $scope.deleteVNFD = function (index) {
@@ -81,7 +84,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.storeNSDF = function (nsdCreate) {
         $('#modalForm').modal('hide');
-        console.log(nsdCreate)
+        console.log(nsdCreate);
         http.post(url, nsdCreate)
             .success(function (response) {
                 showOk('Network Service Descriptors stored!');
@@ -211,6 +214,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     };
 
+    $scope.showTab = function (value) {
+        return (value > 0);
+    }
 
     $scope.sendFile = function () {
 
@@ -316,12 +322,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.launch = function (data) {
-        http.post(urlRecord + '/', data)
+        console.log(data)
+        http.post(urlRecord + '/' + data.id)
             .success(function (response) {
                 showOk('Created Network Service Record from Descriptor with id: ' + data.id);
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(status, JSON.stringify(data));
             });
     };
 
