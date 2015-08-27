@@ -1,31 +1,48 @@
-
 angular.module('app')
-    .factory('http', function($http, $q, $cookieStore) {
+    .factory('http', function ($http, $q, $cookieStore) {
 
         var http = {};
-        http.get = function(url) {
+        http.get = function (url) {
             return $http({
-                url:url,
+                url: url,
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer '+$cookieStore.get('token')
-                }})
+                    'Authorization': 'Bearer ' + $cookieStore.get('token')
+                }
+            })
         };
 
 
-        http.post = function(url, data) {
-            console.log('Bearer '+$cookieStore.get('token'));
+        http.post = function (url, data) {
             console.log(data);
             $('#modalSend').modal('show');
-            return $http({
-                url:url,
-                method: 'POST',
-                data: data,
-                headers: {
-                    'Authorization': 'Bearer '+$cookieStore.get('token')
-                }})
+            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
+            console.log(headerAutorization);
+
+            console.log(angular.isUndefined(data))
+            if (!angular.isUndefined(data))
+                return $http({
+                    url: url,
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        'Authorization': headerAutorization,
+                        'Accept': 'application/json',
+                        'Content-type': 'application/json'
+                    }
+                });
+            else
+                return $http({
+                    url: url,
+                    method: 'POST',
+
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-type': 'application/json'
+                    }
+                });
         };
-        http.postXML = function(url, data) {
+        http.postXML = function (url, data) {
             $('#modalSend').modal('show');
             return $http({
                 url: url,
@@ -38,19 +55,19 @@ angular.module('app')
 
             });
         };
-        http.put = function(url, data) {
+        http.put = function (url, data) {
             $('#modalSend').modal('show');
             return $http.put(url, data);
         };
 
-        http.delete = function(url) {
+        http.delete = function (url) {
             $('#modalSend').modal('show');
             return $http.delete(url);
         };
 
-        http.syncGet = function(url) {
+        http.syncGet = function (url) {
             var deferred = $q.defer();
-            http.get(url).success(function(data, status) {
+            http.get(url).success(function (data, status) {
                 deferred.resolve(data);
             });
             return deferred.promise;

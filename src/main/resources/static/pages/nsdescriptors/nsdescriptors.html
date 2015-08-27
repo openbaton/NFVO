@@ -143,7 +143,7 @@
 
                     </div>
                     <tabset>
-                        <tab heading="lifecycle_event">
+                        <tab heading="lifecycle_event" ng-show="showTab(vduCreate.lifecycle_event.length)">
                             {{vduCreate.lifecycle_event}}
                         </tab>
                         <tab heading="monitoring_parameter">
@@ -161,9 +161,8 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -181,7 +180,6 @@
                                 </div>
                             </div>
                             <br/>
-
                             <ul class="col-lg-offset-3"
                                 ng-repeat="mp in vduCreate.monitoring_parameter track by $index">
                                 <li>{{mp}} <a href="" ng-click="deleteMP($index)"><i class="fa fa-trash-o"></i></a></li>
@@ -203,9 +201,8 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -270,7 +267,7 @@
                         </div>
                     </div>
                     <tabset>
-                        <tab heading="df_constraint">
+                        <tab heading="costituent_vdu">
                             <div class="">
                                 <div class="">
                                     <h4 class="">
@@ -285,9 +282,8 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -313,7 +309,7 @@
                             <!--{{depFlavor.costituent_vdu}}-->
 
                         </tab>
-                        <tab heading="costituent_vdu">
+                        <tab heading="df_constraint">
                             <div class="">
                                 <div class="">
                                     <h4 class="">
@@ -328,9 +324,8 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -396,13 +391,10 @@
 
                     </div>
                     <tabset>
-                        <tab class="" heading="auto_scale_policy">
+                        <tab class="" heading="auto_scale_policy" ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
                             {{vnfdCreate.auto_scale_policy}}
                         </tab>
-                        <tab class=" " heading="connection_point">
-                            {{vnfdCreate.connection_point}}
-                        </tab>
-                        <tab class="" heading="connection_point">
+                        <tab class="" heading="connection_point" ng-show="showTab(vnfdCreate.connection_point.length)">
                             {{vnfdCreate.connection_point}}
                         </tab>
                         <tab class="" heading="monitoring_parameter">
@@ -420,7 +412,7 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
                                         <div class="col-sm-6">
@@ -481,7 +473,7 @@
                                 </div>
                             </div>
                         </tab>
-                        <tab class="" heading="vdu_dependency">
+                        <tab class="" heading="vdu_dependency" ng-show="showTab(vnfdCreate.vdu_dependency.length)">
                             {{vnfdCreate.vdu_dependency}}
                         </tab>
                         <tab class="" heading="deployment_flavour">
@@ -519,10 +511,10 @@
                             </div>
                             <!--{{vnfdCreate.deployment_flavour}}-->
                         </tab>
-                        <tab class="" heading="lifecycle_event">
+                        <tab class="" heading="lifecycle_event"  ng-show="showTab(vnfdCreate.lifecycle_event.length)">
                             {{vnfdCreate.lifecycle_event}}
                         </tab>
-                        <tab class="" heading="virtual_link">
+                        <tab class="" heading="virtual_link" ng-show="showTab(vnfdCreate.virtual_link.length)">
                             {{vnfdCreate.virtual_link}}
                         </tab>
                     </tabset>
@@ -570,13 +562,13 @@
 
                     <tabset>
 
-                        <tab heading="auto_scale_policy">
+                        <tab heading="auto_scale_policy" ng-show="showTab(nsdCreate.auto_scale_policy.length)">
                             {{nsdCreate.auto_scale_policy}}
                         </tab>
-                        <tab heading="connection_point">
+                        <tab heading="connection_point" ng-show="showTab(nsdCreate.connection_point.length)">
                             {{nsdCreate.connection_point}}
                         </tab>
-                        <tab heading="lifecycle_event">
+                        <tab heading="lifecycle_event" ng-show="showTab(nsdCreate.lifecycle_event.length)">
                             {{nsdCreate.lifecycle_event}}
                         </tab>
                         <tab heading="monitoring_parameter">
@@ -594,7 +586,7 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
                                         <div class="col-sm-6">
@@ -622,10 +614,10 @@
                             </ul>
                             <!--{{nsdCreate.monitoring_parameter}}-->
                         </tab>
-                        <tab heading="pnfd">
+                        <tab heading="pnfd" ng-show="showTab(nsdCreate.pnfd.length)">
                             {{nsdCreate.pnfd}}
                         </tab>
-                        <tab heading="service_deployment_flavour">
+                        <tab heading="service_deployment_flavour" ng-show="showTab(nsdCreate.service_deployment_flavour.length)">
 
                             {{nsdCreate.service_deployment_flavour}}
                         </tab>
@@ -655,10 +647,10 @@
                             <!--{{nsdCreate.vnf_dependency}}-->
                         </tab>
 
-                        <tab heading="vnffgd">
+                        <tab heading="vnffgd" ng-show="showTab(nsdCreate.vnffgd.length)">
                             {{nsdCreate.vnffgd}}
                         </tab>
-                        <tab heading="vld">
+                        <tab heading="vld" ng-show="showTab(nsdCreate.vld.length)">
                             {{nsdCreate.vld}}
                         </tab>
 
