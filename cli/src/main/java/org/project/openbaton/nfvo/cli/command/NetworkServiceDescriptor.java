@@ -73,12 +73,18 @@ public class NetworkServiceDescriptor implements CommandMarker {
     @CliCommand(value = "networkServiceDescriptor create", help = "Submit and validate a new Network Service Descriptor (NSD)")
     public String create(
             @CliOption(key = {"networkServiceDescriptorFile"}, mandatory = true, help = "The networkServiceDescriptor json file") final File networkServiceDescriptor) {
+        org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor nsd = null;
         try {
-            return "NSD CREATED" + networkServiceDescriptorAgent.create(getObject(networkServiceDescriptor));
+            nsd = networkServiceDescriptorAgent.create(getObject(networkServiceDescriptor));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return "NSD NOT CREATED";
+        } catch (BadFormatException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
+        return "NSD CREATED" +nsd;
     }
 
     /**
