@@ -202,14 +202,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         String lastScript = (String) currentEvent.getLifecycle_events().toArray()[currentEvent.getLifecycle_events().size() - 1];
         log.debug("Last script is: " + lastScript);
 
-
 //        if(lastScript.equalsIgnoreCase(command))
 //            changeStatus(vnfr,currentEvent.getEvent());
 //
 //        //If the current vnfr is INITIALIZED and it hasn't a configure event, set it as INACTIVE
 //        if(vnfr.getStatus()==Status.INITIALIZED && getLifecycleEvent(vnfr.getLifecycle_event(),Event.CONFIGURE)==null)
 //            changeStatus(vnfr,Event.CONFIGURE);
-
 
         //set the command in the history event
         LifecycleEvent historyEvent = getLifecycleEvent(vnfr.getLifecycle_event_history(),event);
@@ -224,7 +222,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             vnfr.getLifecycle_event_history().add(newLce);
         }
     }
-
 
 //    private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
 //        switch (event){
@@ -269,7 +266,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
 //        }
 //
 //    }
-
 
     protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
