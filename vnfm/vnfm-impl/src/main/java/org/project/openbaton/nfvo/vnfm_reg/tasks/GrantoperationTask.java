@@ -40,9 +40,11 @@ public class GrantoperationTask extends AbstractTask {
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
+            lifecycleEvent.setLifecycle_events(new HashSet<String>());
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+            virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
             message = new CoreMessage();
             message.setAction(Action.GRANT_OPERATION);
             message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
