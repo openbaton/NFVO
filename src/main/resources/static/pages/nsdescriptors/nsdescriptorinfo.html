@@ -13,7 +13,7 @@
                     NS Descriptors</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                Template: {{nsdinfo.name}}
+                NSD Name: {{nsdinfo.name}}
             </li>
         </ol>
     </div>
@@ -60,7 +60,7 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="vnfd in nsdinfo.vnfd | orderBy:predicate:reverse">
-                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}" ng-click="showData(nsd)">{{vnfd.id}}</a>
+                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}">{{vnfd.id}}</a>
                         </td>
                         <td>{{vnfd.name}}</td>
                         <td>{{vnfd.type}}</td>

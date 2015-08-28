@@ -8,7 +8,7 @@
             <li><a href="#"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                NSDs
+                NS Descriptors
             </li>
         </ol>
     </div>
@@ -49,7 +49,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="nsd in nsdescriptors| orderBy:predicate:reverse">
-                    <td><a href="#nsdescriptors/{{nsd.id}}" ng-click="showData(nsd)">{{nsd.id}}</a></td>
+                    <td><a href="#nsdescriptors/{{nsd.id}}">{{nsd.id}}</a></td>
                     <td>{{nsd.name}}</td>
                     <td>{{nsd.vendor}}</td>
                     <td>{{nsd.version}}</td>
@@ -163,6 +163,7 @@
 
                                     <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -203,6 +204,7 @@
 
                                     <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -227,7 +229,7 @@
                             </ul>
                             <!--{{vduCreate.vm_image}}-->
                         </tab>
-                        <tab heading="vnfc">
+                        <tab heading="vnfc" ng-show="showTab(vduCreate.vnfc.length)">
                             {{vduCreate.vnfc}}
                         </tab>
                     </tabset>
@@ -284,6 +286,7 @@
 
                                     <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -326,6 +329,7 @@
 
                                     <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
                                         <div class="col-sm-6">
                                             <div class="form-group input-group">
                                                 <input class="form-control" type="text" ng-model="newValue">
@@ -391,7 +395,8 @@
 
                     </div>
                     <tabset>
-                        <tab class="" heading="auto_scale_policy" ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
+                        <tab class="" heading="auto_scale_policy"
+                             ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
                             {{vnfdCreate.auto_scale_policy}}
                         </tab>
                         <tab class="" heading="connection_point" ng-show="showTab(vnfdCreate.connection_point.length)">
@@ -511,7 +516,7 @@
                             </div>
                             <!--{{vnfdCreate.deployment_flavour}}-->
                         </tab>
-                        <tab class="" heading="lifecycle_event"  ng-show="showTab(vnfdCreate.lifecycle_event.length)">
+                        <tab class="" heading="lifecycle_event" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
                             {{vnfdCreate.lifecycle_event}}
                         </tab>
                         <tab class="" heading="virtual_link" ng-show="showTab(vnfdCreate.virtual_link.length)">
@@ -617,7 +622,8 @@
                         <tab heading="pnfd" ng-show="showTab(nsdCreate.pnfd.length)">
                             {{nsdCreate.pnfd}}
                         </tab>
-                        <tab heading="service_deployment_flavour" ng-show="showTab(nsdCreate.service_deployment_flavour.length)">
+                        <tab heading="service_deployment_flavour"
+                             ng-show="showTab(nsdCreate.service_deployment_flavour.length)">
 
                             {{nsdCreate.service_deployment_flavour}}
                         </tab>
