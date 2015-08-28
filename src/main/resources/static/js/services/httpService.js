@@ -18,29 +18,17 @@ angular.module('app')
             $('#modalSend').modal('show');
             var headerAutorization = 'Bearer ' + $cookieStore.get('token');
             console.log(headerAutorization);
+            return $http({
+                url: url,
+                method: 'POST',
+                data: data,
+                headers: {
+                    'Authorization': headerAutorization,
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                }
+            });
 
-            console.log(angular.isUndefined(data))
-            if (!angular.isUndefined(data))
-                return $http({
-                    url: url,
-                    method: 'POST',
-                    data: data,
-                    headers: {
-                        'Authorization': headerAutorization,
-                        'Accept': 'application/json',
-                        'Content-type': 'application/json'
-                    }
-                });
-            else
-                return $http({
-                    url: url,
-                    method: 'POST',
-
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-type': 'application/json'
-                    }
-                });
         };
         http.postXML = function (url, data) {
             $('#modalSend').modal('show');

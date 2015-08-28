@@ -5,7 +5,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     loadTable();
 
-
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
@@ -82,6 +81,17 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreate.vnfd.splice(index, 1);
     };
 
+
+    console.log($routeParams.vnfdescriptorId);
+
+    if (!angular.isUndefined($routeParams.vnfdescriptorId))
+        $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
+    console.log($scope.vnfdescriptorId);
+
+    if (!angular.isUndefined($routeParams.vnfdependencyId))
+        $scope.vnfdependencyId = $routeParams.vnfdependencyId;
+    console.log($scope.vnfdescriptorId);
+
     $scope.storeNSDF = function (nsdCreate) {
         $('#modalForm').modal('hide');
         console.log(nsdCreate);
@@ -91,7 +101,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                console.error('STATUS: ' + status + ' DATA: ' + data);
+                showError(status, JSON.stringify(data));
             });
     };
 
@@ -184,7 +195,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies.json')
         .then(function (res) {
-            console.log(res.data);
+            //console.log(res.data);
             $scope.nsdCreate = angular.copy(res.data);
         });
 
@@ -322,7 +333,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.launch = function (data) {
-        console.log(data)
+        console.log(data);
         http.post(urlRecord + '/' + data.id)
             .success(function (response) {
                 showOk('Created Network Service Record from Descriptor with id: ' + data.id);
@@ -362,7 +373,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $('.modal').modal('hide');
     }
 
-
     function loadTable() {
         //if (!$('#jsonInfo').hasClass('in'))
         if (angular.isUndefined($routeParams.nsdescriptorId))
@@ -389,7 +399,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                     //$window.location.href = destinationUrl;
                 });
     }
-
 
 });
 
