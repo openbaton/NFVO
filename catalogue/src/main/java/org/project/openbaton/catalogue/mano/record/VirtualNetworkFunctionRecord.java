@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.common.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.nfvo.Configuration;
@@ -43,9 +42,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<VNFRecordDependency> dependency;
 
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
@@ -170,6 +166,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration provides;
 
+    @JsonIgnore
+    private boolean cyclicDependency;
+
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
@@ -180,6 +179,14 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public boolean hasCyclicDependency() {
+        return cyclicDependency;
+    }
+
+    public void setCyclicDependency(boolean cyclicDependency) {
+        this.cyclicDependency = cyclicDependency;
     }
 
     public String getParent_ns_id() {
@@ -215,14 +222,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public void setConnection_point(Set<ConnectionPoint> connection_point) {
         this.connection_point = connection_point;
-    }
-
-    public Set<VNFRecordDependency> getDependency() {
-        return dependency;
-    }
-
-    public void setDependency(Set<VNFRecordDependency> dependency) {
-        this.dependency = dependency;
     }
 
     public String getDeployment_flavour_key() {
@@ -392,7 +391,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 ", hb_version=" + hb_version +
                 ", auto_scale_policy=" + auto_scale_policy +
                 ", connection_point=" + connection_point +
-                ", dependency=" + dependency +
                 ", deployment_flavour_key='" + deployment_flavour_key + '\'' +
                 ", lifecycle_event=" + lifecycle_event +
                 ", lifecycle_event_history=" + lifecycle_event_history +
