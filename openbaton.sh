@@ -5,15 +5,15 @@ source gradle.properties
 _version=${version}
 
 _openbaton_base="."
-_message_queue_base="apache-activemq-5.11.1"
+_message_queue_base="/opt/openbaton/apache-activemq-5.11.1"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+    sudo ${_message_queue_base}/bin/activemq start
 }
 
 function start_activemq_osx {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
+    sudo ${_message_queue_base}/bin/macosx/activemq start
 }
 
 function check_activemq {
