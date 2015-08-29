@@ -20,35 +20,49 @@ import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.validation.FieldError;
+
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+
+
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 /**
  * Created by gca on 27/08/15.
  */
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @ExceptionHandler({NotFoundException.class, BadFormatException.class, NoResultException.class})
+
+    @ExceptionHandler({ NotFoundException.class, NoResultException.class, BadFormatException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ModelAndView handleNotFound(HttpServletRequest request, Exception ex){
-        log.error("Requested URL="+request.getRequestURL());
-        log.error("Exception Raised="+ex);
+    protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
+        ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("exception", ex);
-        modelAndView.addObject("url", request.getRequestURL());
-
-        modelAndView.setViewName("error");
-        return modelAndView;
+        return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
+
+
+
 
 
 }
