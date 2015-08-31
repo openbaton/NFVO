@@ -10,6 +10,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Describe dependencies between VNF. Defined in terms of
@@ -22,6 +23,7 @@ import java.io.Serializable;
  * Orchestrator.*/
 @Entity
 public class VNFDependency implements Serializable {
+
 	@Id
 	private String id = IdGenerator.createUUID();
 	@Version
@@ -33,17 +35,27 @@ public class VNFDependency implements Serializable {
 	@OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
     private VirtualNetworkFunctionDescriptor target;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<String> parameters;
+
     public VNFDependency() {
     }
 
     public VirtualNetworkFunctionDescriptor getSource() {
-
         return source;
     }
 
     public void setSource(VirtualNetworkFunctionDescriptor source) {
         this.source = source;
     }
+
+	public Set<String> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(Set<String> parameters) {
+		this.parameters = parameters;
+	}
 
     public VirtualNetworkFunctionDescriptor getTarget() {
         return target;
@@ -64,7 +76,9 @@ public class VNFDependency implements Serializable {
 	@Override
 	public String toString() {
 		return "VNFDependency [id=" + id + ", version=" + version + ", source="
-				+ (source == null ? source : source.getName()) + ", target=" + (target == null ? target : target.getName())  + "]";
+				+ (source == null ? source : source.getName()) + ", target=" + (target == null ? target : target.getName()) +
+				", parameters=" + parameters +
+				"]";
 	}
 
 

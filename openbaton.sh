@@ -4,8 +4,7 @@ source gradle.properties
 
 _version=${version}
 
-_base=/opt
-_openbaton_base="${_base}/openbaton"
+_openbaton_base="."
 _message_queue_base="apache-activemq-5.11.1"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
@@ -78,6 +77,17 @@ function check_mysql {
     fi
 }
 
+
+function check_already_running {
+        result=$(screen -ls | grep openbaton | wc -l);
+        if [ "${result}" -ne "0" ]; then
+                echo "openbaton is already running.."
+		exit;
+        fi
+}
+
+
+
 function start {
 
     if [ ! -d build/  ]
@@ -87,10 +97,11 @@ function start {
 
     check_activemq
     check_mysql
+    check_already_running
     if [ 0 -eq $? ]
         then
-	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-#            screen -d -m -S openbaton -p 0 -X screen -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "$_openbaton_base/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+#            screen -d -m -S openbaton -p 0 -X screen -t nfvo java -jar "$_openbaton_base/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
 	    screen -c .screenrc -r -p 0
     fi
 }
@@ -103,7 +114,7 @@ function stop {
 
 function kill {
     if screen -list | grep "openbaton"; then
-	    screen -X -S openbaton kill
+	    screen -ls | grep openbaton | cut -d. -f1 | awk '{print $1}' | xargs kill
     fi
 }
 
@@ -169,5 +180,9 @@ do
             usage
             end ;;
     esac
+    if [[ $? -ne 0 ]]; 
+    then
+	    exit 1
+    fi
 done
 
