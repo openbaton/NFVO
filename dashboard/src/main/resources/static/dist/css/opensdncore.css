@@ -746,19 +746,25 @@ h4 > a, h4 > a:hover {
 /*}*/
 
 .input-group .form-control:first-child {
-    width: 90%;
+    /*width: 90%;*/
      left: 0px;
 }
-/*.fa {*/
-    /*display: inline-block;*/
-    /*font: normal normal normal 14px/1 FontAwesome;*/
-    /*font-size: inherit;*/
-    /*text-rendering: auto;*/
-    /*-webkit-font-smoothing: antialiased;*/
-    /*-moz-osx-font-smoothing: grayscale;*/
-/*}*/
 
-/*.input-group-btn > .btn {*/
-    /*position: relative;*/
-    /*padding-left: -20px;*/
-/*}*/
+
+.modal-open .modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    display: none;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+}

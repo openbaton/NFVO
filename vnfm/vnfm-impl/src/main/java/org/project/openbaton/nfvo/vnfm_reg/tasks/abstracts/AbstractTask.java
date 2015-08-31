@@ -108,16 +108,13 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
             case SCALE:
                 break;
             case SCALING:
+                status = Status.SCALING;
                 break;
             case ERROR:
                 status = Status.ERROR;
                 break;
             case MODIFY:
-                if (dependencyQueuer.areMyDepResolved(virtualNetworkFunctionRecord.getParent_ns_id(), virtualNetworkFunctionRecord.getId())) {
-                    status = Status.INACTIVE;
-                }else {
-                    status = virtualNetworkFunctionRecord.getStatus();
-                }
+                 status = Status.INACTIVE;
                 break;
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;
@@ -129,8 +126,10 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.INITIALIZED;
                 break;
             case SCALE_UP_FINISHED:
+                status = Status.ACTIVE;
                 break;
             case SCALE_DOWN_FINISHED:
+                status = Status.ACTIVE;
                 break;
             case RELEASE_RESOURCES_FINISH:
                 status = Status.TERMINATED;

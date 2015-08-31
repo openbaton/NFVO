@@ -8,7 +8,7 @@
             <li><a href="#"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                NSDs
+                NS Descriptors
             </li>
         </ol>
     </div>
@@ -49,7 +49,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="nsd in nsdescriptors| orderBy:predicate:reverse">
-                    <td><a href="#nsdescriptors/{{nsd.id}}" ng-click="showData(nsd)">{{nsd.id}}</a></td>
+                    <td><a href="#nsdescriptors/{{nsd.id}}">{{nsd.id}}</a></td>
                     <td>{{nsd.name}}</td>
                     <td>{{nsd.vendor}}</td>
                     <td>{{nsd.version}}</td>
@@ -143,7 +143,7 @@
 
                     </div>
                     <tabset>
-                        <tab heading="lifecycle_event">
+                        <tab heading="lifecycle_event" ng-show="showTab(vduCreate.lifecycle_event.length)">
                             {{vduCreate.lifecycle_event}}
                         </tab>
                         <tab heading="monitoring_parameter">
@@ -161,20 +161,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMP(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueMP(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -182,7 +181,6 @@
                                 </div>
                             </div>
                             <br/>
-
                             <ul class="col-lg-offset-3"
                                 ng-repeat="mp in vduCreate.monitoring_parameter track by $index">
                                 <li>{{mp}} <a href="" ng-click="deleteMP($index)"><i class="fa fa-trash-o"></i></a></li>
@@ -204,20 +202,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueVMI(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueVMI(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -232,7 +229,7 @@
                             </ul>
                             <!--{{vduCreate.vm_image}}-->
                         </tab>
-                        <tab heading="vnfc">
+                        <tab heading="vnfc" ng-show="showTab(vduCreate.vnfc.length)">
                             {{vduCreate.vnfc}}
                         </tab>
                     </tabset>
@@ -272,7 +269,7 @@
                         </div>
                     </div>
                     <tabset>
-                        <tab heading="df_constraint">
+                        <tab heading="costituent_vdu">
                             <div class="">
                                 <div class="">
                                     <h4 class="">
@@ -287,20 +284,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueDFC(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueDFC(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -316,7 +312,7 @@
                             <!--{{depFlavor.costituent_vdu}}-->
 
                         </tab>
-                        <tab heading="costituent_vdu">
+                        <tab heading="df_constraint">
                             <div class="">
                                 <div class="">
                                     <h4 class="">
@@ -331,20 +327,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueCVDU(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueCVDU(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -400,13 +395,11 @@
 
                     </div>
                     <tabset>
-                        <tab class="" heading="auto_scale_policy">
+                        <tab class="" heading="auto_scale_policy"
+                             ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
                             {{vnfdCreate.auto_scale_policy}}
                         </tab>
-                        <tab class=" " heading="connection_point">
-                            {{vnfdCreate.connection_point}}
-                        </tab>
-                        <tab class="" heading="connection_point">
+                        <tab class="" heading="connection_point" ng-show="showTab(vnfdCreate.connection_point.length)">
                             {{vnfdCreate.connection_point}}
                         </tab>
                         <tab class="" heading="monitoring_parameter">
@@ -424,20 +417,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMPfromVNFD(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueMPfromVNFD(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -486,7 +478,7 @@
                                 </div>
                             </div>
                         </tab>
-                        <tab class="" heading="vdu_dependency">
+                        <tab class="" heading="vdu_dependency" ng-show="showTab(vnfdCreate.vdu_dependency.length)">
                             {{vnfdCreate.vdu_dependency}}
                         </tab>
                         <tab class="" heading="deployment_flavour">
@@ -524,10 +516,10 @@
                             </div>
                             <!--{{vnfdCreate.deployment_flavour}}-->
                         </tab>
-                        <tab class="" heading="lifecycle_event">
+                        <tab class="" heading="lifecycle_event" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
                             {{vnfdCreate.lifecycle_event}}
                         </tab>
-                        <tab class="" heading="virtual_link">
+                        <tab class="" heading="virtual_link" ng-show="showTab(vnfdCreate.virtual_link.length)">
                             {{vnfdCreate.virtual_link}}
                         </tab>
                     </tabset>
@@ -575,13 +567,13 @@
 
                     <tabset>
 
-                        <tab heading="auto_scale_policy">
+                        <tab heading="auto_scale_policy" ng-show="showTab(nsdCreate.auto_scale_policy.length)">
                             {{nsdCreate.auto_scale_policy}}
                         </tab>
-                        <tab heading="connection_point">
+                        <tab heading="connection_point" ng-show="showTab(nsdCreate.connection_point.length)">
                             {{nsdCreate.connection_point}}
                         </tab>
-                        <tab heading="lifecycle_event">
+                        <tab heading="lifecycle_event" ng-show="showTab(nsdCreate.lifecycle_event.length)">
                             {{nsdCreate.lifecycle_event}}
                         </tab>
                         <tab heading="monitoring_parameter">
@@ -599,20 +591,19 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group input-group">
+                                    <div class="form-group">
                                         <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-7">
-                                            <div ng-init="newValue=''">
-                                                <input type="text" class="form-control" id="newValue" name="newValue"
-                                                       ng-model="newValue"/>
-                                            </div>
-                                        <span class="input-group-btn">
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMPfromNSD(newValue)">
-                                                    <i class="fa fa-floppy-o"></i>
+                                                        ng-click="saveValueMPfromNSD(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -628,10 +619,11 @@
                             </ul>
                             <!--{{nsdCreate.monitoring_parameter}}-->
                         </tab>
-                        <tab heading="pnfd">
+                        <tab heading="pnfd" ng-show="showTab(nsdCreate.pnfd.length)">
                             {{nsdCreate.pnfd}}
                         </tab>
-                        <tab heading="service_deployment_flavour">
+                        <tab heading="service_deployment_flavour"
+                             ng-show="showTab(nsdCreate.service_deployment_flavour.length)">
 
                             {{nsdCreate.service_deployment_flavour}}
                         </tab>
@@ -661,10 +653,10 @@
                             <!--{{nsdCreate.vnf_dependency}}-->
                         </tab>
 
-                        <tab heading="vnffgd">
+                        <tab heading="vnffgd" ng-show="showTab(nsdCreate.vnffgd.length)">
                             {{nsdCreate.vnffgd}}
                         </tab>
-                        <tab heading="vld">
+                        <tab heading="vld" ng-show="showTab(nsdCreate.vld.length)">
                             {{nsdCreate.vld}}
                         </tab>
 

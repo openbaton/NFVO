@@ -118,19 +118,23 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
         log.trace("Creating " + networkServiceRecord);
 
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
-            vnfrRepository.create(vnfr);
+//        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
+//            vnfrRepository.create(vnfr);
 
         log.trace("Persisting VNFDependencies");
-        for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
-            log.trace("" + vnfrDependency.getSource());
-            vnfrDependencyRepository.create(vnfrDependency);
-        }
+//        for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
+//            log.trace("" + vnfrDependency.getSources());
+//            vnfrDependencyRepository.create(vnfrDependency);
+//        }
         log.trace("Persisted VNFDependencies");
 
-
+        NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
         nsrRepository.create(networkServiceRecord);
 
+        log.debug("VNFR are: ");
+        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
+            log.debug(vnfr.getName());
+        }
 
         log.debug("created NetworkServiceRecord with id " + networkServiceRecord.getId());
 

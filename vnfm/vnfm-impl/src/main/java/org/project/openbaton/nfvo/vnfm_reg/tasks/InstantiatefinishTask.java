@@ -1,5 +1,6 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope("prototype")
-public class InstantiateTask extends AbstractTask {
+public class InstantiatefinishTask extends AbstractTask {
 
     @Autowired
     @Qualifier("vnfmRegister")
@@ -48,6 +49,7 @@ public class InstantiateTask extends AbstractTask {
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
+            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.START);
