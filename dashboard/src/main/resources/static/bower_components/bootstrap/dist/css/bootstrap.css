@@ -3703,7 +3703,7 @@ tbody.collapse.in {
 }
 .input-group {
     position: relative;
-    /*display: table;*/
+    display: table;
     border-collapse: separate;
 }
 .input-group[class*="col-"] {
@@ -3713,7 +3713,7 @@ tbody.collapse.in {
 }
 .input-group .form-control {
     position: relative;
-    /*z-index: 2;*/
+    z-index: 2;
     float: left;
     width: 100%;
     margin-bottom: 0;
@@ -3784,7 +3784,6 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     padding: 6px 12px;
     font-size: 14px;
     font-weight: normal;
-    line-height: 1;
     color: #555;
     text-align: center;
     background-color: #eee;

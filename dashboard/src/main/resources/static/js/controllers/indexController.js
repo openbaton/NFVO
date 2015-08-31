@@ -99,14 +99,14 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
                 if (status == 404) {
                     AuthService.loginGuest($scope.URL);
                 }
-                console.info((status == 404) );
-                console.error('Repos error', status, data);
+                console.info(('status != 404') );
+                console.error('Response error', status, data);
             })
 
     };
 
     /**
-     * Calls the AuthService Service for making the login on Keystone
+     * Calls the AuthService Service for retrieving the token access
      *
      * @param {type} credential
      * @returns {undefined}
