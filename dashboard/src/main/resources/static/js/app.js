@@ -28,6 +28,22 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
                 controller: 'NsdCtrl'
             }).
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors.html',
+                controller: 'NsdCtrl'
+            }).
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/:vnfdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptor.html',
+                controller: 'NsdCtrl'
+            }).
+            when('/nsdescriptors/:nsdescriptorId/vnfdepencies/:vnfdependencyId', {
+                templateUrl: 'pages/nsdescriptors/vnfdependency.html',
+                controller: 'NsdCtrl'
+            }).
+            when('/nsdescriptors/:nsdescriptorId/vnfdepencies/', {
+                templateUrl: 'pages/nsdescriptors/vnfdependencies.html',
+                controller: 'NsdCtrl'
+            }).
             when('/nsrecords', {
                 templateUrl: 'pages/nsrecords/nsrecords.html',
                 controller: 'NsrCtrl'
