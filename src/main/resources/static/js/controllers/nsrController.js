@@ -126,6 +126,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
             });
     };
 
+    if (!angular.isUndefined($routeParams.vnfrecordId))
+        $scope.vnfrecordId = $routeParams.vnfrecordId;
+    
+    if (!angular.isUndefined($routeParams.vnfdependencyId))
+        $scope.vnfdependencyId = $routeParams.vnfdependencyId;
+
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
