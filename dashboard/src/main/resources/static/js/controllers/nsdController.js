@@ -86,11 +86,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vnfdescriptorId))
         $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
-    console.log($scope.vnfdescriptorId);
+
 
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
-    console.log($scope.vnfdescriptorId);
+
 
     $scope.storeNSDF = function (nsdCreate) {
         $('#modalForm').modal('hide');
