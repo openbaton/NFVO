@@ -81,6 +81,30 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreate.vnfd.splice(index, 1);
     };
 
+    $scope.deleteVNFDependency = function (vnfd) {
+        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdependencies/' + vnfd.id)
+            .success(function (response) {
+                showOk('Deleted VNF Dependecy with id: ' + vnfd.id);
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + data);
+                showError(status, JSON.stringify(data));
+            });
+
+    };
+
+    $scope.deleteVNFD = function (vnfd) {
+        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdescriptors/' + vnfd.id)
+            .success(function (response) {
+                showOk('Deleted VNF Descriptors with id: ' + vnfd.id);
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + data);
+                showError(status, JSON.stringify(data));
+            });
+    };
 
     console.log($routeParams.vnfdescriptorId);
 
