@@ -40,9 +40,6 @@ import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.api.RestNetworkServiceDescriptor;
-import org.project.openbaton.nfvo.api.exceptions.PNFDNotFoundException;
-import org.project.openbaton.nfvo.api.exceptions.VNFDNotFoundException;
-import org.project.openbaton.nfvo.api.exceptions.VNFDependencyNotFoundException;
 
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
