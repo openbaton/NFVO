@@ -129,7 +129,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         log.trace("Persisted VNFDependencies");
 
         NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
-        nsrRepository.create(networkServiceRecord);
 
         log.debug("VNFR are: ");
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
@@ -204,6 +203,8 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         }
 
         vnfmManager.deploy(networkServiceRecord);
+
+        nsrRepository.create(networkServiceRecord);
 
         return networkServiceRecord;
     }
