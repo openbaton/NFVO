@@ -54,6 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ NotFoundException.class, NoResultException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
+        log.error("Exception with message "+e.getMessage()+" was thrown");
         ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
