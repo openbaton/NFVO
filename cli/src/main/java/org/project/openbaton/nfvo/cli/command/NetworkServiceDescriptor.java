@@ -160,7 +160,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String getVirtualNetworkFunctionDescriptor(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_vfn"}, mandatory = true, help = "The virtual network function descriptor id") final String id_vfn) {
-        return "FOUND VNFDESCRIPTOR: " + networkServiceDescriptorAgent.getVirtualNetworkFunctionDescriptor(id, id_vfn);
+        try {
+            return "Found NSD" + networkServiceDescriptorAgent.getVirtualNetworkFunctionDescriptor(id, id_vfn);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while getting the VNFD, particularly the VNFD with id " + id_vfn + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -173,7 +179,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String deleteVirtualNetworkFunctionDescriptors(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_vfn"}, mandatory = true, help = "The virtual network function descriptor id") final String id_vfn) {
-        networkServiceDescriptorAgent.deleteVirtualNetworkFunctionDescriptor(id, id_vfn);
+        try {
+            networkServiceDescriptorAgent.deleteVirtualNetworkFunctionDescriptor(id, id_vfn);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the VNF, particularly the VNFD with id " + id_vfn + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "DELETED VNFDESCRIPTOR";
     }
 
@@ -241,7 +253,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String getVNFDependency(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_vnfd"}, mandatory = true, help = "The VNFDependencies id") final String id_vnfd) {
-        return "FOUND VNFDEPENDENCY: " + networkServiceDescriptorAgent.getVNFDependency(id, id_vnfd);
+        try {
+            return "FOUND VNFDEPENDENCY: " + networkServiceDescriptorAgent.getVNFDependency(id, id_vnfd);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while getting VNF dependencies, particularly the VNFD with id " + id_vnfd + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -254,7 +272,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String deleteVNFDependency(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_vnfd"}, mandatory = true, help = "The VNFDependencies id") final String id_vnfd) {
-        networkServiceDescriptorAgent.deleteVNFDependency(id, id_vnfd);
+        try {
+            networkServiceDescriptorAgent.deleteVNFDependency(id, id_vnfd);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the VNF dependency, particularly the VNFD with id " + id_vnfd + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "Deleted VNFDependency";
     }
 
@@ -324,7 +348,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String getPhysicalNetworkFunctionDescriptor(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_pnf"}, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
-        return "FOUND PNFDESCRIPTOR: " + networkServiceDescriptorAgent.getPhysicalNetworkFunctionDescriptor(id, id_pnf);
+        try {
+            return "FOUND PNFDESCRIPTOR: " + networkServiceDescriptorAgent.getPhysicalNetworkFunctionDescriptor(id, id_pnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the PNFD, particularly the PNFD with id " + id_pnf  + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -337,7 +367,13 @@ public class NetworkServiceDescriptor implements CommandMarker {
     public String deletePhysicalNetworkFunctionDescriptor(
             @CliOption(key = {"id"}, mandatory = true, help = "The networkServiceDescriptor id") final String id,
             @CliOption(key = {"id_pnf"}, mandatory = true, help = "The PhysicalNetworkFunctionDescriptor id") final String id_pnf) {
-        networkServiceDescriptorAgent.deletePhysicalNetworkFunctionDescriptor(id, id_pnf);
+        try {
+            networkServiceDescriptorAgent.deletePhysicalNetworkFunctionDescriptor(id, id_pnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the PNFD, particularly the PNFD with id " + id_pnf + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "Deleted PhysicalNetworkFunctionDescriptor";
     }
 

@@ -157,7 +157,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdescriptors/{id_vfn}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  {
+			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn) throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		return findVNF(nsd.getVnfd(), id_vfn);
 	}
@@ -165,7 +165,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdescriptors/{id_vfn}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  {
+			@PathVariable("id") String id, @PathVariable("id_vfn") String id_vfn)  throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		VirtualNetworkFunctionDescriptor nDescriptor = findVNF(nsd.getVnfd(),
 				id_vfn);
@@ -213,7 +213,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VNFDependency getVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd)  {
+			@PathVariable("id_vnfd") String id_vnfd)  throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		return findVNFD(nsd.getVnf_dependency(), id_vnfd);
 	}
@@ -221,7 +221,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd)  {
+			@PathVariable("id_vnfd") String id_vnfd) throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		VNFDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
 		nsd.getVnf_dependency().remove(vnfDependency);
@@ -282,7 +282,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		return findPNFD(nsd.getPnfd(), id_pnf);
 	}
@@ -299,7 +299,7 @@ public class RestNetworkServiceDescriptor {
 	@RequestMapping(value = "{id}/pnfdescriptors/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePhysicalNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf)  {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException{
 		NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
 		PhysicalNetworkFunctionDescriptor pDescriptor = findPNFD(nsd.getPnfd(),
 				id_pnf);
@@ -458,32 +458,32 @@ public class RestNetworkServiceDescriptor {
 	}
 
 	private PhysicalNetworkFunctionDescriptor findPNFD(
-			Collection<PhysicalNetworkFunctionDescriptor> listPNFD, String id_pnf) {
+			Collection<PhysicalNetworkFunctionDescriptor> listPNFD, String id_pnf) throws NotFoundException{
 		for (PhysicalNetworkFunctionDescriptor pDescriptor : listPNFD) {
 			if (pDescriptor.getId().equals(id_pnf)) {
 				return pDescriptor;
 			}
 		}
-		throw new PNFDNotFoundException(id_pnf);
+		throw new NotFoundException("VNFR with id "+id_pnf+ " was not found");
 	}
 
 	private VNFDependency findVNFD(Collection<VNFDependency> vnf_dependency,
-			String id_vnfd) {
+			String id_vnfd)  throws NotFoundException{
 		for (VNFDependency vnfDependency : vnf_dependency) {
 			if (vnfDependency.getId().equals(id_vnfd)) {
 				return vnfDependency;
 			}
 		}
-		throw new VNFDependencyNotFoundException(id_vnfd);
+		throw new NotFoundException("VNFR with id "+id_vnfd+ " was not found");
 	}
 
-	private VirtualNetworkFunctionDescriptor findVNF(Collection<VirtualNetworkFunctionDescriptor> listVNF, String id_vfn) {
+	private VirtualNetworkFunctionDescriptor findVNF(Collection<VirtualNetworkFunctionDescriptor> listVNF, String id_vfn) throws NotFoundException {
 		for (VirtualNetworkFunctionDescriptor vnfDescriptor : listVNF) {
 			if (vnfDescriptor.getId().equals(id_vfn)) {
 				return vnfDescriptor;
 			}
 		}
-		throw new VNFDNotFoundException(id_vfn);
+		throw new NotFoundException("VNFR with id "+id_vfn+ " was not found");
 	}
 
 }

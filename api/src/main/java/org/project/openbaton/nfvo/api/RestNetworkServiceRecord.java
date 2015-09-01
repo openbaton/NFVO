@@ -155,7 +155,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
+			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
 		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		return findVNF(nsd.getVnfr(), id_vnf);
 	}
@@ -163,7 +163,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
+			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
 		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		VirtualNetworkFunctionRecord nRecord = findVNF(nsr.getVnfr(), id_vnf);
 		nsr.getVnfr().remove(nRecord);
@@ -209,7 +209,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VNFRecordDependency getVNFDependency(@PathVariable("id") String id,
-												@PathVariable("id_vnfr") String id_vnfr) {
+												@PathVariable("id_vnfr") String id_vnfr) throws NotFoundException {
 		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		return findVNFD(nsr.getVnf_dependency(), id_vnfr);
 	}
@@ -217,7 +217,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd) {
+			@PathVariable("id_vnfd") String id_vnfd) throws NotFoundException{
 		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		VNFRecordDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
 		nsd.getVnf_dependency().remove(vnfDependency);
@@ -276,7 +276,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionRecord getPhysicalNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException {
 		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		return findPNFD(nsd.getPnfr(), id_pnf);
 	}
@@ -292,7 +292,7 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePhysicalNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException{
 		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(),
 				id_pnf);
@@ -343,32 +343,32 @@ public class RestNetworkServiceRecord {
 
 	// TODO The Rest of the classes
 
-	private PhysicalNetworkFunctionRecord findPNFD(Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) {
+	private PhysicalNetworkFunctionRecord findPNFD(Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) throws  NotFoundException{
 		for (PhysicalNetworkFunctionRecord pRecord : listPNFR) {
 			if (pRecord.getId().equals(id_pnf)) {
 				return pRecord;
 			}
 		}
-		throw new PNFDNotFoundException(id_pnf);
+		throw new NotFoundException("PNFD with id "+id_pnf+ " was not found");
 	}
 
-	private VNFRecordDependency findVNFD(Collection<VNFRecordDependency> vnf_dependency, String id_vnfd) {
+	private VNFRecordDependency findVNFD(Collection<VNFRecordDependency> vnf_dependency, String id_vnfd) throws NotFoundException{
 		for (VNFRecordDependency vnfDependency : vnf_dependency) {
 			if (vnfDependency.getId().equals(id_vnfd)) {
 				return vnfDependency;
 			}
 		}
-		throw new VNFDependencyNotFoundException(id_vnfd);
+		throw new NotFoundException("VNFD with id "+id_vnfd+ " was not found");
 	}
 
 	private VirtualNetworkFunctionRecord findVNF(
-			Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) {
+			Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) throws NotFoundException {
 		for (VirtualNetworkFunctionRecord vnfRecord : listVNF) {
 			if (vnfRecord.getId().equals(id_vnf)) {
 				return vnfRecord;
 			}
 		}
-		throw new VNFDNotFoundException(id_vnf);
+		throw new NotFoundException("VNFR with id "+id_vnf+ " was not found");
 	}
 
 
