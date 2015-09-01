@@ -76,10 +76,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/infrastructures/infrastructures.html',
                 controller: 'InfrastructureCtrl'
             }).
-            when('/deployed/:nsrecordId', {
-                templateUrl: 'pages/infrastructures/deployed.html',
-                controller: 'InfrastructureCtrl'
-            }).
             when('/infrastructures/:infrastructureid', {
                 templateUrl: 'pages/infrastructures/infrastructureinfo.html',
                 controller: 'InfrastructureCtrl'
