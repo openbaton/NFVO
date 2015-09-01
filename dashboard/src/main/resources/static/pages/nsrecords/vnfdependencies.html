@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            VNF Dependencies
+            <small>into {{nsrinfo.name}}</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="">
+                <a href="#nsrecords/"><i class="fa fa-pencil"></i>
+                    NS Dependencies</a></li>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSR: {{nsrinfo.name}}</a></li>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies"><i class="fa fa-pencil-square-o"></i>
+                    VNF Dependencies</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VNF Dependency
+            </li>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+                title="Add a new Virtuan Networck Function Descriptor" data-toggle="modal"
+                data-target="#modalFile">Add a new VNFDependency
+        </button>
+
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-if="nsrinfo.vnf_dependency.length > 0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'parameters'; reverse = !reverse">Source <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="vnfd in nsrinfo.vnf_dependency| orderBy:predicate:reverse">
+                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
+                    </td>
+                    <td>{{vnfd.parameters}}</td>
+                    <td>{{vnfd.target.name}}</td>
+                    <td>{{vnfd.version}}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <!--<li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                       ng-click="launch(nsd)">Launch</a>
+                                </li>-->
+                                <li class="divider"></li>
+                                <li><a href="" ng-click="deleteVNFDependency(vnfd)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

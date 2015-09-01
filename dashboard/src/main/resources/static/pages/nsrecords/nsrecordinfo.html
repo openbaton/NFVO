@@ -13,13 +13,16 @@
                     NS Records</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                NSR: {{nsrinfo.name}}
+                NSR Name: {{nsrinfo.name}}
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="col-lg-12">
             <h2>NSR name: {{nsrinfo.name}}</h2>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
@@ -30,61 +33,145 @@
             <dd>{{nsrinfo.vendor}}</dd>
             <dt>Version:</dt>
             <dd>{{nsrinfo.version}}</dd>
-            <dt>Enabled:</dt>
-            <dd>{{nsrinfo.enabled}}</dd>
-            <dt>Service Deployment Flavor:</dt>
-            <dd ng-repeat="sdf in nsrinfo.service_deployment_flavour">
-                <spam ng-repeat="(k,v) in sdf"><b>{{k}}</b>: {{v}}
-                    <spam ng-if="!$last">,</spam>
-                </spam>
-            </dd>
+            <dt>Status:</dt>
+            <dd>{{nsrinfo.status}}</dd>
 
-
-            <dt>VNF Descriptor:</dt>
-            <dd>
-                <spam ng-repeat="vnfd in nsrinfo.vnfd">
-                    <spam ng-repeat="(k,v) in vnfd"><b>{{k}}</b>: {{v}}
+            <div class="table-responsive" ng-if="nsrinfo.vnfr.length > 0">
+                <h3>VNF Records</h3>
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="vnfrTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">VNFD Name <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'type'; reverse = !reverse">VNFD Type <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+                        </th>
+                        <th>Actions <i class="fa"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="vnfr in nsrinfo.vnfr | orderBy:predicate:reverse">
+                        <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}">{{vnfr.id}}</a>
+                        </td>
+                        <td>{{vnfr.name}}</td>
+                        <td>{{vnfr.type}}</td>
+                        <td>{{vnfr.vendor}}</td>
+                        <td>{{vnfr.version}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    Action
+                                    <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                           ng-click="launch(nsd)">Launch</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li><a href="" ng-click="deleteVNFR(vnfr)">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--<dd>
+                <spam ng-repeat="vnfr in nsrinfo.vnfr">
+                    <spam ng-repeat="(k,v) in vnfr"><b>{{k}}</b>: {{v}}
                         <spam ng-if="!$last">,</spam>
                     </spam>
                 </spam>
-            </dd>
-
-            <dt>VNF Forward Graph Descriptor:</dt>
-            <dd>
-                <spam ng-repeat="vnfd in nsrinfo.vnffgd">
-                    <spam ng-repeat="(k,v) in vnfd"><b>{{k}}</b>: {{v}}
-                        <spam ng-if="!$last">,</spam>
+            </dd>-->
+            <div ng-show="nsrinfo.vnffgd>0">
+                <dt>VNF Forward Graph Descriptor:</dt>
+                <dd>
+                    <spam ng-repeat="vnfr in nsrinfo.vnffgd">
+                        <spam ng-repeat="(k,v) in vnfr"><b>{{k}}</b>: {{v}}
+                            <spam ng-if="!$last">,</spam>
+                        </spam>
                     </spam>
-                </spam>
-            </dd>
+                </dd>
+            </div>
 
-            <dt>VNF dependency:</dt>
-            <dd ng-repeat="vnfd in nsrinfo.vnf_dependency">
-                <p><b>id:</b>{{vnfd.id}}</p>
+
+            <div class="table-responsive" ng-show="nsrinfo.vnf_dependency.length > 0">
+                <h3>VNF Dependencies</h3>
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="vnfrepTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'parameters.parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+                        </th>
+                        </th>
+                        <th>Actions <i class="fa"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="df in nsrinfo.vnf_dependency | orderBy:predicate:reverse">
+                        <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a>
+                        </td>
+                        <td class="">{{df.parameters}}</td>
+                        <td class="col-sm-2">{{df.target.name}}</td>
+                        <td>{{df.version}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    Action
+                                    <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                           ng-click="launch(nsd)">Launch</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li><a href="" ng-click="deleteVNFDependency(df)">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--<dt>VNF dependency:</dt>
+            <dd ng-repeat="vnfr in nsrinfo.vnf_dependency">
+                <p><b>id:</b>{{vnfr.id}}</p>
 
                 <p><b>source:</b>
                     <br/><b>deployment flavour:</b>
-                    <spam ng-repeat="df in vnfd.source.deployment_flavour">
+                    <spam ng-repeat="df in vnfr.source.deployment_flavour">
                         <spam ng-repeat="(k,v) in df"><b>{{k}}</b>: {{v}}
                             <spam ng-if="!$last">,</spam>
                         </spam>
                     </spam>
-                    <spam ng-repeat="(k,v) in vnfd.source"><b>{{k}}</b>: {{v}}
+                    <spam ng-repeat="(k,v) in vnfr.source"><b>{{k}}</b>: {{v}}
                         <spam ng-if="!$last">,</spam>
                     </spam>
                 </p>
                 <p><b>target:</b>
                     <br/><b>deployment flavour:</b>
-                    <spam ng-repeat="df in vnfd.target.deployment_flavour">
+                    <spam ng-repeat="df in vnfr.target.deployment_flavour">
                         <spam ng-repeat="(k,v) in df"><b>{{k}}</b>: {{v}}
                             <spam ng-if="!$last">,</spam>
                         </spam>
                     </spam>
-                    <spam ng-repeat="(k,v) in vnfd.target"><b>{{k}}</b>: {{v}}
+                    <spam ng-repeat="(k,v) in vnfr.target"><b>{{k}}</b>: {{v}}
                         <spam ng-if="!$last">,</spam>
                     </spam>
                 </p>
-            </dd>
+            </dd>-->
         </div>
 
 
@@ -95,12 +182,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <dt class="modal-title" id="myModalLabel">JSON of NSD: {{nsrinfo.name}}</dt>
+                <dt class="modal-title" id="myModalLabel">JSON of NSR: {{nsdInfo.name}}</dt>
             </div>
             <div class="modal-body">
-                <pre id="json">{{nsrJSON}}</pre>
+                <pre id="json">{{nsdJSON}}</pre>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"

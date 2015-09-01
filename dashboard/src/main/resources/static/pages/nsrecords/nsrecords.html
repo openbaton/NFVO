@@ -1,57 +1,58 @@
 <div class="row">
     <div class="col-lg-12">
         <h1>
-            Network Service Records <small>List of NSRs</small>
+            Network Service Records
+            <small>List of NSRs</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>
-                    Overview</a></li>
+                Overview</a></li>
             <li class="active"><i class="fa fa-cloud-upload"></i>
-                Topologies</li>
+                NS Records
+            </li>
         </ol>
     </div>
 </div>
 <!-- /.row -->
-<div class="row">
-    <div class="col-lg-12">
-        <button id="btn_create_topology" class="btn btn-primary pull-right"
-                title="Create a new Topology" data-toggle="modal"
-                data-target="#modalT">Create Topology</button>
-    </div>
-</div>
+
 <div class="row">
     <div class="col-lg-12 top-buffer">
-        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="table-responsive" ng-if="nsrecords.length > 0">
-            <table id="topologyTable"
+            <table id="nsrTable"
                    class="table table-bordered table-striped table-hover tablesorter">
                 <thead>
-                    <tr>
-                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
-                        <th>Actions <i class="fa"></i></th>
-                    </tr>
+                <tr>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="data in nsrecords| orderBy:predicate:reverse">
+                <tr ng-repeat="data in nsrecords| orderBy:predicate:reverse">
 
-                        <td><a popover="Show Info for this Topology" popover-placement="right" popover-trigger="mouseenter" href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
-                        <td>{{data.name}}</td>
-                        <td>{{data.state}}</td>
+                    <td><a popover="Show Info for this NSR" popover-placement="right" popover-trigger="mouseenter"
+                           href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
+                    <td>{{data.name}}</td>
+                    <td>{{data.status}}</td>
 
-                        <td>
-                            <div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action <span class="caret"></span></button> 
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="" ng-click="addServiceContainer(data)">Add Service</a></li>
-                                    <li><a href=""  ng-click="cleanTopology(data)">Clean</a></li>
-                                    <!--<li><a href=""  ng-click="startTopology(data)">Start</a></li>-->
-                                    <li class="divider"></li>
-                                    <li><a  href=""  ng-click="deleteNSR(data)">Delete</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="addServiceContainer(data)">Add Service</a></li>
+                                <li><a href="" ng-click="cleanTopology(data)">Clean</a></li>
+                                <!--<li><a href=""  ng-click="startTopology(data)">Start</a></li>-->
+                                <li class="divider"></li>
+                                <li><a href="" ng-click="deleteNSR(data)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -60,7 +61,7 @@
 <!-- /.row -->
 
 <!-- /#page-wrapper -->
-<div class="modal" id="modalT" >
+<div class="modal" id="modalT">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,44 +73,56 @@
                 <tabset>
                     <tab heading="Form">
                         <br>
+
                         <form class="form-horizontal" role="form" name="formForm" novalidate>
                             <div class="form-group" ng-class="{ 'has-error' : formForm.Name.$invalid  }">
                                 <label for="Name" class="col-sm-4 control-label">Name
                                     Topology</label>
+
                                 <div class="col-sm-5">
                                     <input type="text" class="form-control" id="Name" name="Name"
                                            ng-model="data.name" placeholder="Topology" value="" required>
+
                                     <p ng-show="formForm.Name.$invalid" class="help-block">Name is required.</p>
                                 </div>
                             </div>
                             <div class="form-group" ng-class="{ 'has-error' : selectedOneLocation }">
                                 <label for="checkboxDiv" class="col-sm-4 control-label">Location</label>
-                                <div id="checkboxDiv" >
-                                    <div class="col-sm-8 input-group" >
+
+                                <div id="checkboxDiv">
+                                    <div class="col-sm-8 input-group">
                                         <div class="checkbox" ng-repeat="location in locations track by $index">
                                             <label>
-                                                <input type="checkbox" value="{{location}}"  ng-model="locationChecked[location]" ng-change="selectedLocations(location)" >
+                                                <input type="checkbox" value="{{location}}"
+                                                       ng-model="locationChecked[location]"
+                                                       ng-change="selectedLocations(location)">
                                                 {{location}}
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-                                <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">One Location is required.</p>
+                                <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">
+                                    One Location is required.</p>
                             </div>
-                            <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}" data-toggle="modal" data-target="#addContainerModal">Add Container</button>
+                            <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}"
+                                    data-toggle="modal" data-target="#addContainerModal">Add Container
+                            </button>
                             <hr>
                             <div collapse="">
-                                <div class="well well-lg" ng-show="data.serviceContainers[$index]" ng-repeat="serviceContainer in data.serviceContainers track by $index">
+                                <div class="well well-lg" ng-show="data.serviceContainers[$index]"
+                                     ng-repeat="serviceContainer in data.serviceContainers track by $index">
                                     <div class="row pull-right">
-                                        <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
+                                        <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">
+                                            <i class="fa fa-trash-o"> Delete </i></a>
                                     </div>
                                     <div class="row">
                                         <div>
-                                            <b>Container:</b> {{serviceContainer.containerName}} 
-                                            :: <b>min:</b> {{serviceContainer.minNumInst}} 
+                                            <b>Container:</b> {{serviceContainer.containerName}}
+                                            :: <b>min:</b> {{serviceContainer.minNumInst}}
                                             :: <b>max:</b> {{serviceContainer.maxNumInst}}
                                             :: <b>flavour:</b> {{serviceContainer.flavour}}
                                             <br/>
+
                                             <div>
                                                 <b>images:</b>
                                                 <span ng-repeat="(k,v) in serviceContainer.images">
@@ -130,24 +143,26 @@
                                         </div>
                                     </div>
                                     <br/>
-                                    <table id="tableServices" class="table" >
+                                    <table id="tableServices" class="table">
                                         <thead>
                                         <th>Service Name</th>
                                         <th>Service Type</th>
                                         <th>Require</th>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="service in serviceContainer.services track by $index">
-                                                <td>{{service.instanceName}}</td>
-                                                <td>{{service.serviceType}}</td>
-                                                <td>{{service.requires}}</td>
-                                            </tr>
+                                        <tr ng-repeat="service in serviceContainer.services track by $index">
+                                            <td>{{service.instanceName}}</td>
+                                            <td>{{service.serviceType}}</td>
+                                            <td>{{service.requires}}</td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                     <div class="row pull-right">
-                                        <a href="" title="Add a new Service Instance" ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
+                                        <a href="" title="Add a new Service Instance"
+                                           ng-click="addInstance(data.serviceContainers[$index])"> <i
+                                                class="fa fa-plus-circle"> Add Instance</i></a>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                         </form>
 
@@ -158,6 +173,7 @@
                             <div class="form-group form-horizontal ">
                                 <label for="nameTemplate" class="col-sm-4 control-label">Name
                                     Template</label>
+
                                 <div class="col-sm-5">
                                     <input type="text" class="form-control" id="nameTemplate" name="nameTemplate"
                                            ng-model="template.name" placeholder="Name Template" value="">
@@ -181,12 +197,16 @@
                         <form role="form" id="formJson">
                             <div class="form-group">
                                 <br> <label for="jsonInputArea">Insert Your Json</label>
-                                <textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)"id="jsonInputArea" class="form-control" rows="5"
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson"
+                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+                                          class="form-control" rows="5"
                                           placeholder="{ }"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="jsonInputFile">File input</label> 
-                                <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)" >
+                                <label for="jsonInputFile">File input</label>
+                                <input type="file" id="jsonInputFile"
+                                       onchange="angular.element(this).scope().setFile(this)">
+
                                 <p class="help-block">Example: Topology.json </p>
                             </div>
                         </form>
@@ -202,17 +222,19 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="nameTemplate">flavour</label> <input type="text"
-                                                                                             class="form-control" id="inputFlavorTemplate"
-                                                                                             value="m1.small" placeholder="m1.small">
+                                                                                             class="form-control"
+                                                                                             id="inputFlavorTemplate"
+                                                                                             value="m1.small"
+                                                                                             placeholder="m1.small">
                                         </div>
 
                                     </div>
                                 <td></td>
-                            <div class="checkbox pull-right">
-                                <!--                                <label><input id="checkTemplatej" type="checkbox"
-                                                                              onclick="toggle('#inputTemplateJson', this)">Create
-                                                                    a Template?</label>-->
-                            </div>
+                                <div class="checkbox pull-right">
+                                    <!--                                <label><input id="checkTemplatej" type="checkbox"
+                                                                                  onclick="toggle('#inputTemplateJson', this)">Create
+                                                                        a Template?</label>-->
+                                </div>
                             </tr>
                             </td>
                         </table>
@@ -221,12 +243,15 @@
                         <form role="form" id="formXML">
                             <div class="form-group">
                                 <br> <label for="xmlInputArea">Insert Your XML</label>
-                                <textarea ng-model="xmlInputArea" ng-change="changeTextXML(xmlInputArea)" id="xmlInputArea" class="form-control" rows="5"
+                                <textarea ng-model="xmlInputArea" ng-change="changeTextXML(xmlInputArea)"
+                                          id="xmlInputArea" class="form-control" rows="5"
                                           placeholder="<Definitions></Definitions>"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="xmlInputFile">File input</label> 
-                                <input type="file" id="xmlInputFile" onchange="angular.element(this).scope().setFile(this)" >
+                                <label for="xmlInputFile">File input</label>
+                                <input type="file" id="xmlInputFile"
+                                       onchange="angular.element(this).scope().setFile(this)">
+
                                 <p class="help-block">Example: Load your File Topology.xml</p>
                             </div>
                         </form>
@@ -242,15 +267,17 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="nameTemplate">flavour</label> <input type="text"
-                                                                                             class="form-control" id="inputFlavorTemplate"
-                                                                                             value="m1.small" placeholder="m1.small">
+                                                                                             class="form-control"
+                                                                                             id="inputFlavorTemplate"
+                                                                                             value="m1.small"
+                                                                                             placeholder="m1.small">
                                         </div>
 
                                     </div>
                                 <td></td>
-                            <div class="checkbox pull-right">
+                                <div class="checkbox pull-right">
 
-                            </div>
+                                </div>
 
                             </tr>
                             </td>
@@ -261,9 +288,11 @@
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
                         ng-click="cleanModal()"
-                        data-dismiss="modal">Close</button>
-                <button type="button" id="sendTopology" 
-                        ng-click="sendTopology()" class="btn btn-primary">Send Topology</button>
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="sendTopology"
+                        ng-click="sendTopology()" class="btn btn-primary">Send Topology
+                </button>
             </div>
 
         </div>
@@ -271,7 +300,7 @@
 
 </div>
 
-<div class="modal" id="addContainerModal" >
+<div class="modal" id="addContainerModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -283,10 +312,14 @@
                 <tabset>
                     <tab heading="Details" active="tabs[0].active">
                         <br>
+
                         <form class="form-horizontal" role="form" name="formForm" novalidate>
-                            <div ng-repeat="(key,value) in serviceContainer" ng-if="key != 'expose' && key != 'locations'">
-                                <div class="form-group" ng-if="key != 'configuration' && key != 'services' && key != 'serviceType'" >
+                            <div ng-repeat="(key,value) in serviceContainer"
+                                 ng-if="key != 'expose' && key != 'locations'">
+                                <div class="form-group"
+                                     ng-if="key != 'configuration' && key != 'services' && key != 'serviceType'">
                                     <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
                                     <div class="col-sm-5">
                                         <input type="text" class="form-control" id="{{key}}" name="{{key}}"
                                                ng-model="serviceContainer[key]" placeholder="{{value}}"/>
@@ -296,11 +329,14 @@
 
                             <div class="form-group">
                                 <label for="checkboxDiv" class="col-sm-4 control-label">Location</label>
-                                <div id="checkboxDiv" >
-                                    <div  class="col-sm-8 input-group" >
+
+                                <div id="checkboxDiv">
+                                    <div class="col-sm-8 input-group">
                                         <div class="checkbox" ng-repeat="locationS in locationsS">
                                             <label>
-                                                <input type="checkbox" value="{{locationS}}"  ng-model="locationCheckedS[locationS]" ng-change="selectedLocations2(locationS)" >
+                                                <input type="checkbox" value="{{locationS}}"
+                                                       ng-model="locationCheckedS[locationS]"
+                                                       ng-change="selectedLocations2(locationS)">
                                                 {{locationS}}
                                             </label>
                                         </div>
@@ -311,54 +347,77 @@
 
                         </form>
                     </tab>
-                    <tab heading="Images"  active="tabs[1].active" >
+                    <tab heading="Images" active="tabs[1].active">
                         <br>
+
                         <form class="form-horizontal" role="form" name="formContainer" novalidate>
-                            <div ng-show="datacenters" class="form-group well well-lg" ng-repeat="datacenter in datacenters track by datacenter.id">
-                                <div class="col-sm-6 input-group col-lg-offset-3" >
-                                    <label class="">Image for: {{datacenter.name}}</label> 
-                                    <select name="typeSelect" class="modal-select form-control" ng-model="imageId[datacenter.name]" ng-options="v as k for (k,v) in datacenter.serviceImageId"></select>
+                            <div ng-show="datacenters" class="form-group well well-lg"
+                                 ng-repeat="datacenter in datacenters track by datacenter.id">
+                                <div class="col-sm-6 input-group col-lg-offset-3">
+                                    <label class="">Image for: {{datacenter.name}}</label>
+                                    <select name="typeSelect" class="modal-select form-control"
+                                            ng-model="imageId[datacenter.name]"
+                                            ng-options="v as k for (k,v) in datacenter.serviceImageId"></select>
                                 </div>
                             </div>
                         </form>
                     </tab>
-                    <tab heading="Networking"  active="tabs[2].active">
+                    <tab heading="Networking" active="tabs[2].active">
                         <br>
+
                         <form class="form-horizontal" role="form" name="formContainer" novalidate>
-                            <div ng-show="datacenters" class="form-group well well-lg" style="background: #fdfdfb"ng-repeat="datacenter in datacenters track by datacenter.id">
-                                <p ng-init="expose[datacenter.name] = {}; ">Choose the Networks for datacenter: {{datacenter.name}}</p>
+                            <div ng-show="datacenters" class="form-group well well-lg" style="background: #fdfdfb"
+                                 ng-repeat="datacenter in datacenters track by datacenter.id">
+                                <p ng-init="expose[datacenter.name] = {}; ">Choose the Networks for datacenter:
+                                    {{datacenter.name}}</p>
                                 <!--<label for="checkboxDiv" class="col-sm-4 control-label" ng-init="expose[datacenter.name] = {}; ">Networks</label>-->
-                                <div id="checkboxDiv" >
+                                <div id="checkboxDiv">
                                     <div class="row ">
                                         <div class="col-lg-12">
-                                            <div  class="" >
+                                            <div class="">
                                                 <form class="form-horizontal" role="form" name="formForm" novalidate>
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <div class=" form-group" ng-class="{ 'has-error' : mgmt == '' }">
-                                                                <label for="typeSelect" class="col-sm-4 control-label">Please select the mgmt network</label>
+                                                            <div class=" form-group"
+                                                                 ng-class="{ 'has-error' : mgmt == '' }">
+                                                                <label for="typeSelect" class="col-sm-4 control-label">Please
+                                                                    select the mgmt network</label>
+
                                                                 <div class="input-group col-sm-5">
-                                                                    <select name="typeSelect" class="form-control " ng-model="mgmt" ng-options="net.name as net.name for net in datacenter.subnets" ng-change="selectMgmt(mgmt)">
+                                                                    <select name="typeSelect" class="form-control "
+                                                                            ng-model="mgmt"
+                                                                            ng-options="net.name as net.name for net in datacenter.subnets"
+                                                                            ng-change="selectMgmt(mgmt)">
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>  
+                                                    </div>
                                                 </form>
-                                                <div class="well-sm well row" ng-repeat="subnets in datacenter.subnets track by $index| orderBy:'subnets.name':false ">
-                                                    <div class="col-md-6 " >
+                                                <div class="well-sm well row"
+                                                     ng-repeat="subnets in datacenter.subnets track by $index| orderBy:'subnets.name':false ">
+                                                    <div class="col-md-6 ">
 
-                                                        <div class="checkbox " >
+                                                        <div class="checkbox ">
                                                             <label ng-init="expose[datacenter.name][subnets.name] = {};">
-                                                                <input type="checkbox" ng-model="subnets[datacenter.name]" name="subnets" id="{{$index}}" value="{{subnets.name}}" ng-change="selectSubnets(subnets)">
+                                                                <input type="checkbox"
+                                                                       ng-model="subnets[datacenter.name]"
+                                                                       name="subnets" id="{{$index}}"
+                                                                       value="{{subnets.name}}"
+                                                                       ng-change="selectSubnets(subnets)">
                                                                 {{subnets.name}}
                                                             </label>
                                                         </div>
-                                                        <div class=""ng-class="{'has-error':!checkIP(fixedip[datacenter.name][subnets.name]) }" ng-show="subnets[datacenter.name]">
-                                                            <label class="control-label">Fixed IP</label> 
+                                                        <div class=""
+                                                             ng-class="{'has-error':!checkIP(fixedip[datacenter.name][subnets.name]) }"
+                                                             ng-show="subnets[datacenter.name]">
+                                                            <label class="control-label">Fixed IP</label>
 
-                                                            <input  type="text" class="form-control"  name="{{fixedip[datacenter.name]}} " 
-                                                                    ng-model="fixedip[datacenter.name][subnets.name]" ng-init="fixedip[datacenter.name] = {}" placeholder="{{subnets.cidr}}" />
+                                                            <input type="text" class="form-control"
+                                                                   name="{{fixedip[datacenter.name]}} "
+                                                                   ng-model="fixedip[datacenter.name][subnets.name]"
+                                                                   ng-init="fixedip[datacenter.name] = {}"
+                                                                   placeholder="{{subnets.cidr}}"/>
                                                             <span class="help-block">In this range {{subnets.cidr}}</span>
                                                         </div>
 
@@ -368,17 +427,30 @@
                                                         <div ng-show="noMoreFloatingIp">
                                                             <p class="help-block">None Floating IP available.</p>
                                                         </div>
-                                                        <div ng-show="!noMoreFloatingIp" class="checkbox" ng-show="subnets[datacenter.name]">
-                                                            <label >
-                                                                <input type="checkbox" ng-model="expose[datacenter.name][subnets.name].expose" ng-init="expose[datacenter.name][subnets.name].expose = false" id="{{datacenter.name}}-{{subnets.name}}"  name="expose"  ng-change="selectExpose(datacenter, expose[datacenter.name][subnets.name].expose, expose[datacenter.name][subnets.name].floatingIP)">
+                                                        <div ng-show="!noMoreFloatingIp" class="checkbox"
+                                                             ng-show="subnets[datacenter.name]">
+                                                            <label>
+                                                                <input type="checkbox"
+                                                                       ng-model="expose[datacenter.name][subnets.name].expose"
+                                                                       ng-init="expose[datacenter.name][subnets.name].expose = false"
+                                                                       id="{{datacenter.name}}-{{subnets.name}}"
+                                                                       name="expose"
+                                                                       ng-change="selectExpose(datacenter, expose[datacenter.name][subnets.name].expose, expose[datacenter.name][subnets.name].floatingIP)">
                                                                 expose: {{subnets.name}}<br/>
                                                                 <!--{{expose}}-->
                                                             </label>
                                                         </div>
-                                                        <div class=""ng-if="expose[datacenter.name][subnets.name].expose" >
-                                                            <label class="control-label" ng-init="expose[datacenter.name][subnets.name].floatingIP = floatingIPsNET[0]">Floating IP</label> 
-                                                            <select name="typeSelect" class="form-control modal-select"  ng-model="expose[datacenter.name][subnets.name].floatingIP" ng-options="ip for ip in floatingIPsNET | orderBy:'ip':false" ng-change="updateFloatingIPs(datacenter, expose[datacenter.name][subnets.name].floatingIP)"></select>
-                                                            <span ng-if="expose[datacenter.name][subnets.name].floatingIP" class="help-block">Selected Floating IP: <b>{{expose[datacenter.name][subnets.name].floatingIP}}</b></span>
+                                                        <div class=""
+                                                             ng-if="expose[datacenter.name][subnets.name].expose">
+                                                            <label class="control-label"
+                                                                   ng-init="expose[datacenter.name][subnets.name].floatingIP = floatingIPsNET[0]">Floating
+                                                                IP</label>
+                                                            <select name="typeSelect" class="form-control modal-select"
+                                                                    ng-model="expose[datacenter.name][subnets.name].floatingIP"
+                                                                    ng-options="ip for ip in floatingIPsNET | orderBy:'ip':false"
+                                                                    ng-change="updateFloatingIPs(datacenter, expose[datacenter.name][subnets.name].floatingIP)"></select>
+                                                            <span ng-if="expose[datacenter.name][subnets.name].floatingIP"
+                                                                  class="help-block">Selected Floating IP: <b>{{expose[datacenter.name][subnets.name].floatingIP}}</b></span>
 
                                                         </div>
                                                     </div>
@@ -399,17 +471,19 @@
                 <button type="button" id="closeModal" class="btn btn-default"
                         class="close"
                         aria-hidden="true"
-                        data-dismiss="modal">Close</button>
-                <button type="button" id="sendTopology" 
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="sendTopology"
                         ng-class="{'disabled': !netCheck}"
-                        ng-click="addContainer(serviceContainer)" class="btn btn-primary">Add Container</button>
+                        ng-click="addContainer(serviceContainer)" class="btn btn-primary">Add Container
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Form -->
-<div class="modal" id="addInstanceModal" >
+<div class="modal" id="addInstanceModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -421,58 +495,73 @@
 
 
                 <br>
+
                 <form class="form-horizontal" role="form" name="formForm" novalidate>
 
                     <table class="table table-bordered">
                         <tbody>
-                            <tr>
-                                <td class="col-md-6 row">
-                                    <div id="left-box">
-                                        <label class=" ">Select Instance</label> 
-                                        <select name="typeSelect" class="form-control modal-select" ng-model="selection" ng-options="services as services.serviceType for services in services| orderBy:'serviceType':false" ng-change="changeSelection(selection)"></select>
-                                    </div>
-                                    <br>
-                                    <ul ng-repeat="(k,v) in containerSelected.subnets">
-                                        Networks for {{k}}:
-                                        <li ng-repeat="sub in v.subnets track by $index">
-                                            {{sub.name}}: {{$index + 1}}
-                                        </li>
-                                    </ul>
-                                    <!--{{containerSelected.subnets}}-->
-                                </td>
-                                <td class="col-md-6 row">
-                                    <div id="right-box" class="right-box">
-                                        <div  ng-repeat="(key,value) in serviceEdit track by $index">
-                                            <div class="form-group" ng-if="key != 'configuration' && key != 'locations' && key != 'serviceType' && key != 'requires'">
-                                                <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+                        <tr>
+                            <td class="col-md-6 row">
+                                <div id="left-box">
+                                    <label class=" ">Select Instance</label>
+                                    <select name="typeSelect" class="form-control modal-select" ng-model="selection"
+                                            ng-options="services as services.serviceType for services in services| orderBy:'serviceType':false"
+                                            ng-change="changeSelection(selection)"></select>
+                                </div>
+                                <br>
+                                <ul ng-repeat="(k,v) in containerSelected.subnets">
+                                    Networks for {{k}}:
+                                    <li ng-repeat="sub in v.subnets track by $index">
+                                        {{sub.name}}: {{$index + 1}}
+                                    </li>
+                                </ul>
+                                <!--{{containerSelected.subnets}}-->
+                            </td>
+                            <td class="col-md-6 row">
+                                <div id="right-box" class="right-box">
+                                    <div ng-repeat="(key,value) in serviceEdit track by $index">
+                                        <div class="form-group"
+                                             ng-if="key != 'configuration' && key != 'locations' && key != 'serviceType' && key != 'requires'">
+                                            <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                                            <div class="col-sm-8 input-group">
+                                                <input type="text" name="{{key}}" class="form-control"
+                                                       ng-model="serviceEdit[key]">
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="key == 'configuration'"
+                                             ng-repeat="parameter in value.parameters track by $index">
+                                            <label for="{{parameter.config_key}}" class="col-sm-4 control-label">{{parameter.config_key}}</label>
+
+                                            <div class="col-sm-8 input-group"><input type="text"
+                                                                                     ng-model="serviceEdit.configuration.parameters[$index].config_value"
+                                                                                     class="form-control parameters"
+                                                                                     id="{{parameter.config_key}}">
+                                                <span class="input-group-addon">@</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="key == 'requires'">
+                                            <label for="checkboxDiv" class="col-sm-4 control-label">requires</label>
+
+                                            <div id="checkboxDiv">
                                                 <div class="col-sm-8 input-group">
-                                                    <input type="text" name="{{key}}" class="form-control" ng-model="serviceEdit[key]">
-                                                </div>
-                                            </div>
-                                            <div class="form-group" ng-if="key == 'configuration'" ng-repeat="parameter in value.parameters track by $index">
-                                                <label for="{{parameter.config_key}}" class="col-sm-4 control-label">{{parameter.config_key}}</label>
-                                                <div class="col-sm-8 input-group"><input type="text" ng-model="serviceEdit.configuration.parameters[$index].config_value" class="form-control parameters" id="{{parameter.config_key}}"  >
-                                                    <span class="input-group-addon">@</span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group" ng-if="key == 'requires'">
-                                                <label for="checkboxDiv" class="col-sm-4 control-label">requires</label>
-                                                <div id="checkboxDiv" >
-                                                    <div class="col-sm-8 input-group" >
-                                                        <div class="checkbox" ng-repeat="require in requires track by $index">
-                                                            <label>
-                                                                <input type="checkbox" value="{{require}}"  ng-model="requireChecked[require]" ng-change="selectedRequires(require)" >
-                                                                {{require}}
-                                                            </label>
-                                                        </div>
+                                                    <div class="checkbox"
+                                                         ng-repeat="require in requires track by $index">
+                                                        <label>
+                                                            <input type="checkbox" value="{{require}}"
+                                                                   ng-model="requireChecked[require]"
+                                                                   ng-change="selectedRequires(require)">
+                                                            {{require}}
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                </td>
-                            </tr>
+                            </td>
+                        </tr>
 
 
                         </tbody>
@@ -480,17 +569,22 @@
                     <div class="row">
                         <div class="col-md-12 ">
                             <div ng-repeat="poli in policies track by $index">
-                                <i class="fa fa-bell-o"></i> {{poli.alarm.expression.item}} {{poli.alarm.expression.operation}} {{poli.alarm.expression.value}} period: {{poli.alarm.period}}
+                                <i class="fa fa-bell-o"></i> {{poli.alarm.expression.item}}
+                                {{poli.alarm.expression.operation}} {{poli.alarm.expression.value}} period:
+                                {{poli.alarm.period}}
                                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                <i class="fa fa-magic"></i> {{poli.action.actionType}} num. of unit: {{poli.action.num}} period: {{poli.action.period}}
+                                <i class="fa fa-magic"></i> {{poli.action.actionType}} num. of unit: {{poli.action.num}}
+                                period: {{poli.action.period}}
                                 <div class="pull-right">
-                                    <a href="" title="Delete Policy" ng-click="deletePolicy($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
+                                    <a href="" title="Delete Policy" ng-click="deletePolicy($index)"> <i
+                                            class="fa fa-trash-o"> Delete </i></a>
                                 </div>
                                 <hr/>
                             </div>
                             <div class="pull-right">
 
-                                <a href="" title="Add a new Policy for this Service" data-toggle="modal" data-target="#modalPolicy"> 
+                                <a href="" title="Add a new Policy for this Service" data-toggle="modal"
+                                   data-target="#modalPolicy">
                                     <i class="fa fa-plus-circle"> Add Policy</i>
                                 </a>
                             </div>
@@ -502,10 +596,12 @@
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
 
-                        data-dismiss="modal">Close</button>
-                <button type="button" id="addInstance" 
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="addInstance"
                         ng-disabled="formIsEmpity()"
-                        ng-click="saveService(serviceEdit)" class="btn btn-primary">Add Instance</button>
+                        ng-click="saveService(serviceEdit)" class="btn btn-primary">Add Instance
+                </button>
             </div>
         </div>
 
@@ -523,19 +619,23 @@
             </div>
             <div class="modal-body">
                 <button ng-if="data.serviceContainers.length == 0" class="btn btn-default" data-toggle="modal"
-                        data-target="#addContainerModal" >Add Container</button>
+                        data-target="#addContainerModal">Add Container
+                </button>
                 <form class="form-horizontal" role="form" id="formAddService">
-                    <div class="well well-lg" ng-show="data.serviceContainers[$index]" ng-repeat="container in data.serviceContainers track by $index">
+                    <div class="well well-lg" ng-show="data.serviceContainers[$index]"
+                         ng-repeat="container in data.serviceContainers track by $index">
                         <div class="row pull-right">
-                            <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">  <i class="fa fa-trash-o"> Delete </i></a>  
+                            <a href="" title="Delete Service Container" ng-click="deleteContainer($index)"> <i
+                                    class="fa fa-trash-o"> Delete </i></a>
                         </div>
                         <div class="row">
                             <div>
-                                <b>Container:</b> {{container.containerName}} 
-                                :: <b>min:</b> {{container.minNumInst}} 
+                                <b>Container:</b> {{container.containerName}}
+                                :: <b>min:</b> {{container.minNumInst}}
                                 :: <b>max:</b> {{container.maxNumInst}}
                                 :: <b>flavour: </b>{{container.flavour}}
                                 <br/>
+
                                 <div ng-show="container.images">
                                     <b>images:</b>
                                     <span ng-repeat="(k,v) in container.images">
@@ -558,32 +658,37 @@
                             </div>
                         </div>
                         <br/>
-                        <table id="tableServices" class="table" >
+                        <table id="tableServices" class="table">
                             <thead>
                             <th>Service Name</th>
                             <th>Service Type</th>
                             <th>Require</th>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="service in container.services">
-                                    <td>{{service.instanceName}}</td>
-                                    <td>{{service.serviceType}}</td>
-                                    <td>{{service.requires}}</td>
-                                </tr>
+                            <tr ng-repeat="service in container.services">
+                                <td>{{service.instanceName}}</td>
+                                <td>{{service.serviceType}}</td>
+                                <td>{{service.requires}}</td>
+                            </tr>
                             </tbody>
                         </table>
                         <div class="row pull-right">
-                            <a href="" title="Add a new Service Instance" ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add Instance</i></a>
+                            <a href="" title="Add a new Service Instance"
+                               ng-click="addInstance(data.serviceContainers[$index])"> <i class="fa fa-plus-circle"> Add
+                                Instance</i></a>
 
                         </div>
-                    </div> 
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close</button>
-                <button ng-class="{'disabled': !containerSelected}" type="button" id="addService" class="btn btn-primary" ng-click="sendServiceToAdd(serviceContainer)">Add
-                    Services Container</button>
+                        data-dismiss="modal">Close
+                </button>
+                <button ng-class="{'disabled': !containerSelected}" type="button" id="addService"
+                        class="btn btn-primary" ng-click="sendServiceToAdd(serviceContainer)">Add
+                    Services Container
+                </button>
             </div>
         </div>
     </div>
@@ -600,53 +705,66 @@
             </div>
             <div class="modal-body">
                 <h3 class="">Alert</h3>
+
                 <div class="row">
                     <div class="col-sm-4">
-                        <label class=" ">Item</label> 
-                        <select name="typeSelect" class="form-control modal-select"  ng-model="policy.alert.item"  ng-options="items as items.itemKey for items in items| orderBy:'itemKey':false" ng-init="policy.alert.item = items[0]"></select>
+                        <label class=" ">Item</label>
+                        <select name="typeSelect" class="form-control modal-select" ng-model="policy.alert.item"
+                                ng-options="items as items.itemKey for items in items| orderBy:'itemKey':false"
+                                ng-init="policy.alert.item = items[0]"></select>
                         <span class="help-block" ng-show="policy.alert.item">{{policy.alert.item.name}}</span>
                     </div>
 
                     <div class=" col-sm-2">
-                        <label class="">sign</label> 
-                        <select name="typeSelect" class="form-control modal-select" ng-init="policy.alert.sign = signs[0]" ng-model="policy.alert.sign" ng-options="signs as signs for signs in signs| orderBy:'signs':false"></select>
+                        <label class="">sign</label>
+                        <select name="typeSelect" class="form-control modal-select"
+                                ng-init="policy.alert.sign = signs[0]" ng-model="policy.alert.sign"
+                                ng-options="signs as signs for signs in signs| orderBy:'signs':false"></select>
                     </div>
                     <div class="col-sm-2">
                         <label class=" ">Value</label>
-                        <input type="number" class="form-control"  ng-model="policy.alert.value" >
+                        <input type="number" class="form-control" ng-model="policy.alert.value">
                     </div>
                     <div class="col-sm-2 pull-right" style="margin-right: 50px">
                         <label class="">Period</label> {{policy.alert.period}}
-                        <input class="" type="range" min="0" max="100" ng-model="policy.alert.period" ng-init="policy.alert.period = '60'" size="20" id="periodAlert" />
+                        <input class="" type="range" min="0" max="100" ng-model="policy.alert.period"
+                               ng-init="policy.alert.period = '60'" size="20" id="periodAlert"/>
 
                         <!--                        <input type="number" class="form-control"  ng-model="policy.alert.period" >-->
                     </div>
                 </div>
                 <hr/>
                 <h3 class="">Action</h3>
+
                 <div class="row">
                     <div class="col-sm-4">
                         <label class=" ">Type</label>
-                        <select name="typeSelect" class="form-control modal-select" ng-init="policy.action.actionType = types[0]" ng-model="policy.action.actionType" ng-options="types as types for types in types| orderBy:'types':false" ></select>
+                        <select name="typeSelect" class="form-control modal-select"
+                                ng-init="policy.action.actionType = types[0]" ng-model="policy.action.actionType"
+                                ng-options="types as types for types in types| orderBy:'types':false"></select>
                     </div>
 
                     <div class=" col-sm-2">
                         <label class="">Num. unit</label> {{policy.action.unit}}
                         <!--<input type="number" class="form-control"  ng-model="policy.action.unit" >-->
-                        <input  type="range" min="0" max="10" ng-model="policy.action.unit" ng-init="policy.action.unit = '1'" size="10" id="unitAction" />
+                        <input type="range" min="0" max="10" ng-model="policy.action.unit"
+                               ng-init="policy.action.unit = '1'" size="10" id="unitAction"/>
                     </div>
                     <div class="col-sm-2 pull-right" style="margin-right: 50px">
                         <label class=" ">Period</label> {{policy.action.period}}
-                        <input class="" type="range" min="0" max="100" ng-model="policy.action.period" ng-init="policy.action.period = '60'" size="20" id="periodAction" />
+                        <input class="" type="range" min="0" max="100" ng-model="policy.action.period"
+                               ng-init="policy.action.period = '60'" size="20" id="periodAction"/>
                         <!--<input type="number" class="form-control"  ng-model="policy.action.period" >-->
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close</button>
+                        data-dismiss="modal">Close
+                </button>
                 <button type="button" id="addPolicy" class="btn btn-primary" ng-click="addPolicy(serviceContainer)">Add
-                    Policy</button>
+                    Policy
+                </button>
             </div>
         </div>
     </div>
