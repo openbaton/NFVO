@@ -36,11 +36,11 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsdescriptors/vnfdescriptor.html',
                 controller: 'NsdCtrl'
             }).
-            when('/nsdescriptors/:nsdescriptorId/vnfdepencies/:vnfdependencyId', {
+            when('/nsdescriptors/:nsdescriptorId/vnfdependencies/:vnfdependencyId', {
                 templateUrl: 'pages/nsdescriptors/vnfdependency.html',
                 controller: 'NsdCtrl'
             }).
-            when('/nsdescriptors/:nsdescriptorId/vnfdepencies/', {
+            when('/nsdescriptors/:nsdescriptorId/vnfdependencies/', {
                 templateUrl: 'pages/nsdescriptors/vnfdependencies.html',
                 controller: 'NsdCtrl'
             }).
@@ -56,16 +56,20 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsrecords/graph.html',
                 controller: 'NsrCtrl'
             }).
-            when('/nsrecords/:nsrecordId/containers/:containerId', {
-                templateUrl: 'pages/nsrecords/unitsinfo.html',
+            when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId', {
+                templateUrl: 'pages/nsrecords/vnfrecord.html',
                 controller: 'NsrCtrl'
             }).
-            when('/nsrecords/:nsrecordId/services/:serviceId', {
-                templateUrl: 'pages/nsrecords/serviceinstance.html',
+            when('/nsrecords/:nsrecordId/vnfrecords/', {
+                templateUrl: 'pages/nsrecords/vnfrecords.html',
                 controller: 'NsrCtrl'
             }).
-            when('/nsrecords/:nsrecordId/containers/:containerId/units/', {
-                templateUrl: 'pages/nsrecords/unitsinfo.html',
+            when('/nsrecords/:nsrecordId/vnfdependencies/', {
+                templateUrl: 'pages/nsrecords/vnfdependencies.html',
+                controller: 'NsrCtrl'
+            }).
+            when('/nsrecords/:nsrecordId/vnfdependencies/:vnfdependencyId', {
+                templateUrl: 'pages/nsrecords/vnfdependency.html',
                 controller: 'NsrCtrl'
             }).
             when('/infrastructures', {

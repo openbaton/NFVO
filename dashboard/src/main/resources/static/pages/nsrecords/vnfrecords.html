@@ -1,22 +1,22 @@
 <div class="row">
     <div class="col-lg-12">
         <h1>
-            VNF Dependencies
-            <small>into {{nsdinfo.name}}</small>
+            VNF Records
+            <small>into {{nsrinfo.name}}</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="">
-                <a href="#nsdescriptors/"><i class="fa fa-pencil"></i>
-                    NS Dependencies</a></li>
+                <a href="#nsrecords/"><i class="fa fa-pencil"></i>
+                    NS Records</a></li>
             </li>
             <li class="">
-                <a href="#nsdescriptors/{{nsdinfo.id}}"><i class="fa fa-pencil"></i>
-                    NSD: {{nsdinfo.name}}</a></li>
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSD: {{nsrinfo.name}}</a></li>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VNF Dependencies
+                VNF Records
             </li>
             </li>
         </ol>
@@ -25,11 +25,9 @@
 <div class="row">
     <div class="col-lg-12">
         <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
-                title="Add a new Virtuan Networck Function Descriptor" data-toggle="modal"
-                data-target="#modalFile">Add a new VNFDependency
+                title="Add a new Virtuan Networck Function Record" data-toggle="modal"
+                data-target="#modalFile">Add a new VNFR
         </button>
-
-
     </div>
 </div>
 <div class="row">
@@ -37,7 +35,7 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
-        <div class="table-responsive" ng-if="nsdinfo.vnf_dependency.length > 0">
+        <div class="table-responsive" ng-if="nsrinfo.vnfr.length > 0">
 
             <table
                     class="table table-bordered table-striped table-hover tablesorter"
@@ -46,26 +44,31 @@
                 <tr>
                     <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
-                    <th ng-click="predicate = 'source.name'; reverse = !reverse">Source <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">VNFR name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'type'; reverse = !reverse">VNFR type <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="vnfd in nsdinfo.vnf_dependency| orderBy:predicate:reverse">
-                    <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a></td>
-                    <td>{{vnfd.source.name}}</td>
-                    <td>{{vnfd.target.name}}</td>
+                <tr ng-repeat="vnfr in nsrinfo.vnfr| orderBy:predicate:reverse">
+                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}" ng-click="showData(vnfr)">{{vnfr.id}}</a>
+                    </td>
+                    <td>{{vnfr.name}}</td>
+                    <td>{{vnfr.type}}</td>
+                    <td>{{vnfr.vendor}}</td>
+                    <td>{{vnfr.version}}</td>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
-                                <!--<li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                <li><a href="" data-toggle="modal" data-target="#modalAdd"
                                        ng-click="launch(nsd)">Launch</a>
-                                </li>-->
+                                </li>
                                 <li class="divider"></li>
-                                <li><a href="" ng-click="deleteVNFD(vnfd)">Delete</a></li>
+                                <li><a href="" ng-click="deleteVNFR(vnfr)">Delete</a></li>
                             </ul>
                         </div>
                     </td>
