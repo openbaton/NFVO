@@ -128,7 +128,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vnfrecordId))
         $scope.vnfrecordId = $routeParams.vnfrecordId;
-    
+
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
 
@@ -147,6 +147,29 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
         $scope.alerts.splice(index, 1);
     };
 
+    $scope.deleteVNFDependency = function (vnfd) {
+        http.delete(url + '/' + $scope.nsrinfo.id + '/vnfdependencies/' + vnfd.id)
+            .success(function (response) {
+                showOk('Deleted VNF Dependecy with id: ' + vnfd.id);
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + data);
+                showError(status, JSON.stringify(data));
+            });
+    };
+
+    $scope.deleteVNFR = function (vnfr) {
+        http.delete(url + '/' + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id)
+            .success(function (response) {
+                showOk('Deleted VNF Record with id: ' + vnfr.id);
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + data);
+                showError(status, JSON.stringify(data));
+            });
+    };
 
     $scope.deleteNSR = function (data) {
         http.delete(url + '/' + data.id)
