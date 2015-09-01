@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1>Network Service Descriptor
+        <h1>Network Service Record
             <small>Information</small>
         </h1>
         <ol class="breadcrumb">
@@ -20,6 +20,9 @@
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="col-lg-12">
             <h2>NSR name: {{nsrinfo.name}}</h2>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
@@ -32,8 +35,6 @@
             <dd>{{nsrinfo.version}}</dd>
             <dt>Status:</dt>
             <dd>{{nsrinfo.status}}</dd>
-
-
 
             <div class="table-responsive" ng-if="nsrinfo.vnfr.length > 0">
                 <h3>VNF Records</h3>
@@ -71,7 +72,7 @@
                                            ng-click="launch(nsd)">Launch</a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="" ng-click="deleteVNFD(vnfr)">Delete</a></li>
+                                    <li><a href="" ng-click="deleteVNFR(vnfr)">Delete</a></li>
                                 </ul>
                             </div>
                         </td>
