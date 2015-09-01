@@ -30,11 +30,13 @@ public class VNFDependency implements Serializable {
 	@Version
 	private int version = 0;
 	
-	@OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
     private VirtualNetworkFunctionDescriptor source;
 
-	@OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private VirtualNetworkFunctionDescriptor target;
+	@ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private VirtualNetworkFunctionDescriptor target;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> parameters;
