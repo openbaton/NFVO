@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            VNF Descriptors
+            <small>into {{nsdinfo.name}}</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="">
+                <a href="#nsdescriptors/"><i class="fa fa-pencil"></i>
+                    NS Descriptors</a></li>
+            </li>
+            <li class="">
+                <a href="#nsdescriptors/{{nsdinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSD: {{nsdinfo.name}}</a></li>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VNF Descriptors
+            </li>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+                title="Add a new Virtuan Networck Function Descriptor" data-toggle="modal"
+                data-target="#modalFile">Add a new VNFD
+        </button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-if="nsdinfo.vnfd.length > 0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">VNFD name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'type'; reverse = !reverse">VNFD type <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="vnfd in nsdinfo.vnfd| orderBy:predicate:reverse">
+                    <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
+                    </td>
+                    <td>{{vnfd.name}}</td>
+                    <td>{{vnfd.type}}</td>
+                    <td>{{vnfd.vendor}}</td>
+                    <td>{{vnfd.version}}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                       ng-click="launch(nsd)">Launch</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li><a href="" ng-click="deleteVNFD(vnfd)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

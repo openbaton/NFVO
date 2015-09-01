@@ -13,13 +13,16 @@
                     NS Descriptors</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                Template: {{nsdinfo.name}}
+                NSD Name: {{nsdinfo.name}}
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsdinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="col-lg-12">
             <h2>NSD name: {{nsdinfo.name}}</h2>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
@@ -40,25 +43,113 @@
             </dd>
 
 
-            <dt>VNF Descriptor:</dt>
-            <dd>
+            <div class="table-responsive" ng-if="nsdinfo.vnfd.length > 0">
+                <h3>VNF Descriptors</h3>
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="vnfdTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">VNFD Name <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'type'; reverse = !reverse">VNFD Type <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+                        </th>
+                        <th>Actions <i class="fa"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="vnfd in nsdinfo.vnfd | orderBy:predicate:reverse">
+                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}">{{vnfd.id}}</a>
+                        </td>
+                        <td>{{vnfd.name}}</td>
+                        <td>{{vnfd.type}}</td>
+                        <td>{{vnfd.vendor}}</td>
+                        <td>{{vnfd.version}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    Action
+                                    <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                           ng-click="launch(nsd)">Launch</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li><a href="" ng-click="deleteVNFD(vnfd)">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--<dd>
                 <spam ng-repeat="vnfd in nsdinfo.vnfd">
                     <spam ng-repeat="(k,v) in vnfd"><b>{{k}}</b>: {{v}}
                         <spam ng-if="!$last">,</spam>
                     </spam>
                 </spam>
-            </dd>
-
-            <dt>VNF Forward Graph Descriptor:</dt>
-            <dd>
-                <spam ng-repeat="vnfd in nsdinfo.vnffgd">
-                    <spam ng-repeat="(k,v) in vnfd"><b>{{k}}</b>: {{v}}
-                        <spam ng-if="!$last">,</spam>
+            </dd>-->
+            <div ng-show="nsdinfo.vnffgd>0">
+                <dt>VNF Forward Graph Descriptor:</dt>
+                <dd>
+                    <spam ng-repeat="vnfd in nsdinfo.vnffgd">
+                        <spam ng-repeat="(k,v) in vnfd"><b>{{k}}</b>: {{v}}
+                            <spam ng-if="!$last">,</spam>
+                        </spam>
                     </spam>
-                </spam>
-            </dd>
+                </dd>
+            </div>
 
-            <dt>VNF dependency:</dt>
+
+            <div class="table-responsive" ng-show="nsdinfo.vnf_dependency.length > 0">
+                <h3>VNF Dependencies</h3>
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="vnfdepTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'source.name'; reverse = !reverse">Source <i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i>
+                        </th>
+                        </th>
+                        <th>Actions <i class="fa"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="df in nsdinfo.vnf_dependency | orderBy:predicate:reverse">
+                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a>
+                        </td>
+                        <td>{{df.source.name}}</td>
+                        <td>{{df.target.name}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    Action
+                                    <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                           ng-click="launch(nsd)">Launch</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li><a href="" ng-click="deleteVNFDependency(df)">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--<dt>VNF dependency:</dt>
             <dd ng-repeat="vnfd in nsdinfo.vnf_dependency">
                 <p><b>id:</b>{{vnfd.id}}</p>
 
@@ -84,7 +175,7 @@
                         <spam ng-if="!$last">,</spam>
                     </spam>
                 </p>
-            </dd>
+            </dd>-->
         </div>
 
 
@@ -95,7 +186,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
                 <dt class="modal-title" id="myModalLabel">JSON of NSD: {{nsdInfo.name}}</dt>
             </div>
