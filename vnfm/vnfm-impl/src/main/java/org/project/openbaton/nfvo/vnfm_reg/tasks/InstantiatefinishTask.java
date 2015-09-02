@@ -49,7 +49,6 @@ public class InstantiatefinishTask extends AbstractTask {
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
-            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.START);
