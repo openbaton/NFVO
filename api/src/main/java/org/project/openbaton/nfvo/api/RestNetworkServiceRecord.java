@@ -85,10 +85,6 @@ public class RestNetworkServiceRecord {
 	public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NotFoundException{
 		try {
 			networkServiceRecordManagement.delete(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-
 		} catch (WrongStatusException e) {
 			e.printStackTrace();
 			throw new StateException(id);
@@ -118,13 +114,7 @@ public class RestNetworkServiceRecord {
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public NetworkServiceRecord findById(@PathVariable("id") String id) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		return nsr;
 	}
 
@@ -158,46 +148,23 @@ public class RestNetworkServiceRecord {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecord(
 			@PathVariable("id") String id) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		return nsr.getVnfr();
 	}
 
 	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		return findVNF(nsd.getVnfr(), id_vnf);
 	}
 
 	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
-
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		VirtualNetworkFunctionRecord nRecord = findVNF(nsr.getVnfr(), id_vnf);
 		nsr.getVnfr().remove(nRecord);
 	}
@@ -207,13 +174,7 @@ public class RestNetworkServiceRecord {
 	public VirtualNetworkFunctionRecord postVNFR(
 			@RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
 			@PathVariable("id") String id) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		nsd.getVnfr().add(vnfRecord);
 		networkServiceRecordManagement.update(nsd, id);
 		return vnfRecord;
@@ -224,19 +185,10 @@ public class RestNetworkServiceRecord {
 	public VirtualNetworkFunctionRecord updateVNF(
 			@RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
 			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
-		VirtualNetworkFunctionRecord nRecord = findVNF(nsd.getVnfr(), id_vnf);
-		nRecord = vnfRecord;
-		nsd.getVnfr().add(nRecord);
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+		nsd.getVnfr().add(vnfRecord);
 		networkServiceRecordManagement.update(nsd, id);
-		return nRecord;
+		return vnfRecord;
 	}
 
 	/**
@@ -250,45 +202,23 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		return nsd.getVnf_dependency();
 	}
 
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VNFRecordDependency getVNFDependency(@PathVariable("id") String id,
-												@PathVariable("id_vnfr") String id_vnfr) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+												@PathVariable("id_vnfr") String id_vnfr) throws NotFoundException {
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		return findVNFD(nsr.getVnf_dependency(), id_vnfr);
 	}
 
 	@RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteVNFDependency(@PathVariable("id") String id,
-			@PathVariable("id_vnfd") String id_vnfd) {
-
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+			@PathVariable("id_vnfd") String id_vnfd) throws NotFoundException{
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		VNFRecordDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
 		nsd.getVnf_dependency().remove(vnfDependency);
 	}
@@ -298,13 +228,7 @@ public class RestNetworkServiceRecord {
 	public VNFRecordDependency postVNFDependency(
 			@RequestBody @Valid VNFRecordDependency vnfDependency,
 			@PathVariable("id") String id) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		nsr.getVnf_dependency().add(vnfDependency);
 		networkServiceRecordManagement.update(nsr, id);
 		return vnfDependency;
@@ -316,17 +240,8 @@ public class RestNetworkServiceRecord {
 			@RequestBody @Valid VNFRecordDependency vnfDependency,
 			@PathVariable("id") String id,
 			@PathVariable("id_vnfd") String id_vnfd) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
-		VNFRecordDependency vDependency = findVNFD(nsr.getVnf_dependency(), id_vnfd);
-		vDependency = vnfDependency;
-		nsr.getVnf_dependency().add(vDependency);
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+		nsr.getVnf_dependency().add(vnfDependency);
 		networkServiceRecordManagement.update(nsr, id);
 		return vnfDependency;
 	}
@@ -343,14 +258,7 @@ public class RestNetworkServiceRecord {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
 			@PathVariable("id") String id) {
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		return nsr.getPnfr();
 	}
 
@@ -368,16 +276,8 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public PhysicalNetworkFunctionRecord getPhysicalNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException {
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		return findPNFD(nsd.getPnfr(), id_pnf);
 	}
 
@@ -392,16 +292,8 @@ public class RestNetworkServiceRecord {
 	@RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePhysicalNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
-
-		NetworkServiceRecord nsr = null;
-		try {
-			nsr = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
+			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException{
+		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
 		PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(),
 				id_pnf);
 		nsr.getVnfr().remove(pDescriptor);
@@ -422,13 +314,7 @@ public class RestNetworkServiceRecord {
 	public PhysicalNetworkFunctionRecord postPhysicalNetworkFunctionRecord(
 			@RequestBody @Valid PhysicalNetworkFunctionRecord pDescriptor,
 			@PathVariable("id") String id) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
 		nsd.getPnfr().add(pDescriptor);
 		networkServiceRecordManagement.update(nsd, id);
 		return pDescriptor;
@@ -449,111 +335,42 @@ public class RestNetworkServiceRecord {
 	public PhysicalNetworkFunctionRecord updatePNFD(
 			@RequestBody @Valid PhysicalNetworkFunctionRecord pRecord,
 			@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
-		NetworkServiceRecord nsd = null;
-		try {
-			nsd = networkServiceRecordManagement.query(id);
-		} catch (NoResultException e) {
-			log.error(e.getMessage());
-			throw new NSDNotFoundException(id);
-		}
-
-		PhysicalNetworkFunctionRecord pnfDescriptor = findPNFD(nsd.getPnfr(), id_pnf);
-		pnfDescriptor = pRecord;
-		nsd.getPnfr().add(pnfDescriptor);
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+		nsd.getPnfr().add(pRecord);
 		networkServiceRecordManagement.update(nsd, id);
-		return pnfDescriptor;
+		return pRecord;
 	}
 
 	// TODO The Rest of the classes
 
-	private PhysicalNetworkFunctionRecord findPNFD(Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) {
-		PhysicalNetworkFunctionRecord pNetworkFunctionDescriptor = null;
+	private PhysicalNetworkFunctionRecord findPNFD(Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) throws  NotFoundException{
 		for (PhysicalNetworkFunctionRecord pRecord : listPNFR) {
 			if (pRecord.getId().equals(id_pnf)) {
-				pNetworkFunctionDescriptor = pRecord;
+				return pRecord;
 			}
 		}
-		if (pNetworkFunctionDescriptor == null) {
-			throw new PNFDNotFoundException(id_pnf);
-		}
-		return pNetworkFunctionDescriptor;
+		throw new NotFoundException("PNFD with id "+id_pnf+ " was not found");
 	}
 
-	private VNFRecordDependency findVNFD(Collection<VNFRecordDependency> vnf_dependency, String id_vnfd) {
-		VNFRecordDependency vDependency = null;
+	private VNFRecordDependency findVNFD(Collection<VNFRecordDependency> vnf_dependency, String id_vnfd) throws NotFoundException{
 		for (VNFRecordDependency vnfDependency : vnf_dependency) {
 			if (vnfDependency.getId().equals(id_vnfd)) {
-				vDependency = vnfDependency;
+				return vnfDependency;
 			}
 		}
-		if (vDependency == null) {
-
-			throw new VNFDependencyNotFoundException(id_vnfd);
-		}
-		return vDependency;
+		throw new NotFoundException("VNFD with id "+id_vnfd+ " was not found");
 	}
 
 	private VirtualNetworkFunctionRecord findVNF(
-			Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) {
-
-		VirtualNetworkFunctionRecord nRecord = null;
+			Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) throws NotFoundException {
 		for (VirtualNetworkFunctionRecord vnfRecord : listVNF) {
 			if (vnfRecord.getId().equals(id_vnf)) {
-				nRecord = vnfRecord;
+				return vnfRecord;
 			}
 		}
-		if (nRecord == null) {
-			throw new VNFDNotFoundException(id_vnf);
-		}
-		return nRecord;
+		throw new NotFoundException("VNFR with id "+id_vnf+ " was not found");
 	}
 
 
 
-	/**
-	 * Exception handling
-	 *
-	 * TODO make a common class for handling exceptions over all the rest classes
-	 */
-
-	// Convert a predefined exception to an HTTP Status code
-	@ExceptionHandler(value = {VimException.class, NotFoundException.class, BadFormatException.class})
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)  //
-	public ModelAndView vimException(HttpServletRequest req, Exception exception) {
-
-		log.error("Exception: " + exception.getClass().getSimpleName());
-		log.error("Request: " + req.getRequestURL());
-		log.error(" raised " + exception);
-		exception.printStackTrace();
-
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", exception);
-		mav.addObject("url", req.getRequestURL());
-		mav.setViewName("Error");
-		return mav;
-	}
-//
-//	// Specify the name of a specific view that will be used to display the error:
-//	@ExceptionHandler({SQLException.class,DataAccessException.class})
-//	public String databaseError() {
-//		// Nothing to do.  Returns the logical view name of an error page, passed to
-//		// the view-resolver(s) in usual way.
-//		// Note that the exception is _not_ available to this view (it is not added to
-//		// the model) but see "Extending ExceptionHandlerExceptionResolver" below.
-//		return "databaseError";
-//	}
-
-	// Total control - setup a model and return the view name yourself. Or consider
-	// subclassing ExceptionHandlerExceptionResolver (see below).
-	@ExceptionHandler(Exception.class)
-	public ModelAndView handleError(HttpServletRequest req, Exception exception) {
-		log.error("Request: " + req.getRequestURL() + " raised " + exception);
-		exception.printStackTrace();
-
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", exception);
-		mav.addObject("url", req.getRequestURL());
-		mav.setViewName("error");
-		return mav;
-	}
 }

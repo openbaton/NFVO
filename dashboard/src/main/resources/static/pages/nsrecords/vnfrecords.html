@@ -53,7 +53,8 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="vnfr in nsrinfo.vnfr| orderBy:predicate:reverse">
-                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}" ng-click="showData(vnfr)">{{vnfr.id}}</a>
+                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}"
+                           ng-click="showData(vnfr)">{{vnfr.id}}</a>
                     </td>
                     <td>{{vnfr.name}}</td>
                     <td>{{vnfr.type}}</td>
