@@ -59,9 +59,8 @@ public interface NetworkServiceDescriptorManagement {
 	 * include creating/deleting new VNFFGDs
 	 * and/or new VLDs.
 	 * @param new_nsd
-	 * @param old_id
 	 */
-	NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id);
+	NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd);
 
 	/**
 	 * This operation is used to query the
@@ -80,4 +79,5 @@ public interface NetworkServiceDescriptorManagement {
 	 */
 	void delete(String id);
 
+	void removeVNFDescriptor(String id_vfn);
 }

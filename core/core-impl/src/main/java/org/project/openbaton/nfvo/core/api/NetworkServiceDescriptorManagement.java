@@ -119,18 +119,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * include creating/deleting new VNFFGDs
      * and/or new VLDs.
      * @param new_nsd: the new values to be updated
-     * @param old_id: the id of the old NetworkServiceDescriptor
      */
     @Override
-    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
-        NetworkServiceDescriptor old_nsd = nsdRepository.find(old_id);
-        old_nsd.setName(new_nsd.getName());
-        old_nsd.setVendor(new_nsd.getVendor());
-        old_nsd.setEnabled(new_nsd.isEnabled());
-        old_nsd.setVersion(new_nsd.getVersion());
-        return old_nsd;
+    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd) {
+        return nsdRepository.merge(new_nsd);
     }
 
+    public void removeVNFDescriptor(String id_vnfd){
+        vnfdRepository.remove(vnfdRepository.find(id_vnfd));
+    }
     /**
      * This operation is used to query the
      * information of the Network Service
