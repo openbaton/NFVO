@@ -229,7 +229,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String getVirtualNetworkFunctionRecord(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_vnf"}, mandatory = true, help = "The VirtualNetworkFunctionRecord id") final String id_vnf) {
-        return "FOUND VNFRECORD: " + networkServiceRecordAgent.getVirtualNetworkFunctionRecord(id, id_vnf);
+        try {
+            return "FOUND VNFRECORD: " + networkServiceRecordAgent.getVirtualNetworkFunctionRecord(id, id_vnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while getting the VNFR, particularly the VNFR with id " + id_vnf + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -239,7 +245,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String deleteVirtualNetworkFunctionDescriptor(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_vnf"}, mandatory = true, help = "TODO") final String id_vnf) {
-        networkServiceRecordAgent.deleteVirtualNetworkFunctionDescriptor(id, id_vnf);
+        try {
+            networkServiceRecordAgent.deleteVirtualNetworkFunctionDescriptor(id, id_vnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the VNFD, particularly the VNFD with id " + id_vnf + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "Deleted VirtualNetworkFunctionDescriptor with id: " + id_vnf;
     }
 
@@ -293,7 +305,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String getVNFDependency(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_vnfr"}, mandatory = true, help = "TODO") final String id_vnfr) {
-        return "FOUND VNFDEPENDENCY: " + networkServiceRecordAgent.getVNFDependency(id, id_vnfr);
+        try {
+            return "FOUND VNFDEPENDENCY: " + networkServiceRecordAgent.getVNFDependency(id, id_vnfr);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while getting the VNF dependency, particularly the VNF dependency with id " + id_vnfr + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -303,7 +321,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String deleteVNFDependency(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_vnfd"}, mandatory = true, help = "TODO") final String id_vnfd) {
-        networkServiceRecordAgent.deleteVNFDependency(id, id_vnfd);
+        try {
+            networkServiceRecordAgent.deleteVNFDependency(id, id_vnfd);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the VNF dependency, particularly the VNF dependency with id " + id_vnfd + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "DELETED VNFDEPENDENCY";
     }
 
@@ -365,7 +389,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String getPhysicalNetworkFunctionRecord(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_pnf"}, mandatory = true, help = "TODO") final String id_pnf) {
-        return "FOUND PNFRECORD: " + networkServiceRecordAgent.getPhysicalNetworkFunctionRecord(id, id_pnf);
+        try {
+            return "FOUND PNFRECORD: " + networkServiceRecordAgent.getPhysicalNetworkFunctionRecord(id, id_pnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while getting the PNFR, particularly the PNFR with id " + id_pnf + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 
     /**
@@ -378,7 +408,13 @@ public class NetworkServiceRecord extends org.project.openbaton.catalogue.mano.r
     public String deletePhysicalNetworkFunctionRecord(
             @CliOption(key = {"id"}, mandatory = true, help = "The NetworkServiceRecord id") final String id,
             @CliOption(key = {"id_pnf"}, mandatory = true, help = "TODO") final String id_pnf) {
-        networkServiceRecordAgent.deletePhysicalNetworkFunctionRecord(id, id_pnf);
+        try {
+            networkServiceRecordAgent.deletePhysicalNetworkFunctionRecord(id, id_pnf);
+        } catch (NotFoundException e) {
+            log.error("an error appeared while deleting the PNFR, particularly the PNFR with id " + id_pnf + " was not found");
+            e.printStackTrace();
+            return e.getMessage();
+        }
         return "DELETED PNFRECORD";
     }
 
