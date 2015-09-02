@@ -125,6 +125,12 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
             case INSTANTIATE:
                 status = Status.INITIALIZED;
                 break;
+            case SCALE_OUT_FINISHED:
+                status = Status.ACTIVE;
+                break;
+            case SCALE_IN_FINISHED:
+                status = Status.ACTIVE;
+                break;
             case SCALE_UP_FINISHED:
                 status = Status.ACTIVE;
                 break;
@@ -135,7 +141,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.TERMINATED;
                 break;
             case INSTANTIATE_FINISH:
-                status = Status.INITIALIZED;
+                status = Status.ACTIVE;
                 break;
             case CONFIGURE:
                 break;
