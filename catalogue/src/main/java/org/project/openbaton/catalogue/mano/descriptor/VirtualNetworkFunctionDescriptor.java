@@ -70,6 +70,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String type;
     @JsonIgnore
     private String endpoint;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
 
