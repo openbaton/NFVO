@@ -30,6 +30,11 @@ dependencies {
     compile 'commons-dbcp:commons-dbcp:1.4'
     compile 'mysql:mysql-connector-java:5.1.35'
 
+    // CrudRepository
+    //compile 'org.springframework.data:spring-data-commons-core:1.4.1.RELEASE'
+    //compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion

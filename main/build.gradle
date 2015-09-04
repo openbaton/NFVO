@@ -20,8 +20,12 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
     compile 'org.springframework:spring-jms:' + springVersion
 //    compile 'org.springframework:spring-orm:' + springVersion
+    //jpa repo
+    //@EnableJpaRepositories(basePackages = "org.project.openbaton.catalogue.repositories")
+    //compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
 
     compile 'org.apache.activemq:activemq-pool:5.9.0'
+
 
     compile project(':repo-int')
     compile project(':catalogue')

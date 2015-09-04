@@ -16,6 +16,7 @@
 
 package org.project.openbaton.vnfm.interfaces.manager;
 
+import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
@@ -33,7 +34,7 @@ import java.util.concurrent.Future;
 public interface VnfmManager {
     void init();
 
-    Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException;
+    Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor,NetworkServiceRecord networkServiceRecord) throws NotFoundException;
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
