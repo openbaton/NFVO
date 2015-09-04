@@ -38,8 +38,9 @@ public abstract class DatabaseRepository<T> implements GenericRepository {
 
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION)
 	protected EntityManager entityManager;
-
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+
+	public DatabaseRepository(){}
 
 	@Override
 	public List<T> findAll() {
@@ -71,17 +72,15 @@ public abstract class DatabaseRepository<T> implements GenericRepository {
 
 	@Override
 	public T find(String id) throws NoResultException {
-		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
-		};
+		TypeToken<T> typeToken = new TypeToken<T>(getClass()) {	};
 		Type type = typeToken.getType();
-		log.trace("Type is: " + type.toString());
-		Object o = entityManager.createQuery(
-				"FROM " + type.toString() + " WHERE id=\'" + id + "\'")
-				.getSingleResult();
 
+		log.trace("Searching object of type " + type.toString() + " with id "+id);
+		Object o = entityManager.createQuery("FROM " + type.toString() + " WHERE id=\'" + id + "\'").getSingleResult();
 		log.debug("Obtained object is: " + o.getClass().getSimpleName());
+
 		if (o == null)
 			throw new NoResultException(type.toString() + " with " + id	+ " not found");
-		return (T) o;
+		return (T)o;
 	}
 }

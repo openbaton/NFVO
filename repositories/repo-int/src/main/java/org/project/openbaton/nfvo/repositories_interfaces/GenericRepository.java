@@ -17,7 +17,6 @@
 package org.project.openbaton.nfvo.repositories_interfaces;
 
 import java.util.List;
-
 import javax.persistence.NoResultException;
 
 /**

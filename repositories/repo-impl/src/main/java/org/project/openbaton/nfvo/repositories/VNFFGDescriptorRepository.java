@@ -28,4 +28,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Scope("singleton")
 public class VNFFGDescriptorRepository<VNFForwardingGraphDescriptor> extends DatabaseRepository<VNFForwardingGraphDescriptor> {
+
 }

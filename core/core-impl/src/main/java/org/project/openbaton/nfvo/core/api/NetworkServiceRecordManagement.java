@@ -18,6 +18,7 @@ package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -112,48 +113,37 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         return deployNSR(networkServiceDescriptor);
     }
 
-    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
-        log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
-        NetworkServiceRecord networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-
+    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws   NotFoundException,BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
+        log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
+        NetworkServiceRecord networkServiceRecord=null;
+        networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Creating " + networkServiceRecord);
 
 //        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
 //            vnfrRepository.create(vnfr);
 
-        log.trace("Persisting VNFDependencies");
+        //log.trace("Persisting VNFDependencies");
 //        for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
 //            log.trace("" + vnfrDependency.getSources());
 //            vnfrDependencyRepository.create(vnfrDependency);
 //        }
-        log.trace("Persisted VNFDependencies");
-
-        NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
-
-        nsrRepository.create(networkServiceRecord);
-
-        log.debug("VNFR are: ");
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
-            log.debug(vnfr.getName());
-        }
-
-        log.debug("created NetworkServiceRecord with id " + networkServiceRecord.getId());
+        //log.trace("Persisted VNFDependencies");
 
         /*
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
         List<String> ids = new ArrayList<>();
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
-            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()) {
                 if (internalVirtualLink.getConnectivity_type().equals("LAN")) {
                     for (String connectionPointReference : internalVirtualLink.getConnection_points_references()) {
-                        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                             boolean networkExists = false;
                             for (Network network : vdu.getVimInstance().getNetworks()) {
                                 if (network.getName().equals(connectionPointReference) || network.getExtId().equals(connectionPointReference)) {
                                     networkExists = true;
-                                    NSRUtils.createConnectionsPoints(virtualNetworkFunctionRecord, vdu, network);
+                                    NSRUtils.createConnectionsPoints(virtualNetworkFunctionDescriptor, vdu, network);
                                     break;
                                 }
                             }
@@ -162,34 +152,43 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                                 network.setName(connectionPointReference);
                                 network.setSubnets(new HashSet<Subnet>());
                                 network = networkManagement.add(vdu.getVimInstance(), network);
-                                NSRUtils.createConnectionsPoints(virtualNetworkFunctionRecord, vdu, network);
+                                NSRUtils.createConnectionsPoints(virtualNetworkFunctionDescriptor, vdu, network);
                             }
                         }
                     }
                 }
             }
             Set<Event> events = new HashSet<>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
             }
-            if (!events.contains(Event.ALLOCATE)) {
-                if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord) == false)
-                    throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionRecord.getName());
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord));
+
+            /*if (!events.contains(Event.ALLOCATE)) {
+                if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionDescriptor) == false)
+                    throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionDescriptor.getName());
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()) {
+                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionDescriptor));
                 }
-            }
+            }*/
         }
 
         for(String id : ids){
             log.debug("Created VDU with id: " + id);
         }
 
+
+
+        vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
+
+        /*log.debug("VNFR are: ");
+        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
+            log.debug(vnfr.getName());
+        }*/
         /**
          * now check for the requires pointing to the nfvo
          */
-
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+        //TODO check where to put this
+        /*for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()){
                 log.debug("Checking parameter: " + configurationParameter.getConfKey());
                 if (configurationParameter.getConfKey().startsWith("nfvo:")){ //the parameters known from the nfvo
@@ -202,11 +201,11 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     }
                 }
             }
-        }
+        }*/
 
-        vnfmManager.deploy(networkServiceRecord);
+        NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
-        return networkServiceRecord;
+        return nsrRepository.create(networkServiceRecord);
     }
 
     @Override

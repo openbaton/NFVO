@@ -1,5 +1,6 @@
 package org.project.openbaton.nfvo.core.core;
 
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
@@ -57,22 +58,29 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     }
 
     @Override
-    public synchronized void releaseVNFR(String vnfrSourceId) throws NotFoundException {
+    public synchronized void releaseVNFR(String vnfrSourceName,NetworkServiceRecord nsrFather) throws NotFoundException {
         List<String> dependencyIdToBeRemoved = new ArrayList<>();
-        log.debug("Doing release for VNFR id: " + vnfrSourceId);
+        log.debug("Doing release for VNFR id: " + vnfrSourceName);
         for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
             String dependencyId = entry.getKey();
             Set<String> sourceList = entry.getValue();
             log.debug("Dependency " + dependencyId + " contains " + sourceList.size() + " dependencies: " + sourceList);
-            if (sourceList.contains(vnfrSourceId)) {
-                sourceList.remove(vnfrSourceId);
+            if (sourceList.contains(vnfrSourceName+nsrFather.getId())) {
+                sourceList.remove(vnfrSourceName+nsrFather.getId());
                 if (sourceList.size() == 0) {
                     CoreMessage coreMessage = new CoreMessage();
                     coreMessage.setAction(Action.MODIFY);
                     VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.find(dependencyId);
                     coreMessage.setDependency(vnfRecordDependency);
-                    VirtualNetworkFunctionRecord target = vnfrRepository.find(vnfRecordDependency.getTarget().getId());
+
+                    //get the vnfr target by its name
+                    VirtualNetworkFunctionRecord target=null;
+                    for(VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
+                        if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
+                            target=vnfrRepository.find(vnfr.getId());
+                    log.debug("Target version is: " +target.getHb_version());
                     coreMessage.setVirtualNetworkFunctionRecord(target);
+                    log.debug("SENDIGN MODIFY");
                     vnfmManager.modify(target, coreMessage);
                     dependencyIdToBeRemoved.add(dependencyId);
                 }

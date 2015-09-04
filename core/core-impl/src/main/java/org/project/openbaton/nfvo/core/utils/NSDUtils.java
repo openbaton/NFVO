@@ -64,9 +64,7 @@ public class NSDUtils {
          * Fetching VNFD
          */
         List<VirtualNetworkFunctionDescriptor> vnfdToAdd = new ArrayList<>();
-        int size = networkServiceDescriptor.getVnfd().size();
-        for (int i=0; i< size; i++) {
-            VirtualNetworkFunctionDescriptor vnfd = (VirtualNetworkFunctionDescriptor) networkServiceDescriptor.getVnfd().toArray()[i];
+        for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd()) {
             log.debug("The VNFD to fetch is: " + vnfd.getName());
             for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll()) {
                 log.debug("Checking: " + virtualNetworkFunctionDescriptor.getName());
@@ -128,6 +126,7 @@ public class NSDUtils {
 
         mergeMultipleDependency(networkServiceDescriptor);
 
+
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
             VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
@@ -143,12 +142,12 @@ public class NSDUtils {
                 if (virtualNetworkFunctionDescriptor.getName().equals(source.getName())){
                     vnfDependency.setSource(virtualNetworkFunctionDescriptor);
                     sourceFound = true;
-                    log.trace("Found " + virtualNetworkFunctionDescriptor);
+                    log.trace("Found source" + virtualNetworkFunctionDescriptor.getName());
                 }
                 else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())){
                     vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
                     targetFound = true;
-                    log.trace("Found " + virtualNetworkFunctionDescriptor);
+                    log.trace("Found target" + virtualNetworkFunctionDescriptor.getName());
                 }
             }
 
