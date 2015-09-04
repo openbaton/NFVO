@@ -55,10 +55,10 @@ public class NSRUtils {
         networkServiceRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         networkServiceRecord.getAuto_scale_policy().addAll(networkServiceDescriptor.getAuto_scale_policy());
         networkServiceRecord.setVnfr(new HashSet<VirtualNetworkFunctionRecord>());
-        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+        /*for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd, networkServiceRecord.getId());
             networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
-        }
+        }*/
         //TODO set dependencies!!! (DONE)
         networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
 //        setDependencies(networkServiceDescriptor, networkServiceRecord);
@@ -92,17 +92,17 @@ public class NSRUtils {
             boolean found = false;
             for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
 
-                if (vnfRecordDependency.getTarget().getName().equals(vnfDependency.getTarget().getName())) { // if there is a vnfRecordDepenendency with the same target
+                if (vnfRecordDependency.getTarget().equals(vnfDependency.getTarget().getName())) { // if there is a vnfRecordDepenendency with the same target
 
                     // I find the source
-                    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+                    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
 
-                        log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionRecord.getName());
+                        log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionDescriptor.getName());
 
-                        if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
-                            vnfRecordDependency.getIdType().put(virtualNetworkFunctionRecord.getId(), virtualNetworkFunctionRecord.getType());
+                        if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
+                            vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
 
-                            DependencyParameters dependencyParameters=vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
+                            DependencyParameters dependencyParameters=vnfRecordDependency.getParameters().get(virtualNetworkFunctionDescriptor.getType());
                             //If there are no dependencyParameter of that type
                             if(dependencyParameters==null) {
                                 dependencyParameters = new DependencyParameters();
@@ -111,7 +111,7 @@ public class NSRUtils {
                             for (String key:vnfDependency.getParameters()) {
                                 dependencyParameters.getParameters().put(key, "");
                             }
-                            vnfRecordDependency.getParameters().put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
+                            vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
                         }
                     }
 
@@ -124,21 +124,21 @@ public class NSRUtils {
                 VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
                 vnfRecordDependency.setIdType(new HashMap<String, String>());
                 vnfRecordDependency.setParameters(new HashMap<String, DependencyParameters>());
-                for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+                for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
 
-                    if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionRecord.getName())) {
-                        vnfRecordDependency.getIdType().put(virtualNetworkFunctionRecord.getId(), virtualNetworkFunctionRecord.getType());
+                    if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
+                        vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
                         DependencyParameters dependencyParameters = new DependencyParameters();
                         dependencyParameters.setParameters(new HashMap<String, String>());
                         for (String key:vnfDependency.getParameters()) {
                             log.debug("Adding parameter to dependency: " + key);
                             dependencyParameters.getParameters().put(key,"");
                         }
-                        vnfRecordDependency.getParameters().put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
+                        vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
                     }
 
-                    if (virtualNetworkFunctionRecord.getName().equals(vnfDependency.getTarget().getName()))
-                        vnfRecordDependency.setTarget(virtualNetworkFunctionRecord);
+                    if (virtualNetworkFunctionDescriptor.getName().equals(vnfDependency.getTarget().getName()))
+                        vnfRecordDependency.setTarget(virtualNetworkFunctionDescriptor.getName());
                 }
                 log.debug("Adding dependency " + vnfRecordDependency);
                 networkServiceRecord.getVnf_dependency().add(vnfRecordDependency);
@@ -360,13 +360,13 @@ public class NSRUtils {
         return false;
     }
 
-    public static void createConnectionsPoints(VirtualNetworkFunctionRecord vnfr, VirtualDeploymentUnit vdu, Network network) {
+    public static void createConnectionsPoints(VirtualNetworkFunctionDescriptor vnfd, VirtualDeploymentUnit vdu, Network network) {
         //Create ConnectionPoint for VNFR
         ConnectionPoint connectionPoint = new ConnectionPoint();
         connectionPoint.setName(network.getName());
         connectionPoint.setExtId(network.getExtId());
         connectionPoint.setType("LAN");
-        vnfr.getConnection_point().add(connectionPoint);
+        vnfd.getConnection_point().add(connectionPoint);
         //Create ConnectionPoint for VDU
         VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
         vnfdConnectionPoint.setVirtual_link_reference(network.getName());

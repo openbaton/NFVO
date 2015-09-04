@@ -52,6 +52,7 @@ import java.util.jar.JarFile;
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
 @EntityScan(basePackages="org.project.openbaton.catalogue")
 @ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
+//@EnableJpaRepositories("org.project.openbaton.nfvo")
 public class Application {
 
     @Bean

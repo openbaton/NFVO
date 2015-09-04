@@ -94,7 +94,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     public void dispatchEvent(ApplicationEventNFVO event){
         log.debug("dispatching event to the world!!!");
         log.debug("event is: " + event);
-        log.trace("payload is: " + event.getPayload());
+        //log.trace("payload is: " + event.getPayload());
 
         List<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 

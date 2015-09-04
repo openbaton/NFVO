@@ -10,7 +10,7 @@ _message_queue_base="apache-activemq-5.11.1"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq restart
 }
 
 function start_activemq_osx {

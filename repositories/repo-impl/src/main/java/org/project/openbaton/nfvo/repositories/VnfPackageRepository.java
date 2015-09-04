@@ -28,4 +28,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Scope("singleton")
 public class VnfPackageRepository<VNFPackage> extends DatabaseRepository<VNFPackage> {
+
 }

@@ -16,6 +16,8 @@
 
 package org.project.openbaton.nfvo.vnfm_reg;
 
+import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -51,6 +53,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -172,17 +176,25 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Override
     @Async
-    public Future<Void> deploy(NetworkServiceRecord networkServiceRecord) throws NotFoundException {
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+    public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
+
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setVirtualNetworkFunctionRecord(vnfr);
-            if (vnfr.getVnfPackage() == null)
+            coreMessage.setVirtualNetworkFunctionDescriptor(vnfd);
+
+            //Creating the extension
+            Map<String, String> extension= new HashMap<>();
+            extension.put("nsr-id",networkServiceRecord.getId());
+            // Setting extension in CoreMassage
+            coreMessage.setExtension(extension);
+
+            if (vnfd.getVnfPackage() == null)
                 coreMessage.setAction(Action.INSTANTIATE);
             else
                 coreMessage.setAction(Action.CONFIGURE);
-            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
+            VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
             if (endpoint == null) {
-                throw new NotFoundException("VnfManager of type " + vnfr.getType() + " (endpoint = " + vnfr.getEndpoint() + ") is not registered");
+                throw new NotFoundException("VnfManager of type " + vnfd.getType() + " (endpoint = " + vnfd.getEndpoint() + ") is not registered");
             }
 
             /**
@@ -225,9 +237,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 //        if (!virtualNetworkFunctionRecord.hasCyclicDependency()){
             asyncExecutor.submit(task);
 //        }else
-//            serialExecutor.execute(task);
+            //serialExecutor.execute(task);
 
-        log.debug("AsyncQueue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
+        //log.debug("AsyncQueue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
 
     }
 

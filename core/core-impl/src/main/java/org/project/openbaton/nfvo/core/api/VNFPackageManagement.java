@@ -142,8 +142,10 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         myTarFile.close();
 
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
+        vnfPackage.setVnfr(virtualNetworkFunctionDescriptor);
         vnfdRepository.create(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
+
         vnfPackageRepository.create(vnfPackage);
         log.debug("Persisted " + vnfPackage);
         return vnfPackage;

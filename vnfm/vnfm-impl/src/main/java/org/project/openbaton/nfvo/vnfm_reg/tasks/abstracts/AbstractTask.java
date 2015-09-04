@@ -1,11 +1,14 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.nfvo.abstract_repositories.NetworkServiceRecordRepository;
+import org.project.openbaton.nfvo.abstract_repositories.NetworkServiceRepositoryInterface;
 import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
 import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -59,6 +62,13 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     @Autowired
     @Qualifier("VNFRRepository")
     protected GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+
+    @Autowired
+    @Qualifier("NSRRepository")
+    protected GenericRepository<NetworkServiceRecord> nsrRepository;
+
+    @Autowired
+    protected NetworkServiceRepositoryInterface nsrMyRepo;
 
     @Autowired
     private DependencyQueuer dependencyQueuer;
