@@ -27,5 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional(readOnly = true)
 @Scope("singleton")
-public class NSRRepository<NetworkServiceRecord> extends DatabaseRepository<NetworkServiceRecord> {
+public class NSRRepository<NetworkServiceRecord> extends DatabaseRepository<NetworkServiceRecord>{
 }
+

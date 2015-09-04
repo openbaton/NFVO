@@ -4,16 +4,17 @@ source gradle.properties
 
 _version=${version}
 
-_openbaton_base="."
-_message_queue_base="/opt/openbaton/apache-activemq-5.11.1"
+_base=/opt
+_openbaton_base="${_base}/openbaton"
+_message_queue_base="apache-activemq-5.11.1"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
-    sudo ${_message_queue_base}/bin/activemq start
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq restart
 }
 
 function start_activemq_osx {
-    sudo ${_message_queue_base}/bin/macosx/activemq start
+    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
 }
 
 function check_activemq {
@@ -100,8 +101,8 @@ function start {
     check_already_running
     if [ 0 -eq $? ]
         then
-	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "$_openbaton_base/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-#            screen -d -m -S openbaton -p 0 -X screen -t nfvo java -jar "$_openbaton_base/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+#            screen -d -m -S openbaton -p 0 -X screen -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
 	    screen -c .screenrc -r -p 0
     fi
 }

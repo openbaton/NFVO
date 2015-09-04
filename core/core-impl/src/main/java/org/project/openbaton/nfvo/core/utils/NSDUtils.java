@@ -126,6 +126,7 @@ public class NSDUtils {
 
         mergeMultipleDependency(networkServiceDescriptor);
 
+
         for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
             log.trace(""+vnfDependency);
             VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
@@ -141,12 +142,12 @@ public class NSDUtils {
                 if (virtualNetworkFunctionDescriptor.getName().equals(source.getName())){
                     vnfDependency.setSource(virtualNetworkFunctionDescriptor);
                     sourceFound = true;
-                    log.trace("Found " + virtualNetworkFunctionDescriptor);
+                    log.trace("Found source" + virtualNetworkFunctionDescriptor.getName());
                 }
                 else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())){
                     vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
                     targetFound = true;
-                    log.trace("Found " + virtualNetworkFunctionDescriptor);
+                    log.trace("Found target" + virtualNetworkFunctionDescriptor.getName());
                 }
             }
 

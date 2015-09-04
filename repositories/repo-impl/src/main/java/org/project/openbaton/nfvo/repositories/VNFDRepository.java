@@ -28,4 +28,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Scope("singleton")
 public class VNFDRepository<VirtualNetworkFunctionDescriptor> extends DatabaseRepository<VirtualNetworkFunctionDescriptor> {
+
 }

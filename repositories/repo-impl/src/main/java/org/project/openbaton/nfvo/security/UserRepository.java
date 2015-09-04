@@ -25,4 +25,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Scope("singleton")
 public class UserRepository<User> extends DatabaseRepository<User> {
+
 }
