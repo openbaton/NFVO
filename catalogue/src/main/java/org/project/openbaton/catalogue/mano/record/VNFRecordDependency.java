@@ -18,8 +18,8 @@ public class VNFRecordDependency implements Serializable {
     @Version
     private int version = 0;
 
-    @OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
-    private VirtualNetworkFunctionRecord target;
+    //@OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
+    private String target;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Map<String, DependencyParameters> parameters;
@@ -31,6 +31,11 @@ public class VNFRecordDependency implements Serializable {
 //    private Status status;
 
     public VNFRecordDependency() {
+    }
+
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
     }
 
     public Map<String, String> getIdType() {
@@ -46,7 +51,7 @@ public class VNFRecordDependency implements Serializable {
         return "VNFRecordDependency{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", target=" + target.getName() + " ( " + target.getId() + ")" +
+                ", target="+target+
                 ", parameters=" + parameters +
                 ", idType=" + idType +
                 '}';
@@ -76,11 +81,11 @@ public class VNFRecordDependency implements Serializable {
         this.version = version;
     }
 
-    public VirtualNetworkFunctionRecord getTarget() {
+    public String getTarget() {
         return target;
     }
 
-    public void setTarget(VirtualNetworkFunctionRecord target) {
+    public void setTarget(String target) {
         this.target = target;
     }
 

@@ -1,7 +1,7 @@
 package org.project.openbaton.catalogue.mano.common;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -16,7 +16,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 * ID of this Network Service Descriptor
 	 * */
 	@Id
-	protected String id = IdGenerator.createUUID();
+	protected String id;
 	@Version
 	protected Integer hb_version = 0;
 
@@ -78,6 +78,10 @@ public abstract class NFVEntityDescriptor implements Serializable {
  	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected Set<ConnectionPoint> connection_point;
 
+	@PrePersist
+	public void ensureId(){
+		id=IdGenerator.createUUID();
+	}
 	public String getName() {
 		return name;
 	}

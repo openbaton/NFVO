@@ -1,5 +1,6 @@
 package org.project.openbaton.catalogue.nfvo;
 
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Set;
 public class VNFPackage implements Serializable{
 
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -27,6 +28,10 @@ public class VNFPackage implements Serializable{
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true)
     private NFVImage image;
 
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true, mappedBy = "vnfPackage")
+    private VirtualNetworkFunctionDescriptor vnfr;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Script> scripts;
 
@@ -39,6 +44,7 @@ public class VNFPackage implements Serializable{
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
+                ", vnfr='" + vnfr + '\'' +
                 ", extId='" + extId + '\'' +
                 ", imageLink='" + imageLink + '\'' +
                 ", scriptsLink='" + scriptsLink + '\'' +
@@ -55,6 +61,10 @@ public class VNFPackage implements Serializable{
         this.imageLink = imageLink;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getScriptsLink() {
         return scriptsLink;
     }
@@ -70,6 +80,10 @@ public class VNFPackage implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
+
+    public VirtualNetworkFunctionDescriptor getVnfr() { return vnfr;}
+
+    public void setVnfr(VirtualNetworkFunctionDescriptor vnfr) {this.vnfr = vnfr;}
 
     public int getVersion() {
         return version;

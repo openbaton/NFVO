@@ -4,10 +4,12 @@ import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
+import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ import java.util.Properties;
 /**
  * Created by lto on 08/07/15.
  */
-public abstract class AbstractVnfm implements VNFLifecycleManagement {
+public abstract class AbstractVnfm implements VNFLifecycleManagement,VNFLifecycleChangeNotification {
     protected String type;
     protected String endpoint;
     protected Properties properties;
@@ -68,8 +70,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
         this.properties = properties;
     }
 
-    @Override
-    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    /*@Override
+    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);*/
 
     @Override
     public abstract void query();
@@ -134,7 +136,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 break;
             case GRANT_OPERATION:
             case INSTANTIATE:
-                coreMessage = this.instantiate(virtualNetworkFunctionRecord);
+                VirtualNetworkFunctionRecord vnfr = instantiate(message.getVirtualNetworkFunctionDescriptor(), null, null,null, message.getExtention());
+                if(vnfr!=null)
+                    coreMessage = getCoreMessage(Action.INSTANTIATE,vnfr);
                 break;
             case SCALE_UP_FINISHED:
                 break;
@@ -168,6 +172,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
                 return lce;
             }
         return null;
+    }
+
+    protected CoreMessage getCoreMessage(Action action, VirtualNetworkFunctionRecord payload){
+        CoreMessage coreMessage = new CoreMessage();
+        coreMessage.setAction(action);
+        coreMessage.setVirtualNetworkFunctionRecord(payload);
+        return coreMessage;
     }
 
     /**

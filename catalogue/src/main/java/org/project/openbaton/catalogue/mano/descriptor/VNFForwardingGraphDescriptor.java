@@ -21,7 +21,7 @@ public class VNFForwardingGraphDescriptor implements Serializable{
      * ID of the VNFFG Descriptor
      * */
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	@Version
 	private int hb_version = 0;
     /**
@@ -75,6 +75,10 @@ public class VNFForwardingGraphDescriptor implements Serializable{
     public VNFForwardingGraphDescriptor() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

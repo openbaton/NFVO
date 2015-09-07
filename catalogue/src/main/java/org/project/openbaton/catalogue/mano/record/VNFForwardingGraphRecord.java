@@ -8,8 +8,8 @@ package org.project.openbaton.catalogue.mano.record;
 
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
-import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Entity
 public class VNFForwardingGraphRecord implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     /**
      * Record of the VNFFGD (vnffgd:id) used to instantiate this VNFFG
      * */
@@ -96,6 +96,10 @@ public class VNFForwardingGraphRecord implements Serializable{
     public VNFForwardingGraphRecord() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }
