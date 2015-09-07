@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Entity
 public class NetworkServiceRecord implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @OneToMany(cascade = CascadeType.ALL)
     private Set<AutoScalePolicy> auto_scale_policy;
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
@@ -107,6 +107,10 @@ public class NetworkServiceRecord implements Serializable{
     
     private String name;
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }
