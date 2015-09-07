@@ -83,7 +83,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable message) {
-        log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
+        //log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
 
         MessageCreator messageCreator;
 

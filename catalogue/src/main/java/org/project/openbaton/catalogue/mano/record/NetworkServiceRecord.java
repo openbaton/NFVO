@@ -10,9 +10,8 @@ import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
-
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -22,10 +21,10 @@ import java.io.Serializable;
 @Entity
 public class NetworkServiceRecord implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private String id;
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<AutoScalePolicy> auto_scale_policy;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
     /**
      * Monitoring parameter used in this instance.
@@ -36,11 +35,11 @@ public class NetworkServiceRecord implements Serializable{
      * References the nsd:service_deployment_flavour used to instantiate this Network Service instance.
      * */
 
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REFRESH)
      private NetworkServiceDeploymentFlavour service_deployment_flavour;
     private String vendor;
     private String version;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> vlr;
 
     @OneToMany(cascade = {/*CascadeType.PERSIST, CascadeType.MERGE*/ CascadeType.ALL}, fetch = FetchType.EAGER)
@@ -49,16 +48,16 @@ public class NetworkServiceRecord implements Serializable{
     @OneToMany(cascade = {/*CascadeType.PERSIST, CascadeType.MERGE*/ CascadeType.ALL}, fetch = FetchType.EAGER)
     private Set<VNFRecordDependency> vnf_dependency;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<VNFForwardingGraphRecord> vnffgr;
     /**
      * At least one
      * */
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<PhysicalNetworkFunctionRecord> pnfr;
     /**
      * The reference to the Network Service Descriptor used to instantiate this Network Service.
@@ -97,7 +96,7 @@ public class NetworkServiceRecord implements Serializable{
     /**
      * Record of significant Network Service lifecycle events.
      * */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational events.
@@ -107,6 +106,10 @@ public class NetworkServiceRecord implements Serializable{
     
     private String name;
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

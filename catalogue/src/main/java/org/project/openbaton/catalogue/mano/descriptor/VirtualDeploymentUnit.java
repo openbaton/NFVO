@@ -23,7 +23,7 @@ import java.util.Set;
 @Entity
 public class VirtualDeploymentUnit implements Serializable{
 	@Id
-    private String id = IdGenerator.createUUID();
+    private String id;
 	@Version
 	private int version = 0;
     /**
@@ -87,6 +87,10 @@ public class VirtualDeploymentUnit implements Serializable{
     public VirtualDeploymentUnit() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

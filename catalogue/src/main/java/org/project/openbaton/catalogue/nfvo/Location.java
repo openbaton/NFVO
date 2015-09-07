@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @Entity
 public class Location implements Serializable{
     @Id
-    private String id= IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -25,6 +26,10 @@ public class Location implements Serializable{
         this.id = id;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public int getVersion() {
         return version;
     }

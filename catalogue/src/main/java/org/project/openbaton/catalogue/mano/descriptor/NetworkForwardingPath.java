@@ -21,7 +21,7 @@ import java.util.Map;
 public class NetworkForwardingPath implements Serializable{
 
 	@Id
-    private String id = IdGenerator.createUUID();
+    private String id;
 	@Version
 	private int version = 0;
     /**
@@ -38,6 +38,10 @@ public class NetworkForwardingPath implements Serializable{
     public NetworkForwardingPath() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

@@ -25,14 +25,16 @@ import java.util.Set;
 public class VNFDependency implements Serializable {
 
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	@Version
 	private int version = 0;
-	
-	@OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
+
+	@ManyToOne
+	@JoinColumn(nullable = false)
     private VirtualNetworkFunctionDescriptor source;
 
-	@OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
+	@ManyToOne
+	@JoinColumn(nullable = false)
     private VirtualNetworkFunctionDescriptor target;
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -41,6 +43,10 @@ public class VNFDependency implements Serializable {
     public VNFDependency() {
     }
 
+	@PrePersist
+	public void ensureId(){
+		id=IdGenerator.createUUID();
+	}
     public VirtualNetworkFunctionDescriptor getSource() {
         return source;
     }

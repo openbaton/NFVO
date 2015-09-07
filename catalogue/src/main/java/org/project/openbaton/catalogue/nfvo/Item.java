@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
 /**
@@ -12,7 +13,7 @@ import javax.persistence.Version;
 @Entity
 public class Item {
     @Id
-    private String id= IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -42,6 +43,10 @@ public class Item {
         return id;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public void setId(String id) {
         this.id = id;
     }
