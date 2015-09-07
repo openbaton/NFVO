@@ -23,8 +23,6 @@ import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.project.openbaton.nfvo.repositories.VNFDRepository;
-import org.project.openbaton.nfvo.repositories.VNFDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +48,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
     @Autowired
-    private VNFDRepository vnfdRepository;
-
-    @Autowired
     private NSDUtils nsdUtils;
-    @Autowired
-    private VNFDependencyRepository vnfDependencyRepository;
 
     /**
      * This operation allows submitting and
@@ -69,15 +62,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
 
         Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
             boolean found = false;
-            for (VnfmManagerEndpoint endpoint : endpoints){
-                if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())){
+            for (VnfmManagerEndpoint endpoint : endpoints) {
+                if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())) {
                     found = true;
                     break;
                 }
             }
-            if (!found){
+            if (!found) {
                 throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
             }
         }
@@ -98,8 +91,8 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
 //        }
         log.trace("Persisted VNFDependencies");
 
-        networkServiceDescriptor=nsdRepository.save(networkServiceDescriptor);
-        log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
+        networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
+        log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
         return networkServiceDescriptor;
     }
 
@@ -108,6 +101,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * Network Service Descriptor, so that it
      * is not possible to instantiate it any
      * further.
+     *
      * @param id: the id of the {@Link NetworkServiceDescriptor} to disable
      */
     @Override
@@ -121,6 +115,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     /**
      * This operation allows enabling a
      * Network Service Descriptor.
+     *
      * @param id: the id of the {@Link NetworkServiceDescriptor} to enable
      */
     @Override
@@ -137,8 +132,9 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * related VNFFGD and VLD.This update might
      * include creating/deleting new VNFFGDs
      * and/or new VLDs.
+     *
      * @param new_nsd: the new values to be updated
-     * @param old_id: the id of the old NetworkServiceDescriptor
+     * @param old_id:  the id of the old NetworkServiceDescriptor
      */
     @Override
     public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
@@ -173,6 +169,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     /**
      * This operation is used to remove a
      * disabled Network Service Descriptor.
+     *
      * @param id
      */
     @Override
