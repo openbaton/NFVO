@@ -70,9 +70,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement,VNFLifecycl
         this.properties = properties;
     }
 
-    /*@Override
-    public abstract CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);*/
-
     @Override
     public abstract void query();
 
@@ -139,6 +136,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement,VNFLifecycl
                 VirtualNetworkFunctionRecord vnfr = instantiate(message.getVirtualNetworkFunctionDescriptor(), null, null,null, message.getExtention());
                 if(vnfr!=null)
                     coreMessage = getCoreMessage(Action.INSTANTIATE,vnfr);
+                break;
+            case SCALE_IN_FINISHED:
+                break;
+            case SCALE_OUT_FINISHED:
                 break;
             case SCALE_UP_FINISHED:
                 break;
