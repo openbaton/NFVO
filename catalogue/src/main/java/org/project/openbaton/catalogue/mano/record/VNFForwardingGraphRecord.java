@@ -24,7 +24,7 @@ import java.util.Set;
 @Entity
 public class VNFForwardingGraphRecord implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     /**
      * Record of the VNFFGD (vnffgd:id) used to instantiate this VNFFG
      * */
@@ -96,6 +96,10 @@ public class VNFForwardingGraphRecord implements Serializable{
     public VNFForwardingGraphRecord() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

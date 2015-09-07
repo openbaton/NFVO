@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 public class Server implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
     private String name;
@@ -40,6 +40,10 @@ public class Server implements Serializable{
 
     public int getVersion() { return version; }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public void setName(String name) {
         this.name = name;
     }

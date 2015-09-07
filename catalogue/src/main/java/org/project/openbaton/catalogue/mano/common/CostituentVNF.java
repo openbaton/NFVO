@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class CostituentVNF implements Serializable{
 
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	@Version
 	private int version = 0; 
 	
@@ -51,7 +51,10 @@ public class CostituentVNF implements Serializable{
 
     public CostituentVNF() {
     }
-
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getVnf_reference() {
         return vnf_reference;
     }

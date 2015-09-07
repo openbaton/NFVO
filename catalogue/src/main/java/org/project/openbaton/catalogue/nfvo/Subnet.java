@@ -2,9 +2,7 @@ package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -13,7 +11,7 @@ import java.io.Serializable;
 @Entity
 public class Subnet implements Serializable {
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
     private String name;
@@ -23,7 +21,10 @@ public class Subnet implements Serializable {
 
     public Subnet() {
     }
-
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() { return id; }
 
     public void setId(String id) {
