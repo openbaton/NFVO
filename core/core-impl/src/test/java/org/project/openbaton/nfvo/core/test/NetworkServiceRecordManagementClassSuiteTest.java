@@ -38,7 +38,9 @@ import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.common.exceptions.WrongStatusException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -85,16 +87,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	private NetworkServiceRecordManagement nsrManagement;
 
 	@Autowired
-	@Qualifier("vimRepository")
-	GenericRepository<VimInstance> vimRepository;
+	VimRepository vimRepository;
 
 	@Autowired
-	@Qualifier("NSDRepository")
-	GenericRepository<NetworkServiceDescriptor> nsdRepository;
+	NetworkServiceDescriptorRepository nsdRepository;
 
 	@Autowired
-	@Qualifier("NSRRepository")
-	GenericRepository<NetworkServiceRecord> nsrRepository;
+	NetworkServiceRecordRepository nsrRepository;
 
 	@Autowired
 	private NSDUtils nsdUtils;
@@ -103,10 +102,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	public VimBroker vimBroker;
 
 	@Before
-	public void init() throws VimException, VimDriverException{
+	public void init() throws VimException, VimDriverException, ExecutionException, InterruptedException {
 		MockitoAnnotations.initMocks(ApplicationTest.class);
 		ResourceManagement resourceManagement = mock(ResourceManagement.class);
-		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
+		when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(String.valueOf(new AsyncResult<String>("mocked_id")));
 		Vim vim = mock(Vim.class);
 		when(vimBroker.getVim(anyString())).thenReturn(vim);
 		when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
@@ -125,23 +124,23 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	@Test
 	public void nsrManagementQueryTest(){
 		when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
-		List<NetworkServiceRecord> nsds = nsrManagement.query();
-		Assert.assertEquals(nsds.size(), 0);
+		Iterable<NetworkServiceRecord> nsds = nsrManagement.query();
+		Assert.assertEquals(nsds.iterator().hasNext(), false);
 		final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
 		when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>() {{
 			add(nsd_exp);
 		}});
 		nsds = nsrManagement.query();
-		Assert.assertEquals(nsds.size(), 1);
+		Assert.assertEquals(nsds.iterator().hasNext(), true);
 
-		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		when(nsrRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
 		assertEqualsNSR(nsd_exp);
 	}
 
 	@Test
 	public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
 		NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
-		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		when(nsrRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
 		nsrManagement.delete(nsd_exp.getId());
 	}
 
@@ -172,12 +171,12 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
 		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
 		LifecycleEvent event = new LifecycleEvent();
-		event.setEvent(Event.INSTALL);
+		event.setEvent(Event.INSTANTIATE);
 		event.setLifecycle_events(new HashSet<String>());
 		event.getLifecycle_events().add("command_1");
 		virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
 
-		when(nsdRepository.find(anyString())).thenReturn(networkServiceDescriptor);
+		when(nsdRepository.findOne(anyString())).thenReturn(networkServiceDescriptor);
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
 		}});
@@ -206,7 +205,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		event.getLifecycle_events().add("command_1");
 		virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
 
-		when(nsdRepository.find(anyString())).thenReturn(networkServiceDescriptor);
+		when(nsdRepository.findOne(anyString())).thenReturn(networkServiceDescriptor);
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
 			add(createVimInstance());
 		}});
@@ -224,7 +223,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 	@Test
 	public void nsrManagementUpdateTest() throws NotFoundException {
 		final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
-		when(nsrRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		when(nsrRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
 		NetworkServiceRecord new_nsr = createNetworkServiceRecord();
 		new_nsr.setName("UpdatedName");
 		nsrManagement.update(new_nsr, nsd_exp.getId());
@@ -253,7 +252,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		nsd.getMonitoring_parameter().add("monitor1");
 		nsd.getMonitoring_parameter().add("monitor2");
 		nsd.getMonitoring_parameter().add("monitor3");
-		nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
+		//nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
 		nsd.setPnfd(new HashSet<PhysicalNetworkFunctionDescriptor>());
 		nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
 		nsd.setVld(new HashSet<VirtualLinkDescriptor>());

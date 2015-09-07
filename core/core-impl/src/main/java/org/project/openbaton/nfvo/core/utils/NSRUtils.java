@@ -25,7 +25,6 @@ import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +37,6 @@ import java.util.*;
  */
 public class NSRUtils {
 
-    @Autowired
-    @Qualifier("VNFDRepository")
-    private static GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
 
     private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
 

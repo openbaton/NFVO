@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface VnfmRegister {
 
-    List<VnfmManagerEndpoint> listVnfm();
+    Iterable<VnfmManagerEndpoint> listVnfm();
 
     void addManagerEndpoint(VnfmManagerEndpoint endpoint);
 

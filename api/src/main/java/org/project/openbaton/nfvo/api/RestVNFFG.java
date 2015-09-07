@@ -70,7 +70,7 @@ public class RestVNFFG {
 	 * @return List<VNFForwardingGraphDescriptor>: The list of VNFFGs available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<VNFForwardingGraphDescriptor> findAll() {
+	public Iterable<VNFForwardingGraphDescriptor> findAll() {
 		return vnffgManagement.query();
 	}
 

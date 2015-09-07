@@ -13,13 +13,17 @@ import java.util.Map;
 public class DependencyParameters implements Serializable{
 
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, String> parameters;
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

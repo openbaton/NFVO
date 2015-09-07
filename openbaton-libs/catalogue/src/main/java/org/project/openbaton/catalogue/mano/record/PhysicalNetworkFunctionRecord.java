@@ -22,7 +22,7 @@ import java.util.Set;
 public class PhysicalNetworkFunctionRecord implements Serializable{
 
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id ;
     private String vendor;
     private String version;
     private String description;
@@ -63,7 +63,10 @@ public class PhysicalNetworkFunctionRecord implements Serializable{
 
     public PhysicalNetworkFunctionRecord() {
     }
-
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

@@ -30,7 +30,7 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.NFVImageManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.ImageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +67,7 @@ public class NFVImageManagementClassSuiteTest {
 	private NFVImageManagement nfvImageManagement;
 
 	@Autowired
-	@Qualifier("imageRepository")
-	private GenericRepository<NFVImage> imageRepository;
+	private ImageRepository imageRepository;
 
 	@Before
 	public void init() {
@@ -84,7 +83,7 @@ public class NFVImageManagementClassSuiteTest {
 	@Test
 	public void nfvImageManagementUpdateTest(){
 		NFVImage nfvImage_exp = createNfvImage();
-		when(imageRepository.find(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
+		when(imageRepository.findOne(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
 
 		NFVImage nfvImage_new = createNfvImage();
 		nfvImage_new.setName("UpdatedName");
@@ -105,7 +104,7 @@ public class NFVImageManagementClassSuiteTest {
 	@Test
 	public void nfvImageManagementAddTest(){
 		NFVImage nfvImage_exp = createNfvImage();
-		when(imageRepository.create(any(NFVImage.class))).thenReturn(nfvImage_exp);
+		when(imageRepository.save(any(NFVImage.class))).thenReturn(nfvImage_exp);
 		NFVImage nfvImage_new = nfvImageManagement.add(nfvImage_exp);
 
 		Assert.assertEquals(nfvImage_exp.getId(),nfvImage_new.getId());
@@ -118,10 +117,10 @@ public class NFVImageManagementClassSuiteTest {
 	public void nfvImageManagementQueryTest(){
 		when(imageRepository.findAll()).thenReturn(new ArrayList<NFVImage>());
 
-		Assert.assertEquals(0, nfvImageManagement.query().size());
+		Assert.assertEquals(false, nfvImageManagement.query().iterator().hasNext());
 
 		NFVImage nfvImage_exp = createNfvImage();
-		when(imageRepository.find(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
+		when(imageRepository.findOne(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
 		NFVImage nfvImage_new = nfvImageManagement.query(nfvImage_exp.getId());
 		Assert.assertEquals(nfvImage_exp.getId(), nfvImage_new.getId());
 		Assert.assertEquals(nfvImage_exp.getName(), nfvImage_new.getName());
@@ -132,9 +131,9 @@ public class NFVImageManagementClassSuiteTest {
 	@Test
 	public void nfvImageManagementDeleteTest(){
 		NFVImage nfvImage_exp = createNfvImage();
-		when(imageRepository.find(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
+		when(imageRepository.findOne(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
 		nfvImageManagement.delete(nfvImage_exp.getId());
-		when(imageRepository.find(nfvImage_exp.getId())).thenReturn(null);
+		when(imageRepository.findOne(nfvImage_exp.getId())).thenReturn(null);
 		NFVImage nfvImage_new = nfvImageManagement.query(nfvImage_exp.getId());
 		Assert.assertNull(nfvImage_new);
 	}

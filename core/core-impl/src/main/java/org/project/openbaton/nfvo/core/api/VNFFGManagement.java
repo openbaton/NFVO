@@ -17,13 +17,10 @@
 package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFFGDescriptorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created by lto on 16/06/15.
@@ -33,27 +30,26 @@ import java.util.List;
 public class VNFFGManagement implements org.project.openbaton.nfvo.core.interfaces.VNFFGManagement {
 
     @Autowired
-    @Qualifier("VNFFGDescriptorRepository")
-    private GenericRepository<VNFForwardingGraphDescriptor> vnffgDescriptorRepository;
+    private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
     @Override
     public VNFForwardingGraphDescriptor add(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor) {
-        return vnffgDescriptorRepository.create(vnfForwardingGraphDescriptor);
+        return vnffgDescriptorRepository.save(vnfForwardingGraphDescriptor);
     }
 
     @Override
     public void delete(String id) {
-        vnffgDescriptorRepository.remove(vnffgDescriptorRepository.find(id));
+        vnffgDescriptorRepository.delete(vnffgDescriptorRepository.findOne(id));
     }
 
     @Override
-    public List<VNFForwardingGraphDescriptor> query() {
+    public Iterable<VNFForwardingGraphDescriptor> query() {
         return vnffgDescriptorRepository.findAll();
     }
 
     @Override
     public VNFForwardingGraphDescriptor query(String id) {
-        return vnffgDescriptorRepository.find(id);
+        return vnffgDescriptorRepository.findOne(id);
     }
 
     @Override

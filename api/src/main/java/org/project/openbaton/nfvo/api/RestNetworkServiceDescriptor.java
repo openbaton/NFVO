@@ -109,7 +109,7 @@ public class RestNetworkServiceDescriptor {
 	 */
 
 	@RequestMapping(method = RequestMethod.GET)
-	public List<NetworkServiceDescriptor> findAll() {
+	public Iterable<NetworkServiceDescriptor> findAll() {
 
 		return networkServiceDescriptorManagement.query();
 	}

@@ -57,7 +57,7 @@ public interface NetworkManagement {
 	 * This operation allows querying the information of 
 	 * the VNF software images in the image repository.
 	 */
-    List<Network> query();
+    Iterable<Network> query();
     
     /**
      * This operation allows querying the information of 

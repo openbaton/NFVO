@@ -18,13 +18,10 @@ package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created by lto on 13/05/15.
@@ -34,22 +31,21 @@ import java.util.List;
 public class ConfigurationManagement implements org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement {
 
     @Autowired
-    @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationRepository;
+    private ConfigurationRepository configurationRepository;
 
     @Override
     public Configuration add(Configuration datacenter) {
-        return configurationRepository.create(datacenter);
+        return configurationRepository.save(datacenter);
     }
 
     @Override
     public void delete(String id) {
-        configurationRepository.remove(configurationRepository.find(id));
+        configurationRepository.delete(configurationRepository.findOne(id));
     }
 
     @Override
     public Configuration update(Configuration configuration_new, String id) {
-        Configuration old = configurationRepository.find(id);
+        Configuration old = configurationRepository.findOne(id);
         old.setName(configuration_new.getName());
         old.setConfigurationParameters(configuration_new.getConfigurationParameters());
         return old;
@@ -57,18 +53,18 @@ public class ConfigurationManagement implements org.project.openbaton.nfvo.core.
     }
 
     @Override
-    public List<Configuration> query() {
+    public Iterable<Configuration> query() {
         return configurationRepository.findAll();
     }
 
     @Override
     public Configuration query(String id) {
-        return configurationRepository.find(id);
+        return configurationRepository.findOne(id);
     }
 
     @Override
     public Configuration queryByName(String name) throws NotFoundException {
-        List<Configuration> configurations = query();
+        Iterable<Configuration> configurations = query();
         for (Configuration configuration: configurations){
             if (configuration.getName().equals(name)){
                 return configuration;

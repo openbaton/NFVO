@@ -15,7 +15,7 @@ public class ScalingTask extends AbstractTask {
         log.debug("NFVO: SCALING");
         log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " shoud be in status scaling --> " + virtualNetworkFunctionRecord.getStatus());
 //        virtualNetworkFunctionRecord.setStatus(Status.SCALING);
-        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
 
     @Override

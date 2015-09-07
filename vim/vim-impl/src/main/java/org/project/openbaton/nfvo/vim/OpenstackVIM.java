@@ -197,7 +197,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             try {
                 Subnet createdSubnet = openstackClient.createSubnet(vimInstance.getType(), vimInstance, createdNetwork, subnet);
                 log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
-                createdSubnet.setNetworkId(createdNetwork.getId());
+                createdSubnet.setNetworkId(createdNetwork.getId().toString());
                 createdSubnets.add(createdSubnet);
             } catch (Exception e) {
                 log.error("Subnet with id: " + subnet.getId() + " not created successfully.", e);
@@ -224,7 +224,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
                 try {
                     Subnet updatedSubnet = openstackClient.updateSubnet(vimInstance.getType(), vimInstance, updatedNetwork, subnet);
                     log.debug("Subnet with id: " + subnet.getId() + " updated successfully.");
-                    updatedSubnet.setNetworkId(updatedNetwork.getId());
+                    updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(updatedSubnet);
                     updatedSubnetExtIds.add(updatedSubnet.getExtId());
                 } catch (Exception e) {
@@ -235,7 +235,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
                 try {
                     Subnet createdSubnet = openstackClient.createSubnet(vimInstance.getType(), vimInstance, updatedNetwork, subnet);
                     log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
-                    createdSubnet.setNetworkId(updatedNetwork.getId());
+                    createdSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(createdSubnet);
                     updatedSubnetExtIds.add(createdSubnet.getExtId());
                 } catch (Exception e) {

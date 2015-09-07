@@ -23,13 +23,14 @@ import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -92,12 +93,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
     @Autowired
-    @Qualifier("VNFRRepository")
-    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+    private VNFRRepository vnfrRepository;
 
     @Autowired
-    @Qualifier("NSRRepository")
-    private GenericRepository<NetworkServiceRecord> nsrRepository;
+    private NetworkServiceRecordRepository nsrRepository;
 
     @Override
     public void init() {
@@ -253,7 +252,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         Status status = Status.TERMINATED;
         NetworkServiceRecord networkServiceRecord;
         try {
-            networkServiceRecord = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+            networkServiceRecord = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         } catch (NoResultException e) {
             log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
             return;
@@ -269,13 +268,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
-        networkServiceRecord = nsrRepository.merge(networkServiceRecord);
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal())
             publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
         else if (status.ordinal() == Status.TERMINATED.ordinal()) {
             publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
-            nsrRepository.remove(networkServiceRecord);
+            nsrRepository.delete(networkServiceRecord);
         }
     }
 

@@ -24,7 +24,7 @@ public class VNFComponent implements Serializable{
      * Unique VNFC identification within the namespace of a specific VNF.
      * */
     @Id
-	private String id= IdGenerator.createUUID();
+	private String id;
     @Version
     private int version = 0;
     public int getVersion() {
@@ -41,6 +41,10 @@ public class VNFComponent implements Serializable{
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VNFDConnectionPoint> connection_point;
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public VNFComponent() {
         this.connection_point = new HashSet<VNFDConnectionPoint>();
     }

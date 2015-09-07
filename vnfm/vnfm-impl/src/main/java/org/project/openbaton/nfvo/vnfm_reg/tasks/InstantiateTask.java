@@ -6,7 +6,6 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
-import org.project.openbaton.nfvo.repositories.NSRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -39,17 +38,15 @@ public class InstantiateTask extends AbstractTask {
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+        networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
 
-        nsrMyRepo.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        virtualNetworkFunctionRecord=vnfrRepository.find(virtualNetworkFunctionRecord.getId());
-
-        log.info("---vnfr added" + virtualNetworkFunctionRecord.getName());
+        log.debug("Vnfr added" + virtualNetworkFunctionRecord.getName());
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
 
-        NetworkServiceRecord nsr = nsrMyRepo.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
-            log.debug("--Current Vnfr: "+vnfr.getName());
+            log.debug("Current Vnfrs in the database: "+vnfr.getName());
 
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(),nsr);
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());

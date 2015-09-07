@@ -35,9 +35,9 @@ public interface VirtualLinkManagement {
 
     VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord_new, String id);
 
-    List<VirtualLinkDescriptor> queryDescriptors();
+    Iterable<VirtualLinkDescriptor> queryDescriptors();
 
-    List<VirtualLinkRecord> queryRecords();
+    Iterable<VirtualLinkRecord> queryRecords();
 
     VirtualLinkRecord queryRecord(String id);
 
