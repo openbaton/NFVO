@@ -20,7 +20,7 @@ public class ScaleoutfinishedTask extends AbstractTask {
     @Override
     protected void doWork() throws Exception {
         log.debug("NFVO: SCALE_OUT_FINISHED");
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo = vnfrRepository.find(virtualNetworkFunctionRecord.getId());
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
         virtualNetworkFunctionRecord_nfvo.setStatus(virtualNetworkFunctionRecord.getStatus());
         List<String> existingVDUs = new ArrayList<String>();
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord_nfvo.getVdu()) {
@@ -38,7 +38,7 @@ public class ScaleoutfinishedTask extends AbstractTask {
             }
         }
         virtualNetworkFunctionRecord_nfvo.getVnf_address().addAll(new_addresses);
-        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord_nfvo);
+        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class ScalingTask extends AbstractTask {
     protected void doWork() throws Exception {
         log.debug("NFVO: SCALING");
         log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " shoud be in status scaling --> " + virtualNetworkFunctionRecord.getStatus());
-//        virtualNetworkFunctionRecord.setStatus(Status.SCALING);
+        virtualNetworkFunctionRecord.setStatus(Status.SCALING);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
 
