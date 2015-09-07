@@ -1,4 +1,4 @@
-package org.project.openbaton.catalogue.mano.common;
+package org.project.openbaton.catalogue.mano.descriptor;
 
 /**
  * Created by lto on 05/02/15.

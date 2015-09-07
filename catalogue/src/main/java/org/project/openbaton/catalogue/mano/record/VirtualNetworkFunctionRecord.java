@@ -12,6 +12,7 @@ import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
