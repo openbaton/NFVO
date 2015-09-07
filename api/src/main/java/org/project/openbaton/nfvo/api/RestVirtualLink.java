@@ -71,7 +71,7 @@ public class RestVirtualLink {
 	 * @return List<Configuration>: The list of Configurations available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<VirtualLinkDescriptor> findAllDescriptors() {
+	public Iterable<VirtualLinkDescriptor> findAllDescriptors() {
 		log.debug("Find all Configurations");
 		return virtualLinkManagement.queryDescriptors();
 	}

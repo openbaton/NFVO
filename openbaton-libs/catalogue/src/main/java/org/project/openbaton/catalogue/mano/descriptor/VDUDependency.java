@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Entity
 public class VDUDependency implements Serializable{
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	@Version
 	private int version = 0;
 	
@@ -28,6 +28,10 @@ public class VDUDependency implements Serializable{
 	@OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	private VirtualDeploymentUnit target;
 
+	@PrePersist
+	public void ensureId(){
+		id=IdGenerator.createUUID();
+	}
 
 	public String getId() {
 		return id;

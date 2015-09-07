@@ -52,7 +52,7 @@ public interface ConfigurationManagement {
      * This operation allows querying the information of
      * the datacenters in the datacenter repository.
      */
-    List<Configuration> query();
+    Iterable<Configuration> query();
 
     /**
      * This operation allows querying the information of

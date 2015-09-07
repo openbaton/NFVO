@@ -14,19 +14,18 @@ import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
+import org.project.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Created by lto on 22/07/15.
@@ -43,12 +42,10 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
     private NSDUtils nsdUtils;
 
     @Autowired
-    @Qualifier("vnfPackageRepository")
-    private GenericRepository<VNFPackage> vnfPackageRepository;
+    private VnfPackageRepository vnfPackageRepository;
 
     @Autowired
-    @Qualifier("VNFDRepository")
-    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+    private VNFDRepository vnfdRepository;
 
     @Autowired
     private VimBroker vimBroker;
@@ -143,10 +140,10 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfPackage.setVnfr(virtualNetworkFunctionDescriptor);
-        vnfdRepository.create(virtualNetworkFunctionDescriptor);
+        vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
 
-        vnfPackageRepository.create(vnfPackage);
+        vnfPackageRepository.save(vnfPackage);
         log.debug("Persisted " + vnfPackage);
         return vnfPackage;
     }
@@ -168,7 +165,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public VNFPackage update(String id, VNFPackage pack_new) {
-        VNFPackage old = vnfPackageRepository.find(id);
+        VNFPackage old = vnfPackageRepository.findOne(id);
         old.setName(pack_new.getName());
         old.setExtId(pack_new.getExtId());
         old.setImage(pack_new.getImage());
@@ -177,17 +174,17 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public VNFPackage query(String id) {
-        return vnfPackageRepository.find(id);
+        return vnfPackageRepository.findOne(id);
     }
 
     @Override
-    public List<VNFPackage> query() {
+    public Iterable<VNFPackage> query() {
         return vnfPackageRepository.findAll();
     }
 
     @Override
     public void delete(String id) {
         //TODO remove image in the VIM
-        vnfPackageRepository.remove(vnfPackageRepository.find(id));
+        vnfPackageRepository.delete(vnfPackageRepository.findOne(id));
     }
 }

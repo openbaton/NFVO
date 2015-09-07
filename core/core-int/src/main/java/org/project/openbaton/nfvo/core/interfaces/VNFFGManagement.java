@@ -28,7 +28,7 @@ public interface VNFFGManagement {
 
     void delete(String id);
 
-    List<VNFForwardingGraphDescriptor> query();
+    Iterable<VNFForwardingGraphDescriptor> query();
 
     VNFForwardingGraphDescriptor query(String id);
 

@@ -33,7 +33,8 @@ import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +73,11 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 	private NetworkServiceDescriptorManagement nsdManagement;
 
 	@Autowired
-	@Qualifier("vimRepository")
-	GenericRepository<VimInstance> vimRepository;
+	VimRepository vimRepository;
 
 
 	@Autowired
-	@Qualifier("NSDRepository")
-	GenericRepository<NetworkServiceDescriptor> nsdRepository;
+	NetworkServiceDescriptorRepository nsdRepository;
 
 	@Before
 	public void init() {
@@ -99,7 +98,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 		}});
 
 		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(anyString())).thenReturn(nsd_exp);
+		when(nsdRepository.findOne(anyString())).thenReturn(nsd_exp);
 		Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
 		Assert.assertTrue(nsd_exp.isEnabled());
 		nsdManagement.delete(nsd_exp.getId());
@@ -114,7 +113,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 		}});
 
 		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(anyString())).thenReturn(nsd_exp);
+		when(nsdRepository.findOne(anyString())).thenReturn(nsd_exp);
 		Assert.assertFalse(nsdManagement.disable(nsd_exp.getId()));
 		Assert.assertFalse(nsd_exp.isEnabled());
 		nsdManagement.delete(nsd_exp.getId());
@@ -123,21 +122,22 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 	@Test
 	public void nsdManagementQueryTest(){
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
-		List<NetworkServiceDescriptor> nsds = nsdManagement.query();
-		Assert.assertEquals(nsds.size(), 0);
+		Iterable<NetworkServiceDescriptor> nsds = nsdManagement.query();
+		Assert.assertEquals(nsds.iterator().hasNext(), false);
 		final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>() {{
 			add(nsd_exp);
 		}});
 		nsds = nsdManagement.query();
-		Assert.assertEquals(nsds.size(), 1);
+
+		Assert.assertEquals(nsds.iterator().hasNext(), true);
 		nsdManagement.delete(nsd_exp.getId());
 	};
 
 	@Test
 	public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException {
 		when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
-		when(nsdRepository.find(anyString())).thenReturn(null);
+		when(nsdRepository.findOne(anyString())).thenReturn(null);
 		NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 		exception.expect(NotFoundException.class);
@@ -167,7 +167,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 		}});
 
 		nsdManagement.onboard(nsd_exp);
-		when(nsdRepository.find(nsd_exp.getId())).thenReturn(nsd_exp);
+		when(nsdRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
 
 		NetworkServiceDescriptor new_nsd = createNetworkServiceDescriptor();
 		new_nsd.setName("UpdatedName");

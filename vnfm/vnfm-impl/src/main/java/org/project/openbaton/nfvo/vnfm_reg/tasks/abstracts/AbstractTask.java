@@ -1,22 +1,20 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
-import org.project.openbaton.nfvo.abstract_repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.abstract_repositories.NetworkServiceRepositoryInterface;
+import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
+import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -60,15 +58,10 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     }
 
     @Autowired
-    @Qualifier("VNFRRepository")
-    protected GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+    protected VNFRRepository vnfrRepository;
 
     @Autowired
-    @Qualifier("NSRRepository")
-    protected GenericRepository<NetworkServiceRecord> nsrRepository;
-
-    @Autowired
-    protected NetworkServiceRepositoryInterface nsrMyRepo;
+    protected NetworkServiceRecordRepository networkServiceRecordRepository;
 
     @Autowired
     private DependencyQueuer dependencyQueuer;

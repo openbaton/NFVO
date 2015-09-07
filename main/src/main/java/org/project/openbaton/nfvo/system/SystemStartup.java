@@ -18,11 +18,10 @@ package org.project.openbaton.nfvo.system;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -42,9 +41,9 @@ import java.util.*;
 class SystemStartup implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-    @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationRepository;
+    private ConfigurationRepository configurationRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -94,7 +93,7 @@ class SystemStartup implements CommandLineRunner {
             c.getConfigurationParameters().add(cp);
         }
 
-        configurationRepository.create(c);
+        configurationRepository.save(c);
 
     }
 }

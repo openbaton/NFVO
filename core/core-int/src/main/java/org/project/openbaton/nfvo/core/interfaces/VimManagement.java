@@ -52,7 +52,7 @@ public interface VimManagement {
      * This operation allows querying the information of
      * the datacenters in the datacenter repository.
      */
-    List<VimInstance> query();
+    Iterable<VimInstance> query();
 
     /**
      * This operation allows querying the information of

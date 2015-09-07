@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity
 public class Network implements Serializable {
     @Id
-    private String id = IdGenerator.createUUID();;
+    private String id;
     @Version
     private static int version = 0;
     private String name;
@@ -35,6 +35,11 @@ public class Network implements Serializable {
                 ", shared=" + shared +
                 ", subnets=" + subnets +
                 '}';
+    }
+
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
     }
 
     public String getId() {

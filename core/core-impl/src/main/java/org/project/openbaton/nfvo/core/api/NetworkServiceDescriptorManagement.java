@@ -16,22 +16,20 @@
 
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
+import org.project.openbaton.nfvo.repositories.VNFDependencyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
-import java.util.List;
 
 /**
  * Created by lto on 11/05/15.
@@ -43,18 +41,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @Qualifier("NSDRepository")
-    private GenericRepository<NetworkServiceDescriptor> nsdRepository;
+    private NetworkServiceDescriptorRepository nsdRepository;
 
     @Autowired
-    @Qualifier("VNFDRepository")
-    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+    private VNFDRepository vnfdRepository;
 
     @Autowired
     private NSDUtils nsdUtils;
     @Autowired
-    @Qualifier("VNFDependencyRepository")
-    private GenericRepository<VNFDependency> vnfDependencyRepository;
+    private VNFDependencyRepository vnfDependencyRepository;
 
     /**
      * This operation allows submitting and
@@ -79,7 +74,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
 //        }
         log.trace("Persisted VNFDependencies");
 
-        nsdRepository.create(networkServiceDescriptor);
+        networkServiceDescriptor=nsdRepository.save(networkServiceDescriptor);
         log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId() );
         return networkServiceDescriptor;
     }
@@ -94,7 +89,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public boolean disable(String id) throws NoResultException {
         log.debug("disabling NetworkServiceDescriptor with id " + id);
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(id);
         networkServiceDescriptor.setEnabled(false);
         return networkServiceDescriptor.isEnabled();
     }
@@ -107,7 +102,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public boolean enable(String id) throws NoResultException {
         log.debug("enabling NetworkServiceDescriptor with id " + id);
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(id);
         networkServiceDescriptor.setEnabled(true);
         return networkServiceDescriptor.isEnabled();
     }
@@ -119,10 +114,11 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * include creating/deleting new VNFFGDs
      * and/or new VLDs.
      * @param new_nsd: the new values to be updated
+     * @param old_id: the id of the old NetworkServiceDescriptor
      */
     @Override
-    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd) {
-        return nsdRepository.merge(new_nsd);
+    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
+        return nsdRepository.save(new_nsd);
     }
 
     public void removeVNFDescriptor(String id_vnfd){
@@ -135,7 +131,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * related VNFFGD and VLD.
      */
     @Override
-    public List<NetworkServiceDescriptor> query() {
+    public Iterable<NetworkServiceDescriptor> query() {
         return nsdRepository.findAll();
     }
 
@@ -147,7 +143,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public NetworkServiceDescriptor query(String id) throws NoResultException {
-        return nsdRepository.find(id);
+        return nsdRepository.findOne(id);
     }
 
     /**
@@ -158,6 +154,6 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public void delete(String id) {
         log.debug("Removing NetworkServiceDescriptor with id " + id);
-        nsdRepository.remove(nsdRepository.find(id));
+        nsdRepository.delete(nsdRepository.findOne(id));
     }
 }
