@@ -122,7 +122,8 @@ public class VimTestSuiteClass {
 
         Server server = new Server();
         server.setExtId(environment.getProperty("mocked_id"));
-        when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString())).thenReturn(server);
+        //TODO use the method launchInstanceAndWait properly
+        //when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString())).thenReturn(server);
 
         try {
             Future<String> id = openstackVIM.allocate(vdu, vnfr);
@@ -162,7 +163,7 @@ public class VimTestSuiteClass {
     private VirtualNetworkFunctionRecord createVNFR(){
         VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();
         vnfr.setName("testVnfr");
-        vnfr.setStatus(Status.INITIAILZED);
+        vnfr.setStatus(Status.INITIALIZED);
         vnfr.setAudit_log("audit_log");
         vnfr.setDescriptor_reference("test_dr");
         VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();

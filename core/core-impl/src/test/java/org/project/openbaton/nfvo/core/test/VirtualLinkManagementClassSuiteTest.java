@@ -32,7 +32,8 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VirtualLinkManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +71,10 @@ public class VirtualLinkManagementClassSuiteTest {
 	private VirtualLinkManagement virtualLinkManagement;
 
 	@Autowired
-	@Qualifier("virtualLinkDescriptorRepository")
-	private GenericRepository<VirtualLinkDescriptor> virtualLinkDescriptorRepository;
+	private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
 	@Autowired
-	@Qualifier("virtualLinkRecordRepository")
-	private GenericRepository<VirtualLinkRecord> virtualLinkRecordRepository;
+	private VirtualLinkRecordRepository virtualLinkRecordRepository;
 
 	@Before
 	public void init() {
@@ -91,7 +90,7 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementUpdateDescriptorTest(){
 		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.find(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
 
 		VirtualLinkDescriptor virtualLinkDescriptor_new = createVirtualLinkDescriptor();
 		virtualLinkDescriptor_new.setRoot_requirement("root_requirement_updated");
@@ -103,7 +102,7 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementUpdateRecordTest(){
 		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.find(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
 
 		VirtualLinkRecord virtualLinkRecord_new = createVirtualLinkRecord();
 		virtualLinkRecord_new.setRoot_requirement("root_requirement_updated");
@@ -182,7 +181,7 @@ public class VirtualLinkManagementClassSuiteTest {
 		}});
 		virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>() {{
 			LifecycleEvent lifecycleEvent = new LifecycleEvent();
-			lifecycleEvent.setEvent(Event.INSTALL);
+			lifecycleEvent.setEvent(Event.INSTANTIATE);
 			lifecycleEvent.setLifecycle_events(new HashSet<String>() {{
 				add("command");
 			}});
@@ -194,7 +193,7 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementAddDescriptorTest(){
 		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.create(any(VirtualLinkDescriptor.class))).thenReturn(virtualLinkDescriptor_exp);
+		when(virtualLinkDescriptorRepository.save(any(VirtualLinkDescriptor.class))).thenReturn(virtualLinkDescriptor_exp);
 		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.add(virtualLinkDescriptor_exp);
 
 		assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
@@ -203,7 +202,7 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementRecordAddTest(){
 		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.create(any(VirtualLinkRecord.class))).thenReturn(virtualLinkRecord_exp);
+		when(virtualLinkRecordRepository.save(any(VirtualLinkRecord.class))).thenReturn(virtualLinkRecord_exp);
 		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.add(virtualLinkRecord_exp);
 
 		assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
@@ -214,16 +213,16 @@ public class VirtualLinkManagementClassSuiteTest {
 		when(virtualLinkDescriptorRepository.findAll()).thenReturn(new ArrayList<VirtualLinkDescriptor>());
 		when(virtualLinkRecordRepository.findAll()).thenReturn(new ArrayList<VirtualLinkRecord>());
 
-		Assert.assertEquals(0, virtualLinkManagement.queryDescriptors().size());
-		Assert.assertEquals(0, virtualLinkManagement.queryRecords().size());
+		Assert.assertEquals(false, virtualLinkManagement.queryDescriptors().iterator().hasNext());
+		Assert.assertEquals(false, virtualLinkManagement.queryRecords().iterator().hasNext());
 
 		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.find(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
 		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
 		assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
 
 		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.find(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
 		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
 		assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
 	}
@@ -231,9 +230,9 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementDeleteDescriptorTest(){
 		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.find(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
 		virtualLinkManagement.delete(virtualLinkDescriptor_exp.getId());
-		when(virtualLinkDescriptorRepository.find(virtualLinkDescriptor_exp.getId())).thenReturn(null);
+		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(null);
 		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
 		Assert.assertNull(virtualLinkDescriptor_new);
 	}
@@ -241,10 +240,10 @@ public class VirtualLinkManagementClassSuiteTest {
 	@Test
 	public void virtualLinkManagementDeleteRecordTest(){
 		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.find(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
-		when(virtualLinkDescriptorRepository.find(virtualLinkRecord_exp.getId())).thenThrow(NoResultException.class);
+		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+		when(virtualLinkDescriptorRepository.findOne(virtualLinkRecord_exp.getId())).thenThrow(NoResultException.class);
 		virtualLinkManagement.delete(virtualLinkRecord_exp.getId());
-		when(virtualLinkRecordRepository.find(virtualLinkRecord_exp.getId())).thenReturn(null);
+		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(null);
 		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
 		Assert.assertNull(virtualLinkRecord_new);
 	}

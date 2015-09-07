@@ -54,7 +54,7 @@ public class ApiRestConfigurationTest {
 	public void configurationFindAll() {
 
 		log.info("" + mock.query());
-		List<Configuration> list = mock.query();
+		Iterable<Configuration> list = mock.query();
 		when(mock.query()).thenReturn(list);
 		assertEquals(list, restConfiguration.findAll());
 	}
