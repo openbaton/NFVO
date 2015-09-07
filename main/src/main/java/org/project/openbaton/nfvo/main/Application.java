@@ -59,6 +59,7 @@ public class Application {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
+        factory.setSessionTransacted(true);
         return factory;
     }
 
