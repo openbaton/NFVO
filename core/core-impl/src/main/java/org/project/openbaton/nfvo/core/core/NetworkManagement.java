@@ -21,15 +21,13 @@ import org.project.openbaton.catalogue.nfvo.Subnet;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.NetworkRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,8 +40,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     private VimBroker vimBroker;
 
     @Autowired
-    @Qualifier("networkRepository")
-    private GenericRepository<Network> networkRepository;
+    private NetworkRepository networkRepository;
 
     @Override
     public Network add(VimInstance vimInstance, Network network) throws VimException{
@@ -65,7 +62,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
         //Create Network on cloud environment
         network = vim.add(vimInstance, network);
         //Create Network in NetworkRepository
-        networkRepository.create(network);
+        networkRepository.save(network);
         //Add network to VimInstance
         vimInstance.getNetworks().add(network);
         return network;
@@ -79,7 +76,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
         //Delete network from cloud environment
         vim.delete(vimInstance, network);
         //Delete network from NetworkRepository
-        networkRepository.remove(network);
+        networkRepository.delete(network);
     }
 
     @Override
@@ -92,12 +89,12 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     }
 
     @Override
-    public List<Network> query() {
+    public Iterable<Network> query() {
         return networkRepository.findAll();
     }
 
     @Override
     public Network query(String id) {
-        return networkRepository.find(id);
+        return networkRepository.findOne(id);
     }
 }

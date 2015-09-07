@@ -13,7 +13,7 @@ import java.util.Set;
 @Entity
 public class Configuration implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version;
 
@@ -32,7 +32,10 @@ public class Configuration implements Serializable{
     }
 
     private String name;
-
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }

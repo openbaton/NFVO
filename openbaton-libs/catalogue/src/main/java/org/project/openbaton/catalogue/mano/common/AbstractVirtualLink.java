@@ -24,7 +24,7 @@ public abstract class AbstractVirtualLink implements Serializable{
      * ID of the VLD
      * */
 	@Id
-    protected String id = IdGenerator.createUUID();
+    protected String id;
 	@Version
 	protected int version = 0;
 
@@ -52,6 +52,11 @@ public abstract class AbstractVirtualLink implements Serializable{
      * TODO: think of using Enum instead of String
      * */
     private String connectivity_type;
+
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
 
     public AbstractVirtualLink() {
     }

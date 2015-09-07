@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 public class NFVImage implements Serializable {
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -33,6 +33,11 @@ public class NFVImage implements Serializable {
     private Date updated;
 
     public NFVImage() {
+    }
+
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
     }
 
     public String getName() {

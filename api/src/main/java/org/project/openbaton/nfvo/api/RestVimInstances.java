@@ -67,7 +67,7 @@ public class RestVimInstances {
 	 * @return List<Datacenter>: The List of Datacenters available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<VimInstance> findAll() {
+	public Iterable<VimInstance> findAll() {
 		return vimManagement.query();
 	}
 

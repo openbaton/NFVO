@@ -70,7 +70,7 @@ public class RestImage {
 	 * @return List<Image>: The list of VNF software images available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<NFVImage> findAll() {
+	public Iterable<NFVImage> findAll() {
 		return imageManagement.query();
 	}
 

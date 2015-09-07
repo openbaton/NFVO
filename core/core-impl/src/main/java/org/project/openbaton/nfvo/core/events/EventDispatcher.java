@@ -26,11 +26,10 @@ import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
 import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.EventEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -40,7 +39,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * This class implements the interface {@Link org.project.openbaton.nfvo.core.interfaces.EventDispatcher} so is in charge
@@ -57,14 +55,13 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     @Override
     @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
     public EventEndpoint register(@Payload EventEndpoint endpoint){
-        return eventEndpointRepository.create(endpoint);
+        return eventEndpointRepository.save(endpoint);
     }
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @Qualifier("eventEndpointRepository")
-    private GenericRepository<EventEndpoint> eventEndpointRepository;
+    private EventEndpointRepository eventEndpointRepository;
 
     @Autowired
     private ConfigurableApplicationContext context;
@@ -96,7 +93,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
         log.debug("event is: " + event);
         //log.trace("payload is: " + event.getPayload());
 
-        List<EventEndpoint> endpoints = eventEndpointRepository.findAll();
+        Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 
         for (EventEndpoint endpoint : endpoints){
             log.debug("Checking endpoint: " + endpoint);
@@ -139,7 +136,7 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     @Override
     @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String id) throws NotFoundException {
-        eventEndpointRepository.remove(eventEndpointRepository.find(id));
+        eventEndpointRepository.delete(eventEndpointRepository.findOne(id));
     }
 
 }

@@ -17,7 +17,7 @@ public class ConnectionPoint implements Serializable{
 
     /*ID of the Connection Point.*/
 	@Id
-    protected String id = IdGenerator.createUUID();
+    protected String id;
 	@Version
 	protected int version = 0;
 
@@ -37,6 +37,10 @@ public class ConnectionPoint implements Serializable{
     public ConnectionPoint() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getType() {
 
         return type;

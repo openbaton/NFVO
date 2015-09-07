@@ -27,6 +27,7 @@ import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
@@ -52,7 +53,7 @@ import java.util.jar.JarFile;
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
 @EntityScan(basePackages="org.project.openbaton.catalogue")
 @ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
-//@EnableJpaRepositories("org.project.openbaton.nfvo")
+@EnableJpaRepositories("org.project.openbaton.nfvo")
 public class Application {
 
     @Bean

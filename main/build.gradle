@@ -20,14 +20,16 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
     compile 'org.springframework:spring-jms:' + springVersion
 //    compile 'org.springframework:spring-orm:' + springVersion
+
     //jpa repo
     //@EnableJpaRepositories(basePackages = "org.project.openbaton.catalogue.repositories")
-    //compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+    compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+    compile 'org.aspectj:aspectjweaver:1.8.6'
 
     compile 'org.apache.activemq:activemq-pool:5.9.0'
 
 
-    compile project(':repo-int')
+    compile project(':repository')
     compile project(':catalogue')
     compile project(':vim-drivers')
 
@@ -37,7 +39,7 @@ dependencies {
     runtime project(':dashboard')
     runtime project(':cli')
     runtime project(':vim-impl')
-    runtime project(':repo-impl')
+    runtime project(':repository')
     runtime project(':vnfm-impl')
     compile project(':vnfm-int')
 

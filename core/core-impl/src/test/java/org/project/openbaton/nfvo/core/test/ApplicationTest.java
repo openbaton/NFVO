@@ -16,13 +16,8 @@
 
 package org.project.openbaton.nfvo.core.test;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.*;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
@@ -31,7 +26,7 @@ import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.*;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -66,7 +61,7 @@ public class ApplicationTest {
 	@Bean
 	VnfmManager vnfmManager() throws JMSException, NamingException, NotFoundException {
 		VnfmManager vnfmManager = mock(VnfmManager.class);
-		when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
+		//when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
 		return vnfmManager;
 	}
 
@@ -74,71 +69,67 @@ public class ApplicationTest {
 	ClientInterfaces clientInterfaces(){return mock(ClientInterfaces.class);}
 
 	@Bean
-	GenericRepository<Configuration> configurationRepository(){
-		return mock(GenericRepository.class);
+	ConfigurationRepository configurationRepository(){
+		return mock(ConfigurationRepository.class);
 	}
 
-	@Bean(name = "NSRRepository")
-	GenericRepository<NetworkServiceRecord> nsrRepository(){
-		return mock(GenericRepository.class);
+	@Bean
+	NetworkServiceRecordRepository nsrRepository(){
+		return mock(NetworkServiceRecordRepository.class);
 	}
 
-	@Bean(name = "NSDRepository")
-	GenericRepository<NetworkServiceDescriptor> nsdRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	NetworkServiceDescriptorRepository nsdRepository() {
+		return mock(NetworkServiceDescriptorRepository.class);
 	}
 
-	@Bean(name = "imageRepository")
-	GenericRepository<NFVImage> imageRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	ImageRepository imageRepository() {
+		return mock(ImageRepository.class);
 	}
 
-	@Bean(name = "vimRepository")
-	GenericRepository<VimInstance> vimRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VimRepository vimRepository() {
+		return mock(VimRepository.class);
 	}
 
-	@Bean(name = "VNFDependencyRepository")
-	GenericRepository<VNFDependency> vnfDependencyRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VNFDRepository vnfDependencyRepository() {return mock(VNFDRepository.class);}
+
+	@Bean
+	VnfPackageRepository vnfPackageRepository() { return mock(VnfPackageRepository.class); }
+
+	@Bean
+	VNFRRepository vnfrRepository() {
+		return mock(VNFRRepository.class);
 	}
 
-	@Bean(name = "VNFDRepository")
-	GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository() { return mock(GenericRepository.class); }
-	@Bean(name = "vnfPackageRepository")
-	GenericRepository<VNFPackage> vnfPackageRepository() { return mock(GenericRepository.class); }
-
-	@Bean(name = "VNFRRepository")
-	GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VNFRDependencyRepository vnfRecordRepository() {
+		return mock(VNFRDependencyRepository.class);
 	}
 
-	@Bean(name = "VNFRDependencyRepository")
-	GenericRepository<VNFRecordDependency> vnfRecordRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	NetworkRepository networkRepository() {
+		return mock(NetworkRepository.class);
 	}
 
-	@Bean(name = "networkRepository")
-	GenericRepository<Network> networkRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VNFFGDescriptorRepository vnffgDescriptorRepository() {
+		return mock(VNFFGDescriptorRepository.class);
 	}
 
-	@Bean(name = "VNFFGDescriptorRepository")
-	GenericRepository<VNFForwardingGraphDescriptor> vnffgDescriptorRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VnfmEndpointRepository vnfmManagerEndpointRepository() {
+		return mock(VnfmEndpointRepository.class);
 	}
 
-	@Bean(name = "vnfmEndpointRepository")
-	GenericRepository<VnfmManagerEndpoint> vnfmManagerEndpointRepository() {
-		return mock(GenericRepository.class);
-	}
-	@Bean(name = "virtualLinkDescriptorRepository")
-	GenericRepository<VirtualLinkDescriptor> virtualLinkDescriptorRepository() {
-		return mock(GenericRepository.class);
-	}
-	@Bean(name = "virtualLinkRecordRepository")
-	GenericRepository<VirtualLinkRecord> virtualLinkRecordRepository() {
-		return mock(GenericRepository.class);
+	@Bean
+	VirtualLinkDescriptorRepository virtualLinkDescriptorRepository() {	return mock(VirtualLinkDescriptorRepository.class);}
+
+	@Bean
+	VirtualLinkRecordRepository virtualLinkRecordRepository() {
+		return mock(VirtualLinkRecordRepository.class);
 	}
 
 	@Bean

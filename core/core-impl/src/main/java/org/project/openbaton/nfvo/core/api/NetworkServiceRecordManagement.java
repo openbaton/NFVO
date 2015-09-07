@@ -19,7 +19,6 @@ package org.project.openbaton.nfvo.core.api;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -28,6 +27,8 @@ import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.common.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
@@ -35,12 +36,12 @@ import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
+import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -61,20 +62,16 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     private EventDispatcher publisher;
 
     @Autowired
-    @Qualifier("NSRRepository")
-    private GenericRepository<NetworkServiceRecord> nsrRepository;
+    private NetworkServiceRecordRepository nsrRepository;
 
     @Autowired
-    @Qualifier("NSDRepository")
-    private GenericRepository<NetworkServiceDescriptor> nsdRepository;
+    private NetworkServiceDescriptorRepository nsdRepository;
 
     @Autowired
-    @Qualifier("VNFRRepository")
-    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
+    private VNFRRepository vnfrRepository;
 
     @Autowired
-    @Qualifier("VNFRDependencyRepository")
-    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+    private VNFRDependencyRepository vnfrDependencyRepository;
 
     @Autowired
     private ConfigurationManagement configurationManagement;
@@ -97,7 +94,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     // TODO fetch the NetworkServiceDescriptor from the DB (DONE)
     @Override
     public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.find(nsd_id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(nsd_id);
         return deployNSR(networkServiceDescriptor);
     }
 
@@ -176,7 +173,9 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             log.debug("Created VDU with id: " + id);
         }
 
+        NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
+        networkServiceRecord=nsrRepository.save(networkServiceRecord);
 
         vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
 
@@ -203,14 +202,14 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
         }*/
 
-        NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
-        return nsrRepository.create(networkServiceRecord);
+
+        return networkServiceRecord;
     }
 
     @Override
     public NetworkServiceRecord update(NetworkServiceRecord new_nsr, String old_id) {
-        NetworkServiceRecord old_nsr = nsrRepository.find(old_id);
+        NetworkServiceRecord old_nsr = nsrRepository.findOne(old_id);
         old_nsr.setName(new_nsr.getName());
         old_nsr.setVendor(new_nsr.getVendor());
         old_nsr.setVersion(new_nsr.getVersion());
@@ -218,18 +217,18 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     }
 
     @Override
-    public List<NetworkServiceRecord> query() {
+    public Iterable<NetworkServiceRecord> query() {
         return nsrRepository.findAll();
     }
 
     @Override
     public NetworkServiceRecord query(String id) {
-        return nsrRepository.find(id);
+        return nsrRepository.findOne(id);
     }
 
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
-        NetworkServiceRecord networkServiceRecord = nsrRepository.find(id);
+        NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
 
         Configuration configuration = configurationManagement.queryByName("system");
 
@@ -283,7 +282,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             ApplicationEventNFVO event = new ApplicationEventNFVO(this, Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             log.debug("Publishing event: " + event);
             publisher.dispatchEvent(event);
-            nsrRepository.remove(networkServiceRecord);
+            nsrRepository.delete(networkServiceRecord);
         }
     }
 }

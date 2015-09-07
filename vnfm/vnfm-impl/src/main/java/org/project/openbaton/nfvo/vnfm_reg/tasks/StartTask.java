@@ -23,9 +23,9 @@ public class StartTask extends AbstractTask {
         log.debug("----> STARTED VNFR: " + virtualNetworkFunctionRecord.getName());
         log.debug("vnfr arrived version= "+virtualNetworkFunctionRecord.getHb_version());
 
-        VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.find(virtualNetworkFunctionRecord.getId());
+        VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
         log.debug("vnfr existing version= "+existingvnfr.getHb_version());
         log.debug("try to merge vnfr arrived");
-        virtualNetworkFunctionRecord= vnfrRepository.merge(virtualNetworkFunctionRecord);
+        virtualNetworkFunctionRecord= vnfrRepository.save(virtualNetworkFunctionRecord);
     }
 }

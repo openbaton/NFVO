@@ -68,7 +68,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-                virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+                virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
                 message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 error = true;
@@ -87,7 +87,7 @@ public class AllocateresourcesTask extends AbstractTask {
 
             CoreMessage coreMessage = new CoreMessage();
             coreMessage.setAction(Action.INSTANTIATE);
-            virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+            virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
 
             for (VirtualDeploymentUnit virtualDeploymentUnit: virtualNetworkFunctionRecord.getVdu()){
                 log.debug(">---< The unit ext id is: " + virtualDeploymentUnit.getExtId());

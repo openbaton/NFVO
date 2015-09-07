@@ -24,8 +24,10 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.DependencyParameters;
+import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
+import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +48,6 @@ import java.util.Set;
 @Scope
 public class DependencyManagement implements org.project.openbaton.nfvo.core.interfaces.DependencyManagement {
 
-    @Autowired
-    @Qualifier("NSRRepository")
-    private GenericRepository<NetworkServiceRecord> nsrRepository;
 
     @Autowired
     @Qualifier("vnfmManager")
@@ -58,17 +57,19 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private org.project.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    @Qualifier("VNFRRepository")
-    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
 
     @Autowired
-    @Qualifier("VNFRDependencyRepository")
-    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+    private VNFRRepository vnfrRepository;
+
+    @Autowired
+    private NetworkServiceRecordRepository nsrRepository;
+
+    @Autowired
+    private VNFRDependencyRepository vnfrDependencyRepository;
 
     @Override
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
-        NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         int dep = 0;
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
@@ -77,6 +78,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                 if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())){
                     dep++;
                     //waiting for them to finish
+                    log.debug("dipendenza trovata: "+vnfRecordDependency);
                     Set<String> notInitIds = getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(),nsr);
                     if (notInitIds.size() > 0) {
                         dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
@@ -100,12 +102,12 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public synchronized void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        NetworkServiceRecord nsr = nsrRepository.find(virtualNetworkFunctionRecord.getParent_ns_id());
+        NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
 
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
-                vnfRecordDependency = vnfrDependencyRepository.find(vnfRecordDependency.getId());
+                vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
 
                 DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
                 if(dp!=null){
@@ -118,7 +120,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                             }
                         }
                     }
-                    vnfrDependencyRepository.merge(vnfRecordDependency);
+                    vnfrDependencyRepository.save(vnfRecordDependency);
                 }
                 log.debug("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters());
             }

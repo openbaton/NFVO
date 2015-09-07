@@ -27,7 +27,7 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
      * The ID (e.g. name) of this PNFD.
      * */
     @Id
-	private String id = IdGenerator.createUUID();
+	private String id;
     @Version
     private int hb_version = 0;
     /**
@@ -57,7 +57,10 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
      * */
     @OneToOne(cascade = CascadeType.ALL)
     private Security pnfd_security;
-
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }
