@@ -31,7 +31,7 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VimManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -71,7 +71,7 @@ public class VimManagementClassSuiteTest {
 	VimBroker vimBroker;
 
 	@Autowired
-	VimInstanceR vimRepository;
+	VimRepository vimRepository;
 
 	@Autowired
 	private VimManagement vimManagement;
@@ -106,7 +106,7 @@ public class VimManagementClassSuiteTest {
 	public void vimManagementUpdateTest() throws VimException {
 		initMocks();
 		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.find(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
 		VimInstance vimInstance_new = createVimInstance();
 		vimInstance_new.setName("UpdatedName");
 		vimInstance_new.setTenant("UpdatedTenant");
@@ -133,7 +133,7 @@ public class VimManagementClassSuiteTest {
 	public void nfvImageManagementAddTest() throws VimException {
 		initMocks();
 		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.create(any(VimInstance.class))).thenReturn(vimInstance_exp);
+		when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
 		VimInstance vimInstance_new = vimManagement.add(vimInstance_exp);
 
 		Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
@@ -161,10 +161,10 @@ public class VimManagementClassSuiteTest {
 	public void nfvImageManagementQueryTest(){
 		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 
-		Assert.assertEquals(0, vimManagement.query().size());
+		Assert.assertEquals(false, vimManagement.query().iterator().hasNext());
 
 		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.find(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
 		VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
 		Assert.assertEquals(vimInstance_exp.getId(), vimInstance_new.getId());
 		Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
@@ -176,9 +176,9 @@ public class VimManagementClassSuiteTest {
 	@Test
 	public void nfvImageManagementDeleteTest(){
 		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.find(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
 		vimManagement.delete(vimInstance_exp.getId());
-		when(vimRepository.find(vimInstance_exp.getId())).thenReturn(null);
+		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(null);
 		VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
 		Assert.assertNull(vimInstance_new);
 	}
