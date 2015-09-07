@@ -28,12 +28,6 @@ import java.io.Serializable;
 @SpringBootApplication
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
-    @Autowired
-    protected JmsListenerContainerFactory topicJmsContainerFactory;
-
-    private boolean exit = false;
-
-    protected String SELECTOR;
     protected Gson parser = new GsonBuilder().create();
 
     @Autowired
@@ -142,7 +136,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
-        log.debug("Received from EMS ("+vduHostname+"): " + response);
+        log.debug("Received from EMS (" + vduHostname + "): " + response);
 
         if(response==null) {
             throw new NullPointerException("Response from EMS is null");

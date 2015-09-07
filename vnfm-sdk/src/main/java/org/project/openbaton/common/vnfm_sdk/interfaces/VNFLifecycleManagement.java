@@ -1,9 +1,6 @@
 package org.project.openbaton.common.vnfm_sdk.interfaces;
 
 
-import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
