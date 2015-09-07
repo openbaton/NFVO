@@ -23,6 +23,7 @@ import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,9 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
 
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
+
+    @Autowired
+    private VNFDRepository vnfdRepository;
 
     @Autowired
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
@@ -134,15 +138,14 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * and/or new VLDs.
      *
      * @param new_nsd: the new values to be updated
-     * @param old_id:  the id of the old NetworkServiceDescriptor
      */
     @Override
-    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
+    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd) {
         return nsdRepository.save(new_nsd);
     }
 
     public void removeVNFDescriptor(String id_vnfd){
-        vnfdRepository.remove(vnfdRepository.find(id_vnfd));
+        vnfdRepository.delete(id_vnfd);
     }
     /**
      * This operation is used to query the
