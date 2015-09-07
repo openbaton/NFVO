@@ -84,7 +84,7 @@ public class ApiRestNSDescriptorTest {
 
 	@Test
 	public void NSDFindAll() {
-		List<NetworkServiceDescriptor> list = nsdManagement.query();
+		Iterable<NetworkServiceDescriptor> list = nsdManagement.query();
 		when(nsdManagement.query()).thenReturn(list);
 		assertEquals(list, restNetworkService.findAll());
 	}
