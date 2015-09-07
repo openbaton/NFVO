@@ -17,12 +17,15 @@
 package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VNFDependencyRepository;
+import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     private NetworkServiceDescriptorRepository nsdRepository;
 
     @Autowired
+    private VnfmEndpointRepository vnfmManagerEndpointRepository;
+
+    @Autowired
     private VNFDRepository vnfdRepository;
 
     @Autowired
@@ -58,6 +64,24 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+
+        log.info("Checking if Vnfm is running...");
+
+        Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
+
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+            boolean found = false;
+            for (VnfmManagerEndpoint endpoint : endpoints){
+                if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())){
+                    found = true;
+                    break;
+                }
+            }
+            if (!found){
+                throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
+            }
+        }
+
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
