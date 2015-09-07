@@ -1,4 +1,4 @@
-package org.project.openbaton.catalogue.mano.common;
+package org.project.openbaton.catalogue.mano.record;
 
 import org.project.openbaton.catalogue.nfvo.DependencyParameters;
 import org.project.openbaton.catalogue.util.IdGenerator;
