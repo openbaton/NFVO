@@ -26,7 +26,7 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.core.interfaces.VNFFGManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFFGDescriptorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +62,7 @@ public class VNFFGManagementClassSuiteTest {
 	private VNFFGManagement vnffgManagement;
 
 	@Autowired
-	@Qualifier("VNFFGDescriptorRepository")
-	private GenericRepository<VNFForwardingGraphDescriptor> vnffgDescriptorRepository;
+	private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
 	@Before
 	public void init() {
@@ -80,7 +79,7 @@ public class VNFFGManagementClassSuiteTest {
 	public void vnffgManagementUpdateTest(){
 		exception.expect(UnsupportedOperationException.class);
 		VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-		when(vnffgDescriptorRepository.find(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
+		when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
 
 		VNFForwardingGraphDescriptor vnffgDescriptor_new = createVNFFGDescriptor();
 		vnffgDescriptor_new.setVendor("UpdatedVendor");
@@ -142,7 +141,7 @@ public class VNFFGManagementClassSuiteTest {
 	@Test
 	public void vnffgManagementAddTest(){
 		VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-		when(vnffgDescriptorRepository.create(any(VNFForwardingGraphDescriptor.class))).thenReturn(vnffgDescriptor_exp);
+		when(vnffgDescriptorRepository.save(any(VNFForwardingGraphDescriptor.class))).thenReturn(vnffgDescriptor_exp);
 		VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.add(vnffgDescriptor_exp);
 
 		assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
@@ -152,10 +151,10 @@ public class VNFFGManagementClassSuiteTest {
 	public void vnffgManagementQueryTest(){
 		when(vnffgDescriptorRepository.findAll()).thenReturn(new ArrayList<VNFForwardingGraphDescriptor>());
 
-		Assert.assertEquals(0, vnffgManagement.query().size());
+		Assert.assertEquals(0, vnffgManagement.query().iterator().hasNext());
 
 		VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-		when(vnffgDescriptorRepository.find(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
+		when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
 		VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.query(vnffgDescriptor_exp.getId());
 		assertEqualsVNFFG(vnffgDescriptor_exp,vnffgDescriptor_new);
 	}
@@ -163,9 +162,9 @@ public class VNFFGManagementClassSuiteTest {
 	@Test
 	public void vnffgManagementDeleteTest(){
 		VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-		when(vnffgDescriptorRepository.find(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
+		when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
 		vnffgManagement.delete(vnffgDescriptor_exp.getId());
-		when(vnffgDescriptorRepository.find(vnffgDescriptor_exp.getId())).thenReturn(null);
+		when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(null);
 		VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.query(vnffgDescriptor_exp.getId());
 		Assert.assertNull(vnffgDescriptor_new);
 	}

@@ -150,7 +150,7 @@ public class MyOpenstackVimTest {
     private VirtualNetworkFunctionRecord createVNFR(){
         VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();
         vnfr.setName("testVnfr");
-        vnfr.setStatus(Status.INITIAILZED);
+        vnfr.setStatus(Status.INITIALIZED);
         vnfr.setAudit_log("audit_log");
         vnfr.setDescriptor_reference("test_dr");
         VNFDeploymentFlavour deployment_flavour = new VNFDeploymentFlavour();

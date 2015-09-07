@@ -55,7 +55,7 @@ public class ApiRestImageTest {
     @Test
     public void findAllImage() {
         log.info("" + mock.query());
-        List<NFVImage> list = mock.query();
+        Iterable<NFVImage> list = mock.query();
         when(mock.query()).thenReturn(list);
         assertEquals(list, restImage.findAll());
     }
