@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
  * Created by lto on 11/05/15.
  */
 @Service
-@Scope // TODO think if singleton or prototype
+@Scope
 public class NetworkServiceDescriptorManagement implements org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -84,15 +84,8 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         log.trace("Fetched Data");
 
-//        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
-//            vnfdRepository.create(vnfd);
-
         log.trace("Persisting VNFDependencies");
         nsdUtils.fetchDependencies(networkServiceDescriptor);
-//        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()){
-//            log.trace(""+ vnfDependency.getSource());
-//            vnfDependencyRepository.create(vnfDependency);
-//        }
         log.trace("Persisted VNFDependencies");
 
         networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
@@ -144,6 +137,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         return nsdRepository.save(new_nsd);
     }
 
+    @Override
     public void removeVNFDescriptor(String id_vnfd){
         vnfdRepository.delete(id_vnfd);
     }

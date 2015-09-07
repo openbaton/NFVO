@@ -65,8 +65,8 @@ public class RestNetworkServiceDescriptor {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
-        NetworkServiceDescriptor nsd = null;
-        log.debug("Just Received: " + networkServiceDescriptor.getVnf_dependency());
+        NetworkServiceDescriptor nsd;
+        log.trace("Just Received: " + networkServiceDescriptor);
         nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
         return nsd;
     }
