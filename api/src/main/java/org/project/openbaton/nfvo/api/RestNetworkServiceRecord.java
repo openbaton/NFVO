@@ -103,7 +103,7 @@ public class RestNetworkServiceRecord {
 	 */
 
 	@RequestMapping(method = RequestMethod.GET)
-	public List<NetworkServiceRecord> findAll() {
+	public Iterable<NetworkServiceRecord> findAll() {
 		return networkServiceRecordManagement.query();
 	}
 

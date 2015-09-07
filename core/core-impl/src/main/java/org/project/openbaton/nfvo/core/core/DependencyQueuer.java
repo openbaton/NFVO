@@ -7,7 +7,8 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
+import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +26,21 @@ import java.util.*;
 @Service
 @Scope
 public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfaces.DependencyQueuer {
+
     @Autowired
     @Qualifier("vnfmManager")
     private VnfmManager vnfmManager;
-    @Autowired
-    @Qualifier("VNFRRepository")
-    private GenericRepository<VirtualNetworkFunctionRecord> vnfrRepository;
 
     @Autowired
-    @Qualifier("VNFRDependencyRepository")
-    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+    private VNFRRepository vnfrRepository;
+
+    @Autowired
+    private VNFRDependencyRepository vnfrDependencyRepository;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> queues;
+
     @Autowired
     private NetworkServiceRecordManagement networkServiceRecordManagement;
 
@@ -70,14 +72,14 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                 if (sourceList.size() == 0) {
                     CoreMessage coreMessage = new CoreMessage();
                     coreMessage.setAction(Action.MODIFY);
-                    VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.find(dependencyId);
+                    VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
                     coreMessage.setDependency(vnfRecordDependency);
 
                     //get the vnfr target by its name
                     VirtualNetworkFunctionRecord target=null;
                     for(VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
                         if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
-                            target=vnfrRepository.find(vnfr.getId());
+                            target=vnfrRepository.findOne(vnfr.getId());
                     log.debug("Target version is: " +target.getHb_version());
                     coreMessage.setVirtualNetworkFunctionRecord(target);
                     log.debug("SENDIGN MODIFY");

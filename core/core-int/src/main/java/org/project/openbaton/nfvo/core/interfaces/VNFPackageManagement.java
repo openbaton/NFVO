@@ -65,7 +65,7 @@ public interface VNFPackageManagement {
 	 * This operation is used to query 
 	 * information on VNF Packages.
 	 */
-	List<VNFPackage> query();
+	Iterable<VNFPackage> query();
 
 	/**
 	 * This operation is used to remove a

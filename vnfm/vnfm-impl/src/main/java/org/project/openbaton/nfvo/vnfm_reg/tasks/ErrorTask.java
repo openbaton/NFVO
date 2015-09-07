@@ -21,6 +21,6 @@ public class ErrorTask extends AbstractTask {
     public void doWork() throws Exception {
         log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
         virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
 }

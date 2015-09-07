@@ -27,11 +27,11 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
+import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -48,12 +48,10 @@ import java.util.Set;
 public class NSDUtils {
 
     @Autowired
-    @Qualifier("vimRepository")
-    private GenericRepository<VimInstance> vimRepository;
+    private VimRepository vimRepository;
 
     @Autowired
-    @Qualifier("VNFDRepository")
-    private GenericRepository<VirtualNetworkFunctionDescriptor> vnfdRepository;
+    private VNFDRepository vnfdRepository;
 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -90,13 +88,13 @@ public class NSDUtils {
     }
 
     public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException {
-        List<VimInstance> vimInstances = vimRepository.findAll();
-        if (vimInstances.size() == 0){
+        Iterable<VimInstance> vimInstances = vimRepository.findAll();
+        if (!vimInstances.iterator().hasNext()){
             throw new NotFoundException("No VimInstances in the Database");
         }
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
-            String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId();
+            String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId().toString();
             boolean fetched = false;
             for(VimInstance vimInstance : vimInstances){
                 if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
@@ -184,7 +182,7 @@ public class NSDUtils {
         for (VNFDependency oldDependency : networkServiceDescriptor.getVnf_dependency()){
             boolean contained = false;
             for (VNFDependency newDependency: newDependencies){
-                if (newDependency.getTarget().getId().equals(oldDependency.getTarget().getId()) && newDependency.getSource().getId().equals(oldDependency.getSource().getId())){
+                if (newDependency.getTarget().getName().equals(oldDependency.getTarget().getName()) && newDependency.getSource().getName().equals(oldDependency.getSource().getName())){
                     log.debug("Old is: " + oldDependency);
                     if (oldDependency.getParameters() != null)
                         newDependency.getParameters().addAll(oldDependency.getParameters());

@@ -18,16 +18,15 @@ package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
-import java.util.List;
 
 /**
  *
@@ -40,19 +39,17 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @Qualifier("virtualLinkDescriptorRepository")
-    private GenericRepository<VirtualLinkDescriptor> virtualLinkDescriptorRepository;
+    private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
     @Autowired
-    @Qualifier("virtualLinkRecordRepository")
-    private GenericRepository<VirtualLinkRecord> virtualLinkRecordRepository;
+    private VirtualLinkRecordRepository virtualLinkRecordRepository;
 
     @Override
     public VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor) {
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkDescriptor);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkDescriptor.getId());
         //TODO maybe check whenever the image is available on the VimInstance
-        return virtualLinkDescriptorRepository.create(virtualLinkDescriptor);
+        return virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
     }
 
     @Override
@@ -60,7 +57,7 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkRecord);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkRecord.getId());
         //TODO maybe check whenever the image is available on the VimInstance
-        return virtualLinkRecordRepository.create(virtualLinkRecord);
+        return virtualLinkRecordRepository.save(virtualLinkRecord);
     }
 
     @Override
@@ -69,20 +66,20 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
         VirtualLinkDescriptor vld = null;
         VirtualLinkRecord vlr = null;
         try {
-            vld = virtualLinkDescriptorRepository.find(id);
+            vld = virtualLinkDescriptorRepository.findOne(id);
         } catch (NoResultException e) {
-            vlr = virtualLinkRecordRepository.find(id);
+            vlr = virtualLinkRecordRepository.findOne(id);
         }
 
         if (vld == null)
-            virtualLinkRecordRepository.remove(vlr);
+            virtualLinkRecordRepository.delete(vlr);
         else
-            virtualLinkDescriptorRepository.remove(vld);
+            virtualLinkDescriptorRepository.delete(vld);
     }
 
     @Override
     public VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor_new, String id) {
-        VirtualLinkDescriptor old = virtualLinkDescriptorRepository.find(id);
+        VirtualLinkDescriptor old = virtualLinkDescriptorRepository.findOne(id);
         old.setConnection(virtualLinkDescriptor_new.getConnection());
         old.setQos(virtualLinkDescriptor_new.getQos());
         old.setDescriptor_version(virtualLinkDescriptor_new.getDescriptor_version());
@@ -98,7 +95,7 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
 
     @Override
     public VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord_new, String id) {
-        VirtualLinkRecord old = virtualLinkRecordRepository.find(id);
+        VirtualLinkRecord old = virtualLinkRecordRepository.findOne(id);
         old.setConnection(virtualLinkRecord_new.getConnection());
         old.setQos(virtualLinkRecord_new.getQos());
         old.setVendor(virtualLinkRecord_new.getVendor());
@@ -120,22 +117,22 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     }
 
     @Override
-    public List<VirtualLinkDescriptor> queryDescriptors() {
+    public Iterable<VirtualLinkDescriptor> queryDescriptors() {
         return virtualLinkDescriptorRepository.findAll();
     }
 
     @Override
-    public List<VirtualLinkRecord> queryRecords() {
+    public Iterable<VirtualLinkRecord> queryRecords() {
         return virtualLinkRecordRepository.findAll();
     }
 
     @Override
     public VirtualLinkRecord queryRecord(String id) {
-        return virtualLinkRecordRepository.find(id);
+        return virtualLinkRecordRepository.findOne(id);
     }
 
     @Override
     public VirtualLinkDescriptor queryDescriptor(String id){
-        return virtualLinkDescriptorRepository.find(id);
+        return virtualLinkDescriptorRepository.findOne(id);
     }
 }

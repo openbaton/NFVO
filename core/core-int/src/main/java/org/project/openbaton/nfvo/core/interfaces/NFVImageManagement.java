@@ -52,7 +52,7 @@ public interface NFVImageManagement {
 	 * This operation allows querying the information of 
 	 * the VNF software images in the image repository.
 	 */
-    List<NFVImage> query();
+    Iterable<NFVImage> query();
     
     /**
      * This operation allows querying the information of 

@@ -69,7 +69,7 @@ public interface NetworkServiceDescriptorManagement {
 	 * Descriptor (NSD), including any
 	 * related VNFFGD and VLD.
 	 */
-	List<NetworkServiceDescriptor> query();
+	Iterable<NetworkServiceDescriptor> query();
 
 	NetworkServiceDescriptor query(String id) throws NoResultException;
 

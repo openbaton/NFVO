@@ -3,6 +3,6 @@ dependencies {
     compile project(':catalogue')
     compile project(':vim-drivers')
     compile project(':monitoring')
-    compile project(':repo-int')
+    compile project(':repository')
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

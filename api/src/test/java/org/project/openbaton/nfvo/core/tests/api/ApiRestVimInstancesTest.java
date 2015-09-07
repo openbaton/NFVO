@@ -54,7 +54,7 @@ public class ApiRestVimInstancesTest {
 	@Test
 	public void findAllVimInstances() {
 		log.info("" + mock.query());
-		List<VimInstance> list = mock.query();
+		Iterable<VimInstance> list = mock.query();
 		when(mock.query()).thenReturn(list);
 		assertEquals(list, restVimInstances.findAll());
 	}

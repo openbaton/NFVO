@@ -21,7 +21,7 @@ import java.util.Set;
 public class LifecycleEvent implements Serializable{
 
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	
 	@Version
 	private int version = 0;
@@ -35,8 +35,11 @@ public class LifecycleEvent implements Serializable{
     public LifecycleEvent() {
     }
 
-    
-    
+
+	@PrePersist
+	public void ensureId(){
+		id=IdGenerator.createUUID();
+	}
     public String getId() {
 		return id;
 	}

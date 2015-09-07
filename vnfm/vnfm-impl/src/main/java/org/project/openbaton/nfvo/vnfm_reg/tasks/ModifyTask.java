@@ -1,15 +1,13 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +19,10 @@ import org.springframework.stereotype.Service;
 public class ModifyTask extends AbstractTask {
 
     @Autowired
-    @Qualifier("vnfmRegister")
     private VnfmRegister vnfmRegister;
 
     @Autowired
-    @Qualifier("VNFRDependencyRepository")
-    private GenericRepository<VNFRecordDependency> vnfrDependencyRepository;
+    private VNFRDependencyRepository vnfrDependencyRepository;
 
 
     @Override
@@ -40,7 +36,7 @@ public class ModifyTask extends AbstractTask {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         log.debug("NFVO: MODIFY finish");
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        virtualNetworkFunctionRecord = vnfrRepository.merge(virtualNetworkFunctionRecord);
+        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
 

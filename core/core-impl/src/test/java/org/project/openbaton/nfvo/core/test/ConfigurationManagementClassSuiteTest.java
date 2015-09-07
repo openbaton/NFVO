@@ -28,7 +28,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +65,7 @@ public class ConfigurationManagementClassSuiteTest {
 	private ConfigurationManagement configurationManagement;
 
 	@Autowired
-	@Qualifier("configurationRepository")
-	private GenericRepository<Configuration> configurationRepository;
+	private ConfigurationRepository configurationRepository;
 
 	@Before
 	public void init() {
@@ -82,7 +81,7 @@ public class ConfigurationManagementClassSuiteTest {
 	@Test
 	public void nfvImageManagementUpdateTest(){
 		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(configuration_exp);
+		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
 
 		Configuration configuration_new = createConfigutation();
 		configuration_new.setName("UpdatedName");
@@ -132,7 +131,7 @@ public class ConfigurationManagementClassSuiteTest {
 	@Test
 	public void configurationManagementAddTest(){
 		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.create(any(Configuration.class))).thenReturn(configuration_exp);
+		when(configurationRepository.save(any(Configuration.class))).thenReturn(configuration_exp);
 		Configuration configuration_new = configurationManagement.add(configuration_exp);
 
 		assertEqualsConfiguration(configuration_exp, configuration_new);
@@ -142,10 +141,10 @@ public class ConfigurationManagementClassSuiteTest {
 	public void configurationManagementQueryTest(){
 		when(configurationRepository.findAll()).thenReturn(new ArrayList<Configuration>());
 
-		Assert.assertEquals(0, configurationManagement.query().size());
+		Assert.assertEquals(false, configurationManagement.query().iterator().hasNext());
 
 		Configuration configutation_exp = createConfigutation();
-		when(configurationRepository.find(configutation_exp.getId())).thenReturn(configutation_exp);
+		when(configurationRepository.findOne(configutation_exp.getId())).thenReturn(configutation_exp);
 		Configuration configuration_new = configurationManagement.query(configutation_exp.getId());
 		assertEqualsConfiguration(configutation_exp, configuration_new);
 	}
@@ -153,9 +152,9 @@ public class ConfigurationManagementClassSuiteTest {
 	@Test
 	public void configurationManagementDeleteTest(){
 		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(configuration_exp);
+		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
 		configurationManagement.delete(configuration_exp.getId());
-		when(configurationRepository.find(configuration_exp.getId())).thenReturn(null);
+		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(null);
 		Configuration configuration_new = configurationManagement.query(configuration_exp.getId());
 		Assert.assertNull(configuration_new);
 	}

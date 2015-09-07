@@ -33,7 +33,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      * ID of the VNF instance
      */
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int hb_version = 0;
 
@@ -173,6 +173,10 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getEndpoint() {
         return endpoint;
     }

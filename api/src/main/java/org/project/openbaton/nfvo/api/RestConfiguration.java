@@ -71,7 +71,7 @@ public class RestConfiguration {
 	 * @return List<Configuration>: The list of Configurations available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Configuration> findAll() {
+	public Iterable<Configuration> findAll() {
 		log.debug("Find all Configurations");
 		return configurationManagement.query();
 	}

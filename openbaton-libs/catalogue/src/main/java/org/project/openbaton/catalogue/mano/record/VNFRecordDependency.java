@@ -33,6 +33,11 @@ public class VNFRecordDependency implements Serializable {
     public VNFRecordDependency() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
+
     public Map<String, String> getIdType() {
         return idType;
     }

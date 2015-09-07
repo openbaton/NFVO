@@ -62,7 +62,7 @@ public interface NetworkServiceRecordManagement {
      * Descriptor (NSD), including any
      * related VNFFGD and VLD.
      */
-    List<NetworkServiceRecord> query();
+    Iterable<NetworkServiceRecord> query();
 
     NetworkServiceRecord query(String id);
 

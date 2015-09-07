@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 public class Quota implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -31,6 +31,10 @@ public class Quota implements Serializable{
         this.tenant = tenant;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public int getRam() {
         return ram;
     }

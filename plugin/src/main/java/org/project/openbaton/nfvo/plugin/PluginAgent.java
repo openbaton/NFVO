@@ -7,9 +7,8 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
 import org.project.openbaton.nfvo.common.utils.AgentBroker;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.jms.JMSException;
 import java.io.Serializable;
@@ -22,8 +21,7 @@ import java.util.LinkedList;
 public abstract class PluginAgent extends org.project.openbaton.nfvo.common.interfaces.PluginAgent {
 
     @Autowired
-    @Qualifier("pluginEndpointRepository")
-    private GenericRepository<PluginEndpoint> pluginEndpointRepository;
+    private PluginEndpointRepository pluginEndpointRepository;
     @Autowired
     private AgentBroker agentBroker;
 
@@ -115,13 +113,13 @@ public abstract class PluginAgent extends org.project.openbaton.nfvo.common.inte
             return;
         }
         log.debug("Registering endpoint: " + endpoint);
-        pluginEndpointRepository.create(endpoint);
+        pluginEndpointRepository.save(endpoint);
     }
 
     @Override
     public void unregister(PluginEndpoint endpoint) {
         log.debug("Unregistering endpoint: " + endpoint);
-        pluginEndpointRepository.remove(endpoint);
+        pluginEndpointRepository.delete(endpoint);
     }
 
 

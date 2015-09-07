@@ -24,11 +24,11 @@ import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.nfvo.common.utils.AgentBroker;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
+import org.project.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -49,8 +49,7 @@ import java.util.*;
 public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
 
     @Autowired
-    @Qualifier("pluginEndpointRepository")
-    private GenericRepository<PluginEndpoint> pluginEndpointRepository;
+    private PluginEndpointRepository pluginEndpointRepository;
 
     @Autowired
     private AgentBroker agentBroker;
@@ -65,9 +64,9 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     private ApplicationEventPublisher publisher;
+
     @Autowired
-    @Qualifier("configurationRepository")
-    private GenericRepository<Configuration> configurationRepository;
+    private ConfigurationRepository configurationRepository;
 
     private static void exit(int status) {
         System.exit(status);

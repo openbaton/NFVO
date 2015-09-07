@@ -74,7 +74,7 @@ public class RestVNFPackage {
 	 * @return List<VNFPackage>: The list of VNFPackages available
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<VNFPackage> findAll() {
+	public Iterable<VNFPackage> findAll() {
 		return vnfPackageManagement.query();
 	}
 

@@ -71,7 +71,7 @@ public class VimManagementClassSuiteTest {
 	VimBroker vimBroker;
 
 	@Autowired
-	GenericRepository<VimInstance> vimRepository;
+	VimInstanceR vimRepository;
 
 	@Autowired
 	private VimManagement vimManagement;

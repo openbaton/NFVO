@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Endpoint implements Serializable {
     @Id
-    protected String id = IdGenerator.createUUID();
+    protected String id;
     @Version
     protected int version = 0;
 
@@ -20,6 +20,10 @@ public abstract class Endpoint implements Serializable {
     protected EndpointType endpointType;
     protected String endpoint;
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getType() {
         return type;
     }
