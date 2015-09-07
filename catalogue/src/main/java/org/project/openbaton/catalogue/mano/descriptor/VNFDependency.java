@@ -6,6 +6,7 @@ package org.project.openbaton.catalogue.mano.descriptor;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -28,14 +29,14 @@ public class VNFDependency implements Serializable {
 	private String id;
 	@Version
 	private int version = 0;
-
-	@ManyToOne
+	
+	@ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
     private VirtualNetworkFunctionDescriptor source;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
-    private VirtualNetworkFunctionDescriptor target;
+	private VirtualNetworkFunctionDescriptor target;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> parameters;

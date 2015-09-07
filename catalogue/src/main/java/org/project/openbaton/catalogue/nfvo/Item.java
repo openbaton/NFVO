@@ -36,6 +36,8 @@ public class Item {
                 ", metric='" + metric + '\'' +
                 ", hostExtId='" + hostExtId + '\'' +
                 ", vduId='" + vduId + '\'' +
+                ", value='" + value + '\'' +
+                ", lastvalue='" + lastValue + '\'' +
                 '}';
     }
 

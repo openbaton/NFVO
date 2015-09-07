@@ -1,7 +1,7 @@
 package org.project.openbaton.catalogue.nfvo;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 
 import java.io.Serializable;

@@ -2,10 +2,7 @@ package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
