@@ -14,7 +14,7 @@ import java.util.Set;
 public class VNFPackage implements Serializable{
 
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -61,6 +61,10 @@ public class VNFPackage implements Serializable{
         this.imageLink = imageLink;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getScriptsLink() {
         return scriptsLink;
     }

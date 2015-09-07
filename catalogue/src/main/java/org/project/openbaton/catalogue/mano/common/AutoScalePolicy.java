@@ -2,6 +2,7 @@ package org.project.openbaton.catalogue.mano.common;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @Entity
 public class AutoScalePolicy implements Serializable{
 	@Id
-	private String id = IdGenerator.createUUID();
+	private String id;
 	@Version
 	private int version = 0;
 
@@ -28,6 +29,10 @@ public class AutoScalePolicy implements Serializable{
 	private int threshold;
 	private int cooldown;
 
+	@PrePersist
+	public void ensureId(){
+		id=IdGenerator.createUUID();
+	}
 	public String getMetric() {
 		return metric;
 	}
