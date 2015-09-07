@@ -77,11 +77,11 @@ class SystemStartup implements CommandLineRunner {
 
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 
-        for (NetworkInterface netint : Collections.list(nets)){
+        for (NetworkInterface netint : Collections.list(nets)) {
             ConfigurationParameter cp = new ConfigurationParameter();
-            log.trace("Display name: "+ netint.getDisplayName());
-            log.trace("Name: "+ netint.getName());
-            cp.setConfKey("ip-" + netint.getName().replaceAll("\\s",""));
+            log.trace("Display name: " + netint.getDisplayName());
+            log.trace("Name: " + netint.getName());
+            cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
             Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
             for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                 if (inetAddress.getHostAddress().contains(".")) {

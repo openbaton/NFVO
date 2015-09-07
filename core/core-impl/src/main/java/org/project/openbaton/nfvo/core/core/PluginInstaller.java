@@ -14,17 +14,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ClassUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -59,6 +54,16 @@ public class PluginInstaller implements CommandLineRunner {
          */
         String pluginName = "plugin-vim-drivers";
 
+        try {
+            checkScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new PluginInstallException(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new PluginInstallException(e);
+        }
+
         /**
          * Run it into the screen session
          */
@@ -85,6 +90,16 @@ public class PluginInstaller implements CommandLineRunner {
 
     }
 
+    private void checkScreen() throws IOException, InterruptedException {
+        Process screen = Runtime.getRuntime().exec("screen -ls");
+        screen.waitFor();
+        int exitValue = screen.exitValue();
+        log.debug("screen -ls exit value: " + exitValue);
+        if (exitValue != 0){
+            Runtime.getRuntime().exec("screen -d -m -S openbaton");
+        }
+    }
+
     private void checkJar(String path) throws PluginInstallException {
         if (!path.endsWith(".jar")) {
             throw new PluginInstallException("The file must be a valid jar plugin");
@@ -93,42 +108,6 @@ public class PluginInstaller implements CommandLineRunner {
         if (!file.isFile()) {
             throw new PluginInstallException("The file must be a valid jar plugin");
         }
-    }
-
-    private Field getField(Class c) throws PluginInstallException {
-        Field f;
-        try {
-            f = c.getField("interfaceVersion");
-        } catch (NoSuchFieldException e) {
-            throw new PluginInstallException("Not a valid plugin");
-        }
-        return f;
-    }
-
-    private Class getClass(String path, List<String> classes) throws PluginInstallException, MalformedURLException {
-        ClassLoader classLoader = getClassLoader(path);
-        Class c;
-        for (String clazz : classes) {
-            log.debug("Loading class: " + clazz + " on path " + path);
-            try {
-                c = classLoader.loadClass(clazz);
-                return c;
-            } catch (ClassNotFoundException e) {
-            }
-        }
-        throw new PluginInstallException("No valid Plugin found");
-
-
-    }
-
-    public ClassLoader getClassLoader(String path) throws PluginInstallException, MalformedURLException {
-        File jar = new File(path);
-        if (!jar.exists())
-            throw new PluginInstallException(path + " does not exist");
-        ClassLoader parent = ClassUtils.getDefaultClassLoader();
-        path = jar.getAbsolutePath();
-        log.trace("path is: " + path);
-        return new URLClassLoader(new URL[]{new URL("file://" + path)}, parent);
     }
 
     public void installMonitoringPlugin(String path, List<String> classes) throws PluginInstallException {
@@ -140,6 +119,16 @@ public class PluginInstaller implements CommandLineRunner {
          * Checking version
          */
         String pluginName = "plugin-monitoring";
+
+        try {
+            checkScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new PluginInstallException(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new PluginInstallException(e);
+        }
         /**
          * Run it into the screen session
          */
@@ -151,6 +140,7 @@ public class PluginInstaller implements CommandLineRunner {
             this.processes.put(pluginName, plugin);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new PluginInstallException(e);
         }
     }
 
