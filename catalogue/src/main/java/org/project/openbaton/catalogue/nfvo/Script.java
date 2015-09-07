@@ -3,10 +3,7 @@ package org.project.openbaton.catalogue.nfvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -15,7 +12,7 @@ import java.io.Serializable;
 @Entity
 public class Script implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     @Version
     private int version = 0;
 
@@ -36,6 +33,10 @@ public class Script implements Serializable{
         this.id = id;
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public int getVersion() {
         return version;
     }

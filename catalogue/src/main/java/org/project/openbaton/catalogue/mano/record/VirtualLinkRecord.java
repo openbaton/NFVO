@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 public class VirtualLinkRecord implements Serializable{
     @Id
-    private String id = IdGenerator.createUUID();
+    private String id;
     private String vendor;
     private String version;
     private int number_of_enpoints;
@@ -100,6 +100,10 @@ public class VirtualLinkRecord implements Serializable{
     public VirtualLinkRecord() {
     }
 
+    @PrePersist
+    public void ensureId(){
+        id=IdGenerator.createUUID();
+    }
     public String getId() {
         return id;
     }
