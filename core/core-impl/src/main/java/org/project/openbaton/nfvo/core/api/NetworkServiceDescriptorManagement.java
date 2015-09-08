@@ -65,7 +65,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd())
             if (vnfd.getEndpoint() == null)
                 vnfd.setEndpoint(vnfd.getType());
-        
+
         log.info("Checking if Vnfm is running...");
 
         Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();

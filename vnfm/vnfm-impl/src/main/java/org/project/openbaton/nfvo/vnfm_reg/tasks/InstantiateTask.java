@@ -38,7 +38,8 @@ public class InstantiateTask extends AbstractTask {
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
-        networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+        virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
 
         log.debug("Vnfr added" + virtualNetworkFunctionRecord.getName());
 
@@ -60,6 +61,7 @@ public class InstantiateTask extends AbstractTask {
             coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
+        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
     }
 
     @Override

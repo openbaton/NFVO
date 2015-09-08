@@ -54,7 +54,9 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         List<String> ids=new ArrayList<>();
-        virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() + "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1));
+        log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
+        log.debug("ID: " + virtualDeploymentUnit.getId());
+        virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() /*+ "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1)*/);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc())
             ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component).get());
         return ids;

@@ -325,7 +325,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             networks.add(vnfdConnectionPoint.getExtId());
 
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
-        String hostname = vdu.getHostname() + "-" + vnfComponent.getId().substring(0,4);
+        String hostname = vdu.getHostname() /*+ "-" + vnfComponent.getId().substring(0,4)*/;
 
         log.trace("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server;

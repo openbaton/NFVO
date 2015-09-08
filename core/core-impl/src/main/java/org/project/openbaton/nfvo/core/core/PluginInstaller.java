@@ -49,7 +49,7 @@ public class PluginInstaller implements CommandLineRunner {
         /**
          * Checking version
          */
-        String pluginName = "plugin-vim-drivers";
+        String pluginName = getPluginName(path) + "-vim-driver";
 
         try {
             checkScreen();
@@ -87,6 +87,12 @@ public class PluginInstaller implements CommandLineRunner {
 
     }
 
+    private String getPluginName(String path) {
+        String jarName = path.substring(path.lastIndexOf("/") + 1);
+        StringTokenizer st = new StringTokenizer(jarName, "-");
+        return st.nextToken() + "-plugin";
+    }
+
     private void checkScreen() throws IOException, InterruptedException {
         Process screen = Runtime.getRuntime().exec("screen -ls");
         screen.waitFor();
@@ -115,7 +121,7 @@ public class PluginInstaller implements CommandLineRunner {
         /**
          * Checking version
          */
-        String pluginName = "plugin-monitoring";
+        String pluginName = getPluginName(path) + "-monitoring";
 
         try {
             checkScreen();

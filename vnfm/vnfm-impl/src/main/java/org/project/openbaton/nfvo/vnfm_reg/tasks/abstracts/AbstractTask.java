@@ -7,8 +7,6 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
-import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -62,10 +60,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
     @Autowired
     protected NetworkServiceRecordRepository networkServiceRecordRepository;
-
-    @Autowired
-    private DependencyQueuer dependencyQueuer;
-
 
     @Override
     public void run() {
