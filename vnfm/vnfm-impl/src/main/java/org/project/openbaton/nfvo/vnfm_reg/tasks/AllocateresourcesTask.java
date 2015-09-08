@@ -45,9 +45,9 @@ public class AllocateresourcesTask extends AbstractTask {
         boolean error = false;
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
             try {
-                String extId = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
-                log.debug("the returned ext id is: " + extId);
-                vdu.setExtId(extId);
+                List<String> extIds = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
+                log.debug("the returned ext id is: " + extIds);
+//                vdu.setExtId(extId);
             } catch (VimException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -90,7 +90,7 @@ public class AllocateresourcesTask extends AbstractTask {
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
 
             for (VirtualDeploymentUnit virtualDeploymentUnit: virtualNetworkFunctionRecord.getVdu()){
-                log.debug(">---< The unit ext id is: " + virtualDeploymentUnit.getExtId());
+                log.debug(">---< The unit is: " + virtualDeploymentUnit);
             }
             coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));

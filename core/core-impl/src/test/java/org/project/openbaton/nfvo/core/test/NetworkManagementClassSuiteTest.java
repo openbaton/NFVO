@@ -20,6 +20,8 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -36,7 +38,6 @@ import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -240,7 +241,7 @@ public class NetworkManagementClassSuiteTest {
 		}
 
 		@Override
-		public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
+		public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimException {
 			return null;
 		}
 
@@ -270,7 +271,7 @@ public class NetworkManagementClassSuiteTest {
 		}
 
 		@Override
-		public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) throws VimException {
+		public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException {
 			return null;
 
 		}

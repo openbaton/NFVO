@@ -55,10 +55,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
 /**
  * Created by lto on 21/05/15.
  */
@@ -126,7 +122,7 @@ public class VimTestSuiteClass {
         //when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString())).thenReturn(server);
 
         try {
-            Future<String> id = openstackVIM.allocate(vdu, vnfr);
+            Future<String> id = openstackVIM.allocate(vdu, vnfr, );
             String expectedId = id.get();
             log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
             Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -145,7 +141,7 @@ public class VimTestSuiteClass {
         vdu.getVm_image().remove(0);
 
         exception.expect(VimException.class);
-        openstackVIM.allocate(vdu, vnfr);
+        openstackVIM.allocate(vdu, vnfr, );
     }
 
     @Test

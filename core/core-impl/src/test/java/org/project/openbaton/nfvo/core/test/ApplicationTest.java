@@ -138,7 +138,7 @@ public class ApplicationTest {
 	@Bean
 	Vim vim() throws VimDriverException, VimException{
 		Vim vim = mock(Vim.class);
-		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked-id"));
+		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), )).thenReturn(new AsyncResult<String>("mocked-id"));
 		return vim;
 	}
 

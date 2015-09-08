@@ -46,7 +46,6 @@ import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -60,7 +59,6 @@ import javax.persistence.NoResultException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -109,7 +107,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		Vim vim = mock(Vim.class);
 		when(vimBroker.getVim(anyString())).thenReturn(vim);
 		when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
-		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new AsyncResult<String>("mocked_id"));
+		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), )).thenReturn(new AsyncResult<String>("mocked_id"));
 		VNFLifecycleOperationGranting vnfLifecycleOperationGranting = mock(VNFLifecycleOperationGranting.class);
 		when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
 

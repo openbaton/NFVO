@@ -20,6 +20,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
@@ -61,21 +62,12 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @PostConstruct
     private void init() {
-//        ClientInterfaces client = vimBroker.getClient("openstack");
-//        if (client==null) {
-//            log.error("Plugin Openstack Vim Drivers not found. Have you installed it?");
-//            NotFoundException notFoundException = new NotFoundException("Plugin Openstack Vim Drivers not found. Have you installed it?");
-//            throw new RuntimeException(notFoundException);
-//        }
-//        log.debug("Found Client " + client);
-//        this.openstackClient = client;
-
     }
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         try {
-            NFVImage addedImage = openstackClient.addImage(vimInstance.getType(), vimInstance,image, inputStream);
+            NFVImage addedImage = openstackClient.addImage(vimInstance.getType(), vimInstance, image, inputStream);
             log.debug("Image with id: " + image.getId() + " added successfully.");
             return addedImage;
         } catch (Exception e) {
@@ -317,29 +309,28 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr) throws VimDriverException, VimException {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         log.debug("initialized VimInstance");
         /**
-         *  *) Create hostname
          *  *) choose image
          *  *) ...?
          */
-        vdu.setHostname(vnfr.getName() + "-" + vdu.getId().substring((vdu.getId().length() - 5), vdu.getId().length() - 1));
 
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
         Set<String> networks = new HashSet<String>();
-        for (VNFComponent vnfc: vdu.getVnfc()) {
-            for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point())
-                networks.add(vnfdConnectionPoint.getExtId());
-        }
+        for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
+            networks.add(vnfdConnectionPoint.getExtId());
+
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
-        log.trace("Params are: hostname:" + vdu.getHostname() + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
-        Server server = null;
+        String hostname = vdu.getHostname() + "-" + vnfComponent.getId().substring(0,4);
+
+        log.trace("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
+        Server server;
         try {
-            server = openstackClient.launchInstanceAndWait(vimInstance.getType(), vimInstance, vdu.getHostname(), image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
+            server = openstackClient.launchInstanceAndWait(vimInstance.getType(), vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         } catch (NotFoundException e) {
             e.printStackTrace();
             throw new VimException(e);
@@ -348,7 +339,29 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             throw new VimException(e);
         }
         log.debug("launched instance with id " + server.getExtId());
-        vdu.setExtId(server.getExtId());
+
+//        vdu.setExtId(server.getExtId());
+        VNFCInstance vnfcInstance = new VNFCInstance();
+        vnfcInstance.setVc_id(server.getExtId());
+        vnfcInstance.setVim_id(vdu.getVimInstance().getId());
+
+        if (vnfcInstance.getConnection_point() == null)
+            vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+
+        for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+            VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
+            connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+            connectionPoint_new.setExtId(connectionPoint.getExtId());
+            connectionPoint_new.setName(connectionPoint.getName());
+            connectionPoint_new.setType(connectionPoint.getType());
+
+            vnfcInstance.getConnection_point().add(connectionPoint_new);
+        }
+
+        if (vdu.getVnfc_instance() == null)
+            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+        vdu.getVnfc_instance().add(vnfcInstance);
+
         for (String network : server.getIps().keySet()) {
             for (String ip : server.getIps().get(network)) {
                 vnfr.getVnf_address().add(ip);
@@ -429,10 +442,10 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) throws VimException {
-        log.debug("Removing VM with ext id: " + vdu.getExtId());
+    public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException {
+        log.debug("Removing VM with ext id: " + vnfcInstance.getVc_id());
         try {
-            openstackClient.deleteServerByIdAndWait(vimInstance.getType(), vimInstance, vdu.getExtId());
+            openstackClient.deleteServerByIdAndWait(vimInstance.getType(), vimInstance, vnfcInstance.getVc_id());
         } catch (NotFoundException e) {
             e.printStackTrace();
             throw new VimException(e);
@@ -440,7 +453,6 @@ public class OpenstackVIM implements Vim {// TODO and so on...
             e.printStackTrace();
             throw new VimException(e);
         }
-        vdu.setExtId(null);
         return new AsyncResult<>(null);
     }
 
