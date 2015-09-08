@@ -116,16 +116,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Creating " + networkServiceRecord);
 
-//        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr())
-//            vnfrRepository.create(vnfr);
-
-        //log.trace("Persisting VNFDependencies");
-//        for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()){
-//            log.trace("" + vnfrDependency.getSources());
-//            vnfrDependencyRepository.create(vnfrDependency);
-//        }
-        //log.trace("Persisted VNFDependencies");
-
         /*
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources

@@ -38,23 +38,22 @@ import java.util.HashMap;
 @Service
 @Scope
 public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting {
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
-
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
         //if (true)
         //    return true;
         //HashMap holds how many VDUs are deployed on a specific VimInstance
-        HashMap<VimInstance,Integer> countVDUsOnVimInstances = new HashMap<>();
+        HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
         //Count VDUs on a specific VimInstance
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            log.debug("Found VDU with id: " + vdu.getId());
+//            log.debug("Found VDU with id: " + vdu.getId());
             for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-                log.debug("Found VNFCInstance with id: " + vnfcInstance.getId());
+//                log.debug("Found VNFCInstance with id: " + vnfcInstance.getId());
                 if (vnfcInstance.getVc_id() != null) {
                     log.debug("VNFCInstance " + vnfcInstance.getHostname() + " is already deployed");
                     break;

@@ -1,8 +1,6 @@
 package org.project.openbaton.nfvo.repositories;
 
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +18,9 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
 
     @Override
     @Transactional
-    public void addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
+    public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
         vnfr=vnfrRepository.save(vnfr);
         networkServiceRecordRepository.findFirstById(id).getVnfr().add(vnfr);
+        return vnfr;
     }
 }

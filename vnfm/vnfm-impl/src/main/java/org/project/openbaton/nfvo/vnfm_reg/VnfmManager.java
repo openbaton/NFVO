@@ -339,7 +339,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     public void onApplicationEvent(EventFinishEvent event) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getVirtualNetworkFunctionRecord();
         publishEvent(event.getAction(), virtualNetworkFunctionRecord);
-        findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        if ((event.getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (event.getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {
+            findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        }
     }
 
     @Override
