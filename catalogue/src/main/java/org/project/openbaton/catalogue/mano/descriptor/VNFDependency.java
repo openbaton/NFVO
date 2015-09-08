@@ -6,7 +6,6 @@ package org.project.openbaton.catalogue.mano.descriptor;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
