@@ -1,15 +1,9 @@
 package org.project.openbaton.common.vnfm_sdk.interfaces;
 
 
-import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by mpa on 05/05/15.
@@ -19,11 +13,11 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param virtualNetworkFunctionDescriptor
+	 * @param virtualNetworkFunctionRecord
 	 */
 	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, VNFDeploymentFlavour flavorId, String vnfInstanceName, List<VirtualLinkDescriptor> virtualLinkDescriptors,Map<String,String> extention);
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.

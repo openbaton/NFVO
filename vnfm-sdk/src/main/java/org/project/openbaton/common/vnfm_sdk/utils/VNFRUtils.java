@@ -133,7 +133,6 @@ public class VNFRUtils {
 
             vdu_new.setHostname(virtualDeploymentUnit.getHostname());
             vdu_new.setHigh_availability(virtualDeploymentUnit.getHigh_availability());
-            vdu_new.setExtId(virtualDeploymentUnit.getExtId());
             vdu_new.setComputation_requirement(virtualDeploymentUnit.getComputation_requirement());
             vdu_new.setScale_in_out(virtualDeploymentUnit.getScale_in_out());
             HashSet<String> monitoringParameters = new HashSet<>();
