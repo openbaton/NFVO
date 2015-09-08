@@ -16,7 +16,9 @@
 
 package org.project.openbaton.nfvo.core.core;
 
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
@@ -27,8 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -45,11 +49,15 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     private VimBroker vimBroker;
 
     @Override
-    public String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
+    public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
-        return vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord).get();
+        List<String> ids=new ArrayList<>();
+        virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() + "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1));
+        for (VNFComponent component : virtualDeploymentUnit.getVnfc())
+            ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component).get());
+        return ids;
     }
 
     @Override
@@ -80,7 +88,10 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-        return vim.release(virtualDeploymentUnit, virtualDeploymentUnit.getVimInstance());
+        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+            vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance());
+        }
+        return new AsyncResult<>(null);
     }
 
     @Override

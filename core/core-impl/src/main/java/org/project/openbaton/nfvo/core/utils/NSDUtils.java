@@ -57,7 +57,6 @@ public class NSDUtils {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
-
         /**
          * Fetching VNFD
          */

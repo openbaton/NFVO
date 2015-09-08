@@ -18,6 +18,7 @@ package org.project.openbaton.nfvo.core.core;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
@@ -52,14 +53,17 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             log.debug("Found VDU with id: " + vdu.getId());
-            if (vdu.getExtId() != null) {
-                log.debug("VDU " + vdu.getHostname() + " is already deployed");
-                break;
-            }
-            if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
-                countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + 1);
-            } else {
-                countVDUsOnVimInstances.put(vdu.getVimInstance(), 1);
+            for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+                log.debug("Found VNFCInstance with id: " + vnfcInstance.getId());
+                if (vnfcInstance.getVc_id() != null) {
+                    log.debug("VNFCInstance " + vnfcInstance.getHostname() + " is already deployed");
+                    break;
+                }
+                if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
+                    countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + 1);
+                } else {
+                    countVDUsOnVimInstances.put(vdu.getVimInstance(), 1);
+                }
             }
         }
         //Check if enough resources are available for the deployment

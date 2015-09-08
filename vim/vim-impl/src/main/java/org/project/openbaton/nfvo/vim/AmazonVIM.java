@@ -17,7 +17,9 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
@@ -78,7 +80,7 @@ public class AmazonVIM implements Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) {
         throw new UnsupportedOperationException();
     }
 
@@ -108,7 +110,7 @@ public class AmazonVIM implements Vim {
     }
 
     @Override
-    public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) {
+    public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) {
         return new AsyncResult<>(null);
     }
 

@@ -17,10 +17,12 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.catalogue.util.IdGenerator;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
@@ -59,12 +61,6 @@ public class TestVIM implements Vim {
 
     @PostConstruct
     private void init() {
-//        this.testClient = vimBroker.getClient("test");
-//        if (testClient ==null) {
-//            log.error("Plugin Test Vim Drivers not found. Have you installed it?");
-//            NotFoundException notFoundException = new NotFoundException("Plugin Test Vim Drivers not found. Have you installed it?");
-//            throw new RuntimeException(notFoundException);
-//        }
     }
 
     @Override
@@ -139,15 +135,50 @@ public class TestVIM implements Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimDriverException, VimException {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {
             HashSet<String> networks = new HashSet<>();
             networks.add("network_id");
-            HashSet<String> securityGroups = new HashSet<String>();
+            HashSet<String> securityGroups = new HashSet<>();
             securityGroups.add("secGroup_id");
-            testClient.launchInstanceAndWait(vimInstance.getType(), vimInstance,vdu.getHostname(),vimInstance.getImages().iterator().next().getExtId(),"flavor","keypair", networks, securityGroups, "#userdate");
+
+            Server server = testClient.launchInstanceAndWait(vimInstance.getType(), vimInstance, vdu.getHostname(), vimInstance.getImages().iterator().next().getExtId(), "flavor", "keypair", networks, securityGroups, "#userdate");
+            VNFCInstance component = new VNFCInstance();
+            component.setVc_id(server.getExtId());
+            component.setVim_id(vdu.getVimInstance().getId());
+
+
+            VNFCInstance vnfcInstance = new VNFCInstance();
+            vnfcInstance.setVc_id(server.getExtId());
+            vnfcInstance.setVim_id(vdu.getVimInstance().getId());
+
+            if (vnfcInstance.getConnection_point() == null)
+                vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+
+            for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+                VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
+                connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+                connectionPoint_new.setExtId(connectionPoint.getExtId());
+                connectionPoint_new.setName(connectionPoint.getName());
+                connectionPoint_new.setType(connectionPoint.getType());
+
+                vnfcInstance.getConnection_point().add(connectionPoint_new);
+            }
+
+            if (vdu.getVnfc_instance() == null)
+                vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+            vdu.getVnfc_instance().add(vnfcInstance);
+
+            for (String network : server.getIps().keySet()) {
+                for (String ip : server.getIps().get(network)) {
+                    virtualNetworkFunctionRecord.getVnf_address().add(ip);
+                }
+            }
+            String id = server.getId();
+            log.debug("launched instance with id " + id);
+            return new AsyncResult<>(id);
         } catch (NotFoundException e) {
             e.printStackTrace();
             throw new VimException(e);
@@ -155,9 +186,6 @@ public class TestVIM implements Vim {
             e.printStackTrace();
             throw new VimException(e);
         }
-        String id = IdGenerator.createUUID();
-        log.debug("launched instance with id " + id);
-        return new AsyncResult<String>(id);
     }
 
     @Override
@@ -196,7 +224,7 @@ public class TestVIM implements Vim {
 
     @Override
     @Async
-    public Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) {
+    public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) {
         return new AsyncResult<>(null);
     }
 

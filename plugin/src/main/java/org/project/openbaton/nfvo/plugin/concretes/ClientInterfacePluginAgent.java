@@ -22,37 +22,31 @@ import java.util.Set;
 @Scope
 public class ClientInterfacePluginAgent extends PluginAgent {
 
-
     public Server launchInstance(String type, VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws NoSuchMethodException, NotFoundException, PluginInvokeException {
-//        return this.invokeMethod(this.getClass().getMethod("launchInstance"), ClientInterfaces.class, name, image, flavor, keypair, network, secGroup, userData);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
         return this.invokeMethod(method, ClientInterfaces.class, type, name, image, flavor, keypair, network, secGroup, userData);
     }
 
     public List<NFVImage> listImages(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
-//        return this.invokeMethod(this.getClass().getMethod("listImages"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
         return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<Server> listServer(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
-//        return this.invokeMethod(this.getClass().getMethod("listServers"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
         return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<Network> listNetworks(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
-//        return this.invokeMethod(this.getClass().getMethod("listNetworks"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
         return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);
     }
 
     public List<DeploymentFlavour> listFlavors(String type, VimInstance vimInstance) throws NotFoundException, PluginInvokeException {
-//        return this.invokeMethod(this.getClass().getMethod("listNetworks"), ClientInterfaces.class);
         Method method = new Object() {
         }.getClass().getEnclosingMethod();
         return this.invokeMethod(method, ClientInterfaces.class, type, vimInstance);

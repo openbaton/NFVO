@@ -15,13 +15,15 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- *
+ * <p/>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualLinkRecord implements Serializable{
+public class VirtualLinkRecord implements Serializable {
     @Id
     private String id;
+    @Version
+    private int hb_version = 0;
     private String vendor;
     private String version;
     private int number_of_enpoints;
@@ -33,40 +35,40 @@ public class VirtualLinkRecord implements Serializable{
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
-     * */
+     */
     private String test_access;
     /**
      * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
-     * */
+     */
     @ElementCollection(fetch = FetchType.EAGER)
-     private Set<String> connection;
+    private Set<String> connection;
     /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
-     * */
+     */
     private String parent_ns;
 
     /**
      * References to the records of the VNFFG instances in which this VL instance participates
-     * */
+     */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VNFForwardingGraphRecord> vnffgr_reference;
     /**
      * Reference to the id of VLD used to instantiate this VL
-     * */
+     */
     private String descriptor_reference;
     /**
      * The reference to the system managing this VL instance
-     * */
+     */
     private String vim_id;
     /**
      * Bandwidth allocated for each of the QoS options on this link
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> allocated_capacity;
     /**
      * Flag to report status of the VL (e.g. 0=Link down, 1= normal operation, 2= degraded operation, 3= Offline through management action)
-     * */
+     */
 
     @Enumerated(EnumType.STRING)
     private LinkStatus status;
@@ -74,36 +76,37 @@ public class VirtualLinkRecord implements Serializable{
     /**
      * System that has registered to received notifications of status changes
      * TODO consider a notification framework
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> notification;
     /**
      * Record of significant VL lifecycle event (e.g. Creation, Configuration changes)
-     * */
+     */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * Record of detailed operational events (e.g. link up/down, Operator logins, Alarms sent)
      * TODO consider a stream to a file
-     * */
+     */
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> audit_log;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree
      * TODO consider a Enum
-     * */
+     */
     private String connectivity_type;
 
     public VirtualLinkRecord() {
     }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
+
     public String getId() {
         return id;
     }
@@ -198,6 +201,14 @@ public class VirtualLinkRecord implements Serializable{
 
     public void setDescriptor_reference(String descriptor_reference) {
         this.descriptor_reference = descriptor_reference;
+    }
+
+    public int getHb_version() {
+        return hb_version;
+    }
+
+    public void setHb_version(int hb_version) {
+        this.hb_version = hb_version;
     }
 
     public String getVim_id() {

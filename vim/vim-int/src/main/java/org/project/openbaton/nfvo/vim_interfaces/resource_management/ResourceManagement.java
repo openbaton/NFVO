@@ -16,6 +16,8 @@
 
 package org.project.openbaton.nfvo.vim_interfaces.resource_management;
 
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -40,7 +42,7 @@ public interface ResourceManagement {
 	 * indicated by the consumer functional block.
 	 */
 	@Async
-	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException;
+	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimException, VimDriverException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
@@ -89,10 +91,10 @@ public interface ResourceManagement {
 	 * This operation allows de-allocating and terminating an 
 	 * instantiated virtualised resource. This operation frees 
 	 * resources and returns them to the NFVI resource pool.
-	 * @param vdu
+	 * @param vnfcInstance
 	 * @param vimInstance
 	 */
-	Future<Void> release(VirtualDeploymentUnit vdu, VimInstance vimInstance) throws VimException;
+	Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException;
 	
 	/**
 	 * This operation allows requesting the reservation of a set 
