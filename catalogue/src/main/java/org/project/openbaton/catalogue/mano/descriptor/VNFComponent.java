@@ -19,14 +19,16 @@ import java.util.Set;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class VNFComponent implements Serializable{
     /**
      * Unique VNFC identification within the namespace of a specific VNF.
      * */
     @Id
-	private String id;
+	protected String id;
     @Version
-    private int version = 0;
+    protected int version = 0;
+
     public int getVersion() {
 		return version;
 	}
@@ -39,14 +41,15 @@ public class VNFComponent implements Serializable{
      * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
      * */
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<VNFDConnectionPoint> connection_point;
+    protected Set<VNFDConnectionPoint> connection_point;
 
     @PrePersist
     public void ensureId(){
         id=IdGenerator.createUUID();
     }
+
     public VNFComponent() {
-        this.connection_point = new HashSet<VNFDConnectionPoint>();
+        this.connection_point = new HashSet<>();
     }
 
     public String getId() {
@@ -63,5 +66,14 @@ public class VNFComponent implements Serializable{
 
     public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
         this.connection_point = connection_point;
+    }
+
+    @Override
+    public String toString() {
+        return "VNFComponent{" +
+                "connection_point=" + connection_point +
+                ", id='" + id + '\'' +
+                ", version=" + version +
+                '}';
     }
 }
