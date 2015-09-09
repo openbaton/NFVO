@@ -29,7 +29,9 @@ public class MonitoringManager {
     }
 
     public Item getMeasurmentResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period){
-        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
+
+//        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
+        return null;
     }
 
     public void notifyResults(){
