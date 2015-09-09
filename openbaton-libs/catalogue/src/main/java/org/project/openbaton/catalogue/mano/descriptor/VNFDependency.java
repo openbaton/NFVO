@@ -28,7 +28,7 @@ public class VNFDependency implements Serializable {
 	private String id;
 	@Version
 	private int version = 0;
-	
+
 	@ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
     private VirtualNetworkFunctionDescriptor source;
