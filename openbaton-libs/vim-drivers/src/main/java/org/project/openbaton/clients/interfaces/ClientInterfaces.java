@@ -5,61 +5,71 @@ import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 
 import java.io.InputStream;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Set;
 
 /**
  * Created by lto on 12/05/15.
  */
-public interface ClientInterfaces {
+public abstract class ClientInterfaces extends UnicastRemoteObject implements Remote {
 
     /**
      * This version must match the version of the plugin...
      */
-    String interfaceVersion = "1.0";
-	
-    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData);
+    public static final String interfaceVersion = "1.0";
+
+    public ClientInterfaces() throws RemoteException {
+    }
+
+    public abstract Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws RemoteException;
 //    void init(VimInstance vimInstance);
 
-    List<NFVImage> listImages(VimInstance vimInstance);
+    public abstract List<NFVImage> listImages(VimInstance vimInstance) throws RemoteException;
 
-    List<Server> listServer(VimInstance vimInstance);
-    List<Network> listNetworks(VimInstance vimInstance);
-    List<DeploymentFlavour> listFlavors(VimInstance vimInstance);
+    public abstract List<Server> listServer(VimInstance vimInstance) throws RemoteException;
 
-    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException;
+    public abstract List<Network> listNetworks(VimInstance vimInstance) throws RemoteException;
 
-    void deleteServerByIdAndWait(VimInstance vimInstance, String id);
-    Network createNetwork(VimInstance vimInstance, Network network);
-    DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour);
+    public abstract List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws RemoteException;
 
-    NFVImage addImage(VimInstance vimInstance, NFVImage image, InputStream inputStream);
+    public abstract Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException, RemoteException;
 
-    NFVImage updateImage(VimInstance vimInstance, NFVImage image);
+    public abstract void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws RemoteException;
 
-    NFVImage copyImage(VimInstance vimInstance, NFVImage image, InputStream inputStream);
+    public abstract Network createNetwork(VimInstance vimInstance, Network network) throws RemoteException;
 
-    boolean deleteImage(VimInstance vimInstance, NFVImage image);
+    public abstract DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException;
 
-    DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException;
+    public abstract NFVImage addImage(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws RemoteException;
 
-    boolean deleteFlavor(VimInstance vimInstance, String extId);
+    public abstract NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 
-    Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet);
+    public abstract NFVImage copyImage(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws RemoteException;
 
-    Network updateNetwork(VimInstance vimInstance, Network network);
+    public abstract boolean deleteImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 
-    Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet);
+    public abstract DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException, RemoteException;
 
-    List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId);
+    public abstract boolean deleteFlavor(VimInstance vimInstance, String extId) throws RemoteException;
 
-    boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId);
+    public abstract Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet) throws RemoteException;
 
-    boolean deleteNetwork(VimInstance vimInstance, String extId);
+    public abstract Network updateNetwork(VimInstance vimInstance, Network network) throws RemoteException;
 
-    Network getNetworkById(VimInstance vimInstance, String id);
+    public abstract Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet) throws RemoteException;
 
-    Quota getQuota(VimInstance vimInstance);
+    public abstract List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId) throws RemoteException;
 
-    String getType(VimInstance vimInstance);
+    public abstract boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId) throws RemoteException;
+
+    public abstract boolean deleteNetwork(VimInstance vimInstance, String extId) throws RemoteException;
+
+    public abstract Network getNetworkById(VimInstance vimInstance, String id) throws RemoteException;
+
+    public abstract Quota getQuota(VimInstance vimInstance) throws RemoteException;
+
+    public abstract String getType(VimInstance vimInstance) throws RemoteException;
 }
