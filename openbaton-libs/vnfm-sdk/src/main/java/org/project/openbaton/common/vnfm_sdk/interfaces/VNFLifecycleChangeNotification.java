@@ -11,4 +11,5 @@ public interface VNFLifecycleChangeNotification {
 	 * of a VNF instance, related to the VNF Lifecycle.
 	 */
 	void NotifyChange();
+
 }

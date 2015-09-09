@@ -9,9 +9,8 @@ package org.project.openbaton.catalogue.mano.descriptor;
 import org.project.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.project.openbaton.catalogue.mano.common.Security;
 
-import java.util.Set;
-
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.

@@ -8,11 +8,10 @@ package org.project.openbaton.catalogue.mano.descriptor;
 
 import org.project.openbaton.catalogue.mano.common.AbstractVirtualLink;
 
-import java.util.Set;
-
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.

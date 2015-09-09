@@ -5,6 +5,8 @@ import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
+import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
+import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -142,7 +144,15 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
     //TODO add the validation
     public void  receive(@RequestBody /*@Valid*/ CoreMessage message){
         log.debug("Received: " + message);
-        this.onAction(message);
+        try {
+            this.onAction(message);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (BadFormatException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

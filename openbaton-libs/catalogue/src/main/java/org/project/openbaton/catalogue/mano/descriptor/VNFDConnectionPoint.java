@@ -6,9 +6,9 @@
 
 package org.project.openbaton.catalogue.mano.descriptor;
 
-import javax.persistence.Entity;
-
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
+
+import javax.persistence.Entity;
 
 /**
  * Created by lto on 06/02/15.
