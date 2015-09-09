@@ -17,7 +17,7 @@ dependencies {
     compile project(':plugin')
 }
 
-ext.mainClass = "org.project.openbaton.plugin.main.spring.SpringPlugin"
+//ext.mainClass = "org.project.openbaton.plugin.main.spring.SpringPlugin"
 
 //task oneJar(type: Jar) {
 //    manifest {
