@@ -29,6 +29,7 @@ import org.project.openbaton.nfvo.common.exceptions.QuotaExceededException;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.openbaton.nfvo.core.interfaces.SecurityManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ import java.util.concurrent.ExecutionException;
 public class RestNetworkServiceDescriptor {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private SecurityManagement securityManagement;
 
     @Autowired
     private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
@@ -438,9 +442,10 @@ public class RestNetworkServiceDescriptor {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Security updateSecurity(@RequestBody @Valid Security security,
                                    @PathVariable("id") String id, @PathVariable("id_s") String id_s) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
-        nsd.setNsd_security(security);
-        networkServiceDescriptorManagement.update(nsd);
+//        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+//        nsd.setNsd_security(security);
+//        networkServiceDescriptorManagement.update(nsd);
+
         return security;
     }
 
