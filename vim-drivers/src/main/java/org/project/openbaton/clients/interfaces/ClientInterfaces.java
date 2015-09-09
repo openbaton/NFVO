@@ -5,13 +5,14 @@ import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 
 import java.io.InputStream;
+import java.rmi.Remote;
 import java.util.List;
 import java.util.Set;
 
 /**
  * Created by lto on 12/05/15.
  */
-public interface ClientInterfaces {
+public interface ClientInterfaces extends Remote {
 
     /**
      * This version must match the version of the plugin...
