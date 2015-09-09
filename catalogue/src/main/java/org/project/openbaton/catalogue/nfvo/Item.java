@@ -21,7 +21,7 @@ public class Item {
 
     private String hostExtId;
 
-    private String vduId;
+    private String vnfcInstanceId;
     private String lastValue;
     private String value;
 
@@ -35,7 +35,7 @@ public class Item {
                 ", version=" + version +
                 ", metric='" + metric + '\'' +
                 ", hostExtId='" + hostExtId + '\'' +
-                ", vduId='" + vduId + '\'' +
+                ", vnfcInstanceId='" + vnfcInstanceId + '\'' +
                 ", value='" + value + '\'' +
                 ", lastvalue='" + lastValue + '\'' +
                 '}';
@@ -77,12 +77,12 @@ public class Item {
         this.hostExtId = hostExtId;
     }
 
-    public String getVduId() {
-        return vduId;
+    public String getVnfcInstanceId() {
+        return vnfcInstanceId;
     }
 
-    public void setVduId(String vduId) {
-        this.vduId = vduId;
+    public void setVnfcInstanceId(String vduId) {
+        this.vnfcInstanceId = vnfcInstanceId;
     }
 
     public void setLastValue(String lastValue) {
