@@ -15,8 +15,9 @@ public interface VNFLifecycleManagement {
 	 * This operation allows creating a VNF instance.
 	 * @param virtualNetworkFunctionRecord
 	 */
-	CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
-	
+	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.
