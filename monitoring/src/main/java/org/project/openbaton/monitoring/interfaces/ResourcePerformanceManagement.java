@@ -17,6 +17,7 @@
 package org.project.openbaton.monitoring.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.nfvo.Item;
 
 /**
@@ -34,7 +35,7 @@ public interface ResourcePerformanceManagement {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	Item getMeasurementResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period);
+	Item getMeasurementResults(VNFCInstance vnfcInstance, String metric, String period);
 
 	/**
 	 * This operation allows providing notifications with performance
