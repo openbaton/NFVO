@@ -31,6 +31,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 
 /**
@@ -93,7 +96,18 @@ class SystemStartup implements CommandLineRunner {
             c.getConfigurationParameters().add(cp);
         }
 
-        configurationRepository.save(c);
 
+        startRegistry(c);
+        configurationRepository.save(c);
+    }
+
+    private void startRegistry(Configuration configuration) throws RemoteException, RemoteException {
+        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters())
+            if (configurationParameter.getConfKey().equals("registry-port")) {
+                Registry registry = LocateRegistry.createRegistry(Integer.parseInt(configurationParameter.getValue()));
+                return;
+            }
+
+        Registry registry = LocateRegistry.createRegistry(1099);
     }
 }

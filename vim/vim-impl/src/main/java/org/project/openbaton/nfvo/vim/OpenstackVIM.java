@@ -24,10 +24,9 @@ import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.PluginInvokeException;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
-import org.project.openbaton.nfvo.plugin.concretes.ClientInterfacePluginAgent;
+import org.project.openbaton.nfvo.plugin.utils.PluginBroker;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -41,6 +40,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -54,20 +55,29 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private ClientInterfacePluginAgent openstackClient;
+    private PluginBroker<ClientInterfaces> pluginBroker;
+
+    private ClientInterfaces openstackClient;
 
     @Autowired
     private VimBroker vimBroker;
 
     @PostConstruct
     private void init() {
+        pluginBroker = new PluginBroker<>();
+        try {
+            openstackClient = pluginBroker.getPlugin("openstack-plugin");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         try {
-            NFVImage addedImage = openstackClient.addImage(vimInstance.getType(), vimInstance, image, inputStream);
+            NFVImage addedImage = openstackClient.addImage(vimInstance, image, inputStream);
             log.debug("Image with id: " + image.getId() + " added successfully.");
             return addedImage;
         } catch (Exception e) {
@@ -79,7 +89,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException{
         try {
-            NFVImage updatedImage = openstackClient.updateImage(vimInstance.getType(), vimInstance, image);
+            NFVImage updatedImage = openstackClient.updateImage(vimInstance, image);
             log.debug("Image with id: " + image.getId() + " updated successfully.");
             return updatedImage;
         } catch (Exception e) {
@@ -91,7 +101,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException{
         try {
-            openstackClient.copyImage(vimInstance.getType(), vimInstance, image, inputStream);
+            openstackClient.copyImage(vimInstance, image, inputStream);
             log.debug("Image with id: " + image.getId() + " copied successfully.");
         } catch (Exception e) {
             log.error("Image with id: " + image.getId() + " not copied successfully.", e);
@@ -102,14 +112,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
         boolean isDeleted = false;
-        try {
-            isDeleted = openstackClient.deleteImage(vimInstance.getType(), vimInstance, image);
-        } catch (NotFoundException e) {
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        isDeleted = openstackClient.deleteImage(vimInstance, image);
         if (isDeleted) {
             log.debug("Image with id: " + image.getId() + " deleted successfully.");
         } else {
@@ -121,7 +124,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         try {
-            DeploymentFlavour flavor = openstackClient.addFlavor(vimInstance.getType(), vimInstance, deploymentFlavour);
+            DeploymentFlavour flavor = openstackClient.addFlavor(vimInstance, deploymentFlavour);
             log.debug("Flavor with id: " + deploymentFlavour.getId() + " added successfully.");
             return flavor;
         } catch (Exception e) {
@@ -133,7 +136,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         try {
-            DeploymentFlavour flavor = openstackClient.updateFlavor(vimInstance.getType(), vimInstance, deploymentFlavour);
+            DeploymentFlavour flavor = openstackClient.updateFlavor(vimInstance, deploymentFlavour);
             log.debug("Flavor with id: " + deploymentFlavour.getId() + " updated successfully.");
             return flavor;
         } catch (Exception e) {
@@ -145,15 +148,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException {
         boolean isDeleted = false;
-        try {
-            isDeleted = openstackClient.deleteFlavor(vimInstance.getType(), vimInstance, deploymentFlavor.getExtId());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        isDeleted = openstackClient.deleteFlavor(vimInstance, deploymentFlavor.getExtId());
         if (isDeleted) {
             log.debug("Flavor with id: " + deploymentFlavor.getId() + " deleted successfully.");
         } else {
@@ -165,7 +160,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
         try {
-            List<DeploymentFlavour> flavors = openstackClient.listFlavors(vimInstance.getType(), vimInstance);
+            List<DeploymentFlavour> flavors = openstackClient.listFlavors(vimInstance);
             log.debug("Flavors listed successfully.");
             return flavors;
         } catch (Exception e) {
@@ -178,7 +173,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     public Network add(VimInstance vimInstance, Network network) throws VimException {
         Network createdNetwork = null;
         try {
-            createdNetwork = openstackClient.createNetwork(vimInstance.getType(), vimInstance, network);
+            createdNetwork = openstackClient.createNetwork(vimInstance, network);
             log.debug("Network with id: " + network.getId() + " created successfully.");
         } catch (Exception e) {
             log.error("Network with id: " + network.getId() + " not created successfully.", e);
@@ -187,7 +182,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         Set<Subnet> createdSubnets = new HashSet<>();
         for (Subnet subnet : network.getSubnets()) {
             try {
-                Subnet createdSubnet = openstackClient.createSubnet(vimInstance.getType(), vimInstance, createdNetwork, subnet);
+                Subnet createdSubnet = openstackClient.createSubnet(vimInstance, createdNetwork, subnet);
                 log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
                 createdSubnet.setNetworkId(createdNetwork.getId().toString());
                 createdSubnets.add(createdSubnet);
@@ -204,7 +199,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     public Network update(VimInstance vimInstance, Network network) throws VimException {
         Network updatedNetwork = null;
         try {
-            updatedNetwork = openstackClient.updateNetwork(vimInstance.getType(), vimInstance, network);
+            updatedNetwork = openstackClient.updateNetwork(vimInstance, network);
         } catch (Exception e) {
             log.error("Network with id: " + network.getId() + " not updated successfully.", e);
             throw new VimException("Network with id: " + network.getId() + " not updated successfully.");
@@ -214,7 +209,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         for (Subnet subnet : network.getSubnets()) {
             if (subnet.getExtId()!=null){
                 try {
-                    Subnet updatedSubnet = openstackClient.updateSubnet(vimInstance.getType(), vimInstance, updatedNetwork, subnet);
+                    Subnet updatedSubnet = openstackClient.updateSubnet(vimInstance, updatedNetwork, subnet);
                     log.debug("Subnet with id: " + subnet.getId() + " updated successfully.");
                     updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(updatedSubnet);
@@ -225,7 +220,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
                 }
             } else {
                 try {
-                    Subnet createdSubnet = openstackClient.createSubnet(vimInstance.getType(), vimInstance, updatedNetwork, subnet);
+                    Subnet createdSubnet = openstackClient.createSubnet(vimInstance, updatedNetwork, subnet);
                     log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
                     createdSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(createdSubnet);
@@ -238,26 +233,10 @@ public class OpenstackVIM implements Vim {// TODO and so on...
         }
         updatedNetwork.setSubnets(updatedSubnets);
         List<String> existingSubnetExtIds = null;
-        try {
-            existingSubnetExtIds = openstackClient.getSubnetsExtIds(vimInstance.getType(), vimInstance, updatedNetwork.getExtId());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        existingSubnetExtIds = openstackClient.getSubnetsExtIds(vimInstance, updatedNetwork.getExtId());
         for (String existingSubnetExtId : existingSubnetExtIds) {
             if (!updatedSubnetExtIds.contains(existingSubnetExtId)) {
-                try {
-                    openstackClient.deleteSubnet(vimInstance.getType(), vimInstance, existingSubnetExtId);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                    throw new VimException(e);
-                } catch (PluginInvokeException e) {
-                    e.printStackTrace();
-                    throw new VimException(e);
-                }
+                openstackClient.deleteSubnet(vimInstance, existingSubnetExtId);
             }
         }
         return updatedNetwork;
@@ -266,15 +245,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public void delete(VimInstance vimInstance, Network network) throws VimException{
         boolean isDeleted = false;
-        try {
-            isDeleted = openstackClient.deleteNetwork(vimInstance.getType(), vimInstance, network.getExtId());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        isDeleted = openstackClient.deleteNetwork(vimInstance, network.getExtId());
         if (isDeleted) {
             log.debug("Network with id: " + network.getId() + " deleted successfully.");
         } else {
@@ -286,7 +257,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public Network query(VimInstance vimInstance, String id) throws VimException {
         try {
-            Network network = openstackClient.getNetworkById(vimInstance.getType(), vimInstance, id);
+            Network network = openstackClient.getNetworkById(vimInstance, id);
             log.debug("Network with id: " + network.getId() + " found.");
             return network;
         } catch (Exception e) {
@@ -298,7 +269,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
         try {
-            List<Network> networks = openstackClient.listNetworks(vimInstance.getType(), vimInstance);
+            List<Network> networks = openstackClient.listNetworks(vimInstance);
             log.debug("Networks listed successfully.");
             return networks;
         } catch (Exception e) {
@@ -329,15 +300,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
         log.trace("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server;
-        try {
-            server = openstackClient.launchInstanceAndWait(vimInstance.getType(), vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        server = openstackClient.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
         log.debug("launched instance with id " + server.getExtId());
 
 //        vdu.setExtId(server.getExtId());
@@ -381,15 +344,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
 
     @Override
     public List<Server> queryResources(VimInstance vimInstance) throws VimException {
-        try {
-            return openstackClient.listServer(vimInstance.getType(), vimInstance);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        return openstackClient.listServer(vimInstance);
     }
 
     //     TODO choose the right image (DONE)
@@ -409,15 +364,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
         log.trace("Openstack client is: " + openstackClient);
-        try {
-            return openstackClient.listImages(vimInstance.getType(), vimInstance);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        return openstackClient.listImages(vimInstance);
     }
 
     @Override
@@ -444,15 +391,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Async
     public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException {
         log.debug("Removing VM with ext id: " + vnfcInstance.getVc_id());
-        try {
-            openstackClient.deleteServerByIdAndWait(vimInstance.getType(), vimInstance, vnfcInstance.getVc_id());
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        openstackClient.deleteServerByIdAndWait(vimInstance, vnfcInstance.getVc_id());
         return new AsyncResult<>(null);
     }
 
@@ -479,15 +418,7 @@ public class OpenstackVIM implements Vim {// TODO and so on...
     @Override
     public Quota getQuota(VimInstance vimInstance) throws VimException {
         Quota quota = null;
-        try {
-            quota = openstackClient.getQuota(vimInstance.getType(), vimInstance);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        } catch (PluginInvokeException e) {
-            e.printStackTrace();
-            throw new VimException(e);
-        }
+        quota = openstackClient.getQuota(vimInstance);
         return quota;
     }
 
