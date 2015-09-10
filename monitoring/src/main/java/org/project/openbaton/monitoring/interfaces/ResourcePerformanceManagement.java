@@ -20,11 +20,13 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.nfvo.Item;
 
+import java.rmi.Remote;
+
 /**
  * Created by mpa on 30/04/15.
  */
 
-public interface ResourcePerformanceManagement {
+public interface ResourcePerformanceManagement extends Remote {
 	
 	/**
 	 * This version must match the version of the plugin...
