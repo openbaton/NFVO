@@ -11,6 +11,9 @@ import java.rmi.registry.LocateRegistry;
 public class PluginBroker<T extends Remote> {
 
     public T getPlugin(String name) throws RemoteException, NotBoundException {
-        return (T) LocateRegistry.getRegistry().lookup(name);
+        return (T) LocateRegistry.getRegistry(1099).lookup(name);
+    }
+    public T getPlugin(String name, int port) throws RemoteException, NotBoundException {
+        return (T) LocateRegistry.getRegistry(port).lookup(name);
     }
 }

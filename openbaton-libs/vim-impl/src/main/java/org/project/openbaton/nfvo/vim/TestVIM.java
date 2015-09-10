@@ -31,7 +31,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -45,10 +44,8 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class TestVIM extends Vim {
 
-    @PostConstruct
-    private void init() {
-        String name = "test-plugin";
-        super.init(name);
+    public TestVIM(String name, int port) {
+        super(name, port);
     }
 
     @Override

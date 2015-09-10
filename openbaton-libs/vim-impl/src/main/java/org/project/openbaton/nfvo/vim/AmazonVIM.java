@@ -29,7 +29,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -41,11 +40,10 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class AmazonVIM extends Vim {
 
-    @PostConstruct
-    private void init() {
-        String name = "amazon-plugin";
-        super.init(name);
+    public AmazonVIM(String name, int port) {
+        super(name, port);
     }
+
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         throw new UnsupportedOperationException();
