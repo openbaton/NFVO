@@ -18,8 +18,8 @@ public class PluginStartup {
     private static Map<String, Process> processes = new HashMap<>();
 
     public static void installPlugin(String path) throws IOException {
-        log.debug("Running: java -jar " + path);
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path);
+        log.debug("Running: java -jar " + path + " openstack-media-server localhost 19345");
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, "openstack-media-server", "localhost", "19345");
         String pluginName = path.substring(path.lastIndexOf("/"), path.length());
         File file = new File("plugins" + pluginName + ".log");
         processBuilder.redirectErrorStream(true);
