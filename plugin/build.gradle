@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':common')
+    compile project(':catalogue')
+    compile project(':vim-drivers')
+    compile project(':monitoring')
+    compile project(':repository')
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
