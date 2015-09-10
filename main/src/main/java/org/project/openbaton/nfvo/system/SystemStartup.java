@@ -106,7 +106,7 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException{
-        PluginStartup.startPluginRecursive(folderPath);
+        PluginStartup.startPluginRecursive(folderPath, false,"localhost", "1099");
     }
 
     private void startRegistry(Configuration configuration) throws RemoteException, RemoteException {
