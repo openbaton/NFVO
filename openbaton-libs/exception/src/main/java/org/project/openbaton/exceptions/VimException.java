@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.common.exceptions;
+package org.project.openbaton.exceptions;
 
 /**
- * Created by lto on 08/06/15.
+ * Created by lto on 20/05/15.
  */
-public class QuotaExceededException extends Throwable {
-    public QuotaExceededException(String s) {
+public class VimException extends Exception {
+    public VimException(String s) {
         super(s);
     }
-    public QuotaExceededException(Throwable t){
-        super(t);
+
+    public VimException(Throwable cause) {
+        super(cause);
+    }
+
+    public VimException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

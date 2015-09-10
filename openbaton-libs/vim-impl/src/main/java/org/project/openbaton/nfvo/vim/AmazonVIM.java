@@ -22,7 +22,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
