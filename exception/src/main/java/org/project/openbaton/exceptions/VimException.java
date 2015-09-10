@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(':plugin')
-    compile project(':catalogue')
+package org.project.openbaton.exceptions;
 
-    compile project(':exception')
-    compile project(':monitoring')
-    compile project(':vim-drivers')
+/**
+ * Created by lto on 20/05/15.
+ */
+public class VimException extends Exception {
+    public VimException(String s) {
+        super(s);
+    }
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    public VimException(Throwable cause) {
+        super(cause);
+    }
+
+    public VimException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

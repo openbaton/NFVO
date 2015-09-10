@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(':plugin')
-    compile project(':catalogue')
+package org.project.openbaton.exceptions;
 
-    compile project(':exception')
-    compile project(':monitoring')
-    compile project(':vim-drivers')
+/**
+ * Created by lto on 26/05/15.
+ */
+public class NotFoundException extends Exception {
+    public NotFoundException(String msg){
+        super(msg);
+    }
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    public NotFoundException(Throwable e) {
+        super(e);
+    }
 }

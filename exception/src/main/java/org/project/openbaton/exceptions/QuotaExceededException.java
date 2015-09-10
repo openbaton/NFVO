@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(':plugin')
-    compile project(':catalogue')
+package org.project.openbaton.exceptions;
 
-    compile project(':exception')
-    compile project(':monitoring')
-    compile project(':vim-drivers')
-
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+/**
+ * Created by lto on 08/06/15.
+ */
+public class QuotaExceededException extends Throwable {
+    public QuotaExceededException(String s) {
+        super(s);
+    }
+    public QuotaExceededException(Throwable t){
+        super(t);
+    }
 }
