@@ -26,13 +26,11 @@ import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -43,13 +41,11 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-@ComponentScan(basePackages = "org.project.openbaton.clients")
 public class OpenstackVIM extends Vim {// TODO and so on...
 
-    @PostConstruct
-    private void init() {
-        String name = "openstack-media-server";
-        super.init(name);
+
+    public OpenstackVIM(String name, int port) {
+        super(name,port);
     }
 
     @Override

@@ -38,10 +38,10 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
 
     protected PluginBroker<ClientInterfaces> pluginBroker;
 
-    protected void init(String name) {
+    public Vim(String name, int port) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin(name);
+            client = pluginBroker.getPlugin(name, port);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
             e.printStackTrace();
