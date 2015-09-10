@@ -18,6 +18,7 @@ dependencies {
     compile project(':plugin')
     compile project(':catalogue')
 
+    compile project(':exception')
     compile project(':monitoring')
     compile project(':vim-drivers')
 

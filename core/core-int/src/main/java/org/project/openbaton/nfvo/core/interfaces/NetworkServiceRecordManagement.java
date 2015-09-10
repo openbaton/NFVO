@@ -19,9 +19,8 @@ package org.project.openbaton.nfvo.core.interfaces;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.common.exceptions.*;
+import org.project.openbaton.exceptions.*;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**

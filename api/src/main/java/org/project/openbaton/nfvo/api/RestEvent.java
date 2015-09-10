@@ -18,7 +18,7 @@ package org.project.openbaton.nfvo.api;
 
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

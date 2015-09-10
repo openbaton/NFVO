@@ -28,6 +28,7 @@ include 'repository'
 //include 'security'
 include 'catalogue'
 include 'monitoring'
+include 'exception'
 include 'vim-drivers'
 include 'dashboard'
 include 'plugin'
@@ -36,6 +37,7 @@ include 'plugin'
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')
 project(':monitoring').projectDir = file('openbaton-libs/monitoring')
 project(':vim-drivers').projectDir = file('openbaton-libs/vim-drivers')
+project(':exception').projectDir = file('openbaton-libs/exception')
 
 project(':common').projectDir = file('common')
 project(':dashboard').projectDir = file('dashboard')

@@ -18,7 +18,6 @@ package org.project.openbaton.nfvo.system;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
 import org.project.openbaton.nfvo.plugin.utils.PluginStartup;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
@@ -106,7 +105,7 @@ class SystemStartup implements CommandLineRunner {
         startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
     }
 
-    private void startPlugins(String folderPath) throws IOException, PluginInstallException {
+    private void startPlugins(String folderPath) throws IOException{
         PluginStartup.startPluginRecursive(folderPath);
     }
 

@@ -23,7 +23,6 @@ import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.utils.AgentBroker;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.project.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.slf4j.Logger;
@@ -51,8 +50,8 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     @Autowired
     private PluginEndpointRepository pluginEndpointRepository;
 
-    @Autowired
-    private AgentBroker agentBroker;
+//    @Autowired
+//    private AgentBroker agentBroker;
 
     private static final Character mask = '*';
     private final static Map<String, String> helpCommandList = new HashMap<String, String>(){{
@@ -141,7 +140,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
                     message.setInterfaceClass(Class.forName(endpoint.getInterfaceClass()));
                     message.setParameters(new LinkedList<Serializable>());
                     message.getParameters().add("shutting down the NFVO");
-                    agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
+//                    agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
                 }
 
                 exit(0);

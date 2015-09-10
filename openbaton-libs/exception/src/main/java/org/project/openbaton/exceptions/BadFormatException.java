@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.project.openbaton.nfvo.common.exceptions;
+package org.project.openbaton.exceptions;
 
 /**
  * Created by lto on 08/06/15.
