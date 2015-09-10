@@ -45,7 +45,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
 
     public OpenstackVIM(String name, int port) {
-        super(name,port);
+        super(name, port);
     }
 
     @Override
@@ -276,8 +276,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     @Async
     public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
-        log.trace("Initializing " + vimInstance);
+        log.debug("Initializing " + vimInstance.toString());
         log.debug("initialized VimInstance");
+        log.debug("VDU is : " + vdu.toString());
+        log.debug("VNFR is : " + vnfr.toString());
         /**
          *  *) choose image
          *  *) ...?
@@ -290,9 +292,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             networks.add(vnfdConnectionPoint.getExtId());
 
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
-        String hostname = vdu.getHostname() /*+ "-" + vnfComponent.getId().substring(0,4)*/;
+        vdu.setHostname(vnfr.getName());
+        String hostname = vdu.getHostname() + "-" + ((int)(Math.random()*1000));
 
-        log.trace("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
+        log.debug("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server;
         try {
             server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
