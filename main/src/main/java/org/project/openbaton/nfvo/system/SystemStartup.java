@@ -18,6 +18,8 @@ package org.project.openbaton.nfvo.system;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
+import org.project.openbaton.nfvo.plugin.utils.PluginStartup;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -99,6 +102,12 @@ class SystemStartup implements CommandLineRunner {
 
         startRegistry(c);
         configurationRepository.save(c);
+
+        startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
+    }
+
+    private void startPlugins(String folderPath) throws IOException, PluginInstallException {
+        PluginStartup.startPluginRecursive(folderPath);
     }
 
     private void startRegistry(Configuration configuration) throws RemoteException, RemoteException {

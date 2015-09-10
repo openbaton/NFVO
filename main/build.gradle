@@ -31,7 +31,7 @@ dependencies {
 
     compile project(':repository')
     compile project(':catalogue')
-    compile project(':vim-drivers')
+    compile project(':plugin')
 
     runtime project(':core-impl')
     runtime project(':api')
