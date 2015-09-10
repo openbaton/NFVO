@@ -48,7 +48,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
     @PostConstruct
     private void init() {
-        String name = "openstack-plugin";
+        String name = "openstack-media-server";
         super.init(name);
     }
 
