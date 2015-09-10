@@ -12,6 +12,7 @@ import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
@@ -28,6 +29,7 @@ import java.io.Serializable;
  */
 
 @SpringBootApplication
+@ComponentScan(basePackages = "org.project.openbaton")
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
     protected Gson parser = new GsonBuilder().create();

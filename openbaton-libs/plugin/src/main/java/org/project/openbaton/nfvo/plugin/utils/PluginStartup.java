@@ -1,6 +1,5 @@
 package org.project.openbaton.nfvo.plugin.utils;
 
-import org.project.openbaton.nfvo.common.exceptions.PluginInstallException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ public class PluginStartup {
 
     private static Map<String, Process> processes = new HashMap<>();
 
-    public static void installPlugin(String path) throws PluginInstallException, IOException {
+    public static void installPlugin(String path) throws IOException {
         log.debug("Running: java -jar " + path);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path);
         String pluginName = path.substring(path.lastIndexOf("/"), path.length());
@@ -30,7 +29,7 @@ public class PluginStartup {
         processes.put(path,p);
     }
 
-    public static void startPluginRecursive(String folderPath) throws PluginInstallException, IOException {
+    public static void startPluginRecursive(String folderPath) throws IOException {
 
         File folder = new File(folderPath);
 
