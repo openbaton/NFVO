@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(':plugin')
-    compile project(':catalogue')
+package org.project.openbaton.exceptions;
 
-    compile project(':exception')
-    compile project(':monitoring')
-    compile project(':vim-drivers')
+/**
+ * Created by lto on 23/06/15.
+ */
+public class VnfmException extends Exception {
+    public VnfmException() {
+        super();
+    }
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    public VnfmException(String message) {
+        super(message);
+    }
+
+    public VnfmException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public VnfmException(Throwable cause) {
+        super(cause);
+    }
 }
