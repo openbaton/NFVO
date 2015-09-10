@@ -23,12 +23,12 @@ public class PluginStartup {
 
         StringTokenizer st = new StringTokenizer(pluginName, "-");
         String token = st.nextToken();
-        log.debug("Running: java -jar " + path + " " + token + " localhost "+ port);
+        log.trace("Running: java -jar " + path + " " + token + " localhost "+ port);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, token, registryip, port);
         File file = new File("plugin-" + token + ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
-        log.debug("ProcessBuilder is: " + processBuilder);
+        log.trace("ProcessBuilder is: " + processBuilder);
         Process p = processBuilder.start();
         if (waitForPlugin)
             try {
