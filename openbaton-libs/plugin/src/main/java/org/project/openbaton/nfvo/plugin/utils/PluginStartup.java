@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Created by lto on 10/09/15.
@@ -17,11 +18,14 @@ public class PluginStartup {
 
     private static Map<String, Process> processes = new HashMap<>();
 
-    public static void installPlugin(String path, boolean waitForPlugin) throws IOException {
-        log.debug("Running: java -jar " + path + " openstack-media-server localhost 19345");
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, "openstack-media-server", "localhost", "19345");
-        String pluginName = path.substring(path.lastIndexOf("/"), path.length());
-        File file = new File("plugins" + pluginName + ".log");
+    private static void installPlugin(String path, boolean waitForPlugin, String registryip, String  port) throws IOException {
+        String pluginName = path.substring(path.lastIndexOf("/") + 1, path.length());
+
+        StringTokenizer st = new StringTokenizer(pluginName, "-");
+        String token = st.nextToken();
+        log.debug("Running: java -jar " + path + " " + token + " localhost "+ port);
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, token, registryip, port);
+        File file = new File("plugin-" + token + ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
         log.debug("ProcessBuilder is: " + processBuilder);
@@ -35,17 +39,17 @@ public class PluginStartup {
         processes.put(path,p);
     }
 
-    public static void startPluginRecursive(String folderPath, boolean waitForPlugin) throws IOException {
+    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String  port) throws IOException {
 
         File folder = new File(folderPath);
 
         if (folder.isDirectory()){
             for (File jar : folder.listFiles()) {
                 if (jar.getAbsolutePath().endsWith(".jar"))
-                    installPlugin(jar.getAbsolutePath(), waitForPlugin);
+                    installPlugin(jar.getAbsolutePath(), waitForPlugin, registryip, port);
                 else
                     if (jar.isDirectory())
-                        startPluginRecursive(jar.getAbsolutePath(), waitForPlugin);
+                        startPluginRecursive(jar.getAbsolutePath(), waitForPlugin,registryip, port);
                     else
                         log.error(jar.getAbsolutePath() + " is not a jar file");
             }
