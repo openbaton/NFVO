@@ -22,7 +22,6 @@ import org.springframework.core.io.Resource;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -91,7 +90,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void updateSoftware();
 
     @Override
-    public abstract CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
+    public abstract VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
 
     @Override
     public abstract void upgradeSoftware();
@@ -129,7 +128,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 coreMessage = handleError(virtualNetworkFunctionRecord);
                 break;
             case MODIFY:
-                coreMessage = this.modify(virtualNetworkFunctionRecord, message.getDependency());
+                coreMessage.setVirtualNetworkFunctionRecord(this.modify(virtualNetworkFunctionRecord, message.getDependency()));
                 break;
             case RELEASE_RESOURCES:
                 coreMessage = this.terminate(virtualNetworkFunctionRecord);
@@ -260,7 +259,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
     }
 
-    protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
+    protected abstract String executeActionOnEMS(String vduHostname, String command) throws Exception;
 
     protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
@@ -289,7 +288,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         register();
     }
 
-    protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws VnfmSdkException, JMSException {
+    protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws Exception {
         executeActionOnEMS(emsEndpoint, command);
         try {
             updateVnfr(vnfr, event, command);
