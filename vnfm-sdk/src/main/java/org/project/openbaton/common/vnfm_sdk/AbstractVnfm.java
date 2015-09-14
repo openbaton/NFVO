@@ -35,6 +35,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected static final String nfvoQueue = "vnfm-core-actions";
     protected String type;
     protected String endpoint;
+    protected String endpointType;
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
@@ -96,7 +97,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract CoreMessage terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
@@ -111,6 +112,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
         this.endpoint = (String) properties.get("endpoint");
         this.type = (String) properties.get("type");
+        this.endpointType = properties.getProperty("endpoint-type", "JMS");
     }
 
     protected void onAction(CoreMessage message) throws NotFoundException, BadFormatException {
@@ -125,13 +127,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             case SCALING:
                 break;
             case ERROR:
-                coreMessage = handleError(virtualNetworkFunctionRecord);
+                handleError(virtualNetworkFunctionRecord);
+                coreMessage = null;
                 break;
             case MODIFY:
-                coreMessage.setVirtualNetworkFunctionRecord(this.modify(virtualNetworkFunctionRecord, message.getDependency()));
+                coreMessage = getCoreMessage(Action.MODIFY,this.modify(virtualNetworkFunctionRecord, message.getDependency()));
                 break;
             case RELEASE_RESOURCES:
-                coreMessage = this.terminate(virtualNetworkFunctionRecord);
+                coreMessage = getCoreMessage(Action.RELEASE_RESOURCES,this.terminate(virtualNetworkFunctionRecord));
                 break;
             case INSTANTIATE:
                 message.setVirtualNetworkFunctionRecord(createVirtualNetworkFunctionRecord(message.getVirtualNetworkFunctionDescriptor(), message.getExtention()));
@@ -160,7 +163,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 coreMessage = configure(virtualNetworkFunctionRecord);
                 break;
             case START:
-                coreMessage = start(virtualNetworkFunctionRecord);
+                coreMessage = getCoreMessage(Action.START,start(virtualNetworkFunctionRecord));
                 break;
         }
 
@@ -197,7 +200,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
     }
 
-    protected abstract CoreMessage start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
         for (LifecycleEvent lce : events)
@@ -284,7 +287,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
-        vnfmManagerEndpoint.setEndpointType(EndpointType.JMS);
+        log.debug("creating VnfmManagerEndpoint for vnfm endpointType: " + this.endpointType);
+        vnfmManagerEndpoint.setEndpointType(EndpointType.valueOf(this.endpointType));
         register();
     }
 
