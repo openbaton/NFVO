@@ -18,3 +18,8 @@ rootProject.name = 'openbaton-libs'
 
 include 'catalogue'
 include 'vnfm-sdk'
+include 'vnfm-sdk-jms'
+
+project(':catalogue').projectDir = file('../../catalogue')
+project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')
+project(':vnfm-sdk-jms').projectDir = file('../../vnfm-sdk-jms')
