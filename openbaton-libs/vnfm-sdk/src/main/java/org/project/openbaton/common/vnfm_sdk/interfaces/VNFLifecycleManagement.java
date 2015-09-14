@@ -56,7 +56,7 @@ public interface VNFLifecycleManagement {
 	 * @param dependency
 	 */
 	
-	CoreMessage modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
+	VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
 	
 	/**
 	 * This operation allows deploying a new 
