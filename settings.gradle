@@ -19,5 +19,7 @@ rootProject.name = 'openbaton-libs'
 include 'catalogue'
 include 'vim-drivers'
 include 'vnfm-sdk'
+include 'vnfm-sdk-jms'
+include 'vnfm-sdk-rest'
 include 'monitoring'
 
