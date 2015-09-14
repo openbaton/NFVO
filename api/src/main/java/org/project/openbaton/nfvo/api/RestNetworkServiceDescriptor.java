@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/api/v1//ns-descriptors")
+@RequestMapping("/api/v1/ns-descriptors")
 public class RestNetworkServiceDescriptor {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
