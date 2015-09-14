@@ -144,7 +144,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
+    protected String executeActionOnEMS(String vduHostname, String command) throws Exception {
         this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
