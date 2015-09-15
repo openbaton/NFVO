@@ -14,7 +14,7 @@ public class Network implements Serializable {
     @Id
     private String id;
     @Version
-    private static int version = 0;
+    private int version = 0;
     private String name;
     private String extId;
     private Boolean external = false;
@@ -50,12 +50,12 @@ public class Network implements Serializable {
         this.id = id;
     }
 
-    public static int getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public static void setVersion(int version) {
-        Network.version = version;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public String getName() {

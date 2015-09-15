@@ -17,11 +17,13 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NotFoundException;
 
 import javax.persistence.NoResultException;
-import java.util.List;
 
 /**
  * Created by mpa on 30/04/15.
@@ -29,55 +31,142 @@ import java.util.List;
 
 public interface NetworkServiceDescriptorManagement {
 
-	/**
-	 * This operation allows submitting and
-	 * validating a Network Service	Descriptor (NSD), 
-	 * including any related VNFFGD and VLD.
-	 */
-	NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException;
+    /**
+     * This operation allows submitting and
+     * validating a Network Service	Descriptor (NSD),
+     * including any related VNFFGD and VLD.
+     */
+    NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException;
 
-	/**
-	 * This operation allows disabling a
-	 * Network Service Descriptor, so that it
-	 * is not possible to instantiate it any 
-	 * further.
-	 * @param id
-	 */
-	boolean disable(String id);
+    /**
+     * This operation allows disabling a
+     * Network Service Descriptor, so that it
+     * is not possible to instantiate it any
+     * further.
+     *
+     * @param id
+     */
+    boolean disable(String id);
 
-	/**
-	 * This operation allows enabling a
-	 * Network Service Descriptor.
-	 * @param id
-	 */
-	boolean enable(String id);
+    /**
+     * This operation allows enabling a
+     * Network Service Descriptor.
+     *
+     * @param id
+     */
+    boolean enable(String id);
 
-	/**
-	 * This operation allows updating a Network 
-	 * Service Descriptor (NSD), including any 
-	 * related VNFFGD and VLD.This update might 
-	 * include creating/deleting new VNFFGDs
-	 * and/or new VLDs.
-	 * @param new_nsd
-	 */
-	NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd);
+    /**
+     * This operation allows updating a Network
+     * Service Descriptor (NSD), including any
+     * related VNFFGD and VLD.This update might
+     * include creating/deleting new VNFFGDs
+     * and/or new VLDs.
+     *
+     * @param new_nsd
+     */
+    NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd);
 
-	/**
-	 * This operation is used to query the
-	 * information of the Network Service
-	 * Descriptor (NSD), including any
-	 * related VNFFGD and VLD.
-	 */
-	Iterable<NetworkServiceDescriptor> query();
+    /**
+     * This operation added a new VNFD to the NSD with {@code id}
+     *
+     * @param vnfd VirtualNetworkFunctionDescriptor to be persisted
+     * @param id   of NetworkServiceDescriptor
+     * @return the persisted VirtualNetworkFunctionDescriptor
+     */
+    VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id);
 
-	NetworkServiceDescriptor query(String id) throws NoResultException;
+    /**
+     * This operation is used to query the
+     * information of the Network Service
+     * Descriptor (NSD), including any
+     * related VNFFGD and VLD.
+     */
+    Iterable<NetworkServiceDescriptor> query();
 
-	/**
-	 * This operation is used to remove a
-	 * disabled Network Service Descriptor.
-	 * @param id
-	 */
-	void delete(String id);
+    NetworkServiceDescriptor query(String id) throws NoResultException;
 
-	void removeVNFDescriptor(String id_vfn);
+    /**
+     * This operation is used to remove a
+     * disabled Network Service Descriptor.
+     *
+     * @param id
+     */
+    void delete(String id);
+
+    /**
+     * Removes the VNFDescriptor into NSD
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VNFD
+     */
+    void deleteVnfDescriptor(String idNsd, String idVnfd);
+
+    /**
+     * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VirtualNetworkFunctionDescriptor
+     * @return VirtualNetworkFunctionDescriptor
+     */
+    VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd);
+
+    /**
+     * Updates the VNFDescriptor into NSD with idNsd
+     *
+     * @param idNsd
+     * @param idVfn
+     * @param vnfDescriptor
+     * @return
+     */
+    VirtualNetworkFunctionDescriptor updateVNF(String idNsd, String idVfn, VirtualNetworkFunctionDescriptor vnfDescriptor);
+
+    /**
+     * Returns the VNFDependency selected by idVnfd into NSD with idNsd
+     *
+     * @return VNFDependency
+     */
+    VNFDependency getVnfDependency(String idNsd, String idVnfd);
+
+    /**
+     * Removes the VNFDependency into NSD
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VNFD
+     */
+    void deleteVNFDependency(String idNsd, String idVnfd);
+
+    /**
+     * Save or Update the VNFDependency into NSD with idNsd
+     *
+     * @param idNsd
+     * @param vnfDependency
+     * @return VNFDependency
+     */
+    VNFDependency saveVNFDependency(String idNsd, VNFDependency vnfDependency);
+
+    /**
+     * Deletes the PhysicalNetworkFunctionDescriptor from NSD
+     *
+     * @param idNsd of NSD
+     * @param idPnf of PhysicalNetworkFunctionDescriptor
+     */
+    void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+
+    /**
+     * Returns the PhysicalNetworkFunctionDescriptor with idPnf into NSD with idNsd
+     *
+     * @param idNsd
+     * @param idPnf
+     * @return PhysicalNetworkFunctionDescriptor selected
+     */
+    PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+
+    /**
+     * Add or Update the PhysicalNetworkFunctionDescriptor into NSD
+     * @param pDescriptor
+     * @param id
+     * @return PhysicalNetworkFunctionDescriptor
+     */
+    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor ,String id);
 }

@@ -20,7 +20,7 @@ import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.Subnet;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.catalogue.util.IdGenerator;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.NetworkRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     @Override
     public Network add(VimInstance vimInstance, Network network) throws VimException{
         org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
+        vim = vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099");
         //Define Network if values are null or empty
         if (network.getName() == null || network.getName().isEmpty())
             network.setName(IdGenerator.createUUID());
@@ -72,7 +72,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     public void delete(VimInstance vimInstance, Network network) throws VimException {
         //Fetch Vim
         org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
+        vim = vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099");
         //Delete network from cloud environment
         vim.delete(vimInstance, network);
         //Delete network from NetworkRepository
@@ -83,7 +83,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException{
         //Fetch Vim
         org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
+        vim = vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099");
         //Update network on cloud environment
         return vim.update(vimInstance, updatingNetwork);
     }

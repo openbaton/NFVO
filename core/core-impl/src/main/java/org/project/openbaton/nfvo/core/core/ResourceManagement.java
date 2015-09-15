@@ -23,7 +23,7 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
-        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType(), virtualDeploymentUnit.getVimInstance().getType(), "1099");
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         List<String> ids=new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
@@ -64,7 +64,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
 
     @Override
     public List<Server> query(VimInstance vimInstance) throws VimException {
-        return vimBroker.getVim(vimInstance.getType()).queryResources(vimInstance);
+        return vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryResources(vimInstance);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
 
     @Override
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
-        org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType(), virtualDeploymentUnit.getVimInstance().getType(), "1099");
         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
             vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance());
         }

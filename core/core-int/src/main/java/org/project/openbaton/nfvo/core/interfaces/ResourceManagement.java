@@ -16,12 +16,12 @@
 
 package org.project.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.exceptions.VimException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +37,7 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException;
+	List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException, VimException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 

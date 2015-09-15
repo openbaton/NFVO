@@ -23,8 +23,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -355,24 +354,4 @@ public class NSRUtils {
         }
         return false;
     }
-
-    public static void createConnectionsPoints(VirtualNetworkFunctionDescriptor vnfd, VirtualDeploymentUnit vdu, Network network) {
-        //Create ConnectionPoint for VNFR
-        ConnectionPoint connectionPoint = new ConnectionPoint();
-        connectionPoint.setName(network.getName());
-        connectionPoint.setExtId(network.getExtId());
-        connectionPoint.setType("LAN");
-        vnfd.getConnection_point().add(connectionPoint);
-        //Create ConnectionPoint for VDU
-        VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
-        vnfdConnectionPoint.setVirtual_link_reference(network.getName());
-        vnfdConnectionPoint.setName(network.getName());
-        vnfdConnectionPoint.setExtId(network.getExtId());
-        vnfdConnectionPoint.setType("LAN");
-        //Create VNFC for VDU
-        VNFComponent vnfComponent = new VNFComponent();
-        vnfComponent.getConnection_point().add(vnfdConnectionPoint);
-        vdu.getVnfc().add(vnfComponent);
-    }
-
 }

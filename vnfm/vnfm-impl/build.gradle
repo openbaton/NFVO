@@ -20,10 +20,10 @@ dependencies {
     compile project(':catalogue')
 
     compile project(':common')
+    compile project(':exception')
     compile project(':repository')
     compile project(':core-int')
     compile project(':vnfm-int')
-
 
     compile 'javax.jms:javax.jms-api:2.0.1'
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
