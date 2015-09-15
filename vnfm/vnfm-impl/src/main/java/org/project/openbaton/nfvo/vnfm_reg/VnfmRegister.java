@@ -64,15 +64,15 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
     }
 
     @Override
-    public VnfmManagerEndpoint getVnfm(String type) throws NotFoundException {
+    public VnfmManagerEndpoint getVnfm(String endpoint) throws NotFoundException {
+        log.trace("Looking for vnfmEndpoint endpoint: " + endpoint);
         for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmManagerEndpointRepository.findAll()){
             log.trace(""+vnfmManagerEndpoint);
-            log.trace("" + type);
-            if (vnfmManagerEndpoint.getType().toLowerCase().equals(type.toLowerCase())){
+            if (vnfmManagerEndpoint.getType().equals(endpoint)){
                 return vnfmManagerEndpoint;
             }
         }
-        throw new NotFoundException("VnfManager of type " + type + " is not registered");
+        throw new NotFoundException("VnfManager of endpoint " + endpoint + " is not registered");
     }
 
     public void unregister(VnfmManagerEndpoint endpoint) {

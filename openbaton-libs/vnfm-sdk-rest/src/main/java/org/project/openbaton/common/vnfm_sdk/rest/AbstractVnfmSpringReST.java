@@ -123,8 +123,8 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     protected void sendToCore(Serializable msg){
         String json = mapper.toJson(msg);
-        log.debug("post on " + this.type + "-core-actions with json: " + json);
-        this.post("admin/v1/" + this.type + "-core-actions", json);
+        log.debug("post on vnfm-core-actions with json: " + json);
+        this.post("admin/v1/vnfm-core-actions", json);
     }
 
     @Override

@@ -1,0 +1,7 @@
+apply from: 'settings-vnfm-sdk-rest.gradle'
+
+rootProject.children.each { project ->
+    String relativeProjectPath = project.projectDir.path.replace(settingsDir.path, "")
+    println 'relativeProjectPath =====' + relativeProjectPath
+    project.projectDir = new File("openbaton-libs/$relativeProjectPath")
+}
