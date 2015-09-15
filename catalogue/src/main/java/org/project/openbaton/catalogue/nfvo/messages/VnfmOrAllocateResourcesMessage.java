@@ -45,6 +45,6 @@ public class VnfmOrAllocateResourcesMessage implements VnfmOrMessage {
 
     @Override
     public Action getAction() {
-        return null;
+        return Action.ALLOCATE_RESOURCES;
     }
 }
