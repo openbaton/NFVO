@@ -29,6 +29,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Destination;
+
 /**
  * Created by lto on 26/05/15.
  */
@@ -41,7 +43,7 @@ public class VnfmReceiverJMS implements VnfmReceiver {
 
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory", concurrency = "20")
-    public void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) String tempDestination) throws NotFoundException, VimException {
+    public void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + nfvMessage);
 
         log.debug("----------Executing ACTION: " + nfvMessage.getAction());

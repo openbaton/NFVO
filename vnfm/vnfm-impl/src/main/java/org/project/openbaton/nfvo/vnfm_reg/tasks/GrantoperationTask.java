@@ -35,8 +35,6 @@ public class GrantoperationTask extends AbstractTask {
 
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-
-        CoreMessage message = null;
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
@@ -49,7 +47,6 @@ public class GrantoperationTask extends AbstractTask {
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.GRANT_OPERATION), getTempDestination());
         } else {
             // there are no enough resources for deploying VNFR
-            message.setAction(Action.ERROR);
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ERROR),getTempDestination());
         }
     }

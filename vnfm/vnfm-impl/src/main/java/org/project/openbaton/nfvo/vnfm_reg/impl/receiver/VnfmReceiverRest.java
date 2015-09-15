@@ -29,6 +29,7 @@ import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.Destination;
 import javax.validation.Valid;
 
 
@@ -46,7 +47,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
     @Override
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void actionFinished(@RequestBody NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) String tempDestination) throws NotFoundException, VimException {
+    public void actionFinished(@RequestBody NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + nfvMessage);
         vnfmManager.executeAction(nfvMessage, tempDestination);
     }

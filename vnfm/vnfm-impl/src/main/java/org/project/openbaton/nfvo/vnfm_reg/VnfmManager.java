@@ -54,6 +54,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Destination;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -229,7 +230,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     }
 
     @Override
-    public void executeAction(NFVMessage nfvMessage, String tempDestination) throws VimException, NotFoundException {
+    public void executeAction(NFVMessage nfvMessage, Destination tempDestination) throws VimException, NotFoundException {
 
         String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
         String beanName = actionName + "Task";
