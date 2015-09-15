@@ -18,7 +18,7 @@ package org.project.openbaton.nfvo.api;
 
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,7 +57,7 @@ public class RestEvent {
 	 * Removes the EventEndpoint from the EventEndpoint repository
 	 * 
 	 * @param name
-	 *            : The Image's id to be deleted
+	 *            : The Event's id to be deleted
 	 */
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -66,12 +66,15 @@ public class RestEvent {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public List<String> getEvents(){
-		List<String> actions = new ArrayList<>();
+	public List<EventEndpoint> getEvents(){
+
+		List<EventEndpoint> events = new ArrayList<>();
 		for (Action action : Action.values()){
-			actions.add(action.toString());
+			EventEndpoint endpoint = new EventEndpoint();
+			endpoint.setEvent(action);
+			events.add(endpoint);
 		}
-		return actions;
+		return events;
 	}
 
 }

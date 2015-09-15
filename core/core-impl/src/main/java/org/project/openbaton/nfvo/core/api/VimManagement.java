@@ -20,7 +20,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -88,13 +88,13 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
         Set<NFVImage> images = new HashSet<>();
-        images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+        images.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryImages(vimInstance));
         vimInstance.setImages(images);
         Set<Network> networks = new HashSet<>();
-        networks.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+        networks.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryNetwork(vimInstance));
         vimInstance.setNetworks(networks);
         Set<DeploymentFlavour> flavours = new HashSet<>();
-        flavours.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        flavours.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryDeploymentFlavors(vimInstance));
         vimInstance.setFlavours(flavours);
     }
 }

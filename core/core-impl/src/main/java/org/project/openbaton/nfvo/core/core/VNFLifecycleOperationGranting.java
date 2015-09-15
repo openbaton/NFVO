@@ -18,10 +18,11 @@ package org.project.openbaton.nfvo.core.core;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,29 +38,31 @@ import java.util.HashMap;
 @Service
 @Scope
 public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting {
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
-        //if (true)
-        //    return true;
+        if (true)
+            return true;
         //HashMap holds how many VDUs are deployed on a specific VimInstance
-        HashMap<VimInstance,Integer> countVDUsOnVimInstances = new HashMap<>();
+        HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
         //Count VDUs on a specific VimInstance
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            log.debug("Found VDU with id: " + vdu.getId());
-            if (vdu.getExtId() != null) {
-                log.debug("VDU " + vdu.getHostname() + " is already deployed");
-                break;
-            }
-            if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
-                countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + 1);
-            } else {
-                countVDUsOnVimInstances.put(vdu.getVimInstance(), 1);
+//            log.debug("Found VDU with id: " + vdu.getId());
+            for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+//                log.debug("Found VNFCInstance with id: " + vnfcInstance.getId());
+                if (vnfcInstance.getVc_id() != null) {
+                    log.debug("VNFCInstance " + vnfcInstance.getHostname() + " is already deployed");
+                    break;
+                }
+                if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
+                    countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + 1);
+                } else {
+                    countVDUsOnVimInstances.put(vdu.getVimInstance(), 1);
+                }
             }
         }
         //Check if enough resources are available for the deployment

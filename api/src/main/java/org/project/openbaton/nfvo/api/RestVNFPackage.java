@@ -17,9 +17,9 @@
 package org.project.openbaton.nfvo.api;
 
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.VNFPackageManagement;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")

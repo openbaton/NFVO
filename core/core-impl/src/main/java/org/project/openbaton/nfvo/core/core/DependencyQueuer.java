@@ -5,8 +5,8 @@ import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
@@ -71,7 +71,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
             if (sourceList.contains(vnfrSourceName+nsrFather.getId())) {
                 sourceList.remove(vnfrSourceName+nsrFather.getId());
                 if (sourceList.size() == 0) {
-
+                    
                     VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
 
                     //get the vnfr target by its name

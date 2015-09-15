@@ -31,8 +31,7 @@ import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -360,7 +359,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     public void onApplicationEvent(EventFinishEvent event) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getVirtualNetworkFunctionRecord();
         publishEvent(event.getAction(), virtualNetworkFunctionRecord);
-        findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        if ((event.getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (event.getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {
+            findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        }
     }
 
     @Override

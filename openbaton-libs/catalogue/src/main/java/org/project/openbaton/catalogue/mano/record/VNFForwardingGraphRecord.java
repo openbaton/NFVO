@@ -8,8 +8,8 @@ package org.project.openbaton.catalogue.mano.record;
 
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
-import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;

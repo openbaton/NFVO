@@ -17,9 +17,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-
-import java.util.List;
+import org.project.openbaton.exceptions.NotFoundException;
 
 /**
  * Created by lto on 13/05/15.
