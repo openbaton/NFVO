@@ -222,51 +222,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement {
             vnfr.getLifecycle_event_history().add(newLce);
         }
     }
-
-//    private void changeStatus(VirtualNetworkFunctionRecord vnfr, Event event) {
-//        switch (event){
-//            case RESET:
-//                break;
-//            case ERROR:vnfr.setStatus(Status.ERROR);
-//                break;
-//            case INSTANTIATE: vnfr.setStatus(Status.INITIALIZED);
-//                break;
-//            case GRANTED:
-//                break;
-//            case ALLOCATE:
-//                break;
-//            case CONFIGURE: vnfr.setStatus(Status.INACTIVE);
-//                break;
-//            case SCALE:
-//                break;
-//            case SCALE_OUT:
-//                break;
-//            case SCALE_IN:
-//                break;
-//            case SCALE_UP:
-//                break;
-//            case SCALE_DOWN:
-//                break;
-//            case UPDATE:
-//                break;
-//            case UPDATE_ROLLBACK:
-//                break;
-//            case UPGRADE:
-//                break;
-//            case UPGRADE_ROLLBACK:
-//                break;
-//            case START: vnfr.setStatus(Status.ACTIVE);
-//                break;
-//            case STOP: vnfr.setStatus(Status.INACTIVE);
-//                break;
-//            case RELEASE:
-//                break;
-//            case TERMINATE: vnfr.setStatus(Status.TERMINATED);
-//                break;
-//        }
-//
-//    }
-
     protected abstract String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException;
 
     protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);

@@ -38,6 +38,9 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     private ApplicationEventPublisher publisher;
     protected Action action;
 
+
+
+    protected String tempDestination;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     protected VNFRecordDependency dependency;
 
@@ -62,9 +65,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
     @Autowired
     protected NetworkServiceRecordRepository networkServiceRecordRepository;
-
-    @Autowired
-    private DependencyQueuer dependencyQueuer;
 
 
     @Override
@@ -101,6 +101,13 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         return (VnfmSender) this.context.getBean(senderName);
     }
 
+    protected String getTempDestination() {
+        return tempDestination;
+    }
+
+    public void setTempDestination(String tempDestination) {
+        this.tempDestination = tempDestination;
+    }
     protected void changeStatus() {
         log.debug("Action is: " + action);
         Status status = null;
