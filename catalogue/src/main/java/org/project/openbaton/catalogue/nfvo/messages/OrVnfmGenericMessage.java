@@ -36,12 +36,14 @@ public class OrVnfmGenericMessage implements OrVnfmMessage {
     @Override
     public String toString() {
         return "OrVnfmGenericMessage{" +
-                "vnfr=" + vnfr +
+                "action=" + action +
+                ", vnfr=" + vnfr +
+                ", vnfrd=" + vnfrd +
                 '}';
     }
 
     @Override
     public Action getAction() {
-        return null;
+        return action;
     }
 }
