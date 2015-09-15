@@ -1,11 +1,9 @@
-
 angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
-    .config(function($routeProvider)
-    {
+    .config(function ($routeProvider) {
 
         $routeProvider.
             when('/login', {
-                templateUrl:'login.html',
+                templateUrl: 'login.html',
                 controller: 'LoginController'
             }).
             when('/', {
@@ -132,9 +130,9 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
  *
  */
 
-angular.module('app').run(function($rootScope, $location, $cookieStore, $route) {
+angular.module('app').run(function ($rootScope, $location, $cookieStore, $route) {
     //$route.reload();
-    $rootScope.$on('$routeChangeStart', function(event, next) {
+    $rootScope.$on('$routeChangeStart', function (event, next) {
 
 //        console.log($cookieStore.get('logged'));
         if ($cookieStore.get('logged') === false || angular.isUndefined($cookieStore.get('logged'))) {
@@ -158,9 +156,9 @@ angular.module('app').run(function($rootScope, $location, $cookieStore, $route) 
  * shows the modal for changing the Settings
  */
 
-angular.module('app').controller('MenuCtrl', function($scope, http) {
+angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
-
+    var url = 'http://localhost:8080/api/v1';
 //    http.syncGet('/api/rest/admin/v2/configs/').then(function(data)
 //    {
 //        $scope.config = data;
@@ -169,18 +167,33 @@ angular.module('app').controller('MenuCtrl', function($scope, http) {
 //    });
 
 
-    $scope.saveSetting = function(config) {
+    $scope.numberNSD = 0;
+    $scope.numberNSD = 0;
+    $scope.numberVNF = 8;
+    $scope.numberUnits = 5;
+    http.syncGet(url + '/ns-descriptors/').then(function (data) {
+        $scope.numberNSD = data.length;
+        console.log(data.length);
+    });
+    http.syncGet(url + '/ns-records/').then(function (data) {
+        $scope.numberNSR = data.length;
+        console.log(data.length);
+
+    });
+
+
+    $scope.saveSetting = function (config) {
         console.log(config);
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
         http.post('/api/rest/admin/v2/configs/', config)
-            .success(function(response) {
+            .success(function (response) {
                 $('.modal').modal('hide');
                 alert('Configurations Updated! ' + response);
 
             })
-            .error(function(response, status) {
+            .error(function (response, status) {
                 $('.modal').modal('hide');
                 alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
             });
@@ -189,8 +202,6 @@ angular.module('app').controller('MenuCtrl', function($scope, http) {
 //    window.onresize = function() {
 //        window.location.reload();
 //    };
-
-
 
 
 });

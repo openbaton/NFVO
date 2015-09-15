@@ -95,8 +95,8 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
     // TODO fetch the NetworkServiceDescriptor from the DB (DONE)
     @Override
-    public NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(nsd_id);
+    public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
         return deployNSR(networkServiceDescriptor);
     }
 
@@ -110,6 +110,11 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          */
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         return deployNSR(networkServiceDescriptor);
+    }
+
+    public void deleteVNFRecord(String idNsr, String idVnf) {
+        //TODO the logic of this request for the moment deletes only the VNFR from the DB
+        nsrRepository.deleteVNFRecord(idNsr, idVnf);
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
@@ -156,7 +161,23 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     }
                 }
             }
+//            Set<Event> events = new HashSet<Event>();
+//            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
+//                events.add(lifecycleEvent.getEvent());
+//            }
+//
+//            /*if (!events.contains(Event.ALLOCATE)) {
+//                if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionDescriptor) == false)
+//                    throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionDescriptor.getName());
+//                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()) {
+//                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionDescriptor));
+//                }
+//            }*/
         }
+
+//        for (String id : ids) {
+//            log.debug("Created VDU with id: " + id);
+//        }
 
         NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
@@ -192,12 +213,10 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     }
 
     @Override
-    public NetworkServiceRecord update(NetworkServiceRecord new_nsr, String old_id) {
-        NetworkServiceRecord old_nsr = nsrRepository.findOne(old_id);
-        old_nsr.setName(new_nsr.getName());
-        old_nsr.setVendor(new_nsr.getVendor());
-        old_nsr.setVersion(new_nsr.getVersion());
-        return old_nsr;
+    public NetworkServiceRecord update(NetworkServiceRecord newRsr, String idNsr) {
+        nsrRepository.exists(idNsr);
+        newRsr = nsrRepository.save(newRsr);
+        return newRsr;
     }
 
     @Override
@@ -213,7 +232,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
-
         Configuration configuration = configurationManagement.queryByName("system");
 
         boolean checkStatus = true;
@@ -236,7 +254,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
             Set<Event> events = new HashSet<Event>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
                 events.add(lifecycleEvent.getEvent());
                 log.debug("found " + lifecycleEvent.getEvent());
             }
