@@ -78,42 +78,15 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     }
 
     @Override
-    public VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor_new, String id) {
-        VirtualLinkDescriptor old = virtualLinkDescriptorRepository.findOne(id);
-        old.setConnection(virtualLinkDescriptor_new.getConnection());
-        old.setQos(virtualLinkDescriptor_new.getQos());
-        old.setDescriptor_version(virtualLinkDescriptor_new.getDescriptor_version());
-        old.setNumber_of_endpoints(virtualLinkDescriptor_new.getNumber_of_endpoints());
-        old.setVendor(virtualLinkDescriptor_new.getVendor());
-        old.setVld_security(virtualLinkDescriptor_new.getVld_security());
-        old.setConnectivity_type(virtualLinkDescriptor_new.getConnectivity_type());
-        old.setLeaf_requirement(virtualLinkDescriptor_new.getLeaf_requirement());
-        old.setRoot_requirement(virtualLinkDescriptor_new.getRoot_requirement());
-        old.setTest_access(virtualLinkDescriptor_new.getTest_access());
-        return old;
+    public VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor, String id) {
+        virtualLinkDescriptor = virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
+        return virtualLinkDescriptor;
     }
 
     @Override
-    public VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord_new, String id) {
-        VirtualLinkRecord old = virtualLinkRecordRepository.findOne(id);
-        old.setConnection(virtualLinkRecord_new.getConnection());
-        old.setQos(virtualLinkRecord_new.getQos());
-        old.setVendor(virtualLinkRecord_new.getVendor());
-        old.setAllocated_capacity(virtualLinkRecord_new.getAllocated_capacity());
-        old.setConnectivity_type(virtualLinkRecord_new.getConnectivity_type());
-        old.setLeaf_requirement(virtualLinkRecord_new.getLeaf_requirement());
-        old.setRoot_requirement(virtualLinkRecord_new.getRoot_requirement());
-        old.setTest_access(virtualLinkRecord_new.getTest_access());
-        old.setAudit_log(virtualLinkRecord_new.getAudit_log());
-        old.setDescriptor_reference(virtualLinkRecord_new.getDescriptor_reference());
-        old.setLifecycle_event_history(virtualLinkRecord_new.getLifecycle_event_history());
-        old.setNotification(virtualLinkRecord_new.getNotification());
-        old.setParent_ns(virtualLinkRecord_new.getParent_ns());
-        old.setStatus(virtualLinkRecord_new.getStatus());
-        old.setVnffgr_reference(virtualLinkRecord_new.getVnffgr_reference());
-        old.setVim_id(virtualLinkRecord_new.getVim_id());
-        old.setVersion(virtualLinkRecord_new.getVersion());
-        return old;
+    public VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord, String id) {
+        virtualLinkRecord = virtualLinkRecordRepository.save(virtualLinkRecord);
+        return virtualLinkRecord;
     }
 
     @Override

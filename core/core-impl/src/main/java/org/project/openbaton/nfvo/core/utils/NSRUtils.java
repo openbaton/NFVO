@@ -75,7 +75,9 @@ public class NSRUtils {
         networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if (networkServiceDescriptor.getVld() != null) {
             for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
-                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
+                VirtualLinkRecord vlr = NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor);
+                vlr.setParent_ns(networkServiceDescriptor.getId());
+                networkServiceRecord.getVlr().add(vlr);
             }
         }
         return networkServiceRecord;
@@ -156,7 +158,36 @@ public class NSRUtils {
 
     public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
         VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
-        // TODO implement it
+        virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
+        virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
+        virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
+        virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
+        virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+
+        virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
+        virtualLinkRecord.setNumber_of_enpoints(0);
+
+        virtualLinkRecord.setParent_ns(null);
+        virtualLinkRecord.setExtId(null);
+        virtualLinkRecord.setVim_id(null);
+
+        virtualLinkRecord.setAllocated_capacity(new HashSet<String>());
+        virtualLinkRecord.setAudit_log(new HashSet<String>());
+        virtualLinkRecord.setNotification(new HashSet<String>());
+        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
+        //TODO why do the VLD has already a set of Connections?
+        //virtualLinkRecord.setConnection(virtualLinkDescriptor.getConnection());
+        virtualLinkRecord.setConnection(new HashSet<String>());
+
+        //TODO think about test_access -> different types on VLD and VLR
+        virtualLinkRecord.setTest_access("");
+
+        virtualLinkRecord.setQos(new HashSet<String>());
+        for (String qos : virtualLinkDescriptor.getQos()) {
+            virtualLinkRecord.getQos().add(qos);
+        }
+
         return virtualLinkRecord;
     }
 
@@ -255,8 +286,6 @@ public class NSRUtils {
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-                    connectionPoint_new.setName(connectionPoint.getName());
-                    connectionPoint_new.setExtId(connectionPoint.getExtId());
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
@@ -358,15 +387,11 @@ public class NSRUtils {
     public static void createConnectionsPoints(VirtualNetworkFunctionDescriptor vnfd, VirtualDeploymentUnit vdu, Network network) {
         //Create ConnectionPoint for VNFR
         ConnectionPoint connectionPoint = new ConnectionPoint();
-        connectionPoint.setName(network.getName());
-        connectionPoint.setExtId(network.getExtId());
         connectionPoint.setType("LAN");
         vnfd.getConnection_point().add(connectionPoint);
         //Create ConnectionPoint for VDU
         VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
         vnfdConnectionPoint.setVirtual_link_reference(network.getName());
-        vnfdConnectionPoint.setName(network.getName());
-        vnfdConnectionPoint.setExtId(network.getExtId());
         vnfdConnectionPoint.setType("LAN");
         //Create VNFC for VDU
         VNFComponent vnfComponent = new VNFComponent();

@@ -73,4 +73,5 @@ public interface NetworkServiceRecordManagement {
      */
     void delete(String id) throws VimException, NotFoundException, ExecutionException, InterruptedException, WrongStatusException;
 
+    void deleteVNFRecord(String idNsr, String idVnf);
 }

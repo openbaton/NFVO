@@ -23,4 +23,10 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
         networkServiceRecordRepository.findFirstById(id).getVnfr().add(vnfr);
         return vnfr;
     }
+
+    @Override
+    @Transactional
+    public void deleteVNFRecord(String idNsr, String idVnfd) {
+        networkServiceRecordRepository.findFirstById(idNsr).getVnfr().remove(vnfrRepository.findOne(idVnfd));
+    }
 }
