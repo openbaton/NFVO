@@ -23,4 +23,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor,String> {
 
+    void removeById(String id);
 }

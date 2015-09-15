@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -55,10 +56,7 @@ public class InstantiateTask extends AbstractTask {
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
-            CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setAction(Action.START);
-            coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-            vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
     }
 

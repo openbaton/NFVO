@@ -5,6 +5,7 @@ import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
@@ -70,10 +71,8 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
             if (sourceList.contains(vnfrSourceName+nsrFather.getId())) {
                 sourceList.remove(vnfrSourceName+nsrFather.getId());
                 if (sourceList.size() == 0) {
-                    CoreMessage coreMessage = new CoreMessage();
-                    coreMessage.setAction(Action.MODIFY);
+
                     VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
-                    coreMessage.setDependency(vnfRecordDependency);
 
                     //get the vnfr target by its name
                     VirtualNetworkFunctionRecord target=null;
@@ -81,9 +80,10 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                         if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
                             target=vnfrRepository.findOne(vnfr.getId());
                     log.debug("Target version is: " +target.getHb_version());
-                    coreMessage.setVirtualNetworkFunctionRecord(target);
                     log.debug("SENDIGN MODIFY");
-                    vnfmManager.modify(target, coreMessage);
+                    OrVnfmGenericMessage orVnfmGenericMessage= new OrVnfmGenericMessage(target,Action.MODIFY);
+                    orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+                    vnfmManager.modify(target, orVnfmGenericMessage);
                     dependencyIdToBeRemoved.add(dependencyId);
                 }
             }

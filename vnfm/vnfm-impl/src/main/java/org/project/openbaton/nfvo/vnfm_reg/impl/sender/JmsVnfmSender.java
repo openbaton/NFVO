@@ -16,8 +16,8 @@
 
 package org.project.openbaton.nfvo.vnfm_reg.impl.sender;
 
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.nfvo.common.utils.jms.JmsSender;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -39,10 +39,15 @@ public class JmsVnfmSender implements VnfmSender{
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void sendCommand(final CoreMessage coreMessage, final VnfmManagerEndpoint endpoint) {
+    public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
 //        this.sendToQueue(coreMessage, endpoint.getType());
         String destinationName = "core-" + endpoint.getType() + "-actions";
-        jmsSender.send(destinationName, coreMessage);
+        jmsSender.send(destinationName, nfvMessage);
+    }
+
+    @Override
+    public void sendCommand(final NFVMessage nfvMessage, String tempDestination) {
+        jmsSender.send(tempDestination,nfvMessage);
     }
 
 //    public void sendToQueue(final CoreMessage coreMessage, String type) {

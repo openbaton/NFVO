@@ -6,6 +6,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.common.exceptions.VimException;
@@ -51,26 +52,20 @@ public class AllocateresourcesTask extends AbstractTask {
             } catch (VimException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
-                CoreMessage errorMessage = new CoreMessage();
-                errorMessage.setAction(Action.ERROR);
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                errorMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                    vnfmSender.sendCommand(errorMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
                 error = true;
             } catch (VimDriverException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
-                CoreMessage message = new CoreMessage();
-                message.setAction(Action.ERROR);
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                 virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
-                message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ERROR), getTempDestination());
                 error = true;
             }
 
@@ -84,16 +79,13 @@ public class AllocateresourcesTask extends AbstractTask {
 
         if (!error) {
 
-
-            CoreMessage coreMessage = new CoreMessage();
-            coreMessage.setAction(Action.INSTANTIATE);
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
 
             for (VirtualDeploymentUnit virtualDeploymentUnit: virtualNetworkFunctionRecord.getVdu()){
                 log.debug(">---< The unit ext id is: " + virtualDeploymentUnit.getExtId());
             }
-            coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-            vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+            OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ALLOCATE_RESOURCES);
+            vnfmSender.sendCommand(orVnfmGenericMessage, getTempDestination());
         }
     }
 
