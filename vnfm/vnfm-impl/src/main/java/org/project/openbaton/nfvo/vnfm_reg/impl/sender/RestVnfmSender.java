@@ -22,6 +22,7 @@ import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,8 +32,9 @@ import javax.annotation.PostConstruct;
 /**
  * Created by lto on 03/06/15.
  */
-@Service(value = "restSender")
-public class RestSender implements VnfmSender{
+@Service
+@Scope
+public class RestVnfmSender implements VnfmSender{
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

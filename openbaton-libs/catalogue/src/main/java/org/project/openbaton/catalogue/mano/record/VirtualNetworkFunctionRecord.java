@@ -155,7 +155,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private String name;
     private String type;
 
-    @JsonIgnore
+//    @JsonIgnore
     private String endpoint;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
