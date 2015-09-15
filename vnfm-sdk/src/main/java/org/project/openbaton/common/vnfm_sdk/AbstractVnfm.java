@@ -5,10 +5,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -91,7 +88,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void updateSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
+    public abstract VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency) throws Exception;
 
     @Override
     public abstract void upgradeSoftware();
@@ -116,62 +113,101 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     }
 
     protected void onAction(CoreMessage message) throws NotFoundException, BadFormatException {
-        log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log.trace("VNFM: Received Message: " + message.getAction());
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
-        CoreMessage coreMessage = null;
-        switch (message.getAction()) {
-            case SCALE:
-                this.scale();
-                break;
-            case SCALING:
-                break;
-            case ERROR:
-                handleError(virtualNetworkFunctionRecord);
-                coreMessage = null;
-                break;
-            case MODIFY:
-                coreMessage = getCoreMessage(Action.MODIFY,this.modify(virtualNetworkFunctionRecord, message.getDependency()));
-                break;
-            case RELEASE_RESOURCES:
-                coreMessage = getCoreMessage(Action.RELEASE_RESOURCES,this.terminate(virtualNetworkFunctionRecord));
-                break;
-            case INSTANTIATE:
-                message.setVirtualNetworkFunctionRecord(createVirtualNetworkFunctionRecord(message.getVirtualNetworkFunctionDescriptor(), message.getExtention()));
-            case ALLOCATE_RESOURCES:
-            case GRANT_OPERATION:
-                virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
-                virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord);
-                if (virtualNetworkFunctionRecord != null)
-                    coreMessage = getCoreMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
-                else
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
+        try {
+
+            log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            log.trace("VNFM: Received Message: " + message.getAction());
+            virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
+            CoreMessage coreMessage = null;
+            switch (message.getAction()) {
+                case SCALE:
+                    this.scale();
+                    break;
+                case SCALING:
+                    break;
+                case ERROR:
+                    handleError(virtualNetworkFunctionRecord);
                     coreMessage = null;
-                break;
-            case SCALE_IN_FINISHED:
-                break;
-            case SCALE_OUT_FINISHED:
-                break;
-            case SCALE_UP_FINISHED:
-                break;
-            case SCALE_DOWN_FINISHED:
-                break;
-            case RELEASE_RESOURCES_FINISH:
-                break;
-            case INSTANTIATE_FINISH:
-                break;
-            case CONFIGURE:
-                coreMessage = configure(virtualNetworkFunctionRecord);
-                break;
-            case START:
-                coreMessage = getCoreMessage(Action.START,start(virtualNetworkFunctionRecord));
-                break;
+                    break;
+                case MODIFY:
+                    coreMessage = getCoreMessage(Action.MODIFY, this.modify(virtualNetworkFunctionRecord, message.getDependency()));
+                    break;
+                case RELEASE_RESOURCES:
+                    coreMessage = getCoreMessage(Action.RELEASE_RESOURCES, this.terminate(virtualNetworkFunctionRecord));
+                    break;
+                case INSTANTIATE:
+                    message.setVirtualNetworkFunctionRecord(createVirtualNetworkFunctionRecord(message.getVirtualNetworkFunctionDescriptor(), message.getExtention()));
+                case ALLOCATE_RESOURCES:
+                case GRANT_OPERATION:
+                    virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
+                    virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord);
+                    if (virtualNetworkFunctionRecord != null) {
+                        coreMessage = getCoreMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
+                    }
+                    else {
+                        coreMessage = null;
+                    }
+                    setupProvides(virtualNetworkFunctionRecord);
+                    break;
+                case SCALE_IN_FINISHED:
+                    break;
+                case SCALE_OUT_FINISHED:
+                    break;
+                case SCALE_UP_FINISHED:
+                    break;
+                case SCALE_DOWN_FINISHED:
+                    break;
+                case RELEASE_RESOURCES_FINISH:
+                    break;
+                case INSTANTIATE_FINISH:
+                    break;
+                case CONFIGURE:
+                    coreMessage = getCoreMessage(Action.CONFIGURE, configure(virtualNetworkFunctionRecord));
+                    break;
+                case START:
+                    coreMessage = getCoreMessage(Action.START, start(virtualNetworkFunctionRecord));
+                    break;
+            }
+
+            log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            if (coreMessage != null) {
+                coreMessage.setDependency(message.getDependency());
+                log.debug("send to NFVO");
+                sendToNfvo(coreMessage);
+            }
+        } catch (Exception e) {
+            log.error("ERROR: ", e);
+            sendToNfvo(getCoreMessage(Action.ERROR, virtualNetworkFunctionRecord));
+        }
+    }
+
+    private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
+        //TODO add common parameters, even not defined into the provides: i.e. ip
+
+
+        /**
+         * Before ending, need to get all the "provides" filled
+         *
+         * TODO ask EMS for specific parameters
+         *
+         */
+
+        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
+        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
+            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
+//                TODO call ems here!
+                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
+            }
         }
 
-        log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        if (coreMessage != null) {
-            coreMessage.setDependency(message.getDependency());
-            log.debug("send to NFVO");
-            sendToNfvo(coreMessage);
+        //TODO remove this
+        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
+            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
+                configurationParameter.setValue("" + ((int) (Math.random() * 100)));
+                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
+            }
         }
     }
 
@@ -200,7 +236,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
     }
 
-    protected abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
     protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
         for (LifecycleEvent lce : events)
@@ -264,7 +300,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     protected abstract String executeActionOnEMS(String vduHostname, String command) throws Exception;
 
-    protected abstract CoreMessage configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
     protected abstract void sendToNfvo(CoreMessage coreMessage);
 
