@@ -79,11 +79,13 @@ public class VNFRUtils {
             vnfPackage.setExtId(vnfd.getVnfPackage().getExtId());
             virtualNetworkFunctionRecord.setVnfPackage(vnfPackage);
         }
+
         if (vnfd.getEndpoint() != null) {
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
         }
         else
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getType());
+
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
         virtualNetworkFunctionRecord.getMonitoring_parameter().addAll(vnfd.getMonitoring_parameter());
         virtualNetworkFunctionRecord.setVendor(vnfd.getVendor());
