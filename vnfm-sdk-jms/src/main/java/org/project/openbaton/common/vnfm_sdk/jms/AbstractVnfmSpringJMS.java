@@ -4,7 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.project.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -69,9 +75,9 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
     @Override
     public void onMessage(Message message) {
-        CoreMessage msg = null;
+        NFVMessage msg = null;
         try {
-            msg = (CoreMessage) ((ObjectMessage) message).getObject();
+            msg = (NFVMessage) ((ObjectMessage) message).getObject();
         } catch (JMSException e) {
             e.printStackTrace();
             System.exit(1);
@@ -88,6 +94,42 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         }
     }
 
+    @Override
+    protected boolean grantLifecycleOperation(VirtualNetworkFunctionRecord vnfr){
+        NFVMessage response= null;
+        try {
+            response = sendAndReceiveNfvMessage(nfvoQueue,getNfvMessage(Action.GRANT_OPERATION,vnfr));
+        } catch (JMSException e) {
+            log.error("" + e.getMessage());
+            return false;
+        }
+        log.debug(""+response);
+        if(response.getAction().ordinal()==Action.ERROR.ordinal())
+            return false;
+        OrVnfmGenericMessage orVnfmGenericMessage= (OrVnfmGenericMessage) response;
+        vnfr=orVnfmGenericMessage.getVnfr();
+        return true;
+    }
+    @Override
+    protected boolean allocateResources(VirtualNetworkFunctionRecord vnfr){
+        NFVMessage response= null;
+        try {
+            response = sendAndReceiveNfvMessage(nfvoQueue,getNfvMessage(Action.ALLOCATE_RESOURCES,vnfr));
+        } catch (JMSException e) {
+            log.error("" + e.getMessage());
+            return false;
+        }
+        if(response.getAction().ordinal()==Action.ERROR.ordinal())
+            return false;
+        OrVnfmGenericMessage orVnfmGenericMessage= (OrVnfmGenericMessage) response;
+        vnfr=orVnfmGenericMessage.getVnfr();
+        return true;
+    }
+
+    private NFVMessage sendAndReceiveNfvMessage(String destination, NFVMessage nfvMessage) throws JMSException {
+        Message response=jmsTemplate.sendAndReceive(destination, getObjectMessageCreator(nfvMessage));
+        return (NFVMessage) ((ObjectMessage) response).getObject();
+    }
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable message) {
         //log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
@@ -178,8 +220,8 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected void sendToNfvo(final CoreMessage coreMessage) {
-        sendMessageToQueue(nfvoQueue,coreMessage);
+    protected void sendToNfvo(final NFVMessage nfvMessage) {
+        sendMessageToQueue(nfvoQueue,nfvMessage);
     }
 
     @Override
