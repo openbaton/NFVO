@@ -30,6 +30,11 @@ public class VirtualLinkRecord implements Serializable {
     private String root_requirement;
     private String leaf_requirement;
 
+    /**
+     * extId of the network to attach
+     */
+    private String extId;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> qos;
     /**
@@ -111,8 +116,12 @@ public class VirtualLinkRecord implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
     }
 
     public String getVendor() {
