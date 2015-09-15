@@ -28,7 +28,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+//import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -79,63 +79,63 @@ public class MyOpenstackVimTest {
         definedNetwork.setSubnets(subnets);
     }
 
-    @Ignore
-    @Test
-    public void test_networks() throws VimException {
-        openstackVIM.add(vimInstance, definedNetwork);
-        Subnet newSubnet = createSubnet();
-        newSubnet.setName("newSubnet");
-        newSubnet.setCidr("192.168.124.0/24");
-        definedNetwork.getSubnets().add(newSubnet);
-        openstackVIM.update(vimInstance, definedNetwork);
-        definedNetwork.getSubnets().remove(definedSubnet);
-        openstackVIM.update(vimInstance, definedNetwork);
-        newSubnet.setName("updatedSubnet");
-        openstackVIM.update(vimInstance, definedNetwork);
-        openstackVIM.delete(vimInstance, definedNetwork);
-    }
-
-    @Ignore
-    @Test
-    public void test_flavor() throws VimException{
-        DeploymentFlavour flavor = new DeploymentFlavour();
-        flavor.setFlavour_key("test_flavor");
-        flavor.setRam(512);
-        flavor.setVcpus(4);
-        flavor.setDisk(1);
-        openstackVIM.add(vimInstance, flavor);
-        flavor.setFlavour_key("updated_flavor");
-        flavor.setRam(1024);
-        flavor.setVcpus(2);
-        flavor.setDisk(2);
-        openstackVIM.update(vimInstance, flavor);
-        openstackVIM.delete(vimInstance, flavor);
-    }
-
-    @Ignore
-    @Test
-    public void test_image() throws VimException {
-        NFVImage image = new NFVImage();
-        image.setName("test_cirros");
-        image.setMinRam(512);
-        image.setMinDiskSpace(1);
-        image.setDiskFormat("AMI");
-        image.setContainerFormat("AMI");
-        try {
-            InputStream is = new FileInputStream("/net/u/mpa/Downloads/cirros-0.3.3-x86_64-disk.img");
-            openstackVIM.add(vimInstance, image, is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        image.setName("updated_cirros");
-        image.setMinRam(1024);
-        image.setMinDiskSpace(2);
-        image.setDiskFormat("QCOW2");
-        image.setContainerFormat("BARE");
-        openstackVIM.update(vimInstance, image);
-        openstackVIM.delete(vimInstance, image);
-    }
+//    @Ignore
+//    @Test
+//    public void test_networks() throws VimException {
+//        openstackVIM.add(vimInstance, definedNetwork);
+//        Subnet newSubnet = createSubnet();
+//        newSubnet.setName("newSubnet");
+//        newSubnet.setCidr("192.168.124.0/24");
+//        definedNetwork.getSubnets().add(newSubnet);
+//        openstackVIM.update(vimInstance, definedNetwork);
+//        definedNetwork.getSubnets().remove(definedSubnet);
+//        openstackVIM.update(vimInstance, definedNetwork);
+//        newSubnet.setName("updatedSubnet");
+//        openstackVIM.update(vimInstance, definedNetwork);
+//        openstackVIM.delete(vimInstance, definedNetwork);
+//    }
+//
+//    @Ignore
+//    @Test
+//    public void test_flavor() throws VimException{
+//        DeploymentFlavour flavor = new DeploymentFlavour();
+//        flavor.setFlavour_key("test_flavor");
+//        flavor.setRam(512);
+//        flavor.setVcpus(4);
+//        flavor.setDisk(1);
+//        openstackVIM.add(vimInstance, flavor);
+//        flavor.setFlavour_key("updated_flavor");
+//        flavor.setRam(1024);
+//        flavor.setVcpus(2);
+//        flavor.setDisk(2);
+//        openstackVIM.update(vimInstance, flavor);
+//        openstackVIM.delete(vimInstance, flavor);
+//    }
+//
+//    @Ignore
+//    @Test
+//    public void test_image() throws VimException {
+//        NFVImage image = new NFVImage();
+//        image.setName("test_cirros");
+//        image.setMinRam(512);
+//        image.setMinDiskSpace(1);
+//        image.setDiskFormat("AMI");
+//        image.setContainerFormat("AMI");
+//        try {
+//            InputStream is = new FileInputStream("/net/u/mpa/Downloads/cirros-0.3.3-x86_64-disk.img");
+//            openstackVIM.add(vimInstance, image, is);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        image.setName("updated_cirros");
+//        image.setMinRam(1024);
+//        image.setMinDiskSpace(2);
+//        image.setDiskFormat("QCOW2");
+//        image.setContainerFormat("BARE");
+//        openstackVIM.update(vimInstance, image);
+//        openstackVIM.delete(vimInstance, image);
+//    }
 
     private VimInstance createVimInstance() {
         VimInstance vimInstance = new VimInstance();
