@@ -241,7 +241,7 @@ public class ApiRestNSDescriptorTest {
 			if (vnsDependency.getId().equals(vnfd.getId()))
 				assertEquals(vnsDependency1, vnsDependency);
 			else {
-				fail("postVNFDependency FAILED: not found the VNFDependency into NSD");
+				fail("saveVNFDependency FAILED: not found the VNFDependency into NSD");
 			}
 		}
 

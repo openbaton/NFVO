@@ -123,7 +123,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
-        List<String> ids = new ArrayList<>();
+        List<String> ids = new ArrayList<String>();
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()) {
                 if (internalVirtualLink.getConnectivity_type().equals("LAN")) {
@@ -148,7 +148,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     }
                 }
             }
-            Set<Event> events = new HashSet<>();
+            Set<Event> events = new HashSet<Event>();
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
             }
@@ -216,7 +216,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
     @Override
     public NetworkServiceRecord query(String id) {
-        return nsrRepository.findOne(id);
+        return nsrRepository.findFirstById(id);
     }
 
     @Override
@@ -241,10 +241,10 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
         }
 
-        List<Future<Void>> futures = new ArrayList<>();
+        List<Future<Void>> futures = new ArrayList<Future<Void>>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
-            Set<Event> events = new HashSet<>();
+            Set<Event> events = new HashSet<Event>();
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
                 log.debug("found " + lifecycleEvent.getEvent());
