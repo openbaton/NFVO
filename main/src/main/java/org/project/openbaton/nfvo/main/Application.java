@@ -17,31 +17,26 @@
 package org.project.openbaton.nfvo.main;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.nfvo.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.FileSystemUtils;
 
 import javax.jms.ConnectionFactory;
 import java.io.File;
-import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.jar.JarFile;
 
 /**
  * Created by lto on 16/04/15.
@@ -54,13 +49,14 @@ import java.util.jar.JarFile;
 @EntityScan(basePackages="org.project.openbaton.catalogue")
 @ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
 @EnableJpaRepositories("org.project.openbaton.nfvo")
-public class Application {
+public class Application implements ApplicationListener<ContextClosedEvent>{
 
     @Bean
     JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
+        factory.setSessionTransacted(true);
         return factory;
     }
 
@@ -79,10 +75,15 @@ public class Application {
         Logger log = LoggerFactory.getLogger(Application.class);
 
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+
+        context.registerShutdownHook();
         log.info("Started OpenBaton");
 
     }
-    
-  
 
+
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        PluginStartup.destroy();
+    }
 }

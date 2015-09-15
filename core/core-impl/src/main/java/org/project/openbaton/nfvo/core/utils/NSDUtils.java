@@ -25,8 +25,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -57,7 +56,6 @@ public class NSDUtils {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
-
         /**
          * Fetching VNFD
          */

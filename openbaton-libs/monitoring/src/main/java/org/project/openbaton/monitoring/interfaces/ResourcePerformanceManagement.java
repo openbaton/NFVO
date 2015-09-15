@@ -17,13 +17,16 @@
 package org.project.openbaton.monitoring.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.nfvo.Item;
+
+import java.rmi.Remote;
 
 /**
  * Created by mpa on 30/04/15.
  */
 
-public interface ResourcePerformanceManagement {
+public interface ResourcePerformanceManagement extends Remote {
 	
 	/**
 	 * This version must match the version of the plugin...
@@ -34,7 +37,7 @@ public interface ResourcePerformanceManagement {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	Item getMeasurementResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period);
+	Item getMeasurementResults(VNFCInstance vnfcInstance, String metric, String period);
 
 	/**
 	 * This operation allows providing notifications with performance

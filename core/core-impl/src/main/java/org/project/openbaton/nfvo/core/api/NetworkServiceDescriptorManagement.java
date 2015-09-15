@@ -19,10 +19,10 @@ package org.project.openbaton.nfvo.core.api;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +36,16 @@ import javax.persistence.NoResultException;
  * Created by lto on 11/05/15.
  */
 @Service
-@Scope // TODO think if singleton or prototype
+@Scope
 public class NetworkServiceDescriptorManagement implements org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
+
+    @Autowired
+    private VNFDRepository vnfdRepository;
 
     @Autowired
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
@@ -57,6 +60,10 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+
+        for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd())
+            if (vnfd.getEndpoint() == null)
+                vnfd.setEndpoint(vnfd.getType());
 
         log.info("Checking if Vnfm is running...");
 
@@ -80,15 +87,8 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         log.trace("Fetched Data");
 
-//        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
-//            vnfdRepository.create(vnfd);
-
         log.trace("Persisting VNFDependencies");
         nsdUtils.fetchDependencies(networkServiceDescriptor);
-//        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()){
-//            log.trace(""+ vnfDependency.getSource());
-//            vnfDependencyRepository.create(vnfDependency);
-//        }
         log.trace("Persisted VNFDependencies");
 
         networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
@@ -134,15 +134,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * and/or new VLDs.
      *
      * @param new_nsd: the new values to be updated
-     * @param old_id:  the id of the old NetworkServiceDescriptor
      */
     @Override
-    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String old_id) {
+    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd) {
         return nsdRepository.save(new_nsd);
     }
 
+    @Override
     public void removeVNFDescriptor(String id_vnfd){
-        vnfdRepository.remove(vnfdRepository.find(id_vnfd));
+        vnfdRepository.delete(id_vnfd);
     }
     /**
      * This operation is used to query the

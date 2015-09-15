@@ -23,14 +23,14 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by lto on 11/05/15.
@@ -243,7 +243,7 @@ public class NSRUtils {
             virtualNetworkFunctionRecord.getAuto_scale_policy().add(newAutoScalePolicy);
         }
 
-        // TODO mange the VirtualLinks and links...
+        // TODO manage the VirtualLinks and links...
 //        virtualNetworkFunctionRecord.setConnected_external_virtual_link(vnfd.getVirtual_link());
 
         virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
@@ -276,7 +276,6 @@ public class NSRUtils {
 
             vdu_new.setHostname(virtualDeploymentUnit.getHostname());
             vdu_new.setHigh_availability(virtualDeploymentUnit.getHigh_availability());
-            vdu_new.setExtId(virtualDeploymentUnit.getExtId());
             vdu_new.setComputation_requirement(virtualDeploymentUnit.getComputation_requirement());
             vdu_new.setScale_in_out(virtualDeploymentUnit.getScale_in_out());
             HashSet<String> monitoringParameters = new HashSet<>();

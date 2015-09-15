@@ -16,14 +16,14 @@
 
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.api.exceptions.*;
-import org.project.openbaton.nfvo.common.exceptions.*;
+import org.project.openbaton.exceptions.*;
+import org.project.openbaton.nfvo.api.exceptions.StateException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 

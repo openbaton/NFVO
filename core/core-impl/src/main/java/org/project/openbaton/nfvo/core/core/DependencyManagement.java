@@ -26,7 +26,7 @@ import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.DependencyParameters;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;

@@ -18,6 +18,7 @@ package org.project.openbaton.nfvo.system;
 
 import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.nfvo.plugin.utils.PluginStartup;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 
 /**
@@ -93,7 +98,24 @@ class SystemStartup implements CommandLineRunner {
             c.getConfigurationParameters().add(cp);
         }
 
+
+        startRegistry(c);
         configurationRepository.save(c);
 
+        startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
+    }
+
+    private void startPlugins(String folderPath) throws IOException{
+        PluginStartup.startPluginRecursive(folderPath, false,"localhost", "1099");
+    }
+
+    private void startRegistry(Configuration configuration) throws RemoteException, RemoteException {
+        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters())
+            if (configurationParameter.getConfKey().equals("registry-port")) {
+                Registry registry = LocateRegistry.createRegistry(Integer.parseInt(configurationParameter.getValue()));
+                return;
+            }
+
+        Registry registry = LocateRegistry.createRegistry(1099);
     }
 }

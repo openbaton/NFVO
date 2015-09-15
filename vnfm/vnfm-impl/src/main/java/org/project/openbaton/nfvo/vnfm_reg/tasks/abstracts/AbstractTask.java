@@ -7,8 +7,6 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
-import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -135,6 +133,12 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
             case INSTANTIATE:
                 status = Status.INITIALIZED;
                 break;
+            case SCALE_OUT_FINISHED:
+                status = Status.ACTIVE;
+                break;
+            case SCALE_IN_FINISHED:
+                status = Status.ACTIVE;
+                break;
             case SCALE_UP_FINISHED:
                 status = Status.ACTIVE;
                 break;
@@ -145,7 +149,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.TERMINATED;
                 break;
             case INSTANTIATE_FINISH:
-                status = Status.INITIALIZED;
+                status = Status.ACTIVE;
                 break;
             case CONFIGURE:
                 break;

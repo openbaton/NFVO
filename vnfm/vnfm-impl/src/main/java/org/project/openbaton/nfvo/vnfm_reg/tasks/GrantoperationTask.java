@@ -36,7 +36,6 @@ public class GrantoperationTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
         CoreMessage message = null;
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();

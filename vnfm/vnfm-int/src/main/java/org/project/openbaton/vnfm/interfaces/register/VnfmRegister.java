@@ -17,9 +17,7 @@
 package org.project.openbaton.vnfm.interfaces.register;
 
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-
-import java.util.List;
+import org.project.openbaton.exceptions.NotFoundException;
 
 /**
  * Created by lto on 26/05/15.
