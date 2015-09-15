@@ -23,7 +23,10 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.QuotaExceededException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.core.interfaces.SecurityManagement;
@@ -35,7 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
