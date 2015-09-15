@@ -80,7 +80,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                         if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
                             target=vnfrRepository.findOne(vnfr.getId());
                     log.debug("Target version is: " +target.getHb_version());
-                    log.debug("SENDIGN MODIFY");
+                    log.debug("SENDING MODIFY");
                     OrVnfmGenericMessage orVnfmGenericMessage= new OrVnfmGenericMessage(target,Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
                     vnfmManager.modify(target, orVnfmGenericMessage);

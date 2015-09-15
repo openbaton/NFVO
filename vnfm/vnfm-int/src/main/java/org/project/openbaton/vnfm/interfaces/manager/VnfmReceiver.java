@@ -25,11 +25,13 @@ import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 
+import javax.jms.Destination;
+
 /**
  * Created by lto on 08/07/15.
  */
 public interface VnfmReceiver {
 
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
-    void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) String tempDestination) throws NotFoundException, VimException;
+    void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException;
 }

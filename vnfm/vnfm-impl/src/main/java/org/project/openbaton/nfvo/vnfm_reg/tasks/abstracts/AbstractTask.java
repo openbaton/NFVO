@@ -19,6 +19,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Destination;
+
 /**
  * Created by lto on 06/08/15.
  */
@@ -38,7 +40,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
 
 
-    protected String tempDestination;
+    protected Destination tempDestination;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     protected VNFRecordDependency dependency;
 
@@ -99,11 +101,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         return (VnfmSender) this.context.getBean(senderName);
     }
 
-    protected String getTempDestination() {
+    protected Destination getTempDestination() {
         return tempDestination;
     }
 
-    public void setTempDestination(String tempDestination) {
+    public void setTempDestination(Destination tempDestination) {
         this.tempDestination = tempDestination;
     }
     protected void changeStatus() {

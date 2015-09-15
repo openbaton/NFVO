@@ -41,7 +41,7 @@ public class ModifyTask extends AbstractTask {
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
 
-        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 
     @Override

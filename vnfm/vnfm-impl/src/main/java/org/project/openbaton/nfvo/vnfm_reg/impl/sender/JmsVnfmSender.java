@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Destination;
+
 /**
  * Created by lto on 03/06/15.
  */
@@ -46,7 +48,7 @@ public class JmsVnfmSender implements VnfmSender{
     }
 
     @Override
-    public void sendCommand(final NFVMessage nfvMessage, String tempDestination) {
+    public void sendCommand(final NFVMessage nfvMessage, Destination tempDestination) {
         jmsSender.send(tempDestination,nfvMessage);
     }
 

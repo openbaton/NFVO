@@ -35,10 +35,13 @@ public class VnfmOrGenericMessage implements VnfmOrMessage {
     public void setVnfRecordDependency(VNFRecordDependency vnfRecordDependency) {
         this.vnfRecordDependency = vnfRecordDependency;
     }
+
     @Override
     public String toString() {
         return "VnfmOrGenericMessage{" +
-                "vnfr=" + virtualNetworkFunctionRecord +
+                "action=" + action +
+                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
+                ", vnfRecordDependency=" + vnfRecordDependency +
                 '}';
     }
 

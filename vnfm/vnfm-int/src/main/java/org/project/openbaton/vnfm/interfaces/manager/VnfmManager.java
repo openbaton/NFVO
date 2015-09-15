@@ -27,6 +27,7 @@ import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 
+import javax.jms.Destination;
 import java.util.concurrent.Future;
 
 /**
@@ -39,7 +40,7 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
-    void executeAction(NFVMessage message, String tempDestination) throws VimException, NotFoundException;
+    void executeAction(NFVMessage message, Destination tempDestination) throws VimException, NotFoundException;
 
     @Async
     Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;
