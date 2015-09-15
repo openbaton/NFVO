@@ -17,13 +17,13 @@
 package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.project.openbaton.nfvo.repositories.VNFDRepository;
-import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.project.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +51,12 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
     @Autowired
+    private VNFDependencyRepository vnfDependencyRepository;
+
+    @Autowired
+    private PhysicalNetworkFunctionDescriptorRepository pnfDescriptorRepository;
+
+    @Autowired
     private NSDUtils nsdUtils;
 
     /**
@@ -61,7 +67,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
 
-        for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd())
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
             if (vnfd.getEndpoint() == null)
                 vnfd.setEndpoint(vnfd.getType());
 
@@ -133,17 +139,139 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * include creating/deleting new VNFFGDs
      * and/or new VLDs.
      *
-     * @param new_nsd: the new values to be updated
+     * @param newNsd: the new values to be updated
      */
     @Override
-    public NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd) {
-        return nsdRepository.save(new_nsd);
+    public NetworkServiceDescriptor update(NetworkServiceDescriptor newNsd) {
+        return nsdRepository.save(newNsd);
     }
 
-    @Override
-    public void removeVNFDescriptor(String id_vnfd){
-        vnfdRepository.delete(id_vnfd);
+    /**
+     * This operation added a new VNFD to the NSD with {@code id}
+     *
+     * @param vnfd VirtualNetworkFunctionDescriptor to be persisted
+     * @param id   of NetworkServiceDescriptor
+     * @return the persisted VirtualNetworkFunctionDescriptor
+     */
+    public VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id) {
+        return nsdRepository.addVnfd(vnfd, id);
     }
+
+    /**
+     * Removes the VNFDescriptor with idVnfd from NSD with idNsd
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VNFD
+     */
+    @Override
+    public void deleteVnfDescriptor(String idNsd, String idVnfd) {
+        log.debug("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
+        nsdRepository.deleteVnfd(idNsd, idVnfd);
+    }
+
+    /**
+     * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VirtualNetworkFunctionDescriptor
+     * @return VirtualNetworkFunctionDescriptor
+     */
+    @Override
+    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) {
+        nsdRepository.exists(idNsd);
+        return vnfdRepository.findOne(idVnfd);
+    }
+
+    /**
+     * Updates the VNFDescriptor into NSD with idNsd
+     *
+     * @param idNsd
+     * @param idVfn
+     * @param vnfDescriptor
+     * @return VirtualNetworkFunctionDescriptor
+     */
+    @Override
+    public VirtualNetworkFunctionDescriptor updateVNF(String idNsd, String idVfn, VirtualNetworkFunctionDescriptor vnfDescriptor) {
+        nsdRepository.exists(idNsd);
+        nsdRepository.addVnfd(vnfDescriptor, idNsd);
+        return vnfDescriptor;
+    }
+
+    /**
+     * Returns the VNFDependency selected by idVnfd into NSD with idNsd
+     *
+     * @param idNsd
+     * @param idVnfd
+     * @return VNFDependency
+     */
+    @Override
+    public VNFDependency getVnfDependency(String idNsd, String idVnfd) {
+        nsdRepository.exists(idNsd);
+        return vnfDependencyRepository.findOne(idVnfd);
+    }
+
+    /**
+     * Removes the VNFDependency into NSD
+     *
+     * @param idNsd  of NSD
+     * @param idVnfd of VNFD
+     */
+    @Override
+    public void deleteVNFDependency(String idNsd, String idVnfd) {
+        log.debug("Removing VNFDependency with id: " + idVnfd + " from NSD with id: " + idNsd);
+        nsdRepository.deleteVNFDependency(idNsd, idVnfd);
+        return;
+    }
+
+    /**
+     * Save or Update the VNFDependency into NSD with idNsd
+     *
+     * @param idNsd
+     * @param vnfDependency
+     * @return VNFDependency
+     */
+    @Override
+    public VNFDependency saveVNFDependency(String idNsd, VNFDependency vnfDependency) {
+        nsdRepository.addVnfDependency(vnfDependency, idNsd);
+        return vnfDependency;
+    }
+
+    /**
+     * Deletes the PhysicalNetworkFunctionDescriptor from NSD
+     *
+     * @param idNsd of NSD
+     * @param idPnf of PhysicalNetworkFunctionDescriptor
+     */
+    @Override
+    public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
+        nsdRepository.deletePhysicalNetworkFunctionDescriptor(idNsd ,idPnf);
+    }
+
+    /**
+     * Returns the PhysicalNetworkFunctionDescriptor with idPnf into NSD with idNsd
+     *
+     * @param idNsd
+     * @param idPnf
+     * @return PhysicalNetworkFunctionDescriptor selected
+     */
+    @Override
+    public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
+        nsdRepository.exists(idNsd);
+        return pnfDescriptorRepository.findOne(idPnf);
+    }
+
+    /**
+     * Add or Update the PhysicalNetworkFunctionDescriptor into NSD
+     *
+     * @param pDescriptor
+     * @param id
+     * @return PhysicalNetworkFunctionDescriptor
+     */
+    @Override
+    public PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id) {
+        return nsdRepository.addPnfDescriptor(pDescriptor,id);
+    }
+
     /**
      * This operation is used to query the
      * information of the Network Service
@@ -163,7 +291,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public NetworkServiceDescriptor query(String id) throws NoResultException {
-        return nsdRepository.findOne(id);
+        return nsdRepository.findFirstById(id);
     }
 
     /**
