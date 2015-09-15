@@ -6,6 +6,7 @@
 
 package org.project.openbaton.catalogue.mano.descriptor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
@@ -83,8 +84,10 @@ public class VirtualDeploymentUnit implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
     private VimInstance vimInstance;
+
     private String hostname;
 
     public VirtualDeploymentUnit() {
@@ -231,5 +234,9 @@ public class VirtualDeploymentUnit implements Serializable {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public String getVimInstanceName(){
+        return vimInstance.getName();
     }
 }

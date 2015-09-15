@@ -7,6 +7,11 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -29,6 +34,8 @@ import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lto on 28/05/15.
@@ -38,7 +45,7 @@ import java.io.Serializable;
 @ComponentScan(basePackages = "org.project.openbaton")
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
-    protected Gson parser = new GsonBuilder().create();
+    protected Gson parser = new GsonBuilder().setPrettyPrinting().create();
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -214,6 +221,27 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         return response;
     }
 
+    protected Map<String , String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event) throws Exception {
+        Map<String, String> res = new HashMap<>();
+        LifecycleEvent le = getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event_history(), event);
+        if (le != null)
+        {
+            for (String script : le.getLifecycle_events()) {
+                String command = getJsonObject("EXECUTE", script).toString();
+                log.debug("Sending command: " + command);
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+                        checkEmsStarted(vnfcInstance.getHostname());
+                        res.put(script, executeActionOnEMS(vnfcInstance.getHostname(), command));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    protected abstract void checkEmsStarted(String hostname);
+
     @Override
     protected void unregister() {
         this.sendMessageToQueue("vnfm-unregister", vnfmManagerEndpoint);
@@ -227,6 +255,13 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Override
     protected void register() {
         this.sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+    }
+
+    protected JsonObject getJsonObject(String action, String payload) {
+        JsonObject jsonMessage = new JsonObject();
+        jsonMessage.addProperty("action", action);
+        jsonMessage.addProperty("payload", payload);
+        return jsonMessage;
     }
 }
 
