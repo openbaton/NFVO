@@ -17,7 +17,7 @@ public interface VNFLifecycleManagement {
 	 */
 	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.
@@ -56,7 +56,7 @@ public interface VNFLifecycleManagement {
 	 * @param dependency
 	 */
 	
-	VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency);
+	VirtualNetworkFunctionRecord modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency) throws Exception;
 	
 	/**
 	 * This operation allows deploying a new 
