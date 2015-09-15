@@ -1,7 +1,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.NotFoundException;
 
 import java.util.Set;
 

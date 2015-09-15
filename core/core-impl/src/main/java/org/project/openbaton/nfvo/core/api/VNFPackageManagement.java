@@ -12,8 +12,8 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;

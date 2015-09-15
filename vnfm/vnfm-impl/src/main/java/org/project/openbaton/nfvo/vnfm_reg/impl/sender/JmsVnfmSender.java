@@ -45,35 +45,4 @@ public class JmsVnfmSender implements VnfmSender{
         jmsSender.send(destinationName, coreMessage);
     }
 
-//    public void sendToQueue(final CoreMessage coreMessage, String type) {
-//        String destinationName = "core-" + type + "-actions";
-//        log.debug("Sending message: " + coreMessage.getAction() + " to Queue: " + destinationName);
-//        log.trace("Sending message: " + coreMessage + " to Queue: " + destinationName);
-//        MessageCreator messageCreator = new MessageCreator() {
-//            @Override
-//            public Message createMessage(Session session) throws JMSException {
-//                ObjectMessage objectMessage = session.createObjectMessage(coreMessage);
-//                return objectMessage;
-//            }
-//        };
-//
-//        jmsTemplate.send(destinationName, messageCreator);
-//    }
-//    public void sendToTopic(final CoreMessage coreMessage, String destinationTopicName, final String selector) {
-//        log.debug("Sending message: " + coreMessage.getAction() + " to Topic: " + destinationTopicName + " where selector is: type=\'" + selector + "\'");
-//        log.trace("Sending message: " + coreMessage + " to Topic: " + destinationTopicName + " where selector is: type=\'" + selector + "\'");
-//        MessageCreator messageCreator = new MessageCreator() {
-//            @Override
-//            public Message createMessage(Session session) throws JMSException {
-//                ObjectMessage objectMessage = session.createObjectMessage(coreMessage);
-//                log.trace("SELECTOR: type=\'"+ selector+ "\'");
-//                objectMessage.setStringProperty("type", selector );
-//                return objectMessage;
-//            }
-//        };
-//        jmsTemplate.setPubSubDomain(true);
-//        jmsTemplate.setPubSubNoLocal(true);
-//        jmsTemplate.send(destinationTopicName, messageCreator);
-//
-//    }
 }

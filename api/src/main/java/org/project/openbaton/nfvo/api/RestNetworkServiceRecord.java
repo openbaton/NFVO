@@ -16,14 +16,14 @@
 
 package org.project.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.api.exceptions.*;
-import org.project.openbaton.nfvo.common.exceptions.*;
+import org.project.openbaton.exceptions.*;
+import org.project.openbaton.nfvo.api.exceptions.StateException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -152,21 +148,20 @@ public class RestNetworkServiceRecord {
 		return nsr.getVnfr();
 	}
 
-	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "{idNsd}/vnfrecords/{idVnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
-		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
-		return findVNF(nsd.getVnfr(), id_vnf);
+			@PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf) throws NotFoundException{
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(idNsd);
+		return findVNF(nsd.getVnfr(), idVnf);
 	}
 
-	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteVirtualNetworkFunctionDescriptor(
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) throws NotFoundException{
-		NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
-		VirtualNetworkFunctionRecord nRecord = findVNF(nsr.getVnfr(), id_vnf);
-		nsr.getVnfr().remove(nRecord);
+	public void deleteVNFRecord(
+			@PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf) throws NotFoundException{
+		networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf);
+
 	}
 
 	@RequestMapping(value = "{id}/vnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -180,14 +175,14 @@ public class RestNetworkServiceRecord {
 		return vnfRecord;
 	}
 
-	@RequestMapping(value = "{id}/vnfrecords/{id_vnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public VirtualNetworkFunctionRecord updateVNF(
 			@RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
-			@PathVariable("id") String id, @PathVariable("id_vnf") String id_vnf) {
-		NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+			@PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf) {
+		NetworkServiceRecord nsd = networkServiceRecordManagement.query(idNsr);
 		nsd.getVnfr().add(vnfRecord);
-		networkServiceRecordManagement.update(nsd, id);
+		networkServiceRecordManagement.update(nsd, idNsr);
 		return vnfRecord;
 	}
 

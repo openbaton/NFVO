@@ -5,7 +5,7 @@ import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
