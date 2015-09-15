@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = 'openbaton-libs'
+//rootProject.name = 'openbaton-libs'
 
 include 'exception'
 include 'vim-impl'
