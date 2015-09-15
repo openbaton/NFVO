@@ -53,15 +53,11 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
     }
 
     @Override
-    public NFVImage update(NFVImage new_NFV_image, String id) {
-        NFVImage old = imageRepository.findOne(id);
-        old.setName(new_NFV_image.getName());
-        old.setMinRam(new_NFV_image.getMinRam());
-        old.setMinCPU(new_NFV_image.getMinCPU());
-        old.setExtId(new_NFV_image.getExtId());
-        old.setUpdated(new Date());
-        old.setMinDiskSpace(new_NFV_image.getMinDiskSpace());
-        return old;
+    public NFVImage update(NFVImage nfvImage, String id) {
+        imageRepository.exists(id);
+        nfvImage = imageRepository.save(nfvImage);
+        nfvImage.setUpdated(new Date());
+        return nfvImage;
     }
 
     @Override
