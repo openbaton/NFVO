@@ -147,9 +147,8 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     }
                 }
             }
-
-            Set<Event> events = new HashSet<>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
+            Set<Event> events = new HashSet<Event>();
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
             }
 
@@ -215,7 +214,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
     @Override
     public NetworkServiceRecord query(String id) {
-        return nsrRepository.findOne(id);
+        return nsrRepository.findFirstById(id);
     }
 
     @Override
@@ -240,11 +239,11 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
 
-        List<Future<Void>> futures = new ArrayList<>();
+        List<Future<Void>> futures = new ArrayList<Future<Void>>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
-            Set<Event> events = new HashSet<>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
+            Set<Event> events = new HashSet<Event>();
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
                 events.add(lifecycleEvent.getEvent());
                 log.debug("found " + lifecycleEvent.getEvent());
             }
