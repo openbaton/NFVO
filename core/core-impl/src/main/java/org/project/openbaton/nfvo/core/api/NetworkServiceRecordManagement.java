@@ -18,10 +18,7 @@ package org.project.openbaton.nfvo.core.api;
 
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -113,9 +110,9 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         return deployNSR(networkServiceDescriptor);
     }
 
-    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws   NotFoundException,BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
+    private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
         log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
-        NetworkServiceRecord networkServiceRecord=null;
+        NetworkServiceRecord networkServiceRecord = null;
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Creating " + networkServiceRecord);
 
@@ -124,32 +121,35 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Calling the vim to create the Resources
          */
         List<String> ids = new ArrayList<>();
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
-            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()) {
-                if (internalVirtualLink.getConnectivity_type().equals("LAN")) {
-                    for (String connectionPointReference : internalVirtualLink.getConnection_points_references()) {
-                        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-                            boolean networkExists = false;
-                            for (Network network : vdu.getVimInstance().getNetworks()) {
-                                if (network.getName().equals(connectionPointReference) || network.getExtId().equals(connectionPointReference)) {
-                                    networkExists = true;
-                                    NSRUtils.createConnectionsPoints(virtualNetworkFunctionDescriptor, vdu, network);
-                                    break;
-                                }
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
+            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+                for (VNFComponent vnfComponent : vdu.getVnfc()) {
+                    for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+                        boolean networkExists = false;
+                        for (Network network : vdu.getVimInstance().getNetworks()) {
+                            if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference()) || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+                                networkExists = true;
+                                vnfdConnectionPoint.setName(network.getName());
+                                vnfdConnectionPoint.setExtId(network.getExtId());
+                                vnfdConnectionPoint.setType("LAN");
+                                break;
                             }
-                            if (networkExists == false) {
-                                Network network = new Network();
-                                network.setName(connectionPointReference);
-                                network.setSubnets(new HashSet<Subnet>());
-                                network = networkManagement.add(vdu.getVimInstance(), network);
-                                NSRUtils.createConnectionsPoints(virtualNetworkFunctionDescriptor, vdu, network);
-                            }
+                        }
+                        if (networkExists == false) {
+                            Network network = new Network();
+                            network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+                            network.setSubnets(new HashSet<Subnet>());
+                            network = networkManagement.add(vdu.getVimInstance(), network);
+                            vnfdConnectionPoint.setName(network.getName());
+                            vnfdConnectionPoint.setExtId(network.getExtId());
+                            vnfdConnectionPoint.setType("LAN");
                         }
                     }
                 }
             }
+
             Set<Event> events = new HashSet<>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()){
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
                 events.add(lifecycleEvent.getEvent());
             }
 
@@ -162,13 +162,13 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }*/
         }
 
-        for(String id : ids){
+        for (String id : ids) {
             log.debug("Created VDU with id: " + id);
         }
 
         NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
-        networkServiceRecord=nsrRepository.save(networkServiceRecord);
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
 
         vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
 
@@ -194,7 +194,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                 }
             }
         }*/
-
 
 
         return networkServiceRecord;
@@ -227,25 +226,25 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
         boolean checkStatus = true;
 
-        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters()){
-            if (configurationParameter.getConfKey().equals("delete-on-all-status")){
-                if (configurationParameter.getValue().equalsIgnoreCase("true")){
+        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters()) {
+            if (configurationParameter.getConfKey().equals("delete-on-all-status")) {
+                if (configurationParameter.getValue().equalsIgnoreCase("true")) {
                     checkStatus = false;
                     break;
                 }
             }
         }
 
-        if (checkStatus){
+        if (checkStatus) {
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
-                throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() +" )");
+                throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
 
         List<Future<Void>> futures = new ArrayList<>();
         boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
             Set<Event> events = new HashSet<>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()){
+            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
                 events.add(lifecycleEvent.getEvent());
                 log.debug("found " + lifecycleEvent.getEvent());
             }
@@ -254,14 +253,13 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     futures.add(resourceManagement.release(virtualDeploymentUnit));
                 }
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-            }
-            else {
+            } else {
                 release = true;
                 vnfmManager.release(virtualNetworkFunctionRecord);
             }
         }
 
-        for(Future<Void> result : futures){
+        for (Future<Void> result : futures) {
             result.get();
             log.debug("Deleted VDU");
         }
