@@ -10,9 +10,8 @@ import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
-
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.

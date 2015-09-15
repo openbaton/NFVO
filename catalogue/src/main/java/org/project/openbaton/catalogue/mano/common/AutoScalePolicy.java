@@ -1,12 +1,11 @@
 package org.project.openbaton.catalogue.mano.common;
 
+import org.project.openbaton.catalogue.util.IdGenerator;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-
-import org.project.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 
 /**
