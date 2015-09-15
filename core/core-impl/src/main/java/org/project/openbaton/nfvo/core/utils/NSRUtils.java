@@ -75,7 +75,7 @@ public class NSRUtils {
         networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if (networkServiceDescriptor.getVld() != null) {
             for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
-                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
+                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor, networkServiceRecord.getName()));
             }
         }
         return networkServiceRecord;
@@ -154,9 +154,27 @@ public class NSRUtils {
 
     }
 
-    public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
+    public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor, String parent_ns) {
         VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
-        // TODO implement it
+        virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+        virtualLinkRecord.setAllocated_capacity(new HashSet<String>());
+        virtualLinkRecord.setAudit_log(new HashSet<String>());
+        virtualLinkRecord.setConnection(new HashSet<String>());
+        virtualLinkRecord.getConnection().addAll(virtualLinkRecord.getConnection());
+        virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
+        virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
+        virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
+        virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
+        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+        virtualLinkRecord.setNotification(new HashSet<String>());
+        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
+        virtualLinkRecord.setVim_id("");
+        //TODO virtualLinkDescriptor.getTest_access()
+        virtualLinkRecord.setTest_access("");
+        virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
+        virtualLinkRecord.setQos(virtualLinkDescriptor.getQos());
+        virtualLinkRecord.setParent_ns(parent_ns);
+        virtualLinkRecord.setNumber_of_enpoints(0);
         return virtualLinkRecord;
     }
 
