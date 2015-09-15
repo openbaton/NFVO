@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * Created by lto on 10/09/15.
@@ -21,8 +20,8 @@ public class PluginStartup {
     private static void installPlugin(String path, boolean waitForPlugin, String registryip, String  port) throws IOException {
         String pluginName = path.substring(path.lastIndexOf("/") + 1, path.length());
 
-        StringTokenizer st = new StringTokenizer(pluginName, "-");
-        String token = st.nextToken();
+//        StringTokenizer st = new StringTokenizer(pluginName, "-");
+        String token = pluginName.substring(0,pluginName.indexOf("-"));
         log.trace("Running: java -jar " + path + " " + token + " localhost "+ port);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, token, registryip, port);
         File file = new File("plugin-" + token + ".log");
