@@ -151,7 +151,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
     @JsonIgnore
     public Set<VNFDConnectionPoint> getVNFDConnection_point() {
-        Set<VNFDConnectionPoint> res = new HashSet<>();
+        Set<VNFDConnectionPoint> res = new HashSet<VNFDConnectionPoint>();
         for (ConnectionPoint cp : connection_point)
             res.add((VNFDConnectionPoint) cp);
         return res;
