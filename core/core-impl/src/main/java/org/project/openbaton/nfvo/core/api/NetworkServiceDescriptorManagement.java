@@ -113,7 +113,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public boolean disable(String id) throws NoResultException {
         log.debug("disabling NetworkServiceDescriptor with id " + id);
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
         networkServiceDescriptor.setEnabled(false);
         return networkServiceDescriptor.isEnabled();
     }
@@ -127,7 +127,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public boolean enable(String id) throws NoResultException {
         log.debug("enabling NetworkServiceDescriptor with id " + id);
-        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findOne(id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
         networkServiceDescriptor.setEnabled(true);
         return networkServiceDescriptor.isEnabled();
     }
