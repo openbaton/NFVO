@@ -232,7 +232,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                     for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
                         checkEmsStarted(vnfcInstance.getHostname());
-                        res.put(script, executeActionOnEMS(vnfcInstance.getHostname(), command));
+                        res.put(script, /*executeActionOnEMS(vnfcInstance.getHostname(), command)*/"FOO");
                     }
                 }
             }
