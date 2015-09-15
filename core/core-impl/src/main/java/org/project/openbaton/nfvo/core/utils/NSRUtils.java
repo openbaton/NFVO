@@ -286,8 +286,6 @@ public class NSRUtils {
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-                    connectionPoint_new.setName(connectionPoint.getName());
-                    connectionPoint_new.setExtId(connectionPoint.getExtId());
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
@@ -389,15 +387,11 @@ public class NSRUtils {
     public static void createConnectionsPoints(VirtualNetworkFunctionDescriptor vnfd, VirtualDeploymentUnit vdu, Network network) {
         //Create ConnectionPoint for VNFR
         ConnectionPoint connectionPoint = new ConnectionPoint();
-        connectionPoint.setName(network.getName());
-        connectionPoint.setExtId(network.getExtId());
         connectionPoint.setType("LAN");
         vnfd.getConnection_point().add(connectionPoint);
         //Create ConnectionPoint for VDU
         VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
         vnfdConnectionPoint.setVirtual_link_reference(network.getName());
-        vnfdConnectionPoint.setName(network.getName());
-        vnfdConnectionPoint.setExtId(network.getExtId());
         vnfdConnectionPoint.setType("LAN");
         //Create VNFC for VDU
         VNFComponent vnfComponent = new VNFComponent();
