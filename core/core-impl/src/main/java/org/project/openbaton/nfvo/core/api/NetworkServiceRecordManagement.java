@@ -16,11 +16,13 @@
 
 package org.project.openbaton.nfvo.core.api;
 
+import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
@@ -120,49 +122,40 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
-        List<String> ids = new ArrayList<String>();
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
-            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-                for (VNFComponent vnfComponent : vdu.getVnfc()) {
-                    for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-                        boolean networkExists = false;
-                        for (Network network : vdu.getVimInstance().getNetworks()) {
-                            if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference()) || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
-                                networkExists = true;
-                                vnfdConnectionPoint.setName(network.getName());
-                                vnfdConnectionPoint.setExtId(network.getExtId());
-                                vnfdConnectionPoint.setType("LAN");
-                                break;
+        for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+            for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+                if (vlr.getDescriptor_reference().equals(vld.getId())) {
+                    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+                        for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+                            for (VNFComponent vnfc : vdu.getVnfc()) {
+                                for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
+                                    if (vnfdConnectionPoint.getVirtual_link_reference().equals(vld.getName())) {
+                                        boolean networkExists = false;
+                                        for (Network network : vdu.getVimInstance().getNetworks()) {
+                                            if (network.getName().equals(vld.getId()) || network.getExtId().equals(vld.getName())) {
+                                                networkExists = true;
+                                                vlr.setVim_id(vdu.getId());
+                                                vlr.setExtId(network.getExtId());
+                                                vlr.getConnection().add(vnfdConnectionPoint.getId());
+                                                break;
+                                            }
+                                        }
+                                        if (networkExists == false) {
+                                            Network network = new Network();
+                                            network.setName(vld.getName());
+                                            network.setSubnets(new HashSet<Subnet>());
+                                            network = networkManagement.add(vdu.getVimInstance(), network);
+                                            vlr.setVim_id(vdu.getId());
+                                            vlr.setExtId(network.getExtId());
+                                            vlr.getConnection().add(vnfdConnectionPoint.getId());
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        if (networkExists == false) {
-                            Network network = new Network();
-                            network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-                            network.setSubnets(new HashSet<Subnet>());
-                            network = networkManagement.add(vdu.getVimInstance(), network);
-                            vnfdConnectionPoint.setName(network.getName());
-                            vnfdConnectionPoint.setExtId(network.getExtId());
-                            vnfdConnectionPoint.setType("LAN");
                         }
                     }
                 }
             }
-            Set<Event> events = new HashSet<Event>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()){
-                events.add(lifecycleEvent.getEvent());
-            }
-
-            /*if (!events.contains(Event.ALLOCATE)) {
-                if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionDescriptor) == false)
-                    throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionDescriptor.getName());
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()) {
-                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionDescriptor));
-                }
-            }*/
-        }
-
-        for (String id : ids) {
-            log.debug("Created VDU with id: " + id);
         }
 
         NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
