@@ -7,4 +7,5 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
  */
 public interface NetworkServiceRecordRepositoryCustom {
     VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id);
+    void deleteVNFRecord(String idNsd, String idVnfd);
 }

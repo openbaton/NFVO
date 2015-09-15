@@ -75,7 +75,9 @@ public class NSRUtils {
         networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if (networkServiceDescriptor.getVld() != null) {
             for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
-                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor, networkServiceRecord.getName()));
+                VirtualLinkRecord vlr = NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor);
+                vlr.setParent_ns(networkServiceDescriptor.getId());
+                networkServiceRecord.getVlr().add(vlr);
             }
         }
         return networkServiceRecord;
@@ -154,27 +156,38 @@ public class NSRUtils {
 
     }
 
-    public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor, String parent_ns) {
+    public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
         VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
-        virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
-        virtualLinkRecord.setAllocated_capacity(new HashSet<String>());
-        virtualLinkRecord.setAudit_log(new HashSet<String>());
-        virtualLinkRecord.setConnection(new HashSet<String>());
-        virtualLinkRecord.getConnection().addAll(virtualLinkRecord.getConnection());
         virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
         virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
-        virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
         virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
-        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
-        virtualLinkRecord.setNotification(new HashSet<String>());
-        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
-        virtualLinkRecord.setVim_id("");
-        //TODO virtualLinkDescriptor.getTest_access()
-        virtualLinkRecord.setTest_access("");
+        virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
+        virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+
         virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
-        virtualLinkRecord.setQos(virtualLinkDescriptor.getQos());
-        virtualLinkRecord.setParent_ns(parent_ns);
         virtualLinkRecord.setNumber_of_enpoints(0);
+
+        virtualLinkRecord.setParent_ns(null);
+        virtualLinkRecord.setExtId(null);
+        virtualLinkRecord.setVim_id(null);
+
+        virtualLinkRecord.setAllocated_capacity(new HashSet<String>());
+        virtualLinkRecord.setAudit_log(new HashSet<String>());
+        virtualLinkRecord.setNotification(new HashSet<String>());
+        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
+        //TODO why do the VLD has already a set of Connections?
+        //virtualLinkRecord.setConnection(virtualLinkDescriptor.getConnection());
+        virtualLinkRecord.setConnection(new HashSet<String>());
+
+        //TODO think about test_access -> different types on VLD and VLR
+        virtualLinkRecord.setTest_access("");
+
+        virtualLinkRecord.setQos(new HashSet<String>());
+        for (String qos : virtualLinkDescriptor.getQos()) {
+            virtualLinkRecord.getQos().add(qos);
+        }
+
         return virtualLinkRecord;
     }
 

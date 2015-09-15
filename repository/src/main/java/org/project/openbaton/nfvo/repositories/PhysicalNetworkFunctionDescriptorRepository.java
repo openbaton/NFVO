@@ -16,10 +16,11 @@
 
 package org.project.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
-public interface NetworkServiceDescriptorRepository extends CrudRepository<NetworkServiceDescriptor, String>, NetworkServiceDescriptorRepositoryCustom {
-    NetworkServiceDescriptor findFirstById(String id);
-
+/**
+ * Created by dbo on 14.09.15.
+ */
+public interface PhysicalNetworkFunctionDescriptorRepository extends CrudRepository<PhysicalNetworkFunctionDescriptor,String> {
 }
