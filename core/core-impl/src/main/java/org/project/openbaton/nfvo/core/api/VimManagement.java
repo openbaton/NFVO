@@ -40,7 +40,7 @@ import java.util.Set;
 public class VimManagement implements org.project.openbaton.nfvo.core.interfaces.VimManagement {
 
     @Autowired
-    private VimRepository vimInstanceGenericRepository;
+    private VimRepository vimRepository;
 
     @Autowired
     private VimBroker vimBroker;
@@ -52,48 +52,40 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
     public VimInstance add(VimInstance vimInstance) throws VimException {
         this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
-        return vimInstanceGenericRepository.save(vimInstance);
+        return vimRepository.save(vimInstance);
     }
 
     @Override
     public void delete(String id) {
-        vimInstanceGenericRepository.delete(vimInstanceGenericRepository.findOne(id));
+        vimRepository.delete(vimRepository.findOne(id));
     }
 
     @Override
-    public VimInstance update(VimInstance new_vimInstance, String id) throws VimException {
-        VimInstance old = vimInstanceGenericRepository.findOne(id);
-        old.setName(new_vimInstance.getName());
-        old.setType(new_vimInstance.getType());
-        old.setAuthUrl(new_vimInstance.getAuthUrl());
-        old.setKeyPair(new_vimInstance.getKeyPair());
-        old.setLocation(new_vimInstance.getLocation());
-        old.setUsername(new_vimInstance.getUsername());
-        old.setPassword(new_vimInstance.getPassword());
-        old.setTenant(new_vimInstance.getTenant());
-        refresh(old);
-        return old;
+    public VimInstance update(VimInstance vimInstance, String id) throws VimException {
+        vimInstance = vimRepository.save(vimInstance);
+        refresh(vimInstance);
+        return vimInstance;
     }
 
     @Override
     public Iterable<VimInstance> query() {
-        return vimInstanceGenericRepository.findAll();
+        return vimRepository.findAll();
     }
 
     @Override
     public VimInstance query(String id) {
-        return vimInstanceGenericRepository.findOne(id);
+        return vimRepository.findOne(id);
     }
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
-        Set<NFVImage> images = new HashSet<>();
+        Set<NFVImage> images = new HashSet<NFVImage>();
         images.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryImages(vimInstance));
         vimInstance.setImages(images);
-        Set<Network> networks = new HashSet<>();
+        Set<Network> networks = new HashSet<Network>();
         networks.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryNetwork(vimInstance));
         vimInstance.setNetworks(networks);
-        Set<DeploymentFlavour> flavours = new HashSet<>();
+        Set<DeploymentFlavour> flavours = new HashSet<DeploymentFlavour>();
         flavours.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryDeploymentFlavors(vimInstance));
         vimInstance.setFlavours(flavours);
     }
