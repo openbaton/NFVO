@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-rootProject.name = 'openbaton-libs'
-
 include 'catalogue'
-include 'vim-drivers'
-include 'exception'
-include 'plugin'
-include 'vim-impl'
-include 'vim-int'
 include 'vnfm-sdk'
 include 'vnfm-sdk-jms'
-include 'vnfm-sdk-rest'
-include 'monitoring'
-
