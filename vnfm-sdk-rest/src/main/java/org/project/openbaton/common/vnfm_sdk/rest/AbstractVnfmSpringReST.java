@@ -2,15 +2,16 @@ package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
+import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
+import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PreDestroy;
+//import javax.validation.Valid;
 import java.io.Serializable;
 
 /**
@@ -21,13 +22,12 @@ import java.io.Serializable;
 @RequestMapping("/core-vnfm-actions")
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
-    protected final VnfmManagerEndpoint vnfmManagerEndpoint;
-    protected String server = "localhost";
-    protected String port = "8080";
+    private String server = "localhost";
+    private String port = "8080";
     private String url = "http://" +server + ":" + port+ "/";
-    protected RestTemplate rest;
-    protected HttpHeaders headers;
-    protected HttpStatus status;
+    private RestTemplate rest;
+    private HttpHeaders headers;
+    private HttpStatus status;
     protected Gson mapper;
 
     public String getServer() {
@@ -62,37 +62,19 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.headers = headers;
     }
 
-    @PreDestroy
-    public void shutdown(){
-        this.unregister();
-    }
-
     @Override
-    protected void unregister(){
-        this.post("/admin/v1/vnfm_sdk-unregister", mapper.toJson(endpoint));
-    }
-
-    public AbstractVnfmSpringReST() {
+    protected void setup() {
         this.mapper = new Gson();
         this.rest = new RestTemplate();
+        this.rest.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
         this.headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Accept", "application/json");
-
-        loadProperties();
-        log.debug("SELECTOR: " + this.getEndpoint());
-
-        vnfmManagerEndpoint = new VnfmManagerEndpoint();
-        vnfmManagerEndpoint.setType(this.type);
-        vnfmManagerEndpoint.setEndpoint(this.endpoint);
-        vnfmManagerEndpoint.setEndpointType(EndpointType.REST);
-
-        log.debug("Registering to vnfm-register");
-        register();
+        super.setup();
     }
 
     protected String get(String path) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
@@ -100,6 +82,8 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     protected String post(String path, String json) {
         HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+        log.debug("url is: " + url + path);
+        log.debug("BODY is: " + json);
         ResponseEntity<String> responseEntity = rest.postForEntity(url + path, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
@@ -125,28 +109,41 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.status = status;
     }
 
+    @Override
+    protected void unregister(){
+        this.post("admin/v1/vnfm-unregister", mapper.toJson(vnfmManagerEndpoint));
+    }
+
+    @Override
     protected void register(){
-        String json = mapper.toJson(endpoint);
+        String json = mapper.toJson(vnfmManagerEndpoint);
         log.debug("post on /admin/v1/vnfm-register with json: " + json);
-        this.post("/admin/v1/vnfm-register", mapper.toJson(endpoint));
+        this.post("admin/v1/vnfm-register", json);
     }
 
     protected void sendToCore(Serializable msg){
         String json = mapper.toJson(msg);
-        log.debug("post on " + this.type + "-core-actions with json: " + json);
-        this.post("/admin/v1/" + this.type + "-core-actions", json);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    //TODO add the validation
-    public void  receive(@RequestBody /*@Valid*/ CoreMessage message){
-        log.debug("Received: " + message);
-        this.onAction(message);
+        log.debug("post on vnfm-core-actions with json: " + json);
+        this.post("admin/v1/vnfm-core-actions", json);
     }
 
     @Override
     protected void sendToNfvo(CoreMessage coreMessage) {
         sendToCore(coreMessage);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void receive(@RequestBody /*@Valid*/ CoreMessage message) {
+        log.debug("Received: " + message);
+        try {
+            this.onAction(message);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (BadFormatException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

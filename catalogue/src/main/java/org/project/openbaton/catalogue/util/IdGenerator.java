@@ -18,7 +18,7 @@ public class IdGenerator {
 	  }
 
     public static String createUUID() {
-        UUID uuid = java.util.UUID.randomUUID();
+        UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
 }

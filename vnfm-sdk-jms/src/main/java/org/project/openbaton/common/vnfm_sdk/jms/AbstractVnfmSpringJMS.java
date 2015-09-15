@@ -6,10 +6,13 @@ import com.google.gson.JsonObject;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
+import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
+import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
@@ -26,14 +29,9 @@ import java.io.Serializable;
  */
 
 @SpringBootApplication
+@ComponentScan(basePackages = "org.project.openbaton")
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
-    @Autowired
-    protected JmsListenerContainerFactory topicJmsContainerFactory;
-
-    private boolean exit = false;
-
-    protected String SELECTOR;
     protected Gson parser = new GsonBuilder().create();
 
     @Autowired
@@ -53,6 +51,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
+        factory.setSessionTransacted(true);
         factory.setConcurrency("15");
         return factory;
     }
@@ -78,12 +77,20 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
             System.exit(1);
         }
         log.trace("VNFM: received " + msg);
-        this.onAction(msg);
+        try {
+            this.onAction(msg);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (BadFormatException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 
     protected void sendMessageToQueue(String sendToQueueName, final Serializable message) {
-        log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
+        //log.debug("Sending message: " + message + " to Queue: " + sendToQueueName);
 
         MessageCreator messageCreator;
 
@@ -137,12 +144,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     }
 
     @Override
-    protected String executeActionOnEMS(String vduHostname, String command) throws JMSException, VnfmSdkException {
+    protected String executeActionOnEMS(String vduHostname, String command) throws Exception {
         this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
 
         String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
 
-        log.debug("Received from EMS ("+vduHostname+"): " + response);
+        log.debug("Received from EMS (" + vduHostname + "): " + response);
 
         if(response==null) {
             throw new NullPointerException("Response from EMS is null");

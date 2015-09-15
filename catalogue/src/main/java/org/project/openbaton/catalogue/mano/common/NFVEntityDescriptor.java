@@ -1,7 +1,7 @@
 package org.project.openbaton.catalogue.mano.common;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
