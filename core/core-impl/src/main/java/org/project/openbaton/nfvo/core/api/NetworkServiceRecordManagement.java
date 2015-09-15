@@ -120,7 +120,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
-        List<String> ids = new ArrayList<>();
+        List<String> ids = new ArrayList<String>();
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
             for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                 for (VNFComponent vnfComponent : vdu.getVnfc()) {
