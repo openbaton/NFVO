@@ -90,9 +90,9 @@ public class ScaledTask extends AbstractTask {
                 if (vnfdConnectionPoint_nfvo.getId().equals(vnfdConnectionPoint_manager.getId())) {
                     found = true;
                     vnfdConnectionPoint_nfvo.setVirtual_link_reference(vnfdConnectionPoint_manager.getVirtual_link_reference());
-                    vnfdConnectionPoint_nfvo.setExtId(vnfdConnectionPoint_manager.getExtId());
+                    //vnfdConnectionPoint_nfvo.setExtId(vnfdConnectionPoint_manager.getExtId());
                     vnfdConnectionPoint_nfvo.setType(vnfdConnectionPoint_manager.getType());
-                    vnfdConnectionPoint_nfvo.setName(vnfdConnectionPoint_manager.getName());
+                    //vnfdConnectionPoint_nfvo.setName(vnfdConnectionPoint_manager.getName());
                     //Add updated VNFDConnectionPoint
                     vnfdConnectionPoints.add(vnfdConnectionPoint_nfvo);
                     //Proceed with the next VNFDConnectionPoint
