@@ -92,7 +92,8 @@ public class NSDUtils {
         }
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
-            String name_id = vdu.getVimInstance().getName() != null ? vdu.getVimInstance().getName() : vdu.getVimInstance().getId().toString();
+            String name_id = vdu.getVimInstanceName();
+
             boolean fetched = false;
             for(VimInstance vimInstance : vimInstances){
                 if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
