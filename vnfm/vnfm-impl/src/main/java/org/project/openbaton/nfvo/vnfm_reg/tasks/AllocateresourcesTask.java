@@ -76,7 +76,7 @@ public class AllocateresourcesTask extends AbstractTask {
 
         if (!error) {
 
-            virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+            //virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
 
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                 log.debug(">---< The unit is: " + virtualDeploymentUnit);

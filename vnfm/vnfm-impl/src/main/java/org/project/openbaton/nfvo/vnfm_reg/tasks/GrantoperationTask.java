@@ -42,7 +42,9 @@ public class GrantoperationTask extends AbstractTask {
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-            virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+            log.debug("vdu name : "+virtualNetworkFunctionRecord.getVdu().iterator().next().getVimInstanceName());
+            log.debug("vim instance : "+virtualNetworkFunctionRecord.getVdu().iterator().next().getVimInstance());
+            //virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
             log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.GRANT_OPERATION), getTempDestination());
         } else {
