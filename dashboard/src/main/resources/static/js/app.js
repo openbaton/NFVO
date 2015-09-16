@@ -8,7 +8,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             }).
             when('/', {
                 templateUrl: 'pages/contents.html',
-                controller: ''
+                controller: 'MenuCtrl'
             }).
             when('/services', {
                 templateUrl: 'pages/services/services.html',
