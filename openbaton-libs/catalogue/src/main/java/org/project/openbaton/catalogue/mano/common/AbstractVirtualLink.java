@@ -118,6 +118,14 @@ public abstract class AbstractVirtualLink implements Serializable{
         this.connectivity_type = connectivity_type;
     }
 
+    public String getExtId() {  
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
+    }
+
     public String getName() {
         return name;
     }

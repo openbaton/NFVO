@@ -4,6 +4,7 @@ import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
@@ -20,10 +21,7 @@ import org.springframework.core.io.Resource;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by lto on 08/07/15.
@@ -33,6 +31,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected String type;
     protected String endpoint;
     protected String endpointType;
+    protected Set<VirtualLinkRecord> vlr;
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
@@ -70,6 +69,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public Set<VirtualLinkRecord> getVlr() {
+        return vlr;
+    }
+
+    public void setVlr(Set<VirtualLinkRecord> vlr) {
+        this.vlr = vlr;
     }
 
     @Override
