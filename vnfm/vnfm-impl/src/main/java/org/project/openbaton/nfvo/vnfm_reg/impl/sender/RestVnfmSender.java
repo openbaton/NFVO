@@ -17,8 +17,8 @@
 package org.project.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jms.Destination;
 
 /**
  * Created by lto on 03/06/15.
@@ -87,16 +88,22 @@ public class RestVnfmSender implements VnfmSender{
     }
 
     @Override
-    public void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint) {
-        this.sendToVnfm(coreMessage, endpoint.getEndpoint());
+    public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
+        this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
 
     }
 
-    public void sendToVnfm(CoreMessage coreMessage, String url) {
+    @Override
+    public void sendCommand(NFVMessage nfvMessage, Destination tempDestination) {
+        String json = mapper.toJson(nfvMessage);
+        log.debug("Sending message: " + json + " to url " + tempDestination);
+        throw new UnsupportedOperationException("not implemented");
+        //this.post("core-vnfm-actions", json,tempDestination);
+    }
 
-        String json = mapper.toJson(coreMessage);
+    public void sendToVnfm(NFVMessage nfvMessage, String url) {
+        String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + url);
         this.post("core-vnfm-actions", json,url);
-
     }
 }
