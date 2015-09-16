@@ -66,7 +66,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
 	public Set<VirtualNetworkFunctionDescriptor> getVnfd() {
 		if (vnfd == null)
-			vnfd = new HashSet<>();
+			vnfd = new HashSet<VirtualNetworkFunctionDescriptor>();
 		return vnfd;
 	}
 
@@ -76,7 +76,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
 	public Set<VNFDependency> getVnf_dependency() {
 		if (vnf_dependency == null)
-			vnf_dependency = new HashSet<>();
+			vnf_dependency = new HashSet<VNFDependency>();
 		return vnf_dependency;
 	}
 
@@ -86,7 +86,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
 	public Set<PhysicalNetworkFunctionDescriptor> getPnfd() {
 		if (pnfd == null)
-			pnfd = new HashSet<>();
+			pnfd = new HashSet<PhysicalNetworkFunctionDescriptor>();
 		return pnfd;
 	}
 
