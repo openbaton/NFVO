@@ -93,10 +93,10 @@ public class NSDUtils {
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
             String name_id = vdu.getVimInstanceName();
-
+            log.debug("vim instance name="+name_id);
             boolean fetched = false;
             for(VimInstance vimInstance : vimInstances){
-                if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) || (vimInstance.getId() != null && vimInstance.getId().equals(name_id))){
+                if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/){
                     vdu.setVimInstance(vimInstance);
                     log.debug("Found vimInstance: "+ vimInstance);
                     fetched=true;

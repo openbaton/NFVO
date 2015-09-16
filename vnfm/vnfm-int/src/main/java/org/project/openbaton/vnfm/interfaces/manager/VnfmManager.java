@@ -21,11 +21,13 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 
+import javax.jms.Destination;
 import java.util.concurrent.Future;
 
 /**
@@ -38,10 +40,10 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
-    void executeAction(CoreMessage message) throws VimException, NotFoundException;
+    void executeAction(NFVMessage message, Destination tempDestination) throws VimException, NotFoundException;
 
     @Async
-    Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, CoreMessage coreMessage) throws NotFoundException;
+    Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;
 
     Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException;
 }
