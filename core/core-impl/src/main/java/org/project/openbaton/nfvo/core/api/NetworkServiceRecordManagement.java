@@ -20,10 +20,7 @@ import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.*;
@@ -127,37 +124,33 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          * Getting the vim based on the VDU datacenter type
          * Calling the vim to create the Resources
          */
-        for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
-            for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
-
-                if (vlr.getDescriptor_reference().equals(vld.getId())) {
-                    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-                        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-                            for (VNFComponent vnfc : vdu.getVnfc()) {
-                                for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-                                    if (vnfdConnectionPoint.getVirtual_link_reference().equals(vld.getName())) {
-                                        boolean networkExists = false;
-                                        for (Network network : vdu.getVimInstance().getNetworks()) {
-                                            if (network.getName().equals(vld.getName()
-                                            ) || network.getExtId().equals(vld.getName())) {
-                                                networkExists = true;
-                                                vlr.setVim_id(vdu.getId());
-                                                vlr.setExtId(network.getExtId());
-                                                vlr.getConnection().add(vnfdConnectionPoint.getId());
-                                                break;
-                                            }
-                                        }
-                                        if (networkExists == false) {
-                                            Network network = new Network();
-                                            network.setName(vld.getName());
-                                            network.setSubnets(new HashSet<Subnet>());
-                                            network = networkManagement.add(vdu.getVimInstance(), network);
-                                            vdu.getVimInstance().getNetworks().add(network);
-                                            vlr.setVim_id(vdu.getId());
-                                            vlr.setExtId(network.getExtId());
-                                            vlr.getConnection().add(vnfdConnectionPoint.getId());
-                                        }
+        for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+            for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+                for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+                    for (VNFComponent vnfc : vdu.getVnfc()) {
+                        for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
+                            if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
+                                boolean networkExists = false;
+                                for (Network network : vdu.getVimInstance().getNetworks()) {
+                                    if (network.getName().equals(vlr.getName()
+                                    ) || network.getExtId().equals(vlr.getName())) {
+                                        networkExists = true;
+                                        vlr.setStatus(LinkStatus.NORMALOPERATION);
+                                        vlr.setVim_id(vdu.getId());
+                                        vlr.setExtId(network.getExtId());
+                                        vlr.getConnection().add(vnfdConnectionPoint.getId());
+                                        break;
                                     }
+                                }
+                                if (networkExists == false) {
+                                    Network network = new Network();
+                                    network.setName(vlr.getName());
+                                    network.setSubnets(new HashSet<Subnet>());
+                                    network = networkManagement.add(vdu.getVimInstance(), network);
+                                    vlr.setStatus(LinkStatus.NORMALOPERATION);
+                                    vlr.setVim_id(vdu.getId());
+                                    vlr.setExtId(network.getExtId());
+                                    vlr.getConnection().add(vnfdConnectionPoint.getId());
                                 }
                             }
                         }
