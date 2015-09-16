@@ -178,6 +178,7 @@ public class VNFRUtils {
         HashSet<InternalVirtualLink> internalVirtualLinks = new HashSet<>();
         for (InternalVirtualLink internalVirtualLink : vnfd.getVirtual_link()) {
             InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
+            internalVirtualLink_new.setName(internalVirtualLink.getName());
             internalVirtualLink_new.setLeaf_requirement(internalVirtualLink.getLeaf_requirement());
             internalVirtualLink_new.setRoot_requirement(internalVirtualLink.getRoot_requirement());
             internalVirtualLink_new.setConnection_points_references(new HashSet<String>());
