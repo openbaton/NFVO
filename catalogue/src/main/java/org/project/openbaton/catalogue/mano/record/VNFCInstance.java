@@ -14,7 +14,7 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String vim_id;
     protected String vc_id;
     protected String hostname;
-    protected String vnc_reference;
+    protected String vnfc_reference;
 
     public String getHostname() {
         return hostname;
@@ -40,12 +40,12 @@ public class VNFCInstance extends VNFComponent implements Serializable {
         this.vc_id = vc_id;
     }
 
-    public String getVnc_reference() {
-        return vnc_reference;
+    public String getVnfc_reference() {
+        return vnfc_reference;
     }
 
-    public void setVnc_reference(String vnc_reference) {
-        this.vnc_reference = vnc_reference;
+    public void setVnfc_reference(String vnc_reference) {
+        this.vnfc_reference = vnc_reference;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class VNFCInstance extends VNFComponent implements Serializable {
                 "vim_id='" + vim_id + '\'' +
                 ", vc_id='" + vc_id + '\'' +
                 ", hostname='" + hostname + '\'' +
-                ", vnc_reference='" + vnc_reference + '\'' +
+                ", vnfc_reference='" + vnfc_reference + '\'' +
                 '}';
     }
 }
