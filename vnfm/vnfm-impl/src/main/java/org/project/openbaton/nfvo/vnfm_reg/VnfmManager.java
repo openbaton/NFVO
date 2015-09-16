@@ -187,7 +187,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             Map<String, String> extension= new HashMap<>();
             extension.put("nsr-id",networkServiceRecord.getId());
 
-            OrVnfmInstantiateMessage message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceDescriptor.getVld(),extension);
+            OrVnfmInstantiateMessage message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension);
             // Setting extension in CoreMassage
 
 
