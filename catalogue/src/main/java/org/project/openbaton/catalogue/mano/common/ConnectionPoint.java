@@ -58,7 +58,7 @@ public class ConnectionPoint implements Serializable{
     public String toString() {
         return "ConnectionPoint{" +
                 "id='" + id + '\'' +
-                ", version='" + version +
+                ", hb_version='" + version +
                 ", type='" + type + '\'' +
                 '}';
     }

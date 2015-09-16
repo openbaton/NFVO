@@ -21,10 +21,6 @@ import java.util.Set;
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
     /**
-     * Name referenced by VNFCs
-     */
-    private String name;
-	/**
      * Vendor generating this VLD
      * */
     private String vendor;
@@ -49,14 +45,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
     private Security vld_security;
 
     public VirtualLinkDescriptor() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getVendor() {
