@@ -29,6 +29,8 @@ public class VNFComponent implements Serializable{
     @Version
     protected int version = 0;
 
+    protected String vnfcInstance_reference;
+
     public int getVersion() {
 		return version;
 	}
@@ -66,6 +68,14 @@ public class VNFComponent implements Serializable{
 
     public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
         this.connection_point = connection_point;
+    }
+
+    public String getVnfcInstance_reference() {
+        return vnfcInstance_reference;
+    }
+
+    public void setVnfcInstance_reference(String vnfcInstance_reference) {
+        this.vnfcInstance_reference = vnfcInstance_reference;
     }
 
     @Override
