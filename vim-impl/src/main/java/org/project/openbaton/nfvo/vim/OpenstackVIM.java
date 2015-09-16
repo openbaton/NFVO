@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -156,21 +157,21 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         Network createdNetwork = null;
         try {
             createdNetwork = client.createNetwork(vimInstance, network);
-            log.debug("Network with id: " + network.getId() + " created successfully.");
+            log.debug("Network with name: " + network.getName() + " created successfully.");
         } catch (Exception e) {
-            log.error("Network with id: " + network.getId() + " not created successfully.", e);
-            throw new VimException("Network with id: " + network.getId() + " not created successfully.");
+            log.error("Network with name: " + network.getName() + " not created successfully.", e);
+            throw new VimException("Network with name: " + network.getName() + " not created successfully.");
         }
         Set<Subnet> createdSubnets = new HashSet<>();
         for (Subnet subnet : network.getSubnets()) {
             try {
                 Subnet createdSubnet = client.createSubnet(vimInstance, createdNetwork, subnet);
-                log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
-                createdSubnet.setNetworkId(createdNetwork.getId().toString());
+                log.debug("Subnet with name: " + subnet.getName() + " created successfully.");
+                createdSubnet.setNetworkId(createdNetwork.getId());
                 createdSubnets.add(createdSubnet);
             } catch (Exception e) {
-                log.error("Subnet with id: " + subnet.getId() + " not created successfully.", e);
-                throw new VimException("Subnet with id: " + subnet.getId() + " not created successfully.");
+                log.error("Subnet with name: " + subnet.getName() + " not created successfully.", e);
+                throw new VimException("Subnet with name: " + subnet.getName() + " not created successfully.");
             }
         }
         createdNetwork.setSubnets(createdSubnets);
@@ -280,6 +281,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         log.debug("initialized VimInstance");
         log.debug("VDU is : " + vdu.toString());
         log.debug("VNFR is : " + vnfr.toString());
+        log.debug("VNFC is : " + vnfComponent.toString());
         /**
          *  *) choose image
          *  *) ...?
@@ -288,8 +290,13 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
         Set<String> networks = new HashSet<String>();
-        //for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
-            //networks.add(vnfdConnectionPoint.getExtId());
+        for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+            for (InternalVirtualLink internalVirtualLink : vnfr.getVirtual_link()) {
+                if (vnfdConnectionPoint.getVirtual_link_reference().equals(internalVirtualLink.getName())) {
+                    networks.add(internalVirtualLink.getExtId());
+                }
+            }
+        }
 
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
         vdu.setHostname(vnfr.getName());
@@ -316,11 +323,9 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
             VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
             connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-            //connectionPoint_new.setExtId(connectionPoint.getExtId());
-            //connectionPoint_new.setName(connectionPoint.getName());
             connectionPoint_new.setType(connectionPoint.getType());
-
             vnfcInstance.getConnection_point().add(connectionPoint_new);
+            vnfr.getConnection_point().add(connectionPoint_new);
         }
 
         if (vdu.getVnfc_instance() == null)
