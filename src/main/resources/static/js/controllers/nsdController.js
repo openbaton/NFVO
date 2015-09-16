@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
+var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http) {
 
     var url = 'http://localhost:8080/api/v1/ns-descriptors';
     var urlRecord = 'http://localhost:8080/api/v1/ns-records';
@@ -125,7 +125,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 loadTable();
             })
             .error(function (data, status) {
-                console.error('STATUS: ' + status + ' DATA: ' + data);
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
                 showError(status, JSON.stringify(data));
             });
     };
@@ -217,7 +217,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
     };
 
-    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies.json')
+    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies-and-scripts.json')
         .then(function (res) {
             //console.log(res.data);
             $scope.nsdCreate = angular.copy(res.data);
@@ -328,14 +328,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
 
-    $scope.Jsplumb = function () {
-
-        http.syncGet(url + $routeParams.topologyid).then(function (response) {
-            topologiesAPI.Jsplumb(response);
-            console.log(response);
-
-        });
-    };
 
     $scope.isEmpty = function (obj) {
         if (angular.equals({}, obj))
