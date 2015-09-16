@@ -11,9 +11,10 @@ import java.io.Serializable;
 @Entity
 public class VNFCInstance extends VNFComponent implements Serializable {
 
-    private String vim_id;
-    private String vc_id;
-    private String hostname;
+    protected String vim_id;
+    protected String vc_id;
+    protected String hostname;
+    protected String vnc_reference;
 
     public String getHostname() {
         return hostname;
@@ -39,11 +40,21 @@ public class VNFCInstance extends VNFComponent implements Serializable {
         this.vc_id = vc_id;
     }
 
+    public String getVnc_reference() {
+        return vnc_reference;
+    }
+
+    public void setVnc_reference(String vnc_reference) {
+        this.vnc_reference = vnc_reference;
+    }
+
     @Override
     public String toString() {
         return "VNFCInstance{" +
-                "vc_id='" + vc_id + '\'' +
-                ", vim_id='" + vim_id + '\'' +
+                "vim_id='" + vim_id + '\'' +
+                ", vc_id='" + vc_id + '\'' +
+                ", hostname='" + hostname + '\'' +
+                ", vnc_reference='" + vnc_reference + '\'' +
                 '}';
     }
 }

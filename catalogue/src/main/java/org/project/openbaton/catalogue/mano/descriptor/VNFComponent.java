@@ -29,8 +29,6 @@ public class VNFComponent implements Serializable{
     @Version
     protected int version = 0;
 
-    protected String vnfcInstance_reference;
-
     public int getVersion() {
 		return version;
 	}
@@ -70,22 +68,12 @@ public class VNFComponent implements Serializable{
         this.connection_point = connection_point;
     }
 
-    public String getVnfcInstance_reference() {
-        return vnfcInstance_reference;
-    }
-
-    public void setVnfcInstance_reference(String vnfcInstance_reference) {
-        this.vnfcInstance_reference = vnfcInstance_reference;
-    }
-
     @Override
     public String toString() {
         return "VNFComponent{" +
-                "id='" + id + '\'' +
+                "connection_point=" + connection_point +
+                ", id='" + id + '\'' +
                 ", version=" + version +
-                ", vnfcInstance_reference='" + vnfcInstance_reference + '\'' +
-                ", connection_point=" + connection_point +
                 '}';
     }
-    
 }
