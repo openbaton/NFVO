@@ -1,7 +1,8 @@
 package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -11,8 +12,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-//import javax.validation.Valid;
 import java.io.Serializable;
+
+//import javax.validation.Valid;
 
 /**
  * Created by lto on 08/07/15.
@@ -21,6 +23,18 @@ import java.io.Serializable;
 @RestController
 @RequestMapping("/core-vnfm-actions")
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
+
+    @Override
+    protected boolean allocateResources(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        //TODO implement rest method
+        return true;
+    }
+
+    @Override
+    protected boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        //TODO implement rest method
+        return true;
+    }
 
     private String server = "localhost";
     private String port = "8080";
@@ -127,14 +141,9 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.post("admin/v1/vnfm-core-actions", json);
     }
 
-    @Override
-    protected void sendToNfvo(CoreMessage coreMessage) {
-        sendToCore(coreMessage);
-    }
-
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receive(@RequestBody /*@Valid*/ CoreMessage message) {
+    public void receive(@RequestBody /*@Valid*/ NFVMessage message) {
         log.debug("Received: " + message);
         try {
             this.onAction(message);
