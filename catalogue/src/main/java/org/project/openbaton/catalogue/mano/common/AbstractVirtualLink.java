@@ -69,7 +69,7 @@ public abstract class AbstractVirtualLink implements Serializable{
 
     public AbstractVirtualLink() {
     }
-
+    
     public String getId() {
         return id;
     }
@@ -118,7 +118,7 @@ public abstract class AbstractVirtualLink implements Serializable{
         this.connectivity_type = connectivity_type;
     }
 
-    public String getExtId() {  
+    public String getExtId() {
         return extId;
     }
 
