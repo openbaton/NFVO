@@ -26,32 +26,41 @@ public abstract class AbstractVirtualLink implements Serializable{
 	@Id
     protected String id;
 	@Version
-	protected int version = 0;
+	protected int hb_version = 0;
+
+    /**
+     * extId of the network to attach
+     */
+    protected String extId;
 
         /**
      * Throughput of the link (e.g. bandwidth of E-Line, root bandwidth of E-Tree, and aggregate capacity of E-LAN)
      * */
-    private String root_requirement;
+    protected String root_requirement;
     /**
      * Throughput of leaf connections to the link (for E-Tree and E-LAN branches)
      * */
-    private String leaf_requirement;
+    protected String leaf_requirement;
     /**
      * QoS options available on the VL, e.g. latency, jitter, etc.
      * */
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> qos;
+    protected Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
      * */
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> test_access;
+    protected Set<String> test_access;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree.
      * TODO: think of using Enum instead of String
      * */
-    private String connectivity_type;
+    protected String connectivity_type;
+    /**
+     * Name referenced by VNFCs
+     */
+    protected String name;
 
     @PrePersist
     public void ensureId(){
@@ -107,5 +116,13 @@ public abstract class AbstractVirtualLink implements Serializable{
 
     public void setConnectivity_type(String connectivity_type) {
         this.connectivity_type = connectivity_type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
