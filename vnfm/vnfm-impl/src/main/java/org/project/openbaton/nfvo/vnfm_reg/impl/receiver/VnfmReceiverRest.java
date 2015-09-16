@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.vnfm_reg.impl.receiver;
 
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.exceptions.*;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
@@ -24,8 +25,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jms.support.JmsHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.Destination;
 import javax.validation.Valid;
 
 
@@ -43,10 +47,9 @@ public class VnfmReceiverRest implements VnfmReceiver {
     @Override
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void actionFinished(@RequestBody @Valid CoreMessage coreMessage) throws NotFoundException, VimException {
-        log.debug("CORE: Received: " + coreMessage);
-        vnfmManager.executeAction(coreMessage);
-        return;
+    public void actionFinished(@RequestBody NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
+        log.debug("CORE: Received: " + nfvMessage);
+        vnfmManager.executeAction(nfvMessage, tempDestination);
     }
 
 }
