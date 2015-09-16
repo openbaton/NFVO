@@ -114,8 +114,8 @@ public class VNFRUtils {
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-                    connectionPoint_new.setName(connectionPoint.getName());
-                    connectionPoint_new.setExtId(connectionPoint.getExtId());
+                    //connectionPoint_new.setName(connectionPoint.getName());
+                    //connectionPoint_new.setExtId(connectionPoint.getExtId());
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
