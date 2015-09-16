@@ -130,7 +130,7 @@ public class VNFRUtils {
                 lifecycleEvents.add(lifecycleEvent_new);
             }
             vdu_new.setLifecycle_event(lifecycleEvents);
-
+            vdu_new.setVimInstanceName(virtualDeploymentUnit.getVimInstanceName());
             vdu_new.setHostname(virtualDeploymentUnit.getHostname());
             vdu_new.setHigh_availability(virtualDeploymentUnit.getHigh_availability());
             vdu_new.setComputation_requirement(virtualDeploymentUnit.getComputation_requirement());
