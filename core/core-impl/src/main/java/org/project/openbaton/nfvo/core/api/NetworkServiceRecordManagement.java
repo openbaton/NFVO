@@ -117,6 +117,19 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
         nsrRepository.deleteVNFRecord(idNsr, idVnf);
     }
 
+    /**
+     * Returns the VirtualNetworkFunctionRecord with idVnf into NSR with idNsr
+     *
+     * @param idNsr of Nsr
+     * @param idVnf of VirtualNetworkFunctionRecord
+     * @return VirtualNetworkFunctionRecord selected
+     */
+    @Override
+    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idNsr, String idVnf) {
+        nsrRepository.exists(idNsr);
+        return vnfrRepository.findFirstById(idVnf);
+    }
+
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
         log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = null;

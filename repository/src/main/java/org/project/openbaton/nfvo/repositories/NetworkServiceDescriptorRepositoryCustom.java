@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.repositories;
 
+import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -27,4 +28,7 @@ public interface NetworkServiceDescriptorRepositoryCustom {
     VNFDependency addVnfDependency(VNFDependency vnfd, String id);
     void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
     PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pnfDescriptor, String id);
+    Security addSecurity(String id, Security security);
+
+    void deleteSecurity(String id, String idS);
 }

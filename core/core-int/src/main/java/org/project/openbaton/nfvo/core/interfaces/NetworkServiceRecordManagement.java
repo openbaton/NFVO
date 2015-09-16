@@ -18,6 +18,7 @@ package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.*;
 
@@ -74,4 +75,12 @@ public interface NetworkServiceRecordManagement {
     void delete(String id) throws VimException, NotFoundException, ExecutionException, InterruptedException, WrongStatusException;
 
     void deleteVNFRecord(String idNsr, String idVnf);
+
+    /**
+     * Returns the VirtualNetworkFunctionRecord with idVnf into NSR with idNsr
+     * @param idNsr of Nsr
+     * @param idVnf of VirtualNetworkFunctionRecord
+     * @return VirtualNetworkFunctionRecord selected
+     */
+    VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idNsr, String idVnf );
 }

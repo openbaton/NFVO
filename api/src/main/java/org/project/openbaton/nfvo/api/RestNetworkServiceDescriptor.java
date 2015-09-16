@@ -353,22 +353,16 @@ public class RestNetworkServiceDescriptor {
      * Deletes the Security with the id_s
      *
      * @param id   : The NSD id
-     * @param id_s : The Security id
+     * @param idS : The Security id
      * @
      */
-    @RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}/security/{idS}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSecurity(@PathVariable("id") String id,
-                               @PathVariable("id_s") String id_s) {
+                               @PathVariable("idS") String idS) {
 
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
-        if (!nsd.getNsd_security().getId().equals(id_s)) {
-            log.error("Security with id: " + id_s + " not found.");
-//			TODO throw properly this exception
-//			throw new NSDNotFoundException(id_s);
-        }
-        nsd.setNsd_security(null);
-        networkServiceDescriptorManagement.update(nsd);
+        networkServiceDescriptorManagement.deleteSecurty(id, idS);
+
     }
 
     /**
@@ -383,10 +377,7 @@ public class RestNetworkServiceDescriptor {
     @ResponseStatus(HttpStatus.CREATED)
     public Security postSecurity(@RequestBody @Valid Security security,
                                  @PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
-        nsd.setNsd_security(security);
-        networkServiceDescriptorManagement.update(nsd);
-        return security;
+        return networkServiceDescriptorManagement.addSecurity(id, security);
     }
 
     @RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
