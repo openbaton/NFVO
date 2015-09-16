@@ -145,7 +145,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage=(OrVnfmInstantiateMessage) message;
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfd().getName(),orVnfmInstantiateMessage.getVnfdf().getFlavour_key() , orVnfmInstantiateMessage.getVlrs(),orVnfmInstantiateMessage.getExtention());
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key() ,orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(),orVnfmInstantiateMessage.getExtention());
                     virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord);
                     nfvMessage = getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     setupProvides(virtualNetworkFunctionRecord);
