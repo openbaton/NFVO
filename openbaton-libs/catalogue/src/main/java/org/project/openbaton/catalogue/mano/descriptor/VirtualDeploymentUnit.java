@@ -219,6 +219,7 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", high_availability=" + high_availability +
                 ", scale_in_out=" + scale_in_out +
                 ", vnfc=" + vnfc +
+                ", vimInstanceName=" + vimInstanceName +
                 ", monitoring_parameter=" + monitoring_parameter +
                 '}';
     }

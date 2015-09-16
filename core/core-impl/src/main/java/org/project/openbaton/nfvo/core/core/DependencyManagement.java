@@ -24,6 +24,7 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.DependencyParameters;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
@@ -85,11 +86,9 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                         log.debug("Found " + notInitIds.size() + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
                     }else {
                         //send modify to VNFR
-                        CoreMessage coreMessage = new CoreMessage();
-                        coreMessage.setAction(Action.MODIFY);
-                        coreMessage.setDependency(vnfRecordDependency);
-                        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                        vnfmManager.modify(virtualNetworkFunctionRecord, coreMessage);
+                        OrVnfmGenericMessage orVnfmGenericMessage= new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.MODIFY);
+                        orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+                        vnfmManager.modify(virtualNetworkFunctionRecord, orVnfmGenericMessage);
                     }
                     return dep;
                 }
