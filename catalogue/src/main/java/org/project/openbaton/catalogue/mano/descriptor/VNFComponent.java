@@ -81,9 +81,11 @@ public class VNFComponent implements Serializable{
     @Override
     public String toString() {
         return "VNFComponent{" +
-                "connection_point=" + connection_point +
-                ", id='" + id + '\'' +
+                "id='" + id + '\'' +
                 ", version=" + version +
+                ", vnfcInstance_reference='" + vnfcInstance_reference + '\'' +
+                ", connection_point=" + connection_point +
                 '}';
     }
+    
 }
