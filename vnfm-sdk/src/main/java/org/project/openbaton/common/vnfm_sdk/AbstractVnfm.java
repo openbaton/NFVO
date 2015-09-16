@@ -154,7 +154,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage=(OrVnfmInstantiateMessage) message;
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getExtention(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key());
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key() ,orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(),orVnfmInstantiateMessage.getExtention());
                     virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord);
                     nfvMessage = getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     setupProvides(virtualNetworkFunctionRecord);
@@ -230,14 +230,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecord from the VirtualNetworkFunctionDescriptor
      *
      * @param virtualNetworkFunctionDescriptor
-     * @param extention
+     * @param extension
      * @return The new VirtualNetworkFunctionRecord
      * @throws BadFormatException
      * @throws NotFoundException
      */
-    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Map<String, String> extention, String flavourKey) throws BadFormatException, NotFoundException {
+    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, String vnfInstanceName, Set<VirtualLinkRecord> virtualLink, Map<String, String> extension ) throws BadFormatException, NotFoundException {
         try {
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourKey,extention.get("nsr-id"));
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"));
             log.debug("Created VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord);
             return virtualNetworkFunctionRecord;
         } catch (NotFoundException e) {
