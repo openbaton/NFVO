@@ -42,6 +42,7 @@ public class InternalVirtualLink extends AbstractVirtualLink {
     public String toString() {
         return "InternalVirtualLink{" +
                 "id='" + id + '\'' +
+                ", name='" + getName() + '\'' +
                 ", version='" + hb_version +
                 ", connectivity_type='" + getConnectivity_type() + '\'' +
                 ", connection_points_references='" + connection_points_references + '\'' +
