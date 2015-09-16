@@ -1,7 +1,6 @@
 package org.project.openbaton.catalogue.nfvo.messages;
 
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
@@ -16,14 +15,14 @@ import java.util.Set;
 public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     private VirtualNetworkFunctionDescriptor vnfd;
     private VNFDeploymentFlavour vnfdf;
-    private String vnfInsanceName;
+    private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
     private Map<String,String> extention;
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInsanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
-        this.vnfInsanceName = vnfInsanceName;
+        this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
         this.extention = extention;
     }
@@ -44,12 +43,12 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
         this.vnfdf = vnfdf;
     }
 
-    public String getVnfInsanceName() {
-        return vnfInsanceName;
+    public String getVnfInstanceName() {
+        return vnfInstanceName;
     }
 
-    public void setVnfInsanceName(String vnfInsanceName) {
-        this.vnfInsanceName = vnfInsanceName;
+    public void setVnfInstanceName(String vnfInstanceName) {
+        this.vnfInstanceName = vnfInstanceName;
     }
 
     public Set<VirtualLinkRecord> getVlrs() {
@@ -78,7 +77,7 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
         return "OrVnfmInstantiateMessage{" +
                 "vnfd=" + vnfd +
                 ", vnfdf=" + vnfdf +
-                ", vnfInsanceName='" + vnfInsanceName + '\'' +
+                ", vnfInstanceName='" + vnfInstanceName + '\'' +
                 ", vlrs=" + vlrs +
                 ", extention=" + extention +
                 '}';
