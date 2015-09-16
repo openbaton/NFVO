@@ -16,13 +16,15 @@
 
 package org.project.openbaton.vnfm.interfaces.sender;
 
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+
+import javax.jms.Destination;
 
 /**
  * Created by lto on 03/06/15.
  */
 public interface VnfmSender {
-    void sendCommand(final CoreMessage coreMessage, VnfmManagerEndpoint endpoint);
-
+    void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint);
+    void sendCommand(final NFVMessage nfvMessage, Destination tempDestination);
 }
