@@ -129,15 +129,17 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
          */
         for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
             for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+
                 if (vlr.getDescriptor_reference().equals(vld.getId())) {
-                    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
-                        for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+                    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+                        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
                             for (VNFComponent vnfc : vdu.getVnfc()) {
                                 for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
                                     if (vnfdConnectionPoint.getVirtual_link_reference().equals(vld.getName())) {
                                         boolean networkExists = false;
                                         for (Network network : vdu.getVimInstance().getNetworks()) {
-                                            if (network.getName().equals(vld.getId()) || network.getExtId().equals(vld.getName())) {
+                                            if (network.getName().equals(vld.getName()
+                                            ) || network.getExtId().equals(vld.getName())) {
                                                 networkExists = true;
                                                 vlr.setVim_id(vdu.getId());
                                                 vlr.setExtId(network.getExtId());
@@ -150,6 +152,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                                             network.setName(vld.getName());
                                             network.setSubnets(new HashSet<Subnet>());
                                             network = networkManagement.add(vdu.getVimInstance(), network);
+                                            vdu.getVimInstance().getNetworks().add(network);
                                             vlr.setVim_id(vdu.getId());
                                             vlr.setExtId(network.getExtId());
                                             vlr.getConnection().add(vnfdConnectionPoint.getId());
