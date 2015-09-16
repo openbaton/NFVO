@@ -202,6 +202,7 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
                 "vendor='" + vendor + '\'' +
                 ", version='" + version + '\'' +
                 ", name='" + getName() + '\'' +
+                ", extId='" + getExtId() + '\'' +
                 ", number_of_endpoints=" + number_of_endpoints +
                 ", parent_ns='" + parent_ns + '\'' +
                 ", vnffgr_reference=" + vnffgr_reference +
