@@ -90,6 +90,9 @@ public class VirtualDeploymentUnit implements Serializable {
 
     private String hostname;
 
+    @Column(nullable = false)
+    private String vimInstanceName;
+
     public VirtualDeploymentUnit() {
     }
 
@@ -236,7 +239,11 @@ public class VirtualDeploymentUnit implements Serializable {
         this.hostname = hostname;
     }
 
-    public String getVimInstanceName(){
-        return vimInstance.getName();
+    public String getVimInstanceName() {
+        return vimInstanceName;
+    }
+
+    public void setVimInstanceName(String vimInstanceName) {
+        this.vimInstanceName = vimInstanceName;
     }
 }
