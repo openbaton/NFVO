@@ -386,16 +386,18 @@ select.form-control.ng-valid.ng-dirty {
         display: none;
     }
 }
-@media(max-width:768px) {
-    #footer{
-        display: none;
-    }
-}
+/*@media(max-width:768px) {*/
+    /*#footer{*/
+        /*display: none;*/
+    /*}*/
+/*}*/
 
 #footer{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: small;
     position: fixed;
     left: 20px;
-    bottom: 20px;
-    width: 150px;
+    bottom: 10px;
+    width: 250px;
     height: auto;
 }
