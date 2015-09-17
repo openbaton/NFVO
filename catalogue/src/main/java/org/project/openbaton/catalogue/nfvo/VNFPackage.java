@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -11,7 +26,7 @@ import java.util.Set;
  * Created by lto on 22/07/15.
  */
 @Entity
-public class VNFPackage implements Serializable{
+public class VNFPackage implements Serializable {
 
     @Id
     private String id;
@@ -62,9 +77,10 @@ public class VNFPackage implements Serializable{
     }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
+
     public String getScriptsLink() {
         return scriptsLink;
     }
@@ -81,9 +97,13 @@ public class VNFPackage implements Serializable{
         this.id = id;
     }
 
-    public VirtualNetworkFunctionDescriptor getVnfr() { return vnfr;}
+    public VirtualNetworkFunctionDescriptor getVnfr() {
+        return vnfr;
+    }
 
-    public void setVnfr(VirtualNetworkFunctionDescriptor vnfr) {this.vnfr = vnfr;}
+    public void setVnfr(VirtualNetworkFunctionDescriptor vnfr) {
+        this.vnfr = vnfr;
+    }
 
     public int getVersion() {
         return version;
@@ -117,11 +137,11 @@ public class VNFPackage implements Serializable{
         this.scripts = scripts;
     }
 
-    public void setImage(NFVImage image) {
-        this.image = image;
-    }
-
     public NFVImage getImage() {
         return image;
+    }
+
+    public void setImage(NFVImage image) {
+        this.image = image;
     }
 }
