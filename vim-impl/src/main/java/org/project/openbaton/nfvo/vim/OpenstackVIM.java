@@ -45,8 +45,15 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
 
     public OpenstackVIM(String name, int port) {
-        super(name, port);
+        super("openstack",name, port);
     }
+    public OpenstackVIM() {
+        super("openstack");
+    }
+    public OpenstackVIM(int port) {
+        super("openstack",port);
+    }
+
 
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
