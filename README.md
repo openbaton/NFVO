@@ -73,7 +73,7 @@ How to write a Vnfm for OpenBaton:
             this method will start a particular communication with the NFVO returning true when all the VNFComponents of the VNFR are allocated correctly on the defined VIM
 
 ## Version
-0.5
+ '0.7'
 
 ## Installation
 
@@ -91,7 +91,35 @@ $ ./openbaton.sh -i
 
 `openbaton` provides some plugins in order to interact with the most common cloud platforms available:
 * OpenStack
-* Amazon EC2
+* Test
+
+### How to write a plugin
+
+* install the plugin sdk to your local repository
+* create a new project with build.gradle starting with:
+```
+    project.ext {
+        mainClassName = '<path_to_Starter>'
+    }
+    buildscript {
+        repositories{
+            mavenCentral()
+            maven {
+                url uri('../repository-local')
+            }
+        }
+        dependencies {
+            classpath 'org.project.openbaton:plugin-sdk-gradle-plugin:0.1'
+            classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE'
+        }
+    }
+
+
+    apply plugin: 'spring-boot'
+    apply plugin: 'plugin-sdk'
+```
+* create a starter
+
 
 ### How to install a plugin
 
