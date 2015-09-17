@@ -73,15 +73,14 @@ public class AllocateresourcesTask extends AbstractTask {
                 break;
             }
         }
-
+        Thread.sleep(1000 * ((int) (Math.random() * 3 + 1)));
         if (!error) {
-
-            //virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
 
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                 log.debug(">---< The unit is: " + virtualDeploymentUnit);
             }
             OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ALLOCATE_RESOURCES);
+            log.debug("SENDING ALLOCATE RESOURCES on temp queue:" + getTempDestination());
             vnfmSender.sendCommand(orVnfmGenericMessage, getTempDestination());
         }
     }

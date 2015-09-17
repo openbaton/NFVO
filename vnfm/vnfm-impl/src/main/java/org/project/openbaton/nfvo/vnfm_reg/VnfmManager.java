@@ -26,6 +26,7 @@ import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.catalogue.nfvo.messages.*;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -100,6 +101,9 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
+
+    @Autowired
+    private NetworkServiceDescriptorRepository nsdRepository;
 
     @Override
     public void init() {
@@ -264,7 +268,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     }
 
-    private /*synchronized*/ void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
         if (virtualNetworkFunctionRecord == null)
             return;
@@ -292,8 +296,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         networkServiceRecord.setStatus(status);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
-        if (status.ordinal() == Status.ACTIVE.ordinal())
-            publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+        if (status.ordinal() == Status.ACTIVE.ordinal() ){
+            //Check if all vnfr have been received from the vnfm
+            boolean nsrFilledWithAllVnfr= nsdRepository.findOne(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
+            if(nsrFilledWithAllVnfr)
+                publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+            else log.debug("Nsr is ACTIVE but not all vnfr have been received");
+        }
         else if (status.ordinal() == Status.TERMINATED.ordinal()) {
             publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             nsrRepository.delete(networkServiceRecord);
