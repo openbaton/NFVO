@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.descriptor;
 
@@ -35,6 +44,7 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
      * */
     private String vendor;
     /**
+
      * The version of PNF this PNFD is describing.
      * */
     private String version;
@@ -45,7 +55,7 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
     /**
      * This element describes an external interface exposed by this PNF enabling connection with a VL.
      * */
-    @OneToMany(cascade = CascadeType.ALL)	
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<ConnectionPoint> connection_point;
     /**
      * Version of the PNF descriptor.
@@ -57,10 +67,23 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
      * */
     @OneToOne(cascade = CascadeType.ALL)
     private Security pnfd_security;
+    public PhysicalNetworkFunctionDescriptor() {
+
+    }
+
+    public int getHb_version() {
+        return hb_version;
+    }
+
+    public void setHb_version(int hb_version) {
+        this.hb_version = hb_version;
+    }
+
     @PrePersist
     public void ensureId(){
         id=IdGenerator.createUUID();
     }
+
     public String getId() {
         return id;
     }
@@ -115,10 +138,6 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable{
 
     public void setPnfd_security(Security pnfd_security) {
         this.pnfd_security = pnfd_security;
-    }
-
-    public PhysicalNetworkFunctionDescriptor() {
-
     }
 
 	@Override
