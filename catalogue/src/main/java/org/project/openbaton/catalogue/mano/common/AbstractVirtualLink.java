@@ -85,15 +85,6 @@ public abstract class AbstractVirtualLink implements Serializable{
     public AbstractVirtualLink() {
     }
     
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    
     public String getId() {
         return id;
     }
@@ -101,6 +92,15 @@ public abstract class AbstractVirtualLink implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
+    
+    public int getHb_version() {
+	return hb_version;
+    }
+
+    public void setHb_version(int vb_version) {
+        this.hb_version = hb_version;
+    }
+
 
     public String getRoot_requirement() {
         return root_requirement;
