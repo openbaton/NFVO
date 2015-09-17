@@ -94,15 +94,6 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     public VirtualLinkRecord() {
     }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
-
-    }
-
-    public void setId(String id) {
-        this.id = id;
     public String getVendor() {
         return vendor;
     }
