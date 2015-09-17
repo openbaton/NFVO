@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI) {
 
     var url = 'http://localhost:8080/api/v1/ns-records';
 
@@ -102,14 +102,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     };
 
 
-    $scope.Jsplumb = function () {
-
-        http.syncGet(url + $routeParams.topologyid).then(function (response) {
-            topologiesAPI.Jsplumb(response);
-            console.log(response);
-
-        });
-    };
 
     $scope.isEmpty = function (obj) {
         return angular.equals({}, obj);
@@ -178,7 +170,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                 loadTable();
             })
             .error(function (data, status) {
-                showError(data, status);
+                showError(status, JSON.stringify(data));
             });
     };
 
