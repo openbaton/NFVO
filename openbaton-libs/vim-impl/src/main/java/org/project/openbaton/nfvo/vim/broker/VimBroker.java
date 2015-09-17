@@ -65,14 +65,56 @@ public class VimBroker implements org.project.openbaton.nfvo.vim_interfaces.vim.
     }
 
     @Override
+    public Vim getVim(String type, String name) {
+        switch (type) {
+            case "test":
+                return (Vim) context.getBean("testVIM",type, name);
+            case "openstack":
+                return (Vim) context.getBean("openstackVIM",type, name);
+            case "amazon":
+                return (Vim) context.getBean("amazonVIM",type, name);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Vim getVim(String type) {
+        switch (type) {
+            case "test":
+                return (Vim) context.getBean("testVIM");
+            case "openstack":
+                return (Vim) context.getBean("openstackVIM");
+            case "amazon":
+                return (Vim) context.getBean("amazonVIM");
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Vim getVim(String type, int port) {
+        switch (type) {
+            case "test":
+                return (Vim) context.getBean("testVIM", port);
+            case "openstack":
+                return (Vim) context.getBean("openstackVIM",port);
+            case "amazon":
+                return (Vim) context.getBean("amazonVIM",port);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
     public Vim getVim(String type, String name, String port) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", name, Integer.parseInt(port));
+                return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port));
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", name, Integer.parseInt(port));
+                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port));
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", name, Integer.parseInt(port));
+                return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port));
             default:
                 throw new UnsupportedOperationException();
         }
@@ -80,7 +122,7 @@ public class VimBroker implements org.project.openbaton.nfvo.vim_interfaces.vim.
 
     @Override
     public Quota getLeftQuota(VimInstance vimInstance) throws VimException {
-        Vim vim = getVim(vimInstance.getType(), vimInstance.getType(), "1099");
+        Vim vim = getVim(vimInstance.getType());
 
         Quota maximalQuota = vim.getQuota(vimInstance);
         Quota leftQuota = maximalQuota;
