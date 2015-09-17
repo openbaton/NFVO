@@ -2,6 +2,7 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
@@ -60,7 +61,7 @@ public class ScaledTask extends AbstractTask {
                     vdu_nfvo.setVm_image(vdu_manager.getVm_image());
                     //Updating VNFCInstances
                     vdu_nfvo.setVnfc_instance(updateVNFCInstances(vdu_nfvo.getVnfc_instance(), vdu_manager.getVnfc_instance()));
-                    log.debug("SCALED: VNFCInstances of VDU " + vdu_nfvo.getId() + ": " + vdu_nfvo.getVnfc());
+                    log.debug("SCALED: VNFCInstances of VDU " + vdu_nfvo.getId() + ": " + vdu_nfvo.getVnfc_instance());
                     vdus.add(vdu_nfvo);
                     break;
                 }
@@ -73,6 +74,8 @@ public class ScaledTask extends AbstractTask {
         }
         virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
         log.debug("SCALED: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
+        virtualNetworkFunctionRecord_nfvo.setTask("scaled");
+        virtualNetworkFunctionRecord_nfvo.setStatus(Status.ACTIVE);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
         log.debug("SCALED: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED), getTempDestination());
