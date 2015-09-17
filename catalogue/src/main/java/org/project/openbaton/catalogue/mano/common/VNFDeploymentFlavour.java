@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.common;
 
@@ -31,6 +40,10 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
 	@OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST})
     private Set<CostituentVDU> costituent_vdu;
 
+    public VNFDeploymentFlavour() {
+
+    }
+
     public Set<String> getDf_constraint() {
         return df_constraint;
     }
@@ -45,9 +58,5 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
 
     public void setCostituent_vdu(Set<CostituentVDU> costituent_vdu) {
         this.costituent_vdu = costituent_vdu;
-    }
-
-    public VNFDeploymentFlavour() {
-
     }
 }
