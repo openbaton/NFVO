@@ -11,14 +11,14 @@ import java.rmi.registry.Registry;
  */
 public class PluginBroker<T extends Remote> {
 
-    public T getPlugin(String type) throws RemoteException, NotBoundException {
+    public T getPlugin(String inte, String type) throws RemoteException, NotBoundException {
         Registry registry = getRegistry(1099);
-        return lookupPlugin(type, registry);
+        return lookupPlugin(inte, type, registry);
     }
 
-    private T lookupPlugin(String type, Registry registry) throws RemoteException, NotBoundException {
+    private T lookupPlugin(String inte, String type, Registry registry) throws RemoteException, NotBoundException {
         for (String name : registry.list()) {
-            if (name.startsWith(type + ".")) {
+            if (name.startsWith(inte + "." + type + ".")) {
                 return (T) registry.lookup(name);
             }
         }
@@ -29,15 +29,16 @@ public class PluginBroker<T extends Remote> {
         return LocateRegistry.getRegistry(port);
     }
 
-    public T getPlugin(String type, int port) throws RemoteException, NotBoundException {
-        return lookupPlugin(type, getRegistry(port));
+    public T getPlugin(String inte, String type, int port) throws RemoteException, NotBoundException {
+        return lookupPlugin(inte, type, getRegistry(port));
     }
 
-    public T getPlugin(String type, String name) throws RemoteException, NotBoundException {
-        return (T) getRegistry(1099).lookup(type + "." + name);
+    public T getPlugin(String inte, String type, String name) throws RemoteException, NotBoundException {
+        return (T) getRegistry(1099).lookup(inte + "." + type + "." + name);
     }
 
-    public T getPlugin(String type, String name, int port) throws RemoteException, NotBoundException {
-        return (T) getRegistry(port).lookup(type + "." + name);
+    public T getPlugin(String inte, String type, String name, int port) throws RemoteException, NotBoundException {
+
+        return (T) getRegistry(port).lookup(inte + "." + type + "." + name);
     }
 }
