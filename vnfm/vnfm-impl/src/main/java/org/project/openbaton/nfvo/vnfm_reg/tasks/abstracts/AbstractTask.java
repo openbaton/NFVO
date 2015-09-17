@@ -45,6 +45,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     protected VnfmRegister vnfmRegister;
 
     protected void saveVirtualNetworkFunctionRecord() {
+        log.debug("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
         if (virtualNetworkFunctionRecord.getId() == null)
             virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
         else
