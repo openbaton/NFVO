@@ -41,9 +41,14 @@ import java.util.concurrent.Future;
 public class AmazonVIM extends Vim {
 
     public AmazonVIM(String name, int port) {
-        super(name, port);
+        super("amazon",name, port);
     }
-
+    public AmazonVIM() {
+        super("amazon");
+    }
+    public AmazonVIM(int port) {
+        super("amazon",port);
+    }
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         throw new UnsupportedOperationException();
