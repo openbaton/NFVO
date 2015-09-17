@@ -38,18 +38,14 @@ public class InstantiateTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+        log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName()+" his nsr id father is:"+virtualNetworkFunctionRecord.getParent_ns_id());
         virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-
-        log.debug("Vnfr added" + virtualNetworkFunctionRecord.getName());
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
 
         NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
             log.debug("Current Vnfrs in the database: "+vnfr.getName());
-
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(),nsr);
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep;
@@ -59,7 +55,6 @@ public class InstantiateTask extends AbstractTask {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
-        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
     }
 
     @Override
