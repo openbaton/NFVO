@@ -39,8 +39,6 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     private String version;
     private int number_of_endpoints;
 
-
-    /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
      */
     private String parent_ns;
@@ -94,15 +92,6 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     public VirtualLinkRecord() {
     }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
-
-    }
-
-    public void setId(String id) {
-        this.id = id;
     public String getVendor() {
         return vendor;
     }
