@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Created by mob on 15.09.15.
  */
-public class VnfmOrGrantLifecycleOperationMessage implements VnfmOrMessage{
+public class VnfmOrGrantLifecycleOperationMessage implements VnfmOrMessage {
     private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
     private Set<VirtualDeploymentUnit> vduSet;
     private String deploymentFlavourKey;
