@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.catalogue.nfvo;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -11,17 +26,13 @@ import java.util.Set;
  * Created by lto on 12/05/15.
  */
 @Entity
-public class VimInstance implements Serializable{
+public class VimInstance implements Serializable {
 
     @Id
     private String id;
 
     @Version
     private int version = 0;
-
-    public VimInstance() {
-    }
-
     private String name;
     private String authUrl;
     private String tenant;
@@ -30,18 +41,18 @@ public class VimInstance implements Serializable{
     private String keyPair;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Location location;
-
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> securityGroups;
-
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.PERSIST})
     private Set<DeploymentFlavour> flavours;
-
     private String type;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<NFVImage> images;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Network> networks;
+
+    public VimInstance() {
+    }
 
     @Override
     public String toString() {
@@ -64,8 +75,8 @@ public class VimInstance implements Serializable{
     }
 
     @PrePersist
-    public void ensureId(){
-        id= IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
 
     public String getId() {

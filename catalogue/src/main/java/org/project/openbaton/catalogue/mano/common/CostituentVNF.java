@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.catalogue.mano.common;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
@@ -27,6 +42,7 @@ public class CostituentVNF implements Serializable{
      * References a VNF flavour (vnfd:deployment_flavour:id) to be used for this service flavour, see clause 6.2.1.3.1
      * TODO this must be an id. So a String. For doing that we must do manually
      * */
+
     private String vnf_flavour_id_reference;
     /**
      * Represents the redundancy of instances, for example,"active" or "standby".
@@ -42,15 +58,22 @@ public class CostituentVNF implements Serializable{
      * Represents the capabilities of the VNF instances. An example of capability is instance capacity (e.g. capability = 50 %* NS capacity).
      * */
     private String capability;
-
     /**
      * Number of VNF instances satisfying this service assurance. For a Gold flavour of the vEPC Network Service that
      * needs to satisfy an assurance of 96K cps, 2 instances of the vMME VNFs will be required.
      * */
     private int number_of_instances;
-
     public CostituentVNF() {
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @PrePersist
     public void ensureId(){
         id=IdGenerator.createUUID();
