@@ -6,6 +6,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
@@ -122,6 +123,7 @@ public class VNFRUtils {
                 vnfComponents.add(component_new);
             }
             vdu_new.setVnfc(vnfComponents);
+            vdu_new.setVnfc_instance(new HashSet<VNFCInstance>());
             HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
             for (LifecycleEvent lifecycleEvent : virtualDeploymentUnit.getLifecycle_event()) {
                 LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
