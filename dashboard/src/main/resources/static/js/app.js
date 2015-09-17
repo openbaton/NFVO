@@ -118,6 +118,10 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/tabset.html',
                 controller: 'DragDropCtrl'
             }).
+            when('/copyright', {
+                templateUrl: 'pages/copyright.html',
+                controller: ''
+            }).
             otherwise({
 //                        redirectTo: '/'
             });
@@ -167,17 +171,17 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
 //    });
 
 
-    $scope.numberNSD = 0;
+    $scope.numberNSR = 0;
     $scope.numberNSD = 0;
     $scope.numberVNF = 8;
     $scope.numberUnits = 5;
     http.syncGet(url + '/ns-descriptors/').then(function (data) {
         $scope.numberNSD = data.length;
-        console.log(data.length);
+
     });
     http.syncGet(url + '/ns-records/').then(function (data) {
         $scope.numberNSR = data.length;
-        console.log(data.length);
+
 
     });
 
