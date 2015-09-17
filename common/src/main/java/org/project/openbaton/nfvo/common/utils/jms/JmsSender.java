@@ -33,7 +33,7 @@ public class JmsSender implements Sender {
     }
 
     public void send(Destination destination, final Serializable message) {
-        log.trace("Sending message: " + message + " to Queue: " + destination);
+        /*log.trace("Sending message: " + message + " to Queue: " + destination);*/
         MessageCreator messageCreator = getMessageCreator(message);
         jmsTemplate.send(destination,messageCreator);
     }

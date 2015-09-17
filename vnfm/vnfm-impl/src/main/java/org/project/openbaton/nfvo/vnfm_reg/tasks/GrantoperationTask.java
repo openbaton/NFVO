@@ -3,7 +3,6 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -42,11 +41,10 @@ public class GrantoperationTask extends AbstractTask {
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-            log.debug("vdu name : "+virtualNetworkFunctionRecord.getVdu().iterator().next().getVimInstanceName());
-            log.debug("vim instance : "+virtualNetworkFunctionRecord.getVdu().iterator().next().getVimInstance());
-            //virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
-            log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.GRANT_OPERATION), getTempDestination());
+            log.debug("SENDING GRANT LYFECYCLE OPERATION on temp queue:" + getTempDestination());
+            Thread.sleep(1000 * ((int) (Math.random() * 3 + 1)));
+            saveVirtualNetworkFunctionRecord();
+            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION), getTempDestination());
         } else {
             // there are no enough resources for deploying VNFR
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ERROR),getTempDestination());

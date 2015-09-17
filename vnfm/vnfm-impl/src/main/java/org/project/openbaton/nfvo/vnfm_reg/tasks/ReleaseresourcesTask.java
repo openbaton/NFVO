@@ -21,7 +21,7 @@ public class ReleaseresourcesTask extends AbstractTask {
     protected void doWork() throws Exception {
         log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 //        virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        saveVirtualNetworkFunctionRecord();
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());

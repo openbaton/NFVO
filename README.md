@@ -13,18 +13,18 @@ OpenBaton is an open source project providing a reference implementation of the 
 
 How to write a Vnfm for OpenBaton:
 
-1. install vnfm-sdj-jms:
+* install vnfm-sdj-jms:
 
 ```sh
-$ cd openbaton-libs/vnfm-sdk-jms
-$ ./gradlew build install
+    $ cd openbaton-libs/vnfm-sdk-jms
+    $ ./gradlew build install
 ```
 
-2. install vnfm-sdk gradle plugin:
+* install vnfm-sdk gradle plugin:
 
     download and install the plugin here: [vnfm-plugin](https://gitlab.fokus.fraunhofer.de/openbaton/vnfm-sdk-gradle-plugin/blob/develop/README.md)
 
-3. create new gradle java project with build.gradle starting with:
+* create new gradle java project with build.gradle starting with:
 ```gradle
     buildscript {
         repositories{
@@ -47,14 +47,15 @@ $ ./gradlew build install
 
 ```
 
-4. add a conf.properties file into the classpath (yes call it conf.properties):
+* add a conf.properties file into the classpath (yes call it conf.properties):
+
 ```properties
     type=yourtype
     endpoint=yourtype-endpoint
 ```
 
-5. the manager main class needs to extend AbstractVnfmSpringJms and implements all the methods accordingly
-6. there must be a main method like this:
+* the manager main class needs to extend AbstractVnfmSpringJms and implements all the methods accordingly
+* there must be a main method like this:
 ```java
     public static void main(String[] args) {
             SpringApplication.run(VnfmManagerMainClass.class);
@@ -63,11 +64,16 @@ $ ./gradlew build install
 
    where VnfmManagerMainClass is the name of your manager class
 
-7. please do not forget:
+* please do not forget:
     * the manager main class is stateless and can (will) run each method in parallel potentially
+    * extending AbstractVnfmSpringJMS you get out of the box tho methods:
+        - *_boolean_ grantLifecycleOperation(virtualNetworkFunctionRecord)*:
+            this method will start a particular communication with the NFVO returning true whenever there are enough resources for allocate the VNFR
+        - *_boolean_ allocateResources(virtualNetworkFunctionRecord)*:
+            this method will start a particular communication with the NFVO returning true when all the VNFComponents of the VNFR are allocated correctly on the defined VIM
 
 ## Version
-0.5
+ '0.7'
 
 ## Installation
 
@@ -85,7 +91,41 @@ $ ./openbaton.sh -i
 
 `openbaton` provides some plugins in order to interact with the most common cloud platforms available:
 * OpenStack
-* Amazon EC2
+* Test
+
+### How to write a plugin
+
+* install the plugin sdk to your local repository
+* install the gradle plugin [plugin-sdk-gradle-plugin](https://gitlab.fokus.fraunhofer.de/openbaton/plugin-sdk-gradle-plugin)
+* create a new project with build.gradle starting with:
+```
+    project.ext {
+        mainClassName = '<path_to_Starter>'
+    }
+    buildscript {
+        repositories{
+            mavenCentral()
+            maven {
+                url uri('../repository-local')
+            }
+        }
+        dependencies {
+            classpath 'org.project.openbaton:plugin-sdk-gradle-plugin:0.1'
+            classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE'
+        }
+    }
+
+
+    apply plugin: 'spring-boot'
+    apply plugin: 'plugin-sdk'
+```
+* create a starter that contains a psvm calling PluginStarter.run() like this:
+```java
+public static void main(String[] args) {
+    PluginStarter.run(<plugin_class>, <plugin_register_name>, <nfvo_ip>, <nfvo_rmi_port(default: 1099)>);
+}
+```
+* create a plugin class extending ClientInterfaces for vim-driver plugin, or ResourcePerformanceMeasurement for monitoring plugin
 
 ### How to install a plugin
 
@@ -110,4 +150,3 @@ Information about OpenBaton can be found on our website. Follow us on Twitter @[
 [spring.io]:https://spring.io/
 [NFV MANO]:http://docbox.etsi.org/ISG/NFV/Open/Published/gs_NFV-MAN001v010101p%20-%20Management%20and%20Orchestration.pdf
 [openbaton]:http://twitter.com
-
