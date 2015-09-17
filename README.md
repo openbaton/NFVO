@@ -13,18 +13,18 @@ OpenBaton is an open source project providing a reference implementation of the 
 
 How to write a Vnfm for OpenBaton:
 
-1. install vnfm-sdj-jms:
+* install vnfm-sdj-jms:
 
 ```sh
-$ cd openbaton-libs/vnfm-sdk-jms
-$ ./gradlew build install
+    $ cd openbaton-libs/vnfm-sdk-jms
+    $ ./gradlew build install
 ```
 
-2. install vnfm-sdk gradle plugin:
+* install vnfm-sdk gradle plugin:
 
     download and install the plugin here: [vnfm-plugin](https://gitlab.fokus.fraunhofer.de/openbaton/vnfm-sdk-gradle-plugin/blob/develop/README.md)
 
-3. create new gradle java project with build.gradle starting with:
+* create new gradle java project with build.gradle starting with:
 ```gradle
     buildscript {
         repositories{
@@ -47,14 +47,15 @@ $ ./gradlew build install
 
 ```
 
-4. add a conf.properties file into the classpath (yes call it conf.properties):
+* add a conf.properties file into the classpath (yes call it conf.properties):
+
 ```properties
     type=yourtype
     endpoint=yourtype-endpoint
 ```
 
-5. the manager main class needs to extend AbstractVnfmSpringJms and implements all the methods accordingly
-6. there must be a main method like this:
+* the manager main class needs to extend AbstractVnfmSpringJms and implements all the methods accordingly
+* there must be a main method like this:
 ```java
     public static void main(String[] args) {
             SpringApplication.run(VnfmManagerMainClass.class);
@@ -63,8 +64,13 @@ $ ./gradlew build install
 
    where VnfmManagerMainClass is the name of your manager class
 
-7. please do not forget:
+* please do not forget:
     * the manager main class is stateless and can (will) run each method in parallel potentially
+    * extending AbstractVnfmSpringJMS you get out of the box tho methods:
+        - *_boolean_ grantLifecycleOperation(virtualNetworkFunctionRecord)*:
+            this method will start a particular communication with the NFVO returning true whenever there are enough resources for allocate the VNFR
+        - *_boolean_ allocateResources(virtualNetworkFunctionRecord)*:
+            this method will start a particular communication with the NFVO returning true when all the VNFComponents of the VNFR are allocated correctly on the defined VIM
 
 ## Version
 0.5
