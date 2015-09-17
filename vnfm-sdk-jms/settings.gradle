@@ -1,0 +1,5 @@
+include ':vnfm-sdk'
+include ':catalogue'
+
+project(':catalogue').projectDir = file('../catalogue')
+project(':vnfm-sdk').projectDir = file('../vnfm-sdk')
