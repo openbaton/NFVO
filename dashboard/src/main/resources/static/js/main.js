@@ -105,8 +105,8 @@ require({
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService']
         },
-        switchController: {
-            deps: ['app', 'servicesServices', 'httpService']
+        servicesController: {
+            deps: ['app', 'servicesServices', 'httpService','angular_cookies']
         },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris','authService']
@@ -130,6 +130,7 @@ require({
     'angular_route',
     'indexController',
     'nsdController',
+    'servicesController',
     'nsrController',
     'vimInstanceController',
     'dragDropController'
