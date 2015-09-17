@@ -45,8 +45,8 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
 
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
-        if (true)
-            return true;
+        //if (true)
+        //    return true;
         //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
         HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
         //Find how many VNFCInstances are needed to deploy on a specific VimInstance
