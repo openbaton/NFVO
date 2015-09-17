@@ -96,6 +96,7 @@ $ ./openbaton.sh -i
 ### How to write a plugin
 
 * install the plugin sdk to your local repository
+* install the gradle plugin [plugin-sdk-gradle-plugin](https://gitlab.fokus.fraunhofer.de/openbaton/plugin-sdk-gradle-plugin)
 * create a new project with build.gradle starting with:
 ```
     project.ext {
@@ -118,8 +119,13 @@ $ ./openbaton.sh -i
     apply plugin: 'spring-boot'
     apply plugin: 'plugin-sdk'
 ```
-* create a starter
-
+* create a starter that contains a psvm calling PluginStarter.run() like this:
+```java
+public static void main(String[] args) {
+    PluginStarter.run(<plugin_class>, <plugin_register_name>, <nfvo_ip>, <nfvo_rmi_port(default: 1099)>);
+}
+```
+* create a plugin class extending ClientInterfaces for vim-driver plugin, or ResourcePerformanceMeasurement for monitoring plugin
 
 ### How to install a plugin
 

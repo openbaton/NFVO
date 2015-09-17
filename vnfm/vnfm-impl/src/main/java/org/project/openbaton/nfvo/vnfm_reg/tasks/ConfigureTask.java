@@ -2,7 +2,6 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -36,7 +35,7 @@ public class ConfigureTask extends AbstractTask {
         log.debug("----> CONFIGURE finished for VNFR: " + virtualNetworkFunctionRecord.getName());
         log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        saveVirtualNetworkFunctionRecord();
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.INSTANTIATE), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 }

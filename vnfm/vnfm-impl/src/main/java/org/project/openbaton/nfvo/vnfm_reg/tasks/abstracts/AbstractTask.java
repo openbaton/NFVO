@@ -8,11 +8,13 @@ import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
+import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -38,7 +40,17 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     private ApplicationEventPublisher publisher;
     protected Action action;
 
+    @Autowired
+    @Qualifier("vnfmRegister")
+    protected VnfmRegister vnfmRegister;
 
+    protected void saveVirtualNetworkFunctionRecord() {
+        log.debug("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
+        if (virtualNetworkFunctionRecord.getId() == null)
+            virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+        else
+            virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+    }
 
     protected Destination tempDestination;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;

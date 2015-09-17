@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.record;
 
@@ -53,10 +62,8 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
-
     @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event_history;
-
     /**
      * A language attribute may be specified to identify default localisation/language
      */
@@ -73,23 +80,18 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VirtualDeploymentUnit> vdu;
-
     private String vendor;
-
     private String version;
-
     /**
      * Internal Virtual Links instances used in this VNF
      */
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<InternalVirtualLink> virtual_link;
-
     /**
      * The nsr id
      */
     private String parent_ns_id;
-
     /**
      * The reference to the VNFD used to instantiate this VNF
      */
@@ -106,7 +108,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> connected_external_virtual_link;
-
     /**
      * A network address (e.g. VLAN, IP) configured for the management access or other internal and external connection
      * interface on this VNF
@@ -154,10 +155,8 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Set<String> runtime_policy_info;
     private String name;
     private String type;
-
 //    @JsonIgnore
     private String endpoint;
-
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
     private String task;
@@ -165,7 +164,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Configuration requires;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration provides;
-
     @JsonIgnore
     private boolean cyclicDependency;
 
@@ -173,10 +171,19 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
 
+    public boolean isCyclicDependency() {
+        return cyclicDependency;
+    }
+
+    public void setCyclicDependency(boolean cyclicDependency) {
+        this.cyclicDependency = cyclicDependency;
+    }
+
     @PrePersist
     public void ensureId(){
         id=IdGenerator.createUUID();
     }
+
     public String getEndpoint() {
         return endpoint;
     }
@@ -187,10 +194,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public boolean hasCyclicDependency() {
         return cyclicDependency;
-    }
-
-    public void setCyclicDependency(boolean cyclicDependency) {
-        this.cyclicDependency = cyclicDependency;
     }
 
     public String getParent_ns_id() {
