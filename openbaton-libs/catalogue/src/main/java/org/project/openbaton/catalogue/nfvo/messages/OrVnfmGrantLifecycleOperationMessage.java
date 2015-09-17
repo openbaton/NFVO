@@ -21,7 +21,7 @@ import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 /**
  * Created by mob on 15.09.15.
  */
-public class OrVnfmGrantLifecycleOperationMessage implements OrVnfmMessage {
+public class OrVnfmGrantLifecycleOperationMessage implements OrVnfmMessage{
     private String vimId;
     private boolean grantAllowed;
 
