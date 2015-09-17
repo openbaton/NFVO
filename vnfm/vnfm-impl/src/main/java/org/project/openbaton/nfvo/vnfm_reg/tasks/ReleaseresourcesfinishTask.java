@@ -14,7 +14,7 @@ public class ReleaseresourcesfinishTask extends AbstractTask {
     protected void doWork() throws Exception {
         log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 //        virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        saveVirtualNetworkFunctionRecord();
     }
 
     @Override

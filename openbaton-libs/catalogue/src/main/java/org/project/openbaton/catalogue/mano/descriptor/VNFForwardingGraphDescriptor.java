@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.catalogue.mano.descriptor;
 
 import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
@@ -133,6 +148,14 @@ public class VNFForwardingGraphDescriptor implements Serializable{
 
     public void setNetwork_forwarding_path(Set<NetworkForwardingPath> network_forwarding_path) {
         this.network_forwarding_path = network_forwarding_path;
+    }
+
+    public int getHb_version() {
+        return hb_version;
+    }
+
+    public void setHb_version(int hb_version) {
+        this.hb_version = hb_version;
     }
 
     public Set<ConnectionPoint> getConnection_point() {

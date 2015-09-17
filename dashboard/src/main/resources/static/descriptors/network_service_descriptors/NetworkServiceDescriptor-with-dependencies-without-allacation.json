@@ -17,9 +17,6 @@
 		  "virtual_network_bandwidth_resource":"1000000",
 		  "lifecycle_event":[
 		  ],
-		  "vimInstance":{
-			"name":"vim-instance"
-		  },
 		  "vdu_constraint":"",
 		  "high_availability":"ACTIVE_PASSIVE",
 		  "scale_in_out":3,
@@ -80,9 +77,6 @@
 		  "virtual_network_bandwidth_resource":"1000000",
 		  "lifecycle_event":[
 		  ],
-		  "vimInstance":{
-			"name":"vim-instance"
-		  },
 		  "vdu_constraint":"",
 		  "high_availability":"ACTIVE_PASSIVE",
 		  "scale_in_out":3,

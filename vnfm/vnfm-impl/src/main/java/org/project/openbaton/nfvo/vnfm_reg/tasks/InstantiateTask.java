@@ -3,15 +3,12 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.project.openbaton.nfvo.core.interfaces.DependencyQueuer;
-import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +18,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class InstantiateTask extends AbstractTask {
-
-    @Autowired
-    @Qualifier("vnfmRegister")
-    private VnfmRegister vnfmRegister;
 
     @Autowired
     private DependencyManagement dependencyManagement;
@@ -38,18 +31,14 @@ public class InstantiateTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName());
-        virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-
-        log.debug("Vnfr added" + virtualNetworkFunctionRecord.getName());
+        log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
+        saveVirtualNetworkFunctionRecord();
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
 
         NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
             log.debug("Current Vnfrs in the database: "+vnfr.getName());
-
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(),nsr);
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep;
@@ -59,8 +48,9 @@ public class InstantiateTask extends AbstractTask {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
-        log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
     }
+
+
 
     @Override
     public boolean isAsync() {

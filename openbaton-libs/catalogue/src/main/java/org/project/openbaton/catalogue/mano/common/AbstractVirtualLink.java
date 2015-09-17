@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.catalogue.mano.common;
 
 import org.project.openbaton.catalogue.util.IdGenerator;
@@ -26,32 +41,41 @@ public abstract class AbstractVirtualLink implements Serializable{
 	@Id
     protected String id;
 	@Version
-	protected int version = 0;
+	protected int hb_version = 0;
+
+    /**
+     * extId of the network to attach
+     */
+    protected String extId;
 
         /**
      * Throughput of the link (e.g. bandwidth of E-Line, root bandwidth of E-Tree, and aggregate capacity of E-LAN)
      * */
-    private String root_requirement;
+    protected String root_requirement;
     /**
      * Throughput of leaf connections to the link (for E-Tree and E-LAN branches)
      * */
-    private String leaf_requirement;
+    protected String leaf_requirement;
     /**
      * QoS options available on the VL, e.g. latency, jitter, etc.
      * */
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> qos;
+    protected Set<String> qos;
     /**
      * Test access facilities available on the VL (e.g. none, passive monitoring, or active (intrusive) loopbacks at endpoints
      * TODO think of using Enum instead of String
      * */
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> test_access;
+    protected Set<String> test_access;
     /**
      * Connectivity types, e.g. E-Line, E-LAN, or E-Tree.
      * TODO: think of using Enum instead of String
      * */
-    private String connectivity_type;
+    protected String connectivity_type;
+    /**
+     * Name referenced by VNFCs
+     */
+    protected String name;
 
     @PrePersist
     public void ensureId(){
@@ -60,7 +84,7 @@ public abstract class AbstractVirtualLink implements Serializable{
 
     public AbstractVirtualLink() {
     }
-
+    
     public String getId() {
         return id;
     }
@@ -68,6 +92,15 @@ public abstract class AbstractVirtualLink implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
+    
+    public int getHb_version() {
+	return hb_version;
+    }
+
+    public void setHb_version(int vb_version) {
+        this.hb_version = hb_version;
+    }
+
 
     public String getRoot_requirement() {
         return root_requirement;
@@ -107,5 +140,21 @@ public abstract class AbstractVirtualLink implements Serializable{
 
     public void setConnectivity_type(String connectivity_type) {
         this.connectivity_type = connectivity_type;
+    }
+
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

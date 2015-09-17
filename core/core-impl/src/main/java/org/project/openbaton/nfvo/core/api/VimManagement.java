@@ -80,13 +80,13 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
         Set<NFVImage> images = new HashSet<NFVImage>();
-        images.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryImages(vimInstance));
+        images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
         vimInstance.setImages(images);
         Set<Network> networks = new HashSet<Network>();
-        networks.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryNetwork(vimInstance));
+        networks.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
         vimInstance.setNetworks(networks);
         Set<DeploymentFlavour> flavours = new HashSet<DeploymentFlavour>();
-        flavours.addAll(vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryDeploymentFlavors(vimInstance));
+        flavours.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
         vimInstance.setFlavours(flavours);
     }
 }

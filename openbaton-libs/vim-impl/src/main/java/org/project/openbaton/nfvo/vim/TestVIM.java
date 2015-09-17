@@ -45,9 +45,14 @@ import java.util.concurrent.Future;
 public class TestVIM extends Vim {
 
     public TestVIM(String name, int port) {
-        super(name, port);
+        super("test",name, port);
     }
-
+    public TestVIM() {
+        super("test");
+    }
+    public TestVIM(int port) {
+        super("test",port);
+    }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
