@@ -2,7 +2,9 @@ package org.project.openbaton.common.vnfm_sdk;
 
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -189,10 +191,28 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected abstract boolean allocateResources(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        fillSpecificProvides(virtualNetworkFunctionRecord);
+
         log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
-        //TODO add common parameters, even not defined into the provides: i.e. ip
+        //TODO add common parameters, even not defined into the provides: i.e. ip (DONE ?)
 
+        List<String> hostnames = new ArrayList<>();
+        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+                hostnames.add(vnfcInstance.getHostname());
+            }
+        }
 
+        ConfigurationParameter cp = new ConfigurationParameter();
+        cp.setValue(virtualNetworkFunctionRecord.getType()+".ips");
+        cp.setValue(virtualNetworkFunctionRecord.getVnf_address().toString());
+
+        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+
+        ConfigurationParameter cp2 = new ConfigurationParameter();
+        cp.setValue(virtualNetworkFunctionRecord.getType()+".hostnames");
+        cp.setValue(hostnames.toString());
+        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp2);
         /**
          * Before ending, need to get all the "provides" filled
          *
@@ -202,20 +222,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
         log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
         for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
-            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
-//                TODO call ems here!
-                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
+            if (!configurationParameter.getConfKey().startsWith("#nfvo:")){
+                log.debug(configurationParameter.getConfKey()+": "+configurationParameter.getValue());
             }
         }
 
-        //TODO remove this
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
-            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
-                configurationParameter.setValue("" + ((int) (Math.random() * 100)));
-                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
-            }
-        }
     }
+
+    /**
+     * This method needs to set all the parameter specified in the VNFDependency.parameters
+     *
+     * @param virtualNetworkFunctionRecord
+     */
+    protected abstract void fillSpecificProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     /**
      * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecord from the VirtualNetworkFunctionDescriptor
