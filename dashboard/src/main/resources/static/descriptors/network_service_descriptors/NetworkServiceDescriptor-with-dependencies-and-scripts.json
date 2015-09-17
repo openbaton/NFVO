@@ -57,14 +57,24 @@
       "monitoring_parameter":[
         "cpu_utilization"
       ],
-      "deployment_flavour":[{
-        "df_constraint":[
-          "constraint1",
-          "constraint2"
-        ],
-        "costituent_vdu":[],
-        "flavour_key":"m1.small"
-      }],
+      "deployment_flavour":[
+        {
+          "df_constraint":[
+            "constraint1",
+            "constraint2"
+          ],
+          "costituent_vdu":[],
+          "flavour_key":"m1.small"
+        },{
+          "df_constraint":[
+            "constraint3",
+            "constraint4"
+          ],
+          "costituent_vdu":[],
+          "flavour_key":"m1.medium"
+
+        }
+      ],
       "auto_scale_policy":[
       ],
       "manifest_file":"",
@@ -389,5 +399,8 @@
   "connection_point":[
   ],
   "pnfd":[
-  ]
+  ],
+  "nsd_security": {
+  }
 }
+

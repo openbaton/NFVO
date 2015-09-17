@@ -259,6 +259,7 @@ svg {
     z-index: 1041;
 }
 
+
 #addEditVNDF, #modalPolicy {
     z-index: 1041;
 }
@@ -268,6 +269,10 @@ svg {
 }
 #modaladdDepFlavour{
     z-index: 1043;
+}
+
+#modaladdLifecycleEvent{
+    z-index: 1044;
 }
 
 .line {
