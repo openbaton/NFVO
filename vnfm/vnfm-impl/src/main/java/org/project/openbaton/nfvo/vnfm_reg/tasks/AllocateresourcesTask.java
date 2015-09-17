@@ -5,16 +5,13 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +25,6 @@ import java.util.List;
 public class AllocateresourcesTask extends AbstractTask {
     @Autowired
     private ResourceManagement resourceManagement;
-
-    @Autowired
-    @Qualifier("vnfmRegister")
-    private VnfmRegister vnfmRegister;
 
     @Override
     protected void doWork() throws Exception {
@@ -73,7 +66,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 break;
             }
         }
-        Thread.sleep(1000 * ((int) (Math.random() * 3 + 1)));
+        saveVirtualNetworkFunctionRecord();
         if (!error) {
 
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
