@@ -122,6 +122,7 @@ public class VNFRUtils {
                 vnfComponents.add(component_new);
             }
             vdu_new.setVnfc(vnfComponents);
+            vdu_new.setVnfc_instance(new HashSet<>());
             HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
             for (LifecycleEvent lifecycleEvent : virtualDeploymentUnit.getLifecycle_event()) {
                 LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
