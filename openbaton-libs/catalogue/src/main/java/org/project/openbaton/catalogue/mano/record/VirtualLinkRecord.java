@@ -39,6 +39,7 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     private String version;
     private int number_of_endpoints;
 
+    /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
      */
     private String parent_ns;
