@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.core.api;
 
+import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
@@ -179,7 +180,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) {
         nsdRepository.exists(idNsd);
-        return vnfdRepository.findOne(idVnfd);
+        return vnfdRepository.findFirstById(idVnfd);
     }
 
     /**
@@ -270,6 +271,29 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id) {
         return nsdRepository.addPnfDescriptor(pDescriptor,id);
+    }
+
+    /**
+     * Adds or Updates the Security into NSD
+     *
+     * @param id
+     * @param security
+     * @return Security
+     */
+    @Override
+    public Security addSecurity(String id, Security security) {
+        return nsdRepository.addSecurity(id,security);
+    }
+
+    /**
+     * Removes the Secuty with idS from NSD with id
+     *
+     * @param id
+     * @param idS
+     */
+    @Override
+    public void deleteSecurty(String id, String idS) {
+        nsdRepository.deleteSecurity(id,idS);
     }
 
     /**

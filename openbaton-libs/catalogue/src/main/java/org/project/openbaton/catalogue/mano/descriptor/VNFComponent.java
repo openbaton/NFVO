@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.descriptor;
 
@@ -28,6 +37,15 @@ public class VNFComponent implements Serializable{
 	protected String id;
     @Version
     protected int version = 0;
+	/**
+     * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
+     * */
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    protected Set<VNFDConnectionPoint> connection_point;
+
+    public VNFComponent() {
+        this.connection_point = new HashSet<>();
+    }
 
     public int getVersion() {
 		return version;
@@ -37,19 +55,9 @@ public class VNFComponent implements Serializable{
 		this.version = version;
 	}
 
-	/**
-     * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
-     * */
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    protected Set<VNFDConnectionPoint> connection_point;
-
     @PrePersist
     public void ensureId(){
         id=IdGenerator.createUUID();
-    }
-
-    public VNFComponent() {
-        this.connection_point = new HashSet<>();
     }
 
     public String getId() {

@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.record;
 
@@ -30,11 +39,11 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     private String version;
     private int number_of_endpoints;
 
+
     /**
      * The reference for the Network Service instance (nsr:id) that this VL instance is part of
      */
     private String parent_ns;
-
     /**
      * References to the records of the VNFFG instances in which this VL instance participates
      */
@@ -60,7 +69,6 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
 
     @Enumerated(EnumType.STRING)
     private LinkStatus status;
-
     /**
      * System that has registered to received notifications of status changes
      * TODO consider a notification framework
@@ -83,7 +91,6 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
     private Set<String> audit_log;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> connection;
-
     public VirtualLinkRecord() {
     }
 
@@ -92,6 +99,10 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
         id = IdGenerator.createUUID();
     }
 
+    }
+
+    public void setId(String id) {
+        this.id = id;
     public String getVendor() {
         return vendor;
     }

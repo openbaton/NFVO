@@ -10,18 +10,21 @@
             <li><a href="#vim-instances"><i class="fa fa-tasks"></i>
                 VIM instances</a></li>
             <li class="active"><i class="fa fa-bar-chart-o"></i>
-                {{vimInstance.name}}</li>
+                {{vimInstance.name}}
+            </li>
         </ol>
     </div>
 </div>
-<div class="row" >
+<div class="row">
     <div class="col-lg-12">
-        <h3>Datacenter Name: {{vimInstance.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco" class="fa fa-refresh"></i></h3></a>
+        <h3>Vim isstance Name: {{vimInstance.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco"
+                                                                                         class="fa fa-refresh"></i>
+        </h3></a>
         <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
         <dl>
             <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
             <div ng-repeat="(key,value) in vimInstance">
-                <div ng-if="key != 'location' && key != 'configuration' && key != 'serviceImageId' && key != 'switch' && key != 'subnets' && key != 'serviceContainers'">
+                <div ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks'">
                     <dt>{{key}}:</dt>
                     <dd>{{value}}</dd>
                 </div>
@@ -32,50 +35,110 @@
                     <dd>version: {{value.version}}</dd>
                     <dd>name: {{value.name}}</dd>
                 </div>
-                <div ng-if="key == 'subnets'">
-                    <dt><a href="" data-toggle="modal"  data-target="#modalUpdateSubnets">Subnets <i class="fa fa-pencil-square-o"></i></a></dt>
-                    <dd ng-repeat="sub in value">
-                        id: {{sub.id}}, version: {{sub.version}}, extId: {{sub.extId}},
-                        name: {{sub.name}}, cidr: {{sub.cidr}},
-                        startIp: {{sub.startIp}}, endIp: {{sub.endIp}}
-                    </dd>
-                </div>
-                <div ng-if="key == 'configuration'">
-                    <dt>{{key}}:</dt>
-                    <dd>id: {{value.id}}</dd>
-                    <dd>version: {{value.version}}</dd>
-                    <dd>configurationName: {{value.configurationName}}</dd>
-                    <dt>parameters:</dt>
-                    <dd ng-repeat="param in value.parameters">
-                        <div>
-                            <b>id</b>: {{param.id}}, <b>key</b>: {{param.config_key}}, <b>value</b>: {{param.config_value}}
-                        </div>
-                    </dd>
-                </div>
-                <div ng-if="key == 'serviceImageId'">
-                    <dt><a href="" data-toggle="modal"  data-target="#modalUpdateImage">Images <i class="fa fa-pencil-square-o"></i></a></dt>
-                    <dd>
-                        <div ng-repeat="(k,v) in value">
-                            <b>{{k}}</b>: {{v}}
-                        </div>
-                    </dd>
-                </div>
-                <div ng-if="key == 'switch'">
-                    <dt>{{key}}:</dt>
-                    <div ng-repeat="(k,v) in value">
-                        <dd ng-if="k != 'ports'">
-                            {{k}}: {{v}}
-                        </dd>
-                        <div ng-if="k == 'ports'">
-                            <dt>{{k}}:</dt>
-                            <div ng-repeat="port in v">
-                                <dd ng-repeat="(k2,v2) in port">
-                                    {{k2}}: {{v2}}
-                                </dd>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div ng-if="vimInstance.networks.length>0">
+                <h4>networks</h4>
+                <!--{{vimInstance.networks[0]}}-->
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="nsdTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'version'; reverse = !reverse">version <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'external'; reverse = !reverse">external <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'shared'; reverse = !reverse">shared <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'subnets'; reverse = !reverse">subnets <i class="fa fa-sort"></i>
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
+                        <td>{{network.id}}</td>
+                        <td>{{network.version}}</td>
+                        <td>{{network.name}}</td>
+                        <td>{{network.extId}}</td>
+                        <td>{{network.external}}</td>
+                        <td>{{network.shared}}</td>
+                        <td>{{network.subnets}}</td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="vimInstance.images.length>0">
+                <h4>images</h4>
+                <!--{{vimInstance.images[0]}}-->
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="nsdTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'version'; reverse = !reverse">version <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'minRam'; reverse = !reverse">disk <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">vcpu <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'public'; reverse = !reverse">public <i class="fa fa-sort"></i>
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
+                        <td>{{image.id}}</td>
+                        <td>{{image.version}}</td>
+                        <td>{{image.extId}}</td>
+                        <td>{{image.name}}</td>
+                        <td>{{image.minRam}}</td>
+                        <td>{{image.minDiskSpace}}</td>
+                        <td>{{image.public}}</td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="vimInstance.flavours.length>0">
+                <h4>flavours</h4>
+                <!--{{vimInstance.flavours[0]}}-->
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="nsdTabletable">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour_key <i
+                                class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'ram'; reverse = !reverse">ram <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'disk'; reverse = !reverse">disk <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'vcpus'; reverse = !reverse">vcpu <i class="fa fa-sort"></i>
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="flavour in vimInstance.flavours| orderBy:predicate:reverse">
+                        <td>{{flavour.id}}</td>
+                        <td>{{flavour.flavour_key}}</td>
+                        <td>{{flavour.extId}}</td>
+                        <td>{{flavour.ram}}</td>
+                        <td>{{flavour.disk}}</td>
+                        <td>{{flavour.vcpus}}</td>
+
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </dl>
 
@@ -85,12 +148,12 @@
 <!-- /.wrapper -->
 
 
-
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="myModalLabel">JSON of VIM instance: {{vimInstance.name}}</h4>
             </div>
             <div class="modal-body">
@@ -98,7 +161,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close</button>
+                        data-dismiss="modal">Close
+                </button>
             </div>
         </div>
     </div>
