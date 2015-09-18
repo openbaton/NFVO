@@ -16,6 +16,7 @@ require({
         d3: "libs/d3.min",
         ui_bootstrap: "libs/angular/ui-bootstrap-tpls-0.10.0.min",
         app: "app",
+        bootstrapSwitch:"../bower_components/bootstrap/dist/js/bootstrap-switch.min",
         angular_sanitize: "libs/angular/angular-sanitize",
         tables: 'tablesorter/tables',
         tablesorter: 'tablesorter/jquery.tablesorter',
@@ -59,6 +60,9 @@ require({
         jquery_ui: {
             deps: ['jquery']
         },
+        bootstrapSwitch:{
+            deps: ['jquery']
+        },
         jquery_jsPlumb: {
             deps: ['jquery', 'jquery_ui', 'underscore']
         },
@@ -100,7 +104,7 @@ require({
             deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies']
         },
         nsrController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies','bootstrapSwitch']
         },
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService']

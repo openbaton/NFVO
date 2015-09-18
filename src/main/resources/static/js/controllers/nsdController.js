@@ -6,6 +6,21 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     loadTable();
 
+    $.fn.bootstrapSwitch.defaults.size = 'mini';
+
+    $('#set-flavor').bootstrapSwitch();
+
+
+    $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
+        $scope.showSetting=state;
+        console.log($scope.showSetting);
+        $scope.$apply(function() {
+            $scope.showSetting;
+        });
+
+    });
+
+
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
@@ -96,6 +111,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
 
+    function paintBackdropModal() {
+        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
+        console.log('heigh: ' + height + 'px');
+        $(".modal-backdrop").height(height)
+    }
 
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
@@ -104,9 +124,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             delete $scope.vnfdEditIndex;
         }
         $scope.nsdCreate.vnfd.push(angular.copy($scope.vnfdCreate));
-        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
-        console.log('heigh: ' + height + 'px');
-        $(".modal-backdrop").height(height)
+        paintBackdropModal();
     };
 
     $scope.deleteVNFD = function (index) {
@@ -138,7 +156,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    console.log($routeParams.vnfdescriptorId);
 
     if (!angular.isUndefined($routeParams.vnfdescriptorId))
         $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
@@ -421,12 +438,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         console.log(data);
         http.post(urlRecord + '/' + data.id)
             .success(function (response) {
-                showOk('Created Network Service Record from Descriptor with id: ' + data.id);
+                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + data.id+"<\/a>");
             })
             .error(function (data, status) {
                 showError(status, JSON.stringify(data));
             });
     };
+
 
 
     $scope.returnUptime = function (longUptime) {
