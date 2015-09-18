@@ -30,9 +30,6 @@ import java.util.Set;
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
     /**
-     * Name referenced by VNFCs
-     */
-    private String name;
     /**
      * Vendor generating this VLD
      */

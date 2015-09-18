@@ -38,16 +38,55 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
 
     protected PluginBroker<ClientInterfaces> pluginBroker;
 
-    public Vim(String name, int port) {
+    public Vim(String type, int port) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin(name, port);
+            client = pluginBroker.getPlugin("vim-drivers",type, port);
+            log.trace("Class is: " + client.getClass().getName());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+            log.error("No plugin found for type: " + type);
+        }
+    }
+
+    public Vim(String type) {
+        pluginBroker = new PluginBroker<>();
+        try {
+            client = pluginBroker.getPlugin("vim-drivers",type);
+            log.trace("Class is: " + client.getClass().getName());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+            log.error("No plugin found for type: " + type);
+        }
+    }
+
+    public Vim(String type, String name) {
+        pluginBroker = new PluginBroker<>();
+        try {
+            client = pluginBroker.getPlugin("vim-drivers",type,name);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
             log.error("No plugin found for name: " + name);
+        }
+    }
+
+    public Vim(String type, String name, int port) {
+        pluginBroker = new PluginBroker<>();
+        try {
+            client = pluginBroker.getPlugin("vim-drivers",type, name, port);
+            log.trace("Class is: " + client.getClass().getName());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+            log.error("No plugin found for type: " + type);
         }
     }
 }
