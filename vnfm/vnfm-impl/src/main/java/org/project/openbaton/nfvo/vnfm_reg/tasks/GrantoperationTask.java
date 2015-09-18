@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * Created by lto on 06/08/15.
@@ -37,7 +38,7 @@ public class GrantoperationTask extends AbstractTask {
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
-            lifecycleEvent.setLifecycle_events(new HashSet<String>());
+            lifecycleEvent.setLifecycle_events(new LinkedList<String>());
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);

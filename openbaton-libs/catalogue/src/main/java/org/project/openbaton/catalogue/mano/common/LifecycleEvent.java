@@ -19,6 +19,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,7 +40,7 @@ public class LifecycleEvent implements Serializable{
 	private Event event;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> lifecycle_events;
+    private List<String> lifecycle_events;
 
     public LifecycleEvent() {
     }
@@ -90,11 +91,11 @@ public class LifecycleEvent implements Serializable{
 		this.event = event;
 	}
 
-	public Set<String> getLifecycle_events() {
+	public List<String> getLifecycle_events() {
 		return lifecycle_events;
 	}
 
-	public void setLifecycle_events(Set<String> lifecycle_events) {
+	public void setLifecycle_events(List<String> lifecycle_events) {
 		this.lifecycle_events = lifecycle_events;
 	}
 }
