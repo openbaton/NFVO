@@ -324,7 +324,6 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         VNFCInstance vnfcInstance = new VNFCInstance();
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
-        vnfcInstance.setHostname(hostname);
         vnfcInstance.setVim_id(vdu.getVimInstance().getId());
         vnfcInstance.setVnfc_reference(vnfComponent.getId());
 
@@ -332,11 +331,14 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
 
         for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-            VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-            connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-            connectionPoint_new.setType(connectionPoint.getType());
-            vnfcInstance.getConnection_point().add(connectionPoint_new);
-            vnfr.getConnection_point().add(connectionPoint_new);
+            VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
+            connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+            connectionPoint_vnfci.setType(connectionPoint.getType());
+            vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
+//            VNFDConnectionPoint connectionPoint_vnfr = new VNFDConnectionPoint();
+//            connectionPoint_vnfr.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+//            connectionPoint_vnfr.setType(connectionPoint.getType());
+//            vnfr.getConnection_point().add(connectionPoint_vnfr);
         }
 
         if (vdu.getVnfc_instance() == null)
