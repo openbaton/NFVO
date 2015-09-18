@@ -17,14 +17,14 @@ public class PluginStartup {
 
     private static Map<String, Process> processes = new HashMap<>();
 
-    private static void installPlugin(String path, boolean waitForPlugin, String registryip, String  port) throws IOException {
+    private static void installPlugin(String path, boolean waitForPlugin, String registryip, String port) throws IOException {
         String pluginName = path.substring(path.lastIndexOf("/") + 1, path.length());
 
 //        StringTokenizer st = new StringTokenizer(pluginName, "-");
-        String token = pluginName.substring(0,pluginName.indexOf("-"));
-        log.trace("Running: java -jar " + path + " " + token + " localhost "+ port);
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, token, registryip, port);
-        File file = new File("plugin-" + token + ".log");
+        String name = pluginName.substring(0,pluginName.indexOf("-"));
+        log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
+        File file = new File("plugin-" + name + ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
         log.trace("ProcessBuilder is: " + processBuilder);
@@ -38,7 +38,7 @@ public class PluginStartup {
         processes.put(path,p);
     }
 
-    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String  port) throws IOException {
+    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String port) throws IOException {
 
         File folder = new File(folderPath);
 

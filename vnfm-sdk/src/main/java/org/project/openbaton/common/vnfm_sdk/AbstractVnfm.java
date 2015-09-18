@@ -38,6 +38,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected String type;
     protected String endpoint;
     protected String endpointType;
+    protected Set<VirtualLinkRecord> vlr;
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
@@ -75,6 +76,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public Set<VirtualLinkRecord> getVlr() {
+        return vlr;
+    }
+
+    public void setVlr(Set<VirtualLinkRecord> vlr) {
+        this.vlr = vlr;
     }
 
     @Override
