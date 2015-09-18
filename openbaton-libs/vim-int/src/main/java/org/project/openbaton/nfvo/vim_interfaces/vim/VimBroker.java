@@ -29,6 +29,12 @@ public interface VimBroker {
 
     ClientInterfaces getClient(String type);
 
+    Vim getVim(String type, String name);
+
+    Vim getVim(String type);
+
+    Vim getVim(String type, int port);
+
     Vim getVim(String type, String name, String port);
 
     Quota getLeftQuota(VimInstance vimInstance) throws VimException;
