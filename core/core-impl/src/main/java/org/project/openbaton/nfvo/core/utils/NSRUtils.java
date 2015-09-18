@@ -155,6 +155,7 @@ public class NSRUtils {
 
     public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
         VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
+        virtualLinkRecord.setName(virtualLinkDescriptor.getName());
         virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
         virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
         virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
@@ -162,7 +163,7 @@ public class NSRUtils {
         virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
 
         virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
-        virtualLinkRecord.setNumber_of_enpoints(0);
+        //virtualLinkRecord.setNumber_of_enpoints(0);
 
         virtualLinkRecord.setParent_ns(null);
         virtualLinkRecord.setExtId(null);
@@ -178,7 +179,7 @@ public class NSRUtils {
         virtualLinkRecord.setConnection(new HashSet<String>());
 
         //TODO think about test_access -> different types on VLD and VLR
-        virtualLinkRecord.setTest_access("");
+        //virtualLinkRecord.setTest_access("");
 
         virtualLinkRecord.setQos(new HashSet<String>());
         for (String qos : virtualLinkDescriptor.getQos()) {

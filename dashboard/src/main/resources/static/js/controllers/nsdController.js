@@ -2,12 +2,23 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     var url = 'http://localhost:8080/api/v1/ns-descriptors';
     var urlRecord = 'http://localhost:8080/api/v1/ns-records';
+    var urlVim = 'http://localhost:8080/api/v1/datacenters';
 
     loadTable();
 
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
+    $scope.vimInstances = [];
+    http.get(urlVim)
+        .success(function (response, status) {
+            $scope.vimInstances = response;
+            console.log(response);
+        })
+        .error(function (data, status) {
+            showError(status, data);
+
+        });
 
 
     $scope.tabs = [
@@ -16,6 +27,19 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         {active: false}
     ];
 
+    $scope.selection = [];
+
+    $scope.toggleSelection = function toggleSelection(image) {
+        var idx = $scope.selection.indexOf(image);
+        if (idx > -1) {
+            $scope.selection.splice(idx, 1);
+        }
+        else {
+            $scope.selection.push(image);
+        }
+        console.log($scope.selection);
+        $scope.vduCreate.vm_image= $scope.selection;
+    };
     $scope.addVDU = function () {
         $http.get('descriptors/vnfd/vdu.json')
             .then(function (res) {
@@ -34,7 +58,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.addVDUtoVND = function () {
         $('#addEditVDU').modal('hide');
         if (!angular.isUndefined($scope.vduEditIndex)) {
-            $scope.vnfdCreate.vnfd.splice($scope.vduEditIndex, 1);
+            $scope.vnfdCreate.vdu.splice($scope.vduEditIndex, 1);
             delete $scope.vduEditIndex;
         }
         $scope.vnfdCreate.vdu.push(angular.copy($scope.vduCreate));
@@ -64,6 +88,14 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.dfEditIndex = index;
         $('#modaladdDepFlavour').modal('show');
     };
+
+    $scope.editLEfromVNFD = function (le, index) {
+        $scope.lifecycle_event = le;
+        $scope.leEditIndex = index;
+        $('#modaladdLifecycleEvent').modal('show');
+    };
+
+
 
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
@@ -179,9 +211,29 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.depFlavor.df_constraint.push(newValue);
     };
 
+
+
     $scope.deleteDFC = function (index) {
         $scope.depFlavor.df_constraint.splice(index, 1);
     };
+
+    $scope.saveValueLifeCE = function (newValue) {
+        console.log(newValue);
+        $scope.lifecycle_event.lifecycle_events.push(newValue);
+    };
+
+    $scope.deleteLEfromVNFD = function (index) {
+        $scope.vnfdCreate.lifecycle_event.splice(index, 1);
+    };
+
+    $scope.addLifecycle = function(){
+        $scope.vnfdCreate.lifecycle_event.push(angular.copy($scope.lifecycle_event));
+    };
+
+    $scope.deleteLifeCE = function (index) {
+        $scope.lifecycle_event.lifecycle_events.splice(index, 1);
+    };
+
     $scope.deleteVNFDep = function (index) {
         $scope.nsdCreate.vnf_dependency.splice(index, 1);
     };
@@ -199,15 +251,32 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $('#modaladdDepFlavour').modal('show');
     };
 
+    $scope.addLifecycleEvent = function () {
+        $http.get('descriptors/vnfd/lifecycle_event.json')
+            .then(function (res) {
+                console.log(res.data);
+                $scope.lifecycle_event = angular.copy(res.data);
+            });
+        $('#modaladdLifecycleEvent').modal('show');
+    };
     $scope.addVNFDependencies = function () {
         $('#modalVNFDependencies').modal('show');
     };
 
     $scope.source_target = {'source': {'name': ''}, 'target': {'name': ''}};
     $scope.addVNFDep = function () {
-        $scope.nsdCreate.vnf_dependency.push(angular.copy($scope.source_target))
+        $scope.nsdCreate.vnf_dependency.push(angular.copy($scope.source_target));
         $('#modalVNFDependencies').modal('hide');
     };
+    $scope.addLifecycle = function () {
+        if (!angular.isUndefined($scope.leEditIndex)) {
+            $scope.vnfdCreate.lifecycle_event.splice($scope.leEditIndex, 1);
+            delete $scope.leEditIndex;
+        }
+        $scope.vnfdCreate.lifecycle_event.push(angular.copy($scope.lifecycle_event));
+        $('#modaladdLifecycleEvent').modal('hide');
+    };
+
     $scope.storeDepFlavour = function () {
         $('#modaladdDepFlavour').modal('hide');
         if (!angular.isUndefined($scope.dfEditIndex)) {
@@ -251,7 +320,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.showTab = function (value) {
         return (value > 0);
-    }
+    };
 
     $scope.sendFile = function () {
 

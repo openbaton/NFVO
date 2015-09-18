@@ -51,7 +51,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
-        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType(), virtualDeploymentUnit.getVimInstance().getType(), "1099");
+        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         List<String> ids=new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
@@ -64,7 +64,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
 
     @Override
     public List<Server> query(VimInstance vimInstance) throws VimException {
-        return vimBroker.getVim(vimInstance.getType(), vimInstance.getType(), "1099").queryResources(vimInstance);
+        return vimBroker.getVim(vimInstance.getType()).queryResources(vimInstance);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
 
     @Override
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
-        org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType(), virtualDeploymentUnit.getVimInstance().getType(), "1099");
+        org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
             vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance());
         }
