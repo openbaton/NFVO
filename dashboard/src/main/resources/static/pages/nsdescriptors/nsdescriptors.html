@@ -123,8 +123,8 @@
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
                     <div class="form-group" ng-repeat="(key,value) in vduCreate"
-                         ng-if="key!='vimInstance' && key!='lifecycle_event' && key!='monitoring_parameter'
-                         && key!='vm_image'&& key!='vnfc'">
+                         ng-if="key!='lifecycle_event' && key!='monitoring_parameter'
+                         && key!='vm_image'&& key!='vnfc' && key!='vimInstanceName'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
@@ -133,11 +133,21 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="vimInstance" class="col-sm-4 control-label">vimInstance</label>
+                        <label for="vimInstanceName" class="col-sm-4 control-label">vimInstanceName</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="vimInstance" name="{{key}}"
-                                   ng-model="vduCreate['vimInstance']['name']"/>
+                            <!--          <select type="text" class="form-control" id="vimInstanceName" name="{{key}}"
+                                             ng-model="vduCreate['vimInstance']['name']"/>-->
+                            <select name="typeSelect" class="form-control modal-select"
+                                    ng-model="vduCreate['vimInstanceName']"
+
+                                    ng-options="vim.name as vim.name for vim in vimInstances | orderBy:'name':false"
+                                    ng-change="">
+                            </select>
+
+                            <!--<select name="vimInstanceName" id="vimInstanceName" ng-model="vduCreate['vimInstanceName']">
+                                <option ng-repeat="option in vimInstances" value="{{option.name}}">{{option.name}}</option>
+                            </select>-->
                         </div>
 
 
@@ -196,6 +206,19 @@
                                                ng-click="toggle = !toggle">
                                                 <i class="fa fa-plus-square"> Add </i></a></div>
                                     </h4>
+                                    <div class="col-lg-offset-2" ng-repeat="vim in vimInstances">
+
+                                        <div ng-if="vim.name==vduCreate.vimInstanceName"
+                                             ng-repeat="image in vim.images">
+                                            <input
+                                                    type="checkbox"
+                                                    name="selectedImages[]"
+                                                    value="{{image.name}}"
+                                                    ng-checked="selection.indexOf(image.name) > -1"
+                                                    ng-click="toggleSelection(image.name)"
+                                                    > {{image.name}}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div ng-init="toggle = false" ng-if="toggle" id="">
                                     <br/>
@@ -384,7 +407,7 @@
                     <div class="form-group" ng-repeat="(key,value) in vnfdCreate"
                          ng-if="key!='auto_scale_policy' && key!='connection_point' && key!='connection_point'
                          && key!='monitoring_parameter' && key!='vdu'&& key!='vdu_dependency'
-                         && key!='deployment_flavour' && key!='lifecycle_event'&& key!='virtual_link'">
+                         && key!='deployment_flavour' && key!='lifecycle_event'&& key!='virtual_link' && key!='lifecycle_event'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
@@ -457,6 +480,9 @@
 
                                 </div>
                             </div>
+                            <br/>
+                            <br/>
+
                             <div class="row">
                                 <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
                                      ng-repeat="vdu in vnfdCreate.vdu track by $index">
@@ -490,7 +516,6 @@
                             </h4>
                             <br/>
                             <br/>
-                            <br/>
 
                             <div class="row">
                                 <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
@@ -517,7 +542,40 @@
                             <!--{{vnfdCreate.deployment_flavour}}-->
                         </tab>
                         <tab class="" heading="lifecycle_event" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
-                            {{vnfdCreate.lifecycle_event}}
+                            <!--   {{vnfdCreate.lifecycle_event}}-->
+
+                            <h4 class="">
+                                <div class="col-lg-12">Lifecycle Event
+                                    <a class="pull-right" title="Add a New Lifecycle Event" href=""
+                                       ng-click="addLifecycleEvent()">
+                                        <i class="fa fa-plus-square"> Add </i></a>
+                                </div>
+                            </h4>
+                            <br/>
+                            <br/>
+
+                            <div class="row">
+                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
+                                     ng-repeat="le in vnfdCreate.lifecycle_event track by $index">
+
+                                    <div class="row">
+                                        <spam ng-repeat="(key,value) in le" ng-if="!isEmpty(value)">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last"><br/></spam>
+                                        </spam>
+                                        <div class="pull-right">
+                                            <a href="" title="Edit this Lifecycle Event"
+                                               ng-click="editLEfromVNFD(le,$index)">
+                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
+                                            <a href="" title="Delete this Lifecycle Event"
+                                               ng-click="deleteLEfromVNFD($index)">
+                                                <i class="fa fa-trash-o"> </i></a>
+                                        </div>
+
+                                    </div>
+                                    <hr class="hr_title"/>
+                                </div>
+                            </div>
                         </tab>
                         <tab class="" heading="virtual_link" ng-show="showTab(vnfdCreate.virtual_link.length)">
                             {{vnfdCreate.virtual_link}}
@@ -555,7 +613,7 @@
                     <div class="form-group" ng-repeat="(key,value) in nsdCreate"
                          ng-if="key!='vnfd' && key!='vnfd' && key!='auto_scale_policy' && key!='connection_point' && key!='lifecycle_event'
                           && key!='monitoring_parameter' && key!='pnfd' && key!='service_deployment_flavour' && key!='vnf_dependency'
-                         && key!='vnffgd' && key!='vld'">
+                         && key!='vnffgd' && key!='vld' ">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
@@ -678,12 +736,13 @@
                                      ng-repeat="vnfd in nsdCreate.vnfd track by $index">
 
                                     <div class="row">
-                                        <spam ng-repeat="(key,value) in vnfd" ng-if="!isEmpty(value) && key !='vdu'">
+                                        <spam ng-repeat="(key,value) in vnfd "
+                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour'">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last"><br/></spam>
                                         </spam>
                                     </div>
-                                    <div class="row">
+                                    <!--<div class="row">
                                         <spam ng-repeat=" vdu in vnfd.vdu" ng-if="!isEmpty(value)">
                                             <b>vdu</b>:
                                             <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value) && value!=''">
@@ -692,7 +751,7 @@
                                             </spam>
                                         </spam>
 
-                                    </div>
+                                    </div>-->
                                     <div class="row">
                                         <div class="pull-right">
                                             <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
@@ -721,6 +780,88 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="modaladdLifecycleEvent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit a Lifecycle Event</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" id="form6">
+                    <div class="row">
+                        <!--{{lifecycle_event}}-->
+                        <div class="form-group" ng-repeat="(key,value) in lifecycle_event"
+                             ng-if="key!='vimInstance' && key!='lifecycle_events'">
+                            <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                       ng-model="lifecycle_event[key]"/>
+                            </div>
+                        </div>
+                        <tabset>
+                            <tab heading="lifecycle_events">
+                                <div class="">
+                                    <div class="">
+                                        <h4 class="">
+                                            <div class="col-lg-12">Lifecycle Events
+                                                <a class="pull-right" title="Add a New lifecycle_event" href=""
+                                                   ng-click="toggle = !toggle">
+                                                    <i class="fa fa-plus-square"> Add </i></a></div>
+                                        </h4>
+                                    </div>
+                                    <div ng-init="toggle = false" ng-if="toggle" id="">
+                                        <br/>
+                                        <br/>
+                                        <br/>
+
+                                        <div class="form-group">
+                                            <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                            <div class="col-sm-6">
+                                                <div class="form-group input-group">
+                                                    <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveValueLifeCE(newValue)"
+                                                        ><i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br/>
+
+                                <ul class="col-lg-offset-3"
+                                    ng-repeat="lce in lifecycle_event.lifecycle_events track by $index">
+                                    <li>{{lce}} <a href="" ng-click="deleteLifeCE($index)"><i class="fa fa-trash-o"></i></a>
+                                    </li>
+                                </ul>
+                                <!--{{depFlavor.costituent_vdu}}-->
+
+                            </tab>
+                        </tabset>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id=""
+                        ng-click="addLifecycle()" class="btn btn-primary">Save LifeCycle Event
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modalVNFDependencies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -766,258 +907,3 @@
         </div>
     </div>
 </div>
-<!--
-<div class="" ng-if="expose[datacenter.name][subnets.name].expose">
-    <label class="control-label" ng-init="expose[datacenter.name][subnets.name].floatingIP = floatingIPsNET[0]">Floating
-        IP</label>
-    <select name="typeSelect" class="form-control modal-select"
-            ng-model="expose[datacenter.name][subnets.name].floatingIP"
-            ng-options="ip for ip in floatingIPsNET | orderBy:'ip':false"
-            ng-change="updateFloatingIPs(datacenter, expose[datacenter.name][subnets.name].floatingIP)"></select>
-    <span ng-if="expose[datacenter.name][subnets.name].floatingIP" class="help-block">Selected Floating IP: <b>{{expose[datacenter.name][subnets.name].floatingIP}}</b></span>
-
-</div>-->
-
-
-<!--
-
-&lt;!&ndash; /#page-wrapper &ndash;&gt;
-<div class="modal" id="modalT">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                &lt;!&ndash;                <button type="button" class="close" data-dismiss="modal"
-                                        aria-hidden="true">&times;</button>&ndash;&gt;
-                <h4 class="modal-title" id="serviceFormLabel">Create Topology</h4>
-            </div>
-            <div class="modal-body">
-                <tabset>
-                    <tab heading="Form">
-                        <br>
-
-                        <form class="form-horizontal" role="form" name="formForm" novalidate>
-                            <div class="form-group" ng-class="{ 'has-error' : formForm.Name.$invalid  }">
-                                <label for="Name" class="col-sm-4 control-label">Name
-                                    Topology</label>
-
-                                <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="Name" name="Name"
-                                           ng-model="data.name" placeholder="Topology" value="" required>
-
-                                    <p ng-show="formForm.Name.$invalid" class="help-block">Name is required.</p>
-                                </div>
-                            </div>
-                            <div class="form-group" ng-class="{ 'has-error' : selectedOneLocation }">
-                                <label for="checkboxDiv" class="col-sm-4 control-label">Location</label>
-
-                                <div id="checkboxDiv">
-                                    <div class="col-sm-8 input-group">
-                                        <div class="checkbox" ng-repeat="location in locations track by $index">
-                                            <label>
-                                                <input type="checkbox" value="{{location}}"
-                                                       ng-model="locationChecked[location]"
-                                                       ng-change="selectedLocations(location)">
-                                                {{location}}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p ng-show="selectedOneLocation" class="help-block help-block col-sm-6 control-label">
-                                    One Location is required.</p>
-                            </div>
-                            <button class="btn btn-default" ng-class="{'disabled': selectedOneLocation}"
-                                    data-toggle="modal" data-target="#addContainerModal">Add Container
-                            </button>
-                            <hr>
-                            <div collapse="">
-                                <div class="well well-lg" ng-show="data.serviceContainers[$index]"
-                                     ng-repeat="serviceContainer in data.serviceContainers track by $index">
-                                    <div class="row pull-right">
-                                        <a href="" title="Delete Service Container" ng-click="deleteContainer($index)">
-                                            <i class="fa fa-trash-o"> Delete </i></a>
-                                    </div>
-                                    <div class="row">
-                                        <div>
-                                            <b>Container:</b> {{serviceContainer.containerName}}
-                                            :: <b>min:</b> {{serviceContainer.minNumInst}}
-                                            :: <b>max:</b> {{serviceContainer.maxNumInst}}
-                                            :: <b>flavour:</b> {{serviceContainer.flavour}}
-                                            <br/>
-
-                                            <div>
-                                                <b>images:</b>
-                                                <span ng-repeat="(k,v) in serviceContainer.images">
-                                                    {{k}}: {{v}}<span ng-if="!$last">,</span>
-
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <b>subnets:</b>&nbsp;
-                                                <span ng-repeat="sub in serviceContainer.subnets">
-                                                    <span ng-repeat="(k,v) in sub">
-                                                        <span ng-repeat="obj in v">
-                                                            {{obj.name}}<span ng-show="!$last">, </span>
-                                                        </span>
-                                                    </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br/>
-                                    <table id="tableServices" class="table">
-                                        <thead>
-                                        <th>Service Name</th>
-                                        <th>Service Type</th>
-                                        <th>Require</th>
-                                        </thead>
-                                        <tbody>
-                                        <tr ng-repeat="service in serviceContainer.services track by $index">
-                                            <td>{{service.instanceName}}</td>
-                                            <td>{{service.serviceType}}</td>
-                                            <td>{{service.requires}}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="row pull-right">
-                                        <a href="" title="Add a new Service Instance"
-                                           ng-click="addInstance(data.serviceContainers[$index])"> <i
-                                                class="fa fa-plus-circle"> Add Instance</i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-
-
-                        <div id="inputTemplateForm" class="inputTemplate"
-                             ng-show="toggle">
-
-                            <div class="form-group form-horizontal ">
-                                <label for="nameTemplate" class="col-sm-4 control-label">Name
-                                    Template</label>
-
-                                <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="nameTemplate" name="nameTemplate"
-                                           ng-model="template.name" placeholder="Name Template" value="">
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="checkbox pull-right">
-                            <label>
-                                <input id="checkTemplate" type="checkbox"
-                                       ng-model="toggle"
-                                       ng-click="toggleF()">
-                                Create Template?
-                            </label>
-                        </div>
-
-                    </tab>
-                    <tab heading="Json">
-                        <form role="form" id="formJson">
-                            <div class="form-group">
-                                <br> <label for="jsonInputArea">Insert Your Json</label>
-                                <textarea name="textTopologyJson" ng-model="textTopologyJson"
-                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
-                                          class="form-control" rows="5"
-                                          placeholder="{ }"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="jsonInputFile">File input</label>
-                                <input type="file" id="jsonInputFile"
-                                       onchange="angular.element(this).scope().setFile(this)">
-
-                                <p class="help-block">Example: Topology.json </p>
-                            </div>
-                        </form>
-                        <table>
-                            <tr>
-                                <td class="container row">
-                                    <div id="inputTemplateJson" class="col-sm-12 inputTemplate"
-                                         style="display: none;">
-                                        <div class="form-group ">
-                                            <label for="nameTemplate">Name Template</label> <input
-                                                type="text" class="form-control" id="nameTemplate"
-                                                placeholder="Template">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="nameTemplate">flavour</label> <input type="text"
-                                                                                             class="form-control"
-                                                                                             id="inputFlavorTemplate"
-                                                                                             value="m1.small"
-                                                                                             placeholder="m1.small">
-                                        </div>
-
-                                    </div>
-                                <td></td>
-                                <div class="checkbox pull-right">
-                                    &lt;!&ndash;                                <label><input id="checkTemplatej" type="checkbox"
-                                                                                  onclick="toggle('#inputTemplateJson', this)">Create
-                                                                        a Template?</label>&ndash;&gt;
-                                </div>
-                            </tr>
-                            </td>
-                        </table>
-                    </tab>
-                    <tab heading="XML">
-                        <form role="form" id="formXML">
-                            <div class="form-group">
-                                <br> <label for="xmlInputArea">Insert Your XML</label>
-                                <textarea ng-model="xmlInputArea" ng-change="changeTextXML(xmlInputArea)"
-                                          id="xmlInputArea" class="form-control" rows="5"
-                                          placeholder="<Definitions></Definitions>"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="xmlInputFile">File input</label>
-                                <input type="file" id="xmlInputFile"
-                                       onchange="angular.element(this).scope().setFile(this)">
-
-                                <p class="help-block">Example: Load your File Topology.xml</p>
-                            </div>
-                        </form>
-                        <table>
-                            <tr>
-                                <td class="container row">
-                                    <div id="inputTemplateXML" class="col-sm-12 inputTemplate"
-                                         style="display: none;">
-                                        <div class="form-group ">
-                                            <label for="nameTemplate">Name Template</label> <input
-                                                type="text" class="form-control" id="nameTemplate"
-                                                placeholder="Template">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="nameTemplate">flavour</label> <input type="text"
-                                                                                             class="form-control"
-                                                                                             id="inputFlavorTemplate"
-                                                                                             value="m1.small"
-                                                                                             placeholder="m1.small">
-                                        </div>
-
-                                    </div>
-                                <td></td>
-                                <div class="checkbox pull-right">
-
-                                </div>
-
-                            </tr>
-                            </td>
-                        </table>
-                    </tab>
-                </tabset>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closeModal" class="btn btn-default"
-                        ng-click="cleanModal()"
-                        data-dismiss="modal">Close
-                </button>
-                <button type="button" id="sendTopology"
-                        ng-click="sendTopology()" class="btn btn-primary">Send Topology
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-</div>
--->

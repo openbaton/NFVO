@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.core.interfaces;
 
+import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
@@ -163,10 +164,25 @@ public interface NetworkServiceDescriptorManagement {
     PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
 
     /**
-     * Add or Update the PhysicalNetworkFunctionDescriptor into NSD
+     * Adds or Updates the PhysicalNetworkFunctionDescriptor into NSD
      * @param pDescriptor
      * @param id
      * @return PhysicalNetworkFunctionDescriptor
      */
     PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor ,String id);
+
+    /**
+     * Adds or Updates the Security into NSD
+     * @param id
+     * @param security
+     * @return
+     */
+    Security addSecurity(String id, Security security);
+
+    /**
+     * Removes the Secuty with idS from NSD with id
+     * @param id
+     * @param idS
+     */
+    void deleteSecurty(String id, String idS);
 }

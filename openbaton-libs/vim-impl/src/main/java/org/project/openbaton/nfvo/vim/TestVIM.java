@@ -45,9 +45,14 @@ import java.util.concurrent.Future;
 public class TestVIM extends Vim {
 
     public TestVIM(String name, int port) {
-        super(name, port);
+        super("test",name, port);
     }
-
+    public TestVIM() {
+        super("test");
+    }
+    public TestVIM(int port) {
+        super("test",port);
+    }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
@@ -136,8 +141,8 @@ public class TestVIM extends Vim {
             for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
                 VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
                 connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-                connectionPoint_new.setExtId(connectionPoint.getExtId());
-                connectionPoint_new.setName(connectionPoint.getName());
+                //connectionPoint_new.setExtId(connectionPoint.getExtId());
+                //connectionPoint_new.setName(connectionPoint.getName());
                 connectionPoint_new.setType(connectionPoint.getType());
 
                 vnfcInstance.getConnection_point().add(connectionPoint_new);

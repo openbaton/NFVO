@@ -6,6 +6,7 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
@@ -23,7 +24,7 @@ public class VNFRUtils {
 
     private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String nsr_id) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
@@ -114,8 +115,6 @@ public class VNFRUtils {
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-                    connectionPoint_new.setName(connectionPoint.getName());
-                    connectionPoint_new.setExtId(connectionPoint.getExtId());
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
@@ -124,6 +123,7 @@ public class VNFRUtils {
                 vnfComponents.add(component_new);
             }
             vdu_new.setVnfc(vnfComponents);
+            vdu_new.setVnfc_instance(new HashSet<VNFCInstance>());
             HashSet<LifecycleEvent> lifecycleEvents = new HashSet<>();
             for (LifecycleEvent lifecycleEvent : virtualDeploymentUnit.getLifecycle_event()) {
                 LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
@@ -132,7 +132,7 @@ public class VNFRUtils {
                 lifecycleEvents.add(lifecycleEvent_new);
             }
             vdu_new.setLifecycle_event(lifecycleEvents);
-
+            vdu_new.setVimInstanceName(virtualDeploymentUnit.getVimInstanceName());
             vdu_new.setHostname(virtualDeploymentUnit.getHostname());
             vdu_new.setHigh_availability(virtualDeploymentUnit.getHigh_availability());
             vdu_new.setComputation_requirement(virtualDeploymentUnit.getComputation_requirement());
@@ -156,7 +156,7 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.getConnection_point().addAll(vnfd.getConnection_point());
 
         // TODO find a way to choose between deployment flavors and create the new one
-        virtualNetworkFunctionRecord.setDeployment_flavour_key(vnfd.getDeployment_flavour().iterator().next().getFlavour_key());
+        virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), virtualDeploymentUnit.getVimInstance())) {
                 throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + virtualDeploymentUnit.getVimInstance());
@@ -180,6 +180,7 @@ public class VNFRUtils {
         HashSet<InternalVirtualLink> internalVirtualLinks = new HashSet<>();
         for (InternalVirtualLink internalVirtualLink : vnfd.getVirtual_link()) {
             InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
+            internalVirtualLink_new.setName(internalVirtualLink.getName());
             internalVirtualLink_new.setLeaf_requirement(internalVirtualLink.getLeaf_requirement());
             internalVirtualLink_new.setRoot_requirement(internalVirtualLink.getRoot_requirement());
             internalVirtualLink_new.setConnection_points_references(new HashSet<String>());
