@@ -27,10 +27,7 @@ import org.project.openbaton.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lto on 11/05/15.
@@ -75,7 +72,9 @@ public class NSRUtils {
         networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if (networkServiceDescriptor.getVld() != null) {
             for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
-                networkServiceRecord.getVlr().add(NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor));
+                VirtualLinkRecord vlr = NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor);
+                vlr.setParent_ns(networkServiceDescriptor.getId());
+                networkServiceRecord.getVlr().add(vlr);
             }
         }
         return networkServiceRecord;
@@ -156,7 +155,37 @@ public class NSRUtils {
 
     public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
         VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
-        // TODO implement it
+        virtualLinkRecord.setName(virtualLinkDescriptor.getName());
+        virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
+        virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
+        virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
+        virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
+        virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+
+        virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
+        //virtualLinkRecord.setNumber_of_enpoints(0);
+
+        virtualLinkRecord.setParent_ns(null);
+        virtualLinkRecord.setExtId(null);
+        virtualLinkRecord.setVim_id(null);
+
+        virtualLinkRecord.setAllocated_capacity(new HashSet<String>());
+        virtualLinkRecord.setAudit_log(new HashSet<String>());
+        virtualLinkRecord.setNotification(new HashSet<String>());
+        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
+        //TODO why do the VLD has already a set of Connections?
+        //virtualLinkRecord.setConnection(virtualLinkDescriptor.getConnection());
+        virtualLinkRecord.setConnection(new HashSet<String>());
+
+        //TODO think about test_access -> different types on VLD and VLR
+        //virtualLinkRecord.setTest_access("");
+
+        virtualLinkRecord.setQos(new HashSet<String>());
+        for (String qos : virtualLinkDescriptor.getQos()) {
+            virtualLinkRecord.getQos().add(qos);
+        }
+
         return virtualLinkRecord;
     }
 
@@ -255,8 +284,6 @@ public class NSRUtils {
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-                    connectionPoint_new.setName(connectionPoint.getName());
-                    connectionPoint_new.setExtId(connectionPoint.getExtId());
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
@@ -310,7 +337,7 @@ public class NSRUtils {
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()) {
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new LinkedHashSet<String>());
+            lifecycleEvent_new.setLifecycle_events(new LinkedList<String>());
             for (String event : lifecycleEvent.getLifecycle_events()) {
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }
@@ -354,4 +381,20 @@ public class NSRUtils {
         }
         return false;
     }
+
+    public static void createConnectionsPoints(VirtualNetworkFunctionDescriptor vnfd, VirtualDeploymentUnit vdu, Network network) {
+        //Create ConnectionPoint for VNFR
+        ConnectionPoint connectionPoint = new ConnectionPoint();
+        connectionPoint.setType("LAN");
+        vnfd.getConnection_point().add(connectionPoint);
+        //Create ConnectionPoint for VDU
+        VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
+        vnfdConnectionPoint.setVirtual_link_reference(network.getName());
+        vnfdConnectionPoint.setType("LAN");
+        //Create VNFC for VDU
+        VNFComponent vnfComponent = new VNFComponent();
+        vnfComponent.getConnection_point().add(vnfdConnectionPoint);
+        vdu.getVnfc().add(vnfComponent);
+    }
+
 }

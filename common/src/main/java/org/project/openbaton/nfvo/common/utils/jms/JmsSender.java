@@ -32,6 +32,12 @@ public class JmsSender implements Sender {
         jmsTemplate.send(destination,messageCreator);
     }
 
+    public void send(Destination destination, final Serializable message) {
+        /*log.trace("Sending message: " + message + " to Queue: " + destination);*/
+        MessageCreator messageCreator = getMessageCreator(message);
+        jmsTemplate.send(destination,messageCreator);
+    }
+
     private MessageCreator getMessageCreator(final Serializable message) {
         return new MessageCreator() {
                 @Override

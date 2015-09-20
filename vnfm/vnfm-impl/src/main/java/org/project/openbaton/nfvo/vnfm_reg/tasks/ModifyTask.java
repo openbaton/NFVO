@@ -2,7 +2,7 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -36,14 +36,11 @@ public class ModifyTask extends AbstractTask {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         log.debug("NFVO: MODIFY finish");
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        saveVirtualNetworkFunctionRecord();
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
 
-        CoreMessage coreMessage = new CoreMessage();
-        coreMessage.setAction(Action.START);
-        coreMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-        vnfmSender.sendCommand(coreMessage, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 
     @Override

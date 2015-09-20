@@ -1,12 +1,13 @@
 {
   "vendor":"fokus",
   "version":"0.1",
-  "name":"vnf-dummy-1",
-  "type":"dummy",
+  "name":"<::vnf-dummy-1::>",
+  "type":"server",
+  "endpoint":"generic",
   "vdu":[
     {
       "vm_image":[
-        "ubuntu-14.04-server-cloudimg-amd64-disk1"
+        "larsks/thttpd"
       ],
       "computation_requirement":"",
       "virtual_memory_resource_element":"1024",
@@ -31,6 +32,22 @@
   "connection_point":[
   ],
   "lifecycle_event":[
+    {
+      "event":"INSTANTIATE",
+      "lifecycle_events":
+      [
+        "install.sh"
+      ]
+    },
+    {
+      "event":"CONFIGURE",
+      "lifecycle_events":
+      [
+        "connectToDb.sh #database:ipB",
+        "connectToDb.sh #database:ipC",
+        "connectToDb.sh #database:ipD"
+      ]
+    }
   ],
   "vdu_dependency":[
   ],
@@ -47,5 +64,14 @@
   }],
   "auto_scale_policy":[
   ],
-  "manifest_file":""
+  "manifest_file":"",
+  "requires":[
+    "nfvo:ip-en5",
+    "database:ipB",
+    "database:ipC",
+    "database:ipD"
+  ],
+  "provides":[
+    "ip"
+  ]
 }

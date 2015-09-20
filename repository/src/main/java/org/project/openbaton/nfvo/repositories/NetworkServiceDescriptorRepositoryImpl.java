@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.repositories;
 
+import org.project.openbaton.catalogue.mano.common.Security;
 import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -30,6 +31,9 @@ public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDes
 
     @Autowired
     private VNFDRepository vnfdRepository;
+
+    @Autowired
+    private SecurityRepository securityRepository;
 
     @Autowired
     private VNFDependencyRepository vnfDependencyRepository;
@@ -59,6 +63,23 @@ public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDes
         pnfDescriptor = pnfDescriptorRepository.save(pnfDescriptor);
         networkServiceDescriptorRepository.findFirstById(id).getPnfd().add(pnfDescriptor);
         return pnfDescriptor;
+    }
+
+    @Override
+    @Transactional
+    public Security addSecurity(String id, Security security) {
+        security = securityRepository.save(security);
+        networkServiceDescriptorRepository.findFirstById(id).setNsd_security(security);
+        return security;
+    }
+
+    @Override
+    @Transactional
+    public void deleteSecurity(String id, String idS) {
+        Security s = networkServiceDescriptorRepository.findFirstById(id).getNsd_security();
+        if(s.getId().equals(securityRepository.findOne(idS).getId())){
+            networkServiceDescriptorRepository.findFirstById(id).setNsd_security(null);
+        }
     }
 
     @Override

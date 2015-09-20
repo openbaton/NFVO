@@ -1,8 +1,17 @@
-/*#############################################################################
- # Copyright (c) 2015.                                                        #
- #                                                                            #
- # This file is part of the OpenSDNCore project.                              #
- #############################################################################*/
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.project.openbaton.catalogue.mano.common;
 
@@ -10,6 +19,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,7 +40,7 @@ public class LifecycleEvent implements Serializable{
 	private Event event;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> lifecycle_events;
+    private List<String> lifecycle_events;
 
     public LifecycleEvent() {
     }
@@ -81,11 +91,11 @@ public class LifecycleEvent implements Serializable{
 		this.event = event;
 	}
 
-	public Set<String> getLifecycle_events() {
+	public List<String> getLifecycle_events() {
 		return lifecycle_events;
 	}
 
-	public void setLifecycle_events(Set<String> lifecycle_events) {
+	public void setLifecycle_events(List<String> lifecycle_events) {
 		this.lifecycle_events = lifecycle_events;
 	}
 }

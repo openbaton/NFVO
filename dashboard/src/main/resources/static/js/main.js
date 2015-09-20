@@ -24,16 +24,11 @@ require({
         servicesServices: "services/servicesServices",
         servicesController: "controllers/servicesController",
         vimInstanceController: "controllers/vimInstanceController",
-        topologiesServices: "services/topologiesServices",
         nsdController: "controllers/nsdController",
         nsrController: "controllers/nsrController",
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
         indexController: "controllers/indexController",
-        dragDropController: "controllers/dragDropController",
-        switchController: "controllers/switchController",
-        infrastructuresController: "controllers/infrastructuresController",
-        controllersController: 'controllers/controllersController',
-        chainsController: 'controllers/chainsController'
+        dragDropController: "controllers/dragDropController"
     },
     shim: {
         jquery: {
@@ -102,28 +97,16 @@ require({
             deps: ['app']
         },
         nsdController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologiesServices', 'angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies']
         },
         nsrController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologiesServices', 'angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies']
         },
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService']
         },
-        switchController: {
-            deps: ['app', 'servicesServices', 'httpService']
-        },
         servicesController: {
-            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies']
-        },
-        infrastructuresController: {
-            deps: ['app', 'servicesServices', 'httpService', 'topologiesServices', 'jQueryRotate']
-        },
-        controllersController: {
-            deps: ['app', 'servicesServices', 'httpService']
-        },
-        chainsController: {
-            deps: ['app', 'servicesServices', 'httpService', 'topologiesServices']
+            deps: ['app', 'servicesServices', 'httpService','angular_cookies']
         },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris','authService']
@@ -133,10 +116,8 @@ require({
         },
         dragDropController: {
             deps: ['app', 'httpService', 'jquery_jsPlumb', 'servicesServices']
-        },
-        topologiesServices: {
-            deps: ['app', 'httpService', 'd3', 'jquery_jsPlumb', 'servicesServices']
         }
+
     }
 }), require([
     'require',
@@ -148,17 +129,11 @@ require({
     'angular',
     'angular_route',
     'indexController',
-    'servicesController',
-    'servicesController',
     'nsdController',
+    'servicesController',
     'nsrController',
     'vimInstanceController',
-    'switchController',
-    'infrastructuresController',
-    'controllersController',
-    'dragDropController',
-    'chainsController'
-
+    'dragDropController'
 ], function(require) {
     return require(['bootstrap']);
 });

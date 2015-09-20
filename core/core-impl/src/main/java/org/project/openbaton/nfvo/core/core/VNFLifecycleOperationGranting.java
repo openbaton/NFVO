@@ -45,14 +45,18 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
 
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
-        if (true)
-            return true;
+        //if (true)
+        //    return true;
         //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
         HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
         //Find how many VNFCInstances are needed to deploy on a specific VimInstance
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            countVDUsOnVimInstances.put(vdu.getVimInstance(), vdu.getVnfc().size() - vdu.getVnfc_instance().size());
+            if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
+                countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + vdu.getVnfc().size() - vdu.getVnfc_instance().size());
+            } else {
+                countVDUsOnVimInstances.put(vdu.getVimInstance(), vdu.getVnfc().size() - vdu.getVnfc_instance().size());
+            }
         }
         //Check if enough resources are available for the deployment
         log.debug("Checking if enough resources are available on the defined VimInstance.");

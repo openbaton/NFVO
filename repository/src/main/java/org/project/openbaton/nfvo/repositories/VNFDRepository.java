@@ -22,5 +22,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by lto on 06/05/15.
  */
 public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor,String> {
-
+    VirtualNetworkFunctionDescriptor findFirstById(String id);
 }
