@@ -25,6 +25,6 @@ import org.springframework.data.repository.CrudRepository;
 /*@Repository
 @Transactional(readOnly = true)
 @Scope("singleton")*/
-public interface VNFDependencyRepository extends CrudRepository<VNFDependency,String> {
+public interface VNFDependencyRepository extends CrudRepository<VNFDependency, String> {
 
 }

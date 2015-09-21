@@ -19,10 +19,8 @@ package org.project.openbaton.nfvo.repositories;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.springframework.data.repository.CrudRepository;
 
-import java.awt.*;
-
 /**
  * Created by lto on 06/05/15.
  */
-public interface ImageRepository extends CrudRepository<NFVImage,String> {
+public interface ImageRepository extends CrudRepository<NFVImage, String>, ImageRepositoryCustom{
 }

@@ -22,5 +22,5 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 30/04/15.
  */
-public interface PluginEndpointRepository extends CrudRepository<PluginEndpoint,String> {
+public interface PluginEndpointRepository extends CrudRepository<PluginEndpoint, String> {
 }

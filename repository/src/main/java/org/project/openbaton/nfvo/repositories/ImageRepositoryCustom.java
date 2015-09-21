@@ -16,12 +16,11 @@
 
 package org.project.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.springframework.data.repository.CrudRepository;
+import org.project.openbaton.catalogue.nfvo.VimInstance;
 
 /**
- * Created by lto on 06/05/15.
+ * Created by dbo on 21/09/15.
  */
-public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor, String> {
-    VirtualNetworkFunctionDescriptor findFirstById(String id);
+public interface ImageRepositoryCustom {
+    void deleteImage(String id);
 }

@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.api;
 
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.VimManagement;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 
 @RestController
@@ -33,71 +35,95 @@ public class RestVimInstances {
 
 //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private VimManagement vimManagement;
 
-	/**
-	 * Adds a new VNF software Image to the datacenter repository
-	 * 
-	 * @param vimInstance
-	 *            : Image to add
-	 * @return datacenter: The datacenter filled with values from the core
-	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.CREATED)
-	public VimInstance create(@RequestBody @Valid VimInstance vimInstance) throws VimException {
-		return vimManagement.add(vimInstance);
-	}
+    @Autowired
+    private VimManagement vimManagement;
 
-	/**
-	 * Removes the Datacenter from the Datacenter repository
-	 * 
-	 * @param id: The Datacenter's id to be deleted
-	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable("id") String id) {
-		vimManagement.delete(id);
-	}
+    /**
+     * Adds a new VNF software Image to the datacenter repository
+     *
+     * @param vimInstance : Image to add
+     * @return datacenter: The datacenter filled with values from the core
+     */
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public VimInstance create(@RequestBody @Valid VimInstance vimInstance) throws VimException {
+        return vimManagement.add(vimInstance);
+    }
 
-	/**
-	 * Returns the list of the Datacenters available
-	 * @return List<Datacenter>: The List of Datacenters available
-	 */
-	@RequestMapping(method = RequestMethod.GET)
-	public Iterable<VimInstance> findAll() {
-		return vimManagement.query();
-	}
+    /**
+     * Removes the Datacenter from the Datacenter repository
+     *
+     * @param id: The Datacenter's id to be deleted
+     */
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") String id) {
+        vimManagement.delete(id);
+    }
 
-	/**
-	 * Returns the Datacenter selected by id
-	 * @param id: The Datacenter's id selected
-	 * @return Datacenter: The Datacenter selected
-	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public VimInstance findById(@PathVariable("id") String id) {
-		VimInstance vimInstance = vimManagement.query(id);
+    /**
+     * Returns the list of the Datacenters available
+     *
+     * @return List<Datacenter>: The List of Datacenters available
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    public Iterable<VimInstance> findAll() {
+        return vimManagement.query();
+    }
 
-		return vimInstance;
-	}
+    /**
+     * Returns the Datacenter selected by id
+     *
+     * @param id: The Datacenter's id selected
+     * @return Datacenter: The Datacenter selected
+     */
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public VimInstance findById(@PathVariable("id") String id) {
+        VimInstance vimInstance = vimManagement.query(id);
 
-	/**
+        return vimInstance;
+    }
 
-	 * This operation updates the Network Service Descriptor (NSD)
-	 * 
-	 * @param new_vimInstance
-	 *            : the new datacenter to be updated to
-	 * @param id
-	 *            : the id of the old datacenter
-	 * @return VimInstance: the VimInstance updated
+    /**
+     * This operation updates the Network Service Descriptor (NSD)
+     *
+     * @param new_vimInstance the new datacenter to be updated to
+     * @param id              the id of the old datacenter
+     * @return VimInstance the VimInstance updated
+     */
 
-	 */
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance,
+                              @PathVariable("id") String id) throws VimException {
+        return vimManagement.update(new_vimInstance, id);
+    }
 
-	@RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.ACCEPTED)
-	public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance,
-			@PathVariable("id") String id) throws VimException {
-		return vimManagement.update(new_vimInstance, id);
-	}
+    @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
+    public Set<NFVImage> getAllImages(@PathVariable("id") String id) {
+        VimInstance vimInstance = vimManagement.query(id);
+        return vimInstance.getImages();
+    }
+
+    @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
+    public NFVImage getImage(@PathVariable("idVim") String idVim,@PathVariable("idImage") String idImage) {
+        return vimManagement.queryImage(idVim, idImage);
+    }
+
+    @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
+    public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage) throws VimException {
+        return vimManagement.addImage(id, nfvImage);
+    }
+
+    @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.POST)
+    public NFVImage updateImage(@PathVariable("idVim") String idVim,@RequestBody @Valid NFVImage image) throws VimException {
+        return vimManagement.addImage(idVim, image);
+    }
+
+    @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
+    public void deleteImage(@PathVariable("idVim") String idVim,@PathVariable("idImage") String idImage) throws VimException {
+        vimManagement.deleteImage(idVim, idImage);
+    }
+
 }

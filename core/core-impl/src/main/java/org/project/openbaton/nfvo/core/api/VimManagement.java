@@ -20,7 +20,8 @@ import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.VimException;
+import org.project.openbaton.nfvo.repositories.ImageRepository;
 import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
 
     @Autowired
     private VimBroker vimBroker;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -88,5 +92,38 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
         Set<DeploymentFlavour> flavours = new HashSet<DeploymentFlavour>();
         flavours.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
         vimInstance.setFlavours(flavours);
+    }
+
+    /**
+     * Adds a new NFVImage to the VimInstance with id
+     *
+     * @param id    of VimInstance
+     * @param image the new NFVImage
+     * @return NFVImage
+     */
+    @Override
+    public NFVImage addImage(String id, NFVImage image) throws VimException {
+        image = vimRepository.addImage(id, image);
+        refresh(vimRepository.findFirstById(id));
+        return image;
+    }
+
+
+    public NFVImage queryImage(String idVim, String idImage) {
+        vimRepository.exists(idVim);
+        return imageRepository.findOne(idImage);
+    }
+
+    /**
+     * Removes the NFVImage with idImage from VimInstance with idVim
+     *
+     * @param idVim
+     * @param idImage
+     */
+    @Override
+    public void deleteImage(String idVim, String idImage) throws VimException {
+        vimRepository.deleteImage(idVim,idImage);
+        refresh(vimRepository.findFirstById(idVim));
+
     }
 }
