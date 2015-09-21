@@ -16,11 +16,9 @@
 
 package org.project.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Created by lto on 06/05/15.
- */
-public interface ImageRepository extends CrudRepository<NFVImage, String> {
+public interface VNFRecordDependencyRepository extends CrudRepository<VNFRecordDependency, String> {
+    VNFRecordDependency findFirstById(String id);
 }
