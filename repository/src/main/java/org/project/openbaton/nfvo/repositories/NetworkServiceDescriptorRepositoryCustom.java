@@ -22,12 +22,19 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
 public interface NetworkServiceDescriptorRepositoryCustom {
+
     VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id);
-    void deleteVnfd(String idNsd,String idVnfd);
+
+    void deleteVnfd(String idNsd, String idVnfd);
+
     void deleteVNFDependency(String idNsd, String idVnfd);
+
     VNFDependency addVnfDependency(VNFDependency vnfd, String id);
+
     void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+
     PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pnfDescriptor, String id);
+
     Security addSecurity(String id, Security security);
 
     void deleteSecurity(String id, String idS);
