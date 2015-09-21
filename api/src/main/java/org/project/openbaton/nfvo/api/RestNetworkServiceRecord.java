@@ -218,13 +218,13 @@ public class RestNetworkServiceRecord {
         return findVNFD(nsr.getVnf_dependency(), id_vnfr);
     }
 
-    @RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{idNsr}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFDependency(@PathVariable("id") String id,
-                                    @PathVariable("id_vnfd") String id_vnfd) throws NotFoundException {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
-        VNFRecordDependency vnfDependency = findVNFD(nsd.getVnf_dependency(), id_vnfd);
-        nsd.getVnf_dependency().remove(vnfDependency);
+    public void deleteVNFDependency(@PathVariable("idNsr") String idNsr,
+                                    @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
+        networkServiceRecordManagement.deleteVNFDependency(idNsr,idVnfd);
+
+
     }
 
     @RequestMapping(value = "{id}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

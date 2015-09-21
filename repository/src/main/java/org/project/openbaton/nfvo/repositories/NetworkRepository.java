@@ -22,6 +22,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-public interface NetworkRepository extends CrudRepository<Network,String> {
+public interface NetworkRepository extends CrudRepository<Network, String> {
 
 }

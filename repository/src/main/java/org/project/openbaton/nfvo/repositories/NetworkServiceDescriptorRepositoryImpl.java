@@ -77,8 +77,9 @@ public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDes
     @Transactional
     public void deleteSecurity(String id, String idS) {
         Security s = networkServiceDescriptorRepository.findFirstById(id).getNsd_security();
-        if(s.getId().equals(securityRepository.findOne(idS).getId())){
+        if (s.getId().equals(securityRepository.findOne(idS).getId())) {
             networkServiceDescriptorRepository.findFirstById(id).setNsd_security(null);
+            securityRepository.delete(idS);
         }
     }
 
@@ -86,6 +87,7 @@ public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDes
     @Transactional
     public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
         networkServiceDescriptorRepository.findFirstById(idNsd).getVnfd().remove(pnfDescriptorRepository.findOne(idPnf));
+        pnfDescriptorRepository.delete(idPnf);
         return;
     }
 
@@ -93,14 +95,13 @@ public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDes
     @Transactional
     public void deleteVnfd(String idNsd, String idVnfd) {
         networkServiceDescriptorRepository.findFirstById(idNsd).getVnfd().remove(vnfdRepository.findOne(idVnfd));
-        return;
-
+        vnfdRepository.delete(idVnfd);
     }
 
     @Override
     @Transactional
     public void deleteVNFDependency(String idNsd, String idVnfd) {
         networkServiceDescriptorRepository.findFirstById(idNsd).getVnf_dependency().remove(vnfDependencyRepository.findOne(idVnfd));
-        return;
+        vnfDependencyRepository.delete(idVnfd);
     }
 }

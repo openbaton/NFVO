@@ -83,4 +83,11 @@ public interface NetworkServiceRecordManagement {
      * @return VirtualNetworkFunctionRecord selected
      */
     VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idNsr, String idVnf );
+
+    /**
+     * Deletes the VNFDependency with idVnfr into NSR with idNsr
+     * @param idNsr of NSR
+     * @param idVnfd of VNFDependency
+     */
+    void deleteVNFDependency(String idNsr, String idVnfd);
 }
