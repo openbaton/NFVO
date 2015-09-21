@@ -327,7 +327,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         else {
             LifecycleEvent newLce = new LifecycleEvent();
             newLce.setEvent(event);
-            newLce.setLifecycle_events(new LinkedHashSet<String>());
+            newLce.setLifecycle_events(new LinkedList<String>());
             newLce.getLifecycle_events().add(command);
             vnfr.getLifecycle_event_history().add(newLce);
         }

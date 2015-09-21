@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 /**
  * Created by mob on 31.08.15.
@@ -169,7 +170,7 @@ public class VNFRUtils {
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()) {
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new LinkedHashSet<String>());
+            lifecycleEvent_new.setLifecycle_events(new LinkedList<String>());
             for (String event : lifecycleEvent.getLifecycle_events()) {
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }
