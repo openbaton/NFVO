@@ -57,7 +57,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     private String deployment_flavour_key;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration configurations;
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
