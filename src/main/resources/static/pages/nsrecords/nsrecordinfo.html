@@ -26,7 +26,8 @@
         <div class="col-lg-12">
             <h2>NSR name: {{nsrinfo.name}}</h2>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
-
+            <br/>
+            <a href="#nsrecords/{{nsrinfo.id}}/graph">Show Graph</a>
             <dt>id:</dt>
             <dd>{{nsrinfo.id}}</dd>
             <dt>Vendor:</dt>
@@ -109,9 +110,9 @@
                         <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
                                 class="fa fa-sort"></i>
                         </th>
-                        <th ng-click="predicate = 'parameters.parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'idType'; reverse = !reverse">idType <i class="fa fa-sort"></i>
                         </th>
-                        <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i>
                         </th>
                         <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
                         </th>
@@ -123,8 +124,8 @@
                     <tr ng-repeat="df in nsrinfo.vnf_dependency | orderBy:predicate:reverse">
                         <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a>
                         </td>
+                        <td class="">{{df.idType}}</td>
                         <td class="">{{df.parameters}}</td>
-                        <td class="col-sm-2">{{df.target.name}}</td>
                         <td>{{df.version}}</td>
                         <td>
                             <div class="btn-group">
@@ -145,38 +146,16 @@
                 </table>
             </div>
 
-            <!--<dt>VNF dependency:</dt>
-            <dd ng-repeat="vnfr in nsrinfo.vnf_dependency">
-                <p><b>id:</b>{{vnfr.id}}</p>
-
-                <p><b>source:</b>
-                    <br/><b>deployment flavour:</b>
-                    <spam ng-repeat="df in vnfr.source.deployment_flavour">
-                        <spam ng-repeat="(k,v) in df"><b>{{k}}</b>: {{v}}
-                            <spam ng-if="!$last">,</spam>
-                        </spam>
-                    </spam>
-                    <spam ng-repeat="(k,v) in vnfr.source"><b>{{k}}</b>: {{v}}
-                        <spam ng-if="!$last">,</spam>
-                    </spam>
-                </p>
-                <p><b>target:</b>
-                    <br/><b>deployment flavour:</b>
-                    <spam ng-repeat="df in vnfr.target.deployment_flavour">
-                        <spam ng-repeat="(k,v) in df"><b>{{k}}</b>: {{v}}
-                            <spam ng-if="!$last">,</spam>
-                        </spam>
-                    </spam>
-                    <spam ng-repeat="(k,v) in vnfr.target"><b>{{k}}</b>: {{v}}
-                        <spam ng-if="!$last">,</spam>
-                    </spam>
-                </p>
-            </dd>-->
         </div>
 
 
     </div>
 </div>
+
+<!--<div class="row">
+    <div class="panel panel-default top-buffer" id="graphContainer"
+         style="min-height: 500px" data-ng-init="Jsplumb()"></div>
+</div>-->
 
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
     <div class="modal-dialog">

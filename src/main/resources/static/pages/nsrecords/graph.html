@@ -1,36 +1,35 @@
-
 <div class="row">
     <div class="col-lg-12">
-        <h1>
-            Topology <small>Graphical view of Topology</small>
+        <h1>Network Service Record
+            <small>Information</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>
-                    Overview</a></li>
-            <li><a href="#topologies"><i class="fa fa-cloud-upload"></i>
-                    Topologies</a></li>        
-            <li class="active"><i class="fa fa-cloud-upload"></i>
-                {{topologyShow.name}}</li>
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil-square-o"></i>
+                    NS Records</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                NSR Name: {{nsrinfo.name}}
+            </li>
         </ol>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <h2>Topology name: {{topologyShow.name}}</h2>
-
-        <dl>
-            <!--<h4><a href="#/vim-instances/{{topologyShow.id}}/networks" >Networks<i class=""></i></a></h4>-->
-            <div ng-repeat="(key,value) in topologyShow">
-                <div ng-if="key != 'serviceContainers' && key != 'policies' && key != 'locations' && key != 'version'">
-                    <dt>{{key}}:</dt>
-                    <dd>{{value}}</dd>
-                </div>
-                <div ng-if="key == 'locations'">
-                    <dt>{{key}}:</dt>
-                    <dd ng-repeat="loc in value">{{loc}}</dd>
-                </div>
-            </div>
-        </dl>
+        <h2>NSR name: {{nsrinfo.name}}</h2>
+                <br/>
+        <dt>id:</dt>
+        <dd>{{nsrinfo.id}}</dd>
+        <dt>Vendor:</dt>
+        <dd>{{nsrinfo.vendor}}</dd>
+        <dt>Version:</dt>
+        <dd>{{nsrinfo.version}}</dd>
+        <dt>Status:</dt>
+        <dd>{{nsrinfo.status}}</dd>
         <hr>
         <div class="panel panel-default top-buffer" id="graphContainer"
              style="min-height: 500px" data-ng-init="Jsplumb()"></div>

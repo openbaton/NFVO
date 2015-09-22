@@ -20,7 +20,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     });
 
-
+    $scope.nsdToSend={};
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
@@ -170,7 +170,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         console.log(nsdCreate);
         http.post(url, nsdCreate)
             .success(function (response) {
-                showOk('Network Service Descriptors stored!');
+                showOk('Network Service Descriptor stored!');
                 loadTable();
             })
             .error(function (data, status) {
@@ -376,7 +376,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
 
@@ -388,26 +388,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
         }
-        if ($scope.toggle) {
-            var template = {};
-            var nameTemplate = $('#nameTemplate').val();
-//            template.flavour = $('#inputFlavorTemplate').val();
-            template.name = (nameTemplate === '') ? 'Template-' + Math.floor((Math.random() * 100) + 1) : nameTemplate;
-            template.topology = postNSD;
-            console.log(template);
-            http.post('/api/rest/admin/v2/templates', template)
-                .success(function (response) {
-                    showOk('Template created!');
-//                        $scope.cleanModal();
-                })
-                .error(function (data, status) {
-                    showError(status, data);
-                });
-        }
+
         $scope.toggle = false;
         $scope.file !== '';
         //        $scope.services = [];
@@ -434,11 +419,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    $scope.launch = function (data) {
-        console.log(data);
-        http.post(urlRecord + '/' + data.id)
+    $scope.launchOption= function(data){
+        $scope.nsdToSend = data;
+        $('#madalLaunch').modal('show');
+    }
+    $scope.launch = function () {
+        console.log($scope.nsdToSend);
+        http.post(urlRecord + '/' + $scope.nsdToSend.id)
             .success(function (response) {
-                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + data.id+"<\/a>");
+                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id+"<\/a>");
             })
             .error(function (data, status) {
                 showError(status, JSON.stringify(data));
