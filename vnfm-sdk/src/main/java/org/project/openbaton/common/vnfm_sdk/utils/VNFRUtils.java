@@ -7,6 +7,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Created by mob on 31.08.15.
@@ -24,7 +27,7 @@ public class VNFRUtils {
 
     private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
@@ -169,10 +172,11 @@ public class VNFRUtils {
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()) {
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new LinkedHashSet<String>());
+            lifecycleEvent_new.setLifecycle_events(new LinkedList<String>());
             for (String event : lifecycleEvent.getLifecycle_events()) {
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }
+            log.debug("Found SCRIPTS for EVENT " + lifecycleEvent_new.getEvent() + ": " + lifecycleEvent_new.getLifecycle_events().size());
             lifecycleEvents.add(lifecycleEvent_new);
         }
         virtualNetworkFunctionRecord.setLifecycle_event(lifecycleEvents);
@@ -181,6 +185,13 @@ public class VNFRUtils {
         for (InternalVirtualLink internalVirtualLink : vnfd.getVirtual_link()) {
             InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
             internalVirtualLink_new.setName(internalVirtualLink.getName());
+
+            for (VirtualLinkRecord virtualLinkRecord : vlr){
+                if (virtualLinkRecord.getName().equals(internalVirtualLink_new.getName())){
+                    internalVirtualLink_new.setExtId(virtualLinkRecord.getExtId());
+                }
+            }
+
             internalVirtualLink_new.setLeaf_requirement(internalVirtualLink.getLeaf_requirement());
             internalVirtualLink_new.setRoot_requirement(internalVirtualLink.getRoot_requirement());
             internalVirtualLink_new.setConnection_points_references(new HashSet<String>());
