@@ -1,13 +1,13 @@
 package org.project.openbaton.nfvo.core.core;
 
+import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
-import org.project.openbaton.exceptions.*;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -41,9 +41,6 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Set<String>> queues;
-
-    @Autowired
-    private NetworkServiceRecordManagement networkServiceRecordManagement;
 
     @PostConstruct
     private void init() {
@@ -80,6 +77,16 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                         if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
                             target=vnfrRepository.findOne(vnfr.getId());
                     log.debug("Target version is: " +target.getHb_version());
+
+                    for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
+                        if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
+                            log.debug("THE EVENT CONFIGURE HAS THESE SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                            LinkedHashSet<String> strings = new LinkedHashSet<>();
+                            strings.addAll(lifecycleEvent.getLifecycle_events());
+                            lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
+                            log.debug("NOW THE EVENT CONFIGURE HAS THESE SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                        }
+                    }
                     log.debug("SENDING MODIFY");
                     OrVnfmGenericMessage orVnfmGenericMessage= new OrVnfmGenericMessage(target,Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
