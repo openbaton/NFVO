@@ -60,9 +60,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      */
-    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event;
-    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * A language attribute may be specified to identify default localisation/language
