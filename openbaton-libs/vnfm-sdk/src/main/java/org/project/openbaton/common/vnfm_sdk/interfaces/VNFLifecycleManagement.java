@@ -3,7 +3,6 @@ package org.project.openbaton.common.vnfm_sdk.interfaces;
 
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 
 /**
  * Created by mpa on 05/05/15.
@@ -14,10 +13,11 @@ public interface VNFLifecycleManagement {
 	/**
 	 * This operation allows creating a VNF instance.
 	 * @param virtualNetworkFunctionRecord
+	 * @param scriptsLink
 	 */
 	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String scriptsLink) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.
