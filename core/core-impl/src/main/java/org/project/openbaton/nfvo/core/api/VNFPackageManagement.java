@@ -8,7 +8,9 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
@@ -16,6 +18,7 @@ import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by lto on 22/07/15.
@@ -56,7 +61,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         vnfPackage.setScripts(new HashSet<Script>());
         vnfPackage.setName(name);
 
-        ByteArrayInputStream imageStream = null;
+        InputStream imageStream = null;
         ArchiveInputStream myTarFile = null;
         try {
             imageStream = new ByteArrayInputStream(pack);
@@ -68,7 +73,8 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
         BoundedInputStream boundedInputStream;
-        FileInputStream imageInputStream = null;
+        File imageFile = null;
+        InputStream imageInputStream = null;
         File folderScripts = null;
         TarArchiveEntry entry;
         while ((entry = (TarArchiveEntry)myTarFile.getNextEntry()) != null) {
@@ -76,9 +82,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
             if (entry.isFile() && !entry.getName().startsWith("./._")) {
                 String individualFile = entry.getName();
                 log.debug("file inside tar: " + individualFile);
-                File entryFile = (entry).getFile();
-                log.trace("entryFile is: " + entryFile);
-                log.debug("entry size is: " + entry.getSize() + " much more different from getRealSize: " + entry.getRealSize());
+                byte[] content = new byte[(int) entry.getSize()];
                 if (individualFile.endsWith(".json")) {
                 /*this must be the vnfd*/
                 /*and has to be onboarded in the catalogue*/
@@ -93,18 +97,13 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     }
                     log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
                     nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor);
-                } else if (individualFile.endsWith(".ovf")) {
+                } else if (individualFile.endsWith(".img")) {
                 /*this must be the image*/
                 /*and has to be upladed to the RIGHT vim*/
-                    File imageFile = entryFile;
-                    log.debug("imageFile is: " + imageFile);
-                }else if (individualFile.endsWith(".sh")){
-                    boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
-                    Script script = new Script();
-                    script.setName(individualFile);
-                    byte[] data = IOUtils.toByteArray(boundedInputStream);
-                    script.setPayload(data);
-                    vnfPackage.getScripts().add(script);
+                    //imageFile = entryFile;
+                    myTarFile.read(content, 0, content.length);
+                    imageInputStream = new ByteArrayInputStream(content);
+                    log.debug("imageFile is: " + name);
                 }else if (individualFile.equals("scripts")){
                     boundedInputStream = new BoundedInputStream(myTarFile, entry.getSize());
                     String scriptLink = new BufferedReader(new InputStreamReader(boundedInputStream)).readLine();
@@ -116,35 +115,41 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 }
             }
         }
-//        NFVImage image = new NFVImage();
-//        image.setName(name);
-//        image.setContainerFormat(containerFromat);
-//        image.setDiskFormat(diskFormat);
-//        image.setIsPublic(isPublic);
-//        image.setMinDiskSpace(minDisk);
-//        image.setMinRam(minRam);
-//        List<String> vimInstances = new ArrayList<>();
-//        for (VirtualDeploymentUnit vdu: virtualNetworkFunctionDescriptor.getVdu()){
-//            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-//                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-//                image = vim.add(vdu.getVimInstance(), image, imageStream);
-//                if (vdu.getVm_image() == null)
-//                    vdu.setVm_image(new HashSet<String>());
-//                vdu.getVm_image().add(image.getName());
-//                vimInstances.add(vdu.getVimInstance().getId());
-//            }
-//        }
-//        vnfPackage.setImage(image);
+        NFVImage image = new NFVImage();
+        image.setName(name);
+        image.setContainerFormat(containerFromat);
+        image.setDiskFormat(diskFormat);
+        image.setIsPublic(isPublic);
+        image.setMinDiskSpace(minDisk);
+        image.setMinRam(minRam);
+        List<String> vimInstances = new ArrayList<>();
+        if (imageInputStream == null) {
+            throw new NullPointerException("VNFPackageManagement: Image file does not exist.");
+        } else {
+            //imageStream = new FileInputStream(imageFile);
+            log.debug(imageInputStream.toString());
+            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+                if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
+                    Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                    image = vim.add(vdu.getVimInstance(), image, imageInputStream);
+                    if (vdu.getVm_image() == null)
+                        vdu.setVm_image(new HashSet<String>());
+                    vdu.getVm_image().add(image.getName());
+                    vimInstances.add(vdu.getVimInstance().getId());
+                }
+            }
+        }
+        vnfPackage.setImage(image);
 
         myTarFile.close();
 
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfPackage.setVnfr(virtualNetworkFunctionDescriptor);
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
-        log.trace("Persisted " + virtualNetworkFunctionDescriptor);
+        //log.trace("Persisted " + virtualNetworkFunctionDescriptor);
 
-        vnfPackageRepository.save(vnfPackage);
-        log.debug("Persisted " + vnfPackage);
+        //vnfPackageRepository.save(vnfPackage);
+        //log.debug("Persisted " + vnfPackage);
         return vnfPackage;
     }
 
