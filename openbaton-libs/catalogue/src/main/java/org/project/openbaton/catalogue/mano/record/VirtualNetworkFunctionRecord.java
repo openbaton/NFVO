@@ -28,7 +28,6 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -58,10 +57,8 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     private String deployment_flavour_key;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-//    @MapKey(name = "key") // column name for map "key"
-//    @Column(name = "value") // column name for map "value"
-    private Map<String, String> configurations;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration configurations;
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      */
@@ -171,15 +168,16 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Configuration provides;
     @JsonIgnore
     private boolean cyclicDependency;
+
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
 
-    public Map<String, String> getConfigurations() {
+    public Configuration getConfigurations() {
         return configurations;
     }
 
-    public void setConfigurations(Map<String, String> configurations) {
+    public void setConfigurations(Configuration configurations) {
         this.configurations = configurations;
     }
 
