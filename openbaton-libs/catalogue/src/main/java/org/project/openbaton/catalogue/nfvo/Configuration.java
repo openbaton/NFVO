@@ -33,7 +33,7 @@ public class Configuration implements Serializable{
     private int version;
 
     // TODO think at cascade type
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ConfigurationParameter> configurationParameters;
     private String name;
 
