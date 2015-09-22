@@ -39,7 +39,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 //    private String descriptor_version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration configurations;
     /**
      * This describes a set of elements related to a particular VDU
