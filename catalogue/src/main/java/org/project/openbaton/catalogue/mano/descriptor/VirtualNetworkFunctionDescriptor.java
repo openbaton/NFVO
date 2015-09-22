@@ -110,7 +110,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
+//                ", vnfPackage=" + vnfPackage +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 '}';
