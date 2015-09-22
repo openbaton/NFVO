@@ -322,6 +322,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         Map<String, String> res = new HashMap<>();
         for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters())
             res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
+        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()){
+            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
+        }
         return res;
     }
 }

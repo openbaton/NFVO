@@ -11,6 +11,7 @@ import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
@@ -33,6 +34,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 
 import javax.jms.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -264,7 +266,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                     for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-                        String command = getJsonObject("EXECUTE", script, dependency.getParameters().get(type).getParameters()).toString();
+                        Map<String,String> params = new HashMap<>();
+                        params.putAll(dependency.getParameters().get(type).getParameters());
+
+                        for (ConfigurationParameter configurationParameter: virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters())
+                            params.put(configurationParameter.getConfKey(), configurationParameter.getValue());
+                        String command = getJsonObject("EXECUTE", script, params).toString();
                         return executeActionOnEMS(vnfcInstance.getHostname(), command);
                     }
                 }
