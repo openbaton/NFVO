@@ -16,13 +16,14 @@ require({
         d3: "libs/d3.min",
         ui_bootstrap: "libs/angular/ui-bootstrap-tpls-0.10.0.min",
         app: "app",
-        bootstrapSwitch:"../bower_components/bootstrap/dist/js/bootstrap-switch.min",
+        bootstrapSwitch: "../bower_components/bootstrap/dist/js/bootstrap-switch.min",
         angular_sanitize: "libs/angular/angular-sanitize",
         tables: 'tablesorter/tables',
         tablesorter: 'tablesorter/jquery.tablesorter',
         httpService: "services/httpService",
-        authService:"services/authService",
+        authService: "services/authService",
         servicesServices: "services/servicesServices",
+        topologyServices: "services/topologyServices",
         servicesController: "controllers/servicesController",
         vimInstanceController: "controllers/vimInstanceController",
         nsdController: "controllers/nsdController",
@@ -60,7 +61,7 @@ require({
         jquery_ui: {
             deps: ['jquery']
         },
-        bootstrapSwitch:{
+        bootstrapSwitch: {
             deps: ['jquery']
         },
         jquery_jsPlumb: {
@@ -94,26 +95,29 @@ require({
         ui_bootstrap: {
             deps: ['angular']
         },
-        authService:{
-            deps:['app']
+        authService: {
+            deps: ['app']
         },
         servicesServices: {
             deps: ['app']
         },
         nsdController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'angular_cookies']
         },
         nsrController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore',  'angular_cookies','bootstrapSwitch']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologyServices', 'angular_cookies', 'bootstrapSwitch']
         },
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService']
         },
         servicesController: {
-            deps: ['app', 'servicesServices', 'httpService','angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies']
         },
         indexController: {
-            deps: ['app', 'httpService', 'servicesServices', 'morris','authService']
+            deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService']
+        },
+        topologyServices: {
+            deps: ['app', 'httpService', 'd3', 'jquery_jsPlumb', 'underscore','servicesServices']
         },
         httpService: {
             deps: ['app']
@@ -138,6 +142,6 @@ require({
     'nsrController',
     'vimInstanceController',
     'dragDropController'
-], function(require) {
+], function (require) {
     return require(['bootstrap']);
 });

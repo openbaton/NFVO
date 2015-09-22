@@ -54,6 +54,10 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsrecords/graph.html',
                 controller: 'NsrCtrl'
             }).
+            when('/nsrecords/:nsrecordId/graph', {
+                templateUrl: 'pages/nsrecords/graph.html',
+                controller: 'NsrCtrl'
+            }).
             when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId', {
                 templateUrl: 'pages/nsrecords/vnfrecord.html',
                 controller: 'NsrCtrl'
