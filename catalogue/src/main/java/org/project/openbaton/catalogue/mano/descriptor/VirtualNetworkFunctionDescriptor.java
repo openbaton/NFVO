@@ -23,11 +23,12 @@ import org.project.openbaton.catalogue.nfvo.VNFPackage;
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
- * <p/>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
@@ -37,7 +38,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      */
 //    private String descriptor_version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    protected Set<LifecycleEvent> lifecycle_event;
+    private Set<LifecycleEvent> lifecycle_event;
+    @ElementCollection(fetch = FetchType.EAGER)
+//    @MapKey(name = "key") // column name for map "key"
+//    @Column(name = "value") // column name for map "value"
+    private Map<String, String> configurations;
     /**
      * This describes a set of elements related to a particular VDU
      */
@@ -86,8 +91,15 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private Set<String> provides;
     @JsonIgnore
     private boolean cyclicDependency;
-
     public VirtualNetworkFunctionDescriptor() {
+    }
+
+    public Map<String, String> getConfigurations() {
+        return configurations;
+    }
+
+    public void setConfigurations(Map<String, String> configurations) {
+        this.configurations = configurations;
     }
 
     public boolean isCyclicDependency() {
