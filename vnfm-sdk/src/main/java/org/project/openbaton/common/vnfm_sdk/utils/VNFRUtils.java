@@ -15,10 +15,7 @@ import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by mob on 31.08.15.
@@ -33,6 +30,22 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
         virtualNetworkFunctionRecord.setName(vnfd.getName());
         virtualNetworkFunctionRecord.setType(vnfd.getType());
+        Configuration configuration = new Configuration();
+        if (vnfd.getConfigurations() != null) {
+            configuration.setName(vnfd.getConfigurations().getName());
+        }else
+            configuration.setName(virtualNetworkFunctionRecord.getName());
+
+        configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+        if (vnfd.getConfigurations() != null) {
+            for (ConfigurationParameter configurationParameter: vnfd.getConfigurations().getConfigurationParameters()){
+                ConfigurationParameter cp = new ConfigurationParameter();
+                cp.setConfKey(configurationParameter.getConfKey());
+                cp.setValue(configurationParameter.getValue());
+                configuration.getConfigurationParameters().add(cp);
+            }
+        }
+        virtualNetworkFunctionRecord.setConfigurations(configuration);
         virtualNetworkFunctionRecord.setCyclicDependency(vnfd.hasCyclicDependency());
 
         Configuration requires = new Configuration();
