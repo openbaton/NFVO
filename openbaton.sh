@@ -103,7 +103,7 @@ function start {
         then
 	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
 #            screen -d -m -S openbaton -p 0 -X screen -t nfvo java -jar "$_openbaton_base/nfvo/build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-	    screen -c .screenrc -r -p 0
+	    screen -c .screenrc -r openbaton -p 0
     fi
 }
 
