@@ -18,10 +18,12 @@ package org.project.openbaton.nfvo.repositories;
 
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.springframework.data.repository.CrudRepository;
+
 /**
  * Created by lto on 06/05/15.
  */
 /*@Repository
 @Transactional(readOnly = true)
 @Scope("singleton")*/
-public interface VirtualLinkRecordRepository extends CrudRepository<VirtualLinkRecord,String> {}
+public interface VirtualLinkRecordRepository extends CrudRepository<VirtualLinkRecord, String> {
+}

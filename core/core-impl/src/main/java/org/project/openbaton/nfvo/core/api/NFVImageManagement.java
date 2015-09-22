@@ -49,7 +49,7 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public void delete(String id) {
         log.debug("Removing image with id " + id);
-        imageRepository.delete(imageRepository.findOne(id));
+        imageRepository.delete(id);
     }
 
     @Override

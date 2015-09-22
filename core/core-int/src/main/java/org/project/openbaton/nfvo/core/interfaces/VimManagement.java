@@ -16,6 +16,7 @@
 
 package org.project.openbaton.nfvo.core.interfaces;
 
+import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.exceptions.VimException;
 
@@ -59,4 +60,28 @@ public interface VimManagement {
     VimInstance query(String id);
 
     void refresh(VimInstance vimInstance) throws VimException;
+
+    /**
+     * Adds a new NFVImage to the VimInstance with id
+     * @param id of VimInstance
+     * @param image the new NFVImage
+     * @return NFVImage
+     */
+    NFVImage addImage(String id ,NFVImage image) throws VimException;
+
+    /**
+     * Returns the NFVImage with idImage from VimInstance with idVim
+     * @param idVim
+     * @param idImage
+     * @return NFVImage
+     */
+    NFVImage queryImage(String idVim, String idImage);
+
+    /**
+     * Removes the NFVImage with idImage from VimInstance with idVim
+     * @param idVim
+     * @param idImage
+     */
+    void deleteImage(String idVim, String idImage) throws VimException;
+
 }
