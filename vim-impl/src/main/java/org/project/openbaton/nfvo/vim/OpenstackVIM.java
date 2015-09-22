@@ -88,7 +88,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     @Override
     public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException{
         try {
-            client.copyImage(vimInstance, image, inputStream);
+            client.copyImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
             log.debug("Image with id: " + image.getId() + " copied successfully.");
         } catch (Exception e) {
             log.error("Image with id: " + image.getId() + " not copied successfully.", e);
