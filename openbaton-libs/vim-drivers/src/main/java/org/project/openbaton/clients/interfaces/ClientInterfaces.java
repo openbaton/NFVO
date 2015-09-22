@@ -39,7 +39,7 @@ public interface ClientInterfaces extends Remote {
 
     DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException;
 
-    NFVImage addImage(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws RemoteException;
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
 
     NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 
