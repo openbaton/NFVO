@@ -36,13 +36,13 @@ public class InstantiateTask extends AbstractTask {
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
         for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
             if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal())
-                log.info("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                log.trace("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
         }
         saveVirtualNetworkFunctionRecord();
 
         for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
             if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal())
-                log.info("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                log.trace("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
         }
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
@@ -53,18 +53,19 @@ public class InstantiateTask extends AbstractTask {
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(),nsr);
         for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
             if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal())
-                log.info("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                log.trace("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
         }
         log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep;
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
         for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
             if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal())
-                log.info("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
+                log.trace("THE EVENT CONFIGURE HAS THIS SCRIPTS: " + lifecycleEvent.getLifecycle_events());
         }
         log.debug("Found " + dep + " dependencies");
         if (dep == 0) {
             log.info("VNFR: " + virtualNetworkFunctionRecord.getName() + " (" + virtualNetworkFunctionRecord.getId() + ") has 0 dependencies, Calling START");
+            log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
     }
