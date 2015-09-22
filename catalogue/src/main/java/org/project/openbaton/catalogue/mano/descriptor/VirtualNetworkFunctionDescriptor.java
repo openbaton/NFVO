@@ -18,17 +18,17 @@ package org.project.openbaton.catalogue.mano.descriptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.project.openbaton.catalogue.mano.common.*;
+import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
- *
+ * <p/>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
@@ -39,10 +39,8 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 //    private String descriptor_version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
-    @ElementCollection(fetch = FetchType.EAGER)
-//    @MapKey(name = "key") // column name for map "key"
-//    @Column(name = "value") // column name for map "value"
-    private Map<String, String> configurations;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration configurations;
     /**
      * This describes a set of elements related to a particular VDU
      */
@@ -91,14 +89,15 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private Set<String> provides;
     @JsonIgnore
     private boolean cyclicDependency;
+
     public VirtualNetworkFunctionDescriptor() {
     }
 
-    public Map<String, String> getConfigurations() {
+    public Configuration getConfigurations() {
         return configurations;
     }
 
-    public void setConfigurations(Map<String, String> configurations) {
+    public void setConfigurations(Configuration configurations) {
         this.configurations = configurations;
     }
 
