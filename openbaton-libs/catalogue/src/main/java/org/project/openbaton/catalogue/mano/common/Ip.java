@@ -6,12 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
  * Created by lto on 23/09/15.
  */
 @Entity
-public class Ip {
+public class Ip implements Serializable{
     @Id
     private String id;
     @Version
