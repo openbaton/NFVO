@@ -46,6 +46,7 @@
                 <tr>
                     <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
+                    <th ng-click="predicate = 'parameters'; reverse = !reverse">parameters <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'source.name'; reverse = !reverse">Source <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
@@ -54,6 +55,7 @@
                 <tbody>
                 <tr ng-repeat="vnfd in nsdinfo.vnf_dependency| orderBy:predicate:reverse">
                     <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a></td>
+                    <td>{{vnfd.parameters}}</td>
                     <td>{{vnfd.source.name}}</td>
                     <td>{{vnfd.target.name}}</td>
                     <td>

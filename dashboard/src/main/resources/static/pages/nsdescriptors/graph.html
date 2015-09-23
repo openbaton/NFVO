@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1>Network Service Record
+        <h1>Network Service Descriptor
             <small>Information</small>
         </h1>
         <ol class="breadcrumb">
@@ -9,27 +9,27 @@
                     Overview</a>
             </li>
             <li>
-                <a href="#nsrecords"><i class="fa fa-pencil-square-o"></i>
-                    NS Records</a>
+                <a href="#nsdescriptors"><i class="fa fa-pencil-square-o"></i>
+                    NS Descriptors</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                NSR Name: {{nsrinfo.name}}
+                NSD Name: {{nsdinfo.name}}
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <h2>NSR name: {{nsrinfo.name}}</h2>
+        <h2>NSR name: {{nsdinfo.name}}</h2>
                 <br/>
         <dt>id:</dt>
-        <dd>{{nsrinfo.id}}</dd>
+        <dd>{{nsdinfo.id}}</dd>
         <dt>Vendor:</dt>
-        <dd>{{nsrinfo.vendor}}</dd>
+        <dd>{{nsdinfo.vendor}}</dd>
         <dt>Version:</dt>
-        <dd>{{nsrinfo.version}}</dd>
+        <dd>{{nsdinfo.version}}</dd>
         <dt>Status:</dt>
-        <dd>{{nsrinfo.status}}</dd>
+        <dd>{{nsdinfo.status}}</dd>
         <hr>
         <div class="panel panel-default top-buffer" id="graphContainer"
              style="min-height: 500px" data-ng-init="Jsplumb()"></div>
