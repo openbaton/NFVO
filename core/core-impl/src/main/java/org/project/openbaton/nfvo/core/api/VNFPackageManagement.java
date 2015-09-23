@@ -117,6 +117,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
                     image.setMinRam((Integer) imageConfig.get("minRam"));
                     image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer)imageConfig.get("minRam"))));
+                    vnfPackage.setImage(image);
                 }else if (entry.getName().endsWith(".json")) {
                     //this must be the vnfd
                     //and has to be onboarded in the catalogue
@@ -164,7 +165,6 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     }
                 }
             }
-            vnfPackage.setImage(image);
         }
         myTarFile.close();
 
