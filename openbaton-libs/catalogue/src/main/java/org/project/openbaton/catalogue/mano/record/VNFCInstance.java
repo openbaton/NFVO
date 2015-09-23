@@ -15,10 +15,12 @@
 
 package org.project.openbaton.catalogue.mano.record;
 
+import org.project.openbaton.catalogue.mano.common.Ip;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by lto on 08/09/15.
@@ -30,6 +32,12 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String vc_id;
     protected String hostname;
     protected String vnfc_reference;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> floatingIps;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Ip> ips;
 
     public String getHostname() {
         return hostname;
@@ -71,5 +79,21 @@ public class VNFCInstance extends VNFComponent implements Serializable {
                 ", hostname='" + hostname + '\'' +
                 ", vnfc_reference='" + vnfc_reference + '\'' +
                 '}';
+    }
+
+    public Set<String> getFloatingIps() {
+        return floatingIps;
+    }
+
+    public void setFloatingIps(Set<String> floatingIps) {
+        this.floatingIps = floatingIps;
+    }
+
+    public Set<Ip> getIps() {
+        return ips;
+    }
+
+    public void setIps(Set<Ip> ips) {
+        this.ips = ips;
     }
 }
