@@ -82,7 +82,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
 
@@ -100,7 +100,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
         }
 
     };
-
 
 
     $scope.isEmpty = function (obj) {
@@ -190,15 +189,10 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     }
 
 
-    $scope.Jsplumb = function() {
-
-        http.syncGet(url + '/' + $routeParams.nsrecordId).then(function(response) {
-
-            console.log(http);
-            console.log(topologiesAPI);
-            topologiesAPI.Jsplumb(response);
+    $scope.Jsplumb = function () {
+        http.syncGet(url + '/' + $routeParams.nsrecordId).then(function (response) {
+            topologiesAPI.Jsplumb(response, 'record');
             console.log(response);
-
         });
     };
 
