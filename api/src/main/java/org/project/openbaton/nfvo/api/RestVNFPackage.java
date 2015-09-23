@@ -46,10 +46,10 @@ public class RestVNFPackage {
 	 * 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody VNFPackage onboard(@RequestParam("name") String name, @RequestParam("diskFormat") String diskFormat, @RequestParam("containerFormat") String containerFormat, @RequestParam("minDisk") int minDisk, @RequestParam("minRam") int minRam, @RequestParam("isPublic") boolean isPublic,  @RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
+	public @ResponseBody VNFPackage onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
 		if (!file.isEmpty()) {
 			byte[] bytes = file.getBytes();
-			return vnfPackageManagement.onboard(bytes, name, diskFormat, containerFormat, minDisk, minRam, isPublic);
+			return vnfPackageManagement.onboard(bytes);
 		}
 		else throw new IOException("File is empty!");
 	}
