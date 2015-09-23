@@ -13,7 +13,7 @@ angular.module('app')
             console.log(topology);
             $('#graphContainer').html('');
 //            jsPlumb.Defaults.Container = $("#graphContainer");
-            
+
             if (type === 'record')
                 var unit = topology.vnfr;
             else
