@@ -28,18 +28,20 @@ import java.util.Set;
  * Created by mob on 14.09.15.
  */
 public class OrVnfmInstantiateMessage implements OrVnfmMessage {
+    private String scriptsLink;
     private VirtualNetworkFunctionDescriptor vnfd;
     private VNFDeploymentFlavour vnfdf;
     private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
     private Map<String,String> extention;
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention, String scriptLink) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
         this.extention = extention;
+        this.scriptsLink = scriptLink;
     }
 
     public VirtualNetworkFunctionDescriptor getVnfd() {
@@ -99,4 +101,10 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     }
 
 
+    public String getScriptsLink() {
+        return scriptsLink;
+    }
+    public void setScriptsLink(String link) {
+        scriptsLink = link;
+    }
 }

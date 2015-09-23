@@ -57,12 +57,14 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     private String deployment_flavour_key;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration configurations;
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      */
-    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event;
-    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * A language attribute may be specified to identify default localisation/language
@@ -116,16 +118,16 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
     /**
-     * <p>
+     * <p/>
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
      * <p/>
-     * <p>
+     * <p/>
      * Implementation thoughts:
      * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
      * so for what concerns the VNFR, the state are:
      * <p/>
-     * <p>
+     * <p/>
      * * Null) A VNF Instance does not exist and is about to be created.
      * * Instantiated Not Configured) VNF Instance does exist but is not configured for service.
      * * Instantiated Configured - Inactive) A VNF Instance is configured for service.
@@ -155,7 +157,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Set<String> runtime_policy_info;
     private String name;
     private String type;
-//    @JsonIgnore
+    //    @JsonIgnore
     private String endpoint;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
@@ -171,6 +173,14 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
     }
 
+    public Configuration getConfigurations() {
+        return configurations;
+    }
+
+    public void setConfigurations(Configuration configurations) {
+        this.configurations = configurations;
+    }
+
     public boolean isCyclicDependency() {
         return cyclicDependency;
     }
@@ -180,8 +190,8 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
 
     public String getEndpoint() {
