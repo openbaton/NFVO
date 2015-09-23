@@ -33,9 +33,8 @@ public interface VNFPackageManagement {
 	 * This operation allows submitting and 
 	 * validating the VNF Package.
 	 * @param pack
-	 * @param name
 	 */
-	VNFPackage onboard(byte[] pack, String name, String diskFormat, String containerFromat, long minDisk, long minRam, boolean isPublic) throws IOException, VimException, NotFoundException, SQLException;
+	VNFPackage onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException;
 
 	/**
 	 * This operation allows disabling the 
