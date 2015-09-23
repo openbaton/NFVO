@@ -42,6 +42,7 @@ public class VNFComponent implements Serializable{
      * */
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     protected Set<VNFDConnectionPoint> connection_point;
+    private boolean exposed;
 
     public VNFComponent() {
         this.connection_point = new HashSet<>();
@@ -83,5 +84,13 @@ public class VNFComponent implements Serializable{
                 ", id='" + id + '\'' +
                 ", version=" + version +
                 '}';
+    }
+
+    public boolean isExposed() {
+        return exposed;
+    }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
     }
 }

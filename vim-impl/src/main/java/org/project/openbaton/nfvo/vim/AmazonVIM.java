@@ -76,7 +76,7 @@ public class AmazonVIM extends Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) {
         throw new UnsupportedOperationException();
     }
 
