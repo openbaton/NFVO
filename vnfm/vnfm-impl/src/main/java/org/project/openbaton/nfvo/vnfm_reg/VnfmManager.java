@@ -195,9 +195,12 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
             NFVMessage message;
             if (vnfd.getVnfPackage() != null)
-                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScriptsLink());
+                if (vnfd.getVnfPackage().getScriptsLink() != null)
+                    message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScriptsLink());
+                else
+                    message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScripts());
             else
-                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, null);
+                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
             if (endpoint == null) {

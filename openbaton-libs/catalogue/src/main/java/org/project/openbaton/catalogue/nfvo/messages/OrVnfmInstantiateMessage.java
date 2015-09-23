@@ -19,6 +19,7 @@ import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Set;
  * Created by mob on 14.09.15.
  */
 public class OrVnfmInstantiateMessage implements OrVnfmMessage {
+    private Set<Script> scripts;
     private String scriptsLink;
     private VirtualNetworkFunctionDescriptor vnfd;
     private VNFDeploymentFlavour vnfdf;
@@ -35,13 +37,31 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     private Set<VirtualLinkRecord> vlrs;
     private Map<String,String> extention;
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention, String scriptLink) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention){
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
         this.extention = extention;
+        this.scripts = null;
+    }
+
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention, String scriptLink) {
+        this(vnfd, vnfdf, vnfInstanceName, vlrs, extention);
         this.scriptsLink = scriptLink;
+    }
+
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour deploymentFlavour, String name, Set<VirtualLinkRecord> vlr, Map<String, String> extension, Set<Script> scripts) {
+        this(vnfd, deploymentFlavour, name, vlr, extension);
+        this.scripts = scripts;
+    }
+
+    public Set<Script> getScripts() {
+        return scripts;
+    }
+
+    public void setScripts(Set<Script> scripts) {
+        this.scripts = scripts;
     }
 
     public VirtualNetworkFunctionDescriptor getVnfd() {
