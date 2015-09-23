@@ -80,10 +80,10 @@ public class VirtualDeploymentUnit implements Serializable {
     /**
      * Contains information that is distinct for each VNFC created based on this VDU.
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VNFComponent> vnfc;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VNFCInstance> vnfc_instance;
 
     /**
@@ -228,6 +228,7 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", high_availability=" + high_availability +
                 ", scale_in_out=" + scale_in_out +
                 ", vnfc=" + vnfc +
+                ", vnfc_instance=" + vnfc_instance +
                 ", vimInstanceName=" + vimInstanceName +
                 ", monitoring_parameter=" + monitoring_parameter +
                 '}';
