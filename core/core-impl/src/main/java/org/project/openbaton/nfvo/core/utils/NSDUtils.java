@@ -61,12 +61,14 @@ public class NSDUtils {
          * Fetching VNFD
          */
         List<VirtualNetworkFunctionDescriptor> vnfdToAdd = new ArrayList<>();
+        List<VirtualNetworkFunctionDescriptor> vnfdToRem = new ArrayList<>();
+
         for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd()) {
             log.debug("The VNFD to fetch is: " + vnfd.getName());
             for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll()) {
                 log.debug("Checking: " + virtualNetworkFunctionDescriptor.getName());
                 if (vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())) {
-                    networkServiceDescriptor.getVnfd().remove(vnfd);
+                    vnfdToRem.add(vnfd);
                     vnfdToAdd.add(virtualNetworkFunctionDescriptor);
                     log.debug("Found VNFD: " + vnfd.getName() + " of type: " + vnfd.getType());
                     break;
@@ -74,10 +76,9 @@ public class NSDUtils {
             }
         }
 
+        networkServiceDescriptor.getVnfd().removeAll(vnfdToRem);
+        networkServiceDescriptor.getVnfd().addAll(vnfdToAdd);
 
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdToAdd){
-            networkServiceDescriptor.getVnfd().add(virtualNetworkFunctionDescriptor);
-        }
         /**
          * Fetching VimInstances
          */
