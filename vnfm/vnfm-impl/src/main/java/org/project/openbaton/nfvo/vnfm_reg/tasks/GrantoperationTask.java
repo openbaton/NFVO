@@ -42,15 +42,16 @@ public class GrantoperationTask extends AbstractTask {
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-            log.debug("SENDING GRANT LYFECYCLE OPERATION on temp queue:" + getTempDestination());
-            Thread.sleep(1000 * ((int) (Math.random() * 3 + 1)));
+            log.debug("SENDING GRANT LIFECYCLE OPERATION on temp queue:" + getTempDestination());
             saveVirtualNetworkFunctionRecord();
+            log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION), getTempDestination());
         } else {
             // there are no enough resources for deploying VNFR
-            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ERROR),getTempDestination());
+            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
         }
     }
+
     @Override
     public boolean isAsync() {
         return true;

@@ -191,14 +191,13 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             Map<String, String> extension= new HashMap<>();
             extension.put("nsr-id",networkServiceRecord.getId());
 
-            OrVnfmInstantiateMessage message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension);
             // Setting extension in CoreMassage
 
-
-            /*if (vnfd.getVnfPackage() == null)
-                coreMessage.setAction(Action.INSTANTIATE);
+            NFVMessage message;
+            if (vnfd.getVnfPackage() != null)
+                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScriptsLink());
             else
-                coreMessage.setAction(Action.CONFIGURE);*/
+                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, null);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
             if (endpoint == null) {

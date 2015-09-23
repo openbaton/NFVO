@@ -1,11 +1,10 @@
 #!/bin/bash
 
 _base=/opt
-_openbaton_base="${_base}/openbaton"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start {
-    screen -S openbaton "${_openbaton_base}/bin/openbaton" --spring.config.location=file:${_openbaton_config_file}
+    screen -d -m -S openbaton "openbaton" --spring.config.location=file:${_openbaton_config_file}
 }
 
 function stop {
@@ -34,7 +33,6 @@ function usage {
 
 ##
 #   MAIN
-#   TODO start activemq and/or define application.properties
 ##
 
 if [ $# -eq 0 ]

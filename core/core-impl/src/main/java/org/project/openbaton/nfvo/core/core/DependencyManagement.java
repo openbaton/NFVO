@@ -22,11 +22,10 @@ import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.DependencyParameters;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -79,7 +78,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                 if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())){
                     dep++;
                     //waiting for them to finish
-                    log.debug("dipendenza trovata: "+vnfRecordDependency);
+                    log.debug("found dependency: "+vnfRecordDependency);
                     Set<String> notInitIds = getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(),nsr);
                     if (notInitIds.size() > 0) {
                         dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
