@@ -110,14 +110,13 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                             throw new NullPointerException("Not defined " + requiredKey + " of image in Metadata.yaml");
                         }
                     }
-                    image.setName((String)imageConfig.get("name"));
+                    image.setName((String) imageConfig.get("name"));
                     image.setDiskFormat((String) imageConfig.get("diskFormat"));
                     image.setContainerFormat((String) imageConfig.get("containerFormat"));
-                    image.setMinCPU(Integer.toString((Integer)imageConfig.get("minCPU")));
+                    image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
                     image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
                     image.setMinRam((Integer) imageConfig.get("minRam"));
-                    image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer)imageConfig.get("minRam"))));
-                    vnfPackage.setImage(image);
+                    image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
                 }else if (entry.getName().endsWith(".json")) {
                     //this must be the vnfd
                     //and has to be onboarded in the catalogue
@@ -166,12 +165,13 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 }
             }
         }
+        vnfPackage.setImage(image);
         myTarFile.close();
 
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-        return vnfPackage;
+        return virtualNetworkFunctionDescriptor.getVnfPackage();
     }
 
     @Override
