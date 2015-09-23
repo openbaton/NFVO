@@ -60,8 +60,11 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
         virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() /*+ "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1)*/);
-        for (VNFComponent component : virtualDeploymentUnit.getVnfc())
+        for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
+            log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
+            log.debug("The component is Exposed? " + component.isExposed());
             ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get());
+        }
         return ids;
     }
 
