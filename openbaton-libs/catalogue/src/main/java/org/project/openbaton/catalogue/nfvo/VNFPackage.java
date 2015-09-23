@@ -20,7 +20,7 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lto on 22/07/15.
@@ -33,20 +33,20 @@ public class VNFPackage implements Serializable {
     @Version
     private int version = 0;
 
+    //Name of the Package
     private String name;
 
-    private String extId;
-
+    //URL to the image's location
     private String imageLink;
+
+    //URL to the scripts' location
     private String scriptsLink;
 
+    //NFVImage used by this VNFPackage
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true)
     private NFVImage image;
 
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true, mappedBy = "vnfPackage")
-    private VirtualNetworkFunctionDescriptor vnfr;
-
+    //Set of scripts to execute
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Script> scripts;
 
@@ -59,8 +59,6 @@ public class VNFPackage implements Serializable {
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
-                ", vnfr='" + vnfr + '\'' +
-                ", extId='" + extId + '\'' +
                 ", imageLink='" + imageLink + '\'' +
                 ", scriptsLink='" + scriptsLink + '\'' +
                 ", image=" + image +
@@ -97,12 +95,12 @@ public class VNFPackage implements Serializable {
         this.id = id;
     }
 
-    public VirtualNetworkFunctionDescriptor getVnfr() {
-        return vnfr;
+    public Set<Script> getScripts() {
+        return scripts;
     }
 
-    public void setVnfr(VirtualNetworkFunctionDescriptor vnfr) {
-        this.vnfr = vnfr;
+    public void setScripts(Set<Script> scripts) {
+        this.scripts = scripts;
     }
 
     public int getVersion() {
@@ -119,22 +117,6 @@ public class VNFPackage implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getExtId() {
-        return extId;
-    }
-
-    public void setExtId(String extId) {
-        this.extId = extId;
-    }
-
-    public Set<Script> getScripts() {
-        return scripts;
-    }
-
-    public void setScripts(Set<Script> scripts) {
-        this.scripts = scripts;
     }
 
     public NFVImage getImage() {
