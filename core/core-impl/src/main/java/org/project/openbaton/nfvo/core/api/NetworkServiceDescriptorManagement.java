@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lto on 11/05/15.
@@ -68,9 +70,26 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
 
-        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd())
+        Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
+        Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            if (vnfd.getId() != null) {
+                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findOne(vnfd.getId());
+                log.debug("VNFD fetched: " + vnfd_new);
+                if (vnfd_new == null) {
+                    throw new NotFoundException("Not found VNFD with id: " + vnfd.getId());
+                }
+                vnfd_add.add(vnfd_new);
+                vnfd_remove.add(vnfd);
+            }
+        }
+        networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
+        networkServiceDescriptor.getVnfd().addAll(vnfd_add);
+
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             if (vnfd.getEndpoint() == null)
                 vnfd.setEndpoint(vnfd.getType());
+        }
 
         log.info("Checking if Vnfm is running...");
 
