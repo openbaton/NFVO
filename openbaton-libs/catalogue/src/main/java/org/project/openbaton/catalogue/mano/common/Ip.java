@@ -1,7 +1,10 @@
 package org.project.openbaton.catalogue.mano.common;
 
+import org.project.openbaton.catalogue.util.IdGenerator;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
 /**
@@ -57,5 +60,10 @@ public class Ip {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    @PrePersist
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
 }
