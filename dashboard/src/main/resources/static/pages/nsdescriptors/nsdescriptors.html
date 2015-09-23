@@ -58,8 +58,9 @@
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="" data-toggle="modal" data-target="#modalAdd"
-                                       ng-click="launch(nsd)">Launch</a>
+                                <li><a href="" data-toggle="modal"
+                                       ng-click="launchOption(nsd)"
+                                        >Launch</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li><a href="" ng-click="deleteNSD(nsd)">Delete</a></li>
@@ -613,7 +614,7 @@
                     <div class="form-group" ng-repeat="(key,value) in nsdCreate"
                          ng-if="key!='vnfd' && key!='vnfd' && key!='auto_scale_policy' && key!='connection_point' && key!='lifecycle_event'
                           && key!='monitoring_parameter' && key!='pnfd' && key!='service_deployment_flavour' && key!='vnf_dependency'
-                         && key!='vnffgd' && key!='vld' ">
+                         && key!='vnffgd' && key!='vld' && key!='nsd_security'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
@@ -901,6 +902,75 @@
                 </button>
                 <button type="button" id=""
                         ng-click="addVNFDep()" class="btn btn-primary">Add VNFD
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="madalLaunch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Launch the Descriptor</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" id="form7">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            Do you want to set the Deployment Flavor?
+                            <input type="checkbox" id="set-flavor" name="set-flavor" data-on-text="YES"
+                                   data-off-text="NO">
+                        </div>
+                    </div>
+                    <div ng-if="showSetting">
+                        <div class="row" ng-repeat="vnf in nsdCreate.vnfd">
+                            <div class="col-lg-12">
+                                <h4>For {{vnf.name}}</h4>
+
+                                <div ng-repeat="vdu in vnf.vdu">
+                                    <div class="col-sm-6">
+                                        <label class="control-label"
+                                               ng-init=""> VimInstanceName: {{vdu.vimInstanceName}}</label>
+
+
+                                        <select name="typeSelect" class="form-control modal-select"
+                                                ng-model="dfla.target.image"
+                                                ng-options="image as image for image in vdu.vm_image | orderBy:'vm_image':false"
+                                                ng-change="">
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label class="control-label"
+                                           ng-init=""> deployment_flavour:</label>
+
+                                    <!--{{vnf.deployment_flavour}}-->
+
+                                    <select name="typeSelect" class="form-control modal-select"
+                                            ng-model="dfla.target.name"
+                                            ng-options="df.flavour_key as df.flavour_key for df in vnf.deployment_flavour | orderBy:'flavour_key':false"
+                                            ng-change="">
+                                    </select>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id=""
+                        ng-click="launch()" class="btn btn-primary">Launch the NSD
                 </button>
             </div>
 

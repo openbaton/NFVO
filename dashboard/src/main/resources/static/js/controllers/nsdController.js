@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http) {
+var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
 
     var url = 'http://localhost:8080/api/v1/ns-descriptors';
     var urlRecord = 'http://localhost:8080/api/v1/ns-records';
@@ -6,6 +6,21 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     loadTable();
 
+    $.fn.bootstrapSwitch.defaults.size = 'mini';
+
+    $('#set-flavor').bootstrapSwitch();
+
+
+    $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
+        $scope.showSetting=state;
+        console.log($scope.showSetting);
+        $scope.$apply(function() {
+            $scope.showSetting;
+        });
+
+    });
+
+    $scope.nsdToSend={};
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
@@ -16,7 +31,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             console.log(response);
         })
         .error(function (data, status) {
-            showError(status, data);
+            showError(status, JSON.stringify(data));
 
         });
 
@@ -96,6 +111,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
 
+    function paintBackdropModal() {
+        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
+        console.log('heigh: ' + height + 'px');
+        $(".modal-backdrop").height(height)
+    }
 
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
@@ -104,9 +124,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             delete $scope.vnfdEditIndex;
         }
         $scope.nsdCreate.vnfd.push(angular.copy($scope.vnfdCreate));
-        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
-        console.log('heigh: ' + height + 'px');
-        $(".modal-backdrop").height(height)
+        paintBackdropModal();
     };
 
     $scope.deleteVNFD = function (index) {
@@ -138,7 +156,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    console.log($routeParams.vnfdescriptorId);
 
     if (!angular.isUndefined($routeParams.vnfdescriptorId))
         $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
@@ -153,7 +170,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         console.log(nsdCreate);
         http.post(url, nsdCreate)
             .success(function (response) {
-                showOk('Network Service Descriptors stored!');
+                showOk('Network Service Descriptor stored!');
                 loadTable();
             })
             .error(function (data, status) {
@@ -359,7 +376,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
 
@@ -371,26 +388,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
         }
-        if ($scope.toggle) {
-            var template = {};
-            var nameTemplate = $('#nameTemplate').val();
-//            template.flavour = $('#inputFlavorTemplate').val();
-            template.name = (nameTemplate === '') ? 'Template-' + Math.floor((Math.random() * 100) + 1) : nameTemplate;
-            template.topology = postNSD;
-            console.log(template);
-            http.post('/api/rest/admin/v2/templates', template)
-                .success(function (response) {
-                    showOk('Template created!');
-//                        $scope.cleanModal();
-                })
-                .error(function (data, status) {
-                    showError(status, data);
-                });
-        }
+
         $scope.toggle = false;
         $scope.file !== '';
         //        $scope.services = [];
@@ -417,17 +419,28 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    $scope.launch = function (data) {
-        console.log(data);
-        http.post(urlRecord + '/' + data.id)
+    $scope.launchOption= function(data){
+        $scope.nsdToSend = data;
+        $('#madalLaunch').modal('show');
+    };
+
+    $scope.launch = function () {
+        console.log($scope.nsdToSend);
+        http.post(urlRecord + '/' + $scope.nsdToSend.id)
             .success(function (response) {
-                showOk('Created Network Service Record from Descriptor with id: ' + data.id);
+                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id+"<\/a>");
             })
             .error(function (data, status) {
                 showError(status, JSON.stringify(data));
             });
     };
 
+    $scope.Jsplumb = function () {
+        http.syncGet(url + '/' + $routeParams.nsdescriptorId).then(function (response) {
+            topologiesAPI.Jsplumb(response, 'descriptor');
+            console.log(response);
+        });
+    };
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);

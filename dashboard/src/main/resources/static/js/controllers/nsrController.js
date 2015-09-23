@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI) {
 
     var url = 'http://localhost:8080/api/v1/ns-records';
 
@@ -82,7 +82,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(status, JSON.stringify(data));
                     });
             }
 
@@ -100,7 +100,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
         }
 
     };
-
 
 
     $scope.isEmpty = function (obj) {
@@ -190,6 +189,13 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     }
 
 
+    $scope.Jsplumb = function () {
+        http.syncGet(url + '/' + $routeParams.nsrecordId).then(function (response) {
+            topologiesAPI.Jsplumb(response, 'record');
+            console.log(response);
+        });
+    };
+
     function loadTable() {
         //if (!$('#jsonInfo').hasClass('in'))
         if (angular.isUndefined($routeParams.nsrecordId))
@@ -209,6 +215,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                     $scope.nsrinfo = response;
                     $scope.nsrJSON = JSON.stringify(response, undefined, 4);
                     console.log(response);
+                    //topologiesAPI.Jsplumb(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
