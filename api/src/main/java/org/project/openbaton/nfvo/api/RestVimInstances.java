@@ -100,29 +100,66 @@ public class RestVimInstances {
         return vimManagement.update(new_vimInstance, id);
     }
 
+    /**
+     * Returns the list of NFVImage into a VimInstance with id
+     *
+     * @param id of the VimInstance
+     * @return Set<NFVImage>
+     */
     @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
     public Set<NFVImage> getAllImages(@PathVariable("id") String id) {
         VimInstance vimInstance = vimManagement.query(id);
         return vimInstance.getImages();
     }
 
+    /**
+     * Returns the {@code NFVImage} selected by idImage from {@code VimInstance} with idVim
+     *
+     * @param idVim   of {@code VimInstance}
+     * @param idImage of {@code NFVImage}
+     * @return {@code NFVImage} selected
+     */
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
-    public NFVImage getImage(@PathVariable("idVim") String idVim,@PathVariable("idImage") String idImage) {
+    public NFVImage getImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage) {
         return vimManagement.queryImage(idVim, idImage);
     }
 
+    /**
+     * Adds a new {@code NFVImage} to the {@code VimInstance} with the id
+     *
+     * @param id       of {@code VimInstance}
+     * @param nfvImage the {@code NFVImage} to be added
+     * @return {@code NFVImage} persisted
+     * @throws VimException
+     */
     @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
     public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage) throws VimException {
         return vimManagement.addImage(id, nfvImage);
     }
 
-    @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.POST)
-    public NFVImage updateImage(@PathVariable("idVim") String idVim,@RequestBody @Valid NFVImage image) throws VimException {
+    /**
+     * Updates the {@code NFVImage} with idImage into {@code VimInstance} with idVim
+     *
+     * @param idVim of {@code VimInstance}
+     * @param image of {@code NFVImage}
+     * @return {@code NFVImage} updated
+     * @throws VimException
+     */
+    @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
+    public NFVImage updateImage(@PathVariable("idVim") String idVim, @RequestBody @Valid NFVImage image) throws VimException {
         return vimManagement.addImage(idVim, image);
     }
 
+    /**
+     * Removes the {@code NFVImage} with idImage from {@code VimInstance} with idVim
+     *
+     * @param idVim   of {@code VimInstance}
+     * @param idImage of {@code NFVImage}
+     * @throws VimException
+     */
+
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable("idVim") String idVim,@PathVariable("idImage") String idImage) throws VimException {
+    public void deleteImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage) throws VimException {
         vimManagement.deleteImage(idVim, idImage);
     }
 

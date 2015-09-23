@@ -19,8 +19,8 @@ import org.project.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
@@ -50,7 +50,8 @@ public class LifecycleEvent implements Serializable{
 	public void ensureId(){
 		id=IdGenerator.createUUID();
 	}
-    public String getId() {
+
+	public String getId() {
 		return id;
 	}
 
