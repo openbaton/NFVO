@@ -107,7 +107,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 		Vim vim = mock(Vim.class);
 		when(vimBroker.getVim(anyString())).thenReturn(vim);
 		when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
-		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), )).thenReturn(new AsyncResult<String>("mocked_id"));
+		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), , , )).thenReturn(new AsyncResult<String>("mocked_id"));
 		VNFLifecycleOperationGranting vnfLifecycleOperationGranting = mock(VNFLifecycleOperationGranting.class);
 		when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
 
