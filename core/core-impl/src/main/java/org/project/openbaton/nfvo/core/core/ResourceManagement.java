@@ -32,8 +32,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -58,8 +61,39 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         log.debug("ID: " + virtualDeploymentUnit.getId());
         virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() /*+ "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1)*/);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc())
-            ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component).get());
+            ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get());
         return ids;
+    }
+
+    private String getUserData(String endpoint) {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("/etc/openbaton/openbaton.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.debug("Loaded: " + properties);
+        String url = properties.getProperty("spring.activemq.broker-url");
+        String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
+        log.debug("Active ip is: " + activeIp);
+        String result="#!/bin/bash\n" +
+                "sudo apt-get update\n" +
+                "sudo mkdir -p /etc/openbaton/ems\n" +
+                "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
+                "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
+                "export hn=`hostname`\n" +
+                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
+
+//                "sudo apt-get install -y git\n" +
+//                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
+//                "cd ems-public\n" +
+//                "sudo chmod +x ems.sh\n" +
+//                "sudo sh ems.sh > /var/log/ems.log";
+                "sudo python /opt/openbaton/ems-public > /var/log/ems.log";
+        return result;
     }
 
     @Override
