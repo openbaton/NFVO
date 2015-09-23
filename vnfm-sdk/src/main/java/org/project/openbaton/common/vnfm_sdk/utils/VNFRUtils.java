@@ -1,14 +1,8 @@
 package org.project.openbaton.common.vnfm_sdk.utils;
 
-import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.*;
-import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
-import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.mano.record.*;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -127,7 +121,7 @@ public class VNFRUtils {
             VirtualDeploymentUnit vdu_new = new VirtualDeploymentUnit();
             HashSet<VNFComponent> vnfComponents = new HashSet<>();
             for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
-                VNFComponent component_new = new VNFComponent();
+                VNFCInstance component_new = new VNFCInstance();
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
@@ -135,7 +129,10 @@ public class VNFRUtils {
                     connectionPoint_new.setType(connectionPoint.getType());
                     connectionPoints.add(connectionPoint_new);
                 }
+                component_new.setExposed(component.isExposed());
                 component_new.setConnection_point(connectionPoints);
+                component_new.setFloatingIps(new HashSet<String>());
+                component_new.setIps(new HashSet<Ip>());
                 vnfComponents.add(component_new);
             }
             vdu_new.setVnfc(vnfComponents);
