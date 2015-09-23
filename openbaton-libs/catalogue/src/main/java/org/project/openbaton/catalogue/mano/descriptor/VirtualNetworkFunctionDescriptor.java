@@ -18,6 +18,7 @@ package org.project.openbaton.catalogue.mano.descriptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.project.openbaton.catalogue.mano.common.*;
+import org.project.openbaton.catalogue.nfvo.Configuration;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
@@ -37,7 +38,9 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
      */
 //    private String descriptor_version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    protected Set<LifecycleEvent> lifecycle_event;
+    private Set<LifecycleEvent> lifecycle_event;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Configuration configurations;
     /**
      * This describes a set of elements related to a particular VDU
      */
@@ -90,6 +93,14 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     public VirtualNetworkFunctionDescriptor() {
     }
 
+    public Configuration getConfigurations() {
+        return configurations;
+    }
+
+    public void setConfigurations(Configuration configurations) {
+        this.configurations = configurations;
+    }
+
     public boolean isCyclicDependency() {
         return cyclicDependency;
     }
@@ -110,7 +121,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
+//                ", vnfPackage=" + vnfPackage +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 '}';

@@ -303,7 +303,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         Set<String> networks = new HashSet<String>();
         for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
             for (InternalVirtualLink internalVirtualLink : vnfr.getVirtual_link()) {
-                if (vnfdConnectionPoint.getVirtual_link_reference().equals(internalVirtualLink.getName())) {
+
+                log.debug("InternalVirtualLink is: " + internalVirtualLink);
+
+                if (vnfdConnectionPoint. getVirtual_link_reference().equals(internalVirtualLink.getName())) {
                     networks.add(internalVirtualLink.getExtId());
                 }
             }
@@ -394,11 +397,13 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-                "sudo apt-get install -y git\n" +
-                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
-                "cd ems-public\n" +
-                "sudo chmod +x ems.sh\n" +
-                "sudo sh ems.sh > /var/log/ems.log";
+
+//                "sudo apt-get install -y git\n" +
+//                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
+//                "cd ems-public\n" +
+//                "sudo chmod +x ems.sh\n" +
+//                "sudo sh ems.sh > /var/log/ems.log";
+                "sudo python /opt/openbaton/ems-public > /var/log/ems.log";
         return result;
     }
 

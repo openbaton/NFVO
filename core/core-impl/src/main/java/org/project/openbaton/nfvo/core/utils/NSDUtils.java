@@ -25,7 +25,8 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -204,4 +205,19 @@ public class NSDUtils {
         networkServiceDescriptor.setVnf_dependency(newDependencies);
     }
 
+    public void fetchNetworks(NetworkServiceDescriptor networkServiceDescriptor) {
+//        Iterable<VimInstance> vimInstances = vimRepository.findAll();
+//
+//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+//            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()){
+//                for (VimInstance vimInstance : vimInstances){
+//                    for (Network network : vimInstance.getNetworks()){
+//                        if (network.getName().equals(internalVirtualLink.getName())){
+//                            internalVirtualLink.setExtId(network.getExtId()); // TODO finish other params
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
 }
