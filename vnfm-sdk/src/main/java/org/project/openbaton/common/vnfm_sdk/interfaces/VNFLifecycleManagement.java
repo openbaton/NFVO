@@ -12,12 +12,13 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param virtualNetworkFunctionRecord
 	 * @param scriptsLink
+	 * @param virtualNetworkFunctionRecord
+	 * @param scripts
 	 */
 	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String scriptsLink) throws Exception;
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.

@@ -87,7 +87,6 @@ public class VNFRUtils {
             }
 
             vnfPackage.setImage(vnfd.getVnfPackage().getImage());
-            vnfPackage.setExtId(vnfd.getVnfPackage().getExtId());
             virtualNetworkFunctionRecord.setVnfPackage(vnfPackage);
         }
 
