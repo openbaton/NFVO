@@ -48,11 +48,12 @@
                     id="nsdTabletable">
                 <thead>
                 <tr>
-                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
-                    <th ng-click="predicate = 'parameters'; reverse = !reverse">Source <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'target.name'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'version'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'idType'; reverse = !reverse">idType <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'target'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
@@ -60,8 +61,9 @@
                 <tr ng-repeat="vnfd in nsrinfo.vnf_dependency| orderBy:predicate:reverse">
                     <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
                     </td>
+                    <td>{{vnfd.idType}}</td>
                     <td>{{vnfd.parameters}}</td>
-                    <td>{{vnfd.target.name}}</td>
+                    <td>{{vnfd.target}}</td>
                     <td>{{vnfd.version}}</td>
                     <td>
                         <div class="btn-group">

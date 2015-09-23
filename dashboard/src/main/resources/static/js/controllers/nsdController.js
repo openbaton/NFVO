@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http) {
+var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
 
     var url = 'http://localhost:8080/api/v1/ns-descriptors';
     var urlRecord = 'http://localhost:8080/api/v1/ns-records';
@@ -31,7 +31,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             console.log(response);
         })
         .error(function (data, status) {
-            showError(status, data);
+            showError(status, JSON.stringify(data));
 
         });
 
@@ -422,7 +422,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.launchOption= function(data){
         $scope.nsdToSend = data;
         $('#madalLaunch').modal('show');
-    }
+    };
+
     $scope.launch = function () {
         console.log($scope.nsdToSend);
         http.post(urlRecord + '/' + $scope.nsdToSend.id)
@@ -434,7 +435,12 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-
+    $scope.Jsplumb = function () {
+        http.syncGet(url + '/' + $routeParams.nsdescriptorId).then(function (response) {
+            topologiesAPI.Jsplumb(response, 'descriptor');
+            console.log(response);
+        });
+    };
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
