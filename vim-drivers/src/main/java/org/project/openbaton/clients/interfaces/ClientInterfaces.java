@@ -33,6 +33,8 @@ public interface ClientInterfaces extends Remote {
 
     Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException, RemoteException;
 
+    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s, boolean floatingIp) throws VimDriverException, RemoteException;
+
     void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws RemoteException;
 
     Network createNetwork(VimInstance vimInstance, Network network) throws RemoteException;

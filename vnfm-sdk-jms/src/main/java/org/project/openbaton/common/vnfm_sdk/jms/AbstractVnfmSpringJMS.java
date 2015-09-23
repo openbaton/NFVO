@@ -56,11 +56,6 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Autowired
     private JmsListenerContainerFactory<?> jmsListenerContainerFactory;
 
-
-    protected String receiveTextFromQueue(String queueName) throws JMSException {
-        return ((TextMessage) this.jmsTemplate.receive(queueName)).getText();
-    }
-
     @Bean
     ConnectionFactory connectionFactory() {
         return new ActiveMQConnectionFactory();
@@ -200,6 +195,10 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
      * @return
      * @throws JMSException
      */
+    protected String receiveTextFromQueue(String queueName) throws JMSException {
+        return ((TextMessage) this.jmsTemplate.receive(queueName)).getText();
+    }
+
     @Override
     protected String executeActionOnEMS(String vduHostname, String command) throws Exception {
 
