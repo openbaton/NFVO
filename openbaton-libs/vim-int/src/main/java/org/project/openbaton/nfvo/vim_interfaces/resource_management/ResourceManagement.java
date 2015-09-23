@@ -42,7 +42,7 @@ public interface ResourceManagement {
 	 * indicated by the consumer functional block.
 	 */
 	@Async
-	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimException, VimDriverException;
+	Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 

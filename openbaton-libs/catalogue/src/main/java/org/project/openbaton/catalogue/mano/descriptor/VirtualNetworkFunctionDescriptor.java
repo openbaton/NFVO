@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * Created by lto on 05/02/15.
- * <p/>
+ * <p>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
@@ -36,7 +36,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     /**
      * Version of the VNF Descriptor.
      */
-//    private String descriptor_version;
+    //private String descriptor_version;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<LifecycleEvent> lifecycle_event;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -81,7 +81,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String type;
     @JsonIgnore
     private String endpoint;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private VNFPackage vnfPackage;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> requires;
@@ -121,7 +121,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-//                ", vnfPackage=" + vnfPackage +
+                ", vnfPackage=" + vnfPackage +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 '}';
@@ -224,7 +224,6 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     public void setManifest_file_security(Set<Security> manifest_file_security) {
         this.manifest_file_security = manifest_file_security;
     }
-
 
     public String getType() {
         return type;
