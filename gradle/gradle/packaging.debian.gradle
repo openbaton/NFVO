@@ -51,15 +51,12 @@ task openbatonDeb(type: Deb, dependsOn: [jar, installDist]) {
     }
     from('build/install/openbaton/lib') { into 'lib' }
 
-    from('main/src/main/resources') {
-        fileType CONFIG | NOREPLACE
-        into 'conf'
-    }
+    from('build/install/openbaton/bin/openbaton') { into 'bin' }
     from('etc/openbaton.properties') { into '/etc/openbaton/' }
     from('gradle/gradle/scripts/openbaton.sh')
-    from('build/install/openbaton/bin/openbaton') { into 'bin' }
     from('gradle/gradle/scripts/openbaton.conf') { into '/etc/init/' }
 
     link('/etc/init.d/openbaton', '/lib/init/upstart-job')
+    link('/usr/bin/openbaton','/opt/openbaton/bin/openbaton')
 
 }
