@@ -15,11 +15,11 @@
 
 package org.project.openbaton.catalogue.mano.record;
 
+import org.project.openbaton.catalogue.mano.common.Ip;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,11 +36,8 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> floatingIps;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="vnfcinstance_ips")
-    @MapKeyColumn(name="network")
-    @Column(name="ip")
-    private Map<String, String> ips;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Ip> ips;
 
     public String getHostname() {
         return hostname;
@@ -92,11 +89,11 @@ public class VNFCInstance extends VNFComponent implements Serializable {
         this.floatingIps = floatingIps;
     }
 
-    public Map<String, String> getIps() {
+    public Set<Ip> getIps() {
         return ips;
     }
 
-    public void setIps(Map<String, String> ips) {
+    public void setIps(Set<Ip> ips) {
         this.ips = ips;
     }
 }
