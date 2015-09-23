@@ -33,17 +33,19 @@ public interface ClientInterfaces extends Remote {
 
     Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException, RemoteException;
 
+    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s, boolean floatingIp) throws VimDriverException, RemoteException;
+
     void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws RemoteException;
 
     Network createNetwork(VimInstance vimInstance, Network network) throws RemoteException;
 
     DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException;
 
-    NFVImage addImage(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws RemoteException;
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
 
     NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 
-    NFVImage copyImage(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws RemoteException;
+    NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
 
     boolean deleteImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 

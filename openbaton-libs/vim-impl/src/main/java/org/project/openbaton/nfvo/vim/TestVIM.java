@@ -30,7 +30,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import sun.misc.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -82,8 +84,11 @@ public class TestVIM extends Vim {
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         try {
-            return this.client.addImage(vimInstance, image,inputStream);
+            return this.client.addImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
         } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new VimException(e);
+        } catch (IOException e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -116,7 +121,7 @@ public class TestVIM extends Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimDriverException, VimException {
+    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {
