@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.Ip;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
@@ -358,7 +359,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         }
 
         vnfcInstance.setFloatingIps(new HashSet<String>());
-        vnfcInstance.setIps(new HashMap<String, String>());
+        vnfcInstance.setIps(new HashSet<Ip>());
 
         if (floatingIp){
             vnfcInstance.getFloatingIps().add(server.getFloatingIp());
@@ -369,9 +370,12 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         vdu.getVnfc_instance().add(vnfcInstance);
 
         for (Map.Entry<String,List<String>> network : server.getIps().entrySet()) {
-            vnfcInstance.getIps().put(network.getKey(), network.getValue().iterator().next());
-            for (String ip : server.getIps().get(network.getValue())) {
-                vnfr.getVnf_address().add(ip);
+            Ip ip = new Ip();
+            ip.setNetName(network.getKey());
+            ip.setIp(network.getValue().iterator().next());
+            vnfcInstance.getIps().add(ip);
+            for (String ip1 : server.getIps().get(network.getKey())) {
+                vnfr.getVnf_address().add(ip1);
             }
         }
         return new AsyncResult<>(server.getExtId());
