@@ -16,7 +16,6 @@
 
 package org.project.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.*;
@@ -141,7 +140,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
         log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
-        NetworkServiceRecord networkServiceRecord = null;
+        NetworkServiceRecord networkServiceRecord;
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Creating " + networkServiceRecord);
 
@@ -157,13 +156,19 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                             if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
                                 boolean networkExists = false;
                                 for (Network network : vdu.getVimInstance().getNetworks()) {
-                                    if (network.getName().equals(vlr.getName()
-                                    ) || network.getExtId().equals(vlr.getName())) {
+                                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
                                         networkExists = true;
                                         vlr.setStatus(LinkStatus.NORMALOPERATION);
                                         vlr.setVim_id(vdu.getId());
                                         vlr.setExtId(network.getExtId());
                                         vlr.getConnection().add(vnfdConnectionPoint.getId());
+                                        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
+                                            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()) {
+                                                if (network.getName().equals(internalVirtualLink.getName())) {
+                                                    internalVirtualLink.setExtId(network.getExtId()); // TODO finish other params
+                                                }
+                                            }
+                                        }
                                         break;
                                     }
                                 }
@@ -182,6 +187,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                     }
                 }
             }
+
 //            Set<Event> events = new HashSet<Event>();
 //            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
 //                events.add(lifecycleEvent.getEvent());

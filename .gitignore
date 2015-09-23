@@ -25,6 +25,10 @@ argfile*
 pom.xml
 activemq-data/
 .gradle/
+gradle/gradle/wrapper/
+gradle/osx
+gradle/gradlew
+gradle/gradlew.bat
 
 */build/*
 build/*
