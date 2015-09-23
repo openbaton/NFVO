@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.Ip;
 import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import sun.misc.IOUtils;
 
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -61,12 +63,12 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
         try {
-            NFVImage addedImage = client.addImage(vimInstance, image, inputStream);
-            log.debug("Image with id: " + image.getId() + " added successfully.");
+            NFVImage addedImage = client.addImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
+            log.debug("Image with name: " + image.getName() + " added successfully.");
             return addedImage;
         } catch (Exception e) {
-            log.warn("Image with id: " + image.getId() + " not added successfully.", e);
-            throw new VimException("Image with id: " + image.getId() + " not added successfully.");
+            log.warn("Image with name: " + image.getName() + " not added successfully.", e);
+            throw new VimException("Image with name: " + image.getName() + " not added successfully.");
         }
     }
 
@@ -85,7 +87,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     @Override
     public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException{
         try {
-            client.copyImage(vimInstance, image, inputStream);
+            client.copyImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
             log.debug("Image with id: " + image.getId() + " copied successfully.");
         } catch (Exception e) {
             log.error("Image with id: " + image.getId() + " not copied successfully.", e);
@@ -357,7 +359,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         }
 
         vnfcInstance.setFloatingIps(new HashSet<String>());
-        vnfcInstance.setIps(new HashMap<String, String>());
+        vnfcInstance.setIps(new HashSet<Ip>());
 
         if (floatingIp){
             vnfcInstance.getFloatingIps().add(server.getFloatingIp());
@@ -368,9 +370,12 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         vdu.getVnfc_instance().add(vnfcInstance);
 
         for (Map.Entry<String,List<String>> network : server.getIps().entrySet()) {
-            vnfcInstance.getIps().put(network.getKey(), network.getValue().iterator().next());
-            for (String ip : server.getIps().get(network.getValue())) {
-                vnfr.getVnf_address().add(ip);
+            Ip ip = new Ip();
+            ip.setNetName(network.getKey());
+            ip.setIp(network.getValue().iterator().next());
+            vnfcInstance.getIps().add(ip);
+            for (String ip1 : server.getIps().get(network.getKey())) {
+                vnfr.getVnf_address().add(ip1);
             }
         }
         return new AsyncResult<>(server.getExtId());
