@@ -90,12 +90,12 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
-//                "sudo apt-get install -y git\n" +
-//                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
-//                "cd ems-public\n" +
-//                "sudo chmod +x ems.sh\n" +
-//                "sudo sh ems.sh > /var/log/ems.log";
-                "sudo python /opt/openbaton/ems-public > /var/log/ems.log";
+                "sudo apt-get install -y git\n" +
+                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
+                "cd ems-public\n" +
+                "sudo chmod +x ems.sh\n" +
+                "sudo sh ems.sh > /var/log/ems.log";
+//                "sudo python /opt/openbaton/ems-public";
         return result;
     }
 
