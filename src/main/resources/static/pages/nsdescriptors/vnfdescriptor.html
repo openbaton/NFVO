@@ -32,10 +32,55 @@
             <div>
                 <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
                     <h2>VNF Descriptor: {{vnfd.name}}</h2>
-                    <spam ng-repeat="(k,v) in vnfd">
-                        <dt>{{k}}</dt>
-                        <dd>{{v}}</dd>
+                    <spam ng-repeat="(k,v) in vnfd" ng-show="v != null" ng-if="k!='vdu'">
+                        <spam ng-if="k!='requires' && k!='provides'">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                        </spam>
+                        <spam ng-if="k=='requires' || k=='provides'">
+                            <hr class="hr_title">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                            <hr class="hr_title">
+
+                        </spam>
                     </spam>
+
+
+                <div class="table-responsive" ng-show="vnfd.vdu.length > 0">
+                    <h3>Vdu</h3>
+                    <table
+                            class="table table-bordered table-striped table-hover tablesorter"
+                            id="vduTabletable">
+                        <thead>
+                        <tr>
+                            <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                    class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
+                                    class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
+                                    class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                    class="fa fa-sort"></i>
+                            </th>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="vdu in vnfd.vdu | orderBy:predicate:reverse">
+                            <td>{{vdu.id}}</td>
+                            <td>{{vdu.version}}</td>
+                            <td>{{vdu.vm_image}}</td>
+                            <td>
+                                <span ng-repeat="vnfc in vdu.vnfc"> {{vnfc.connection_point}} </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 </div>
             </div>
         </div>

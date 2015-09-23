@@ -9,11 +9,17 @@ angular.module('app')
          * @param {type} topology
          * @returns {undefined} paints the topology with services and relations
          */
-        topologies.Jsplumb = function (topology) {
+        topologies.Jsplumb = function (topology, type) {
             console.log(topology);
             $('#graphContainer').html('');
 //            jsPlumb.Defaults.Container = $("#graphContainer");
-            _.each(topology.vnfr, function (vnfr) {
+            
+            if (type === 'record')
+                var unit = topology.vnfr;
+            else
+                var unit = topology.vnfd;
+
+            _.each(unit, function (vnfr) {
 
                 var top = Math.floor((Math.random() * 400) + 1);
                 var left = Math.floor((Math.random() * 600) + 1);
@@ -61,22 +67,37 @@ angular.module('app')
             //var connectionCatalogue = catalogueRelForJsPlumb(topology);
 
 //TODO To fix the problem when the name starts with '<'
-            _.each(topology.vnf_dependency, function (r) {
-                console.log(_.keys(r.idType));
-                _.each(_.keys(r.idType), function (source) {
-                    console.log(_.isString(source));
+            if (type === 'record') {
+
+                _.each(topology.vnf_dependency, function (r) {
+                    console.log(_.keys(r.idType));
+                    _.each(_.keys(r.idType), function (source) {
+                        console.log(_.isString(source));
+                        jsPlumb.connect({
+                            source: $('#' + source),
+                            target: $('#' + r.target),
+                            anchor: "Continuous"
+                        });
+
+                    });
+                });
+                jsPlumb.draggable($(".unit"), {
+                    containment: "#graphContainer"
+                });
+            } else {
+                _.each(topology.vnf_dependency, function (r) {
                     jsPlumb.connect({
-                        source: $('#' + source),
-                        target: $('#' + r.target),
+                        source: $('#' + r.source.name),
+                        target: $('#' + r.target.name),
                         anchor: "Continuous"
                     });
 
-                });
-            });
-            jsPlumb.draggable($(".unit"), {
-                containment: "#graphContainer"
-            });
 
+                });
+                jsPlumb.draggable($(".unit"), {
+                    containment: "#graphContainer"
+                });
+            }
 
             // set jsplumb properties
 

@@ -102,7 +102,7 @@ require({
             deps: ['app']
         },
         nsdController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'angular_cookies']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'angular_cookies','topologyServices']
         },
         nsrController: {
             deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologyServices', 'angular_cookies', 'bootstrapSwitch']
