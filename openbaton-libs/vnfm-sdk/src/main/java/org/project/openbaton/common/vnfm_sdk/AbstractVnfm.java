@@ -96,9 +96,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
-    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -294,13 +294,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
     }
 
-    protected abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+    public abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
-    protected abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
-
-//    protected abstract void sendToNfvo(final NFVMessage coreMessage);
-
-//    protected abstract String executeActionOnEMS(String vduHostname, String command) throws Exception;
+    public abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
     /**
      * This method unregister the VNFM in the NFVO
