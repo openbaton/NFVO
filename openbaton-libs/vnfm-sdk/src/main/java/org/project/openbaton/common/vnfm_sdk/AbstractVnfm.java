@@ -159,14 +159,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getScripts());
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
-                case SCALE_IN_FINISHED:
-                    break;
-                case SCALE_OUT_FINISHED:
-                    break;
-                case SCALE_UP_FINISHED:
-                    break;
-                case SCALE_DOWN_FINISHED:
-                    break;
                 case RELEASE_RESOURCES_FINISH:
                     break;
                 case INSTANTIATE_FINISH:
