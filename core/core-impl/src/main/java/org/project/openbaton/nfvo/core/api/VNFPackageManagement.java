@@ -61,7 +61,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         vnfPackage.setScripts(new HashSet<Script>());
         Map<String, Object> metadata = null;
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-        InputStream imageInputStream = null;
+        byte[] imageFile = null;
         NFVImage image = new NFVImage();
 
         InputStream tarStream = null;
@@ -133,7 +133,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                 } else if (entry.getName().endsWith(".img")) {
                     //this must be the image
                     //and has to be upladed to the RIGHT vim
-                    imageInputStream = new ByteArrayInputStream(content);
+                    imageFile = content;
                     log.debug("imageFile is: " + entry.getName());
                 } else if (entry.getName().startsWith("scripts/")) {
                     Script script = new Script();
@@ -148,15 +148,14 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         }
         List<String> vimInstances = new ArrayList<>();
         if (vnfPackage.getImageLink() == null) {
-            if (imageInputStream == null) {
+            if (imageFile == null) {
                 throw new NotFoundException("VNFPackageManagement: Not found image file and image-link is null");
             } else {
                 //imageStream = new FileInputStream(imageFile);
-                log.debug(imageInputStream.toString());
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                     if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
                         Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                        image = vim.add(vdu.getVimInstance(), image, imageInputStream);
+                        image = vim.add(vdu.getVimInstance(), image, imageFile);
                         if (vdu.getVm_image() == null)
                             vdu.setVm_image(new HashSet<String>());
                         vdu.getVm_image().add(image.getName());
