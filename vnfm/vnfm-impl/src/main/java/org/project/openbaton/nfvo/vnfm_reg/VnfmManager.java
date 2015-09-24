@@ -270,7 +270,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     }
 
-    private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    private synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
         if (virtualNetworkFunctionRecord == null)
             return;
