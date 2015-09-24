@@ -36,7 +36,7 @@ public interface ImageManagement {
      * @param image
      * @param imageFile
      */
-	NFVImage add(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException;
+	NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException;
 	
 	/**
 	 * This operation allows deleting in the VNF software 
@@ -68,7 +68,7 @@ public interface ImageManagement {
      * @param image
      * @param imageFile
 	 */
-    void copy(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException;
+    void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException;
 	
 	
     
