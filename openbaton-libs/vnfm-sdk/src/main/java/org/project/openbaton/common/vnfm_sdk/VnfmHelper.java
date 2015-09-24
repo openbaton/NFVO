@@ -3,6 +3,7 @@ package org.project.openbaton.common.vnfm_sdk;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 
@@ -28,4 +29,6 @@ public abstract class VnfmHelper {
     public abstract String executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, VNFRecordDependency dependency) throws Exception;
 
     public abstract void saveScriptOnEms(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scriptsLink) throws Exception;
+
+    public abstract NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 }

@@ -39,7 +39,6 @@ public class NSRUtils {
     private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
 
     public static NetworkServiceRecord createNetworkServiceRecord(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
-//        log.debug("" + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
         networkServiceRecord.setDescriptor_reference(networkServiceDescriptor.getId());
         networkServiceRecord.setName(networkServiceDescriptor.getName());
@@ -49,16 +48,9 @@ public class NSRUtils {
         networkServiceRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         networkServiceRecord.getAuto_scale_policy().addAll(networkServiceDescriptor.getAuto_scale_policy());
         networkServiceRecord.setVnfr(new HashSet<VirtualNetworkFunctionRecord>());
-        /*for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = NSRUtils.createVirtualNetworkFunctionRecord(vnfd, networkServiceRecord.getId());
-            networkServiceRecord.getVnfr().add(virtualNetworkFunctionRecord);
-        }*/
-        //TODO set dependencies!!! (DONE)
         networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
-//        setDependencies(networkServiceDescriptor, networkServiceRecord);
 
         networkServiceRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
-//        networkServiceRecord.getLifecycle_event().addAll(networkServiceDescriptor.getLifecycle_event());
         Set<PhysicalNetworkFunctionRecord> pnfrs = new HashSet<PhysicalNetworkFunctionRecord>();
         if (networkServiceDescriptor.getPnfd() != null)
             for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor : networkServiceDescriptor.getPnfd()) {
@@ -67,8 +59,6 @@ public class NSRUtils {
         networkServiceRecord.setPnfr(pnfrs);
         networkServiceRecord.setStatus(Status.NULL);
         networkServiceRecord.setVnffgr(new HashSet<VNFForwardingGraphRecord>());
-//      TODO translate them from descriptors to records
-//        networkServiceRecord.getVnffgr().addAll(networkServiceDescriptor.getVnffgd());
         networkServiceRecord.setVersion(networkServiceDescriptor.getVersion());
         networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
         if (networkServiceDescriptor.getVld() != null) {
@@ -84,38 +74,30 @@ public class NSRUtils {
     public static void setDependencies(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws BadFormatException {
 
         for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
-
             boolean found = false;
             for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
-
                 if (vnfRecordDependency.getTarget().equals(vnfDependency.getTarget().getName())) { // if there is a vnfRecordDepenendency with the same target
-
                     // I find the source
                     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
-
                         log.debug("Source is: " + vnfDependency.getSource().getName() + ". Target is: " + vnfDependency.getTarget().getName() + ". VNFR is: " + virtualNetworkFunctionDescriptor.getName());
-
                         if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
                             vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
-
-                            DependencyParameters dependencyParameters=vnfRecordDependency.getParameters().get(virtualNetworkFunctionDescriptor.getType());
+                            DependencyParameters dependencyParameters = vnfRecordDependency.getParameters().get(virtualNetworkFunctionDescriptor.getType());
                             //If there are no dependencyParameter of that type
-                            if(dependencyParameters==null) {
+                            if (dependencyParameters == null) {
                                 dependencyParameters = new DependencyParameters();
                                 dependencyParameters.setParameters(new HashMap<String, String>());
                             }
-                            for (String key:vnfDependency.getParameters()) {
+                            for (String key : vnfDependency.getParameters()) {
                                 dependencyParameters.getParameters().put(key, "");
                             }
                             vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
                         }
                     }
-
                     found = true;
-
                 }
-
             }
+
             if (!found) { // there is not yet a vnfrDepenency with this target, I add it
                 VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
                 vnfRecordDependency.setIdType(new HashMap<String, String>());
@@ -126,9 +108,9 @@ public class NSRUtils {
                         vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
                         DependencyParameters dependencyParameters = new DependencyParameters();
                         dependencyParameters.setParameters(new HashMap<String, String>());
-                        for (String key:vnfDependency.getParameters()) {
+                        for (String key : vnfDependency.getParameters()) {
                             log.debug("Adding parameter to dependency: " + key);
-                            dependencyParameters.getParameters().put(key,"");
+                            dependencyParameters.getParameters().put(key, "");
                         }
                         vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
                     }
@@ -140,18 +122,6 @@ public class NSRUtils {
                 networkServiceRecord.getVnf_dependency().add(vnfRecordDependency);
             }
         }
-
-        /*log.debug("New dependency are:");
-        for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
-            log.debug("Target: " + vnfRecordDependency.getTarget().getName());
-            for(Map.Entry<String, DependencyParameters> entry : vnfRecordDependency.getParameters().entrySet()){
-                log.debug("Vnfr type: " + entry.getKey());
-                for(Map.Entry<String, String> entryDependency : entry.getValue().getParameters().entrySet()){
-                    log.debug("Parameters (key=value) "+entryDependency.toString());
-                }
-            }
-        }*/
-
     }
 
     public static VirtualLinkRecord createVirtualLinkRecord(VirtualLinkDescriptor virtualLinkDescriptor) {
@@ -164,7 +134,6 @@ public class NSRUtils {
         virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
 
         virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
-        //virtualLinkRecord.setNumber_of_enpoints(0);
 
         virtualLinkRecord.setParent_ns(null);
         virtualLinkRecord.setExtId(null);
@@ -175,8 +144,6 @@ public class NSRUtils {
         virtualLinkRecord.setNotification(new HashSet<String>());
         virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
-        //TODO why do the VLD has already a set of Connections?
-        //virtualLinkRecord.setConnection(virtualLinkDescriptor.getConnection());
         virtualLinkRecord.setConnection(new HashSet<String>());
 
         //TODO think about test_access -> different types on VLD and VLR

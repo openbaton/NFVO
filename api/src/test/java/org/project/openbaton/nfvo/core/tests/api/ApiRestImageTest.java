@@ -21,17 +21,11 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import org.project.openbaton.nfvo.api.RestImage;
-
 import org.project.openbaton.catalogue.nfvo.NFVImage;
-
+import org.project.openbaton.nfvo.api.RestImage;
 import org.project.openbaton.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -39,13 +33,11 @@ import static org.mockito.Mockito.when;
 
 public class ApiRestImageTest {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @InjectMocks
     RestImage restImage;
-
     @Mock
     NFVImageManagement mock;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Before
     public void init() {

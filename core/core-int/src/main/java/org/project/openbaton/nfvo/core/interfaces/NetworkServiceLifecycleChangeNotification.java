@@ -22,9 +22,9 @@ package org.project.openbaton.nfvo.core.interfaces;
 
 public interface NetworkServiceLifecycleChangeNotification {
 
-	/**
-	 * This operation allows providing lifecycle 
-	 * change notifications on Network Services.
-	 */
-	void notifyChange();
+    /**
+     * This operation allows providing lifecycle
+     * change notifications on Network Services.
+     */
+    void notifyChange();
 }

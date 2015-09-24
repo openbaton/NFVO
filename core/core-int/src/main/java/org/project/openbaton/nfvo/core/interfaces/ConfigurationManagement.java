@@ -27,6 +27,7 @@ public interface ConfigurationManagement {
     /**
      * This operation allows adding a datacenter
      * into the datacenter repository.
+     *
      * @param datacenter
      */
     Configuration add(Configuration datacenter);
@@ -34,6 +35,7 @@ public interface ConfigurationManagement {
     /**
      * This operation allows deleting the datacenter
      * from the datacenter repository.
+     *
      * @param id
      */
     void delete(String id);
@@ -41,6 +43,7 @@ public interface ConfigurationManagement {
     /**
      * This operation allows updating the datacenter
      * in the datacenter repository.
+     *
      * @param new_datacenter
      * @param id
      */

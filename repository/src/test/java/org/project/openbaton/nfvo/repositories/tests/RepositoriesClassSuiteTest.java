@@ -53,20 +53,15 @@ import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
-@TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class RepositoriesClassSuiteTest {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
-
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ConfigurableApplicationContext ctx;
 
@@ -76,20 +71,22 @@ public class RepositoriesClassSuiteTest {
     @Autowired
     private VNFDRepository vnfdRepository;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
     @BeforeClass
-    public static void init(){
+    public static void init() {
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Test
-    public void repositoryNotNullTest(){
+    public void repositoryNotNullTest() {
         Assert.assertNotNull(nsdRepository);
     }
 
     @Test
-    public void createEntityTest(){
+    public void createEntityTest() {
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
         int count = countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR");
@@ -100,7 +97,7 @@ public class RepositoriesClassSuiteTest {
         Assert.assertNotNull(nsd.getId());
         log.debug("id is: " + nsd.getId());
 
-        Assert.assertEquals((count+1) , countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR"));
+        Assert.assertEquals((count + 1), countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR"));
 
         // Clean
         nsdRepository.delete(nsd);
@@ -108,7 +105,7 @@ public class RepositoriesClassSuiteTest {
 
     @Test
     @Transactional
-    public void findEntityTest(){
+    public void findEntityTest() {
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
         nsdRepository.save(nsd);
@@ -119,7 +116,7 @@ public class RepositoriesClassSuiteTest {
 
         Iterable<NetworkServiceDescriptor> all = nsdRepository.findAll();
         log.debug("" + all);
-        for (NetworkServiceDescriptor n : all){
+        for (NetworkServiceDescriptor n : all) {
             log.debug(n.toString());
         }
 
@@ -240,11 +237,17 @@ public class RepositoriesClassSuiteTest {
         nsd.setVendor("FOKUS");
         Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-        virtualNetworkFunctionDescriptor.setMonitoring_parameter( new HashSet<String>() {{add("monitor1");add("monitor2");add("monitor3");}});
+        virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>() {{
+            add("monitor1");
+            add("monitor2");
+            add("monitor3");
+        }});
         final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
         vdu.setComputation_requirement("high_requirements");
-        virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {{add(vdu);}});
+        virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {{
+            add(vdu);
+        }});
         virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
         nsd.setVnfd(virtualNetworkFunctionDescriptors);
         return nsd;

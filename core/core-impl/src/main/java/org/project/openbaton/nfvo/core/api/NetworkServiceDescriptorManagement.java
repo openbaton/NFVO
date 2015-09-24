@@ -22,7 +22,8 @@ import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDe
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
@@ -32,8 +33,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by lto on 11/05/15.
@@ -70,21 +69,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
 
-        Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
-        Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
-        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-            if (vnfd.getId() != null) {
-                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findOne(vnfd.getId());
-                log.debug("VNFD fetched: " + vnfd_new);
-                if (vnfd_new == null) {
-                    throw new NotFoundException("Not found VNFD with id: " + vnfd.getId());
-                }
-                vnfd_add.add(vnfd_new);
-                vnfd_remove.add(vnfd);
-            }
-        }
-        networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
-        networkServiceDescriptor.getVnfd().addAll(vnfd_add);
+        nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             if (vnfd.getEndpoint() == null)
@@ -111,7 +96,6 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
-        nsdUtils.fetchNetworks(networkServiceDescriptor);
         log.trace("Fetched Data");
 
         log.trace("Persisting VNFDependencies");
@@ -265,7 +249,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
-        nsdRepository.deletePhysicalNetworkFunctionDescriptor(idNsd ,idPnf);
+        nsdRepository.deletePhysicalNetworkFunctionDescriptor(idNsd, idPnf);
     }
 
     /**
@@ -290,7 +274,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id) {
-        return nsdRepository.addPnfDescriptor(pDescriptor,id);
+        return nsdRepository.addPnfDescriptor(pDescriptor, id);
     }
 
     /**
@@ -302,7 +286,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public Security addSecurity(String id, Security security) {
-        return nsdRepository.addSecurity(id,security);
+        return nsdRepository.addSecurity(id, security);
     }
 
     /**
@@ -313,7 +297,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      */
     @Override
     public void deleteSecurty(String id, String idS) {
-        nsdRepository.deleteSecurity(id,idS);
+        nsdRepository.deleteSecurity(id, idS);
     }
 
     /**

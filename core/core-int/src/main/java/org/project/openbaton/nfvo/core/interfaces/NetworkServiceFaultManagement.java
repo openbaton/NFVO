@@ -21,16 +21,16 @@ package org.project.openbaton.nfvo.core.interfaces;
  */
 
 public interface NetworkServiceFaultManagement {
-	
-	/**
-	 * This operation allows providing 
-	 * fault notifications on Network Services.
-	 */
-	void notifyFault();
-	
-	/**
-	 * This operation allows collecting 
-	 * Network Service fault information.
-	 */
-	void getFaultInformation();
+
+    /**
+     * This operation allows providing
+     * fault notifications on Network Services.
+     */
+    void notifyFault();
+
+    /**
+     * This operation allows collecting
+     * Network Service fault information.
+     */
+    void getFaultInformation();
 }

@@ -26,12 +26,10 @@ import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
@@ -69,9 +67,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     private VNFRRepository vnfrRepository;
 
     @Autowired
-    private VNFRDependencyRepository vnfrDependencyRepository;
-
-    @Autowired
     private ConfigurationManagement configurationManagement;
 
     @Autowired
@@ -86,30 +81,21 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
     @Autowired
     private NetworkManagement networkManagement;
 
-    @Autowired
-    private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
-
-    // TODO fetch the NetworkServiceDescriptor from the DB (DONE)
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+        log.debug("Looking for NetworkServiceDescriptor with id: " + idNsd);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
         return deployNSR(networkServiceDescriptor);
     }
 
-    // TODO Removed propagation because I don't remeber why I put it, if it works should be completely removed
     @Override
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
-
-        /*
-        Create NSR
-         */
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         return deployNSR(networkServiceDescriptor);
     }
 
     public void deleteVNFRecord(String idNsr, String idVnf) {
-        //TODO the logic of this request for the moment deletes only the VNFR from the DB
+        //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the running NetworkServiceRecord
         nsrRepository.deleteVNFRecord(idNsr, idVnf);
     }
 
@@ -134,7 +120,7 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
      */
     @Override
     public void deleteVNFDependency(String idNsr, String idVnfd) {
-        //TODO the logic of this request for the moment deletes only the VNFR from the DB
+        //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the running NetworkServiceRecord
         nsrRepository.deleteVNFDependency(idNsr, idVnfd);
     }
 
@@ -146,7 +132,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
         /*
          * Getting the vim based on the VDU datacenter type
-         * Calling the vim to create the Resources
          */
         for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
             for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
@@ -162,13 +147,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
                                         vlr.setVim_id(vdu.getId());
                                         vlr.setExtId(network.getExtId());
                                         vlr.getConnection().add(vnfdConnectionPoint.getId());
-                                        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
-                                            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()) {
-                                                if (network.getName().equals(internalVirtualLink.getName())) {
-                                                    internalVirtualLink.setExtId(network.getExtId()); // TODO finish other params
-                                                }
-                                            }
-                                        }
                                         break;
                                     }
                                 }

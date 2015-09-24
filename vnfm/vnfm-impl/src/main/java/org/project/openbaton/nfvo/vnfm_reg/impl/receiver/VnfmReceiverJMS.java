@@ -16,9 +16,9 @@
 
 package org.project.openbaton.nfvo.vnfm_reg.impl.receiver;
 
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +43,11 @@ public class VnfmReceiverJMS implements VnfmReceiver {
 
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory", concurrency = "20")
-    public void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
+    public void actionFinished(@Payload NFVMessage nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + nfvMessage);
-
         log.debug("----------Executing ACTION: " + nfvMessage.getAction());
-        vnfmManager.executeAction(nfvMessage,tempDestination);
+        vnfmManager.executeAction(nfvMessage, tempDestination);
         log.debug("-----------Finished ACTION: " + nfvMessage.getAction());
 
     }
-
 }

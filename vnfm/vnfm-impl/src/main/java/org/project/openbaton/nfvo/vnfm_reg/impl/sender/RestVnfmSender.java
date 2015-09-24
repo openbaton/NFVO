@@ -35,37 +35,36 @@ import javax.jms.Destination;
  */
 @Service
 @Scope
-public class RestVnfmSender implements VnfmSender{
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+public class RestVnfmSender implements VnfmSender {
 
     protected RestTemplate rest;
     protected HttpHeaders headers;
     protected HttpStatus status;
     protected Gson mapper;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private String get(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
 
     private String post(String path, String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.POST, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
 
     private void put(String path, String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity,String.class);
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
 
     private void delete(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.DELETE, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
@@ -79,7 +78,7 @@ public class RestVnfmSender implements VnfmSender{
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         this.mapper = new Gson();
         this.rest = new RestTemplate();
         this.headers = new HttpHeaders();
@@ -90,7 +89,6 @@ public class RestVnfmSender implements VnfmSender{
     @Override
     public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
         this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
-
     }
 
     @Override
@@ -98,12 +96,11 @@ public class RestVnfmSender implements VnfmSender{
         String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + tempDestination);
         throw new UnsupportedOperationException("not implemented");
-        //this.post("core-vnfm-actions", json,tempDestination);
     }
 
     public void sendToVnfm(NFVMessage nfvMessage, String url) {
         String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + url);
-        this.post("core-vnfm-actions", json,url);
+        this.post("core-vnfm-actions", json, url);
     }
 }

@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.*;
 
 /**
@@ -105,17 +104,17 @@ class SystemStartup implements CommandLineRunner {
         startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
     }
 
-    private void startPlugins(String folderPath) throws IOException{
-        PluginStartup.startPluginRecursive(folderPath, false,"localhost", "1099");
+    private void startPlugins(String folderPath) throws IOException {
+        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "1099");
     }
 
-    private void startRegistry(Configuration configuration) throws RemoteException, RemoteException {
+    private void startRegistry(Configuration configuration) throws RemoteException {
         for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters())
             if (configurationParameter.getConfKey().equals("registry-port")) {
-                Registry registry = LocateRegistry.createRegistry(Integer.parseInt(configurationParameter.getValue()));
+                LocateRegistry.createRegistry(Integer.parseInt(configurationParameter.getValue()));
                 return;
             }
 
-        Registry registry = LocateRegistry.createRegistry(1099);
+        LocateRegistry.createRegistry(1099);
     }
 }

@@ -34,15 +34,20 @@ import javax.jms.Destination;
 @Scope("prototype")
 public abstract class AbstractTask implements Runnable, ApplicationEventPublisherAware {
     protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
-
-    @Autowired
-    private ConfigurableApplicationContext context;
-    private ApplicationEventPublisher publisher;
     protected Action action;
-
     @Autowired
     @Qualifier("vnfmRegister")
     protected VnfmRegister vnfmRegister;
+    protected Destination tempDestination;
+    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    protected VNFRecordDependency dependency;
+    @Autowired
+    protected VNFRRepository vnfrRepository;
+    @Autowired
+    protected NetworkServiceRecordRepository networkServiceRecordRepository;
+    @Autowired
+    private ConfigurableApplicationContext context;
+    private ApplicationEventPublisher publisher;
 
     protected void saveVirtualNetworkFunctionRecord() {
         log.debug("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
@@ -51,10 +56,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         else
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
-
-    protected Destination tempDestination;
-    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    protected VNFRecordDependency dependency;
 
     public Action getAction() {
         return action;
@@ -71,13 +72,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
-
-    @Autowired
-    protected VNFRRepository vnfrRepository;
-
-    @Autowired
-    protected NetworkServiceRecordRepository networkServiceRecordRepository;
-
 
     @Override
     public void run() {
@@ -99,7 +93,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
     protected abstract void doWork() throws Exception;
 
-    public boolean isAsync(){
+    public boolean isAsync() {
         return true;
     }
 
@@ -120,10 +114,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     public void setTempDestination(Destination tempDestination) {
         this.tempDestination = tempDestination;
     }
+
     protected void changeStatus() {
         log.debug("Action is: " + action);
         Status status = null;
-        switch (action){
+        switch (action) {
             case ALLOCATE_RESOURCES:
                 status = Status.NULL;
                 break;
@@ -136,7 +131,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.ERROR;
                 break;
             case MODIFY:
-                 status = Status.INACTIVE;
+                status = Status.INACTIVE;
                 break;
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;
@@ -148,10 +143,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.INITIALIZED;
                 break;
             case SCALED:
-            case SCALE_OUT_FINISHED:
-            case SCALE_IN_FINISHED:
-            case SCALE_UP_FINISHED:
-            case SCALE_DOWN_FINISHED:
                 status = Status.ACTIVE;
                 break;
             case RELEASE_RESOURCES_FINISH:
