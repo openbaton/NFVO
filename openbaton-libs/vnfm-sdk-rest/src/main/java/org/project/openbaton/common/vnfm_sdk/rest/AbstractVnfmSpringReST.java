@@ -2,6 +2,7 @@ package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
 import org.project.openbaton.catalogue.nfvo.CoreMessage;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -127,14 +128,14 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         this.post("admin/v1/vnfm-core-actions", json);
     }
 
-    @Override
-    protected void sendToNfvo(CoreMessage coreMessage) {
-        sendToCore(coreMessage);
-    }
+
+   /* protected void sendToNfvo(NFVMessage nfvMessage) {
+        sendToCore(nfvMessage);
+    }*/
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receive(@RequestBody /*@Valid*/ CoreMessage message) {
+    public void receive(@RequestBody /*@Valid*/ NFVMessage message) {
         log.debug("Received: " + message);
         try {
             this.onAction(message);

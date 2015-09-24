@@ -32,9 +32,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import sun.misc.IOUtils;
 
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -61,9 +59,9 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
 
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile ) throws VimException {
         try {
-            NFVImage addedImage = client.addImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
+            NFVImage addedImage = client.addImage(vimInstance, image, imageFile);
             log.debug("Image with name: " + image.getName() + " added successfully.");
             return addedImage;
         } catch (Exception e) {
@@ -85,9 +83,9 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException{
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException{
         try {
-            client.copyImage(vimInstance, image, IOUtils.readFully(inputStream, inputStream.available(), true));
+            client.copyImage(vimInstance, image, imageFile);
             log.debug("Image with id: " + image.getId() + " copied successfully.");
         } catch (Exception e) {
             log.error("Image with id: " + image.getId() + " not copied successfully.", e);
