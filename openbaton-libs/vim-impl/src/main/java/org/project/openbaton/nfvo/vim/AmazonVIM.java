@@ -50,7 +50,7 @@ public class AmazonVIM extends Vim {
         super("amazon",port);
     }
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         throw new UnsupportedOperationException();
     }
 
@@ -70,7 +70,7 @@ public class AmazonVIM extends Vim {
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException {
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
 
     }
 
