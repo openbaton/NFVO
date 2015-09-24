@@ -16,8 +16,6 @@
 
 package org.project.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-
 /**
  * Created by dbo on 21/09/15.
  */

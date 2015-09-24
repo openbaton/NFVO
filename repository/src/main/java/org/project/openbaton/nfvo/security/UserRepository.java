@@ -19,6 +19,6 @@ package org.project.openbaton.nfvo.security;
 import org.project.openbaton.catalogue.security.User;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<User,String> {
+public interface UserRepository extends CrudRepository<User, String> {
 
 }

@@ -23,5 +23,6 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
  */
 public interface VimRepositoryCustom {
     NFVImage addImage(String id, NFVImage image);
+
     void deleteImage(String idVim, String idImage);
 }
