@@ -75,6 +75,7 @@ public class RestNetworkServiceDescriptor {
 
     /**
      * This operation is used to remove a disabled Network Service Descriptor
+     *
      * @param id of Network Service Descriptor
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -170,7 +171,7 @@ public class RestNetworkServiceDescriptor {
     public VirtualNetworkFunctionDescriptor updateVNF(
             @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
             @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) {
-        return  networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor);
+        return networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor);
     }
 
     /**
@@ -208,7 +209,7 @@ public class RestNetworkServiceDescriptor {
     public VNFDependency postVNFDependency(
             @RequestBody @Valid VNFDependency vnfDependency,
             @PathVariable("idNsd") String idNsd) {
-      networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency);
+        networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency);
         return vnfDependency;
     }
 
@@ -241,7 +242,7 @@ public class RestNetworkServiceDescriptor {
     /**
      * Returns the PhysicalNetworkFunctionDescriptor
      *
-     * @param idNsd     : The NSD id
+     * @param idNsd : The NSD id
      * @param idPnf : The PhysicalNetworkFunctionDescriptor id
      * @return PhysicalNetworkFunctionDescriptor: The
      * PhysicalNetworkFunctionDescriptor selected
@@ -260,7 +261,6 @@ public class RestNetworkServiceDescriptor {
      *
      * @param idNsd id of NSD
      * @param idPnf id of PhysicalNetworkFunctionDescriptor
-     *
      */
     @RequestMapping(value = "{idNsd}/pnfdescriptors/{idPnf}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -284,7 +284,7 @@ public class RestNetworkServiceDescriptor {
             @RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
             @PathVariable("id") String id) {
 
-        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor , id);
+        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor, id);
     }
 
     /**
@@ -301,7 +301,7 @@ public class RestNetworkServiceDescriptor {
     public PhysicalNetworkFunctionDescriptor updatePNFD(
             @RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
             @PathVariable("id") String id, @PathVariable("idPnf") String idPnf) {
-        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor , id);
+        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor, id);
     }
 
     /**
@@ -352,7 +352,7 @@ public class RestNetworkServiceDescriptor {
     /**
      * Deletes the Security with the id_s
      *
-     * @param id   : The NSD id
+     * @param id  : The NSD id
      * @param idS : The Security id
      * @
      */
