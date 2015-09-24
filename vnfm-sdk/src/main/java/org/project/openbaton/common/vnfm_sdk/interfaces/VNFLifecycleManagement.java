@@ -70,5 +70,5 @@ public interface VNFLifecycleManagement {
 	 * or forcefully a previously created VNF instance.
 	 * @param virtualNetworkFunctionRecord
 	 */
-	VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 }
