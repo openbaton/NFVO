@@ -96,9 +96,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
-    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract NFVMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -131,7 +131,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case ERROR:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
                     handleError(orVnfmGenericMessage.getVnfr());
-                    nfvMessage = null;
                     break;
                 case MODIFY:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
