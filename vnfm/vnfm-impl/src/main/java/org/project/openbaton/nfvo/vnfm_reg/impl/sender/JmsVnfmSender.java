@@ -33,7 +33,7 @@ import javax.jms.Destination;
  */
 @Service
 @Scope
-public class JmsVnfmSender implements VnfmSender{
+public class JmsVnfmSender implements VnfmSender {
 
     @Autowired
     private JmsSender jmsSender;
@@ -42,7 +42,6 @@ public class JmsVnfmSender implements VnfmSender{
 
     @Override
     public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
-//        this.sendToQueue(coreMessage, endpoint.getType());
         String destinationName = "core-" + endpoint.getType() + "-actions";
         log.trace("Sending NFVMessage with action: " + nfvMessage.getAction() + " to endpoint: " + endpoint);
         jmsSender.send(destinationName, nfvMessage);
@@ -51,7 +50,6 @@ public class JmsVnfmSender implements VnfmSender{
     @Override
     public void sendCommand(final NFVMessage nfvMessage, Destination tempDestination) {
         log.trace("Sending NFVMessage with action: " + nfvMessage.getAction() + " to tempQueue: " + tempDestination);
-        jmsSender.send(tempDestination,nfvMessage);
+        jmsSender.send(tempDestination, nfvMessage);
     }
-
 }

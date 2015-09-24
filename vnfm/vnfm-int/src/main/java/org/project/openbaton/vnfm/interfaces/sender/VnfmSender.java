@@ -26,5 +26,6 @@ import javax.jms.Destination;
  */
 public interface VnfmSender {
     void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint);
+
     void sendCommand(final NFVMessage nfvMessage, Destination tempDestination);
 }
