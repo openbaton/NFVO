@@ -33,48 +33,46 @@ import java.util.List;
 @RequestMapping("/api/v1/events")
 public class RestEvent {
 
-	//	TODO add log prints
+    //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
-	@Autowired
-	private EventDispatcher eventDispatcher;
+    @Autowired
+    private EventDispatcher eventDispatcher;
 
-	/**
-	 * Adds a new EventEndpoint to the EventEndpoint repository
-	 * 
-	 * @param endpoint
-	 *            : Image to add
-	 * @return image: The image filled with values from the core
-	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.CREATED)
-	public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint) {
-		 return eventDispatcher.register(endpoint);
-	}
+    /**
+     * Adds a new EventEndpoint to the EventEndpoint repository
+     *
+     * @param endpoint : Image to add
+     * @return image: The image filled with values from the core
+     */
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint) {
+        return eventDispatcher.register(endpoint);
+    }
 
-	/**
-	 * Removes the EventEndpoint from the EventEndpoint repository
-	 * 
-	 * @param name
-	 *            : The Event's id to be deleted
-	 */
-	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void unregister(@PathVariable("id") String id) throws NotFoundException {
-		eventDispatcher.unregister(id);
-	}
+    /**
+     * Removes the EventEndpoint from the EventEndpoint repository
+     *
+     * @param name : The Event's id to be deleted
+     */
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unregister(@PathVariable("id") String id) throws NotFoundException {
+        eventDispatcher.unregister(id);
+    }
 
-	@RequestMapping(method = RequestMethod.GET)
-	public List<EventEndpoint> getEvents(){
+    @RequestMapping(method = RequestMethod.GET)
+    public List<EventEndpoint> getEvents() {
 
-		List<EventEndpoint> events = new ArrayList<>();
-		for (Action action : Action.values()){
-			EventEndpoint endpoint = new EventEndpoint();
-			endpoint.setEvent(action);
-			events.add(endpoint);
-		}
-		return events;
-	}
+        List<EventEndpoint> events = new ArrayList<>();
+        for (Action action : Action.values()) {
+            EventEndpoint endpoint = new EventEndpoint();
+            endpoint.setEvent(action);
+            events.add(endpoint);
+        }
+        return events;
+    }
 
 }
