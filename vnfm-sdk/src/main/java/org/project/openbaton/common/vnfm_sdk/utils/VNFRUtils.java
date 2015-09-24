@@ -120,7 +120,7 @@ public class VNFRUtils {
             VirtualDeploymentUnit vdu_new = new VirtualDeploymentUnit();
             HashSet<VNFComponent> vnfComponents = new HashSet<>();
             for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
-                VNFCInstance component_new = new VNFCInstance();
+                VNFComponent component_new = new VNFComponent();
                 HashSet<VNFDConnectionPoint> connectionPoints = new HashSet<>();
                 for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
@@ -130,8 +130,6 @@ public class VNFRUtils {
                 }
                 component_new.setExposed(component.isExposed());
                 component_new.setConnection_point(connectionPoints);
-                component_new.setFloatingIps(new HashSet<String>());
-                component_new.setIps(new HashSet<Ip>());
                 vnfComponents.add(component_new);
             }
             vdu_new.setVnfc(vnfComponents);
