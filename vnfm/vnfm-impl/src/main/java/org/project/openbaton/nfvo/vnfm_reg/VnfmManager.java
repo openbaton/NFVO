@@ -23,17 +23,17 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.catalogue.nfvo.messages.*;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.project.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.project.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.VimException;
+import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.project.openbaton.exceptions.*;
-import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -49,7 +49,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -79,25 +78,11 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     private ThreadPoolTaskExecutor asyncExecutor;
 
-    private SyncTaskExecutor serialExecutor;
-
     @Autowired
     private ConfigurableApplicationContext context;
 
     @Autowired
-    private DependencyManagement dependencyManagement;
-
-    @Autowired
     private ConfigurationManagement configurationManagement;
-
-    @Autowired
-    private ResourceManagement resourceManagement;
-
-    @Autowired
-    private VNFLifecycleOperationGranting lifecycleOperationGranting;
-
-    @Autowired
-    private VNFRRepository vnfrRepository;
 
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
@@ -175,9 +160,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         log.debug("KeepAlive = " + this.asyncExecutor.getKeepAliveSeconds());
         log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-
-        this.serialExecutor = new SyncTaskExecutor();
-
     }
 
     @Override
@@ -186,30 +168,26 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
 
-
             //Creating the extension
-            Map<String, String> extension= new HashMap<>();
-            extension.put("nsr-id",networkServiceRecord.getId());
+            Map<String, String> extension = new HashMap<>();
+            extension.put("nsr-id", networkServiceRecord.getId());
 
             // Setting extension in CoreMassage
 
             NFVMessage message;
             if (vnfd.getVnfPackage() != null)
                 if (vnfd.getVnfPackage().getScriptsLink() != null)
-                    message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScriptsLink());
+                    message = new OrVnfmInstantiateMessage(vnfd, getDeploymentFlavour(vnfd), vnfd.getName(), networkServiceRecord.getVlr(), extension, vnfd.getVnfPackage().getScriptsLink());
                 else
-                    message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension, vnfd.getVnfPackage().getScripts());
+                    message = new OrVnfmInstantiateMessage(vnfd, getDeploymentFlavour(vnfd), vnfd.getName(), networkServiceRecord.getVlr(), extension, vnfd.getVnfPackage().getScripts());
             else
-                message = new OrVnfmInstantiateMessage(vnfd,getDeploymentFlavour(vnfd),vnfd.getName(),networkServiceRecord.getVlr(),extension);
+                message = new OrVnfmInstantiateMessage(vnfd, getDeploymentFlavour(vnfd), vnfd.getName(), networkServiceRecord.getVlr(), extension);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
             if (endpoint == null) {
                 throw new NotFoundException("VnfManager of type " + vnfd.getType() + " (endpoint = " + vnfd.getEndpoint() + ") is not registered");
             }
 
-            /**
-             *  TODO Here use an abstraction to call the particular vnfm_reg
-             */
             VnfmSender vnfmSender;
             try {
                 vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
@@ -219,18 +197,18 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
             vnfmSender.sendCommand(message, endpoint);
         }
-        return new AsyncResult<Void>(null);
+        return new AsyncResult<>(null);
     }
 
     //As a default operation of the NFVO, it get always the first DeploymentFlavour!
     private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException {
-        if(!vnfd.getDeployment_flavour().iterator().hasNext())
-            throw new NotFoundException("There are no DeploymentFlavour in vnfd: "+vnfd.getName());
+        if (!vnfd.getDeployment_flavour().iterator().hasNext())
+            throw new NotFoundException("There are no DeploymentFlavour in vnfd: " + vnfd.getName());
         return vnfd.getDeployment_flavour().iterator().next();
     }
 
     @Override
-    public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException{
+    public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
         String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
         return (VnfmSender) this.context.getBean(senderName);
     }
@@ -246,11 +224,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         task.setAction(nfvMessage.getAction());
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        if(nfvMessage.getAction()==Action.INSTANTIATE){
+        if (nfvMessage.getAction() == Action.INSTANTIATE) {
             VnfmOrInstantiateMessage vnfmOrInstantiate = (VnfmOrInstantiateMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrInstantiate.getVirtualNetworkFunctionRecord();
-        }
-        else {
+        } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
@@ -261,16 +238,10 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-//        if (!virtualNetworkFunctionRecord.hasCyclicDependency()){
-            asyncExecutor.submit(task);
-//        }else
-            //serialExecutor.execute(task);
-
-        //log.debug("AsyncQueue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
-
+        asyncExecutor.submit(task);
     }
 
-    private void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    private synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
         if (virtualNetworkFunctionRecord == null)
             return;
@@ -298,21 +269,16 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         networkServiceRecord.setStatus(status);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
-        if (status.ordinal() == Status.ACTIVE.ordinal() ){
+        if (status.ordinal() == Status.ACTIVE.ordinal()) {
             //Check if all vnfr have been received from the vnfm
-            boolean nsrFilledWithAllVnfr= nsdRepository.findOne(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
-            if(nsrFilledWithAllVnfr)
+            boolean nsrFilledWithAllVnfr = nsdRepository.findOne(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
+            if (nsrFilledWithAllVnfr)
                 publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
             else log.debug("Nsr is ACTIVE but not all vnfr have been received");
-        }
-        else if (status.ordinal() == Status.TERMINATED.ordinal()) {
+        } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
             publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             nsrRepository.delete(networkServiceRecord);
         }
-    }
-
-    private void publishEvent(CoreMessage message) {
-        publishEvent(message.getAction(), message.getVirtualNetworkFunctionRecord());
     }
 
     private void publishEvent(Action action, Serializable payload) {
@@ -349,7 +315,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
         }
 
-        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.RELEASE_RESOURCES);
+        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.RELEASE_RESOURCES);
         VnfmSender vnfmSender;
         try {
 

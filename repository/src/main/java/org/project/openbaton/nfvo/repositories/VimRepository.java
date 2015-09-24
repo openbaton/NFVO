@@ -22,6 +22,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-public interface VimRepository extends CrudRepository<VimInstance, String> ,VimRepositoryCustom{
+public interface VimRepository extends CrudRepository<VimInstance, String>, VimRepositoryCustom {
     VimInstance findFirstById(String id);
 }

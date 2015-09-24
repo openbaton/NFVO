@@ -156,7 +156,7 @@ public class RestNetworkServiceRecord {
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
             @PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf) throws NotFoundException {
 
-        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsd, idVnf );
+        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsd, idVnf);
     }
 
     /**
@@ -222,7 +222,7 @@ public class RestNetworkServiceRecord {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVNFDependency(@PathVariable("idNsr") String idNsr,
                                     @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
-        networkServiceRecordManagement.deleteVNFDependency(idNsr,idVnfd);
+        networkServiceRecordManagement.deleteVNFDependency(idNsr, idVnfd);
 
 
     }

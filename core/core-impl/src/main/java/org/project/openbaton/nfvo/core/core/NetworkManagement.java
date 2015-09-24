@@ -20,7 +20,7 @@ import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.Subnet;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.catalogue.util.IdGenerator;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories.NetworkRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     private NetworkRepository networkRepository;
 
     @Override
-    public Network add(VimInstance vimInstance, Network network) throws VimException{
+    public Network add(VimInstance vimInstance, Network network) throws VimException {
         org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
         //Define Network if values are null or empty
@@ -80,7 +80,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
     }
 
     @Override
-    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException{
+    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
         //Fetch Vim
         org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());

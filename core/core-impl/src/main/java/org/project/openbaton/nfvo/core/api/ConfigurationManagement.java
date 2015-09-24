@@ -65,8 +65,8 @@ public class ConfigurationManagement implements org.project.openbaton.nfvo.core.
     @Override
     public Configuration queryByName(String name) throws NotFoundException {
         Iterable<Configuration> configurations = query();
-        for (Configuration configuration: configurations){
-            if (configuration.getName().equals(name)){
+        for (Configuration configuration : configurations) {
+            if (configuration.getName().equals(name)) {
                 return configuration;
             }
         }

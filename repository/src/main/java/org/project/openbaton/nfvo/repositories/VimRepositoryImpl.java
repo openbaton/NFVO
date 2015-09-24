@@ -25,7 +25,7 @@ import javax.transaction.Transactional;
  * Created by dbo on 21/09/15.
  */
 @org.springframework.transaction.annotation.Transactional(readOnly = true)
-public class VimRepositoryImpl implements VimRepositoryCustom{
+public class VimRepositoryImpl implements VimRepositoryCustom {
 
     @Autowired
     private VimRepository vimRepository;
@@ -40,7 +40,6 @@ public class VimRepositoryImpl implements VimRepositoryCustom{
         vimRepository.findFirstById(id).getImages().add(image);
         return image;
     }
-
 
     @Override
     @Transactional

@@ -17,13 +17,11 @@
 package org.project.openbaton.nfvo.core.core;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.*;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +37,12 @@ import java.util.HashMap;
 @Service
 @Scope
 public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting {
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
 
     @Override
     public boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
-        //if (true)
-        //    return true;
         //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
         HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
         //Find how many VNFCInstances are needed to deploy on a specific VimInstance
@@ -55,7 +51,7 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
             if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
                 countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + vdu.getVnfc().size() - vdu.getVnfc_instance().size());
             } else {
-                log.debug("VimInstance: " + vdu.getVimInstance().getName() + "\n VNFC: " + vdu.getVnfc() + "\nVNFCINST: " + vdu.getVnfc_instance() );
+                log.debug("VimInstance: " + vdu.getVimInstance().getName() + "\n VNFC: " + vdu.getVnfc() + "\nVNFCINST: " + vdu.getVnfc_instance());
                 countVDUsOnVimInstances.put(vdu.getVimInstance(), vdu.getVnfc().size() - vdu.getVnfc_instance().size());
             }
         }

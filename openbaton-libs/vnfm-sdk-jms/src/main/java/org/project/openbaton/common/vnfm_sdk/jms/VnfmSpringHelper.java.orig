@@ -180,9 +180,14 @@ public class VnfmSpringHelper extends VnfmHelper {
     public Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, Map<String, String> env) throws Exception {//TODO make it parallel
         LinkedList<String> res = new LinkedList<>();
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
+<<<<<<< HEAD
+        if (le != null) {
+            log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events().size());
+=======
         log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
 
         if (le != null) {
+>>>>>>> 728bbc918447f5d5ba808e42dd2ef9a083158432
             for (String script : le.getLifecycle_events()) {
                 log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
@@ -269,11 +274,6 @@ public class VnfmSpringHelper extends VnfmHelper {
             }
 
         }
-    }
-
-    @Override
-    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws JMSException {
-        return sendAndReceiveNfvMessage(nfvoQueue,VnfmUtils.getNfvMessage(action,virtualNetworkFunctionRecord));
     }
 
     private JsonObject getJsonObjectForScript(String save_scripts, String payload, String name) {

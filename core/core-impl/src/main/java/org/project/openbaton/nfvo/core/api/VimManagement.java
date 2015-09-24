@@ -122,7 +122,7 @@ public class VimManagement implements org.project.openbaton.nfvo.core.interfaces
      */
     @Override
     public void deleteImage(String idVim, String idImage) throws VimException {
-        vimRepository.deleteImage(idVim,idImage);
+        vimRepository.deleteImage(idVim, idImage);
         refresh(vimRepository.findFirstById(idVim));
 
     }

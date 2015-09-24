@@ -29,8 +29,8 @@ public class JmsReceiver implements Receiver {
     public Serializable receive(String destination, String selector) throws JMSException {
         Message message = jmsTemplate.receiveSelected(destination, selector);
         if (message instanceof ObjectMessage)
-            return ((ObjectMessage)message).getObject();
+            return ((ObjectMessage) message).getObject();
         else
-            return ((TextMessage)message).getText();
+            return ((TextMessage) message).getText();
     }
 }

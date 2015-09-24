@@ -32,7 +32,6 @@ import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -50,200 +49,194 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@ContextConfiguration(classes = { ApplicationTest.class })
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
+@ContextConfiguration(classes = {ApplicationTest.class})
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class ConfigurationManagementClassSuiteTest {
 
-	private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Autowired
+    private ConfigurationManagement configurationManagement;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+    @Autowired
+    private ConfigurationRepository configurationRepository;
 
+    @AfterClass
+    public static void shutdown() {
+        // TODO Teardown to avoid exceptions during test shutdown
+    }
 
-	@Autowired
-	private ConfigurationManagement configurationManagement;
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(ApplicationTest.class);
+        log.info("Starting test");
+    }
 
-	@Autowired
-	private ConfigurationRepository configurationRepository;
+    @Test
+    public void configurationManagementNotNull() {
+        Assert.assertNotNull(configurationManagement);
+    }
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(ApplicationTest.class);
-		log.info("Starting test");
-	}
+    @Test
+    public void nfvImageManagementUpdateTest() {
+        Configuration configuration_exp = createConfigutation();
+        when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
 
-	@Test
-	public void configurationManagementNotNull(){
-		Assert.assertNotNull(configurationManagement);
-	}
+        Configuration configuration_new = createConfigutation();
+        configuration_new.setName("UpdatedName");
+        ConfigurationParameter configurationParameter = new ConfigurationParameter();
+        configurationParameter.setConfKey("new_key");
+        configurationParameter.setValue("new_value");
+        configuration_new.getConfigurationParameters().add(configurationParameter);
+        configuration_exp = configurationManagement.update(configuration_new, configuration_exp.getId());
 
-	@Test
-	public void nfvImageManagementUpdateTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
+        assertEqualsConfiguration(configuration_exp, configuration_new);
 
-		Configuration configuration_new = createConfigutation();
-		configuration_new.setName("UpdatedName");
-		ConfigurationParameter configurationParameter = new ConfigurationParameter();
-		configurationParameter.setConfKey("new_key");
-		configurationParameter.setValue("new_value");
-		configuration_new.getConfigurationParameters().add(configurationParameter);
-		configuration_exp = configurationManagement.update(configuration_new, configuration_exp.getId());
+    }
 
-		assertEqualsConfiguration(configuration_exp, configuration_new);
+    private void assertEqualsConfiguration(Configuration configuration_exp, Configuration configuration_new) {
+        Assert.assertEquals(configuration_exp.getName(), configuration_new.getName());
+        int i = 0;
+        for (ConfigurationParameter configurationParameter : configuration_exp.getConfigurationParameters()) {
+            ConfigurationParameter[] parameters = new ConfigurationParameter[10];
+            Assert.assertEquals(configurationParameter.getConfKey(), configuration_new.getConfigurationParameters().toArray(parameters)[i].getConfKey());
+            Assert.assertEquals(configurationParameter.getValue(), configuration_new.getConfigurationParameters().toArray(parameters)[i].getValue());
+            i++;
+        }
+    }
 
-	}
+    private Configuration createConfigutation() {
+        Configuration configuration = new Configuration();
+        configuration.setName("configuration_name");
+        configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>() {{
+            ConfigurationParameter configurationParameter = new ConfigurationParameter();
+            configurationParameter.setConfKey("key");
+            configurationParameter.setValue("value");
+            add(configurationParameter);
+        }});
+        return configuration;
+    }
 
-	private void assertEqualsConfiguration(Configuration configuration_exp, Configuration configuration_new) {
-		Assert.assertEquals(configuration_exp.getName(), configuration_new.getName());
-		int i = 0;
-		for (ConfigurationParameter configurationParameter : configuration_exp.getConfigurationParameters()){
-			ConfigurationParameter[] parameters = new ConfigurationParameter[10];
-			Assert.assertEquals(configurationParameter.getConfKey(), configuration_new.getConfigurationParameters().toArray(parameters)[i].getConfKey());
-			Assert.assertEquals(configurationParameter.getValue(),configuration_new.getConfigurationParameters().toArray(parameters)[i].getValue());
-			i++;
-		}
-	}
+    private void assertEqualsNetwork(Network network_exp, Network network_new) {
+        Assert.assertEquals(network_exp.getName(), network_new.getName());
+        Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
+        Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
+        Assert.assertEquals(network_exp.isShared(), network_new.isShared());
+        Assert.assertEquals(network_exp.getSubnets().size(), network_new.getSubnets().size());
+    }
 
-	private Configuration createConfigutation() {
-		Configuration configuration = new Configuration();
-		configuration.setName("configuration_name");
-		configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>() {{
-			ConfigurationParameter configurationParameter = new ConfigurationParameter();
-			configurationParameter.setConfKey("key");
-			configurationParameter.setValue("value");
-			add(configurationParameter);
-		}});
-		return configuration;
-	}
+    @Test
+    public void configurationManagementAddTest() {
+        Configuration configuration_exp = createConfigutation();
+        when(configurationRepository.save(any(Configuration.class))).thenReturn(configuration_exp);
+        Configuration configuration_new = configurationManagement.add(configuration_exp);
 
-	private void assertEqualsNetwork(Network network_exp, Network network_new) {
-		Assert.assertEquals(network_exp.getName(), network_new.getName());
-		Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-		Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
-		Assert.assertEquals(network_exp.isShared(), network_new.isShared());
-		Assert.assertEquals(network_exp.getSubnets().size(), network_new.getSubnets().size());
-	}
+        assertEqualsConfiguration(configuration_exp, configuration_new);
+    }
 
+    @Test
+    public void configurationManagementQueryTest() {
+        when(configurationRepository.findAll()).thenReturn(new ArrayList<Configuration>());
 
+        Assert.assertEquals(false, configurationManagement.query().iterator().hasNext());
 
-	@Test
-	public void configurationManagementAddTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.save(any(Configuration.class))).thenReturn(configuration_exp);
-		Configuration configuration_new = configurationManagement.add(configuration_exp);
+        Configuration configutation_exp = createConfigutation();
+        when(configurationRepository.findOne(configutation_exp.getId())).thenReturn(configutation_exp);
+        Configuration configuration_new = configurationManagement.query(configutation_exp.getId());
+        assertEqualsConfiguration(configutation_exp, configuration_new);
+    }
 
-		assertEqualsConfiguration(configuration_exp, configuration_new);
-	}
+    @Test
+    public void configurationManagementDeleteTest() {
+        Configuration configuration_exp = createConfigutation();
+        when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
+        configurationManagement.delete(configuration_exp.getId());
+        when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(null);
+        Configuration configuration_new = configurationManagement.query(configuration_exp.getId());
+        Assert.assertNull(configuration_new);
+    }
 
-	@Test
-	public void configurationManagementQueryTest(){
-		when(configurationRepository.findAll()).thenReturn(new ArrayList<Configuration>());
+    private NFVImage createNfvImage() {
+        NFVImage nfvImage = new NFVImage();
+        nfvImage.setName("image_name");
+        nfvImage.setExtId("ext_id");
+        nfvImage.setMinCPU("1");
+        nfvImage.setMinRam(1024);
+        return nfvImage;
+    }
 
-		Assert.assertEquals(false, configurationManagement.query().iterator().hasNext());
+    private NetworkServiceDescriptor createNetworkServiceDescriptor() {
+        final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+        nsd.setVendor("FOKUS");
+        Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+        virtualNetworkFunctionDescriptor
+                .setMonitoring_parameter(new HashSet<String>() {
+                    {
+                        add("monitor1");
+                        add("monitor2");
+                        add("monitor3");
+                    }
+                });
+        virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
+            VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+            vdf.setExtId("ext_id");
+            vdf.setFlavour_key("flavor_name");
+            add(vdf);
+        }});
+        virtualNetworkFunctionDescriptor
+                .setVdu(new HashSet<VirtualDeploymentUnit>() {
+                    {
+                        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        vdu.setComputation_requirement("high_requirements");
+                        VimInstance vimInstance = new VimInstance();
+                        vimInstance.setName("vim_instance");
+                        vimInstance.setType("test");
+                        vdu.setVimInstance(vimInstance);
+                        add(vdu);
+                    }
+                });
+        virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
+        nsd.setVnfd(virtualNetworkFunctionDescriptors);
+        return nsd;
+    }
 
-		Configuration configutation_exp = createConfigutation();
-		when(configurationRepository.findOne(configutation_exp.getId())).thenReturn(configutation_exp);
-		Configuration configuration_new = configurationManagement.query(configutation_exp.getId());
-		assertEqualsConfiguration(configutation_exp, configuration_new);
-	}
+    private VimInstance createVimInstance() {
+        VimInstance vimInstance = new VimInstance();
+        vimInstance.setName("vim_instance");
+        vimInstance.setType("test");
+        vimInstance.setNetworks(new HashSet<Network>() {{
+            Network network = new Network();
+            network.setExtId("ext_id");
+            network.setName("network_name");
+            add(network);
+        }});
+        vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
+            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_1");
+            deploymentFlavour.setFlavour_key("flavor_name");
+            add(deploymentFlavour);
 
-	@Test
-	public void configurationManagementDeleteTest(){
-		Configuration configuration_exp = createConfigutation();
-		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
-		configurationManagement.delete(configuration_exp.getId());
-		when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(null);
-		Configuration configuration_new = configurationManagement.query(configuration_exp.getId());
-		Assert.assertNull(configuration_new);
-	}
+            deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_2");
+            deploymentFlavour.setFlavour_key("m1.tiny");
+            add(deploymentFlavour);
+        }});
+        vimInstance.setImages(new HashSet<NFVImage>() {{
+            NFVImage image = new NFVImage();
+            image.setExtId("ext_id_1");
+            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
+            add(image);
 
-	@AfterClass
-	public static void shutdown() {
-		// TODO Teardown to avoid exceptions during test shutdown
-	}
-
-
-	private NFVImage createNfvImage() {
-		NFVImage nfvImage = new NFVImage();
-		nfvImage.setName("image_name");
-		nfvImage.setExtId("ext_id");
-		nfvImage.setMinCPU("1");
-		nfvImage.setMinRam(1024);
-		return nfvImage;
-	}
-
-	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-		nsd.setVendor("FOKUS");
-		Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
-		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-		virtualNetworkFunctionDescriptor
-				.setMonitoring_parameter(new HashSet<String>() {
-					{
-						add("monitor1");
-						add("monitor2");
-						add("monitor3");
-					}
-				});
-		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
-			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
-			vdf.setExtId("ext_id");
-			vdf.setFlavour_key("flavor_name");
-			add(vdf);
-		}});
-		virtualNetworkFunctionDescriptor
-				.setVdu(new HashSet<VirtualDeploymentUnit>() {
-					{
-						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
-						vdu.setComputation_requirement("high_requirements");
-						VimInstance vimInstance = new VimInstance();
-						vimInstance.setName("vim_instance");
-						vimInstance.setType("test");
-						vdu.setVimInstance(vimInstance);
-						add(vdu);
-					}
-				});
-		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-		nsd.setVnfd(virtualNetworkFunctionDescriptors);
-		return nsd;
-	}
-
-	private VimInstance createVimInstance() {
-		VimInstance vimInstance = new VimInstance();
-		vimInstance.setName("vim_instance");
-		vimInstance.setType("test");
-		vimInstance.setNetworks(new HashSet<Network>() {{
-			Network network = new Network();
-			network.setExtId("ext_id");
-			network.setName("network_name");
-			add(network);
-		}});
-		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
-			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_1");
-			deploymentFlavour.setFlavour_key("flavor_name");
-			add(deploymentFlavour);
-
-			deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_2");
-			deploymentFlavour.setFlavour_key("m1.tiny");
-			add(deploymentFlavour);
-		}});
-		vimInstance.setImages(new HashSet<NFVImage>() {{
-			NFVImage image = new NFVImage();
-			image.setExtId("ext_id_1");
-			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-			add(image);
-
-			image = new NFVImage();
-			image.setExtId("ext_id_2");
-			image.setName("image_name_1");
-			add(image);
-		}});
-		return vimInstance;
-	}
+            image = new NFVImage();
+            image.setExtId("ext_id_2");
+            image.setName("image_name_1");
+            add(image);
+        }});
+        return vimInstance;
+    }
 
 }

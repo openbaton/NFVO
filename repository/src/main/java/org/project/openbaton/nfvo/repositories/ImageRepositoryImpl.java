@@ -16,31 +16,13 @@
 
 package org.project.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-
-import javax.transaction.Transactional;
-
 /**
  * Created by dbo on 21/09/15.
  */
-public class ImageRepositoryImpl implements ImageRepositoryCustom{
-
-    @Autowired
-    private VimRepository vimRepository;
-
-    @Autowired
-    private ImageRepository imageRepository;
+public class ImageRepositoryImpl implements ImageRepositoryCustom {
 
     @Override
-    @Transactional
-    public void deleteImage(String id){
+    public void deleteImage(String id) {
 
-    }
-
-    @Query("select u from User u")
-    public VimInstance findVimInstanceFromImageId(String id){
-        return null;
     }
 }

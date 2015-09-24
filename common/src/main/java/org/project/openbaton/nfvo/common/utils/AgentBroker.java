@@ -4,8 +4,8 @@ import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.common.interfaces.Receiver;
 import org.project.openbaton.nfvo.common.interfaces.Sender;
-import org.project.openbaton.nfvo.common.utils.jms.JmsSender;
 import org.project.openbaton.nfvo.common.utils.jms.JmsReceiver;
+import org.project.openbaton.nfvo.common.utils.jms.JmsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -26,7 +26,7 @@ public class AgentBroker {
             case JMS:
                 return (JmsSender) context.getBean("jmsSender");
             case REST:
-                //return (RestSender) context.getBean("restSender"); TODO RestSender
+                //TODO RestSender
             default:
                 throw new NotFoundException("no type sender found");
         }
@@ -37,7 +37,7 @@ public class AgentBroker {
             case JMS:
                 return (JmsReceiver) context.getBean("jmsReceiver");
             case REST:
-                //return (RestReceiver) context.getBean("restReceiver"); TODO RestReceiver
+                //TODO RestReceiver
             default:
                 throw new NotFoundException("no type Receiver found");
         }

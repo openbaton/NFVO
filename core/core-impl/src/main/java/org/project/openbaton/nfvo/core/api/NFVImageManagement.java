@@ -42,7 +42,6 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
     public NFVImage add(NFVImage NFVImage) {
         log.trace("Adding image " + NFVImage);
         log.debug("Adding image with name " + NFVImage.getName());
-        //TODO maybe check whenever the image is available on the VimInstance
         return imageRepository.save(NFVImage);
     }
 
@@ -54,7 +53,6 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
 
     @Override
     public NFVImage update(NFVImage nfvImage, String id) {
-        imageRepository.exists(id);
         nfvImage = imageRepository.save(nfvImage);
         nfvImage.setUpdated(new Date());
         return nfvImage;
@@ -64,12 +62,12 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
     public Iterable<NFVImage> query() {
         return imageRepository.findAll();
     }
-    
+
     @Override
-    public NFVImage query(String id){
+    public NFVImage query(String id) {
         return imageRepository.findOne(id);
     }
-    
+
     @Override
     public void copy() {
         throw new UnsupportedOperationException();

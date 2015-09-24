@@ -54,13 +54,12 @@ public class RestEventSender implements EventSender {
             Gson mapper = new GsonBuilder().create();
             String json = "{action:'" + event.getAction() + "',payload:'" + mapper.toJson(event.getPayload()) + "'}";
 
-            log.debug("body is: " + json);
+            log.trace("body is: " + json);
 
             log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
             HttpPost request = new HttpPost(endpoint.getEndpoint());
             request.addHeader("content-type", "application/json");
             request.addHeader("accept", "application/json");
-            log.trace("With body: " + json);
             StringEntity params = new StringEntity(json);
             request.setEntity(params);
             HttpResponse response = httpClient.execute(request);
@@ -68,7 +67,7 @@ public class RestEventSender implements EventSender {
             } else {
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new AsyncResult<>(null);

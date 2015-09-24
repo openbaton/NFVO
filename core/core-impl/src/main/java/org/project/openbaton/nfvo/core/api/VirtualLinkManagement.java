@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NoResultException;
 
 /**
- *
  * Created by lto on 11/06/15.
  */
 @Service
@@ -48,7 +47,6 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     public VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor) {
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkDescriptor);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkDescriptor.getId());
-        //TODO maybe check whenever the image is available on the VimInstance
         return virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
     }
 
@@ -56,7 +54,6 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     public VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord) {
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkRecord);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkRecord.getId());
-        //TODO maybe check whenever the image is available on the VimInstance
         return virtualLinkRecordRepository.save(virtualLinkRecord);
     }
 
@@ -105,7 +102,7 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     }
 
     @Override
-    public VirtualLinkDescriptor queryDescriptor(String id){
+    public VirtualLinkDescriptor queryDescriptor(String id) {
         return virtualLinkDescriptorRepository.findOne(id);
     }
 }

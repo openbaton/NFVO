@@ -18,8 +18,6 @@ package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 
-import java.util.List;
-
 /**
  * Created by lto on 16/06/15.
  */

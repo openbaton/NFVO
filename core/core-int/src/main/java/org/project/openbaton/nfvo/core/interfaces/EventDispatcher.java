@@ -26,9 +26,8 @@ import org.project.openbaton.exceptions.NotFoundException;
 
 /**
  * This class is in charge of registering and deregistering endpoint for event dispatching.
- *
+ * <p/>
  * An external application can register to a specific event sending an EndpointEvent through JMS or Rest.
- *
  */
 public interface EventDispatcher {
     EventEndpoint register(EventEndpoint endpoint);

@@ -41,10 +41,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
-    @ExceptionHandler({ NotFoundException.class, NoResultException.class })
+    @ExceptionHandler({NotFoundException.class, NoResultException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
-        log.error("Exception with message "+e.getMessage()+" was thrown");
+        log.error("Exception with message " + e.getMessage() + " was thrown");
         ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
-    @ExceptionHandler({BadFormatException.class })
+    @ExceptionHandler({BadFormatException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
         ExceptionResource exc = new ExceptionResource("Bad Request", e.getMessage());
@@ -61,8 +61,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
-
-
 
 
 }
