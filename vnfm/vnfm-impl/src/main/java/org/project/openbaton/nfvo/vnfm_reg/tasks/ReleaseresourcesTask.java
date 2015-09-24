@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope("prototype")
-public class ReleaseresourcesTask extends AbstractTask {
+public class
+        ReleaseresourcesTask extends AbstractTask {
 
     @Autowired
     private ResourceManagement resourceManagement;

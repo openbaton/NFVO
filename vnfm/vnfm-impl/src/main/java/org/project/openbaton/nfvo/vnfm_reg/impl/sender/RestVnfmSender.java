@@ -37,35 +37,34 @@ import javax.jms.Destination;
 @Scope
 public class RestVnfmSender implements VnfmSender {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
     protected RestTemplate rest;
     protected HttpHeaders headers;
     protected HttpStatus status;
     protected Gson mapper;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private String get(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
 
     private String post(String path, String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.POST, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
 
     private void put(String path, String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
 
     private void delete(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.DELETE, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
