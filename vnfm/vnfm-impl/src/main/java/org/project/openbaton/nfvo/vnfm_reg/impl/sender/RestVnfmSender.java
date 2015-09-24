@@ -35,7 +35,7 @@ import javax.jms.Destination;
  */
 @Service
 @Scope
-public class RestVnfmSender implements VnfmSender{
+public class RestVnfmSender implements VnfmSender {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -60,7 +60,7 @@ public class RestVnfmSender implements VnfmSender{
 
     private void put(String path, String json, String url) {
         HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity,String.class);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
     }
 
@@ -79,7 +79,7 @@ public class RestVnfmSender implements VnfmSender{
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         this.mapper = new Gson();
         this.rest = new RestTemplate();
         this.headers = new HttpHeaders();
@@ -90,7 +90,6 @@ public class RestVnfmSender implements VnfmSender{
     @Override
     public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
         this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
-
     }
 
     @Override
@@ -98,12 +97,11 @@ public class RestVnfmSender implements VnfmSender{
         String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + tempDestination);
         throw new UnsupportedOperationException("not implemented");
-        //this.post("core-vnfm-actions", json,tempDestination);
     }
 
     public void sendToVnfm(NFVMessage nfvMessage, String url) {
         String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + url);
-        this.post("core-vnfm-actions", json,url);
+        this.post("core-vnfm-actions", json, url);
     }
 }

@@ -66,9 +66,9 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
     @Override
     public VnfmManagerEndpoint getVnfm(String endpoint) throws NotFoundException {
         log.trace("Looking for vnfmEndpoint endpoint: " + endpoint);
-        for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmManagerEndpointRepository.findAll()){
-            log.trace(""+vnfmManagerEndpoint);
-            if (vnfmManagerEndpoint.getType().equals(endpoint)){
+        for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmManagerEndpointRepository.findAll()) {
+            log.trace("" + vnfmManagerEndpoint);
+            if (vnfmManagerEndpoint.getType().equals(endpoint)) {
                 return vnfmManagerEndpoint;
             }
         }
@@ -77,8 +77,8 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
 
     public void unregister(VnfmManagerEndpoint endpoint) {
         Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmManagerEndpointRepository.findAll();
-        for (VnfmManagerEndpoint vnfmManagerEndpoint: vnfmManagerEndpoints){
-            if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType().equals(endpoint.getType())){
+        for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
+            if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
                 this.vnfmManagerEndpointRepository.delete(endpoint);
                 return;
             }
