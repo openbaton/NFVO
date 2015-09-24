@@ -38,16 +38,15 @@ public class ApplicationTEST {
 
     private static Logger log = LoggerFactory.getLogger(ApplicationTEST.class);
 
+    public static void main(String[] argv) {
+//        ConfigurableApplicationContext context =
+        SpringApplication.run(ApplicationTEST.class);
 
-    @Bean
-    Receiver receiver(){
-        return mock(Receiver.class);
+
     }
 
-    public static void main(String[] argv){
-//        ConfigurableApplicationContext context =
-                SpringApplication.run(ApplicationTEST.class);
-
-
+    @Bean
+    Receiver receiver() {
+        return mock(Receiver.class);
     }
 }
