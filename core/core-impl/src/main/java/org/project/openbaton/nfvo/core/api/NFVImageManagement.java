@@ -64,12 +64,12 @@ public class NFVImageManagement implements org.project.openbaton.nfvo.core.inter
     public Iterable<NFVImage> query() {
         return imageRepository.findAll();
     }
-    
+
     @Override
-    public NFVImage query(String id){
+    public NFVImage query(String id) {
         return imageRepository.findOne(id);
     }
-    
+
     @Override
     public void copy() {
         throw new UnsupportedOperationException();

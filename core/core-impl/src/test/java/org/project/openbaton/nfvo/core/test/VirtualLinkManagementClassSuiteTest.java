@@ -37,7 +37,6 @@ import org.project.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -56,283 +55,281 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@ContextConfiguration(classes = { ApplicationTest.class })
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
+@ContextConfiguration(classes = {ApplicationTest.class})
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VirtualLinkManagementClassSuiteTest {
 
-	private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Autowired
+    private VirtualLinkManagement virtualLinkManagement;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+    @Autowired
+    private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
+    @Autowired
+    private VirtualLinkRecordRepository virtualLinkRecordRepository;
 
-	@Autowired
-	private VirtualLinkManagement virtualLinkManagement;
+    @AfterClass
+    public static void shutdown() {
+        // TODO Teardown to avoid exceptions during test shutdown
+    }
 
-	@Autowired
-	private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(ApplicationTest.class);
+        log.info("Starting test");
+    }
 
-	@Autowired
-	private VirtualLinkRecordRepository virtualLinkRecordRepository;
+    @Test
+    public void virtualLinkManagementNotNull() {
+        Assert.assertNotNull(virtualLinkManagement);
+    }
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(ApplicationTest.class);
-		log.info("Starting test");
-	}
+    @Test
+    public void virtualLinkManagementUpdateDescriptorTest() {
+        VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
+        when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
 
-	@Test
-	public void virtualLinkManagementNotNull(){
-		Assert.assertNotNull(virtualLinkManagement);
-	}
+        VirtualLinkDescriptor virtualLinkDescriptor_new = createVirtualLinkDescriptor();
+        virtualLinkDescriptor_new.setRoot_requirement("root_requirement_updated");
+        virtualLinkDescriptor_exp = virtualLinkManagement.update(virtualLinkDescriptor_new, virtualLinkDescriptor_exp.getId());
 
-	@Test
-	public void virtualLinkManagementUpdateDescriptorTest(){
-		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+        assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
+    }
 
-		VirtualLinkDescriptor virtualLinkDescriptor_new = createVirtualLinkDescriptor();
-		virtualLinkDescriptor_new.setRoot_requirement("root_requirement_updated");
-		virtualLinkDescriptor_exp = virtualLinkManagement.update(virtualLinkDescriptor_new, virtualLinkDescriptor_exp.getId());
+    @Test
+    public void virtualLinkManagementUpdateRecordTest() {
+        VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
+        when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
 
-		assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
-	}
+        VirtualLinkRecord virtualLinkRecord_new = createVirtualLinkRecord();
+        virtualLinkRecord_new.setRoot_requirement("root_requirement_updated");
+        virtualLinkRecord_exp = virtualLinkManagement.update(virtualLinkRecord_new, virtualLinkRecord_exp.getId());
 
-	@Test
-	public void virtualLinkManagementUpdateRecordTest(){
-		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+        assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
+    }
 
-		VirtualLinkRecord virtualLinkRecord_new = createVirtualLinkRecord();
-		virtualLinkRecord_new.setRoot_requirement("root_requirement_updated");
-		virtualLinkRecord_exp = virtualLinkManagement.update(virtualLinkRecord_new, virtualLinkRecord_exp.getId());
+    private void assertEquals(VirtualLinkRecord virtualLinkRecord_exp, VirtualLinkRecord virtualLinkRecord_new) {
+        Assert.assertEquals(virtualLinkRecord_exp.getVendor(), virtualLinkRecord_new.getVendor());
+        Assert.assertEquals(virtualLinkRecord_exp.getConnectivity_type(), virtualLinkRecord_new.getConnectivity_type());
+        Assert.assertEquals(virtualLinkRecord_exp.getConnection(), virtualLinkRecord_new.getConnection());
+        Assert.assertEquals(virtualLinkRecord_exp.getLeaf_requirement(), virtualLinkRecord_new.getLeaf_requirement());
+        Assert.assertEquals(virtualLinkRecord_exp.getRoot_requirement(), virtualLinkRecord_new.getRoot_requirement());
+        Assert.assertEquals(virtualLinkRecord_exp.getVersion(), virtualLinkRecord_new.getVersion());
+        Assert.assertEquals(virtualLinkRecord_exp.getVim_id(), virtualLinkRecord_new.getVim_id());
+        Assert.assertEquals(virtualLinkRecord_exp.getAllocated_capacity(), virtualLinkRecord_new.getAllocated_capacity());
+    }
 
-		assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
-	}
+    private void assertEquals(VirtualLinkDescriptor virtualLinkDescriptor_exp, VirtualLinkDescriptor virtualLinkDescriptor_new) {
+        Assert.assertEquals(virtualLinkDescriptor_exp.getDescriptor_version(), virtualLinkDescriptor_new.getDescriptor_version());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getVendor(), virtualLinkDescriptor_new.getVendor());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getConnectivity_type(), virtualLinkDescriptor_new.getConnectivity_type());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getConnection(), virtualLinkDescriptor_new.getConnection());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getNumber_of_endpoints(), virtualLinkDescriptor_new.getNumber_of_endpoints());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getLeaf_requirement(), virtualLinkDescriptor_new.getLeaf_requirement());
+        Assert.assertEquals(virtualLinkDescriptor_exp.getRoot_requirement(), virtualLinkDescriptor_new.getRoot_requirement());
+    }
 
-	private void assertEquals(VirtualLinkRecord virtualLinkRecord_exp, VirtualLinkRecord virtualLinkRecord_new) {
-		Assert.assertEquals(virtualLinkRecord_exp.getVendor(), virtualLinkRecord_new.getVendor());
-		Assert.assertEquals(virtualLinkRecord_exp.getConnectivity_type(), virtualLinkRecord_new.getConnectivity_type());
-		Assert.assertEquals(virtualLinkRecord_exp.getConnection(), virtualLinkRecord_new.getConnection());
-		Assert.assertEquals(virtualLinkRecord_exp.getLeaf_requirement(), virtualLinkRecord_new.getLeaf_requirement());
-		Assert.assertEquals(virtualLinkRecord_exp.getRoot_requirement(), virtualLinkRecord_new.getRoot_requirement());
-		Assert.assertEquals(virtualLinkRecord_exp.getVersion(), virtualLinkRecord_new.getVersion());
-		Assert.assertEquals(virtualLinkRecord_exp.getVim_id(), virtualLinkRecord_new.getVim_id());
-		Assert.assertEquals(virtualLinkRecord_exp.getAllocated_capacity(), virtualLinkRecord_new.getAllocated_capacity());
-	}
+    private VirtualLinkDescriptor createVirtualLinkDescriptor() {
+        VirtualLinkDescriptor virtualLinkDescriptor = new VirtualLinkDescriptor();
+        virtualLinkDescriptor.setConnection(new HashSet<String>() {{
+            add("connection1");
+        }});
+        virtualLinkDescriptor.setDescriptor_version("desc_version");
+        virtualLinkDescriptor.setRoot_requirement("root_req");
+        virtualLinkDescriptor.setNumber_of_endpoints(3);
+        virtualLinkDescriptor.setVendor("vendor");
+        virtualLinkDescriptor.setVld_security(new Security());
+        virtualLinkDescriptor.setConnectivity_type("type");
+        virtualLinkDescriptor.setLeaf_requirement("leaf_req");
+        virtualLinkDescriptor.setQos(new HashSet<String>() {{
+            add("qos");
+        }});
+        virtualLinkDescriptor.setTest_access(new HashSet<String>() {{
+            add("test_access");
+        }});
+        return virtualLinkDescriptor;
+    }
 
-	private void assertEquals(VirtualLinkDescriptor virtualLinkDescriptor_exp, VirtualLinkDescriptor virtualLinkDescriptor_new) {
-		Assert.assertEquals(virtualLinkDescriptor_exp.getDescriptor_version(), virtualLinkDescriptor_new.getDescriptor_version());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getVendor(), virtualLinkDescriptor_new.getVendor());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getConnectivity_type(), virtualLinkDescriptor_new.getConnectivity_type());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getConnection(), virtualLinkDescriptor_new.getConnection());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getNumber_of_endpoints(), virtualLinkDescriptor_new.getNumber_of_endpoints());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getLeaf_requirement(), virtualLinkDescriptor_new.getLeaf_requirement());
-		Assert.assertEquals(virtualLinkDescriptor_exp.getRoot_requirement(), virtualLinkDescriptor_new.getRoot_requirement());
-	}
+    private VirtualLinkRecord createVirtualLinkRecord() {
+        VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
+        virtualLinkRecord.setConnection(new HashSet<String>() {{
+            add("connection1");
+        }});
+        virtualLinkRecord.setRoot_requirement("root_req");
+        virtualLinkRecord.setVendor("vendor");
+        virtualLinkRecord.setConnectivity_type("type");
+        virtualLinkRecord.setLeaf_requirement("leaf_req");
+        virtualLinkRecord.setQos(new HashSet<String>() {{
+            add("qos");
+        }});
+        virtualLinkRecord.setVersion("version");
+        virtualLinkRecord.setVim_id("vim_id");
+        virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
+        virtualLinkRecord.setStatus(LinkStatus.NORMALOPERATION);
+        virtualLinkRecord.setAudit_log(new HashSet<String>() {{
+            add("audit_log_1");
+        }});
+        virtualLinkRecord.setAllocated_capacity(new HashSet<String>() {{
+            add("allocated_cap");
+        }});
+        virtualLinkRecord.setTest_access("test_access");
+        virtualLinkRecord.setParent_ns("parent_id");
+        virtualLinkRecord.setNumber_of_enpoints(3);
+        virtualLinkRecord.setNotification(new HashSet<String>() {{
+            add("notification");
+        }});
+        virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>() {{
+            LifecycleEvent lifecycleEvent = new LifecycleEvent();
+            lifecycleEvent.setEvent(Event.INSTANTIATE);
+            lifecycleEvent.setLifecycle_events(new HashSet<String>() {{
+                add("command");
+            }});
+            add(lifecycleEvent);
+        }});
+        return virtualLinkRecord;
+    }
 
-	private VirtualLinkDescriptor createVirtualLinkDescriptor() {
-		VirtualLinkDescriptor virtualLinkDescriptor = new VirtualLinkDescriptor();
-		virtualLinkDescriptor.setConnection(new HashSet<String>(){{add("connection1");}});
-		virtualLinkDescriptor.setDescriptor_version("desc_version");
-		virtualLinkDescriptor.setRoot_requirement("root_req");
-		virtualLinkDescriptor.setNumber_of_endpoints(3);
-		virtualLinkDescriptor.setVendor("vendor");
-		virtualLinkDescriptor.setVld_security(new Security());
-		virtualLinkDescriptor.setConnectivity_type("type");
-		virtualLinkDescriptor.setLeaf_requirement("leaf_req");
-		virtualLinkDescriptor.setQos(new HashSet<String>() {{
-			add("qos");
-		}});
-		virtualLinkDescriptor.setTest_access(new HashSet<String>() {{
-			add("test_access");
-		}});
-		return virtualLinkDescriptor;
-	}
+    @Test
+    public void virtualLinkManagementAddDescriptorTest() {
+        VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
+        when(virtualLinkDescriptorRepository.save(any(VirtualLinkDescriptor.class))).thenReturn(virtualLinkDescriptor_exp);
+        VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.add(virtualLinkDescriptor_exp);
 
-	private VirtualLinkRecord createVirtualLinkRecord() {
-		VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
-		virtualLinkRecord.setConnection(new HashSet<String>() {{
-			add("connection1");
-		}});
-		virtualLinkRecord.setRoot_requirement("root_req");
-		virtualLinkRecord.setVendor("vendor");
-		virtualLinkRecord.setConnectivity_type("type");
-		virtualLinkRecord.setLeaf_requirement("leaf_req");
-		virtualLinkRecord.setQos(new HashSet<String>() {{
-			add("qos");
-		}});
-		virtualLinkRecord.setVersion("version");
-		virtualLinkRecord.setVim_id("vim_id");
-		virtualLinkRecord.setVnffgr_reference(new HashSet<VNFForwardingGraphRecord>());
-		virtualLinkRecord.setStatus(LinkStatus.NORMALOPERATION);
-		virtualLinkRecord.setAudit_log(new HashSet<String>() {{
-			add("audit_log_1");
-		}});
-		virtualLinkRecord.setAllocated_capacity(new HashSet<String>() {{
-			add("allocated_cap");
-		}});
-		virtualLinkRecord.setTest_access("test_access");
-		virtualLinkRecord.setParent_ns("parent_id");
-		virtualLinkRecord.setNumber_of_enpoints(3);
-		virtualLinkRecord.setNotification(new HashSet<String>() {{
-			add("notification");
-		}});
-		virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>() {{
-			LifecycleEvent lifecycleEvent = new LifecycleEvent();
-			lifecycleEvent.setEvent(Event.INSTANTIATE);
-			lifecycleEvent.setLifecycle_events(new HashSet<String>() {{
-				add("command");
-			}});
-			add(lifecycleEvent);
-		}});
-		return virtualLinkRecord;
-	}
+        assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
+    }
 
-	@Test
-	public void virtualLinkManagementAddDescriptorTest(){
-		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.save(any(VirtualLinkDescriptor.class))).thenReturn(virtualLinkDescriptor_exp);
-		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.add(virtualLinkDescriptor_exp);
+    @Test
+    public void virtualLinkManagementRecordAddTest() {
+        VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
+        when(virtualLinkRecordRepository.save(any(VirtualLinkRecord.class))).thenReturn(virtualLinkRecord_exp);
+        VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.add(virtualLinkRecord_exp);
 
-		assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
-	}
+        assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
+    }
 
-	@Test
-	public void virtualLinkManagementRecordAddTest(){
-		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.save(any(VirtualLinkRecord.class))).thenReturn(virtualLinkRecord_exp);
-		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.add(virtualLinkRecord_exp);
+    @Test
+    public void virtualLinkManagementQueryTest() {
+        when(virtualLinkDescriptorRepository.findAll()).thenReturn(new ArrayList<VirtualLinkDescriptor>());
+        when(virtualLinkRecordRepository.findAll()).thenReturn(new ArrayList<VirtualLinkRecord>());
 
-		assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
-	}
+        Assert.assertEquals(false, virtualLinkManagement.queryDescriptors().iterator().hasNext());
+        Assert.assertEquals(false, virtualLinkManagement.queryRecords().iterator().hasNext());
 
-	@Test
-	public void virtualLinkManagementQueryTest(){
-		when(virtualLinkDescriptorRepository.findAll()).thenReturn(new ArrayList<VirtualLinkDescriptor>());
-		when(virtualLinkRecordRepository.findAll()).thenReturn(new ArrayList<VirtualLinkRecord>());
+        VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
+        when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+        VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
+        assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
 
-		Assert.assertEquals(false, virtualLinkManagement.queryDescriptors().iterator().hasNext());
-		Assert.assertEquals(false, virtualLinkManagement.queryRecords().iterator().hasNext());
+        VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
+        when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+        VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
+        assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
+    }
 
-		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
-		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
-		assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
+    @Test
+    public void virtualLinkManagementDeleteDescriptorTest() {
+        VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
+        when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+        virtualLinkManagement.delete(virtualLinkDescriptor_exp.getId());
+        when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(null);
+        VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
+        Assert.assertNull(virtualLinkDescriptor_new);
+    }
 
-		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
-		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
-		assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);
-	}
+    @Test
+    public void virtualLinkManagementDeleteRecordTest() {
+        VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
+        when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+        when(virtualLinkDescriptorRepository.findOne(virtualLinkRecord_exp.getId())).thenThrow(NoResultException.class);
+        virtualLinkManagement.delete(virtualLinkRecord_exp.getId());
+        when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(null);
+        VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
+        Assert.assertNull(virtualLinkRecord_new);
+    }
 
-	@Test
-	public void virtualLinkManagementDeleteDescriptorTest(){
-		VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
-		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
-		virtualLinkManagement.delete(virtualLinkDescriptor_exp.getId());
-		when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(null);
-		VirtualLinkDescriptor virtualLinkDescriptor_new = virtualLinkManagement.queryDescriptor(virtualLinkDescriptor_exp.getId());
-		Assert.assertNull(virtualLinkDescriptor_new);
-	}
+    private NFVImage createNfvImage() {
+        NFVImage nfvImage = new NFVImage();
+        nfvImage.setName("image_name");
+        nfvImage.setExtId("ext_id");
+        nfvImage.setMinCPU("1");
+        nfvImage.setMinRam(1024);
+        return nfvImage;
+    }
 
-	@Test
-	public void virtualLinkManagementDeleteRecordTest(){
-		VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
-		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
-		when(virtualLinkDescriptorRepository.findOne(virtualLinkRecord_exp.getId())).thenThrow(NoResultException.class);
-		virtualLinkManagement.delete(virtualLinkRecord_exp.getId());
-		when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(null);
-		VirtualLinkRecord virtualLinkRecord_new = virtualLinkManagement.queryRecord(virtualLinkRecord_exp.getId());
-		Assert.assertNull(virtualLinkRecord_new);
-	}
+    private NetworkServiceDescriptor createNetworkServiceDescriptor() {
+        final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+        nsd.setVendor("FOKUS");
+        Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+        virtualNetworkFunctionDescriptor
+                .setMonitoring_parameter(new HashSet<String>() {
+                    {
+                        add("monitor1");
+                        add("monitor2");
+                        add("monitor3");
+                    }
+                });
+        virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
+            VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+            vdf.setExtId("ext_id");
+            vdf.setFlavour_key("flavor_name");
+            add(vdf);
+        }});
+        virtualNetworkFunctionDescriptor
+                .setVdu(new HashSet<VirtualDeploymentUnit>() {
+                    {
+                        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        vdu.setComputation_requirement("high_requirements");
+                        VimInstance vimInstance = new VimInstance();
+                        vimInstance.setName("vim_instance");
+                        vimInstance.setType("test");
+                        vdu.setVimInstance(vimInstance);
+                        add(vdu);
+                    }
+                });
+        virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
+        nsd.setVnfd(virtualNetworkFunctionDescriptors);
+        return nsd;
+    }
 
-	@AfterClass
-	public static void shutdown() {
-		// TODO Teardown to avoid exceptions during test shutdown
-	}
+    private VimInstance createVimInstance() {
+        VimInstance vimInstance = new VimInstance();
+        vimInstance.setName("vim_instance");
+        vimInstance.setType("test");
+        vimInstance.setNetworks(new HashSet<Network>() {{
+            Network network = new Network();
+            network.setExtId("ext_id");
+            network.setName("network_name");
+            add(network);
+        }});
+        vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
+            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_1");
+            deploymentFlavour.setFlavour_key("flavor_name");
+            add(deploymentFlavour);
 
+            deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_2");
+            deploymentFlavour.setFlavour_key("m1.tiny");
+            add(deploymentFlavour);
+        }});
+        vimInstance.setImages(new HashSet<NFVImage>() {{
+            NFVImage image = new NFVImage();
+            image.setExtId("ext_id_1");
+            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
+            add(image);
 
-	private NFVImage createNfvImage() {
-		NFVImage nfvImage = new NFVImage();
-		nfvImage.setName("image_name");
-		nfvImage.setExtId("ext_id");
-		nfvImage.setMinCPU("1");
-		nfvImage.setMinRam(1024);
-		return nfvImage;
-	}
-
-	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-		nsd.setVendor("FOKUS");
-		Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
-		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-		virtualNetworkFunctionDescriptor
-				.setMonitoring_parameter(new HashSet<String>() {
-					{
-						add("monitor1");
-						add("monitor2");
-						add("monitor3");
-					}
-				});
-		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
-			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
-			vdf.setExtId("ext_id");
-			vdf.setFlavour_key("flavor_name");
-			add(vdf);
-		}});
-		virtualNetworkFunctionDescriptor
-				.setVdu(new HashSet<VirtualDeploymentUnit>() {
-					{
-						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
-						vdu.setComputation_requirement("high_requirements");
-						VimInstance vimInstance = new VimInstance();
-						vimInstance.setName("vim_instance");
-						vimInstance.setType("test");
-						vdu.setVimInstance(vimInstance);
-						add(vdu);
-					}
-				});
-		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-		nsd.setVnfd(virtualNetworkFunctionDescriptors);
-		return nsd;
-	}
-
-	private VimInstance createVimInstance() {
-		VimInstance vimInstance = new VimInstance();
-		vimInstance.setName("vim_instance");
-		vimInstance.setType("test");
-		vimInstance.setNetworks(new HashSet<Network>() {{
-			Network network = new Network();
-			network.setExtId("ext_id");
-			network.setName("network_name");
-			add(network);
-		}});
-		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
-			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_1");
-			deploymentFlavour.setFlavour_key("flavor_name");
-			add(deploymentFlavour);
-
-			deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_2");
-			deploymentFlavour.setFlavour_key("m1.tiny");
-			add(deploymentFlavour);
-		}});
-		vimInstance.setImages(new HashSet<NFVImage>() {{
-			NFVImage image = new NFVImage();
-			image.setExtId("ext_id_1");
-			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-			add(image);
-
-			image = new NFVImage();
-			image.setExtId("ext_id_2");
-			image.setName("image_name_1");
-			add(image);
-		}});
-		return vimInstance;
-	}
+            image = new NFVImage();
+            image.setExtId("ext_id_2");
+            image.setName("image_name_1");
+            add(image);
+        }});
+        return vimInstance;
+    }
 
 }

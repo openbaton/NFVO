@@ -30,9 +30,9 @@ import org.project.openbaton.catalogue.nfvo.Location;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.VimManagement;
 import org.project.openbaton.nfvo.repositories.VimRepository;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -56,223 +56,217 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@ContextConfiguration(classes = { ApplicationTest.class })
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
+@ContextConfiguration(classes = {ApplicationTest.class})
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VimManagementClassSuiteTest {
 
-	private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+    @Autowired
+    VimBroker vimBroker;
+    @Autowired
+    VimRepository vimRepository;
+    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+    @Autowired
+    private VimManagement vimManagement;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+    @AfterClass
+    public static void shutdown() {
+        // TODO Teardown to avoid exceptions during test shutdown
+    }
 
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(ApplicationTest.class);
+        log.info("Starting test");
+    }
 
-	@Autowired
-	VimBroker vimBroker;
+    @Test
+    public void nfvImageManagementNotNull() {
+        Assert.assertNotNull(vimManagement);
+    }
 
-	@Autowired
-	VimRepository vimRepository;
+    @Test
+    public void nfvImageManagementUpdateTest() {
+    }
 
-	@Autowired
-	private VimManagement vimManagement;
+    @Test
+    public void nfvImageManagementRefreshTest() throws VimException {
+        initMocks();
+        VimInstance vimInstance = createVimInstance();
+        vimManagement.refresh(vimInstance);
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(ApplicationTest.class);
-		log.info("Starting test");
-	}
+        Assert.assertEquals(0, vimInstance.getFlavours().size());
+        Assert.assertEquals(0, vimInstance.getImages().size());
+        Assert.assertEquals(0, vimInstance.getNetworks().size());
+    }
 
-	@Test
-	public void nfvImageManagementNotNull(){
-		Assert.assertNotNull(vimManagement);
-	}
+    @Test
+    public void vimManagementUpdateTest() throws VimException {
+        initMocks();
+        VimInstance vimInstance_exp = createVimInstance();
+        when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+        VimInstance vimInstance_new = createVimInstance();
+        vimInstance_new.setName("UpdatedName");
+        vimInstance_new.setTenant("UpdatedTenant");
+        vimInstance_new.setUsername("UpdatedUsername");
 
-	@Test
-	public void nfvImageManagementUpdateTest(){
-	}
+        vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId());
 
-	@Test
-	public void nfvImageManagementRefreshTest() throws VimException {
-		initMocks();
-		VimInstance vimInstance = createVimInstance();
-		vimManagement.refresh(vimInstance);
+        Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
+        Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
+        Assert.assertEquals(vimInstance_exp.getType(), vimInstance_new.getType());
+        Assert.assertEquals(vimInstance_exp.getKeyPair(), vimInstance_new.getKeyPair());
+        Assert.assertEquals(vimInstance_exp.getUsername(), vimInstance_new.getUsername());
+        Assert.assertEquals(vimInstance_exp.getAuthUrl(), vimInstance_new.getAuthUrl());
+        Assert.assertEquals(vimInstance_exp.getPassword(), vimInstance_new.getPassword());
+        Assert.assertEquals(vimInstance_exp.getLocation().getName(), vimInstance_new.getLocation().getName());
+        Assert.assertEquals(vimInstance_exp.getLocation().getLatitude(), vimInstance_new.getLocation().getLatitude());
+        Assert.assertEquals(vimInstance_exp.getLocation().getLongitude(), vimInstance_new.getLocation().getLongitude());
+        Assert.assertEquals(vimInstance_exp.getFlavours().size(), 0);
+        Assert.assertEquals(vimInstance_exp.getImages().size(), 0);
+        Assert.assertEquals(vimInstance_exp.getNetworks().size(), 0);
+    }
 
-		Assert.assertEquals(0, vimInstance.getFlavours().size());
-		Assert.assertEquals(0, vimInstance.getImages().size());
-		Assert.assertEquals(0,vimInstance.getNetworks().size());
-	}
+    @Test
+    public void nfvImageManagementAddTest() throws VimException {
+        initMocks();
+        VimInstance vimInstance_exp = createVimInstance();
+        when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
+        VimInstance vimInstance_new = vimManagement.add(vimInstance_exp);
 
-	@Test
-	public void vimManagementUpdateTest() throws VimException {
-		initMocks();
-		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-		VimInstance vimInstance_new = createVimInstance();
-		vimInstance_new.setName("UpdatedName");
-		vimInstance_new.setTenant("UpdatedTenant");
-		vimInstance_new.setUsername("UpdatedUsername");
+        Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
+        Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
+        Assert.assertEquals(vimInstance_exp.getType(), vimInstance_new.getType());
+        Assert.assertEquals(vimInstance_exp.getKeyPair(), vimInstance_new.getKeyPair());
+        Assert.assertEquals(vimInstance_exp.getUsername(), vimInstance_new.getUsername());
+        Assert.assertEquals(vimInstance_exp.getAuthUrl(), vimInstance_new.getAuthUrl());
+        Assert.assertEquals(vimInstance_exp.getPassword(), vimInstance_new.getPassword());
+        Assert.assertEquals(vimInstance_exp.getLocation().getName(), vimInstance_new.getLocation().getName());
+        Assert.assertEquals(vimInstance_exp.getLocation().getLatitude(), vimInstance_new.getLocation().getLatitude());
+        Assert.assertEquals(vimInstance_exp.getLocation().getLongitude(), vimInstance_new.getLocation().getLongitude());
+        Assert.assertEquals(vimInstance_exp.getFlavours().size(), vimInstance_new.getFlavours().size());
+        Assert.assertEquals(vimInstance_exp.getImages().size(), vimInstance_new.getImages().size());
+        Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
+    }
 
-		vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId());
+    private void initMocks() throws VimException {
+        Vim vim = mock(Vim.class);
+        when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
+        when(vimBroker.getVim(anyString())).thenReturn(vim);
+    }
 
-		Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
-		Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
-		Assert.assertEquals(vimInstance_exp.getType(), vimInstance_new.getType());
-		Assert.assertEquals(vimInstance_exp.getKeyPair(), vimInstance_new.getKeyPair());
-		Assert.assertEquals(vimInstance_exp.getUsername(), vimInstance_new.getUsername());
-		Assert.assertEquals(vimInstance_exp.getAuthUrl(), vimInstance_new.getAuthUrl());
-		Assert.assertEquals(vimInstance_exp.getPassword(), vimInstance_new.getPassword());
-		Assert.assertEquals(vimInstance_exp.getLocation().getName(), vimInstance_new.getLocation().getName());
-		Assert.assertEquals(vimInstance_exp.getLocation().getLatitude(), vimInstance_new.getLocation().getLatitude());
-		Assert.assertEquals(vimInstance_exp.getLocation().getLongitude(), vimInstance_new.getLocation().getLongitude());
-		Assert.assertEquals(vimInstance_exp.getFlavours().size(), 0);
-		Assert.assertEquals(vimInstance_exp.getImages().size(), 0);
-		Assert.assertEquals(vimInstance_exp.getNetworks().size(), 0);
-	}
+    @Test
+    public void nfvImageManagementQueryTest() {
+        when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
 
-	@Test
-	public void nfvImageManagementAddTest() throws VimException {
-		initMocks();
-		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
-		VimInstance vimInstance_new = vimManagement.add(vimInstance_exp);
+        Assert.assertEquals(false, vimManagement.query().iterator().hasNext());
 
-		Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
-		Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
-		Assert.assertEquals(vimInstance_exp.getType(), vimInstance_new.getType());
-		Assert.assertEquals(vimInstance_exp.getKeyPair(), vimInstance_new.getKeyPair());
-		Assert.assertEquals(vimInstance_exp.getUsername(), vimInstance_new.getUsername());
-		Assert.assertEquals(vimInstance_exp.getAuthUrl(), vimInstance_new.getAuthUrl());
-		Assert.assertEquals(vimInstance_exp.getPassword(), vimInstance_new.getPassword());
-		Assert.assertEquals(vimInstance_exp.getLocation().getName(), vimInstance_new.getLocation().getName());
-		Assert.assertEquals(vimInstance_exp.getLocation().getLatitude(), vimInstance_new.getLocation().getLatitude());
-		Assert.assertEquals(vimInstance_exp.getLocation().getLongitude(), vimInstance_new.getLocation().getLongitude());
-		Assert.assertEquals(vimInstance_exp.getFlavours().size(), vimInstance_new.getFlavours().size());
-		Assert.assertEquals(vimInstance_exp.getImages().size(), vimInstance_new.getImages().size());
-		Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
-	}
+        VimInstance vimInstance_exp = createVimInstance();
+        when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
+        Assert.assertEquals(vimInstance_exp.getId(), vimInstance_new.getId());
+        Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
+        Assert.assertEquals(vimInstance_exp.getFlavours().size(), vimInstance_new.getFlavours().size());
+        Assert.assertEquals(vimInstance_exp.getImages().size(), vimInstance_new.getImages().size());
+        Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
+    }
 
-	private void initMocks() throws VimException {
-		Vim vim = mock(Vim.class);
-		when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
-		when(vimBroker.getVim(anyString())).thenReturn(vim);
-	}
+    @Test
+    public void nfvImageManagementDeleteTest() {
+        VimInstance vimInstance_exp = createVimInstance();
+        when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+        vimManagement.delete(vimInstance_exp.getId());
+        when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(null);
+        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
+        Assert.assertNull(vimInstance_new);
+    }
 
-	@Test
-	public void nfvImageManagementQueryTest(){
-		when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
+    private NFVImage createNfvImage() {
+        NFVImage nfvImage = new NFVImage();
+        nfvImage.setName("image_name");
+        nfvImage.setExtId("ext_id");
+        nfvImage.setMinCPU("1");
+        nfvImage.setMinRam(1024);
+        return nfvImage;
+    }
 
-		Assert.assertEquals(false, vimManagement.query().iterator().hasNext());
+    private NetworkServiceDescriptor createNetworkServiceDescriptor() {
+        final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+        nsd.setVendor("FOKUS");
+        HashSet<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+        virtualNetworkFunctionDescriptor
+                .setMonitoring_parameter(new HashSet<String>() {
+                    {
+                        add("monitor1");
+                        add("monitor2");
+                        add("monitor3");
+                    }
+                });
+        virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
+            VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+            vdf.setExtId("ext_id");
+            vdf.setFlavour_key("flavor_name");
+            add(vdf);
+        }});
+        virtualNetworkFunctionDescriptor
+                .setVdu(new HashSet<VirtualDeploymentUnit>() {
+                    {
+                        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        vdu.setComputation_requirement("high_requirements");
+                        VimInstance vimInstance = new VimInstance();
+                        vimInstance.setName("vim_instance");
+                        vimInstance.setType("test");
+                        vdu.setVimInstance(vimInstance);
+                        add(vdu);
+                    }
+                });
+        virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
+        nsd.setVnfd(virtualNetworkFunctionDescriptors);
+        return nsd;
+    }
 
-		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-		VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
-		Assert.assertEquals(vimInstance_exp.getId(), vimInstance_new.getId());
-		Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
-		Assert.assertEquals(vimInstance_exp.getFlavours().size(), vimInstance_new.getFlavours().size());
-		Assert.assertEquals(vimInstance_exp.getImages().size(), vimInstance_new.getImages().size());
-		Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
-	}
+    private VimInstance createVimInstance() {
+        VimInstance vimInstance = new VimInstance();
+        vimInstance.setName("vim_instance");
+        Location location = new Location();
+        location.setName("LocationName");
+        location.setLatitude("Latitude");
+        location.setLongitude("Longitude");
+        vimInstance.setLocation(location);
+        vimInstance.setType("test");
+        vimInstance.setNetworks(new HashSet<Network>() {{
+            Network network = new Network();
+            network.setExtId("ext_id");
+            network.setName("network_name");
+            add(network);
+        }});
+        vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
+            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_1");
+            deploymentFlavour.setFlavour_key("flavor_name");
+            add(deploymentFlavour);
 
-	@Test
-	public void nfvImageManagementDeleteTest(){
-		VimInstance vimInstance_exp = createVimInstance();
-		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-		vimManagement.delete(vimInstance_exp.getId());
-		when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(null);
-		VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId());
-		Assert.assertNull(vimInstance_new);
-	}
+            deploymentFlavour = new DeploymentFlavour();
+            deploymentFlavour.setExtId("ext_id_2");
+            deploymentFlavour.setFlavour_key("m1.tiny");
+            add(deploymentFlavour);
+        }});
+        vimInstance.setImages(new HashSet<NFVImage>() {{
+            NFVImage image = new NFVImage();
+            image.setExtId("ext_id_1");
+            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
+            add(image);
 
-	@AfterClass
-	public static void shutdown() {
-		// TODO Teardown to avoid exceptions during test shutdown
-	}
-
-
-	private NFVImage createNfvImage() {
-		NFVImage nfvImage = new NFVImage();
-		nfvImage.setName("image_name");
-		nfvImage.setExtId("ext_id");
-		nfvImage.setMinCPU("1");
-		nfvImage.setMinRam(1024);
-		return nfvImage;
-	}
-
-	private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-		final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-		nsd.setVendor("FOKUS");
-		HashSet<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
-		VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-		virtualNetworkFunctionDescriptor
-				.setMonitoring_parameter(new HashSet<String>() {
-					{
-						add("monitor1");
-						add("monitor2");
-						add("monitor3");
-					}
-				});
-		virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
-			VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
-			vdf.setExtId("ext_id");
-			vdf.setFlavour_key("flavor_name");
-			add(vdf);
-		}});
-		virtualNetworkFunctionDescriptor
-				.setVdu(new HashSet<VirtualDeploymentUnit>() {
-					{
-						VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-						vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
-						vdu.setComputation_requirement("high_requirements");
-						VimInstance vimInstance = new VimInstance();
-						vimInstance.setName("vim_instance");
-						vimInstance.setType("test");
-						vdu.setVimInstance(vimInstance);
-						add(vdu);
-					}
-				});
-		virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-		nsd.setVnfd(virtualNetworkFunctionDescriptors);
-		return nsd;
-	}
-
-	private VimInstance createVimInstance() {
-		VimInstance vimInstance = new VimInstance();
-		vimInstance.setName("vim_instance");
-		Location location = new Location();
-		location.setName("LocationName");
-		location.setLatitude("Latitude");
-		location.setLongitude("Longitude");
-		vimInstance.setLocation(location);
-		vimInstance.setType("test");
-		vimInstance.setNetworks(new HashSet<Network>() {{
-			Network network = new Network();
-			network.setExtId("ext_id");
-			network.setName("network_name");
-			add(network);
-		}});
-		vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
-			DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_1");
-			deploymentFlavour.setFlavour_key("flavor_name");
-			add(deploymentFlavour);
-
-			deploymentFlavour = new DeploymentFlavour();
-			deploymentFlavour.setExtId("ext_id_2");
-			deploymentFlavour.setFlavour_key("m1.tiny");
-			add(deploymentFlavour);
-		}});
-		vimInstance.setImages(new HashSet<NFVImage>() {{
-			NFVImage image = new NFVImage();
-			image.setExtId("ext_id_1");
-			image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-			add(image);
-
-			image = new NFVImage();
-			image.setExtId("ext_id_2");
-			image.setName("image_name_1");
-			add(image);
-		}});
-		return vimInstance;
-	}
+            image = new NFVImage();
+            image.setExtId("ext_id_2");
+            image.setName("image_name_1");
+            add(image);
+        }});
+        return vimInstance;
+    }
 
 }

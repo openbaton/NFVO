@@ -21,10 +21,10 @@ package org.project.openbaton.nfvo.core.interfaces;
  */
 
 public interface VNFLifecycleChangeNotification {
-	
-	/**
-	 * This operation allows providing notifications on state changes 
-	 * of a VNF instance, related to the VNF Lifecycle.
-	 */
-	void NotifyChange();
+
+    /**
+     * This operation allows providing notifications on state changes
+     * of a VNF instance, related to the VNF Lifecycle.
+     */
+    void NotifyChange();
 }

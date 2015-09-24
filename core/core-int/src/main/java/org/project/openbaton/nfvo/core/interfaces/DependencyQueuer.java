@@ -11,5 +11,5 @@ import java.util.Set;
 public interface DependencyQueuer {
     void waitForVNFR(String targetDependencyId, Set<String> sourceNames) throws InterruptedException, NotFoundException;
 
-    void releaseVNFR(String vnfrId,NetworkServiceRecord nsr) throws NotFoundException;
+    void releaseVNFR(String vnfrId, NetworkServiceRecord nsr) throws NotFoundException;
 }

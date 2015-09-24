@@ -56,7 +56,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
-        List<String> ids=new ArrayList<>();
+        List<String> ids = new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
         virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName() /*+ "-" + virtualDeploymentUnit.getId().substring((virtualDeploymentUnit.getId().length() - 5), virtualDeploymentUnit.getId().length() - 1)*/);
@@ -80,13 +80,13 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         String url = properties.getProperty("spring.activemq.broker-url");
         String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
         log.debug("Active ip is: " + activeIp);
-        String result="#!/bin/bash\n" +
+        String result = "#!/bin/bash\n" +
                 "sudo apt-get update\n" +
                 "sudo mkdir -p /etc/openbaton/ems\n" +
-                "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
+                "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
-                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
@@ -127,7 +127,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     @Override
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
             vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance());
         }
         return new AsyncResult<>(null);

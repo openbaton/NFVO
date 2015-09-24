@@ -28,6 +28,7 @@ public interface VimManagement {
     /**
      * This operation allows adding a datacenter
      * into the datacenter repository.
+     *
      * @param vimInstance
      */
     VimInstance add(VimInstance vimInstance) throws VimException;
@@ -35,6 +36,7 @@ public interface VimManagement {
     /**
      * This operation allows deleting the datacenter
      * from the datacenter repository.
+     *
      * @param id
      */
     void delete(String id);
@@ -42,6 +44,7 @@ public interface VimManagement {
     /**
      * This operation allows updating the datacenter
      * in the datacenter repository.
+     *
      * @param new_vimInstance
      * @param id
      */
@@ -63,14 +66,16 @@ public interface VimManagement {
 
     /**
      * Adds a new NFVImage to the VimInstance with id
-     * @param id of VimInstance
+     *
+     * @param id    of VimInstance
      * @param image the new NFVImage
      * @return NFVImage
      */
-    NFVImage addImage(String id ,NFVImage image) throws VimException;
+    NFVImage addImage(String id, NFVImage image) throws VimException;
 
     /**
      * Returns the NFVImage with idImage from VimInstance with idVim
+     *
      * @param idVim
      * @param idImage
      * @return NFVImage
@@ -79,6 +84,7 @@ public interface VimManagement {
 
     /**
      * Removes the NFVImage with idImage from VimInstance with idVim
+     *
      * @param idVim
      * @param idImage
      */

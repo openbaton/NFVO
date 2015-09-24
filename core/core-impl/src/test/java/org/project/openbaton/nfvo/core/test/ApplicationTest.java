@@ -16,16 +16,16 @@
 
 package org.project.openbaton.nfvo.core.test;
 
-import org.project.openbaton.catalogue.mano.descriptor.*;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.nfvo.repositories.*;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -49,108 +49,118 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @org.springframework.context.annotation.Configuration
-@ComponentScan(basePackageClasses = { NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
+@ComponentScan(basePackageClasses = {NetworkServiceDescriptorManagement.class, NetworkServiceFaultManagement.class, NSDUtils.class})
 @EnableJms
 public class ApplicationTest {
 
-	@Bean
-	VnfmRegister vnfmRegister(){
-		return mock(VnfmRegister.class);
-	}
+    public static void main(String[] argv) {
+        ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
+        for (String s : context.getBeanDefinitionNames())
+            System.out.println(s);
+    }
 
-	@Bean
-	VnfmManager vnfmManager() throws JMSException, NamingException, NotFoundException {
-		VnfmManager vnfmManager = mock(VnfmManager.class);
-		//when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
-		return vnfmManager;
-	}
+    @Bean
+    VnfmRegister vnfmRegister() {
+        return mock(VnfmRegister.class);
+    }
 
-	@Bean
-	ClientInterfaces clientInterfaces(){return mock(ClientInterfaces.class);}
+    @Bean
+    VnfmManager vnfmManager() throws JMSException, NamingException, NotFoundException {
+        VnfmManager vnfmManager = mock(VnfmManager.class);
+        //when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
+        return vnfmManager;
+    }
 
-	@Bean
-	ConfigurationRepository configurationRepository(){
-		return mock(ConfigurationRepository.class);
-	}
+    @Bean
+    ClientInterfaces clientInterfaces() {
+        return mock(ClientInterfaces.class);
+    }
 
-	@Bean
-	NetworkServiceRecordRepository nsrRepository(){
-		return mock(NetworkServiceRecordRepository.class);
-	}
+    @Bean
+    ConfigurationRepository configurationRepository() {
+        return mock(ConfigurationRepository.class);
+    }
 
-	@Bean
-	NetworkServiceDescriptorRepository nsdRepository() {
-		return mock(NetworkServiceDescriptorRepository.class);
-	}
+    @Bean
+    NetworkServiceRecordRepository nsrRepository() {
+        return mock(NetworkServiceRecordRepository.class);
+    }
 
-	@Bean
-	ImageRepository imageRepository() {
-		return mock(ImageRepository.class);
-	}
+    @Bean
+    NetworkServiceDescriptorRepository nsdRepository() {
+        return mock(NetworkServiceDescriptorRepository.class);
+    }
 
-	@Bean
-	VimRepository vimRepository() {
-		return mock(VimRepository.class);
-	}
+    @Bean
+    ImageRepository imageRepository() {
+        return mock(ImageRepository.class);
+    }
 
-	@Bean
-	VNFDRepository vnfDependencyRepository() {return mock(VNFDRepository.class);}
+    @Bean
+    VimRepository vimRepository() {
+        return mock(VimRepository.class);
+    }
 
-	@Bean
-	VnfPackageRepository vnfPackageRepository() { return mock(VnfPackageRepository.class); }
+    @Bean
+    VNFDRepository vnfDependencyRepository() {
+        return mock(VNFDRepository.class);
+    }
 
-	@Bean
-	VNFRRepository vnfrRepository() {
-		return mock(VNFRRepository.class);
-	}
+    @Bean
+    VnfPackageRepository vnfPackageRepository() {
+        return mock(VnfPackageRepository.class);
+    }
 
-	@Bean
-	VNFRDependencyRepository vnfRecordRepository() {
-		return mock(VNFRDependencyRepository.class);
-	}
+    @Bean
+    VNFRRepository vnfrRepository() {
+        return mock(VNFRRepository.class);
+    }
 
-	@Bean
-	NetworkRepository networkRepository() {
-		return mock(NetworkRepository.class);
-	}
+    @Bean
+    VNFRDependencyRepository vnfRecordRepository() {
+        return mock(VNFRDependencyRepository.class);
+    }
 
-	@Bean
-	VNFFGDescriptorRepository vnffgDescriptorRepository() {
-		return mock(VNFFGDescriptorRepository.class);
-	}
+    @Bean
+    NetworkRepository networkRepository() {
+        return mock(NetworkRepository.class);
+    }
 
-	@Bean
-	VnfmEndpointRepository vnfmManagerEndpointRepository() {
-		return mock(VnfmEndpointRepository.class);
-	}
+    @Bean
+    VNFFGDescriptorRepository vnffgDescriptorRepository() {
+        return mock(VNFFGDescriptorRepository.class);
+    }
 
-	@Bean
-	VirtualLinkDescriptorRepository virtualLinkDescriptorRepository() {	return mock(VirtualLinkDescriptorRepository.class);}
+    @Bean
+    VnfmEndpointRepository vnfmManagerEndpointRepository() {
+        return mock(VnfmEndpointRepository.class);
+    }
 
-	@Bean
-	VirtualLinkRecordRepository virtualLinkRecordRepository() {
-		return mock(VirtualLinkRecordRepository.class);
-	}
+    @Bean
+    VirtualLinkDescriptorRepository virtualLinkDescriptorRepository() {
+        return mock(VirtualLinkDescriptorRepository.class);
+    }
 
-	@Bean
-	ResourceManagement resourceManagement() { return mock(ResourceManagement.class); }
+    @Bean
+    VirtualLinkRecordRepository virtualLinkRecordRepository() {
+        return mock(VirtualLinkRecordRepository.class);
+    }
 
-	@Bean
-	Vim vim() throws VimDriverException, VimException{
-		Vim vim = mock(Vim.class);
-		when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), , , )).thenReturn(new AsyncResult<String>("mocked-id"));
-		return vim;
-	}
+    @Bean
+    ResourceManagement resourceManagement() {
+        return mock(ResourceManagement.class);
+    }
 
-	@Bean
-	VimBroker vimBroker() throws VimException {
-		VimBroker mock = mock(VimBroker.class);
-		return mock;
-	}
+    @Bean
+    Vim vim() throws VimDriverException, VimException {
+        Vim vim = mock(Vim.class);
+        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), , , )).thenReturn(new AsyncResult<String>("mocked-id"));
+        return vim;
+    }
 
-	public static void main(String[] argv) {
-		ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
-		for (String s : context.getBeanDefinitionNames())
-			System.out.println(s);
-	}
+    @Bean
+    VimBroker vimBroker() throws VimException {
+        VimBroker mock = mock(VimBroker.class);
+        return mock;
+    }
 }

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NoResultException;
 
 /**
- *
  * Created by lto on 11/06/15.
  */
 @Service
@@ -105,7 +104,7 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     }
 
     @Override
-    public VirtualLinkDescriptor queryDescriptor(String id){
+    public VirtualLinkDescriptor queryDescriptor(String id) {
         return virtualLinkDescriptorRepository.findOne(id);
     }
 }

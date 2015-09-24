@@ -55,9 +55,6 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         super("openstack",port);
     }
     
-
-
-
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile ) throws VimException {
         try {

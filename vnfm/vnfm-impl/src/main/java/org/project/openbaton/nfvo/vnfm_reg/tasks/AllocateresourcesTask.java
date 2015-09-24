@@ -33,31 +33,29 @@ public class AllocateresourcesTask extends AbstractTask {
 
         log.debug("NFVO: ALLOCATE_RESOURCES");
         log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        boolean error = false;
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
             try {
                 List<String> extIds = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
                 log.debug("the returned ext id is: " + extIds);
             } catch (VimException e) {
-                virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
                 e.printStackTrace();
                 log.error(e.getMessage());
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                saveVirtualNetworkFunctionRecord();
                 vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
-                error = true;
+                return;
             } catch (VimDriverException e) {
-                virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
                 e.printStackTrace();
                 log.error(e.getMessage());
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-                virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
-                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ERROR), getTempDestination());
-                error = true;
+                saveVirtualNetworkFunctionRecord();
+                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
+                return;
             }
 
         for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
@@ -67,15 +65,13 @@ public class AllocateresourcesTask extends AbstractTask {
             }
         }
         saveVirtualNetworkFunctionRecord();
-        if (!error) {
 
-            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                log.debug(">---< The unit is: " + virtualDeploymentUnit);
-            }
-            OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,Action.ALLOCATE_RESOURCES);
-            log.debug("SENDING ALLOCATE RESOURCES on temp queue:" + getTempDestination());
-            vnfmSender.sendCommand(orVnfmGenericMessage, getTempDestination());
+        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+            log.debug(">---< The unit is: " + virtualDeploymentUnit);
         }
+        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ALLOCATE_RESOURCES);
+        log.debug("SENDING ALLOCATE RESOURCES on temp queue:" + getTempDestination());
+        vnfmSender.sendCommand(orVnfmGenericMessage, getTempDestination());
     }
 
     @Override

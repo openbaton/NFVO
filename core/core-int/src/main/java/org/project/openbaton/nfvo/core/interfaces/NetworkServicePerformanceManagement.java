@@ -21,16 +21,16 @@ package org.project.openbaton.nfvo.core.interfaces;
  */
 
 public interface NetworkServicePerformanceManagement {
-	
-	/**
-	 * This operation allows collecting performance 
-	 * measurement results generated on Network Services.
-	 */
-	void getPerformanceMeasurementResults();
-	
-	/**
-	 * This operation allows providing performance 
-	 * notifications on Network Services.
-	 */
-	void notifyPerformance();
+
+    /**
+     * This operation allows collecting performance
+     * measurement results generated on Network Services.
+     */
+    void getPerformanceMeasurementResults();
+
+    /**
+     * This operation allows providing performance
+     * notifications on Network Services.
+     */
+    void notifyPerformance();
 }
