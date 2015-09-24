@@ -40,7 +40,6 @@ public class StartTask extends AbstractTask {
 
         VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
         log.debug("vnfr existing version= " + existingvnfr.getHb_version());
-        log.debug("try to merge vnfr arrived");
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
 }

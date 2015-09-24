@@ -32,12 +32,8 @@ import org.project.openbaton.catalogue.util.EventFinishEvent;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.project.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.project.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -53,7 +49,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -83,25 +78,11 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
     private ThreadPoolTaskExecutor asyncExecutor;
 
-    private SyncTaskExecutor serialExecutor;
-
     @Autowired
     private ConfigurableApplicationContext context;
 
     @Autowired
-    private DependencyManagement dependencyManagement;
-
-    @Autowired
     private ConfigurationManagement configurationManagement;
-
-    @Autowired
-    private ResourceManagement resourceManagement;
-
-    @Autowired
-    private VNFLifecycleOperationGranting lifecycleOperationGranting;
-
-    @Autowired
-    private VNFRRepository vnfrRepository;
 
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
@@ -179,9 +160,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         log.debug("KeepAlive = " + this.asyncExecutor.getKeepAliveSeconds());
         log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-
-        this.serialExecutor = new SyncTaskExecutor();
-
     }
 
     @Override
@@ -189,7 +167,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-
 
             //Creating the extension
             Map<String, String> extension = new HashMap<>();
@@ -211,9 +188,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
                 throw new NotFoundException("VnfManager of type " + vnfd.getType() + " (endpoint = " + vnfd.getEndpoint() + ") is not registered");
             }
 
-            /**
-             *  TODO Here use an abstraction to call the particular vnfm_reg
-             */
             VnfmSender vnfmSender;
             try {
                 vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
@@ -223,7 +197,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
             vnfmSender.sendCommand(message, endpoint);
         }
-        return new AsyncResult<Void>(null);
+        return new AsyncResult<>(null);
     }
 
     //As a default operation of the NFVO, it get always the first DeploymentFlavour!
@@ -264,13 +238,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
 
         log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-//        if (!virtualNetworkFunctionRecord.hasCyclicDependency()){
         asyncExecutor.submit(task);
-//        }else
-        //serialExecutor.execute(task);
-
-        //log.debug("AsyncQueue is: " + asyncExecutor.getThreadPoolExecutor().getActiveCount());
-
     }
 
     private synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
@@ -311,10 +279,6 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
             publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             nsrRepository.delete(networkServiceRecord);
         }
-    }
-
-    private void publishEvent(CoreMessage message) {
-        publishEvent(message.getAction(), message.getVirtualNetworkFunctionRecord());
     }
 
     private void publishEvent(Action action, Serializable payload) {

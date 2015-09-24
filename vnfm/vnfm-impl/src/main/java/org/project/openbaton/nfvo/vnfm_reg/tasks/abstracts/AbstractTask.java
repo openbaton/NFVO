@@ -34,15 +34,20 @@ import javax.jms.Destination;
 @Scope("prototype")
 public abstract class AbstractTask implements Runnable, ApplicationEventPublisherAware {
     protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
-
-    @Autowired
-    private ConfigurableApplicationContext context;
-    private ApplicationEventPublisher publisher;
     protected Action action;
-
     @Autowired
     @Qualifier("vnfmRegister")
     protected VnfmRegister vnfmRegister;
+    protected Destination tempDestination;
+    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    protected VNFRecordDependency dependency;
+    @Autowired
+    protected VNFRRepository vnfrRepository;
+    @Autowired
+    protected NetworkServiceRecordRepository networkServiceRecordRepository;
+    @Autowired
+    private ConfigurableApplicationContext context;
+    private ApplicationEventPublisher publisher;
 
     protected void saveVirtualNetworkFunctionRecord() {
         log.debug("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
@@ -51,10 +56,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         else
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
-
-    protected Destination tempDestination;
-    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    protected VNFRecordDependency dependency;
 
     public Action getAction() {
         return action;
@@ -71,13 +72,6 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
-
-    @Autowired
-    protected VNFRRepository vnfrRepository;
-
-    @Autowired
-    protected NetworkServiceRecordRepository networkServiceRecordRepository;
-
 
     @Override
     public void run() {
