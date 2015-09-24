@@ -82,7 +82,7 @@ public class TestVIM extends Vim {
 
 
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
             return this.client.addImage(vimInstance, image, imageFile);
         } catch (RemoteException e) {
@@ -115,7 +115,7 @@ public class TestVIM extends Vim {
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, Byte[] imageFile) throws VimException {
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
 
     }
 
