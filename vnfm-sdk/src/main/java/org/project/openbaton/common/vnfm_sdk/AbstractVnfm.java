@@ -98,7 +98,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     @Override
     public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract NFVMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
