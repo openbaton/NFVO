@@ -180,9 +180,8 @@ public class VnfmSpringHelper extends VnfmHelper {
     public Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, Map<String, String> env) throws Exception {//TODO make it parallel
         LinkedList<String> res = new LinkedList<>();
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
-        log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
-
         if (le != null) {
+            log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events().size());
             for (String script : le.getLifecycle_events()) {
                 log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
