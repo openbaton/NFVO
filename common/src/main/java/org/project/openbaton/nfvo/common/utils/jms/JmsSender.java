@@ -24,41 +24,40 @@ public class JmsSender implements Sender {
     @Autowired
     private JmsTemplate jmsTemplate;
 
-
     @Override
     public void send(String destination, final Serializable message) {
         log.trace("Sending message: " + message + " to Queue: " + destination);
         MessageCreator messageCreator = getMessageCreator(message);
-        jmsTemplate.send(destination,messageCreator);
+        jmsTemplate.send(destination, messageCreator);
     }
 
     public void send(Destination destination, final Serializable message) {
-        /*log.trace("Sending message: " + message + " to Queue: " + destination);*/
+        log.trace("Sending message: " + message + " to Queue: " + destination);
         MessageCreator messageCreator = getMessageCreator(message);
-        jmsTemplate.send(destination,messageCreator);
+        jmsTemplate.send(destination, messageCreator);
     }
 
     private MessageCreator getMessageCreator(final Serializable message) {
         return new MessageCreator() {
-                @Override
-                public Message createMessage(Session session) throws JMSException {
-                    Message msg;
-                    if (message instanceof java.lang.String)
-                        msg = session.createTextMessage((String) message);
-                    else
-                        msg = session.createObjectMessage(message);
-                    return msg;
-                }
-            };
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                Message msg;
+                if (message instanceof java.lang.String)
+                    msg = session.createTextMessage((String) message);
+                else
+                    msg = session.createObjectMessage(message);
+                return msg;
+            }
+        };
     }
 
     @Override
     public Serializable receiveObject(String destination) throws JMSException {
-        return ((ObjectMessage)jmsTemplate.receive(destination)).getObject();
+        return ((ObjectMessage) jmsTemplate.receive(destination)).getObject();
     }
 
     @Override
     public String receiveText(String destination) throws JMSException {
-        return ((TextMessage)jmsTemplate.receive(destination)).getText();
+        return ((TextMessage) jmsTemplate.receive(destination)).getText();
     }
 }
