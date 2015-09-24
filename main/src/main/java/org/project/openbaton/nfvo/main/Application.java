@@ -46,10 +46,22 @@ import java.io.File;
 @SpringBootApplication
 @EnableJms
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
-@EntityScan(basePackages="org.project.openbaton.catalogue")
+@EntityScan(basePackages = "org.project.openbaton.catalogue")
 @ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
 @EnableJpaRepositories("org.project.openbaton.nfvo")
-public class Application implements ApplicationListener<ContextClosedEvent>{
+public class Application implements ApplicationListener<ContextClosedEvent> {
+
+    public static void main(String[] args) {
+        // Clean out any ActiveMQ data from a previous run
+        FileSystemUtils.deleteRecursively(new File("activemq-data"));
+        Logger log = LoggerFactory.getLogger(Application.class);
+
+        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+
+        context.registerShutdownHook();
+        log.info("Started OpenBaton");
+
+    }
 
     @Bean
     JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
@@ -68,19 +80,6 @@ public class Application implements ApplicationListener<ContextClosedEvent>{
         factory.setPubSubDomain(true);
         return factory;
     }
-
-    public static void main(String[] args) {
-        // Clean out any ActiveMQ data from a previous run
-        FileSystemUtils.deleteRecursively(new File("activemq-data"));
-        Logger log = LoggerFactory.getLogger(Application.class);
-
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-
-        context.registerShutdownHook();
-        log.info("Started OpenBaton");
-
-    }
-
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {

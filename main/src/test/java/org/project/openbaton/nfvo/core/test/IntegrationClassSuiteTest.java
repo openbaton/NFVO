@@ -18,7 +18,6 @@ package org.project.openbaton.nfvo.core.test;
 
 
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.project.openbaton.nfvo.main.Application;
@@ -37,33 +36,25 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * Created by lto on 20/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {Application.class})
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class IntegrationClassSuiteTest {
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     ConfigurableApplicationContext context;
-
-    @BeforeClass
-    public static void init(){
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-    }
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Test
-    public void method1(){
+    public void method1() {
         log.info("Here the context");
-
-        for (String s : context.getBeanDefinitionNames()){
+        for (String s : context.getBeanDefinitionNames()) {
             log.info(s);
         }
-
     }
 
     @After
-    public void shutdown(){
+    public void shutdown() {
         context.close();
     }
 
