@@ -206,20 +206,4 @@ public class NSDUtils {
         log.debug("New dependencies are: " + newDependencies);
         networkServiceDescriptor.setVnf_dependency(newDependencies);
     }
-
-    public void fetchNetworks(NetworkServiceDescriptor networkServiceDescriptor) {
-//        Iterable<VimInstance> vimInstances = vimRepository.findAll();
-//
-//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
-//            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionDescriptor.getVirtual_link()){
-//                for (VimInstance vimInstance : vimInstances){
-//                    for (Network network : vimInstance.getNetworks()){
-//                        if (network.getName().equals(internalVirtualLink.getName())){
-//                            internalVirtualLink.setExtId(network.getExtId()); // TODO finish other params
-//                        }
-//                    }
-//                }
-//            }
-//        }
-    }
 }

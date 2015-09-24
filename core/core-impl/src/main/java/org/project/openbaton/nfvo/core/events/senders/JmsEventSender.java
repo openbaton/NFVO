@@ -47,7 +47,6 @@ public class JmsEventSender implements EventSender {
     private JmsTemplate jmsTemplate;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-
     @Override
     @Async
     public Future<Void> send(EventEndpoint endpoint, final ApplicationEventNFVO event) {

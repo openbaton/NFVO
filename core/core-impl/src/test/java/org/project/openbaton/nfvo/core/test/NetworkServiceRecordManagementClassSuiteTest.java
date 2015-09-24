@@ -29,7 +29,7 @@ import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.nfvo.common.exceptions.*;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
@@ -58,6 +58,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -96,11 +97,11 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     public void init() throws VimException, VimDriverException, ExecutionException, InterruptedException {
         MockitoAnnotations.initMocks(ApplicationTest.class);
         ResourceManagement resourceManagement = mock(ResourceManagement.class);
-        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(String.valueOf(new AsyncResult<String>("mocked_id")));
+        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new ArrayList<String>(){{add("mocked_id");}});
         Vim vim = mock(Vim.class);
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
-        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), , , )).thenReturn(new AsyncResult<String>("mocked_id"));
+        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyBoolean() )).thenReturn(new AsyncResult<String>("mocked_id"));
         VNFLifecycleOperationGranting vnfLifecycleOperationGranting = mock(VNFLifecycleOperationGranting.class);
         when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
 
@@ -163,7 +164,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
         LifecycleEvent event = new LifecycleEvent();
         event.setEvent(Event.INSTANTIATE);
-        event.setLifecycle_events(new HashSet<String>());
+        event.setLifecycle_events(new ArrayList<String>());
         event.getLifecycle_events().add("command_1");
         virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
 
@@ -192,7 +193,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
         LifecycleEvent event = new LifecycleEvent();
         event.setEvent(Event.ALLOCATE);
-        event.setLifecycle_events(new HashSet<String>());
+        event.setLifecycle_events(new ArrayList<String>());
         event.getLifecycle_events().add("command_1");
         virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
 

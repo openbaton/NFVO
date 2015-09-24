@@ -27,7 +27,6 @@ import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.repositories.VNFRDependencyRepository;
-import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +56,6 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
     private org.project.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private VNFRRepository vnfrRepository;
 
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
@@ -142,7 +138,7 @@ public class DependencyManagement implements org.project.openbaton.nfvo.core.int
                 res.add(sourceName + nsr.getId());
         }
         if (!res.isEmpty())
-            log.debug("There are the following not inizialized vnfr sources:" + res);
+            log.debug("There are the following not initialized vnfr sources:" + res);
         return res;
     }
 }

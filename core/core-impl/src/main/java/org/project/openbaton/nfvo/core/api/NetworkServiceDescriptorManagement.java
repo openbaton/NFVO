@@ -96,7 +96,6 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
-        nsdUtils.fetchNetworks(networkServiceDescriptor);
         log.trace("Fetched Data");
 
         log.trace("Persisting VNFDependencies");

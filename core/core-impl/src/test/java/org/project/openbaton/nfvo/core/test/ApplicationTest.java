@@ -16,12 +16,13 @@
 
 package org.project.openbaton.nfvo.core.test;
 
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.core.NetworkServiceFaultManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -42,6 +43,8 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +70,6 @@ public class ApplicationTest {
     @Bean
     VnfmManager vnfmManager() throws JMSException, NamingException, NotFoundException {
         VnfmManager vnfmManager = mock(VnfmManager.class);
-        //when(vnfmManager.deploy(any(NetworkServiceRecord.class))).thenReturn(new AsyncResult<Void>(null));
         return vnfmManager;
     }
 
@@ -102,14 +104,15 @@ public class ApplicationTest {
     }
 
     @Bean
-    VNFDRepository vnfDependencyRepository() {
-        return mock(VNFDRepository.class);
-    }
-
-    @Bean
     VnfPackageRepository vnfPackageRepository() {
         return mock(VnfPackageRepository.class);
     }
+
+    @Bean
+    PhysicalNetworkFunctionDescriptorRepository physicalNetworkFunctionDescriptorRepository(){return mock(PhysicalNetworkFunctionDescriptorRepository.class);}
+
+    @Bean
+    VNFDRepository vnfdRepository(){return mock(VNFDRepository.class);}
 
     @Bean
     VNFRRepository vnfrRepository() {
@@ -119,6 +122,11 @@ public class ApplicationTest {
     @Bean
     VNFRDependencyRepository vnfRecordRepository() {
         return mock(VNFRDependencyRepository.class);
+    }
+
+    @Bean
+    VNFDependencyRepository vnfDependencyRepository() {
+        return mock(VNFDependencyRepository.class);
     }
 
     @Bean
@@ -154,7 +162,7 @@ public class ApplicationTest {
     @Bean
     Vim vim() throws VimDriverException, VimException {
         Vim vim = mock(Vim.class);
-        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), , , )).thenReturn(new AsyncResult<String>("mocked-id"));
+        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() , anyBoolean())).thenReturn(new AsyncResult<String>("mocked-id"));
         return vim;
     }
 
