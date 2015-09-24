@@ -271,6 +271,11 @@ public class VnfmSpringHelper extends VnfmHelper {
         }
     }
 
+    @Override
+    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws JMSException {
+        return sendAndReceiveNfvMessage(nfvoQueue,VnfmUtils.getNfvMessage(action,virtualNetworkFunctionRecord));
+    }
+
     private JsonObject getJsonObjectForScript(String save_scripts, String payload, String name) {
         JsonObject jsonMessage = new JsonObject();
         jsonMessage.addProperty("action", save_scripts);
