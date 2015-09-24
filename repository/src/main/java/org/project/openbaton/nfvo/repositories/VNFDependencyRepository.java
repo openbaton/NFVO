@@ -22,9 +22,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-/*@Repository
-@Transactional(readOnly = true)
-@Scope("singleton")*/
 public interface VNFDependencyRepository extends CrudRepository<VNFDependency, String> {
 
 }
