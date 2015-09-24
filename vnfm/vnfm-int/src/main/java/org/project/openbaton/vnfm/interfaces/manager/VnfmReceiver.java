@@ -16,7 +16,6 @@
 
 package org.project.openbaton.vnfm.interfaces.manager;
 
-import org.project.openbaton.catalogue.nfvo.CoreMessage;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.exceptions.VimException;
@@ -33,5 +32,5 @@ import javax.jms.Destination;
 public interface VnfmReceiver {
 
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory")
-    void actionFinished(@Payload NFVMessage nfvMessage,@Header(name= JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException;
+    void actionFinished(@Payload NFVMessage nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException;
 }

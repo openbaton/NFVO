@@ -1,10 +1,25 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -28,6 +43,7 @@ public class ScalingTask extends AbstractTask {
     @Autowired
     @Qualifier("vnfmRegister")
     private VnfmRegister vnfmRegister;
+
     @Override
     protected void doWork() throws Exception {
         VnfmSender vnfmSender;
@@ -76,12 +92,12 @@ public class ScalingTask extends AbstractTask {
         virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
         log.debug("SCALING: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
-        log.debug("SCALING: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
+        log.info("SCALING: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALING), getTempDestination());
     }
 
     private Set<VNFComponent> updateVNFComponents(Set<VNFComponent> vnfComponents_nfvo, Set<VNFComponent> vnfComponents_manager) {
-        Set<VNFComponent> components= new HashSet<>();
+        Set<VNFComponent> components = new HashSet<>();
         boolean found = false;
         //Updating existing Components, adding new ones and ignoring old ones
         for (VNFComponent vnfComponent_manager : vnfComponents_manager) {
@@ -131,9 +147,7 @@ public class ScalingTask extends AbstractTask {
                     found = true;
                     log.debug("SCALING: Updating exsting VNFDConnectionPoint " + vnfdConnectionPoint_nfvo.getId());
                     vnfdConnectionPoint_nfvo.setVirtual_link_reference(vnfdConnectionPoint_manager.getVirtual_link_reference());
-                    //vnfdConnectionPoint_nfvo.setExtId(vnfdConnectionPoint_manager.getExtId());
                     vnfdConnectionPoint_nfvo.setType(vnfdConnectionPoint_manager.getType());
-                    //vnfdConnectionPoint_nfvo.setName(vnfdConnectionPoint_manager.getName());
                     //Add updated VNFDConnectionPoint
                     vnfdConnectionPoints.add(vnfdConnectionPoint_nfvo);
                     //Proceed with the next VNFDConnectionPoint
