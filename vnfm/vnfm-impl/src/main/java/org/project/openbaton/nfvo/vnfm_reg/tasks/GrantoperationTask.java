@@ -64,6 +64,7 @@ public class GrantoperationTask extends AbstractTask {
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION), getTempDestination());
         } else {
             // there are not enough resources for deploying VNFR
+            saveVirtualNetworkFunctionRecord();
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
         }
     }

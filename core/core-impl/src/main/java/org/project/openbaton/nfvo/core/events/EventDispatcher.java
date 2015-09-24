@@ -43,7 +43,7 @@ import java.io.IOException;
 /**
  * This class implements the interface {@Link org.project.openbaton.nfvo.core.interfaces.EventDispatcher} so is in charge
  * of handling the de/registration of a EventEndpoint.
- * <p/>
+ *
  * Moreover receives also internal events and dispatches them to the external applications.
  */
 @Service
@@ -88,7 +88,6 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     public void dispatchEvent(ApplicationEventNFVO event) {
         log.debug("dispatching event to the world!!!");
         log.debug("event is: " + event);
-        //log.trace("payload is: " + event.getPayload());
 
         Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 

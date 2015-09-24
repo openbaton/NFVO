@@ -47,7 +47,6 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     public VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor) {
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkDescriptor);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkDescriptor.getId());
-        //TODO maybe check whenever the image is available on the VimInstance
         return virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
     }
 
@@ -55,7 +54,6 @@ public class VirtualLinkManagement implements org.project.openbaton.nfvo.core.in
     public VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord) {
         log.trace("Adding VirtualLinkDescriptor " + virtualLinkRecord);
         log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkRecord.getId());
-        //TODO maybe check whenever the image is available on the VimInstance
         return virtualLinkRecordRepository.save(virtualLinkRecord);
     }
 

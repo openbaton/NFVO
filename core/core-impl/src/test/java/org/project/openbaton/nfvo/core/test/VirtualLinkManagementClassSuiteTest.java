@@ -176,16 +176,16 @@ public class VirtualLinkManagementClassSuiteTest {
         virtualLinkRecord.setAllocated_capacity(new HashSet<String>() {{
             add("allocated_cap");
         }});
-        virtualLinkRecord.setTest_access("test_access");
+        virtualLinkRecord.setTest_access(new HashSet<String>(){{add("test_access");}});
         virtualLinkRecord.setParent_ns("parent_id");
-        virtualLinkRecord.setNumber_of_enpoints(3);
+        virtualLinkRecord.setNumber_of_endpoints(3);
         virtualLinkRecord.setNotification(new HashSet<String>() {{
             add("notification");
         }});
         virtualLinkRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>() {{
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.INSTANTIATE);
-            lifecycleEvent.setLifecycle_events(new HashSet<String>() {{
+            lifecycleEvent.setLifecycle_events(new ArrayList<String>() {{
                 add("command");
             }});
             add(lifecycleEvent);

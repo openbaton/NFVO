@@ -30,8 +30,8 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.common.exceptions.BadFormatException;
-import org.project.openbaton.nfvo.common.exceptions.NotFoundException;
+import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.VimRepository;
@@ -169,7 +169,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
         NetworkServiceDescriptor new_nsd = createNetworkServiceDescriptor();
         new_nsd.setName("UpdatedName");
-        nsdManagement.update(new_nsd, nsd_exp.getId());
+        nsdManagement.update(new_nsd);
 
         new_nsd.setId(nsd_exp.getId());
 

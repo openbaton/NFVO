@@ -26,7 +26,6 @@ import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.core.utils.NSRUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
@@ -81,9 +80,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
 
     @Autowired
     private NetworkManagement networkManagement;
-
-    @Autowired
-    private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {

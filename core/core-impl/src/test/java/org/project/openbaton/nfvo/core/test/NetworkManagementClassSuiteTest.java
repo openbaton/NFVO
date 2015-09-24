@@ -30,7 +30,8 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.common.exceptions.VimException;
+import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.project.openbaton.nfvo.repositories.NetworkRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -44,7 +45,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -92,7 +92,7 @@ public class NetworkManagementClassSuiteTest {
 
     @Test
     public void networkManagementUpdateTest() throws VimException {
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim());
+        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
         Network network = createNetwork();
         network.setName("UpdatedName");
         network.setExternal(true);
@@ -131,9 +131,7 @@ public class NetworkManagementClassSuiteTest {
     public void networkManagementAddTest() throws VimException {
         Network network_exp = createNetwork();
         when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim());
-//		Vim vim = vimBroker.getVim("mocked_vim");
-//		when(vim.add(any(VimInstance.class), any(Network.class))).thenReturn(network_exp);
+        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
 
         Network network_new = networkManagement.add(createVimInstance(), network_exp);
 
@@ -161,7 +159,7 @@ public class NetworkManagementClassSuiteTest {
     @Test
     public void networkManagementDeleteTest() throws VimException {
         Network network_exp = createNetwork();
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim());
+        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
         when(networkRepository.findOne(network_exp.getId())).thenReturn(network_exp);
         networkManagement.delete(createVimInstance(), network_exp);
         when(networkRepository.findOne(anyString())).thenReturn(null);
@@ -250,7 +248,23 @@ public class NetworkManagementClassSuiteTest {
         return vimInstance;
     }
 
-    private class MyVim implements Vim, org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement {
+    private class MyVim extends Vim implements org.project.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement {
+
+        public MyVim(String type, int port) {
+            super(type, port);
+        }
+
+        public MyVim(String type, String name, int port) {
+            super(type, name, port);
+        }
+
+        public MyVim(String type, String name) {
+            super(type, name);
+        }
+
+        public MyVim(String type) {
+            super(type);
+        }
 
         @Override
         public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
@@ -273,7 +287,7 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
-        public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+        public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
             return null;
         }
 
@@ -293,7 +307,7 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
-        public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+        public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
 
         }
 
@@ -323,7 +337,7 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
-        public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimException {
+        public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException {
             return null;
         }
 

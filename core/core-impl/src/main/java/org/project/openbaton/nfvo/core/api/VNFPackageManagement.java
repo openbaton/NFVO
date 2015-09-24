@@ -66,8 +66,8 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
         byte[] imageFile = null;
         NFVImage image = new NFVImage();
 
-        InputStream tarStream = null;
-        ArchiveInputStream myTarFile = null;
+        InputStream tarStream;
+        ArchiveInputStream myTarFile;
         try {
             tarStream = new ByteArrayInputStream(pack);
             myTarFile = new ArchiveStreamFactory().createArchiveInputStream("tar", tarStream);
@@ -176,12 +176,10 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
     @Override
     public void disable() {
-
     }
 
     @Override
     public void enable() {
-
     }
 
     @Override
