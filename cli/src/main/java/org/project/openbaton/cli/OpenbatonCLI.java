@@ -22,7 +22,9 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
-import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.catalogue.nfvo.InstallPluginEvent;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.project.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.slf4j.Logger;
@@ -36,7 +38,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -47,14 +48,7 @@ import java.util.*;
 @Component
 public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
 
-    @Autowired
-    private PluginEndpointRepository pluginEndpointRepository;
-
-//    @Autowired
-//    private AgentBroker agentBroker;
-
-    private static final Character mask = '*';
-    private final static Map<String, String> helpCommandList = new HashMap<String, String>(){{
+    private final static Map<String, String> helpCommandList = new HashMap<String, String>() {{
         put("help", "Print the usage");
         put("exit", "Exit the application");
         put("installVim", "install vim driver plugin");
@@ -62,6 +56,8 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         put("print properties", "print all the properties");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private PluginEndpointRepository pluginEndpointRepository;
     private ApplicationEventPublisher publisher;
 
     @Autowired
@@ -76,7 +72,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
         System.out.println("Available commands are");
         for (Object entry : helpCommandList.entrySet()) {
-            System.out.println("\t" + ((Map.Entry)entry).getKey() + ":\t" + ((Map.Entry)entry).getValue());
+            System.out.println("\t" + ((Map.Entry) entry).getKey() + ":\t" + ((Map.Entry) entry).getValue());
         }
         System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
     }
@@ -84,8 +80,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     /**
      * Base start as a single module
      *
-     * @param args
-     * parameters for starting the shell and bootstrap
+     * @param args parameters for starting the shell and bootstrap
      */
     public static void main(String[] args) {
         OpenbatonCLI openbatonCLI = new OpenbatonCLI();
@@ -100,15 +95,10 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
      * When running in spring boot application this implements the CommandLineRunner
      * and is executed after all the spring-shell components were loaded.
      *
-     * @param args
-     * parameters for starting the shell and bootstrap
+     * @param args parameters for starting the shell and bootstrap
      */
     @Override
     public void run(String... args) throws Exception {
-
-// Bootstrap bootstrap = new Bootstrap();
-// List<String> argumentList = new ArrayList<String>(Arrays.asList(args));
-// bootstrap.main(argumentList.toArray(new String[0]));
 
         ConsoleReader reader = null;
         try {
@@ -122,50 +112,30 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         List<Completer> completors = new LinkedList<>();
         completors.add(new StringsCompleter(helpCommandList.keySet()));
         completors.add(new FileNameCompleter());
-// completors.add(new StringsCompleter(new ArrayList<String>(){{
-// add("test");
-// add("openstack");
-// add("amazon");
-// }}));
         reader.addCompleter(new ArgumentCompleter(completors));
         reader.setPrompt("\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
         while ((line = reader.readLine()) != null) {
             out.flush();
             line = line.trim();
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
-
-                for (PluginEndpoint endpoint : pluginEndpointRepository.findAll()){
-                    PluginMessage message = new PluginMessage();
-                    message.setMethodName("CLOSE");
-                    message.setInterfaceClass(Class.forName(endpoint.getInterfaceClass()));
-                    message.setParameters(new LinkedList<Serializable>());
-                    message.getParameters().add("shutting down the NFVO");
-//                    agentBroker.getSender(endpoint.getEndpointType()).send(endpoint.getEndpoint(), message);
-                }
-
                 exit(0);
-            }else
-            if (line.equalsIgnoreCase("cls")) {
+            } else if (line.equalsIgnoreCase("cls")) {
                 reader.clearScreen();
-            }else
-            if (line.equalsIgnoreCase("help")) {
+            } else if (line.equalsIgnoreCase("help")) {
                 usage();
-            }else
-            if (line.startsWith("installVim ")) {
+            } else if (line.startsWith("installVim ")) {
                 installPlugin(line, "vim");
-            }else
-            if (line.startsWith("installMonitor ")) {
+            } else if (line.startsWith("installMonitor ")) {
                 installPlugin(line, "monitor");
-            }else
-            if (line.equalsIgnoreCase("")) {
+            } else if (line.equalsIgnoreCase("")) {
                 continue;
-            }else usage();
+            } else usage();
         }
     }
 
     private boolean installPlugin(String line, String type) throws IOException {
         String path = line.split(" ")[1];
-        List<String > classes = new ArrayList<>();
+        List<String> classes = new ArrayList<>();
         File jar = new File(path);
         if (!jar.exists() || jar.isDirectory()) {
             log.error(jar.getAbsolutePath() + " doesn't exists or is not a plugin.");
@@ -177,21 +147,21 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
 
         String installPath = null;
 
-        for (Configuration c : configurationRepository.findAll()){
-            if (c.getName().equals("system")){
-                for (ConfigurationParameter cp : c.getConfigurationParameters()){
+        for (Configuration c : configurationRepository.findAll()) {
+            if (c.getName().equals("system")) {
+                for (ConfigurationParameter cp : c.getConfigurationParameters()) {
                     if (type.equals("vim")) {
                         if (cp.getConfKey().equals("vim-plugin-installation-dir")) {
                             installPath = cp.getValue();
                         }
-                        if (cp.getConfKey().equals("vim-classes")){
+                        if (cp.getConfKey().equals("vim-classes")) {
                             classes = Arrays.asList(cp.getValue().split(";"));
                         }
-                    }
-                    else if (type.equals("monitor")) {
+                    } else if (type.equals("monitor")) {
                         if (cp.getConfKey().equals("monitoring-plugin-installation-dir")) {
                             installPath = cp.getValue();
-                        }if (cp.getConfKey().equals("monitoring-classes")){
+                        }
+                        if (cp.getConfKey().equals("monitoring-classes")) {
                             classes = Arrays.asList(cp.getValue().split(";"));
                         }
                     }
@@ -208,7 +178,6 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         event.setClasses(classes);
         this.publisher.publishEvent(event);
         return true;
-
     }
 
     @Override
