@@ -30,7 +30,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import java.util.concurrent.Future;
 
 /**
@@ -38,7 +41,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope
-public class JmsEventSender implements EventSender{
+public class JmsEventSender implements EventSender {
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -51,7 +54,7 @@ public class JmsEventSender implements EventSender{
 
         log.debug("Sending message: " + event + " to endpoint: " + endpoint);
         log.info("Sending message: " + event.getAction() + " to endpoint: " + endpoint.getName());
-        final String json = "{action:'" + event.getAction() +"',payload:'" + new Gson().toJson(event.getPayload()) +"'}";
+        final String json = "{action:'" + event.getAction() + "',payload:'" + new Gson().toJson(event.getPayload()) + "'}";
         MessageCreator messageCreator = new MessageCreator() {
             @Override
             public Message createMessage(Session session) throws JMSException {

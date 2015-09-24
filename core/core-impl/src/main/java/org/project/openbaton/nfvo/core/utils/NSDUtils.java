@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,29 +55,31 @@ public class NSDUtils {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
-        /**
-         * Fetching VNFD
-         */
-        List<VirtualNetworkFunctionDescriptor> vnfdToAdd = new ArrayList<>();
-        List<VirtualNetworkFunctionDescriptor> vnfdToRem = new ArrayList<>();
-
-        for (VirtualNetworkFunctionDescriptor vnfd: networkServiceDescriptor.getVnfd()) {
-            log.debug("The VNFD to fetch is: " + vnfd.getName());
-            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll()) {
-                log.debug("Checking: " + virtualNetworkFunctionDescriptor.getName());
-                if (vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())) {
-                    vnfdToRem.add(vnfd);
-                    vnfdToAdd.add(virtualNetworkFunctionDescriptor);
-                    log.debug("Found VNFD: " + vnfd.getName() + " of type: " + vnfd.getType());
-                    break;
+    /**
+     * Fetching vnfd already existing in thr DB based on the id
+     *
+     * @param networkServiceDescriptor
+     * @throws NotFoundException
+     */
+    public void fetchExistingVnfd(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
+        Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
+        Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            if (vnfd.getId() != null) {
+                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findOne(vnfd.getId());
+                log.debug("VNFD fetched: " + vnfd_new);
+                if (vnfd_new == null) {
+                    throw new NotFoundException("Not found VNFD with id: " + vnfd.getId());
                 }
+                vnfd_add.add(vnfd_new);
+                vnfd_remove.add(vnfd);
             }
         }
+        networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
+        networkServiceDescriptor.getVnfd().addAll(vnfd_add);
+    }
 
-        networkServiceDescriptor.getVnfd().removeAll(vnfdToRem);
-        networkServiceDescriptor.getVnfd().addAll(vnfdToAdd);
-
+    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
         /**
          * Fetching VimInstances
          */
@@ -89,23 +90,23 @@ public class NSDUtils {
 
     public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException {
         Iterable<VimInstance> vimInstances = vimRepository.findAll();
-        if (!vimInstances.iterator().hasNext()){
+        if (!vimInstances.iterator().hasNext()) {
             throw new NotFoundException("No VimInstances in the Database");
         }
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
 
             String name_id = vdu.getVimInstanceName();
-            log.debug("vim instance name="+name_id);
+            log.debug("vim instance name=" + name_id);
             boolean fetched = false;
-            for(VimInstance vimInstance : vimInstances){
-                if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/){
+            for (VimInstance vimInstance : vimInstances) {
+                if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
                     vdu.setVimInstance(vimInstance);
-                    log.debug("Found vimInstance: "+ vimInstance);
-                    fetched=true;
+                    log.debug("Found vimInstance: " + vimInstance);
+                    fetched = true;
                     break;
                 }
             }
-            if (!fetched){
+            if (!fetched) {
                 throw new NotFoundException("No VimInstance with name or id equals to " + name_id);
             }
         }
@@ -119,31 +120,30 @@ public class NSDUtils {
         DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
         //Add a vertex to the graph for each vnfd
-        for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             g.addVertex(vnfd.getName());
         }
 
         mergeMultipleDependency(networkServiceDescriptor);
 
 
-        for (VNFDependency vnfDependency:networkServiceDescriptor.getVnf_dependency()){
-            log.trace(""+vnfDependency);
+        for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
+            log.trace("" + vnfDependency);
             VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
             VirtualNetworkFunctionDescriptor target = vnfDependency.getTarget();
 
-            if(source == null || target == null || source.getName() == null || target.getName() == null){
+            if (source == null || target == null || source.getName() == null || target.getName() == null) {
                 throw new BadFormatException("Source name and Target name must be defined in the request json file");
             }
             boolean sourceFound = false;
             boolean targetFound = false;
 
-            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
-                if (virtualNetworkFunctionDescriptor.getName().equals(source.getName())){
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
+                if (virtualNetworkFunctionDescriptor.getName().equals(source.getName())) {
                     vnfDependency.setSource(virtualNetworkFunctionDescriptor);
                     sourceFound = true;
                     log.trace("Found source" + virtualNetworkFunctionDescriptor.getName());
-                }
-                else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())){
+                } else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())) {
                     vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
                     targetFound = true;
                     log.trace("Found target" + virtualNetworkFunctionDescriptor.getName());
@@ -155,24 +155,25 @@ public class NSDUtils {
                 throw new NotFoundException(name + " was not found in the NetworkServiceDescriptor");
             }
             // Add an edge to the graph
-            g.addEdge(source.getName(),target.getName());
+            g.addEdge(source.getName(), target.getName());
         }
 
         // Get simple cycles
-        DirectedSimpleCycles<String,DefaultEdge> dsc = new SzwarcfiterLauerSimpleCycles(g);
+        DirectedSimpleCycles<String, DefaultEdge> dsc = new SzwarcfiterLauerSimpleCycles(g);
         List<List<String>> cycles = dsc.findSimpleCycles();
         // Set cyclicDependency param to the vnfd
-        for(VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
-            for(List<String> cycle : cycles)
-                if(cycle.contains(vnfd.getName())) {
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            for (List<String> cycle : cycles)
+                if (cycle.contains(vnfd.getName())) {
                     vnfd.setCyclicDependency(true);
                     break;
                 }
         }
     }
+
     /**
      * MergeMultipleDependency
-     *
+     * <p/>
      * Merge two VNFDependency (A and B), where source and target are equals, in only one (C).
      * C contains the parameters of A and B.     *
      */
@@ -180,17 +181,17 @@ public class NSDUtils {
 
         Set<VNFDependency> newDependencies = new HashSet<>();
 
-        for (VNFDependency oldDependency : networkServiceDescriptor.getVnf_dependency()){
+        for (VNFDependency oldDependency : networkServiceDescriptor.getVnf_dependency()) {
             boolean contained = false;
-            for (VNFDependency newDependency: newDependencies){
-                if (newDependency.getTarget().getName().equals(oldDependency.getTarget().getName()) && newDependency.getSource().getName().equals(oldDependency.getSource().getName())){
+            for (VNFDependency newDependency : newDependencies) {
+                if (newDependency.getTarget().getName().equals(oldDependency.getTarget().getName()) && newDependency.getSource().getName().equals(oldDependency.getSource().getName())) {
                     log.debug("Old is: " + oldDependency);
                     if (oldDependency.getParameters() != null)
                         newDependency.getParameters().addAll(oldDependency.getParameters());
                     contained = true;
                 }
             }
-            if (!contained){
+            if (!contained) {
                 VNFDependency newDependency = new VNFDependency();
                 newDependency.setSource(oldDependency.getSource());
                 newDependency.setTarget(oldDependency.getTarget());

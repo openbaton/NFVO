@@ -58,25 +58,25 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
     }
 
     @Override
-    public synchronized void releaseVNFR(String vnfrSourceName,NetworkServiceRecord nsrFather) throws NotFoundException {
+    public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather) throws NotFoundException {
         List<String> dependencyIdToBeRemoved = new ArrayList<>();
         log.debug("Doing release for VNFR id: " + vnfrSourceName);
         for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
             String dependencyId = entry.getKey();
             Set<String> sourceList = entry.getValue();
             log.debug("Dependency " + dependencyId + " contains " + sourceList.size() + " dependencies: " + sourceList);
-            if (sourceList.contains(vnfrSourceName+nsrFather.getId())) {
-                sourceList.remove(vnfrSourceName+nsrFather.getId());
+            if (sourceList.contains(vnfrSourceName + nsrFather.getId())) {
+                sourceList.remove(vnfrSourceName + nsrFather.getId());
                 if (sourceList.size() == 0) {
-                    
+
                     VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
 
                     //get the vnfr target by its name
-                    VirtualNetworkFunctionRecord target=null;
-                    for(VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
-                        if(vnfr.getName().equals(vnfRecordDependency.getTarget()))
-                            target=vnfrRepository.findOne(vnfr.getId());
-                    log.debug("Target version is: " +target.getHb_version());
+                    VirtualNetworkFunctionRecord target = null;
+                    for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
+                        if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
+                            target = vnfrRepository.findOne(vnfr.getId());
+                    log.debug("Target version is: " + target.getHb_version());
 
                     for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
                         if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
@@ -88,7 +88,7 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
                         }
                     }
                     log.debug("SENDING MODIFY");
-                    OrVnfmGenericMessage orVnfmGenericMessage= new OrVnfmGenericMessage(target,Action.MODIFY);
+                    OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(target, Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
                     vnfmManager.modify(target, orVnfmGenericMessage);
                     dependencyIdToBeRemoved.add(dependencyId);
@@ -96,8 +96,8 @@ public class DependencyQueuer implements org.project.openbaton.nfvo.core.interfa
             }
         }
 
-        for (String depIdToRem : dependencyIdToBeRemoved){
-            for (String depId: queues.keySet()) {
+        for (String depIdToRem : dependencyIdToBeRemoved) {
+            for (String depId : queues.keySet()) {
                 if (depIdToRem.equals(depId)) {
                     queues.remove(depId);
                     break;

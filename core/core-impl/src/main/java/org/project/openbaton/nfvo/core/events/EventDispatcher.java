@@ -24,8 +24,8 @@ import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.project.openbaton.exceptions.NotFoundException;
+import org.project.openbaton.nfvo.core.interfaces.EventSender;
 import org.project.openbaton.nfvo.repositories.EventEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,33 +43,30 @@ import java.io.IOException;
 /**
  * This class implements the interface {@Link org.project.openbaton.nfvo.core.interfaces.EventDispatcher} so is in charge
  * of handling the de/registration of a EventEndpoint.
- *
+ * <p/>
  * Moreover receives also internal events and dispatches them to the external applications.
- *
  */
 @Service
 @Scope
 @EnableJms
 class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.project.openbaton.nfvo.core.interfaces.EventDispatcher {
 
-    @Override
-    @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
-    public EventEndpoint register(@Payload EventEndpoint endpoint){
-        return eventEndpointRepository.save(endpoint);
-    }
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private EventEndpointRepository eventEndpointRepository;
-
     @Autowired
     private ConfigurableApplicationContext context;
 
     @Override
-    public void onApplicationEvent(ApplicationEventNFVO  event) {
+    @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
+    public EventEndpoint register(@Payload EventEndpoint endpoint) {
+        return eventEndpointRepository.save(endpoint);
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationEventNFVO event) {
         log.debug("Received event: " + event);
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case INSTANTIATE_FINISH:
                 break;
             case ALLOCATE_RESOURCES:
@@ -88,32 +85,31 @@ class EventDispatcher implements ApplicationListener<ApplicationEventNFVO>, org.
     }
 
     @Override
-    public void dispatchEvent(ApplicationEventNFVO event){
+    public void dispatchEvent(ApplicationEventNFVO event) {
         log.debug("dispatching event to the world!!!");
         log.debug("event is: " + event);
         //log.trace("payload is: " + event.getPayload());
 
         Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 
-        for (EventEndpoint endpoint : endpoints){
+        for (EventEndpoint endpoint : endpoints) {
             log.debug("Checking endpoint: " + endpoint);
-            if (endpoint.getEvent().ordinal() == event.getAction().ordinal()){
-                if (endpoint.getVirtualNetworkFunctionId() != null){
-                    if (event.getPayload() instanceof VirtualNetworkFunctionRecord){
-                        if (((VirtualNetworkFunctionRecord) event.getPayload()).getId().equals(endpoint.getVirtualNetworkFunctionId())){
+            if (endpoint.getEvent().ordinal() == event.getAction().ordinal()) {
+                if (endpoint.getVirtualNetworkFunctionId() != null) {
+                    if (event.getPayload() instanceof VirtualNetworkFunctionRecord) {
+                        if (((VirtualNetworkFunctionRecord) event.getPayload()).getId().equals(endpoint.getVirtualNetworkFunctionId())) {
                             log.debug("dispatching event to: " + endpoint);
-                            sendEvent(endpoint,event);
+                            sendEvent(endpoint, event);
                         }
                     }
-                }
-                else if (endpoint.getNetworkServiceId() != null){
-                    if (event.getPayload() instanceof NetworkServiceRecord){
-                        if (((NetworkServiceRecord) event.getPayload()).getId().equals(endpoint.getNetworkServiceId())){
+                } else if (endpoint.getNetworkServiceId() != null) {
+                    if (event.getPayload() instanceof NetworkServiceRecord) {
+                        if (((NetworkServiceRecord) event.getPayload()).getId().equals(endpoint.getNetworkServiceId())) {
                             log.debug("dispatching event to: " + endpoint);
-                            sendEvent(endpoint,event);
+                            sendEvent(endpoint, event);
                         }
                     }
-                }else {
+                } else {
                     log.debug("dispatching event to: " + endpoint);
                     sendEvent(endpoint, event);
                 }

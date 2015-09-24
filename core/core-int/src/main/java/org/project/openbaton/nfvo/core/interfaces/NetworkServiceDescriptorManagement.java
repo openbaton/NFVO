@@ -165,14 +165,16 @@ public interface NetworkServiceDescriptorManagement {
 
     /**
      * Adds or Updates the PhysicalNetworkFunctionDescriptor into NSD
+     *
      * @param pDescriptor
      * @param id
      * @return PhysicalNetworkFunctionDescriptor
      */
-    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor ,String id);
+    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id);
 
     /**
      * Adds or Updates the Security into NSD
+     *
      * @param id
      * @param security
      * @return
@@ -181,6 +183,7 @@ public interface NetworkServiceDescriptorManagement {
 
     /**
      * Removes the Secuty with idS from NSD with id
+     *
      * @param id
      * @param idS
      */

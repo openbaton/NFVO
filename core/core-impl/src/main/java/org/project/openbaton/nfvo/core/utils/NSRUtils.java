@@ -98,13 +98,13 @@ public class NSRUtils {
                         if (vnfDependency.getSource().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
                             vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
 
-                            DependencyParameters dependencyParameters=vnfRecordDependency.getParameters().get(virtualNetworkFunctionDescriptor.getType());
+                            DependencyParameters dependencyParameters = vnfRecordDependency.getParameters().get(virtualNetworkFunctionDescriptor.getType());
                             //If there are no dependencyParameter of that type
-                            if(dependencyParameters==null) {
+                            if (dependencyParameters == null) {
                                 dependencyParameters = new DependencyParameters();
                                 dependencyParameters.setParameters(new HashMap<String, String>());
                             }
-                            for (String key:vnfDependency.getParameters()) {
+                            for (String key : vnfDependency.getParameters()) {
                                 dependencyParameters.getParameters().put(key, "");
                             }
                             vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
@@ -126,9 +126,9 @@ public class NSRUtils {
                         vnfRecordDependency.getIdType().put(virtualNetworkFunctionDescriptor.getName(), virtualNetworkFunctionDescriptor.getType());
                         DependencyParameters dependencyParameters = new DependencyParameters();
                         dependencyParameters.setParameters(new HashMap<String, String>());
-                        for (String key:vnfDependency.getParameters()) {
+                        for (String key : vnfDependency.getParameters()) {
                             log.debug("Adding parameter to dependency: " + key);
-                            dependencyParameters.getParameters().put(key,"");
+                            dependencyParameters.getParameters().put(key, "");
                         }
                         vnfRecordDependency.getParameters().put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
                     }

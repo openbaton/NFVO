@@ -6,16 +6,14 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.utils.BoundedInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.VNFPackage;
-import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.exceptions.VimException;
+import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.project.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -27,10 +25,14 @@ import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.lang.reflect.Array;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lto on 22/07/15.
@@ -74,7 +76,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
             throw new IOException();
         }
         TarArchiveEntry entry;
-        while ((entry = (TarArchiveEntry)myTarFile.getNextEntry()) != null) {
+        while ((entry = (TarArchiveEntry) myTarFile.getNextEntry()) != null) {
             /* Get the name of the file */
             if (entry.isFile() && !entry.getName().startsWith("./._")) {
                 log.debug("file inside tar: " + entry.getName());
@@ -84,7 +86,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     YamlJsonParser yaml = new YamlJsonParser();
                     metadata = yaml.parseMap(new String(content));
                     //Get configuration for NFVImage
-                    String[] REQUIRED_PACKAGE_KEYS = new String[] {"name", "image"};
+                    String[] REQUIRED_PACKAGE_KEYS = new String[]{"name", "image"};
                     for (String requiredKey : REQUIRED_PACKAGE_KEYS) {
                         if (!metadata.containsKey(requiredKey)) {
                             throw new NotFoundException("Not found " + requiredKey + " of VNFPackage in Metadata.yaml");
@@ -93,7 +95,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                             throw new NullPointerException("Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
                         }
                     }
-                    vnfPackage.setName((String)metadata.get("name"));
+                    vnfPackage.setName((String) metadata.get("name"));
                     if (metadata.containsKey("scripts-link"))
                         vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
                     if (metadata.containsKey("image-link"))
@@ -101,7 +103,7 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
 
                     Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image");
                     //Check if all required keys are available
-                    String[] REQUIRED_IMAGE_KEYS = new String[] {"name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"};
+                    String[] REQUIRED_IMAGE_KEYS = new String[]{"name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"};
                     for (String requiredKey : REQUIRED_IMAGE_KEYS) {
                         if (!imageConfig.containsKey(requiredKey)) {
                             throw new NotFoundException("Not found " + requiredKey + " of image in Metadata.yaml");
@@ -117,15 +119,14 @@ public class VNFPackageManagement implements org.project.openbaton.nfvo.core.int
                     image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
                     image.setMinRam((Integer) imageConfig.get("minRam"));
                     image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
-                }else if (entry.getName().endsWith(".json")) {
+                } else if (entry.getName().endsWith(".json")) {
                     //this must be the vnfd
                     //and has to be onboarded in the catalogue
                     String json = new String(content);
                     log.trace("Content of json is: " + json);
                     try {
                         virtualNetworkFunctionDescriptor = mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
