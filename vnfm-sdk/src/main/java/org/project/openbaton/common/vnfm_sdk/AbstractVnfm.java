@@ -1,12 +1,16 @@
 package org.project.openbaton.common.vnfm_sdk;
 
+import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
@@ -273,6 +277,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, String vnfInstanceName, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension) throws BadFormatException, NotFoundException {
         try {
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords);
+            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
+                for (VirtualLinkRecord virtualLinkRecord : virtualLinkRecords) {
+                    if (internalVirtualLink.getName().equals(virtualLinkRecord.getName())) {
+                        internalVirtualLink.setExtId(virtualLinkRecord.getExtId());
+                        internalVirtualLink.setConnectivity_type(virtualLinkRecord.getConnectivity_type());
+                    }
+                }
+            }
             log.debug("Created VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord);
             return virtualNetworkFunctionRecord;
         } catch (NotFoundException e) {
