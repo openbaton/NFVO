@@ -99,7 +99,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
     protected abstract void doWork() throws Exception;
 
-    public boolean isAsync(){
+    public boolean isAsync() {
         return true;
     }
 
@@ -120,10 +120,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     public void setTempDestination(Destination tempDestination) {
         this.tempDestination = tempDestination;
     }
+
     protected void changeStatus() {
         log.debug("Action is: " + action);
         Status status = null;
-        switch (action){
+        switch (action) {
             case ALLOCATE_RESOURCES:
                 status = Status.NULL;
                 break;
@@ -136,7 +137,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 status = Status.ERROR;
                 break;
             case MODIFY:
-                 status = Status.INACTIVE;
+                status = Status.INACTIVE;
                 break;
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;

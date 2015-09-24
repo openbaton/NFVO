@@ -36,7 +36,7 @@ public class JmsRegister extends VnfmRegister {
     @Override
     @JmsListener(destination = "vnfm-register", containerFactory = "queueJmsContainerFactory")
     public void addManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
-        if (endpoint.getEndpointType() == null){
+        if (endpoint.getEndpointType() == null) {
             endpoint.setEndpointType(EndpointType.JMS);
         }
         log.debug("Received: " + endpoint);
@@ -49,8 +49,4 @@ public class JmsRegister extends VnfmRegister {
         log.debug("Unregistering: " + endpoint);
         this.unregister(endpoint);
     }
-
-
-
-
 }
