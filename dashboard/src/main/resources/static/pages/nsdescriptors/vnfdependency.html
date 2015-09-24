@@ -33,8 +33,10 @@
                 <div ng-repeat="vnfd in nsdinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
                     <h2>VNF Dependency {{vnfd.name}}</h2>
                     <spam ng-repeat="(k,v) in vnfd">
-                        <dt>{{k}}</dt>
-                        <dd>{{v}}</dd>
+                        <dl class="dl-horizontal">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                        </dl>
                     </spam>
                 </div>
             </div>
