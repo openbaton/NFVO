@@ -28,15 +28,16 @@
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
             <br/>
             <a href="#nsdescriptors/{{nsdinfo.id}}/graph">Show Graph</a>
-
-            <dt>id:</dt>
-            <dd>{{nsdinfo.id}}</dd>
-            <dt>Vendor:</dt>
-            <dd>{{nsdinfo.vendor}}</dd>
-            <dt>Version:</dt>
-            <dd>{{nsdinfo.version}}</dd>
-            <dt>Enabled:</dt>
-            <dd>{{nsdinfo.enabled}}</dd>
+            <dl class="dl-horizontal">
+                <dt>id:</dt>
+                <dd>{{nsdinfo.id}}</dd>
+                <dt>Vendor:</dt>
+                <dd>{{nsdinfo.vendor}}</dd>
+                <dt>Version:</dt>
+                <dd>{{nsdinfo.version}}</dd>
+                <dt>Enabled:</dt>
+                <dd>{{nsdinfo.enabled}}</dd>
+            </dl>
             <!--<dt>Service Deployment Flavor:</dt>
             <dd ng-repeat="sdf in nsdinfo.service_deployment_flavour">
                 <spam ng-repeat="(k,v) in sdf"><b>{{k}}</b>: {{v}}
