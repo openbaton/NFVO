@@ -29,6 +29,7 @@ import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDe
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.api.RestNetworkServiceDescriptor;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
@@ -39,7 +40,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +54,7 @@ public class ApiRestNSDescriptorTest {
 
     @Mock
     NetworkServiceDescriptorManagement nsdManagement;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
     private NetworkServiceDescriptor networkServiceDescriptor;
 
@@ -83,7 +85,7 @@ public class ApiRestNSDescriptorTest {
     }
 
     @Test
-    public void NSDCreate() throws NotFoundException, BadFormatException {
+    public void NSDCreate() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
         when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
         NetworkServiceDescriptor networkServiceDescriptor2 = restNetworkService.create(networkServiceDescriptor);
         assertEquals(networkServiceDescriptor, networkServiceDescriptor2);
@@ -115,94 +117,53 @@ public class ApiRestNSDescriptorTest {
 
     @Test
     public void postVNFD() {
-        Set<VirtualNetworkFunctionDescriptor> list = new HashSet<>();
-        networkServiceDescriptor.setVnfd(list);
         VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
         vnfd.setName("test_VNFD");
-        networkServiceDescriptor.getVnfd().add(vnfd);
-        when(
-                nsdManagement.update(networkServiceDescriptor
-                )).thenReturn(
-                networkServiceDescriptor);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(
-                networkServiceDescriptor);
-        VirtualNetworkFunctionDescriptor vnsDescriptor1 = restNetworkService
-                .postVNFD(vnfd, networkServiceDescriptor.getId());
-        Set<VirtualNetworkFunctionDescriptor> listVnfds = nsdUpdate.getVnfd();
-        for (VirtualNetworkFunctionDescriptor vnsDescriptor : listVnfds) {
-            if (vnsDescriptor.getId().equals(vnfd.getId()))
-                assertEquals(vnsDescriptor1, vnsDescriptor);
-            else {
-                fail("postVNFD FAILED: not found the VNFD into NSD");
-            }
-        }
+        Set<VirtualNetworkFunctionDescriptor> list = new HashSet<>();
+        networkServiceDescriptor.setVnfd(list);
 
+        when(nsdManagement.addVnfd(vnfd, networkServiceDescriptor.getId())).thenReturn(vnfd);
+
+        VirtualNetworkFunctionDescriptor vnsDescriptor1 = restNetworkService.postVNFD(vnfd, networkServiceDescriptor.getId());
+        assertEquals(vnsDescriptor1, vnfd);
     }
 
     @Test
     public void getVNFD() throws NotFoundException {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor
-                .getVnfd().iterator().next();
-        assertEquals(vnfd,
-                restNetworkService.getVirtualNetworkFunctionDescriptor(
-                        networkServiceDescriptor.getId(),
-                        networkServiceDescriptor.getVnfd().iterator().next().getId()));
+        VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor.getVnfd().iterator().next();
+        when(nsdManagement.getVirtualNetworkFunctionDescriptor(networkServiceDescriptor.getId(), vnfd.getId())).thenReturn(vnfd);
+        assertEquals(vnfd, restNetworkService.getVirtualNetworkFunctionDescriptor(networkServiceDescriptor.getId(), vnfd.getId()));
     }
 
     @Test
     public void getVNFDs() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        Set<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor
-                .getVnfd();
-        assertEquals(
-                vnfds,
-                restNetworkService
-                        .getVirtualNetworkFunctionDescriptors(networkServiceDescriptor
-                                .getId()));
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        Set<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor.getVnfd();
+        assertEquals(vnfds, restNetworkService.getVirtualNetworkFunctionDescriptors(networkServiceDescriptor.getId()));
 
     }
 
     @Test
     public void VNFDNotFoundException() throws NotFoundException {
         exception.expect(NotFoundException.class);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        restNetworkService.getVirtualNetworkFunctionDescriptor(
-                networkServiceDescriptor.getId(), "-1");
+        when(nsdManagement.getVirtualNetworkFunctionDescriptor(anyString(), anyString())).thenThrow(NotFoundException.class);
+        restNetworkService.getVirtualNetworkFunctionDescriptor(networkServiceDescriptor.getId(), "-1");
     }
 
     @Test
     public void updateVNF() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
         VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
         vnfd.setVendor("FOKUS");
-        VirtualNetworkFunctionDescriptor vnfd_toUp = networkServiceDescriptor
-                .getVnfd().iterator().next();
-        log.info("" + vnfd_toUp);
-        vnfd_toUp = vnfd;
-        networkServiceDescriptor.getVnfd().add(vnfd_toUp);
-        log.info("" + vnfd);
-        assertEquals(
-                vnfd,
-                restNetworkService.updateVNF(vnfd,
-                        networkServiceDescriptor.getId(), vnfd_toUp.getId()));
 
+        when(nsdManagement.updateVNF(networkServiceDescriptor.getId(), vnfd.getId(), vnfd)).thenReturn(vnfd);
+        assertEquals(vnfd, restNetworkService.updateVNF(vnfd, networkServiceDescriptor.getId(), vnfd.getId()));
     }
 
     @Test
     public void deleteVNFD() throws NotFoundException {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor
-                .getVnfd().iterator().next();
-        restNetworkService.deleteVirtualNetworkFunctionDescriptor(
-                networkServiceDescriptor.getId(), vnfd.getId());
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor.getVnfd().iterator().next();
+        restNetworkService.deleteVirtualNetworkFunctionDescriptor(networkServiceDescriptor.getId(), vnfd.getId());
         log.info("" + networkServiceDescriptor);
     }
 
@@ -212,63 +173,34 @@ public class ApiRestNSDescriptorTest {
     @Test
     public void postVNFDependency() {
 
+        VNFDependency vnfd = new VNFDependency();
         Set<VNFDependency> list = new HashSet<>();
         networkServiceDescriptor.setVnf_dependency(list);
-        VNFDependency vnfd = new VNFDependency();
-
-        networkServiceDescriptor.getVnf_dependency().add(vnfd);
-        when(
-                nsdManagement.update(networkServiceDescriptor
-                )).thenReturn(
-                networkServiceDescriptor);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(
-                networkServiceDescriptor);
-        VNFDependency vnsDependency1 = restNetworkService.postVNFDependency(
-                vnfd, networkServiceDescriptor.getId());
-
-        Set<VNFDependency> listVnfds = nsdUpdate.getVnf_dependency();
-        for (VNFDependency vnsDependency : listVnfds) {
-            if (vnsDependency.getId().equals(vnfd.getId()))
-                assertEquals(vnsDependency1, vnsDependency);
-            else {
-                fail("saveVNFDependency FAILED: not found the VNFDependency into NSD");
-            }
-        }
-
+        when(nsdManagement.saveVNFDependency(anyString(), any(VNFDependency.class))).thenReturn(vnfd);
+        VNFDependency vnsDependency1 = restNetworkService.postVNFDependency(vnfd, networkServiceDescriptor.getId());
+        assertEquals(vnfd, vnsDependency1);
     }
 
     @Test
     public void getVNFDependency() throws NotFoundException {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency()
-                .iterator().next();
-        assertEquals(vnfd, restNetworkService.getVNFDependency(
-                networkServiceDescriptor.getId(), networkServiceDescriptor
-                        .getVnf_dependency().iterator().next().getId()));
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        VNFDependency vnfd = networkServiceDescriptor.getVnf_dependency().iterator().next();
+        assertEquals(vnfd.getId(), restNetworkService.getVNFDependency(networkServiceDescriptor.getId(), networkServiceDescriptor.getVnf_dependency().iterator().next().getId()));
     }
 
     @Test
     public void getVNFDependencies() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        Set<VNFDependency> vnfds = networkServiceDescriptor
-                .getVnf_dependency();
-        assertEquals(vnfds,
-                restNetworkService.getVNFDependencies(networkServiceDescriptor
-                        .getId()));
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        Set<VNFDependency> vnfds = networkServiceDescriptor.getVnf_dependency();
+        assertEquals(vnfds, restNetworkService.getVNFDependencies(networkServiceDescriptor.getId()));
 
     }
 
     @Test
     public void VNFDependencyNotFoundException() throws NotFoundException {
         exception.expect(NotFoundException.class);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        restNetworkService.getVNFDependency(networkServiceDescriptor.getId(),
-                "-1");
+        when(nsdManagement.getVnfDependency(networkServiceDescriptor.getId(), "-1")).thenThrow(NotFoundException.class);
+        restNetworkService.getVNFDependency(networkServiceDescriptor.getId(), "-1");
     }
 
     @Test
@@ -311,92 +243,50 @@ public class ApiRestNSDescriptorTest {
         networkServiceDescriptor.setPnfd(list);
         PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
 
-        networkServiceDescriptor.getPnfd().add(pnfd);
-        when(
-                nsdManagement.update(networkServiceDescriptor
-                )).thenReturn(
-                networkServiceDescriptor);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(
-                networkServiceDescriptor);
-        PhysicalNetworkFunctionDescriptor pnfd1 = restNetworkService
-                .postPhysicalNetworkFunctionDescriptor(pnfd,
-                        networkServiceDescriptor.getId());
+//        networkServiceDescriptor.getPnfd().add(pnfd);
+//        when(nsdManagement.update(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
+//        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        when(nsdManagement.addPnfDescriptor(pnfd, networkServiceDescriptor.getId())).thenReturn(pnfd);
+//        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(networkServiceDescriptor);
+        PhysicalNetworkFunctionDescriptor pnfd1 = restNetworkService.postPhysicalNetworkFunctionDescriptor(pnfd, networkServiceDescriptor.getId());
 
-        Set<PhysicalNetworkFunctionDescriptor> listVnfds = nsdUpdate.getPnfd();
-        for (PhysicalNetworkFunctionDescriptor pnfdescriptor : listVnfds) {
-            if (pnfdescriptor.getId().equals(pnfd.getId()))
-                assertEquals(pnfdescriptor, pnfd1);
-            else {
-                fail("postPNFD FAILED: not found the PhysicalNetworkFunctionDescriptor into NSD");
-            }
-        }
-
+        assertEquals(pnfd, pnfd1);
     }
 
     @Test
     public void getPNFD() throws NotFoundException {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor
-                .getPnfd().iterator().next();
-        assertEquals(pnfd,
-                restNetworkService.getPhysicalNetworkFunctionDescriptor(
-                        networkServiceDescriptor.getId(),
-                        networkServiceDescriptor.getPnfd().iterator().next().getId()));
+        PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor.getPnfd().iterator().next();
+        when(nsdManagement.getPhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), pnfd.getId())).thenReturn(pnfd);
+        assertEquals(pnfd, restNetworkService.getPhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), pnfd.getId()));
+        assertEquals(pnfd.getId(), restNetworkService.getPhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), pnfd.getId()).getId());
     }
 
     @Test
     public void getPNFDs() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        Set<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor
-                .getPnfd();
-        assertEquals(
-                pnfds,
-                restNetworkService
-                        .getPhysicalNetworkFunctionDescriptors(networkServiceDescriptor
-                                .getId()));
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        Set<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor.getPnfd();
+        assertEquals(pnfds, restNetworkService.getPhysicalNetworkFunctionDescriptors(networkServiceDescriptor.getId()));
 
     }
 
     @Test
     public void PNFDNotFoundException() throws NotFoundException {
         exception.expect(NotFoundException.class);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        restNetworkService.getPhysicalNetworkFunctionDescriptor(
-                networkServiceDescriptor.getId(), "-1");
+        when(nsdManagement.getPhysicalNetworkFunctionDescriptor(anyString(),anyString())).thenThrow(NotFoundException.class);
+        PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor = restNetworkService.getPhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), "-1");
     }
 
     @Test
     public void updatePNFD() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
-
-        PhysicalNetworkFunctionDescriptor pnfd_toUp = networkServiceDescriptor
-                .getPnfd().iterator().next();
-        log.info("" + pnfd_toUp);
-        pnfd_toUp = pnfd;
-        networkServiceDescriptor.getPnfd().add(pnfd_toUp);
-        log.info("" + pnfd);
-        assertEquals(
-                pnfd,
-                restNetworkService.updatePNFD(pnfd,
-                        networkServiceDescriptor.getId(), pnfd_toUp.getId()));
-
+        exception.expect(UnsupportedOperationException.class);
+        PhysicalNetworkFunctionDescriptor actual = restNetworkService.updatePNFD(null, networkServiceDescriptor.getId(), null);
     }
 
     @Test
     public void deletePNFD() throws NotFoundException {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor
-                .getPnfd().iterator().next();
-        restNetworkService.deletePhysicalNetworkFunctionDescriptor(
-                networkServiceDescriptor.getId(), pnfd.getId());
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+        PhysicalNetworkFunctionDescriptor pnfd = networkServiceDescriptor.getPnfd().iterator().next();
+        restNetworkService.deletePhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), pnfd.getId());
         log.info("" + networkServiceDescriptor);
     }
 
@@ -405,35 +295,15 @@ public class ApiRestNSDescriptorTest {
     // XXX FROM Security
     @Test
     public void postSecurity() {
-
         Security security = new Security();
-
-        networkServiceDescriptor.setNsd_security(security);
-        when(
-                nsdManagement.update(networkServiceDescriptor
-                )).thenReturn(
-                networkServiceDescriptor);
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
-        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(
-                networkServiceDescriptor);
-        Security security1 = restNetworkService.postSecurity(security,
-                networkServiceDescriptor.getId());
-
-        Security sec = nsdUpdate.getNsd_security();
-
-        if (sec.getId().equals(security.getId()))
-            assertEquals(sec, security1);
-        else {
-            fail("postSecurity FAILED: not found the Security into NSD");
-        }
-
+        when(nsdManagement.addSecurity(networkServiceDescriptor.getId(), security)).thenReturn(security);
+        Security security1 = restNetworkService.postSecurity(security, networkServiceDescriptor.getId());
+        assertEquals(security, security1);
     }
 
     @Test
     public void getSecurity() {
-        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(
-                networkServiceDescriptor);
+        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
         Security security = networkServiceDescriptor.getNsd_security();
         /*assertEquals(security, restNetworkService.getSecurity(
                 networkServiceDescriptor.getId(), networkServiceDescriptor
