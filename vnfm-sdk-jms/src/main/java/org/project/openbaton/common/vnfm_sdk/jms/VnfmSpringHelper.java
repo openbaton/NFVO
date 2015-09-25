@@ -58,7 +58,7 @@ public class VnfmSpringHelper extends VnfmHelper {
         }
         log.debug("" + response);
         if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-            throw new VnfmSdkException("Not able to grant operation");
+            throw new VnfmSdkException("Not able to grant operation", ((OrVnfmGenericMessage) response).getVnfr());
         }
         OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
         return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
@@ -75,7 +75,7 @@ public class VnfmSpringHelper extends VnfmHelper {
             throw new VnfmSdkException("Not able to allocate Resources", e);
         }
         if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-            throw new VnfmSdkException("Not able to allocate Resources");
+            throw new VnfmSdkException("Not able to allocate Resources", ((OrVnfmGenericMessage) response).getVnfr());
         }
         OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
         log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
