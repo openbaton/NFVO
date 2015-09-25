@@ -22,6 +22,7 @@ import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDe
 import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.project.openbaton.exceptions.NotFoundException;
 
 import javax.persistence.NoResultException;
@@ -37,7 +38,7 @@ public interface NetworkServiceDescriptorManagement {
      * validating a Network Service	Descriptor (NSD),
      * including any related VNFFGD and VLD.
      */
-    NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException;
+    NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException;
 
     /**
      * This operation allows disabling a

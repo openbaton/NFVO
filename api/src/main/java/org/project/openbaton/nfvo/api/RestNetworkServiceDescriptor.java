@@ -23,10 +23,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.BadFormatException;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.QuotaExceededException;
-import org.project.openbaton.exceptions.VimException;
+import org.project.openbaton.exceptions.*;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.project.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.project.openbaton.nfvo.core.interfaces.SecurityManagement;
@@ -66,7 +63,7 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+    public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
         NetworkServiceDescriptor nsd;
         log.trace("Just Received: " + networkServiceDescriptor);
         nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
