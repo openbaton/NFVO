@@ -23,6 +23,7 @@ import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.*;
@@ -67,7 +68,7 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * including any related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
 
         nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 
@@ -98,9 +99,15 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
         log.trace("Fetched Data");
 
+        log.debug("Checking integrity of NetworkServiceDescriptor");
+        nsdUtils.checkIntegrity(networkServiceDescriptor);
+
+
         log.trace("Persisting VNFDependencies");
         nsdUtils.fetchDependencies(networkServiceDescriptor);
         log.trace("Persisted VNFDependencies");
+
+
 
         networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
         log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
