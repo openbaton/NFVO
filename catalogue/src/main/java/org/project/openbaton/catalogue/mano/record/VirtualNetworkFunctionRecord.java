@@ -157,7 +157,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Set<String> runtime_policy_info;
     private String name;
     private String type;
-    //    @JsonIgnore
     private String endpoint;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private VNFPackage vnfPackage;
