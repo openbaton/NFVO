@@ -1,11 +1,14 @@
 angular.module('app').
     controller('vimInstanceCtrl', function ($scope, $routeParams, http) {
 
+        var url = '/api/v1/datacenters/';
+        //var url = 'http://localhost:8080/api/v1/datacenters/';
+
         $scope.alerts = [];
         $scope.datacenter = {};
         $scope.file = '';
 
-        var url = 'http://localhost:8080/api/v1/datacenters/';
+
         loadVIM();
 
 
