@@ -1,6 +1,7 @@
 var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI) {
 
-    var url = 'http://localhost:8080/api/v1/ns-records';
+    var url = '/api/v1/ns-records';
+    //var url = 'http://localhost:8080/api/v1/ns-records';
 
 
     loadTable();
