@@ -22,8 +22,8 @@ public class PluginStartup {
 
 //        StringTokenizer st = new StringTokenizer(pluginName, "-");
         String name = pluginName.substring(0,pluginName.indexOf("-"));
-        log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
+        log.trace("Running: java -jar -Djava.rmi.server.hostname=localhost" + path + " " + name + " localhost "+ port);
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar","-Djava.rmi.server.hostname=localhost", path, name, registryip, port);
         File file = new File("plugin-" + name + ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
