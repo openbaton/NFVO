@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.api.exceptions;
 
 import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.project.openbaton.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +53,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
-    @ExceptionHandler({BadFormatException.class})
+    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
+        log.error("Exception with message " + e.getMessage() + " was thrown");
         ExceptionResource exc = new ExceptionResource("Bad Request", e.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
