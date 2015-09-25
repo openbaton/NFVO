@@ -16,6 +16,7 @@ import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
+import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.project.openbaton.common.vnfm_sdk.utils.VNFRUtils;
@@ -179,12 +180,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
             log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             if (nfvMessage != null) {
-                //coreMessage.setDependency(message.getDependency());
                 log.debug("send to NFVO");
                 vnfmHelper.sendToNfvo(nfvMessage);
             }
         } catch (Exception e) {
             log.error("ERROR: ", e);
+            if (e instanceof VnfmSdkException){
+                VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
+                if (vnfmSdkException.getVnfr() != null){
+                    log.debug("sending vnfr with version: " + vnfmSdkException.getVnfr().getHb_version());
+                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
+                    return;
+                }
+            }
             vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
         }
     }
