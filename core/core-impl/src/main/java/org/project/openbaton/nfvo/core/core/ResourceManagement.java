@@ -47,6 +47,9 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class ResourceManagement implements org.project.openbaton.nfvo.core.interfaces.ResourceManagement {
 
+    private static final String gitRepoEms = "https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git";
+    private static final String branch = "develop";
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
@@ -81,21 +84,18 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
         log.debug("Active ip is: " + activeIp);
         String result = "#!/bin/bash\n" +
-                "sudo apt-get update\n" +
-                "sudo mkdir -p /etc/openbaton/ems\n" +
-                "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
+                "apt-get update\n" +
+                "apt-get install -y git python-pip\n" +
+                "git clone " + gitRepoEms + " -b " + branch + " /opt/ems-deb\n" +
+                "dpkg -i /opt/ems-deb/ems_1.0-1.deb\n" +
+                "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
-                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
-                "sudo apt-get install -y git\n" +
-                "git clone https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git\n" +
-                "cd ems-public\n" +
-                "sudo chmod +x ems.sh\n" +
-                "sudo sh ems.sh > /var/log/ems.log";
-//                "sudo python /opt/openbaton/ems-public";
+                "sudo /opt/ems-public/ems.sh start\n";
         return result;
     }
 
