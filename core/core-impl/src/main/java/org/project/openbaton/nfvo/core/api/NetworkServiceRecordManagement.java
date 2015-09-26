@@ -250,6 +250,9 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
         }
 
+        if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
+            throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
+
         if (checkStatus) {
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
@@ -265,7 +268,10 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             }
             if (!events.contains(Event.RELEASE)) {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    futures.add(resourceManagement.release(virtualDeploymentUnit));
+                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+                        futures.add(resourceManagement.release(virtualDeploymentUnit, vnfcInstance));
+                        vnfcInstance.setFloatingIps(null);
+                    }
                 }
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
             } else {
@@ -279,11 +285,6 @@ public class NetworkServiceRecordManagement implements org.project.openbaton.nfv
             log.debug("Deleted VDU");
         }
 
-        /**
-         * I think that the NSR should be removed from the NFVO anyway from the catalogue.
-         * The VNFM is in charge of releasing resources. The NFVO will receive a notification whether this operation
-         * went well or not. But still the NSR should be removed from the DB.
-         */
         if (!release) {
             ApplicationEventNFVO event = new ApplicationEventNFVO(this, Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             log.debug("Publishing event: " + event);
