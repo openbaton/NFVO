@@ -184,7 +184,7 @@ public class VnfmSpringHelper extends VnfmHelper {
     public Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, Map<String, String> env) throws Exception {//TODO make it parallel
         LinkedList<String> res = new LinkedList<>();
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
-        log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
+        log.trace("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
 
         if (le != null) {
             for (String script : le.getLifecycle_events()) {
@@ -193,15 +193,17 @@ public class VnfmSpringHelper extends VnfmHelper {
                     for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
                         Map<String, String> tempEnv = new HashMap<>();
                         for (Ip ip : vnfcInstance.getIps()) {
+                            log.debug("Adding net: " + ip.getNetName() + " with value: " + ip.getIp());
                             tempEnv.put(ip.getNetName(), ip.getIp());
                         }
                         int i = 1;
                         for (String fip : vnfcInstance.getFloatingIps()) {
+                            log.debug("adding floatingIp: " + fip);
                             tempEnv.put("fip" + i, fip);
                             i++;
                         }
-                        log.info("Environment Variables are: " + env);
                         env.putAll(tempEnv);
+                        log.info("Environment Variables are: " + env);
                         String command = getJsonObject("EXECUTE", script, env).toString();
                         res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
                         for (String key : tempEnv.keySet()) {
