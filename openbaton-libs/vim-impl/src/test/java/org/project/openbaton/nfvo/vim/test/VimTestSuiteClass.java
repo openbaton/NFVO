@@ -24,24 +24,24 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-//import org.project.openbaton.nfvo.common.exceptions.VimException;
 import org.project.openbaton.clients.exceptions.VimDriverException;
+import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.project.openbaton.exceptions.VimException;
 import org.project.openbaton.nfvo.vim.AmazonVIM;
 import org.project.openbaton.nfvo.vim.OpenstackVIM;
 import org.project.openbaton.nfvo.vim.TestVIM;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -49,21 +49,33 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.rmi.RemoteException;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
+
+//import org.project.openbaton.nfvo.common.exceptions.VimException;
 
 /**
  * Created by lto on 21/05/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = { "mocked_id=1234567890", "port: 4242" })
+@TestPropertySource(properties = {"mocked_id=1234567890", "port: 4242"})
 public class VimTestSuiteClass {
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @InjectMocks
+    private OpenstackVIM openstackVIM;
+
+    @Mock
+    private ClientInterfaces clientInterfaces;
     /**
      * TODO add all other tests
      */
@@ -71,92 +83,82 @@ public class VimTestSuiteClass {
     @Autowired
     private Environment environment;
 
-    @Mock
-    ClientInterfaces clientInterfaces;
-
-    @InjectMocks
-    OpenstackVIM openstackVIM;
-
-    @Autowired
-    private ConfigurableApplicationContext context;
-
     @Autowired
     private VimBroker vimBroker;
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Before
-    public void init(){
+    public void init() {
         MockitoAnnotations.initMocks(this);
     }
 
-//    @Test
-//    public void testVimBrokers(){
-//
-//        Assert.assertNotNull(vimBroker);
-//        Vim testVIM = vimBroker.getVim("test");
-//        Assert.assertEquals(testVIM.getClass(), TestVIM.class);
-//        Vim openstackVIM = vimBroker.getVim("openstack");
-//        Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
-//        Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
-//        exception.expect(UnsupportedOperationException.class);
-//        vimBroker.getVim("throw_exception");
-//    }
-//
-//    @Ignore
-//    @Test
-//    public void testVimOpenstack() throws VimDriverException, VimException {
-//        VirtualDeploymentUnit vdu = createVDU();
-//        VirtualNetworkFunctionRecord vnfr = createVNFR();
-//        ArrayList<String> networks = new ArrayList<>();
-//        networks.add("network1");
-//        ArrayList<String> secGroups = new ArrayList<>();
-//        secGroups.add("secGroup1");
-//
-//        Server server = new Server();
-//        server.setExtId(environment.getProperty("mocked_id"));
-//        //TODO use the method launchInstanceAndWait properly
-//        //when(clientInterfaces.launchInstanceAndWait(anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString())).thenReturn(server);
-//
-//        try {
-//            Future<String> id = openstackVIM.allocate(vdu, vnfr, );
-//            String expectedId = id.get();
-//            log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
-//            Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
-//            Assert.assertEquals(vdu.getHostname(), vnfr.getName() + "-" + vdu.getId().substring((vdu.getId().length()-5), vdu.getId().length()-1));
-//        } catch (VimException e) {
-//            e.printStackTrace();
-//            Assert.fail();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//            Assert.fail();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//            Assert.fail();
-//        }
-//
-//        vdu.getVm_image().remove(0);
-//
-//        exception.expect(VimException.class);
-//        openstackVIM.allocate(vdu, vnfr, );
-//    }
+    @Test
+    public void testVimBrokers() {
+
+        Assert.assertNotNull(vimBroker);
+        Vim testVIM = vimBroker.getVim("test");
+        Assert.assertEquals(testVIM.getClass(), TestVIM.class);
+        Vim openstackVIM = vimBroker.getVim("openstack");
+        Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
+        Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
+        exception.expect(UnsupportedOperationException.class);
+        vimBroker.getVim("throw_exception");
+    }
+
+    @Test
+    public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
+        VirtualDeploymentUnit vdu = createVDU();
+        VirtualNetworkFunctionRecord vnfr = createVNFR();
+        ArrayList<String> networks = new ArrayList<>();
+        networks.add("network1");
+        ArrayList<String> secGroups = new ArrayList<>();
+        secGroups.add("secGroup1");
+
+        Server server = new Server();
+        server.setExtId(environment.getProperty("mocked_id"));
+        server.setIps(new HashMap<String, List<String>>());
+        //TODO use the method launchInstanceAndWait properly
+        when(clientInterfaces.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyBoolean())).thenReturn(server);
+
+        try {
+            Future<String> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
+            String expectedId = id.get();
+            log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
+            Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
+        } catch (VimException e) {
+            e.printStackTrace();
+            Assert.fail();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+
+        vdu.getVm_image().removeAll(vdu.getVm_image());
+
+        exception.expect(VimException.class);
+        openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
+    }
 
     @Test
     @Ignore
-    public void testVimAmazon(){}
+    public void testVimAmazon() {
+    }
 
     @Test
     @Ignore
-    public void testVimTest(){}
+    public void testVimTest() {
+    }
 
     @Test
     @Ignore
-    public void testOpenstackClient(){}
+    public void testOpenstackClient() {
+    }
 
-    private VirtualNetworkFunctionRecord createVNFR(){
+    private VirtualNetworkFunctionRecord createVNFR() {
         VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();
         vnfr.setName("testVnfr");
         vnfr.setStatus(Status.INITIALIZED);
@@ -172,6 +174,10 @@ public class VimTestSuiteClass {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         VimInstance vimInstance = new VimInstance();
         vimInstance.setName("mock_vim_instance");
+        vimInstance.setSecurityGroups(new HashSet<String>() {{
+            add("mock_vim_instance");
+        }});
+        vimInstance.setKeyPair("test");
         vimInstance.setImages(new HashSet<NFVImage>() {{
             NFVImage nfvImage = new NFVImage();
             nfvImage.setName("image_1234");
@@ -179,6 +185,9 @@ public class VimTestSuiteClass {
             add(nfvImage);
         }});
         vdu.setVimInstance(vimInstance);
+        HashSet<VNFComponent> vnfc = new HashSet<>();
+        vnfc.add(new VNFComponent());
+        vdu.setVnfc(vnfc);
         Set<String> monitoring_parameter = new HashSet<>();
         monitoring_parameter.add("parameter_1");
         monitoring_parameter.add("parameter_2");
