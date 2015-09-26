@@ -224,9 +224,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         fillSpecificProvides(virtualNetworkFunctionRecord);
 
-        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
-        //TODO add common parameters, even not defined into the provides: i.e. ip (DONE ?)
-
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
                 int i = 1;
@@ -239,6 +236,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 }
             }
         }
+        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
     }
 
     /**
