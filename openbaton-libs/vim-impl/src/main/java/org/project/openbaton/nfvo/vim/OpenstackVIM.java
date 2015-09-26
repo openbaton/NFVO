@@ -281,7 +281,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
+    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.debug("Initializing " + vimInstance.toString());
         log.debug("initialized VimInstance");
@@ -362,7 +362,6 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
         if (vdu.getVnfc_instance() == null)
             vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-        vdu.getVnfc_instance().add(vnfcInstance);
 
         for (Map.Entry<String,List<String>> network : server.getIps().entrySet()) {
             Ip ip = new Ip();
@@ -373,7 +372,8 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 vnfr.getVnf_address().add(ip1);
             }
         }
-        return new AsyncResult<>(server.getExtId());
+        vdu.getVnfc_instance().add(vnfcInstance);
+        return new AsyncResult<>(vnfcInstance);
     }
 
     private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
