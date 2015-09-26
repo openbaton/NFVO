@@ -19,7 +19,8 @@ package org.project.openbaton.nfvo.core.test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -27,22 +28,17 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.Quota;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.exceptions.VimException;
-import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.project.openbaton.nfvo.core.core.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.HashSet;
 
@@ -52,23 +48,19 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VNFLifecycleOperationGrantingClassSuiteTest {
 
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
-    @Autowired
+    @InjectMocks
     private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
 
-    @Autowired
+    @Mock
     private VimBroker vimBroker;
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 
@@ -117,7 +109,13 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
             add("mocked_image");
         }});
         vdu.setComputation_requirement("high_requirements");
-        vdu.setVnfc(new HashSet<VNFComponent>());
+        HashSet<VNFComponent> vnfComponents = new HashSet<>();
+        vnfComponents.add(new VNFComponent());
+        vnfComponents.add(new VNFComponent());
+        vdu.setVnfc(vnfComponents);
+        HashSet<VNFCInstance> vnfc_instance = new HashSet<>();
+        vnfc_instance.add(new VNFCInstance());
+        vdu.setVnfc_instance(vnfc_instance);
         vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
         vdu.setMonitoring_parameter(new HashSet<String>());
         vdu.setVimInstance(vimInstance);

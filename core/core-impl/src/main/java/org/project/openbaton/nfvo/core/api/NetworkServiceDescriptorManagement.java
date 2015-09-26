@@ -189,9 +189,12 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * @return VirtualNetworkFunctionDescriptor
      */
     @Override
-    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) {
+    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) throws NotFoundException {
         nsdRepository.exists(idNsd);
-        return vnfdRepository.findFirstById(idVnfd);
+        VirtualNetworkFunctionDescriptor firstById = vnfdRepository.findFirstById(idVnfd);
+        if (firstById == null)
+            throw new NotFoundException("VirtualNetworkFunctionDescriptor with id " + idVnfd + " doesn't exist");
+        return firstById;
     }
 
     /**
@@ -267,9 +270,12 @@ public class NetworkServiceDescriptorManagement implements org.project.openbaton
      * @return PhysicalNetworkFunctionDescriptor selected
      */
     @Override
-    public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
+    public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) throws NotFoundException {
         nsdRepository.exists(idNsd);
-        return pnfDescriptorRepository.findOne(idPnf);
+        PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor = pnfDescriptorRepository.findOne(idPnf);
+        if (physicalNetworkFunctionDescriptor == null)
+            throw new NotFoundException("PhysicalNetworkFunctionDescriptor with id " + idPnf + " doesn't exist");
+        return physicalNetworkFunctionDescriptor;
     }
 
     /**

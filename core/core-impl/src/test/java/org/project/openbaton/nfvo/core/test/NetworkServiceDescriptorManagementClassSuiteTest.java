@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -30,45 +31,45 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.exceptions.BadFormatException;
+import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
+import org.project.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
+import org.project.openbaton.nfvo.core.utils.NSDUtils;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.VimRepository;
+import org.project.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class NetworkServiceDescriptorManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    @Autowired
-    VimRepository vimRepository;
-    @Autowired
-    NetworkServiceDescriptorRepository nsdRepository;
+    @Mock
+    private VimRepository vimRepository;
+    @Mock
+    private NetworkServiceDescriptorRepository nsdRepository;
+    @Mock
+    private NSDUtils nsdUtils;
+    @Mock
+    private VnfmEndpointRepository vnfmManagerEndpointRepository;
+
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+    @InjectMocks
     private NetworkServiceDescriptorManagement nsdManagement;
 
     @AfterClass
@@ -78,8 +79,16 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
-        log.info("Starting test");
+        MockitoAnnotations.initMocks(this);
+        NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
+        when(nsdRepository.save(any(NetworkServiceDescriptor.class))).thenReturn(nsd_exp);
+
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            add(vnfmManagerEndpoint);
+        }});
     }
 
     @Test
@@ -88,21 +97,21 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementEnableTest() throws NotFoundException, BadFormatException {
+    public void nsdManagementEnableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
         }});
 
         nsdManagement.onboard(nsd_exp);
-        when(nsdRepository.findOne(anyString())).thenReturn(nsd_exp);
+        when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
         Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
         Assert.assertTrue(nsd_exp.isEnabled());
         nsdManagement.delete(nsd_exp.getId());
     }
 
     @Test
-    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException {
+    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         nsd_exp.setEnabled(true);
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
@@ -110,7 +119,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         }});
 
         nsdManagement.onboard(nsd_exp);
-        when(nsdRepository.findOne(anyString())).thenReturn(nsd_exp);
+        when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
         Assert.assertFalse(nsdManagement.disable(nsd_exp.getId()));
         Assert.assertFalse(nsd_exp.isEnabled());
         nsdManagement.delete(nsd_exp.getId());
@@ -134,29 +143,29 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException {
-        when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
-        when(nsdRepository.findOne(anyString())).thenReturn(null);
+    public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
-        when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>());
+
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
         exception.expect(NotFoundException.class);
         nsdManagement.onboard(nsd_exp);
 
-        exception.expect(NullPointerException.class);
-        assertEqualsNSD(nsd_exp);
-
-        when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
-            add(createVimInstance());
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            add(vnfmManagerEndpoint);
         }});
 
+        when(nsdRepository.save(nsd_exp)).thenReturn(nsd_exp);
         exception = ExpectedException.none();
         nsdManagement.onboard(nsd_exp);
         assertEqualsNSD(nsd_exp);
-        nsdManagement.delete(nsd_exp.getId());
     }
 
     @Test
-    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException {
+    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
         when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
@@ -179,6 +188,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     private void assertEqualsNSD(NetworkServiceDescriptor nsd_exp) throws NoResultException {
+        when(nsdRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
         NetworkServiceDescriptor nsd = nsdManagement.query(nsd_exp.getId());
         Assert.assertEquals(nsd_exp.getId(), nsd.getId());
         Assert.assertEquals(nsd_exp.getName(), nsd.getName());
@@ -207,14 +217,14 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     private VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
         virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 1000)));
-        virtualNetworkFunctionDescriptor
-                .setMonitoring_parameter(new HashSet<String>() {
-                    {
-                        add("monitor1");
-                        add("monitor2");
-                        add("monitor3");
-                    }
-                });
+        virtualNetworkFunctionDescriptor.setEndpoint("test");
+        virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>() {
+            {
+                add("monitor1");
+                add("monitor2");
+                add("monitor3");
+            }
+        });
         virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
             VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
             vdf.setExtId("ext_id");

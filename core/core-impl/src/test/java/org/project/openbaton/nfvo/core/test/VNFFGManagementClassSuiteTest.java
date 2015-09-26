@@ -18,23 +18,18 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.*;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.core.interfaces.VNFFGManagement;
+import org.project.openbaton.nfvo.core.api.VNFFGManagement;
 import org.project.openbaton.nfvo.repositories.VNFFGDescriptorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,19 +41,16 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VNFFGManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @InjectMocks
     private VNFFGManagement vnffgManagement;
 
-    @Autowired
+    @Mock
     private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
     @AfterClass
@@ -68,7 +60,7 @@ public class VNFFGManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 
@@ -153,7 +145,7 @@ public class VNFFGManagementClassSuiteTest {
     public void vnffgManagementQueryTest() {
         when(vnffgDescriptorRepository.findAll()).thenReturn(new ArrayList<VNFForwardingGraphDescriptor>());
 
-        Assert.assertEquals(0, vnffgManagement.query().iterator().hasNext());
+        Assert.assertEquals(false, vnffgManagement.query().iterator().hasNext());
 
         VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
         when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);

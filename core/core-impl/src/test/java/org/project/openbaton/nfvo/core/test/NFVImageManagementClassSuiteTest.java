@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -29,16 +30,8 @@ import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDes
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.core.interfaces.NFVImageManagement;
+import org.project.openbaton.nfvo.core.api.NFVImageManagement;
 import org.project.openbaton.nfvo.repositories.ImageRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,30 +43,24 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class NFVImageManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @Before
+    public void init(){
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @InjectMocks
     private NFVImageManagement nfvImageManagement;
 
-    @Autowired
+    @Mock
     private ImageRepository imageRepository;
 
     @AfterClass
     public static void shutdown() {
-        // TODO Teardown to avoid exceptions during test shutdown
-    }
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
-        log.info("Starting test");
     }
 
     @Test
@@ -84,11 +71,11 @@ public class NFVImageManagementClassSuiteTest {
     @Test
     public void nfvImageManagementUpdateTest() {
         NFVImage nfvImage_exp = createNfvImage();
-        when(imageRepository.findOne(nfvImage_exp.getId())).thenReturn(nfvImage_exp);
 
         NFVImage nfvImage_new = createNfvImage();
         nfvImage_new.setName("UpdatedName");
         nfvImage_new.setMinRam(2046);
+        when(imageRepository.save(any(NFVImage.class))).thenReturn(nfvImage_new);
         nfvImage_exp = nfvImageManagement.update(nfvImage_new, nfvImage_exp.getId());
 
         Assert.assertEquals(nfvImage_exp.getName(), nfvImage_new.getName());
