@@ -44,8 +44,8 @@ import java.util.concurrent.Future;
 @Scope
 public class VnfmSpringHelper extends VnfmHelper {
 
-    private Gson parser = new GsonBuilder().setPrettyPrinting().create();
     private static final String nfvoQueue = "vnfm-core-actions";
+    private Gson parser = new GsonBuilder().setPrettyPrinting().create();
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -186,34 +186,34 @@ public class VnfmSpringHelper extends VnfmHelper {
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
         log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
 
-													            if (le != null) {
-															                for (String script : le.getLifecycle_events()) {
-																		                log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
-																				                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-																							                    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-																										                            Map<String,String> tempEnv = new HashMap<>();
-																													                            for (Ip ip : vnfcInstance.getIps()){
-																																	                                tempEnv.put(ip.getNetName(), ip.getIp());
-																																					                        }
-																																                            int i =1;
-																																			                            for (String fip : vnfcInstance.getFloatingIps()){
-																																							                                tempEnv.put("fip" + i,fip);
-																																											                            i++;
-																																														                            }
-																																						                            log.info("Environment Variables are: " + env);
-																																									                            env.putAll(tempEnv);
-																																												                            String command = getJsonObject("EXECUTE", script, env).toString();
-																																															                            res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
-																																																		                            for (String key : tempEnv.keySet()){
-																																																						                                env.remove(key);
-																																																										                        }
-																																																					                        }
-																									                    }
-																						            }
-																	            return res;
-																		            }
-														            throw new VnfmSdkException("Error executing script");
-															        }
+        if (le != null) {
+            for (String script : le.getLifecycle_events()) {
+                log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+                        Map<String, String> tempEnv = new HashMap<>();
+                        for (Ip ip : vnfcInstance.getIps()) {
+                            tempEnv.put(ip.getNetName(), ip.getIp());
+                        }
+                        int i = 1;
+                        for (String fip : vnfcInstance.getFloatingIps()) {
+                            tempEnv.put("fip" + i, fip);
+                            i++;
+                        }
+                        log.info("Environment Variables are: " + env);
+                        env.putAll(tempEnv);
+                        String command = getJsonObject("EXECUTE", script, env).toString();
+                        res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
+                        for (String key : tempEnv.keySet()) {
+                            env.remove(key);
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+        throw new VnfmSdkException("Error executing script");
+    }
 
     @Override
     public String executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, VNFRecordDependency dependency) throws Exception {
@@ -239,6 +239,7 @@ public class VnfmSpringHelper extends VnfmHelper {
         }
         throw new VnfmSdkException("Error executing script");
     }
+
     protected JsonObject getJsonObject(String action, String payload) {
         JsonObject jsonMessage = new JsonObject();
         jsonMessage.addProperty("action", action);
@@ -269,11 +270,10 @@ public class VnfmSpringHelper extends VnfmHelper {
                     executeActionOnEMS(vnfcInstance.getHostname(), jsonMessage.toString());
                 }
             }
-        }
-        else if (scripts instanceof Set){
+        } else if (scripts instanceof Set) {
             Set<Script> scriptSet = (Set<Script>) scripts;
 
-            for (Script script : scriptSet){
+            for (Script script : scriptSet) {
                 log.debug("Sending script encoded base64 ");
                 String base64String = Base64.encodeBase64String(script.getPayload());
                 log.trace("The base64 string is: " + base64String);
@@ -290,7 +290,7 @@ public class VnfmSpringHelper extends VnfmHelper {
 
     @Override
     public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws JMSException {
-        return sendAndReceiveNfvMessage(nfvoQueue,VnfmUtils.getNfvMessage(action,virtualNetworkFunctionRecord));
+        return sendAndReceiveNfvMessage(nfvoQueue, VnfmUtils.getNfvMessage(action, virtualNetworkFunctionRecord));
     }
 
     private JsonObject getJsonObjectForScript(String save_scripts, String payload, String name) {
