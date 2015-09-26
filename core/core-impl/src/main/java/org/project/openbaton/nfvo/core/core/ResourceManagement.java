@@ -66,7 +66,10 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
             log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
             log.debug("The component is Exposed? " + component.isExposed());
-            ids.add(vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get());
+            VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get();
+            ids.add(added.getVc_id());
+            if (component.isExposed() && added.getFloatingIps().size() == 0)
+                log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         }
         return ids;
     }
@@ -88,14 +91,14 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
                 "apt-get install -y git python-pip\n" +
                 "git clone " + gitRepoEms + " -b " + branch + " /opt/ems-deb\n" +
                 "dpkg -i /opt/ems-deb/ems_1.0-1.deb\n" +
-                "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
+                "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
-                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
-                "sudo /opt/ems-public/ems.sh start\n";
+                "sudo /opt/openbaton/ems/ems.sh start\n";
         return result;
     }
 
@@ -125,11 +128,10 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
     }
 
     @Override
-    public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit) throws VimException {
+    public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException {
         org.project.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
-        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-            vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance());
-        }
+        log.debug("Removing vnfcInstance: " + vnfcInstance);
+        vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance()).get();
         return new AsyncResult<>(null);
     }
 

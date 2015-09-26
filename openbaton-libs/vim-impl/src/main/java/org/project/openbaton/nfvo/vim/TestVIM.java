@@ -115,7 +115,7 @@ public class TestVIM extends Vim {
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
+    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {
@@ -158,7 +158,7 @@ public class TestVIM extends Vim {
             }
             String id = server.getId();
             log.debug("launched instance with id " + id);
-            return new AsyncResult<>(id);
+            return new AsyncResult<>(vnfcInstance);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new VimException(e);

@@ -5,7 +5,10 @@ import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.util.EventFinishEvent;
+import org.project.openbaton.exceptions.NotFoundException;
 import org.project.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.project.openbaton.nfvo.repositories.VNFRRepository;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -79,8 +82,25 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         try {
             this.doWork();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            VnfmSender vnfmSender;
+            try {
+                vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+            } catch (NotFoundException e1) {
+                e1.printStackTrace();
+                throw new RuntimeException(e1);
+            }
+            NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+            if (getTempDestination() != null) {
+                vnfmSender.sendCommand(message,getTempDestination());
+            }else {
+                try {
+                    vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                } catch (NotFoundException e1) {
+                    e1.printStackTrace();
+                    throw new RuntimeException(e1);
+                }
+            }
+            log.error("There was an uncaught exception. Message is: " + e.getMessage());
         }
         /**
          * Send event finish
