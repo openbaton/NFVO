@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
     var url = '/api/v1/ns-records';
     //var url = 'http://localhost:8080/api/v1/ns-records';
@@ -83,7 +83,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, JSON.stringify(data));
+                        showError(status, data);
                     });
             }
 
@@ -147,7 +147,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(status, data);
             });
     };
 
@@ -159,7 +159,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(status, data);
             });
     };
 
@@ -170,7 +170,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, JSON.stringify(data));
+                showError(status, data);
             });
     };
 
@@ -178,10 +178,15 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     function showError(status, data) {
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + data
+            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
         });
-//        loadTable();
+
         $('.modal').modal('hide');
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
+            $window.location.reload();
+        }
     }
 
     function showOk(msg) {
@@ -191,10 +196,15 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
 
     $scope.Jsplumb = function () {
-        http.syncGet(url + '/' + $routeParams.nsrecordId).then(function (response) {
-            topologiesAPI.Jsplumb(response, 'record');
-            console.log(response);
-        });
+        http.get(url + '/' + $routeParams.nsrecordId)
+            .success(function (response, status) {
+                topologiesAPI.Jsplumb(response, 'record');
+                console.log(response);
+
+            }).error(function (data, status) {
+                showError(data, status);
+            });
+
     };
 
     function loadTable() {

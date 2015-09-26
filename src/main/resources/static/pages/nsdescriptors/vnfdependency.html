@@ -32,12 +32,14 @@
             <div>
                 <div ng-repeat="vnfd in nsdinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
                     <h2>VNF Dependency {{vnfd.name}}</h2>
-                    <spam ng-repeat="(k,v) in vnfd">
-                        <dl class="dl-horizontal">
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vnfd">
+
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
-                        </dl>
-                    </spam>
+
+                        </spam>
+                    </dl>
                 </div>
             </div>
         </div>
