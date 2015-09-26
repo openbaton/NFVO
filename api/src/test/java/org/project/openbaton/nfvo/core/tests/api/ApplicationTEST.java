@@ -17,8 +17,6 @@
 package org.project.openbaton.nfvo.core.tests.api;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,13 +34,8 @@ import static org.mockito.Mockito.mock;
 
 public class ApplicationTEST {
 
-    private static Logger log = LoggerFactory.getLogger(ApplicationTEST.class);
-
     public static void main(String[] argv) {
-//        ConfigurableApplicationContext context =
         SpringApplication.run(ApplicationTEST.class);
-
-
     }
 
     @Bean

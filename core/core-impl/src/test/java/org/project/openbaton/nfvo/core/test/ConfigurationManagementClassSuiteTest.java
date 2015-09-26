@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -27,16 +28,10 @@ import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.nfvo.core.interfaces.ConfigurationManagement;
+import org.project.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.project.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,19 +43,16 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class ConfigurationManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @InjectMocks
     private ConfigurationManagement configurationManagement;
 
-    @Autowired
+    @Mock
     private ConfigurationRepository configurationRepository;
 
     @AfterClass
@@ -70,7 +62,7 @@ public class ConfigurationManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 

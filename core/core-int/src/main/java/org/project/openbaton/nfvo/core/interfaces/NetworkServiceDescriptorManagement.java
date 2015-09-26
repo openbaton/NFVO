@@ -111,7 +111,7 @@ public interface NetworkServiceDescriptorManagement {
      * @param idVnfd of VirtualNetworkFunctionDescriptor
      * @return VirtualNetworkFunctionDescriptor
      */
-    VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd);
+    VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) throws NotFoundException;
 
     /**
      * Updates the VNFDescriptor into NSD with idNsd
@@ -162,7 +162,7 @@ public interface NetworkServiceDescriptorManagement {
      * @param idPnf
      * @return PhysicalNetworkFunctionDescriptor selected
      */
-    PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+    PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) throws NotFoundException;
 
     /**
      * Adds or Updates the PhysicalNetworkFunctionDescriptor into NSD

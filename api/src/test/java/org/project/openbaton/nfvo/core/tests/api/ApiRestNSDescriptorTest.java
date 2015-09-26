@@ -49,6 +49,7 @@ public class ApiRestNSDescriptorTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
     @InjectMocks
     RestNetworkServiceDescriptor restNetworkService;
 
@@ -56,6 +57,7 @@ public class ApiRestNSDescriptorTest {
     NetworkServiceDescriptorManagement nsdManagement;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
     private NetworkServiceDescriptor networkServiceDescriptor;
 
     private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
@@ -63,12 +65,12 @@ public class ApiRestNSDescriptorTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
+
         networkServiceDescriptor = new NetworkServiceDescriptor();
         networkServiceDescriptor.setVendor("Fokus");
         virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
         virtualNetworkFunctionDescriptor.setVendor("Fokus");
-        networkServiceDescriptor.getVnfd()
-                .add(virtualNetworkFunctionDescriptor);
+        networkServiceDescriptor.getVnfd().add(virtualNetworkFunctionDescriptor);
         VNFDependency vnfdependency = new VNFDependency();
         networkServiceDescriptor.getVnf_dependency().add(vnfdependency);
         PhysicalNetworkFunctionDescriptor pDescriptor = new PhysicalNetworkFunctionDescriptor();
@@ -272,7 +274,7 @@ public class ApiRestNSDescriptorTest {
     @Test
     public void PNFDNotFoundException() throws NotFoundException {
         exception.expect(NotFoundException.class);
-        when(nsdManagement.getPhysicalNetworkFunctionDescriptor(anyString(),anyString())).thenThrow(NotFoundException.class);
+        when(nsdManagement.getPhysicalNetworkFunctionDescriptor(anyString(), anyString())).thenThrow(NotFoundException.class);
         PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor = restNetworkService.getPhysicalNetworkFunctionDescriptor(networkServiceDescriptor.getId(), "-1");
     }
 

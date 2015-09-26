@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.*;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -31,17 +32,11 @@ import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.nfvo.core.interfaces.VirtualLinkManagement;
+import org.project.openbaton.nfvo.core.api.VirtualLinkManagement;
 import org.project.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
@@ -54,22 +49,20 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VirtualLinkManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @InjectMocks
     private VirtualLinkManagement virtualLinkManagement;
 
-    @Autowired
+    @Mock
     private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
-    @Autowired
+    @Mock
     private VirtualLinkRecordRepository virtualLinkRecordRepository;
 
     @AfterClass
@@ -79,7 +72,7 @@ public class VirtualLinkManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 
@@ -92,9 +85,11 @@ public class VirtualLinkManagementClassSuiteTest {
     public void virtualLinkManagementUpdateDescriptorTest() {
         VirtualLinkDescriptor virtualLinkDescriptor_exp = createVirtualLinkDescriptor();
         when(virtualLinkDescriptorRepository.findOne(virtualLinkDescriptor_exp.getId())).thenReturn(virtualLinkDescriptor_exp);
+        when(virtualLinkDescriptorRepository.save(virtualLinkDescriptor_exp)).thenReturn(virtualLinkDescriptor_exp);
 
         VirtualLinkDescriptor virtualLinkDescriptor_new = createVirtualLinkDescriptor();
         virtualLinkDescriptor_new.setRoot_requirement("root_requirement_updated");
+        when(virtualLinkDescriptorRepository.save(virtualLinkDescriptor_new)).thenReturn(virtualLinkDescriptor_new);
         virtualLinkDescriptor_exp = virtualLinkManagement.update(virtualLinkDescriptor_new, virtualLinkDescriptor_exp.getId());
 
         assertEquals(virtualLinkDescriptor_exp, virtualLinkDescriptor_new);
@@ -104,9 +99,11 @@ public class VirtualLinkManagementClassSuiteTest {
     public void virtualLinkManagementUpdateRecordTest() {
         VirtualLinkRecord virtualLinkRecord_exp = createVirtualLinkRecord();
         when(virtualLinkRecordRepository.findOne(virtualLinkRecord_exp.getId())).thenReturn(virtualLinkRecord_exp);
+        when(virtualLinkRecordRepository.save(virtualLinkRecord_exp)).thenReturn(virtualLinkRecord_exp);
 
         VirtualLinkRecord virtualLinkRecord_new = createVirtualLinkRecord();
         virtualLinkRecord_new.setRoot_requirement("root_requirement_updated");
+        when(virtualLinkRecordRepository.save(virtualLinkRecord_new)).thenReturn(virtualLinkRecord_new);
         virtualLinkRecord_exp = virtualLinkManagement.update(virtualLinkRecord_new, virtualLinkRecord_exp.getId());
 
         assertEquals(virtualLinkRecord_exp, virtualLinkRecord_new);

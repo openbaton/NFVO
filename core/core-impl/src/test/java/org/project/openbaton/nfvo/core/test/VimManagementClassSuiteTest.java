@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -31,18 +32,12 @@ import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Network;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
 import org.project.openbaton.exceptions.VimException;
-import org.project.openbaton.nfvo.core.interfaces.VimManagement;
+import org.project.openbaton.nfvo.core.api.VimManagement;
 import org.project.openbaton.nfvo.repositories.VimRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,20 +50,20 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class VimManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    @Autowired
-    VimBroker vimBroker;
-    @Autowired
-    VimRepository vimRepository;
+
+    @Mock
+    private VimBroker vimBroker;
+
+    @Mock
+    private VimRepository vimRepository;
+
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @InjectMocks
     private VimManagement vimManagement;
 
     @AfterClass
@@ -78,21 +73,18 @@ public class VimManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 
     @Test
-    public void nfvImageManagementNotNull() {
+    public void vimManagementNotNull() {
         Assert.assertNotNull(vimManagement);
     }
 
-    @Test
-    public void nfvImageManagementUpdateTest() {
-    }
 
     @Test
-    public void nfvImageManagementRefreshTest() throws VimException {
+    public void vimManagementRefreshTest() throws VimException {
         initMocks();
         VimInstance vimInstance = createVimInstance();
         vimManagement.refresh(vimInstance);
@@ -106,12 +98,13 @@ public class VimManagementClassSuiteTest {
     public void vimManagementUpdateTest() throws VimException {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
-        when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+        when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+        when(vimRepository.save(vimInstance_exp)).thenReturn(vimInstance_exp);
         VimInstance vimInstance_new = createVimInstance();
         vimInstance_new.setName("UpdatedName");
         vimInstance_new.setTenant("UpdatedTenant");
         vimInstance_new.setUsername("UpdatedUsername");
-
+        when(vimRepository.save(vimInstance_new)).thenReturn(vimInstance_new);
         vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId());
 
         Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());

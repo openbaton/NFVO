@@ -18,7 +18,8 @@ package org.project.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
@@ -32,18 +33,12 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.*;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.VimException;
-import org.project.openbaton.nfvo.core.interfaces.NetworkManagement;
+import org.project.openbaton.nfvo.core.core.NetworkManagement;
 import org.project.openbaton.nfvo.repositories.NetworkRepository;
 import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,20 +53,20 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class NetworkManagementClassSuiteTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    @Autowired
+
+    @Mock
     public VimBroker vimBroker;
+
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
-    @Autowired
+
+    @InjectMocks
     private NetworkManagement networkManagement;
-    @Autowired
+
+    @Mock
     private NetworkRepository networkRepository;
 
     @AfterClass
@@ -81,7 +76,7 @@ public class NetworkManagementClassSuiteTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(ApplicationTest.class);
+        MockitoAnnotations.initMocks(this);
         log.info("Starting test");
     }
 
