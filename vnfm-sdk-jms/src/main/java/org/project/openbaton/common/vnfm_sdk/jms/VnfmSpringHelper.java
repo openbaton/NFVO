@@ -15,6 +15,7 @@ import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.Script;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -62,7 +63,7 @@ public class VnfmSpringHelper extends VnfmHelper {
         }
         log.debug("" + response);
         if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-            throw new VnfmSdkException("Not able to grant operation", ((OrVnfmGenericMessage) response).getVnfr());
+            throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage() , ((OrVnfmErrorMessage) response).getVnfr());
         }
         OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
         return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
@@ -79,7 +80,9 @@ public class VnfmSpringHelper extends VnfmHelper {
             throw new VnfmSdkException("Not able to allocate Resources", e);
         }
         if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-            throw new VnfmSdkException("Not able to allocate Resources", ((OrVnfmGenericMessage) response).getVnfr());
+            OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
+            log.error(errorMessage.getMessage());
+            throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage() , errorMessage.getVnfr());
         }
         OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
         log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
