@@ -24,8 +24,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.project.openbaton.catalogue.mano.common.HighAvailability;
 import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.project.openbaton.nfvo.repositories.VNFDRepository;
 import org.slf4j.Logger;
@@ -91,7 +93,7 @@ public class RepositoriesClassSuiteTest {
 
         int count = countRowsInTable(jdbcTemplate, "NETWORK_SERVICE_DESCRIPTOR");
 
-        nsdRepository.save(nsd);
+        nsd = nsdRepository.save(nsd);
 
         Assert.assertNotNull(nsd);
         Assert.assertNotNull(nsd.getId());
@@ -108,7 +110,7 @@ public class RepositoriesClassSuiteTest {
     public void findEntityTest() {
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
-        nsdRepository.save(nsd);
+        nsd = nsdRepository.save(nsd);
 
         Assert.assertNotNull(nsd);
         Assert.assertNotNull(nsd.getId());
@@ -121,7 +123,7 @@ public class RepositoriesClassSuiteTest {
         }
 
         NetworkServiceDescriptor new_nsd = null;
-        new_nsd = nsdRepository.findOne(nsd.getId());
+        new_nsd = nsdRepository.findFirstById(nsd.getId());
 
         Assert.assertNotNull(new_nsd);
         Assert.assertNotNull(new_nsd.getId());
@@ -133,7 +135,10 @@ public class RepositoriesClassSuiteTest {
 
     @Test
     public void nsdRepositoryFindTest() {
-        Assert.assertEquals(0, nsdRepository.findAll().hashCode());
+        int i = 0;
+        for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll())
+            i++;
+        Assert.assertEquals(0, i);
     }
 
     @Test
@@ -141,7 +146,7 @@ public class RepositoriesClassSuiteTest {
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
         NetworkServiceDescriptor nsd_new;
         nsd.setVendor("0");
-        nsdRepository.save(nsd);
+        nsd = nsdRepository.save(nsd);
 
         for (int i = 0; i < 10; i++) {
             nsd.setVendor("" + i);
@@ -162,7 +167,7 @@ public class RepositoriesClassSuiteTest {
     public void nsdRepositoryPersistTest() {
         NetworkServiceDescriptor nsd = createNetworkServiceDescriptor();
 
-        nsdRepository.save(nsd);
+        nsd = nsdRepository.save(nsd);
 
         String id = nsd.getId();
 
@@ -175,14 +180,8 @@ public class RepositoriesClassSuiteTest {
         Assert.assertEquals(nsd.getVersion(), nsd_new.getVersion());
         Assert.assertEquals(nsd.getVendor(), nsd_new.getVendor());
         for (int i = 0; i < nsd.getVnfd().size(); i++) {
-            Assert.assertEquals(((VirtualNetworkFunctionDescriptor) nsd
-                            .getVnfd().toArray()[i]).getId(),
-                    ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd()
-                            .toArray()[i]).getId());
-            Assert.assertEquals(((VirtualNetworkFunctionDescriptor) nsd
-                            .getVnfd().toArray()[i]).getVersion(),
-                    ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd()
-                            .toArray()[i]).getVersion());
+            Assert.assertEquals(((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getId(), ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getId());
+            Assert.assertEquals(((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVersion(), ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVersion());
 //            for (int k = 0; k < ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getMonitoring_parameter().size(); k++) {
 //                Assert.assertEquals(
 //                        ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getMonitoring_parameter().get(k),
@@ -190,34 +189,10 @@ public class RepositoriesClassSuiteTest {
 //            }
             for (int j = 0; j < ((VirtualNetworkFunctionDescriptor) nsd
                     .getVnfd().toArray()[i]).getVdu().size(); j++) {
-                Assert.assertEquals(
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getId(),
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getId());
-                Assert.assertEquals(
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getVersion(),
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getVersion());
-                Assert.assertEquals(
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getComputation_requirement(),
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getComputation_requirement());
-                Assert.assertEquals(
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getHigh_availability(),
-                        ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new
-                                .getVnfd().toArray()[i]).getVdu().toArray()[j])
-                                .getHigh_availability());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getId(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getId());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getVersion(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getVersion());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getComputation_requirement(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getComputation_requirement());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability());
             }
         }
 
@@ -226,9 +201,8 @@ public class RepositoriesClassSuiteTest {
 
         NetworkServiceDescriptor nsd_null = null;
 
-        exception.expect(javax.persistence.NoResultException.class);
-        nsd_null = nsdRepository.findOne(id);
-
+        nsd_null = nsdRepository.findFirstById(id);
+        Assert.assertNull(nsd_null);
     }
 
 
@@ -237,12 +211,16 @@ public class RepositoriesClassSuiteTest {
         nsd.setVendor("FOKUS");
         Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+        virtualNetworkFunctionDescriptor.setType("test");
         virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>() {{
             add("monitor1");
             add("monitor2");
             add("monitor3");
         }});
         final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+        vdu.setVnfc(new HashSet<VNFComponent>());
+        vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+        vdu.setVimInstanceName("test");
         vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
         vdu.setComputation_requirement("high_requirements");
         virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {{
