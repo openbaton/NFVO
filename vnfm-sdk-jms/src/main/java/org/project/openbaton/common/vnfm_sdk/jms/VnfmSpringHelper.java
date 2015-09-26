@@ -186,29 +186,34 @@ public class VnfmSpringHelper extends VnfmHelper {
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
         log.debug("The number of scripts for " + virtualNetworkFunctionRecord.getName() + " are: " + le.getLifecycle_events());
 
-        if (le != null) {
-            for (String script : le.getLifecycle_events()) {
-                log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
-                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-                    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-                        for (Ip ip : vnfcInstance.getIps()){
-                            env.put(ip.getNetName(),ip.getIp());
-                        }
-                        int i =1;
-                        for (String fip : vnfcInstance.getFloatingIps()){
-                            env.put("fip" + i,fip);
-                            i++;
-                        }
-                        log.info("Environment Variables are: " + env);
-                        String command = getJsonObject("EXECUTE", script, env).toString();
-                        res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
-                    }
-                }
-            }
-            return res;
-        }
-        throw new VnfmSdkException("Error executing script");
-    }
+													            if (le != null) {
+															                for (String script : le.getLifecycle_events()) {
+																		                log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
+																				                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+																							                    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+																										                            Map<String,String> tempEnv = new HashMap<>();
+																													                            for (Ip ip : vnfcInstance.getIps()){
+																																	                                tempEnv.put(ip.getNetName(), ip.getIp());
+																																					                        }
+																																                            int i =1;
+																																			                            for (String fip : vnfcInstance.getFloatingIps()){
+																																							                                tempEnv.put("fip" + i,fip);
+																																											                            i++;
+																																														                            }
+																																						                            log.info("Environment Variables are: " + env);
+																																									                            env.putAll(tempEnv);
+																																												                            String command = getJsonObject("EXECUTE", script, env).toString();
+																																															                            res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
+																																																		                            for (String key : tempEnv.keySet()){
+																																																						                                env.remove(key);
+																																																										                        }
+																																																					                        }
+																									                    }
+																						            }
+																	            return res;
+																		            }
+														            throw new VnfmSdkException("Error executing script");
+															        }
 
     @Override
     public String executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, VNFRecordDependency dependency) throws Exception {
