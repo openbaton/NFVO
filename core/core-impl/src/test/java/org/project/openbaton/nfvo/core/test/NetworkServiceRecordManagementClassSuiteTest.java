@@ -141,7 +141,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Test
     public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
         NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
-        when(resourceManagement.release(any(VirtualDeploymentUnit.class))).thenReturn(new AsyncResult<Void>(null));
+        when(resourceManagement.release(any(VirtualDeploymentUnit.class), )).thenReturn(new AsyncResult<Void>(null));
         when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
         Configuration system = new Configuration();
         system.setConfigurationParameters(new HashSet<ConfigurationParameter>());

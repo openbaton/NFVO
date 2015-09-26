@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.core.interfaces;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Server;
 import org.project.openbaton.catalogue.nfvo.VimInstance;
@@ -83,7 +84,7 @@ public interface ResourceManagement {
      * instantiated virtualised resource. This operation frees
      * resources and returns them to the NFVI resource pool.
      */
-    Future<Void> release(VirtualDeploymentUnit vdu) throws VimException;
+    Future<Void> release(VirtualDeploymentUnit vdu, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException;
 
     /**
      * This operation allows requesting the reservation of a set

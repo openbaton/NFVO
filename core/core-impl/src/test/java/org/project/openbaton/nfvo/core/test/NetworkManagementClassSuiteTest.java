@@ -39,6 +39,7 @@ import org.project.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.project.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -332,7 +333,7 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
-        public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException {
+        public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException {
             return null;
         }
 
