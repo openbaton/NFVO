@@ -13,6 +13,7 @@ import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.EndpointType;
 import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
@@ -30,7 +31,10 @@ import org.springframework.core.io.Resource;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Created by lto on 08/07/15.
@@ -135,8 +139,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case SCALING:
                     break;
                 case ERROR:
-                    orVnfmGenericMessage = (OrVnfmGenericMessage) message;
-                    handleError(orVnfmGenericMessage.getVnfr());
+                    OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) message;
+                    log.error("ERROR Received: " + errorMessage.getMessage());
+                    handleError(errorMessage.getVnfr());
+
                     nfvMessage = null;
                     break;
                 case MODIFY:
