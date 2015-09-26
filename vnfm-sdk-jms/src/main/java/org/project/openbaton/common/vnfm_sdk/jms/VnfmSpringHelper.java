@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Base64;
 import org.project.openbaton.catalogue.mano.common.Event;
+import org.project.openbaton.catalogue.mano.common.Ip;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.VNFCInstance;
@@ -30,7 +31,10 @@ import org.springframework.stereotype.Service;
 
 import javax.jms.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -187,6 +191,14 @@ public class VnfmSpringHelper extends VnfmHelper {
                 log.info("Sending script: " + script + " to VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord.getName());
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
                     for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+                        for (Ip ip : vnfcInstance.getIps()){
+                            env.put(ip.getNetName(),ip.getIp());
+                        }
+                        int i =1;
+                        for (String fip : vnfcInstance.getFloatingIps()){
+                            env.put("fip" + i,fip);
+                            i++;
+                        }
                         log.info("Environment Variables are: " + env);
                         String command = getJsonObject("EXECUTE", script, env).toString();
                         res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
