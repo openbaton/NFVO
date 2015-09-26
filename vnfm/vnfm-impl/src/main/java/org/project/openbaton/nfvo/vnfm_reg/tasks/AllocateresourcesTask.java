@@ -21,6 +21,7 @@ import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.clients.exceptions.VimDriverException;
 import org.project.openbaton.exceptions.VimException;
@@ -60,7 +61,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 lifecycleEvent.setEvent(Event.ERROR);
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 saveVirtualNetworkFunctionRecord();
-                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
+                vnfmSender.sendCommand(new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage()), getTempDestination());
                 return;
             } catch (VimDriverException e) {
                 e.printStackTrace();
@@ -70,7 +71,7 @@ public class AllocateresourcesTask extends AbstractTask {
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                 saveVirtualNetworkFunctionRecord();
-                vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
+                vnfmSender.sendCommand(new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage()), getTempDestination());
                 return;
             }
 

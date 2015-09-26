@@ -19,6 +19,7 @@ package org.project.openbaton.nfvo.vnfm_reg.tasks;
 import org.project.openbaton.catalogue.mano.common.Event;
 import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.project.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -65,7 +66,7 @@ public class GrantoperationTask extends AbstractTask {
         } else {
             // there are not enough resources for deploying VNFR
             saveVirtualNetworkFunctionRecord();
-            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ERROR), getTempDestination());
+            vnfmSender.sendCommand(new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName()), getTempDestination());
         }
     }
 
