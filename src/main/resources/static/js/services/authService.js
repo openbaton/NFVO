@@ -23,10 +23,8 @@ angular.module('app').factory('AuthService', function($http, Session, $location,
                 console.log(res);
                 Session.create(URL, res.data.access_token, credentials.username, true);
                 $location.path("/");
-//                    $window.location.href = '#/dashboard';
-
                 $window.location.reload();
-                return ;
+                return;
             });
     };
 

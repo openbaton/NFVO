@@ -16,148 +16,147 @@
     </div>
 </div>
 <div class="row">
-    <" dclass="col-lg-12">
     <h3>Vim instance Name: {{vimInstance.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco"
                                                                                      class="fa fa-refresh"></i>
     </a></h3>
     <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
 
-        <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
-        <div ng-repeat="(key,value) in vimInstance">
-            <dl class="dl-horizontal">
-            <div ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks'">
+    <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
+    <dl class="dl-horizontal">
+        <span class="dl-horizontal" ng-repeat="(key,value) in vimInstance">
+            <span ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks'">
                 <dt>{{key}}:</dt>
                 <dd>{{value}}</dd>
-            </div>
-
-            <div ng-if="key == 'location'">
+            </span>
+            <span ng-if="key == 'location'">
                 <dt>{{key}}:</dt>
                 <dd>id: {{value.id}}</dd>
                 <dd>version: {{value.version}}</dd>
                 <dd>name: {{value.name}}</dd>
-            </div>
-                </dl>
-        </div>
-        <tabset>
-
-            <tab heading="Networks">
-                <div ng-if="vimInstance.networks.length>0">
-                    <h4>Networks</h4>
-                    <!--{{vimInstance.networks[0]}}-->
-                    <table
-                            class="table table-bordered table-striped table-hover tablesorter"
-                            id="nsdTabletable">
-                        <thead>
-                        <tr>
-                            <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                    class="fa fa-sort"></i>
-                            </th>
-                            <th ng-click="predicate = 'version'; reverse = !reverse">version <i
-                                    class="fa fa-sort"></i></th>
-                            <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'external'; reverse = !reverse">external <i
-                                    class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'shared'; reverse = !reverse">shared <i
-                                    class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'subnets'; reverse = !reverse">subnets <i
-                                    class="fa fa-sort"></i>
-                            </th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
-                            <td>{{network.id}}</td>
-                            <td>{{network.version}}</td>
-                            <td>{{network.name}}</td>
-                            <td>{{network.extId}}</td>
-                            <td>{{network.external}}</td>
-                            <td>{{network.shared}}</td>
-                            <td>{{network.subnets}}</td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </tab>
-            <tab heading="Images">
-                <div ng-if="vimInstance.images.length>0">
-                    <h4>Images</h4>
-                    <!--{{vimInstance.images[0]}}-->
-                    <table
-                            class="table table-bordered table-striped table-hover tablesorter"
-                            id="nsdTabletable">
-                        <thead>
-                        <tr>
-                            <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                    class="fa fa-sort"></i>
-                            </th>
-                            <th ng-click="predicate = 'version'; reverse = !reverse">version <i
-                                    class="fa fa-sort"></i></th>
-                            <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'minRam'; reverse = !reverse">disk <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">vcpu <i
-                                    class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'public'; reverse = !reverse">public <i
-                                    class="fa fa-sort"></i>
-                            </th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
-                            <td>{{image.id}}</td>
-                            <td>{{image.version}}</td>
-                            <td>{{image.extId}}</td>
-                            <td>{{image.name}}</td>
-                            <td>{{image.minRam}}</td>
-                            <td>{{image.minDiskSpace}}</td>
-                            <td>{{image.public}}</td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </tab>
-            <tab heading="Flavours">
-                <div ng-if="vimInstance.flavours.length>0">
-                    <h4>Flavours</h4>
-                    <table
-                            class="table table-bordered table-striped table-hover tablesorter"
-                            id="nsdTabletable">
-                        <thead>
-                        <tr>
-                            <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                    class="fa fa-sort"></i>
-                            </th>
-                            <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour_key <i
-                                    class="fa fa-sort"></i></th>
-                            <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'ram'; reverse = !reverse">ram <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'disk'; reverse = !reverse">disk <i class="fa fa-sort"></i>
-                            <th ng-click="predicate = 'vcpus'; reverse = !reverse">vcpu <i class="fa fa-sort"></i>
-                            </th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="flavour in vimInstance.flavours| orderBy:predicate:reverse">
-                            <td>{{flavour.id}}</td>
-                            <td>{{flavour.flavour_key}}</td>
-                            <td>{{flavour.extId}}</td>
-                            <td>{{flavour.ram}}</td>
-                            <td>{{flavour.disk}}</td>
-                            <td>{{flavour.vcpus}}</td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </tab>
-        </tabset>
+            </span>
+        </span>
     </dl>
+</div>
+<tabset>
+
+    <tab heading="Networks">
+        <div ng-if="vimInstance.networks.length>0">
+            <h4>Networks</h4>
+            <!--{{vimInstance.networks[0]}}-->
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                            class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                            class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'external'; reverse = !reverse">external <i
+                            class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'shared'; reverse = !reverse">shared <i
+                            class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'subnets'; reverse = !reverse">subnets <i
+                            class="fa fa-sort"></i>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
+                    <td>{{network.id}}</td>
+                    <td>{{network.version}}</td>
+                    <td>{{network.name}}</td>
+                    <td>{{network.extId}}</td>
+                    <td>{{network.external}}</td>
+                    <td>{{network.shared}}</td>
+                    <td>{{network.subnets}}</td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </tab>
+    <tab heading="Images">
+        <div ng-if="vimInstance.images.length>0">
+            <h4>Images</h4>
+            <!--{{vimInstance.images[0]}}-->
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                            class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                            class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'minRam'; reverse = !reverse">disk <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">vcpu <i
+                            class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'public'; reverse = !reverse">public <i
+                            class="fa fa-sort"></i>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
+                    <td>{{image.id}}</td>
+                    <td>{{image.version}}</td>
+                    <td>{{image.extId}}</td>
+                    <td>{{image.name}}</td>
+                    <td>{{image.minRam}}</td>
+                    <td>{{image.minDiskSpace}}</td>
+                    <td>{{image.public}}</td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </tab>
+    <tab heading="Flavours">
+        <div ng-if="vimInstance.flavours.length>0">
+            <h4>Flavours</h4>
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter"
+                    id="nsdTabletable">
+                <thead>
+                <tr>
+                    <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                            class="fa fa-sort"></i>
+                    </th>
+                    <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour_key <i
+                            class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'ram'; reverse = !reverse">ram <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'disk'; reverse = !reverse">disk <i class="fa fa-sort"></i>
+                    <th ng-click="predicate = 'vcpus'; reverse = !reverse">vcpu <i class="fa fa-sort"></i>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="flavour in vimInstance.flavours| orderBy:predicate:reverse">
+                    <td>{{flavour.id}}</td>
+                    <td>{{flavour.flavour_key}}</td>
+                    <td>{{flavour.extId}}</td>
+                    <td>{{flavour.ram}}</td>
+                    <td>{{flavour.disk}}</td>
+                    <td>{{flavour.vcpus}}</td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </tab>
+</tabset>
+</dl>
 
 </div>
 </div>

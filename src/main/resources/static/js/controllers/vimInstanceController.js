@@ -1,5 +1,5 @@
 angular.module('app').
-    controller('vimInstanceCtrl', function ($scope, $routeParams, http) {
+    controller('vimInstanceCtrl', function ($scope, $routeParams, http, $location, AuthService) {
 
         var url = '/api/v1/datacenters/';
         //var url = 'http://localhost:8080/api/v1/datacenters/';
@@ -38,7 +38,7 @@ angular.module('app').
                 http.post(url, $scope.file)
                     .success(function (response) {
                         showOk('Vim Instance created.');
-                        loadTable();
+                        loadVIM();
                     })
                     .error(function (data, status) {
                         showError(data, status);
@@ -48,13 +48,11 @@ angular.module('app').
                 http.post(url, $scope.textTopologyJson)
                     .success(function (response) {
                         showOk('VIM Instance created.');
-                        resizeMap();
                         $scope.file = '';
                     })
                     .error(function (data, status) {
                         showError(data, status);
 
-                        resizeMap();
                     });
             }
             else {
@@ -65,8 +63,6 @@ angular.module('app').
 
 
         $scope.nameFilter = null;
-        $scope.datacenters = [];
-        loadTable();
 
 
         $scope.changeSelection = function (selection) {
@@ -117,7 +113,7 @@ angular.module('app').
         };
 
         $scope.refreshDc = function () {
-            loadDatacenter();
+
             $('#refreshIco').addClass('fa-spin');
             http.get(url + $routeParams.vimInstanceId + '/refresh')
                 .success(function (data) {
@@ -135,15 +131,12 @@ angular.module('app').
         };
 
 
-        $scope.loadFormUpdate = function (data) {
-            $scope.upDatacenter = cleanDatacenter(data);
-            $('#modalUpdate').modal('show');
-        };
         $scope.deleteData = function (id) {
             http.delete(url + id)
                 .success(function (response) {
-                    showOk('Data Center deleted with id ' + id + '.');
-                    delete $scope.dataCenterSelected;
+                    showOk('Vim Instance deleted with id ' + id + '.');
+                    loadVIM();
+
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -152,23 +145,26 @@ angular.module('app').
 
         function loadVIM() {
             if (!angular.isUndefined($routeParams.vimInstanceId))
-                http.syncGet(url + $routeParams.vimInstanceId).then(function (data) {
-                    console.log(data);
-                    $scope.vimInstance = data;
-                    $scope.vimInstanceJSON = JSON.stringify(data, undefined, 4);
+                http.get(url + $routeParams.vimInstanceId)
+                    .success(function (response, status) {
+                        console.log(response);
+                        $scope.vimInstance = response;
+                        $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
 
-                });
+                    }).error(function (data, status) {
+                        showError(data, status);
+                    });
+            else {
+                http.get(url)
+                    .success(function (response) {
+                        $scope.vimInstances = response;
+                    })
+                    .error(function (data, status) {
+                        showError(data, status);
+                    });
+            }
         }
 
-        function loadTable() {
-            http.get(url)
-                .success(function (response) {
-                    $scope.vimInstances = response;
-                })
-                .error(function (data, status) {
-                    showError(data, status);
-                });
-        }
 
         function showError(data, status) {
             console.log('DATA: ' + data + ' STATUS: ' + status)
@@ -178,6 +174,11 @@ angular.module('app').
             });
 
             $('.modal').modal('hide');
+            if (status === 401) {
+                console.log(status + ' Status unauthorized')
+                AuthService.logout();
+                $window.location.reload();
+            }
         }
 
         function showOk(msg) {
