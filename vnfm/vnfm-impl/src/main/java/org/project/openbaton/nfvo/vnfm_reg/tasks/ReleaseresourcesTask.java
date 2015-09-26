@@ -17,6 +17,7 @@
 package org.project.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.project.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,10 @@ public class
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
-            this.resourceManagement.release(virtualDeploymentUnit);
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+                log.debug("Removing VNFCInstance: " + vnfcInstance);
+                this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
+            }
         }
 
     }
