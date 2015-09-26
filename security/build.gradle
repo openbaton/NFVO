@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    compile project(':repo-int')
+    compile project(':repository')
     compile project(':catalogue')
     compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
     compile("org.springframework.security:spring-security-core:4.0.1.RELEASE")
