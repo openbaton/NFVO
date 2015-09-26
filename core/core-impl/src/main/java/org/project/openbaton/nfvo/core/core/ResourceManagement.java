@@ -95,7 +95,7 @@ public class ResourceManagement implements org.project.openbaton.nfvo.core.inter
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
-                "sudo /opt/ems-public/ems.sh start\n";
+                "sudo /opt/openbaton/ems/ems.sh start\n";
         return result;
     }
 

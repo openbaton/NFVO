@@ -17,15 +17,15 @@
 package org.project.openbaton.nfvo.security;
 
 import org.project.openbaton.catalogue.security.User;
-import org.project.openbaton.nfvo.repositories_interfaces.GenericRepository;
+import org.project.openbaton.nfvo.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.project.openbaton.nfvo.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,7 @@ import java.util.List;
 @Component
 public class CustomUserDetailsService implements UserDetailsService {
 	@Autowired
-    @Qualifier("userRepository")
-	private GenericRepository<User> userRepository;
+	private UserRepository userRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String username)
