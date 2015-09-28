@@ -281,7 +281,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
     @Override
     @Async
-    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
+    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.debug("Initializing " + vimInstance.toString());
         log.debug("initialized VimInstance");
