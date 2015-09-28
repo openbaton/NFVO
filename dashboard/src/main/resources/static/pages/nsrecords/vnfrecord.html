@@ -33,25 +33,19 @@
                 <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
                     <h2>VNF Record: {{vnfr.name}}</h2>
                     <div ng-repeat="(k,v) in vnfr" ng-show="v != null" ng-if="k!='vdu' && k!='deployment_flavour'">
-
+                        <dl class="dl-horizontal">
                         <span ng-if="k!='requires' && k!='provides'">
-                            <dl class="dl-horizontal">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
-                            </dl>
                         </span>
                         <span ng-if="k=='requires' || k=='provides'">
                              <hr class="hr_title">
-                            <dl class="dl-horizontal">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
-                            </dl>
                               <hr class="hr_title">
                         </span>
-
-
+                        </dl>
                     </div>
-
                     <div class="table-responsive" ng-show="vnfr.vdu.length > 0">
                         <h3>Vdu</h3>
                         <table
