@@ -53,7 +53,7 @@ public class NetworkManagement implements org.project.openbaton.nfvo.core.interf
             //Define Subnet
             Subnet subnet = new Subnet();
             subnet.setName(network.getName() + "_subnet");
-            subnet.setCidr("192.169." + (int) Math.random() * 255 + ".0/24");
+            subnet.setCidr("192.168." + (int)(Math.random() * 255) + ".0/24");
             //Define list of Subnets for Network
             Set<Subnet> subnets = new HashSet<Subnet>();
             subnets.add(subnet);
