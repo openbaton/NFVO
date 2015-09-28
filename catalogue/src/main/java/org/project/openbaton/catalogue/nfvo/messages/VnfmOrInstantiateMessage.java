@@ -34,6 +34,9 @@ public class VnfmOrInstantiateMessage extends VnfmOrMessage {
     public VnfmOrInstantiateMessage() {
     }
 
+    public VnfmOrInstantiateMessage() {
+    }
+
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
         return virtualNetworkFunctionRecord;
     }
