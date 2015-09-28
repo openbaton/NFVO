@@ -37,6 +37,9 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     private Set<VirtualLinkRecord> vlrs;
     private Map<String,String> extention;
 
+    public OrVnfmInstantiateMessage() {
+    }
+
     public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention){
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;

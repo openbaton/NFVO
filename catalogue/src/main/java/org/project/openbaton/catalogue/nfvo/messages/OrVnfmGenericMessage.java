@@ -28,6 +28,9 @@ public class OrVnfmGenericMessage implements OrVnfmMessage {
     private VirtualNetworkFunctionRecord vnfr;
     private VNFRecordDependency vnfrd;
 
+    public OrVnfmGenericMessage() {
+    }
+
     public OrVnfmGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
         this.vnfr = vnfr;
         this.action=action;

@@ -27,8 +27,10 @@ public class VnfmOrInstantiateMessage implements VnfmOrMessage {
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     public VnfmOrInstantiateMessage(VirtualNetworkFunctionRecord vnfr) {
-
         this.virtualNetworkFunctionRecord = vnfr;
+    }
+
+    public VnfmOrInstantiateMessage() {
     }
 
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
