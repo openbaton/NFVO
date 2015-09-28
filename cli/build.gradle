@@ -16,12 +16,11 @@
 
 dependencies {
 
-    compile project(':api')
-
     compile project(':repository')
 
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+    compile 'commons-io:commons-io:2.4'
     compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
-    compile 'com.google.code.gson:gson:2.3.1'
 
 }
 

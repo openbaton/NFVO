@@ -51,7 +51,7 @@ public class VNFLifecycleOperationGranting implements org.project.openbaton.nfvo
             if (countVDUsOnVimInstances.containsKey(vdu.getVimInstance())) {
                 countVDUsOnVimInstances.put(vdu.getVimInstance(), countVDUsOnVimInstances.get(vdu.getVimInstance()) + vdu.getVnfc().size() - vdu.getVnfc_instance().size());
             } else {
-                log.debug("VimInstance: " + vdu.getVimInstance().getName() + "\n VNFC: " + vdu.getVnfc() + "\nVNFCINST: " + vdu.getVnfc_instance());
+                log.debug("VimInstance: " + vdu.getVimInstanceName() + "\n VNFC: " + vdu.getVnfc() + "\nVNFCINST: " + vdu.getVnfc_instance());
                 countVDUsOnVimInstances.put(vdu.getVimInstance(), vdu.getVnfc().size() - vdu.getVnfc_instance().size());
             }
         }
