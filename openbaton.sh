@@ -112,6 +112,12 @@ function stop {
     fi
 }
 
+function restart {
+    kill
+    start
+}
+
+
 function kill {
     if screen -list | grep "openbaton"; then
 	    screen -ls | grep openbaton | cut -d. -f1 | awk '{print $1}' | xargs kill
@@ -170,6 +176,8 @@ do
             start ;;
         "stop" )
             stop ;;
+        "restart" )
+            restart ;;
         "compile" )
             compile ;;
         "kill" )
