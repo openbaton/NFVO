@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI) {
+var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
     var url = '/api/v1/ns-descriptors';
     //var url = 'http://localhost:8080/api/v1/ns-descriptors';
@@ -34,7 +34,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             console.log(response);
         })
         .error(function (data, status) {
-            showError(status, JSON.stringify(data));
+            showError(status, data);
 
         });
 
@@ -166,6 +166,12 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
+
+    if (!angular.isUndefined($routeParams.vduId)){
+        $scope.vduId= $routeParams.vduId;
+        console.log(  $scope.vduId);
+    }
+
 
 
     $scope.storeNSDF = function (nsdCreate) {
@@ -434,16 +440,22 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id+"<\/a>");
             })
             .error(function (data, status) {
-                showError(status, JSON.stringify(data));
+                showError(status, data);
             });
     };
 
     $scope.Jsplumb = function () {
-        http.syncGet(url + '/' + $routeParams.nsdescriptorId).then(function (response) {
-            topologiesAPI.Jsplumb(response, 'descriptor');
-            console.log(response);
-        });
+        http.get(url + '/' + $routeParams.nsdescriptorId)
+            .success(function (response, status) {
+                topologiesAPI.Jsplumb(response, 'descriptor');
+                console.log(response);
+
+            }).error(function (data, status) {
+                showError(status, data);
+            });
+
     };
+
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
@@ -463,10 +475,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     function showError(status, data) {
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + data
+            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
         });
-//        loadTable();
+
         $('.modal').modal('hide');
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
+            $window.location.reload();
+        }
     }
 
     function showOk(msg) {

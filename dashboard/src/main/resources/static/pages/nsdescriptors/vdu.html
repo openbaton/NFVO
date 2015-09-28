@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1>VNF Dependencies
+        <h1>VDU
             <small>Information</small>
         </h1>
         <ol class="breadcrumb">
@@ -17,29 +17,34 @@
                     NSD: {{nsdinfo.name}}</a>
             </li>
             <li class="">
-                <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdependencies"><i class="fa fa-pencil-square-o"></i>
-                    VNF Dependencies</a>
+                <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/"><i class="fa fa-pencil-square-o"></i>
+                    VNF Descriptors</a>
+            </li>
+            <li class="">
+                <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfdescriptorId}}"><i class="fa fa-pencil-square-o"></i>
+                    VNF Descriptor</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VNF Dependency
+                VDU
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12 top-buffer" ng-show="nsdinfo">
+    <div class="col-lg-12 top-buffer" ng-show="vduId">
         <div class="col-lg-12">
             <div>
-                <div ng-repeat="vnfd in nsdinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
-                    <h2>VNF Dependency {{vnfd.name}}</h2>
+                <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
+                    <span ng-init="vnfdInfo=vnfd"></span>
+                <div ng-repeat="vdu in vnfd.vdu" ng-show="vdu.id==vduId">
+                    <h2>Virtual Deployment Unit</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vnfd">
-
+                        <spam ng-repeat="(k,v) in vdu">
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
-
                         </spam>
                     </dl>
+                </div>
                 </div>
             </div>
         </div>
