@@ -45,12 +45,31 @@ angular.module('app')
         };
         http.put = function (url, data) {
             $('#modalSend').modal('show');
-            return $http.put(url, data);
+            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
+            console.log(headerAutorization);
+            return $http({
+                url: url,
+                method: 'PUT',
+                data: data,
+                headers: {
+                    'Authorization': headerAutorization,
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                }
+            });
         };
 
         http.delete = function (url) {
             $('#modalSend').modal('show');
-            return $http.delete(url);
+            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
+            console.log(headerAutorization);
+            return $http({
+                url: url,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': headerAutorization
+                }
+            });
         };
 
         http.syncGet = function (url) {

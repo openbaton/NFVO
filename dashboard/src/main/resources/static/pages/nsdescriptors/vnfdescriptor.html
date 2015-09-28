@@ -21,7 +21,7 @@
                     VNF Descriptors</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VNF Descriptor {{nsrinfo.name}}
+                VNF Descriptor {{nsdinfo.name}}
             </li>
         </ol>
     </div>
@@ -32,26 +32,22 @@
             <div>
                 <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
                     <h2>VNF Descriptor: {{vnfd.name}}</h2>
-                    <spam ng-repeat="(k,v) in vnfd" ng-show="v != null" ng-if="k!='vdu' && k!='deployment_flavour'">
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vnfd" ng-show="v != null" ng-if="k!='vdu' && k!='deployment_flavour'">
 
                             <spam ng-if="k!='requires' && k!='provides'">
-                                <dl class="dl-horizontal">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
-                                </dl>
                             </spam>
                             <spam ng-if="k=='requires' || k=='provides'">
                                 <hr class="hr_title">
-                                <dl class="dl-horizontal">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
-                                </dl>
                                 <hr class="hr_title">
-
                             </spam>
 
-                    </spam>
-
+                        </spam>
+                    </dl>
                     <tabset>
                         <tab heading="Vdu">
                             <div class="table-responsive" ng-show="vnfd.vdu.length > 0">
@@ -69,20 +65,23 @@
                                         </th>
                                         <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
                                                 class="fa fa-sort"></i>
-                                        </th><th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vimInstanceName <i
-                                            class="fa fa-sort"></i>
-                                    </th>
+                                        </th>
+                                        <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vimInstanceName
+                                            <i
+                                                    class="fa fa-sort"></i>
+                                        </th>
                                         <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
                                                 class="fa fa-sort"></i>
-                                        </th> <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
-                                            class="fa fa-sort"></i>
-                                    </th>
+                                        </th>
+                                        <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                                class="fa fa-sort"></i>
+                                        </th>
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="vdu in vnfd.vdu | orderBy:predicate:reverse">
-                                        <td>{{vdu.id}}</td>
+                                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}/vdus/{{vdu.id}}" >{{vdu.id}}</a></td>
                                         <td>{{vdu.version}}</td>
                                         <td>{{vdu.vm_image}}</td>
                                         <td>{{vdu.vimInstanceName}}</td>
