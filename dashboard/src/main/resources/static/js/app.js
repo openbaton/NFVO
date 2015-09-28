@@ -34,6 +34,14 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsdescriptors/vnfdescriptor.html',
                 controller: 'NsdCtrl'
             }).
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+                templateUrl: 'pages/nsdescriptors/vdu.html',
+                controller: 'NsdCtrl'
+            })
+            .when('/nsrecords/:nsdescriptorId/vnfrecords/:vnfrecordId/vdus/:vduId', {
+                templateUrl: 'pages/nsrecords/vdu.html',
+                controller: 'NsrCtrl'
+            }).
             when('/nsdescriptors/:nsdescriptorId/vnfdependencies/:vnfdependencyId', {
                 templateUrl: 'pages/nsdescriptors/vnfdependency.html',
                 controller: 'NsdCtrl'

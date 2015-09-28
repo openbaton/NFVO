@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1>VNF Dependency
+        <h1>VDU
             <small>Information</small>
         </h1>
         <ol class="breadcrumb">
@@ -10,35 +10,40 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Records</a>
+                    NS Descriptors</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
-                    NSR: {{nsrinfo.name}}</a>
+                    NSD: {{nsrinfo.name}}</a>
             </li>
             <li class="">
-                <a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies"><i class="fa fa-pencil-square-o"></i>
-                    VNF Dependencies</a>
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
+                    VNF Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}"><i class="fa fa-pencil-square-o"></i>
+                    VNF Record</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VNF Dependency
+                VDU
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
-
-    <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+    <div class="col-lg-12 top-buffer" ng-show="vduId">
         <div class="col-lg-12">
             <div>
-                <div ng-repeat="vnfd in nsrinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
-                    <h2>VNF Dependency {{vnfd.name}}</h2>
+                <div ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
+                <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
+                    <h2>Virtual Deployment Unit</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vnfd">
+                        <spam ng-repeat="(k,v) in vdu">
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
                         </spam>
                     </dl>
+                </div>
                 </div>
             </div>
         </div>

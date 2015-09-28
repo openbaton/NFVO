@@ -79,7 +79,6 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
     else if ($cookieStore.get('logged')) {
         $scope.logged = $cookieStore.get('logged');
-
         $rootScope.logged = $cookieStore.get('logged');
     }
     $location.replace();
@@ -99,7 +98,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
                 if (status == 404) {
                     AuthService.loginGuest($scope.URL);
                 }
-                console.info(('status != 404') );
+                console.info(('status != 404'));
                 console.error('Response error', status, data);
             })
 
@@ -113,8 +112,8 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        $scope.logged = Session.logged;
-        $scope.loginError = !$scope.logged;
+        $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
+        console.log($scope.loginError)
     };
 
 

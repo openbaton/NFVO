@@ -1,6 +1,5 @@
-
 var app = angular.module('app');
-app.controller('ServiceCtrl', function($scope, serviceAPI, $routeParams, http, $cookieStore) {
+app.controller('ServiceCtrl', function($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
     var url = '/api/rest/orchestrator/v2/services/';
 
@@ -82,6 +81,11 @@ app.controller('ServiceCtrl', function($scope, serviceAPI, $routeParams, http, $
         $scope.alerts.push({type: 'danger', msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + data});
         loadServicesTable();
         $('.modal').modal('hide');
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
+            $window.location.reload();
+        }
     }
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
