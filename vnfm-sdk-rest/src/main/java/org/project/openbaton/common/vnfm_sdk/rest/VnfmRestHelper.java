@@ -1,7 +1,6 @@
-package org.project.openbaton.common.vnfm_sdk.jms;
+package org.project.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Base64;
 import org.project.openbaton.catalogue.mano.common.Event;
@@ -14,9 +13,8 @@ import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.Script;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
-import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.project.openbaton.common.vnfm_sdk.utils.VnfmUtils;
@@ -24,128 +22,62 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import javax.jms.*;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 
 /**
- * Created by lto on 23/09/15.
+ * Created by lto on 28/09/15.
  */
 @Service
-@Scope
-public class VnfmSpringHelper extends VnfmHelper {
-
-    private static final String nfvoQueue = "vnfm-core-actions";
+@Scope("prototype")
+public class VnfmRestHelper extends VnfmHelper {
+    private String server = "localhost";
+    private String port = "8080";
+    private String url = "http://" +server + ":" + port+ "/";
+    private RestTemplate rest;
+    private HttpHeaders headers;
+    private HttpStatus status;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private Gson mapper;
 
     @Autowired
     private JmsTemplate jmsTemplate;
 
-    private NFVMessage sendAndReceiveNfvMessage(String destination, NFVMessage nfvMessage) throws JMSException {
-        Message response = jmsTemplate.sendAndReceive(destination, getObjectMessageCreator(nfvMessage));
-        return (NFVMessage) ((ObjectMessage) response).getObject();
+    @PostConstruct
+    private void init(){
+        this.mapper = new Gson();
+        this.rest = new RestTemplate();
+        this.rest.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        this.headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("Accept", "application/json");
+
     }
 
     @Override
-    public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
-        log.trace("Sending message: " + message + " to Queue: " + sendToQueueName);
-
-        MessageCreator messageCreator;
-
-        if (message instanceof java.lang.String)
-            messageCreator = getTextMessageCreator((String) message);
-        else
-            messageCreator = getObjectMessageCreator(message);
-
-        jmsTemplate.setPubSubDomain(false);
-        jmsTemplate.setPubSubNoLocal(false);
-        jmsTemplate.send(sendToQueueName, messageCreator);
-    }
-
-    private MessageCreator getTextMessageCreator(final String string) {
-        MessageCreator messageCreator = new MessageCreator() {
-            @Override
-            public Message createMessage(Session session) throws JMSException {
-                TextMessage objectMessage = session.createTextMessage(string);
-                return objectMessage;
-            }
-        };
-        return messageCreator;
-    }
-
-    private MessageCreator getObjectMessageCreator(final Serializable message) {
-        MessageCreator messageCreator = new MessageCreator() {
-            @Override
-            public Message createMessage(Session session) throws JMSException {
-                ObjectMessage objectMessage = session.createObjectMessage(message);
-                return objectMessage;
-            }
-        };
-        return messageCreator;
-    }
-
-    /**
-     * This method should be used for receiving text message from EMS
-     * <p/>
-     * resp = {
-     * 'output': out,          // the output of the command
-     * 'err': err,             // the error outputs of the commands
-     * 'status': status        // the exit status of the command
-     * }
-     *
-     * @param queueName
-     * @return
-     * @throws JMSException
-     */
-    protected String receiveTextFromQueue(String queueName) throws JMSException {
-        return ((TextMessage) this.jmsTemplate.receive(queueName)).getText();
+    public void sendMessageToQueue(String sendToQueueName, Serializable message) {
+        this.post("admin/v1/vnfm-core-actions",mapper.toJson(message));
     }
 
     @Override
-    public void sendToNfvo(final NFVMessage nfvMessage) {
-        sendMessageToQueue(nfvoQueue, nfvMessage);
-    }
-
-    private String executeActionOnEMS(String vduHostname, String command) throws Exception {
-        log.trace("Sending message: " + command + " to " + vduHostname);
-        this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
-
-        log.info("Waiting answer from EMS - " + vduHostname);
-        String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
-
-        log.debug("Received from EMS (" + vduHostname + "): " + response);
-
-        if (response == null) {
-            throw new NullPointerException("Response from EMS is null");
-        }
-
-        JsonObject jsonObject = parser.fromJson(response, JsonObject.class);
-
-        if (jsonObject.get("status").getAsInt() == 0) {
-            try {
-                log.debug("Output from EMS (" + vduHostname + ") is: " + jsonObject.get("output"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw e;
-            }
-        } else {
-            log.error(jsonObject.get("err").getAsString());
-            throw new VnfmSdkException("EMS (" + vduHostname + ") had the following error: " + jsonObject.get("err").getAsString());
-        }
-        return response;
+    public void sendToNfvo(NFVMessage nfvMessage) {
+        this.post("admin/v1/vnfm-core-actions",mapper.toJson(nfvMessage));
     }
 
     @Override
-    public Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event) throws Exception {//TODO make it parallel
+    public Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event) throws Exception {
         Map<String, String> env = getMap(virtualNetworkFunctionRecord);
         LinkedList<String> res = new LinkedList<>();
         LifecycleEvent le = VnfmUtils.getLifecycleEvent(virtualNetworkFunctionRecord.getLifecycle_event(), event);
@@ -168,7 +100,7 @@ public class VnfmSpringHelper extends VnfmHelper {
                             i++;
                         }
                         env.putAll(tempEnv);
-                        log.info("Environment Variables are: " + env);
+                        log.info("Environment Variables are: " + virtualNetworkFunctionRecord);
                         String command = getJsonObject("EXECUTE", script, env).toString();
                         res.add(executeActionOnEMS(vnfcInstance.getHostname(), command));
                         for (String key : tempEnv.keySet()) {
@@ -241,8 +173,115 @@ public class VnfmSpringHelper extends VnfmHelper {
     }
 
     @Override
-    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws JMSException {
-        return sendAndReceiveNfvMessage(nfvoQueue, VnfmUtils.getNfvMessage(action, virtualNetworkFunctionRecord));
+    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception {
+        return null;
     }
 
+    private String get(String path) {
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
+        this.setStatus(responseEntity.getStatusCode());
+        return responseEntity.getBody();
+    }
+
+    private String post(String path, String json) {
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+        log.debug("url is: " + url + path);
+        log.debug("BODY is: " + json);
+        ResponseEntity<String> responseEntity = rest.postForEntity(url + path, requestEntity, String.class);
+        this.setStatus(responseEntity.getStatusCode());
+        return responseEntity.getBody();
+    }
+
+    private void put(String path, String json) {
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
+        this.setStatus(responseEntity.getStatusCode());
+    }
+
+    private void delete(String path) {
+        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
+        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.DELETE, requestEntity, String.class);
+        this.setStatus(responseEntity.getStatusCode());
+    }
+
+    public void register(VnfmManagerEndpoint body){
+        this.post("admin/v1/vnfm-register", mapper.toJson(body));
+    }
+
+    public void unregister(VnfmManagerEndpoint body){
+        this.post("admin/v1/vnfm-unregister", mapper.toJson(body));
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public RestTemplate getRest() {
+        return rest;
+    }
+
+    public void setRest(RestTemplate rest) {
+        this.rest = rest;
+    }
+
+    public HttpHeaders getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(HttpHeaders headers) {
+        this.headers = headers;
+    }
+
+    private String receiveTextFromQueue(String queueName) throws JMSException {
+        return ((TextMessage) this.jmsTemplate.receive(queueName)).getText();
+    }
+
+    private String executeActionOnEMS(String vduHostname, String command) throws Exception {
+        log.trace("Sending message: " + command + " to " + vduHostname);
+        this.sendMessageToQueue("vnfm-" + vduHostname + "-actions", command);
+
+        log.info("Waiting answer from EMS - " + vduHostname);
+        String response = receiveTextFromQueue(vduHostname + "-vnfm-actions");
+
+        log.debug("Received from EMS (" + vduHostname + "): " + response);
+
+        if (response == null) {
+            throw new NullPointerException("Response from EMS is null");
+        }
+
+        JsonObject jsonObject = mapper.fromJson(response, JsonObject.class);
+
+        if (jsonObject.get("status").getAsInt() == 0) {
+            try {
+                log.debug("Output from EMS (" + vduHostname + ") is: " + jsonObject.get("output"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+        } else {
+            log.error(jsonObject.get("err").getAsString());
+            throw new VnfmSdkException("EMS (" + vduHostname + ") had the following error: " + jsonObject.get("err").getAsString());
+        }
+        return response;
+    }
 }
