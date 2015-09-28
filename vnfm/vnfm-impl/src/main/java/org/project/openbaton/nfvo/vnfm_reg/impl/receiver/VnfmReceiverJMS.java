@@ -30,6 +30,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import javax.jms.Destination;
+import javax.jms.JMSException;
 
 /**
  * Created by lto on 26/05/15.
@@ -43,11 +44,18 @@ public class VnfmReceiverJMS implements VnfmReceiver {
 
     @Override
     @JmsListener(destination = "vnfm-core-actions", containerFactory = "queueJmsContainerFactory", concurrency = "20")
-    public void actionFinished(@Payload NFVMessage nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
+    public void actionFinished(@Payload Object nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
         log.debug("CORE: Received: " + nfvMessage);
-        log.debug("----------Executing ACTION: " + nfvMessage.getAction());
-        vnfmManager.executeAction(nfvMessage, tempDestination);
-        log.debug("-----------Finished ACTION: " + nfvMessage.getAction());
+        NFVMessage message = null;
+        try {
+            message = (NFVMessage) ((org.apache.activemq.command.ActiveMQObjectMessage) nfvMessage).getObject();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+
+        log.debug("----------Executing ACTION: " + message.getAction());
+        vnfmManager.executeAction(message, tempDestination);
+        log.debug("-----------Finished ACTION: " + message.getAction());
 
     }
 }

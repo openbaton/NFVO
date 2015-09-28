@@ -224,7 +224,7 @@ public class VnfmManager implements org.project.openbaton.vnfm.interfaces.manage
         task.setAction(nfvMessage.getAction());
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        if (nfvMessage.getAction() == Action.INSTANTIATE) {
+        if (nfvMessage.getAction().ordinal() == Action.INSTANTIATE.ordinal()) {
             VnfmOrInstantiateMessage vnfmOrInstantiate = (VnfmOrInstantiateMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrInstantiate.getVirtualNetworkFunctionRecord();
         } else {
