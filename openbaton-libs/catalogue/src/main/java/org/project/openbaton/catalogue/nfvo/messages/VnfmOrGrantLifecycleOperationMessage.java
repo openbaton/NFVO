@@ -30,6 +30,9 @@ public class VnfmOrGrantLifecycleOperationMessage implements VnfmOrMessage{
     private Set<VirtualDeploymentUnit> vduSet;
     private String deploymentFlavourKey;
 
+    public VnfmOrGrantLifecycleOperationMessage() {
+    }
+
     public VnfmOrGrantLifecycleOperationMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet, String deploymentFlavourKey) {
 
         this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;

@@ -29,6 +29,9 @@ public class VnfmOrAllocateResourcesMessage implements VnfmOrMessage {
     private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
     private Set<VirtualDeploymentUnit> vduSet;
 
+    public VnfmOrAllocateResourcesMessage() {
+    }
+
     public VnfmOrAllocateResourcesMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet) {
         this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
         this.vduSet = vduSet;
