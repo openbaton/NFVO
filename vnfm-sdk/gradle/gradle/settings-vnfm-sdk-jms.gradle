@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<< HEAD
-
 rootProject.name = 'openbaton-libs'
 
 include 'catalogue'
 include 'vnfm-sdk'
 include 'vnfm-sdk-jms'
 
-project(':catalogue').projectDir = file('../../catalogue')
-project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')
-project(':vnfm-sdk-jms').projectDir = file('../../vnfm-sdk-jms')
-=======
-include 'catalogue'
-include 'vnfm-sdk'
-include 'vnfm-sdk-jms'
->>>>>>> 6f3d537c0dd658dd1f49dc9d7d00215df846c184
+//project(':catalogue').projectDir = file('../../catalogue')
+//project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')
+//project(':vnfm-sdk-jms').projectDir = file('../../vnfm-sdk-jms')
