@@ -25,13 +25,13 @@ import org.project.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.project.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -41,6 +41,7 @@ import java.util.Set;
  */
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
+    @Autowired
     protected VnfmHelper vnfmHelper;
     protected String type;
     protected String endpoint;
@@ -312,15 +313,5 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         log.debug("creating VnfmManagerEndpoint for vnfm endpointType: " + this.endpointType);
         vnfmManagerEndpoint.setEndpointType(EndpointType.valueOf(this.endpointType));
         register();
-    }
-
-    protected Map<String, String> getMap(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        Map<String, String> res = new HashMap<>();
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters())
-            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()){
-            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
-        }
-        return res;
     }
 }
