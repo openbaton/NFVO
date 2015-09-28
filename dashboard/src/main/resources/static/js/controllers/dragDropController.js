@@ -1,13 +1,3 @@
-/** Copyright (C) 2014 FhG Fokus
- *
- *  This file is part of the OpenSDNCore project.
- *
- * Controller Controller
- * this file is used for managing the pages html under Controllers folder
- */
-
-
-
 var myApp = angular.module('app');
 myApp.controller('DragDropCtrl', function($scope, http, serviceAPI, $routeParams, $cookieStore, $window, $timeout) {
 
@@ -53,7 +43,7 @@ myApp.controller('DragDropCtrl', function($scope, http, serviceAPI, $routeParams
 
     loadDC();
     function loadDC() {
-        http.syncGet('/api/rest/admin/v2/vim-instances').then(function(response) {
+        http.get('/api/rest/admin/v2/datacenters').then(function(response) {
             $scope.datacentersArray = response;
         });
     }
