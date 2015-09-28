@@ -22,6 +22,14 @@ import java.io.Serializable;
 /**
  * Created by mob on 14.09.15.
  */
-public interface NFVMessage extends Serializable {
-    Action getAction();
+public abstract class NFVMessage implements Serializable {
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    protected Action action;
 }

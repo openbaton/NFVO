@@ -25,13 +25,18 @@ import java.util.Set;
 /**
  * Created by mob on 15.09.15.
  */
-public class VnfmOrAllocateResourcesMessage implements VnfmOrMessage {
+public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
     private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
     private Set<VirtualDeploymentUnit> vduSet;
+
+    public VnfmOrAllocateResourcesMessage() {
+        this.action = Action.ALLOCATE_RESOURCES;
+    }
 
     public VnfmOrAllocateResourcesMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet) {
         this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
         this.vduSet = vduSet;
+        this.action = Action.ALLOCATE_RESOURCES;
     }
 
     public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
@@ -56,10 +61,5 @@ public class VnfmOrAllocateResourcesMessage implements VnfmOrMessage {
                 "virtualNetworkFunctionDescriptor=" + virtualNetworkFunctionDescriptor +
                 ", vduSet=" + vduSet +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return Action.ALLOCATE_RESOURCES;
     }
 }

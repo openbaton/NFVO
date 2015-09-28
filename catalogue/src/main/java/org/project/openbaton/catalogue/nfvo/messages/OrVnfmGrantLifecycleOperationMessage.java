@@ -21,12 +21,16 @@ import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 /**
  * Created by mob on 15.09.15.
  */
-public class OrVnfmGrantLifecycleOperationMessage implements OrVnfmMessage{
+public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage{
     private String vimId;
     private boolean grantAllowed;
 
-    public OrVnfmGrantLifecycleOperationMessage(String vimId, boolean grantAllowed) {
+    public OrVnfmGrantLifecycleOperationMessage() {
+        this.action = Action.GRANT_OPERATION;
+    }
 
+    public OrVnfmGrantLifecycleOperationMessage(String vimId, boolean grantAllowed) {
+        this.action = Action.GRANT_OPERATION;
         this.vimId = vimId;
         this.grantAllowed = grantAllowed;
     }
@@ -53,10 +57,5 @@ public class OrVnfmGrantLifecycleOperationMessage implements OrVnfmMessage{
                 "vimId='" + vimId + '\'' +
                 ", grantAllowed=" + grantAllowed +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return Action.GRANT_OPERATION;
     }
 }

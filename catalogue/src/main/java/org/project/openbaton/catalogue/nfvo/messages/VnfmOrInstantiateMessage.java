@@ -22,13 +22,16 @@ import org.project.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 /**
  * Created by mob on 14.09.15.
  */
-public class VnfmOrInstantiateMessage implements VnfmOrMessage {
+public class VnfmOrInstantiateMessage extends VnfmOrMessage {
 
-    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     public VnfmOrInstantiateMessage(VirtualNetworkFunctionRecord vnfr) {
-
         this.virtualNetworkFunctionRecord = vnfr;
+        this.action = Action.INSTANTIATE;
+    }
+
+    public VnfmOrInstantiateMessage() {
     }
 
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
@@ -40,14 +43,9 @@ public class VnfmOrInstantiateMessage implements VnfmOrMessage {
     }
 
     @Override
-     public String toString() {
+    public String toString() {
         return "VnfmOrInstantiateMessage{" +
                 "vnfr=" + virtualNetworkFunctionRecord +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return Action.INSTANTIATE;
     }
 }

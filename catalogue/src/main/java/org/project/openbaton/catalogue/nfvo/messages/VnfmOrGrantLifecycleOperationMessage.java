@@ -25,16 +25,20 @@ import java.util.Set;
 /**
  * Created by mob on 15.09.15.
  */
-public class VnfmOrGrantLifecycleOperationMessage implements VnfmOrMessage{
+public class VnfmOrGrantLifecycleOperationMessage extends VnfmOrMessage{
     private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
     private Set<VirtualDeploymentUnit> vduSet;
     private String deploymentFlavourKey;
 
-    public VnfmOrGrantLifecycleOperationMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet, String deploymentFlavourKey) {
+    public VnfmOrGrantLifecycleOperationMessage() {
+        this.action = Action.GRANT_OPERATION;
+    }
 
+    public VnfmOrGrantLifecycleOperationMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet, String deploymentFlavourKey) {
         this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
         this.vduSet = vduSet;
         this.deploymentFlavourKey = deploymentFlavourKey;
+        this.action = Action.ALLOCATE_RESOURCES;
     }
 
     public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
@@ -68,10 +72,5 @@ public class VnfmOrGrantLifecycleOperationMessage implements VnfmOrMessage{
                 ", vduSet=" + vduSet +
                 ", deploymentFlavourKey='" + deploymentFlavourKey + '\'' +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return Action.GRANT_OPERATION;
     }
 }

@@ -22,15 +22,21 @@ import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 /**
  * Created by mob on 14.09.15.
  */
-public class OrVnfmErrorMessage implements OrVnfmMessage {
+public class OrVnfmErrorMessage extends OrVnfmMessage {
 
     private VirtualNetworkFunctionRecord vnfr;
     private String message;
 
+    public OrVnfmErrorMessage() {
+        this.action = Action.ERROR;
+    }
+
     public OrVnfmErrorMessage(VirtualNetworkFunctionRecord vnfr, String message) {
         this.vnfr = vnfr;
         this.message = message;
+        this.action = Action.ERROR;
     }
+
 
     public String getMessage() {
         return message;
@@ -55,10 +61,5 @@ public class OrVnfmErrorMessage implements OrVnfmMessage {
                 "message='" + message + '\'' +
                 ", vnfr=" + vnfr +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return Action.ERROR;
     }
 }

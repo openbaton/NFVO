@@ -28,22 +28,27 @@ import java.util.Set;
 /**
  * Created by mob on 14.09.15.
  */
-public class OrVnfmInstantiateMessage implements OrVnfmMessage {
+public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     private Set<Script> scripts;
     private String scriptsLink;
     private VirtualNetworkFunctionDescriptor vnfd;
     private VNFDeploymentFlavour vnfdf;
     private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
-    private Map<String,String> extention;
+    private Map<String, String> extention;
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention){
+    public OrVnfmInstantiateMessage() {
+        this.action = Action.INSTANTIATE;
+    }
+
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
         this.extention = extention;
         this.scripts = null;
+        this.action = Action.INSTANTIATE;
     }
 
     public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention, String scriptLink) {
@@ -105,11 +110,6 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     }
 
     @Override
-    public Action getAction() {
-        return Action.INSTANTIATE;
-    }
-
-    @Override
     public String toString() {
         return "OrVnfmInstantiateMessage{" +
                 "vnfd=" + vnfd +
@@ -124,6 +124,7 @@ public class OrVnfmInstantiateMessage implements OrVnfmMessage {
     public String getScriptsLink() {
         return scriptsLink;
     }
+
     public void setScriptsLink(String link) {
         scriptsLink = link;
     }

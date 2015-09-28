@@ -23,15 +23,18 @@ import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 /**
  * Created by mob on 14.09.15.
  */
-public class OrVnfmGenericMessage implements OrVnfmMessage {
-    private Action action;
+public class OrVnfmGenericMessage extends OrVnfmMessage {
     private VirtualNetworkFunctionRecord vnfr;
     private VNFRecordDependency vnfrd;
 
+    public OrVnfmGenericMessage() {
+    }
+
     public OrVnfmGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
         this.vnfr = vnfr;
-        this.action=action;
+        this.action = action;
     }
+
     public VNFRecordDependency getVnfrd() {
         return vnfrd;
     }
@@ -55,10 +58,5 @@ public class OrVnfmGenericMessage implements OrVnfmMessage {
                 ", vnfr=" + vnfr +
                 ", vnfrd=" + vnfrd +
                 '}';
-    }
-
-    @Override
-    public Action getAction() {
-        return action;
     }
 }
