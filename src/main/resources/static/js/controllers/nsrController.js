@@ -1,7 +1,7 @@
 var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
-    var url = '/api/v1/ns-records';
-    //var url = 'http://localhost:8080/api/v1/ns-records';
+    //var url = '/api/v1/ns-records';
+    var url = 'http://localhost:8080/api/v1/ns-records';
 
 
     loadTable();
@@ -124,6 +124,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
 
+    if (!angular.isUndefined($routeParams.vduId)){
+        $scope.vduId= $routeParams.vduId;
+    }
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);

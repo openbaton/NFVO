@@ -1,11 +1,11 @@
 var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
-    var url = '/api/v1/ns-descriptors';
-    //var url = 'http://localhost:8080/api/v1/ns-descriptors';
-    var urlRecord = '/api/v1/ns-records';
-    //var urlRecord = 'http://localhost:8080/api/v1/ns-records';
-    var urlVim = '/api/v1/datacenters';
-    //var urlVim = 'http://localhost:8080/api/v1/datacenters';
+    //var url = '/api/v1/ns-descriptors';
+    var url = 'http://localhost:8080/api/v1/ns-descriptors';
+    //var urlRecord = '/api/v1/ns-records';
+    var urlRecord = 'http://localhost:8080/api/v1/ns-records';
+    //var urlVim = '/api/v1/datacenters';
+    var urlVim = 'http://localhost:8080/api/v1/datacenters';
 
     loadTable();
 
@@ -166,6 +166,12 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
+
+    if (!angular.isUndefined($routeParams.vduId)){
+        $scope.vduId= $routeParams.vduId;
+        console.log(  $scope.vduId);
+    }
+
 
 
     $scope.storeNSDF = function (nsdCreate) {
