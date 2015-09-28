@@ -17,6 +17,8 @@
 package org.project.openbaton.nfvo.vim;
 
 import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.project.openbaton.catalogue.mano.common.Ip;
+import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -31,7 +33,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -45,18 +46,24 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
 
     public OpenstackVIM(String name, int port) {
-        super(name, port);
+        super("openstack",name, port);
     }
-
+    public OpenstackVIM() {
+        super("openstack");
+    }
+    public OpenstackVIM(int port) {
+        super("openstack",port);
+    }
+    
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile ) throws VimException {
         try {
-            NFVImage addedImage = client.addImage(vimInstance, image, inputStream);
-            log.debug("Image with id: " + image.getId() + " added successfully.");
+            NFVImage addedImage = client.addImage(vimInstance, image, imageFile);
+            log.debug("Image with name: " + image.getName() + " added successfully.");
             return addedImage;
         } catch (Exception e) {
-            log.warn("Image with id: " + image.getId() + " not added successfully.", e);
-            throw new VimException("Image with id: " + image.getId() + " not added successfully.");
+            log.warn("Image with name: " + image.getName() + " not added successfully.", e);
+            throw new VimException("Image with name: " + image.getName() + " not added successfully.");
         }
     }
 
@@ -73,9 +80,9 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException{
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException{
         try {
-            client.copyImage(vimInstance, image, inputStream);
+            client.copyImage(vimInstance, image, imageFile);
             log.debug("Image with id: " + image.getId() + " copied successfully.");
         } catch (Exception e) {
             log.error("Image with id: " + image.getId() + " not copied successfully.", e);
@@ -156,21 +163,21 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         Network createdNetwork = null;
         try {
             createdNetwork = client.createNetwork(vimInstance, network);
-            log.debug("Network with id: " + network.getId() + " created successfully.");
+            log.debug("Network with name: " + network.getName() + " created successfully.");
         } catch (Exception e) {
-            log.error("Network with id: " + network.getId() + " not created successfully.", e);
-            throw new VimException("Network with id: " + network.getId() + " not created successfully.");
+            log.error("Network with name: " + network.getName() + " not created successfully.", e);
+            throw new VimException("Network with name: " + network.getName() + " not created successfully.");
         }
         Set<Subnet> createdSubnets = new HashSet<>();
         for (Subnet subnet : network.getSubnets()) {
             try {
                 Subnet createdSubnet = client.createSubnet(vimInstance, createdNetwork, subnet);
-                log.debug("Subnet with id: " + subnet.getId() + " created successfully.");
-                createdSubnet.setNetworkId(createdNetwork.getId().toString());
+                log.debug("Subnet with name: " + subnet.getName() + " created successfully.");
+                createdSubnet.setNetworkId(createdNetwork.getId());
                 createdSubnets.add(createdSubnet);
             } catch (Exception e) {
-                log.error("Subnet with id: " + subnet.getId() + " not created successfully.", e);
-                throw new VimException("Subnet with id: " + subnet.getId() + " not created successfully.");
+                log.error("Subnet with name: " + subnet.getName() + " not created successfully.", e);
+                throw new VimException("Subnet with name: " + subnet.getName() + " not created successfully.");
             }
         }
         createdNetwork.setSubnets(createdSubnets);
@@ -274,12 +281,13 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent) throws VimDriverException, VimException {
+    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.debug("Initializing " + vimInstance.toString());
         log.debug("initialized VimInstance");
         log.debug("VDU is : " + vdu.toString());
         log.debug("VNFR is : " + vnfr.toString());
+        log.debug("VNFC is : " + vnfComponent.toString());
         /**
          *  *) choose image
          *  *) ...?
@@ -288,8 +296,16 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
         Set<String> networks = new HashSet<String>();
-        //for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
-            //networks.add(vnfdConnectionPoint.getExtId());
+        for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+            for (InternalVirtualLink internalVirtualLink : vnfr.getVirtual_link()) {
+
+                log.debug("InternalVirtualLink is: " + internalVirtualLink);
+
+                if (vnfdConnectionPoint. getVirtual_link_reference().equals(internalVirtualLink.getName())) {
+                    networks.add(internalVirtualLink.getExtId());
+                }
+            }
+        }
 
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
         vdu.setHostname(vnfr.getName());
@@ -297,42 +313,67 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
         log.debug("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server;
+
         try {
-            server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), "#userdata");
+            if(vimInstance==null)
+                throw new NullPointerException("VimInstance is null");
+            if(hostname==null)
+                throw new NullPointerException("hostname is null");
+            if(image==null)
+                throw new NullPointerException("image is null");
+            if(flavorExtId==null)
+                throw new NullPointerException("flavorExtId is null");
+            if(vimInstance.getKeyPair()==null)
+                throw new NullPointerException("vimInstance.getKeyPair() is null");
+            if(networks==null)
+                throw new NullPointerException("networks is null");
+            if(vimInstance.getSecurityGroups()==null)
+                throw new NullPointerException("vimInstance.getSecurityGroups() is null");
+
+            server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIp);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
         }
         log.debug("launched instance with id " + server.getExtId());
 
-//        vdu.setExtId(server.getExtId());
         VNFCInstance vnfcInstance = new VNFCInstance();
+        vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
         vnfcInstance.setVim_id(vdu.getVimInstance().getId());
+        vnfcInstance.setVnfc_reference(vnfComponent.getId());
 
         if (vnfcInstance.getConnection_point() == null)
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
 
         for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-            VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
-            connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-            //connectionPoint_new.setExtId(connectionPoint.getExtId());
-            //connectionPoint_new.setName(connectionPoint.getName());
-            connectionPoint_new.setType(connectionPoint.getType());
+            VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
+            connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+            connectionPoint_vnfci.setType(connectionPoint.getType());
+            vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
+        }
 
-            vnfcInstance.getConnection_point().add(connectionPoint_new);
+        vnfcInstance.setFloatingIps(new HashSet<String>());
+        vnfcInstance.setIps(new HashSet<Ip>());
+
+        if (floatingIp){
+            vnfcInstance.getFloatingIps().add(server.getFloatingIp());
         }
 
         if (vdu.getVnfc_instance() == null)
             vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-        vdu.getVnfc_instance().add(vnfcInstance);
 
-        for (String network : server.getIps().keySet()) {
-            for (String ip : server.getIps().get(network)) {
-                vnfr.getVnf_address().add(ip);
+        for (Map.Entry<String,List<String>> network : server.getIps().entrySet()) {
+            Ip ip = new Ip();
+            ip.setNetName(network.getKey());
+            ip.setIp(network.getValue().iterator().next());
+            vnfcInstance.getIps().add(ip);
+            for (String ip1 : server.getIps().get(network.getKey())) {
+                vnfr.getVnf_address().add(ip1);
             }
         }
-        return new AsyncResult<>(server.getExtId());
+        vdu.getVnfc_instance().add(vnfcInstance);
+        return new AsyncResult<>(vnfcInstance);
     }
 
     private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {

@@ -24,18 +24,6 @@ import java.io.Serializable;
 @RequestMapping("/core-vnfm-actions")
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
-    @Override
-    protected boolean allocateResources(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        //TODO implement rest method
-        return true;
-    }
-
-    @Override
-    protected boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        //TODO implement rest method
-        return true;
-    }
-
     private String server = "localhost";
     private String port = "8080";
     private String url = "http://" +server + ":" + port+ "/";
