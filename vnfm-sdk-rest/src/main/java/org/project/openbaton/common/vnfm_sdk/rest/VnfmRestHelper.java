@@ -161,7 +161,7 @@ public class VnfmRestHelper extends VnfmHelper {
                 log.debug("Sending script encoded base64 ");
                 String base64String = Base64.encodeBase64String(script.getPayload());
                 log.trace("The base64 string is: " + base64String);
-                JsonObject jsonMessage = getJsonObjectForScript("SAVE_SCRIPTS", base64String, script.getName());
+                JsonObject jsonMessage = getJsonObjectForScript("SAVE_SCRIPTS", base64String, script.getName(), scriptPath);
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
                         executeActionOnEMS(vnfcInstance.getHostname(), jsonMessage.toString());
