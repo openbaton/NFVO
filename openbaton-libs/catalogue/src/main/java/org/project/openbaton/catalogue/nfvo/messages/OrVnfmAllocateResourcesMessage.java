@@ -24,11 +24,16 @@ import java.util.Set;
 /**
  * Created by mob on 15.09.15.
  */
-public class OrVnfmAllocateResourcesMessage implements OrVnfmMessage {
+public class OrVnfmAllocateResourcesMessage extends OrVnfmMessage {
     private Set<VirtualDeploymentUnit> vduSet;
+
+    public OrVnfmAllocateResourcesMessage() {
+        this.action = Action.ALLOCATE_RESOURCES;
+    }
 
     public OrVnfmAllocateResourcesMessage(Set<VirtualDeploymentUnit> vduSet) {
         this.vduSet = vduSet;
+        this.action = Action.ALLOCATE_RESOURCES;
     }
 
     public Set<VirtualDeploymentUnit> getVduSet() {
@@ -46,8 +51,4 @@ public class OrVnfmAllocateResourcesMessage implements OrVnfmMessage {
                 '}';
     }
 
-    @Override
-    public Action getAction() {
-        return Action.ALLOCATE_RESOURCES;
-    }
 }
