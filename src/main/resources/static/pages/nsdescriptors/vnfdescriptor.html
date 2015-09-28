@@ -21,7 +21,7 @@
                     VNF Descriptors</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VNF Descriptor {{nsrinfo.name}}
+                VNF Descriptor {{nsdinfo.name}}
             </li>
         </ol>
     </div>
@@ -81,7 +81,7 @@
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="vdu in vnfd.vdu | orderBy:predicate:reverse">
-                                        <td>{{vdu.id}}</td>
+                                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}/vdus/{{vdu.id}}" >{{vdu.id}}</a></td>
                                         <td>{{vdu.version}}</td>
                                         <td>{{vdu.vm_image}}</td>
                                         <td>{{vdu.vimInstanceName}}</td>

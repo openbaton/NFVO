@@ -102,10 +102,10 @@ require({
             deps: ['app']
         },
         nsdController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'angular_cookies','topologyServices', 'authService']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'angular_cookies','topologyServices', 'authService','underscore']
         },
         nsrController: {
-            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologyServices', 'angular_cookies', 'bootstrapSwitch','authService']
+            deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologyServices', 'angular_cookies', 'bootstrapSwitch','authService','underscore']
         },
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService','authService']
