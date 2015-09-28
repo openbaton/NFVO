@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD
+rootProject.name = 'openbaton-libs'
+=======
 //rootProject.name = 'openbaton-libs'
+>>>>>>> 6f3d537c0dd658dd1f49dc9d7d00215df846c184
 
 include 'exception'
 include 'vim-impl'
 include 'vim-int'
 include 'monitoring'
 include 'vim-drivers'
+<<<<<<< HEAD
 include 'plugin'
+=======
+include 'plugin'
+>>>>>>> 6f3d537c0dd658dd1f49dc9d7d00215df846c184
