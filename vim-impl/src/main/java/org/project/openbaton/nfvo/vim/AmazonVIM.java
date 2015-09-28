@@ -29,7 +29,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -41,11 +40,16 @@ import java.util.concurrent.Future;
 public class AmazonVIM extends Vim {
 
     public AmazonVIM(String name, int port) {
-        super(name, port);
+        super("amazon",name, port);
     }
-
+    public AmazonVIM() {
+        super("amazon");
+    }
+    public AmazonVIM(int port) {
+        super("amazon",port);
+    }
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         throw new UnsupportedOperationException();
     }
 
@@ -65,13 +69,13 @@ public class AmazonVIM extends Vim {
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
 
     }
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) {
+    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) {
         throw new UnsupportedOperationException();
     }
 

@@ -31,7 +31,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.List;
@@ -45,9 +44,14 @@ import java.util.concurrent.Future;
 public class TestVIM extends Vim {
 
     public TestVIM(String name, int port) {
-        super(name, port);
+        super("test",name, port);
     }
-
+    public TestVIM() {
+        super("test");
+    }
+    public TestVIM(int port) {
+        super("test",port);
+    }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
@@ -75,9 +79,9 @@ public class TestVIM extends Vim {
 
 
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
-            return this.client.addImage(vimInstance, image,inputStream);
+            return this.client.addImage(vimInstance, image, imageFile);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new VimException(e);
@@ -105,13 +109,13 @@ public class TestVIM extends Vim {
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, InputStream inputStream) throws VimException {
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
 
     }
 
     @Override
     @Async
-    public Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent) throws VimDriverException, VimException {
+    public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {
@@ -154,7 +158,7 @@ public class TestVIM extends Vim {
             }
             String id = server.getId();
             log.debug("launched instance with id " + id);
-            return new AsyncResult<>(id);
+            return new AsyncResult<>(vnfcInstance);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new VimException(e);

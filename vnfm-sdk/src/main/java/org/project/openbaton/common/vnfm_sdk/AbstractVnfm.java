@@ -1,23 +1,28 @@
 package org.project.openbaton.common.vnfm_sdk;
 
-import org.project.openbaton.catalogue.mano.common.Event;
-import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.project.openbaton.catalogue.mano.common.Ip;
+import org.project.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.*;
+import org.project.openbaton.catalogue.nfvo.Action;
+import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.project.openbaton.catalogue.nfvo.EndpointType;
+import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.project.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.project.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.project.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
 import org.project.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.project.openbaton.common.vnfm_sdk.utils.VNFRUtils;
+import org.project.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -26,16 +31,17 @@ import org.springframework.core.io.Resource;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Created by lto on 08/07/15.
  */
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
-    protected static final String nfvoQueue = "vnfm-core-actions";
+
+    protected VnfmHelper vnfmHelper;
     protected String type;
     protected String endpoint;
     protected String endpointType;
@@ -100,9 +106,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void upgradeSoftware();
 
     @Override
-    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract VirtualNetworkFunctionRecord terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
-    public abstract CoreMessage handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     protected void loadProperties() {
         Resource resource = new ClassPathResource("conf.properties");
@@ -125,7 +131,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             log.trace("VNFM: Received Message: " + message.getAction());
             NFVMessage nfvMessage = null;
-            OrVnfmGenericMessage orVnfmGenericMessage=null;
+            OrVnfmGenericMessage orVnfmGenericMessage = null;
             switch (message.getAction()) {
                 case SCALE:
                     this.scale();
@@ -133,186 +139,156 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case SCALING:
                     break;
                 case ERROR:
-                    orVnfmGenericMessage=(OrVnfmGenericMessage) message;
-                    handleError(orVnfmGenericMessage.getVnfr());
+                    OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) message;
+                    log.error("ERROR Received: " + errorMessage.getMessage());
+                    handleError(errorMessage.getVnfr());
+
                     nfvMessage = null;
                     break;
                 case MODIFY:
-                    orVnfmGenericMessage=(OrVnfmGenericMessage) message;
-                    nfvMessage = getNfvMessage(Action.MODIFY, this.modify(orVnfmGenericMessage.getVnfr(), orVnfmGenericMessage.getVnfrd()));
+                    orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.MODIFY, this.modify(orVnfmGenericMessage.getVnfr(), orVnfmGenericMessage.getVnfrd()));
                     break;
                 case RELEASE_RESOURCES:
-                    orVnfmGenericMessage=(OrVnfmGenericMessage) message;
-                    nfvMessage = getNfvMessage(Action.RELEASE_RESOURCES, this.terminate(orVnfmGenericMessage.getVnfr()));
+                    orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.RELEASE_RESOURCES, this.terminate(orVnfmGenericMessage.getVnfr()));
                     break;
                 case INSTANTIATE:
-                    OrVnfmInstantiateMessage orVnfmInstantiateMessage=(OrVnfmInstantiateMessage) message;
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getExtention(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key());
-                    virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord);
-                    nfvMessage = getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
+                    OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtention());
+                    virtualNetworkFunctionRecord = vnfmHelper.grantLifecycleOperation(virtualNetworkFunctionRecord).get();
+                    if (properties.getProperty("allocate", "false").equalsIgnoreCase("true"))
+                        virtualNetworkFunctionRecord = vnfmHelper.allocateResources(virtualNetworkFunctionRecord).get();
                     setupProvides(virtualNetworkFunctionRecord);
-                    break;
-                case SCALE_IN_FINISHED:
-                    break;
-                case SCALE_OUT_FINISHED:
-                    break;
-                case SCALE_UP_FINISHED:
-                    break;
-                case SCALE_DOWN_FINISHED:
+
+                    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
+                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
+                            checkEMS(vnfcInstance.getHostname());
+
+                    if (orVnfmInstantiateMessage.getScriptsLink() != null)
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getScriptsLink());
+                    else
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getScripts());
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
                     break;
                 case INSTANTIATE_FINISH:
                     break;
                 case CONFIGURE:
-                    orVnfmGenericMessage=(OrVnfmGenericMessage) message;
-                    nfvMessage = getNfvMessage(Action.CONFIGURE, configure(orVnfmGenericMessage.getVnfr()));
+                    orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.CONFIGURE, configure(orVnfmGenericMessage.getVnfr()));
                     break;
                 case START:
-                    orVnfmGenericMessage=(OrVnfmGenericMessage) message;
-                    nfvMessage = getNfvMessage(Action.START, start(orVnfmGenericMessage.getVnfr()));
+                    orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.START, start(orVnfmGenericMessage.getVnfr()));
                     break;
             }
 
             log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             if (nfvMessage != null) {
-                //coreMessage.setDependency(message.getDependency());
                 log.debug("send to NFVO");
-                sendToNfvo(nfvMessage);
+                vnfmHelper.sendToNfvo(nfvMessage);
             }
         } catch (Exception e) {
             log.error("ERROR: ", e);
-            sendToNfvo(getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
+            if (e instanceof VnfmSdkException){
+                VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
+                if (vnfmSdkException.getVnfr() != null){
+                    log.debug("sending vnfr with version: " + vnfmSdkException.getVnfr().getHb_version());
+                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
+                    return;
+                }
+            }
+            vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
         }
     }
 
-    protected abstract boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    private void checkEMS(String vduHostname) {
+        int i = 0;
+        while (true) {
+            log.debug("Waiting for ems to be started... (" + i * 5 + " secs)");
+            i++;
+            try {
+                checkEmsStarted(vduHostname);
+                break;
+            } catch (RuntimeException e) {
+                if (i == 100) {
+                    throw e;
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
 
-    protected abstract boolean allocateResources(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+    protected abstract void checkEmsStarted(String vduHostname);
 
     private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
-        //TODO add common parameters, even not defined into the provides: i.e. ip
+        fillSpecificProvides(virtualNetworkFunctionRecord);
 
-
-        /**
-         * Before ending, need to get all the "provides" filled
-         *
-         * TODO ask EMS for specific parameters
-         *
-         */
-
-        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
-            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
-//                TODO call ems here!
-                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
+        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+                int i = 1;
+                for (Ip ip : vnfcInstance.getIps()) {
+                    ConfigurationParameter cp = new ConfigurationParameter();
+                    cp.setConfKey(ip.getNetName() + i);
+                    cp.setValue(ip.getIp());
+                    virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+                    i++;
+                }
             }
         }
+        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
+    }
 
-        //TODO remove this
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()){
-            if (!configurationParameter.getConfKey().startsWith("nfvo:")){
-                configurationParameter.setValue("" + ((int) (Math.random() * 100)));
-                log.debug("Setting: "+configurationParameter.getConfKey()+" with value: "+configurationParameter.getValue());
-            }
-        }
+    /**
+     * This method needs to set all the parameter specified in the VNFDependency.parameters
+     *
+     * @param virtualNetworkFunctionRecord
+     */
+    protected void fillSpecificProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
     }
 
     /**
      * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecord from the VirtualNetworkFunctionDescriptor
      *
      * @param virtualNetworkFunctionDescriptor
-     * @param extention
+     * @param extension
      * @return The new VirtualNetworkFunctionRecord
      * @throws BadFormatException
      * @throws NotFoundException
      */
-    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Map<String, String> extention, String flavourKey) throws BadFormatException, NotFoundException {
+    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, String vnfInstanceName, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension) throws BadFormatException, NotFoundException {
         try {
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourKey,extention.get("nsr-id"));
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords);
+            for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
+                for (VirtualLinkRecord virtualLinkRecord : virtualLinkRecords) {
+                    if (internalVirtualLink.getName().equals(virtualLinkRecord.getName())) {
+                        internalVirtualLink.setExtId(virtualLinkRecord.getExtId());
+                        internalVirtualLink.setConnectivity_type(virtualLinkRecord.getConnectivity_type());
+                    }
+                }
+            }
             log.debug("Created VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord);
             return virtualNetworkFunctionRecord;
         } catch (NotFoundException e) {
             e.printStackTrace();
-            sendToNfvo(getNfvMessage(Action.ERROR, null));
+            vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, null));
             throw e;
         } catch (BadFormatException e) {
             e.printStackTrace();
-            sendToNfvo(getNfvMessage(Action.ERROR, null));
+            vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, null));
             throw e;
         }
     }
 
-    protected abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+    public abstract VirtualNetworkFunctionRecord start(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
-    protected LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
-        for (LifecycleEvent lce : events)
-            if (lce.getEvent().ordinal() == event.ordinal()) {
-                return lce;
-            }
-        return null;
-    }
-
-    protected NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
-        NFVMessage nfvMessage= null;
-        if(Action.INSTANTIATE.ordinal()==action.ordinal())
-            nfvMessage = new VnfmOrInstantiateMessage(payload);
-        else
-            nfvMessage = new VnfmOrGenericMessage(payload,action);
-        return nfvMessage;
-    }
-
-    /**
-     * This method can be used when an Event is processed and concluded in the main Class of the VNFM
-     *
-     * @param virtualNetworkFunctionRecord the VNFR
-     * @param event                        the EVENT to be put in the history
-     */
-    protected void updateVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event) {
-        for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event())
-            if (lifecycleEvent.getEvent().ordinal() == event.ordinal()) {
-                virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                break;
-            }
-    }
-
-    /**
-     * This method is used when a command is executed in the EMS, in order to put the executed command in history
-     * lifecycle events. In case of error is easy to understand what was the last command correctly executed.
-     *
-     * @param vnfr    the VNFR
-     * @param event   the EVENT containing the command
-     * @param command the command executed
-     */
-    protected void updateVnfr(VirtualNetworkFunctionRecord vnfr, Event event, String command) {
-        if (vnfr == null || event == null || command == null || command.isEmpty())
-            throw new NullPointerException("One of the arguments is null or the command is empty");
-
-        //Change vnfr status if the current command is the last script of the current event.
-        LifecycleEvent currentEvent = getLifecycleEvent(vnfr.getLifecycle_event(), event);
-        String lastScript = (String) currentEvent.getLifecycle_events().toArray()[currentEvent.getLifecycle_events().size() - 1];
-        log.debug("Last script is: " + lastScript);
-
-        //set the command in the history event
-        LifecycleEvent historyEvent = getLifecycleEvent(vnfr.getLifecycle_event_history(), event);
-        if (historyEvent != null)
-            historyEvent.getLifecycle_events().add(command);
-            // If the history event doesn't exist create it
-        else {
-            LifecycleEvent newLce = new LifecycleEvent();
-            newLce.setEvent(event);
-            newLce.setLifecycle_events(new LinkedHashSet<String>());
-            newLce.getLifecycle_events().add(command);
-            vnfr.getLifecycle_event_history().add(newLce);
-        }
-    }
-
-    protected abstract String executeActionOnEMS(String vduHostname, String command) throws Exception;
-
-    protected abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
-
-    protected abstract void sendToNfvo(final NFVMessage coreMessage);
+    public abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
     /**
      * This method unregister the VNFM in the NFVO
@@ -338,13 +314,13 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         register();
     }
 
-    protected void sendToEmsAndUpdate(VirtualNetworkFunctionRecord vnfr, Event event, String command, String emsEndpoint) throws Exception {
-        executeActionOnEMS(emsEndpoint, command);
-        try {
-            updateVnfr(vnfr, event, command);
-            log.debug("Updated VNFR");
-        } catch (NullPointerException e) {
-            throw new VnfmSdkException(e);
+    protected Map<String, String> getMap(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        Map<String, String> res = new HashMap<>();
+        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters())
+            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
+        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()){
+            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
         }
+        return res;
     }
 }
