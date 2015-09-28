@@ -2,12 +2,8 @@ package org.project.openbaton.common.vnfm_sdk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import org.project.openbaton.catalogue.mano.common.Event;
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -18,8 +14,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -69,44 +63,5 @@ public abstract class VnfmHelper {
 
     public abstract void sendToNfvo(NFVMessage nfvMessage);
 
-    public abstract Iterable<String> executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event) throws Exception;
-
-    public abstract String executeScriptsForEvent(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Event event, VNFRecordDependency dependency) throws Exception;
-
-    public abstract void saveScriptOnEms(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scriptsLink) throws Exception;
-
-    protected JsonObject getJsonObject(String action, String payload) {
-        JsonObject jsonMessage = new JsonObject();
-        jsonMessage.addProperty("action", action);
-        jsonMessage.addProperty("payload", payload);
-        return jsonMessage;
-    }
-
-    protected JsonObject getJsonObject(String action, String payload, Map<String, String> dependencyParameters) {
-        JsonObject jsonMessage = new JsonObject();
-        jsonMessage.addProperty("action", action);
-        jsonMessage.addProperty("payload", payload);
-        jsonMessage.add("env", parser.fromJson(parser.toJson(dependencyParameters), JsonObject.class));
-        return jsonMessage;
-    }
-
     public abstract NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
-
-    protected JsonObject getJsonObjectForScript(String save_scripts, String payload, String name) {
-        JsonObject jsonMessage = new JsonObject();
-        jsonMessage.addProperty("action", save_scripts);
-        jsonMessage.addProperty("payload", payload);
-        jsonMessage.addProperty("name", name);
-        return jsonMessage;
-    }
-
-    protected Map<String, String> getMap(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        Map<String, String> res = new HashMap<>();
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters())
-            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
-        for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()){
-            res.put(configurationParameter.getConfKey(),configurationParameter.getValue());
-        }
-        return res;
-    }
 }
