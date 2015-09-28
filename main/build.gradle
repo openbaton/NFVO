@@ -33,15 +33,14 @@ dependencies {
     compile project(':catalogue')
     compile project(':plugin')
 
-    runtime project(':core-impl')
-    runtime project(':api')
 //    runtime project(':security')
     runtime project(':dashboard')
+    runtime project(':core-impl')
+    runtime project(':api')
     runtime project(':cli')
     runtime project(':vim-impl')
     runtime project(':repository')
     runtime project(':vnfm-impl')
-    compile project(':vnfm-int')
 
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'junit:junit:4.12'

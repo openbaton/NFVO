@@ -26,6 +26,7 @@ dependencies {
     compile project(':vnfm-int')
 
 
+    compile 'org.apache.activemq:activemq-client:5.11.1'
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
     compile "org.springframework:spring-core:" + springVersion
 
