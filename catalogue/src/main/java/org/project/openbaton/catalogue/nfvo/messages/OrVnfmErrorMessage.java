@@ -27,10 +27,14 @@ public class OrVnfmErrorMessage implements OrVnfmMessage {
     private VirtualNetworkFunctionRecord vnfr;
     private String message;
 
+    public OrVnfmErrorMessage() {
+    }
+
     public OrVnfmErrorMessage(VirtualNetworkFunctionRecord vnfr, String message) {
         this.vnfr = vnfr;
         this.message = message;
     }
+
 
     public String getMessage() {
         return message;

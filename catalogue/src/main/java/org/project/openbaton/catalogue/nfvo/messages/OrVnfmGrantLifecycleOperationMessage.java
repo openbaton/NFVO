@@ -25,6 +25,9 @@ public class OrVnfmGrantLifecycleOperationMessage implements OrVnfmMessage{
     private String vimId;
     private boolean grantAllowed;
 
+    public OrVnfmGrantLifecycleOperationMessage() {
+    }
+
     public OrVnfmGrantLifecycleOperationMessage(String vimId, boolean grantAllowed) {
 
         this.vimId = vimId;
