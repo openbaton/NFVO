@@ -50,9 +50,9 @@ public class RestVnfmSender implements VnfmSender {
         return responseEntity.getBody();
     }
 
-    private String post(String path, String json, String url) {
+    private String post(String json, String url) {
         HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.POST, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
@@ -101,6 +101,6 @@ public class RestVnfmSender implements VnfmSender {
     public void sendToVnfm(NFVMessage nfvMessage, String url) {
         String json = mapper.toJson(nfvMessage);
         log.debug("Sending message: " + json + " to url " + url);
-        this.post("core-vnfm-actions", json, url);
+        this.post(json, url);
     }
 }
