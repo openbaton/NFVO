@@ -31,21 +31,23 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12 top-buffer" ng-show="vduId">
-        <div class="col-lg-12">
-            <div>
+    <div class="col-lg-12" ng-show="vduId">
                 <div ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
-                <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
-                    <h2>Virtual Deployment Unit</h2>
-                    <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vdu">
-                            <dt>{{k}}</dt>
-                            <dd>{{v}}</dd>
-                        </spam>
-                    </dl>
+                    <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
+                        <h2>Virtual Deployment Unit</h2>
+                        <dl class="dl-horizontal">
+                            <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                                <dt>{{k}}</dt>
+                                <dd>{{v}}</dd>
+
+                            </spam>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd><a href="#vim-instances/{{vdu.vimInstance.id}}">{{vdu.vimInstance.name}}</a></dd>
+                         </span>
+                        </dl>
+                    </div>
                 </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
