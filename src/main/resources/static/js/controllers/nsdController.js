@@ -7,6 +7,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     var urlVim = '/api/v1/datacenters';
     //var urlVim = 'http://localhost:8080/api/v1/datacenters';
 
+    //var url ='http://80.96.122.80:8080/api/v1/ns-descriptors';
+    //var urlRecord ='http://80.96.122.80:8080/api/v1/ns-records';
+
     loadTable();
 
     $.fn.bootstrapSwitch.defaults.size = 'mini';
