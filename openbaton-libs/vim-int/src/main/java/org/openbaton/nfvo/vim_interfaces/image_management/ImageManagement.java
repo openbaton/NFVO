@@ -16,11 +16,10 @@
 
 package org.openbaton.nfvo.vim_interfaces.image_management;
 
-import org.project.openbaton.catalogue.nfvo.NFVImage;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
