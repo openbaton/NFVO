@@ -6,7 +6,7 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: 'maven'
 	
-	group = 'org.project.openbaton'
+	group = 'org.openbaton'
 		
 	sourceCompatibility = 1.7
 	targetCompatibility = 1.7
