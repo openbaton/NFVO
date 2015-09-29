@@ -25,7 +25,7 @@ include 'main'
 include 'vim-impl', 'vim-int'
 include 'vnfm-int', 'vnfm-impl'
 include 'repository'
-//include 'security'
+include 'security'
 include 'catalogue'
 include 'monitoring'
 include 'exception'
@@ -41,7 +41,7 @@ project(':exception').projectDir = file('openbaton-libs/exception')
 
 project(':common').projectDir = file('common')
 project(':dashboard').projectDir = file('dashboard')
-//project(':security').projectDir = file('security')
+project(':security').projectDir = file('security')
 
 project(':core-impl').projectDir = file('core/core-impl')
 project(':core-int').projectDir = file('core/core-int')
