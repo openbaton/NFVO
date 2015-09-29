@@ -33,7 +33,7 @@ public class PluginStartup {
             try {
                 Thread.sleep(4000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         processes.put(path,p);
     }
@@ -50,7 +50,7 @@ public class PluginStartup {
                     if (jar.isDirectory())
                         startPluginRecursive(jar.getAbsolutePath(), waitForPlugin,registryip, port);
                     else
-                        log.error(jar.getAbsolutePath() + " is not a jar file");
+                        log.warn(jar.getAbsolutePath() + " is not a jar file");
             }
         }else log.error(folderPath + " must be a folder");
 

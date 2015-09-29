@@ -44,9 +44,8 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             client = pluginBroker.getPlugin("vim-drivers",type, port);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
-            e.printStackTrace();
             log.error("No plugin found for type: " + type);
         }
     }
@@ -57,9 +56,8 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             client = pluginBroker.getPlugin("vim-drivers",type);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
-            e.printStackTrace();
             log.error("No plugin found for type: " + type);
         }
     }
@@ -70,10 +68,9 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             client = pluginBroker.getPlugin("vim-drivers",type,name);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
-            e.printStackTrace();
-            log.error("No plugin found for name: " + name);
+            log.error("No plugin found for type: " + type);
         }
     }
 
@@ -83,9 +80,8 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             client = pluginBroker.getPlugin("vim-drivers",type, name, port);
             log.trace("Class is: " + client.getClass().getName());
         } catch (RemoteException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
-            e.printStackTrace();
             log.error("No plugin found for type: " + type);
         }
     }
