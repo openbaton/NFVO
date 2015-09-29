@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
 public interface NetworkServiceDescriptorRepository extends CrudRepository<NetworkServiceDescriptor, String>, NetworkServiceDescriptorRepositoryCustom {

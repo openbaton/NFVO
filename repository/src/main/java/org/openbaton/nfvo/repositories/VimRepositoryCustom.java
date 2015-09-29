@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.NFVImage;
 
 /**
  * Created by dbo on 21/09/15.

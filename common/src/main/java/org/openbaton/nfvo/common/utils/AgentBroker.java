@@ -1,7 +1,7 @@
 package org.openbaton.nfvo.common.utils;
 
-import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.interfaces.Receiver;
 import org.openbaton.nfvo.common.interfaces.Sender;
 import org.openbaton.nfvo.common.utils.jms.JmsReceiver;

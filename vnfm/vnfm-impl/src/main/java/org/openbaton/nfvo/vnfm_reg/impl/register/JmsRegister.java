@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
-import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

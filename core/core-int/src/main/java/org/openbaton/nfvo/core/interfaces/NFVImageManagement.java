@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.NFVImage;
 
 
 /**

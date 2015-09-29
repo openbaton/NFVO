@@ -46,9 +46,9 @@ import java.io.File;
 @SpringBootApplication
 @EnableJms
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
-@EntityScan(basePackages = "org.project.openbaton.catalogue")
-@ComponentScan(basePackages = {"org.project.openbaton.nfvo", "org.project.openbaton.cli"})
-@EnableJpaRepositories("org.project.openbaton.nfvo")
+@EntityScan(basePackages = "org.openbaton")
+@ComponentScan(basePackages = "org.openbaton")
+@EnableJpaRepositories("org.openbaton")
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
     public static void main(String[] args) {
@@ -61,6 +61,8 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
         context.registerShutdownHook();
         log.info("Started OpenBaton");
 
+        for (String name : context.getBeanDefinitionNames())
+            log.trace(name);
     }
 
     @Bean

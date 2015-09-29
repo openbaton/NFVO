@@ -26,19 +26,19 @@ import org.openbaton.nfvo.vim.AmazonVIM;
 import org.openbaton.nfvo.vim.OpenstackVIM;
 import org.openbaton.nfvo.vim.TestVIM;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.NFVImage;
-import org.project.openbaton.catalogue.nfvo.Server;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.clients.exceptions.VimDriverException;
+import org.openbaton.clients.interfaces.ClientInterfaces;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ import java.util.concurrent.Future;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
-//import org.project.openbaton.nfvo.common.exceptions.VimException;
+//import org.openbaton.nfvo.common.exceptions.VimException;
 
 /**
  * Created by lto on 21/05/15.

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.project.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.nfvo.api.RestImage;
 import org.openbaton.nfvo.core.interfaces.NFVImageManagement;
 import org.slf4j.Logger;

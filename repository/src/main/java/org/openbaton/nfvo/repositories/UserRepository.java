@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.security.User;
+import org.openbaton.catalogue.security.User;
 import org.springframework.data.repository.CrudRepository;
 
 /**

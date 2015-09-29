@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.springframework.data.repository.CrudRepository;
 
 /**

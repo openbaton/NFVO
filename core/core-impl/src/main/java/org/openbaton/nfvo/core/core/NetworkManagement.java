@@ -16,11 +16,11 @@
 
 package org.openbaton.nfvo.core.core;
 
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.Subnet;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.catalogue.util.IdGenerator;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;

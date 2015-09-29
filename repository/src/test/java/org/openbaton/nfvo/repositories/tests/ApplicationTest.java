@@ -16,10 +16,10 @@
 
 package org.openbaton.nfvo.repositories.tests;
 
-import org.project.openbaton.catalogue.mano.common.AbstractVirtualLink;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

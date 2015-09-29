@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.NotFoundException;
 
 /**
  * Created by lto on 01/07/15.

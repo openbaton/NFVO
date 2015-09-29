@@ -21,11 +21,11 @@ package org.openbaton.nfvo.core.events;
  */
 
 import org.openbaton.nfvo.core.interfaces.EventSender;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.project.openbaton.catalogue.nfvo.EventEndpoint;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.nfvo.Configuration;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
