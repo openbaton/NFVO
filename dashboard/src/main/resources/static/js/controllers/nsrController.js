@@ -2,6 +2,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
     var url = '/api/v1/ns-records';
     //var url = 'http://localhost:8080/api/v1/ns-records';
+    //var url ='http://80.96.122.80:8080/api/v1/ns-records';
 
 
     loadTable();
@@ -126,7 +127,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vduId)){
         $scope.vduId= $routeParams.vduId;
+        console.log(  $scope.vduId);
     }
+
 
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
