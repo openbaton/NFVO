@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @SpringBootApplication
 @RestController
-@RequestMapping("/core-vnfm-actions")
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     private VnfmRestHelper vnfmRestHelper;
@@ -41,7 +40,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         vnfmRestHelper.register(vnfmManagerEndpoint);
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/core-dummy-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
         log.debug("Received: " + jsonNfvMessage);
