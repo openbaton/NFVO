@@ -78,7 +78,7 @@ public class VnfmRegister implements org.project.openbaton.vnfm.interfaces.regis
     public void unregister(VnfmManagerEndpoint endpoint) {
         Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmManagerEndpointRepository.findAll();
         for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
-            if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
+            if (vnfmManagerEndpoint.getEndpoint() != null && vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType() != null && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
                 this.vnfmManagerEndpointRepository.delete(endpoint);
                 return;
             }
