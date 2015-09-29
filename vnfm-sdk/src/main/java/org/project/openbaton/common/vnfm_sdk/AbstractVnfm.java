@@ -49,7 +49,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected Properties properties;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
-//    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     @PreDestroy
     private void shutdown() {
