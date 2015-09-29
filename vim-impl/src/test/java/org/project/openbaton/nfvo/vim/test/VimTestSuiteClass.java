@@ -27,6 +27,7 @@ import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.project.openbaton.catalogue.mano.record.Status;
+import org.project.openbaton.catalogue.mano.record.VNFCInstance;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.NFVImage;
 import org.project.openbaton.catalogue.nfvo.Server;
@@ -122,8 +123,8 @@ public class VimTestSuiteClass {
         when(clientInterfaces.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyBoolean())).thenReturn(server);
 
         try {
-            Future<String> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
-            String expectedId = id.get();
+            Future<VNFCInstance> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
+            String expectedId = id.get().getVc_id();
             log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
             Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
         } catch (VimException e) {
