@@ -17,13 +17,13 @@
 package org.openbaton.vnfm.interfaces.manager;
 
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.EndpointType;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 import org.springframework.scheduling.annotation.Async;
 
 import javax.jms.Destination;

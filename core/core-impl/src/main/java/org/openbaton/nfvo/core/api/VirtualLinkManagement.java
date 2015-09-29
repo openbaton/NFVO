@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
 import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;

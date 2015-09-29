@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.project.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 
 /**
  * Created by lto on 11/06/15.

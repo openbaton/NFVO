@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.nfvo.VNFPackage;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -17,8 +17,8 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

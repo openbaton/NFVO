@@ -16,14 +16,14 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.mano.common.Security;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.exceptions.BadFormatException;
-import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.mano.common.Security;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
 
 import javax.persistence.NoResultException;
 

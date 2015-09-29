@@ -16,15 +16,15 @@
 
 package org.openbaton.nfvo.api;
 
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.exceptions.StateException;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

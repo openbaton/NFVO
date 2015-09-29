@@ -16,8 +16,8 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 import org.springframework.jms.support.JmsHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 

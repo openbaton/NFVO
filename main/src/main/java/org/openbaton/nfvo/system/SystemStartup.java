@@ -17,8 +17,8 @@
 package org.openbaton.nfvo.system;
 
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
-import org.project.openbaton.catalogue.nfvo.Configuration;
-import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

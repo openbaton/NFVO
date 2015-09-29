@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.nfvo.core.interfaces.VNFFGManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

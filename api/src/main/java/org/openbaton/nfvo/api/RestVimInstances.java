@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.nfvo.NFVImage;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -22,9 +22,9 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.apache.commons.io.FileUtils;
-import org.project.openbaton.catalogue.nfvo.Configuration;
-import org.project.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.project.openbaton.catalogue.nfvo.InstallPluginEvent;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.InstallPluginEvent;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.slf4j.Logger;
@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -46,6 +48,7 @@ import java.util.*;
  * method.
  */
 @Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
 
     private final static Map<String, String> helpCommandList = new HashMap<String, String>() {{

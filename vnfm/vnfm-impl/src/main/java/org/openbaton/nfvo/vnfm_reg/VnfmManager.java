@@ -18,21 +18,21 @@ package org.openbaton.nfvo.vnfm_reg;
 
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.project.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.Status;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.*;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.project.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.project.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.project.openbaton.catalogue.util.EventFinishEvent;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.util.EventFinishEvent;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -66,7 +66,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("singleton")
-@Order(value = Ordered.LOWEST_PRECEDENCE)
+@Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishEvent>, CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -95,7 +95,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         /**
          * Asynchronous thread executor configuration
          */
-        Configuration system = null;
+        Configuration system;
         try {
             system = configurationManagement.queryByName("system");
         } catch (NotFoundException e) {

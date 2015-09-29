@@ -16,13 +16,13 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Server;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.project.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 

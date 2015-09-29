@@ -16,11 +16,11 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.project.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.exceptions.*;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 
 import java.util.concurrent.ExecutionException;
 

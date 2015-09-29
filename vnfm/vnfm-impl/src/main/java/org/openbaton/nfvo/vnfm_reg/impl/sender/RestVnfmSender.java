@@ -17,8 +17,8 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

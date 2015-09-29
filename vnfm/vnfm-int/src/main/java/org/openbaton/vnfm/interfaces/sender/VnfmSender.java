@@ -16,8 +16,8 @@
 
 package org.openbaton.vnfm.interfaces.sender;
 
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 
 import javax.jms.Destination;
 

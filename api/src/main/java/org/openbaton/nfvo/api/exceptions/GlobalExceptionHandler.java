@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.api.exceptions;
 
-import org.project.openbaton.exceptions.BadFormatException;
-import org.project.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

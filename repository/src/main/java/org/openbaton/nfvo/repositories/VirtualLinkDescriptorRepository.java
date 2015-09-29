@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
 /**

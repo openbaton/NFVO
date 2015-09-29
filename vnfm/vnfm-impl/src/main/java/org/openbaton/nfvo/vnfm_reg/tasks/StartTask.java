@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

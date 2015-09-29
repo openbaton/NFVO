@@ -19,10 +19,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
     compile 'org.springframework:spring-jms:' + springVersion
-//    compile 'org.springframework:spring-orm:' + springVersion
-
-    //jpa repo
-    //@EnableJpaRepositories(basePackages = "org.project.openbaton.catalogue.repositories")
     compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
     compile 'org.aspectj:aspectjweaver:1.8.6'
 

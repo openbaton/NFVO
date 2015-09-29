@@ -16,11 +16,11 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.catalogue.nfvo.NFVImage;
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;

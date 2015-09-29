@@ -17,10 +17,10 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.project.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Action;
-import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.DependencyQueuer;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;

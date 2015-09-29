@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
-import org.project.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

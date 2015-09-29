@@ -17,8 +17,8 @@
 package org.openbaton.nfvo.core.interfaces;
 
 
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.exceptions.VimException;
 
 /**
  * Created by mpa on 05/05/15.

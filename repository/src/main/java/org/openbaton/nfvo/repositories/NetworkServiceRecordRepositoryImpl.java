@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.project.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

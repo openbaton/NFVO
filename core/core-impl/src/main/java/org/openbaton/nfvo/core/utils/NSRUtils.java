@@ -16,13 +16,13 @@
 
 package org.openbaton.nfvo.core.utils;
 
-import org.project.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.project.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.project.openbaton.catalogue.mano.descriptor.*;
-import org.project.openbaton.catalogue.mano.record.*;
-import org.project.openbaton.catalogue.nfvo.DependencyParameters;
-import org.project.openbaton.exceptions.BadFormatException;
-import org.project.openbaton.exceptions.NotFoundException;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

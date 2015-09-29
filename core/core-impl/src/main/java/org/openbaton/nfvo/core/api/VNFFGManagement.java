@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.nfvo.repositories.VNFFGDescriptorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

@@ -17,9 +17,9 @@
 package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
-import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

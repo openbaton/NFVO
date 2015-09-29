@@ -16,12 +16,12 @@
 
 package org.openbaton.nfvo.core.core;
 
-import org.project.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Quota;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

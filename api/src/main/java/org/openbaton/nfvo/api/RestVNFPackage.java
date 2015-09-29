@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.api;
 
-import org.project.openbaton.catalogue.nfvo.VNFPackage;
-import org.project.openbaton.exceptions.NotFoundException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
