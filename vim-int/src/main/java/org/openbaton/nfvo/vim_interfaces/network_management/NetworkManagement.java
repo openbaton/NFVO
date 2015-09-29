@@ -16,9 +16,9 @@
 
 package org.openbaton.nfvo.vim_interfaces.network_management;
 
-import org.project.openbaton.catalogue.nfvo.Network;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimException;
 
 import java.util.List;
 

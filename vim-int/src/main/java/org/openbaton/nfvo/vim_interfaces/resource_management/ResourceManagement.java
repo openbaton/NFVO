@@ -16,17 +16,16 @@
 
 package org.openbaton.nfvo.vim_interfaces.resource_management;
 
-import org.project.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.project.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.project.openbaton.catalogue.mano.record.VNFCInstance;
-import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.project.openbaton.catalogue.nfvo.Quota;
-import org.project.openbaton.catalogue.nfvo.Server;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.clients.exceptions.VimDriverException;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.List;
 import java.util.concurrent.Future;
