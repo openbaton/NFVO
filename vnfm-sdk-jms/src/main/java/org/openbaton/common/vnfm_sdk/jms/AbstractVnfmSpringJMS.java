@@ -24,7 +24,7 @@ import javax.jms.*;
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = "org.project.openbaton")
+@ComponentScan(basePackages = "org.openbaton")
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
 
     @Autowired
