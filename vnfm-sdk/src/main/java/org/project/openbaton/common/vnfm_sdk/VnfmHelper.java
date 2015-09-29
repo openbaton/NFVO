@@ -1,7 +1,5 @@
 package org.project.openbaton.common.vnfm_sdk;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.project.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.project.openbaton.catalogue.nfvo.Action;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -22,7 +20,6 @@ import java.util.concurrent.Future;
 public abstract class VnfmHelper {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
-    protected Gson parser = new GsonBuilder().setPrettyPrinting().create();
 
     @Async
     public Future<VirtualNetworkFunctionRecord> grantLifecycleOperation(VirtualNetworkFunctionRecord vnfr) throws VnfmSdkException {
