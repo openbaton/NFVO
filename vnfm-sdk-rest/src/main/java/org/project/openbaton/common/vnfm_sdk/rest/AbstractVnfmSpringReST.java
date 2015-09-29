@@ -1,6 +1,10 @@
 package org.project.openbaton.common.vnfm_sdk.rest;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.project.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.project.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.project.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.project.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.project.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -39,8 +43,16 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receive(@RequestBody /*@Valid*/ NFVMessage message) {
-        log.debug("Received: " + message);
+    public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
+        log.debug("Received: " + jsonNfvMessage);
+        NFVMessage message;
+
+        JsonElement action = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage, JsonObject.class).get("action");
+        log.debug("json Action is: " + action.getAsString());
+        if (action.getAsString().equals("INSTANTIATE"))
+            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage,OrVnfmInstantiateMessage.class);
+        else
+            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage,OrVnfmGenericMessage.class);
         try {
             this.onAction(message);
         } catch (NotFoundException e) {
