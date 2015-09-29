@@ -1,8 +1,8 @@
 angular.module('app').
     controller('vimInstanceCtrl', function ($scope, $routeParams, http, $location, AuthService) {
 
-        var url = '/api/v1/datacenters/';
-        //var url = 'http://localhost:8080/api/v1/datacenters/';
+        //var url = '/api/v1/datacenters/';
+        var url = 'http://localhost:8080/api/v1/datacenters/';
 
         $scope.alerts = [];
         $scope.datacenter = {};

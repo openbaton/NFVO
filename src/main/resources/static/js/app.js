@@ -174,7 +174,9 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
 
 angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
-    var url = 'http://localhost:8080/api/v1';
+    var url = '/api/v1';
+    //var url = 'http://localhost:8080/api/v1';
+    //var url = 'http://80.96.122.80:8080/api/v1';
 //    http.syncGet('/api/rest/admin/v2/configs/').then(function(data)
 //    {
 //        $scope.config = data;
@@ -185,15 +187,32 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
 
     $scope.numberNSR = 0;
     $scope.numberNSD = 0;
-    $scope.numberVNF = 8;
-    $scope.numberUnits = 5;
+    $scope.numberVNF = 0;
+    $scope.numberUnits = 0;
     http.syncGet(url + '/ns-descriptors/').then(function (data) {
         $scope.numberNSD = data.length;
-
+        var vnf = 0;
+        $.each(data, function (i, nsd) {
+            //console.log(nsd.vnfd.length);
+            if (!angular.isUndefined(nsd.vnfd.length))
+                vnf = vnf + nsd.vnfd.length;
+        });
+        $scope.numberVNF = vnf;
     });
     http.syncGet(url + '/ns-records/').then(function (data) {
         $scope.numberNSR = data.length;
+        var units = 0;
+        $.each(data, function (i, nsr) {
+            $.each(nsr.vnfr, function (i, vnfr) {
+                $.each(vnfr.vdu, function (i, vdu) {
+                    if (!angular.isUndefined(vdu.vnfc_instance.length))
+                        units = units + vdu.vnfc_instance.length;
+                });
 
+            });
+
+        });
+        $scope.numberUnits = units;
 
     });
 
