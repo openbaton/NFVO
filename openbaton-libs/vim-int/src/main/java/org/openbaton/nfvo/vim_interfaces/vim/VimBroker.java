@@ -16,10 +16,10 @@
 
 package org.openbaton.nfvo.vim_interfaces.vim;
 
-import org.project.openbaton.catalogue.nfvo.Quota;
-import org.project.openbaton.catalogue.nfvo.VimInstance;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
-import org.project.openbaton.exceptions.VimException;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
+import org.openbaton.exceptions.VimException;
 
 /**
  * Created by lto on 20/05/15.

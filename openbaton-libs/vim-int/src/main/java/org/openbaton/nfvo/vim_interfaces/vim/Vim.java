@@ -16,12 +16,12 @@
 
 package org.openbaton.nfvo.vim_interfaces.vim;
 
-import org.openbaton.nfvo.plugin.utils.PluginBroker;
 import org.openbaton.nfvo.vim_interfaces.flavor_management.DeploymentFlavorManagement;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
+import org.openbaton.plugin.utils.PluginBroker;
 import org.openbaton.nfvo.vim_interfaces.image_management.ImageManagement;
 import org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement;
 import org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement;
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

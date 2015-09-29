@@ -1,6 +1,6 @@
 package org.openbaton.nfvo.vim_interfaces.monitoring;
 
-import org.project.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
+import org.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
 
 /**
  * Created by lto on 05/08/15.
