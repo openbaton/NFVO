@@ -38,7 +38,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsdescriptors/vdu.html',
                 controller: 'NsdCtrl'
             })
-            .when('/nsrecords/:nsdescriptorId/vnfrecords/:vnfrecordId/vdus/:vduId', {
+            .when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId/vdus/:vduId', {
                 templateUrl: 'pages/nsrecords/vdu.html',
                 controller: 'NsrCtrl'
             }).

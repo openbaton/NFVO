@@ -39,10 +39,15 @@
                 <div ng-repeat="vdu in vnfd.vdu" ng-show="vdu.id==vduId">
                     <h2>Virtual Deployment Unit</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vdu">
+                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
+
                         </spam>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd><a href="#vim-instances/{{vdu.vimInstance.id}}">{{vdu.vimInstance.name}}</a></dd>
+                         </span>
                     </dl>
                 </div>
                 </div>
