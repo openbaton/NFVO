@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.vim.test;
 
-import org.project.openbaton.clients.interfaces.ClientInterfaces;
+import org.openbaton.clients.interfaces.ClientInterfaces;
 import org.openbaton.nfvo.vim.broker.VimBroker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

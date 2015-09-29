@@ -58,7 +58,7 @@ import java.util.concurrent.Future;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
-//import org.project.openbaton.nfvo.common.exceptions.VimException;
+//import org.openbaton.nfvo.common.exceptions.VimException;
 
 /**
  * Created by lto on 21/05/15.

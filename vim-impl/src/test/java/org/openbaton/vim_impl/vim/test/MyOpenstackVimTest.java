@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-//import org.project.openbaton.nfvo.common.exceptions.VimException;
+//import org.openbaton.nfvo.common.exceptions.VimException;
 
 
 /**
