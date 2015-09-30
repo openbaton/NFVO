@@ -15,25 +15,15 @@
 
 package org.openbaton.catalogue.util;
 
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.springframework.context.ApplicationEvent;
+import org.openbaton.catalogue.nfvo.Action;
 
 /**
  * Created by lto on 06/08/15.
  */
-public class EventFinishEvent extends ApplicationEvent {
+public class EventFinishEvent {
     private Action action;
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source the component that published the event (never {@code null})
-     */
-    public EventFinishEvent(Object source) {
-        super(source);
-    }
 
     public Action getAction() {
         return action;
