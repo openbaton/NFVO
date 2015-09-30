@@ -16,10 +16,10 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope("prototype")
-public class
-        ReleaseresourcesTask extends AbstractTask {
+public class ReleaseresourcesTask extends AbstractTask {
 
     @Autowired
     private ResourceManagement resourceManagement;
@@ -38,6 +37,7 @@ public class
     @Override
     protected void doWork() throws Exception {
         log.debug("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+
         saveVirtualNetworkFunctionRecord();
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
@@ -47,7 +47,6 @@ public class
                 this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
             }
         }
-
     }
 
     @Override

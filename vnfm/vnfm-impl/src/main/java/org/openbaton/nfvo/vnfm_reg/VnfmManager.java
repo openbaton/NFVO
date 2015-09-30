@@ -31,6 +31,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
+import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -283,8 +284,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     private void publishEvent(Action action, Serializable payload) {
         ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload);
+        EventNFVO eventNFVO = new EventNFVO(this);
+        eventNFVO.setEventNFVO(event);
         log.debug("Publishing event: " + event);
-        publisher.publishEvent(event);
+        publisher.publishEvent(eventNFVO);
     }
 
     @Override
