@@ -58,11 +58,11 @@ import java.util.concurrent.Future;
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
     protected VnfmHelper vnfmHelper;
-    protected String type;
-    protected String endpoint;
-    protected String endpointType;
-    protected Properties properties;
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
+    protected static String type;
+    protected static String endpoint;
+    protected static String endpointType;
+    protected static Properties properties;
+    protected static Logger log = LoggerFactory.getLogger(AbstractVnfm.class);
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     private ExecutorService executor;
 
@@ -131,7 +131,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    protected void loadProperties() {
+    protected static void loadProperties() {
         properties = new Properties();
         try {
             properties.load(AbstractVnfm.class.getResourceAsStream("conf.properties"));
@@ -139,9 +139,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
         }
-        this.endpoint = (String) properties.get("endpoint");
-        this.type = (String) properties.get("type");
-        this.endpointType = properties.getProperty("endpoint-type", "JMS");
+        endpoint = (String) properties.get("endpoint");
+        type = (String) properties.get("type");
+        endpointType = properties.getProperty("endpoint-type", "JMS");
     }
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
