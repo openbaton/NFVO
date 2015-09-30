@@ -1,26 +1,31 @@
 {
   "vendor":"fokus",
   "version":"0.1",
-  "name":"<::vnf-dummy-1::>",
+  "name":"dummy1",
   "type":"server",
-  "endpoint":"generic",
+  "endpoint":"dummy",
   "vdu":[
     {
       "vm_image":[
-        "larsks/thttpd"
+        "ubuntu-14.04-server-cloudimg-amd64-disk1"
       ],
       "computation_requirement":"",
       "virtual_memory_resource_element":"1024",
       "virtual_network_bandwidth_resource":"1000000",
       "lifecycle_event":[
       ],
-      "vimInstance":{
-        "name":"vim-instance"
-      },
+      "vimInstanceName":"vim-instance",
       "vdu_constraint":"",
       "high_availability":"ACTIVE_PASSIVE",
       "scale_in_out":3,
       "vnfc":[
+        {
+          "connection_point":[
+            {
+              "virtual_link_reference":"private"
+            }
+          ]
+        }
       ],
       "monitoring_parameter":[
         "cpu_utilization"
@@ -28,40 +33,38 @@
     }
   ],
   "virtual_link":[
+    {
+      "name":"private"
+    }
   ],
   "connection_point":[
   ],
   "lifecycle_event":[
-    {
-      "event":"INSTANTIATE",
-      "lifecycle_events":
-      [
-        "install.sh"
-      ]
-    },
-    {
-      "event":"CONFIGURE",
-      "lifecycle_events":
-      [
-        "connectToDb.sh #database:ipB",
-        "connectToDb.sh #database:ipC",
-        "connectToDb.sh #database:ipD"
-      ]
-    }
+
   ],
   "vdu_dependency":[
   ],
   "monitoring_parameter":[
     "cpu_utilization"
   ],
-  "deployment_flavour":[{
-    "df_constraint":[
-      "constraint1",
-      "constraint2"
-    ],
-    "costituent_vdu":[],
-    "flavour_key":"m1.small"
-  }],
+  "deployment_flavour":[
+    {
+      "df_constraint":[
+        "constraint1",
+        "constraint2"
+      ],
+      "costituent_vdu":[],
+      "flavour_key":"m1.small"
+    },{
+      "df_constraint":[
+        "constraint3",
+        "constraint4"
+      ],
+      "costituent_vdu":[],
+      "flavour_key":"m1.nano"
+
+    }
+  ],
   "auto_scale_policy":[
   ],
   "manifest_file":"",
