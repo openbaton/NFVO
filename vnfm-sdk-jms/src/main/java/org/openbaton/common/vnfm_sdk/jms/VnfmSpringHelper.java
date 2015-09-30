@@ -15,11 +15,8 @@
 
 package org.openbaton.common.vnfm_sdk.jms;
 
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
-import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
@@ -56,7 +53,6 @@ public class VnfmSpringHelper extends VnfmHelper {
 
     }
 
-    @Override
     public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
         log.trace("Sending message: " + message + " to Queue: " + sendToQueueName);
 
@@ -117,8 +113,8 @@ public class VnfmSpringHelper extends VnfmHelper {
     }
 
     @Override
-    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception {
-        Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(VnfmUtils.getNfvMessage(action, virtualNetworkFunctionRecord)));
+    public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
+        Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(message));
         return (NFVMessage) ((ObjectMessage) response).getObject();
     }
 

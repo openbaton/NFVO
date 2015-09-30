@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -50,6 +52,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * Created by lto on 08/07/15.
@@ -171,9 +174,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtention());
-                    virtualNetworkFunctionRecord = vnfmHelper.grantLifecycleOperation(virtualNetworkFunctionRecord).get();
+                    virtualNetworkFunctionRecord = this.grantLifecycleOperation(virtualNetworkFunctionRecord).get();
                     if (properties.getProperty("allocate", "false").equalsIgnoreCase("true"))
-                        virtualNetworkFunctionRecord = vnfmHelper.allocateResources(virtualNetworkFunctionRecord).get();
+                        virtualNetworkFunctionRecord = this.allocateResources(virtualNetworkFunctionRecord).get();
                     setupProvides(virtualNetworkFunctionRecord);
 
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
@@ -217,6 +220,41 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             }
             vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
         }
+    }
+
+    @Async
+    public Future<VirtualNetworkFunctionRecord> grantLifecycleOperation(VirtualNetworkFunctionRecord vnfr) throws VnfmSdkException {
+        NFVMessage response;
+        try {
+            response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.GRANT_OPERATION, vnfr));
+        } catch (Exception e) {
+            throw new VnfmSdkException("Not able to grant operation", e);
+        }
+        log.debug("" + response);
+        if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+            throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage() , ((OrVnfmErrorMessage) response).getVnfr());
+        }
+        OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+        return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
+    }
+
+    @Async
+    public Future<VirtualNetworkFunctionRecord> allocateResources(VirtualNetworkFunctionRecord vnfr) throws VnfmSdkException {
+        NFVMessage response;
+        try {
+            response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.ALLOCATE_RESOURCES, vnfr));
+        } catch (Exception e) {
+            log.error("" + e.getMessage());
+            throw new VnfmSdkException("Not able to allocate Resources", e);
+        }
+        if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+            OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
+            log.error(errorMessage.getMessage());
+            throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage() , errorMessage.getVnfr());
+        }
+        OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+        log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
+        return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
     }
 
     private void checkEMS(String vduHostname) {
