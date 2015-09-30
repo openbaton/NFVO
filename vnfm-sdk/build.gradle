@@ -2,10 +2,7 @@
     dependencies {
         compile project(':catalogue')
 
-        compile 'org.springframework:spring-context:' + springVersion
-        compile 'org.springframework.boot:spring-boot:' + springBootVersion
-        compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
-        compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+        compile 'org.slf4j:slf4j-api:1.7.12'
 
         compile 'com.google.code.gson:gson:2.3.1'
 
