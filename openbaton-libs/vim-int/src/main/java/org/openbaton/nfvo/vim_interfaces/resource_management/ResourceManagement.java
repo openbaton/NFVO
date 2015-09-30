@@ -25,7 +25,6 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -41,7 +40,6 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	@Async
 	Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException;
 	
 	/**
