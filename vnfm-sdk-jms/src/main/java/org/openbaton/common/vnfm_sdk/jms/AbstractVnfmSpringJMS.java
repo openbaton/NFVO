@@ -33,8 +33,6 @@ import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
 import javax.jms.*;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Created by lto on 28/05/15.
@@ -65,19 +63,6 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
         factory.setConcurrency(properties.getProperty("concurrency", "15"));
         return factory;
-    }
-    @Override
-    protected void loadProperties() {
-        properties = new Properties();
-        try {
-            properties.load(AbstractVnfmSpringJMS.class.getResourceAsStream("conf.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error(e.getLocalizedMessage());
-        }
-        endpoint = (String) properties.get("endpoint");
-        type = (String) properties.get("type");
-        endpointType = properties.getProperty("endpoint-type", "JMS");
     }
 
     @Override
