@@ -33,11 +33,43 @@
                 <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
                     <h2>VNF Descriptor: {{vnfd.name}}</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vnfd" ng-show="v != null" ng-if="k!='vdu' && k!='deployment_flavour'">
+                        <spam ng-repeat="(k,v) in vnfd" ng-show="v != null"
+                              ng-if="k!='vdu' && k!='deployment_flavour' ">
 
-                            <spam ng-if="k!='requires' && k!='provides'">
+                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackage'">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
+                            </spam>
+                            <spam ng-if="k=='lifecycle_event'">
+                                <dt>{{k}}</dt>
+                                <dd>
+                                    <span ng-repeat="lf in v">
+                                       <span ng-repeat="(k,v) in lf">
+                                            <b>{{k}}</b>: {{v}}
+                                           <span ng-if="!$last">,</span>
+                                        </span>
+                                    </span>
+                                </dd>
+                            </spam>
+                            <spam ng-if="k=='virtual_link'">
+                                <dt>{{k}}</dt>
+                                <dd>
+                                    <span ng-repeat="vl in v">
+                                       <span ng-repeat="(k,v) in vl">
+                                            <b>{{k}}</b>: {{v}}
+                                           <span ng-if="!$last">,</span>
+                                        </span>
+                                    </span>
+                                </dd>
+                            </spam>
+                            <spam ng-if="k=='vnfPackage'">
+                                <dt>{{k}}</dt>
+                                <dd>
+                                       <span ng-repeat="(k,v1) in v">
+                                            <b>{{k}}</b>: {{v1}}
+                                           <span ng-if="!$last">,</span>
+                                        </span>
+                                </dd>
                             </spam>
                             <spam ng-if="k=='requires' || k=='provides'">
                                 <hr class="hr_title">
@@ -81,7 +113,9 @@
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="vdu in vnfd.vdu | orderBy:predicate:reverse">
-                                        <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}/vdus/{{vdu.id}}" >{{vdu.id}}</a></td>
+                                        <td>
+                                            <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                        </td>
                                         <td>{{vdu.version}}</td>
                                         <td>{{vdu.vm_image}}</td>
                                         <td>{{vdu.vimInstanceName}}</td>
