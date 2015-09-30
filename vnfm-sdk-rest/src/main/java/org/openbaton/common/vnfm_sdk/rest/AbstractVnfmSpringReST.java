@@ -21,9 +21,12 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
+import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +41,9 @@ import org.springframework.web.bind.annotation.*;
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     private VnfmRestHelper vnfmRestHelper;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     @Override
     protected void setup() {
@@ -76,5 +82,10 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected void setVnfmHelper() {
+        this.vnfmHelper = (VnfmHelper) context.getBean("vnfmRestHelper");
     }
 }
