@@ -16,10 +16,6 @@
 
 package org.openbaton.nfvo.repositories.tests;
 
-import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,9 +34,9 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableAutoConfiguration
-@EntityScan(basePackageClasses = {VimInstance.class, NetworkServiceDescriptor.class, AbstractVirtualLink.class, NetworkServiceRecord.class})
+@EntityScan(basePackages = "org.openbaton.catalogue")
 @ComponentScan(basePackageClasses = {NetworkServiceDescriptorRepository.class})
-@EnableJpaRepositories(basePackageClasses = {NetworkServiceDescriptorRepository.class})
+@EnableJpaRepositories(basePackages = "org.openbaton.nfvo.repositories")
 public class ApplicationTest {
 
     /**
