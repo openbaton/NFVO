@@ -16,8 +16,6 @@
 
 package org.openbaton.nfvo.vnfm_reg;
 
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -30,11 +28,13 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.util.EventFinishEvent;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ import java.util.concurrent.Future;
 @Service
 @Scope("singleton")
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
-public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishEvent>, CommandLineRunner {
+public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -282,7 +282,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     private void publishEvent(Action action, Serializable payload) {
-        ApplicationEventNFVO event = new ApplicationEventNFVO(this, action, payload);
+        ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload);
         log.debug("Publishing event: " + event);
         publisher.publishEvent(event);
     }
@@ -334,10 +334,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
-    public void onApplicationEvent(EventFinishEvent event) {
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getVirtualNetworkFunctionRecord();
-        publishEvent(event.getAction(), virtualNetworkFunctionRecord);
-        if ((event.getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (event.getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {
+    public void onApplicationEvent(EventFinishNFVO event) {
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getEventNFVO().getVirtualNetworkFunctionRecord();
+        publishEvent(event.getEventNFVO().getAction(), virtualNetworkFunctionRecord);
+        if ((event.getEventNFVO().getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (event.getEventNFVO().getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {
             findAndSetNSRStatus(virtualNetworkFunctionRecord);
         }
     }
