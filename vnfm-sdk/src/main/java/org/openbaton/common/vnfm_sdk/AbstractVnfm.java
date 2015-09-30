@@ -400,7 +400,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      * to override calling super()
      */
     protected void setup() {
-        loadProperties();
+//        loadProperties();
         vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
