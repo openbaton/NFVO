@@ -1,7 +1,21 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -9,7 +23,6 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
-import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -51,7 +64,6 @@ public class VnfmRestHelper extends VnfmHelper {
 
     }
 
-    @Override
     public void sendMessageToQueue(String sendToQueueName, Serializable message) {
         this.post("admin/v1/vnfm-core-actions", mapper.toJson(message));
     }
@@ -68,14 +80,14 @@ public class VnfmRestHelper extends VnfmHelper {
     }
 
     @Override
-    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception {
+    public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
         String path;
-        if (action.ordinal() == Action.GRANT_OPERATION.ordinal())
+        if (message.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
             path = "admin/v1/vnfm-core-grant";
         else
             path = "admin/v1/vnfm-core-allocate";
 
-        return mapper.fromJson(this.post(path, mapper.toJson(VnfmUtils.getNfvMessage(action, virtualNetworkFunctionRecord))), OrVnfmGenericMessage.class);
+        return mapper.fromJson(this.post(path, mapper.toJson(message)), OrVnfmGenericMessage.class);
     }
 
     private String get(String path) {
