@@ -22,6 +22,7 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
+import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -48,6 +49,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private NetworkRepository networkRepository;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -83,15 +87,111 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException {
-        Set<NFVImage> images = new HashSet<NFVImage>();
-        images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
-        vimInstance.setImages(images);
-        Set<Network> networks = new HashSet<Network>();
-        networks.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
-        vimInstance.setNetworks(networks);
-        Set<DeploymentFlavour> flavours = new HashSet<DeploymentFlavour>();
-        flavours.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
-        vimInstance.setFlavours(flavours);
+        //Refreshing Images
+        Set<NFVImage> images_refreshed = new HashSet<NFVImage>();
+        Set<NFVImage> images_new = new HashSet<NFVImage>();
+        Set<NFVImage> images_old = new HashSet<NFVImage>();
+        images_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+        if (vimInstance.getImages() == null) {
+            vimInstance.setImages(new HashSet<NFVImage>());
+        }
+        for (NFVImage image_new : images_refreshed) {
+            boolean found = false;
+            for (NFVImage nfvImage_nfvo : vimInstance.getImages()) {
+                if (nfvImage_nfvo.getExtId().equals(image_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                images_new.add(image_new);
+            }
+        }
+        for (NFVImage nfvImage_nfvo : vimInstance.getImages()) {
+            boolean found = false;
+            for (NFVImage image_new : images_refreshed) {
+                if (nfvImage_nfvo.getExtId().equals(image_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                images_old.add(nfvImage_nfvo);
+            }
+        }
+        vimInstance.getImages().addAll(images_new);
+        vimInstance.getImages().removeAll(images_old);
+        imageRepository.delete(images_old);
+        //Refreshing Networks
+        Set<Network> networks_refreshed = new HashSet<Network>();
+        Set<Network> networks_new = new HashSet<Network>();
+        Set<Network> networks_old = new HashSet<Network>();
+        networks_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+        if (vimInstance.getNetworks() == null) {
+            vimInstance.setNetworks(new HashSet<Network>());
+        }
+        for (Network network_new : networks_refreshed) {
+            boolean found = false;
+            for (Network network_nfvo : vimInstance.getNetworks()) {
+                if (network_nfvo.getExtId().equals(network_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                networks_new.add(network_new);
+            }
+        }
+        for (Network network_nfvo : vimInstance.getNetworks()) {
+            boolean found = false;
+            for (Network network_new : networks_refreshed) {
+                if (network_nfvo.getExtId().equals(network_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                networks_old.add(network_nfvo);
+            }
+        }
+        vimInstance.getNetworks().addAll(networks_new);
+        vimInstance.getNetworks().removeAll(networks_old);
+        networkRepository.delete(networks_old);
+        //Refreshing Flavors
+        Set<DeploymentFlavour> flavors_refreshed = new HashSet<DeploymentFlavour>();
+        Set<DeploymentFlavour> flavors_new = new HashSet<DeploymentFlavour>();
+        Set<DeploymentFlavour> flavors_old = new HashSet<DeploymentFlavour>();
+        flavors_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        if (vimInstance.getFlavours() == null) {
+            vimInstance.setFlavours(new HashSet<DeploymentFlavour>());
+        }
+        for (DeploymentFlavour flavor_new : flavors_refreshed) {
+            boolean found = false;
+            for (DeploymentFlavour flavor_nfvo : vimInstance.getFlavours()) {
+                if (flavor_nfvo.getExtId().equals(flavor_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                flavors_new.add(flavor_new);
+            }
+        }
+        for (DeploymentFlavour flavor_nfvo : vimInstance.getFlavours()) {
+            boolean found = false;
+            for (DeploymentFlavour flavor_new : flavors_refreshed) {
+                if (flavor_nfvo.getExtId().equals(flavor_new.getExtId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                flavors_old.add(flavor_nfvo);
+            }
+        }
+        vimInstance.getFlavours().addAll(flavors_new);
+        vimInstance.getFlavours().removeAll(flavors_old);
+        vimRepository.save(vimInstance);
     }
 
     /**
