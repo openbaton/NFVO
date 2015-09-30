@@ -15,8 +15,6 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.springframework.context.ApplicationEvent;
-
 import java.io.Serializable;
 
 /**
@@ -26,14 +24,16 @@ import java.io.Serializable;
 /**
  * The internal Event containing the action that triggered this and the payload of the event
  */
-public class ApplicationEventNFVO extends ApplicationEvent {
+public class ApplicationEventNFVO {
     private Action action;
     private Serializable payload;
 
-    public ApplicationEventNFVO(Object source, Action action, Serializable payload) {
-        super(source);
+    public ApplicationEventNFVO(Action action, Serializable payload) {
         this.action = action;
         this.payload = payload;
+    }
+
+    public ApplicationEventNFVO() {
     }
 
     public Serializable getPayload() {
