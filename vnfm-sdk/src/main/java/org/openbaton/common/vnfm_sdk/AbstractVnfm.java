@@ -134,7 +134,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected void loadProperties() {
         properties = new Properties();
         try {
-            properties.load(AbstractVnfm.class.getResourceAsStream("conf.properties"));
+            properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
         } catch (IOException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
@@ -400,7 +400,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      * to override calling super()
      */
     protected void setup() {
-//        loadProperties();
+        loadProperties();
         vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
