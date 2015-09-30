@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 30/04/15.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.project.openbaton.nfvo.vim"}, basePackageClasses = VimBroker.class)
+@ComponentScan(basePackages = {"org.openbaton.vim_impl"}, basePackageClasses = VimBroker.class)
 public class ApplicationTest {
 
     @Bean
