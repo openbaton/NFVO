@@ -716,7 +716,51 @@
                             {{nsdCreate.vnffgd}}
                         </tab>
                         <tab heading="vld" ng-show="showTab(nsdCreate.vld.length)">
-                            {{nsdCreate.vld}}
+                            <div class="">
+                                <div class="">
+                                    <h4 class="">
+                                        <div class="col-lg-12">Virtual link
+                                            <a class="pull-right" title="Add a New Virtual link" href=""
+                                               ng-click="toggle = !toggle">
+                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                    </h4>
+                                </div>
+                                <div ng-init="toggle = false" ng-if="toggle">
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="form-group">
+                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
+
+                                        <div class="col-sm-6">
+                                            <div class="form-group input-group">
+                                                <div class="col-sm-6"><input class="form-control" type="text" ng-model="vl.key" placeholder="key"></div>
+                                            <div class="col-sm-6 "><input class="form-control" type="text" ng-model="vl.value" placeholder="value"></div>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveVirtualLink(vl)"
+                                                        ><i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br/>
+                            <ul class="col-lg-offset-3"
+                                ng-repeat="vld in nsdCreate.vld track by $index">
+                                <span ng-repeat="(k,v) in vld">
+                                <li>
+                                    <b>{{k}}</b>: {{v}}
+                                    <a href="" ng-click="deleteVirtualLink($index)"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                                    </span>
+                            </ul>
+                            <!--{{nsdCreate.vld}}-->
                         </tab>
 
                         <tab heading="VNFDescriptors">
@@ -738,10 +782,16 @@
 
                                     <div class="row">
                                         <spam ng-repeat="(key,value) in vnfd "
-                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour'">
+                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackage'">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last"><br/></spam>
                                         </spam>
+                                        <span ng-if="vnfd.vnfPackage"><b>vnfPackage:</b>
+                                        <span ng-repeat="(key,value) in vnfd.vnfPackage">
+                                            <b>{{key}}</b>: {{value}}
+                                            <spam ng-if="!$last">,</spam>
+                                        </span>
+                                            </span>
                                     </div>
                                     <!--<div class="row">
                                         <spam ng-repeat=" vdu in vnfd.vdu" ng-if="!isEmpty(value)">
@@ -757,7 +807,7 @@
                                         <div class="pull-right">
                                             <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
                                                 <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
-                                            <a href="" title="Delete VNFD" ng-click="deleteVNFD($index)">
+                                            <a href="" title="Delete VNFD" ng-click="deleteVNFDForm($index)">
                                                 <i class="fa fa-trash-o"> </i></a>
                                         </div>
                                     </div>
@@ -813,7 +863,7 @@
                                                     <i class="fa fa-plus-square"> Add </i></a></div>
                                         </h4>
                                     </div>
-                                    <div ng-init="toggle = false" ng-if="toggle" id="">
+                                    <div ng-init="toggle = false" ng-if="toggle">
                                         <br/>
                                         <br/>
                                         <br/>

@@ -1,93 +1,191 @@
 {
-  "vendor":"fokus",
-  "version":"0.1-ALPHA",
-  "vnfd":[
+  "name": "iperf-NSD",
+  "vendor": "fokus",
+  "version": "0.1-ALPHA",
+  "vnfd": [
 	{
-	  "name":"vnfd-name",
-	  "vendor":"fokus",
-	  "version":"",
-	  "type":"dummy",
-	  "vdu":[
+	  "vendor": "fokus",
+	  "version": "0.2",
+	  "name": "iperf-server",
+	  "type": "server",
+	  "endpoint": "dummy",
+	  "configurations": {
+		"name": "config_name",
+		"configurationParameters": [
+		  {
+			"confKey": "key",
+			"value": "value"
+		  }
+		]
+	  },
+	  "vdu": [
 		{
-		  "vm_image":[
-			"image_name_1"
+		  "vm_image": [
+			"ubuntu-14.04-server-cloudimg-amd64-disk1"
 		  ],
-		  "computation_requirement":"",
-		  "virtual_memory_resource_element":"1024",
-		  "virtual_network_bandwidth_resource":"1000000",
-		  "lifecycle_event":[
+		  "computation_requirement": "",
+		  "virtual_memory_resource_element": "1024",
+		  "virtual_network_bandwidth_resource": "1000000",
+		  "lifecycle_event": [],
+		  "vimInstanceName": "vim-instance",
+		  "vdu_constraint": "",
+		  "high_availability": "ACTIVE_PASSIVE",
+		  "scale_in_out": 2,
+		  "vnfc": [
+			{
+			  "exposed": true,
+			  "connection_point": [
+				{
+				  "virtual_link_reference": "private"
+				}
+			  ]
+			}
 		  ],
-		  "vimInstance":{
-			"name":"vim-instance"
-		  },
-		  "vdu_constraint":"",
-		  "high_availability":"ACTIVE_PASSIVE",
-		  "scale_in_out":3,
-		  "vnfc":[
-		  ],
-		  "monitoring_parameter":[
+		  "monitoring_parameter": [
 			"cpu_utilization"
 		  ]
 		}
 	  ],
-	  "virtual_link":[
-	  ],
-	  "connection_point":[
-	  ],
-	  "lifecycle_event":[
+	  "virtual_link": [
 		{
-		  "event":"ALLOCATE",
-		  "lifecycle_events":[
-			"allocation of vdu"
-		  ]
-		},
+		  "name": "private"
+		}
+	  ],
+	  "connection_point": [],
+	  "lifecycle_event": [
 		{
-		  "event":"RELEASE",
-		  "lifecycle_events":[
-			"release of vdu"
+		  "event": "INSTANTIATE",
+		  "lifecycle_events": [
+			"install.sh",
+			"install-srv.sh"
 		  ]
 		}
 	  ],
-	  "vdu_dependency":[
-	  ],
-	  "monitoring_parameter":[
+	  "vdu_dependency": [],
+	  "monitoring_parameter": [
 		"cpu_utilization"
 	  ],
-	  "deployment_flavour":[{
-		"df_constraint":[
-		  "constraint1",
-		  "constraint2"
-		],
-		"costituent_vdu":[],
-		"flavour_key":"m1.small"
-	  }],
-	  "auto_scale_policy":[
+	  "deployment_flavour": [
+		{
+		  "df_constraint": [
+			"constraint1",
+			"constraint2"
+		  ],
+		  "costituent_vdu": [],
+		  "flavour_key": "m1.small"
+		}
 	  ],
-	  "manifest_file":""
+	  "manifest_file": "",
+	  "vnfPackage": {
+		"name": "fakeName",
+		"extId": "fakeId",
+		"imageLink": "fakeUrl",
+		"scriptsLink": "https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git"
+	  }
+	},
+	{
+	  "vendor": "fokus",
+	  "version": "0.1",
+	  "name": "iperf-client",
+	  "type": "client",
+	  "endpoint": "dummy",
+	  "vdu": [
+		{
+		  "vm_image": [
+			"ubuntu-14.04-server-cloudimg-amd64-disk1"
+		  ],
+		  "computation_requirement": "",
+		  "virtual_memory_resource_element": "1024",
+		  "virtual_network_bandwidth_resource": "1000000",
+		  "lifecycle_event": [],
+		  "vimInstanceName": "vim-instance",
+		  "vdu_constraint": "",
+		  "high_availability": "ACTIVE_PASSIVE",
+		  "scale_in_out": 2,
+		  "vnfc": [
+			{
+			  "connection_point": [
+				{
+				  "virtual_link_reference": "private"
+				}
+			  ]
+			}
+		  ],
+		  "monitoring_parameter": [
+			"cpu_utilization"
+		  ]
+		}
+	  ],
+	  "virtual_link": [
+		{
+		  "name": "private"
+		}
+	  ],
+	  "connection_point": [],
+	  "lifecycle_event": [
+		{
+		  "event": "INSTANTIATE",
+		  "lifecycle_events": [
+			"install.sh"
+		  ]
+		},
+		{
+		  "event": "CONFIGURE",
+		  "lifecycle_events": [
+			"server_configure.sh"
+		  ]
+		}
+	  ],
+	  "vdu_dependency": [],
+	  "monitoring_parameter": [
+		"cpu_utilization"
+	  ],
+	  "deployment_flavour": [
+		{
+		  "df_constraint": [
+			"constraint1",
+			"constraint2"
+		  ],
+		  "costituent_vdu": [],
+		  "flavour_key": "m1.small"
+		}
+	  ],
+	  "manifest_file": "",
+	  "vnfPackage": {
+		"name": "fakeName",
+		"extId": "fakeId",
+		"imageLink": "fakeUrl",
+		"scriptsLink": "https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git"
+	  }
 	}
   ],
-  "vnffgd":[
+  "vnffgd": [],
+  "vld": [
+	{
+	  "name": "private"
+	}
   ],
-  "vld":[
+  "lifecycle_event": [],
+  "vnf_dependency": [
+	{
+	  "source": {
+		"name": "iperf-server"
+	  },
+	  "target": {
+		"name": "iperf-client"
+	  },
+	  "parameters": [
+		"ip1"
+	  ]
+	}
   ],
-  "lifecycle_event":[
-  ],
-  "vnf_dependency":[
-  ],
-  "monitoring_parameter":[
+  "monitoring_parameter": [
 	"cpu_utilization"
   ],
-  "service_deployment_flavour":[
-	{
+  "service_deployment_flavour": [
 
-	}
   ],
-  "auto_scale_policy":[
-  ],
-  "connection_point":[
-  ],
-  "pnfd":[
-  ]
+  "auto_scale_policy": [],
+  "connection_point": [],
+  "pnfd": []
 }
- 
-

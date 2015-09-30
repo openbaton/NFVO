@@ -28,8 +28,8 @@ dependencies {
     compile project(':repository')
     compile project(':catalogue')
     compile project(':plugin')
-    
-    if (System.properties['security'] == 'true') {
+   
+    if (enableSecurity == 'true') {
         runtime project(':security')
     }
 
