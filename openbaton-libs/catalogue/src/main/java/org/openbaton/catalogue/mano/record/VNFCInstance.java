@@ -33,8 +33,7 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String hostname;
     protected String vnfc_reference;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> floatingIps;
+    private String floatingIps;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ip> ips;
@@ -74,18 +73,20 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     @Override
     public String toString() {
         return "VNFCInstance{" +
-                "vim_id='" + vim_id + '\'' +
+                "floatingIps=" + floatingIps +
+                ", vim_id='" + vim_id + '\'' +
                 ", vc_id='" + vc_id + '\'' +
                 ", hostname='" + hostname + '\'' +
                 ", vnfc_reference='" + vnfc_reference + '\'' +
+                ", ips=" + ips +
                 '}';
     }
 
-    public Set<String> getFloatingIps() {
+    public String getFloatingIps() {
         return floatingIps;
     }
 
-    public void setFloatingIps(Set<String> floatingIps) {
+    public void setFloatingIps(String floatingIps) {
         this.floatingIps = floatingIps;
     }
 

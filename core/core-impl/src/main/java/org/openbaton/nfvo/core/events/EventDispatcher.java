@@ -44,7 +44,7 @@ import java.io.IOException;
 /**
  * This class implements the interface {@Link EventDispatcher} so is in charge
  * of handling the de/registration of a EventEndpoint.
- *
+ * <p/>
  * Moreover receives also internal events and dispatches them to the external applications.
  */
 @Service
@@ -61,7 +61,9 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     @Override
     @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
     public EventEndpoint register(@Payload EventEndpoint endpoint) {
-        return eventEndpointRepository.save(endpoint);
+        EventEndpoint save = eventEndpointRepository.save(endpoint);
+        log.info("Registered event endpoint" + save);
+        return save;
     }
 
     @Override
@@ -132,7 +134,8 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     @Override
     @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String id) throws NotFoundException {
-        eventEndpointRepository.delete(eventEndpointRepository.findOne(id));
+        if (eventEndpointRepository.exists(id))
+            eventEndpointRepository.delete(id);
     }
 
 }

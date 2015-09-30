@@ -271,7 +271,6 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
                         futures.add(resourceManagement.release(virtualDeploymentUnit, vnfcInstance));
-                        vnfcInstance.setFloatingIps(null);
                     }
                 }
                 virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
