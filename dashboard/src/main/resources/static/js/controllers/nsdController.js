@@ -123,6 +123,16 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $(".modal-backdrop").height(height)
     }
 
+    $scope.saveVirtualLink = function(vl){
+//console.log(vl);
+        var obj = {};
+        obj[vl.key]=vl.value;
+        $scope.nsdCreate.vld.push(obj);
+    };
+
+    $scope.deleteVirtualLink= function(index){
+        $scope.nsdCreate.vld.splice(index, 1);
+    };
     $scope.addVNDtoNSD = function () {
         $('#addEditVNDF').modal('hide');
         if (!angular.isUndefined($scope.vnfdEditIndex)) {
@@ -133,7 +143,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         paintBackdropModal();
     };
 
-    $scope.deleteVNFD = function (index) {
+    $scope.deleteVNFDForm = function (index) {
         $scope.nsdCreate.vnfd.splice(index, 1);
     };
 
@@ -315,7 +325,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
     };
 
-    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor-with-dependencies-and-scripts.json')
+    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor.json')
         .then(function (res) {
             //console.log(res.data);
             $scope.nsdCreate = angular.copy(res.data);
