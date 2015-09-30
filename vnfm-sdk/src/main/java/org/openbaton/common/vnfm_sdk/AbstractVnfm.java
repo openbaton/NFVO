@@ -131,7 +131,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     public abstract void handleError(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    protected static void loadProperties() {
+    protected void loadProperties() {
         properties = new Properties();
         try {
             properties.load(AbstractVnfm.class.getResourceAsStream("conf.properties"));
