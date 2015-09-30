@@ -163,4 +163,16 @@ public class RestVimInstances {
         vimManagement.deleteImage(idVim, idImage);
     }
 
+    /**
+     * Returns the refreshed Datacenter selected by id
+     *
+     * @param id: The Datacenter's id selected
+     * @return Datacenter: The Datacenter selected
+     */
+    @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
+    public VimInstance refresh(@PathVariable("id") String id) throws VimException {
+        VimInstance vimInstance = vimManagement.query(id);
+        vimManagement.refresh(vimInstance);
+        return vimInstance;
+    }
 }
