@@ -147,7 +147,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     }
                     log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
                     nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor);
-                } else if (entry.getName().endsWith(".img")) {
+                } else if (entry.getName().endsWith(".iso")) {
                     //this must be the image
                     //and has to be upladed to the RIGHT vim
                     imageFile = content;
@@ -162,6 +162,12 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         }
         if (metadata == null) {
             throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
+        }
+        if (vnfPackage.getScriptsLink() != null) {
+            if (vnfPackage.getScripts().size() > 0) {
+                log.debug("Remove scripts got by scripts/ because the scripts-link is defined");
+                vnfPackage.setScripts(new HashSet<Script>());
+            }
         }
         List<String> vimInstances = new ArrayList<>();
         if (vnfPackage.getImageLink() == null) {
