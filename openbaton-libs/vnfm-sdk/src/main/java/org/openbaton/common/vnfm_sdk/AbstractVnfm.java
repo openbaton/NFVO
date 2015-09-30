@@ -1,10 +1,20 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.common.vnfm_sdk;
 
-import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
-import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
-import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
-import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
-import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -21,13 +31,19 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
+import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
+import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
+import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
+import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,13 +51,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * Created by lto on 08/07/15.
  */
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
-    @Autowired
     protected VnfmHelper vnfmHelper;
     protected String type;
     protected String endpoint;
@@ -57,8 +73,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     @PostConstruct
     private void init() {
+        setVnfmHelper();
         setup();
+
     }
+
+    protected abstract void setVnfmHelper();
 
     public String getType() {
         return type;
@@ -156,9 +176,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtention());
-                    virtualNetworkFunctionRecord = vnfmHelper.grantLifecycleOperation(virtualNetworkFunctionRecord).get();
+                    virtualNetworkFunctionRecord = this.grantLifecycleOperation(virtualNetworkFunctionRecord).get();
                     if (properties.getProperty("allocate", "false").equalsIgnoreCase("true"))
-                        virtualNetworkFunctionRecord = vnfmHelper.allocateResources(virtualNetworkFunctionRecord).get();
+                        virtualNetworkFunctionRecord = this.allocateResources(virtualNetworkFunctionRecord).get();
                     setupProvides(virtualNetworkFunctionRecord);
 
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
@@ -202,6 +222,41 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             }
             vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
         }
+    }
+
+    @Async
+    public Future<VirtualNetworkFunctionRecord> grantLifecycleOperation(VirtualNetworkFunctionRecord vnfr) throws VnfmSdkException {
+        NFVMessage response;
+        try {
+            response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.GRANT_OPERATION, vnfr));
+        } catch (Exception e) {
+            throw new VnfmSdkException("Not able to grant operation", e);
+        }
+        log.debug("" + response);
+        if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+            throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage() , ((OrVnfmErrorMessage) response).getVnfr());
+        }
+        OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+        return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
+    }
+
+    @Async
+    public Future<VirtualNetworkFunctionRecord> allocateResources(VirtualNetworkFunctionRecord vnfr) throws VnfmSdkException {
+        NFVMessage response;
+        try {
+            response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.ALLOCATE_RESOURCES, vnfr));
+        } catch (Exception e) {
+            log.error("" + e.getMessage());
+            throw new VnfmSdkException("Not able to allocate Resources", e);
+        }
+        if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+            OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
+            log.error(errorMessage.getMessage());
+            throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage() , errorMessage.getVnfr());
+        }
+        OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+        log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
+        return new AsyncResult<>(orVnfmGenericMessage.getVnfr());
     }
 
     private void checkEMS(String vduHostname) {

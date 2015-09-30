@@ -2,6 +2,12 @@
     dependencies {
         compile project(':vnfm-sdk')
 
+        compile 'org.springframework:spring-context:' + springVersion
+        compile 'org.springframework.boot:spring-boot:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+
+
         compile 'org.springframework:spring-web:' + springVersion
         compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
 
