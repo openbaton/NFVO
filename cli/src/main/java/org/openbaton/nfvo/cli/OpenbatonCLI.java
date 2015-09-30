@@ -21,10 +21,6 @@ import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-import org.apache.commons.io.FileUtils;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.InstallPluginEvent;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.slf4j.Logger;
@@ -37,10 +33,12 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing
@@ -137,49 +135,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     }
 
     private boolean installPlugin(String line, String type) throws IOException {
-        String path = line.split(" ")[1];
-        List<String> classes = new ArrayList<>();
-        File jar = new File(path);
-        if (!jar.exists() || jar.isDirectory()) {
-            log.error(jar.getAbsolutePath() + " doesn't exists or is not a plugin.");
-            return false;
-        }
-
-        path = jar.getAbsolutePath();
-        log.debug("path is: " + path);
-
-        String installPath = null;
-
-        for (Configuration c : configurationRepository.findAll()) {
-            if (c.getName().equals("system")) {
-                for (ConfigurationParameter cp : c.getConfigurationParameters()) {
-                    if (type.equals("vim")) {
-                        if (cp.getConfKey().equals("vim-plugin-installation-dir")) {
-                            installPath = cp.getValue();
-                        }
-                        if (cp.getConfKey().equals("vim-classes")) {
-                            classes = Arrays.asList(cp.getValue().split(";"));
-                        }
-                    } else if (type.equals("monitor")) {
-                        if (cp.getConfKey().equals("monitoring-plugin-installation-dir")) {
-                            installPath = cp.getValue();
-                        }
-                        if (cp.getConfKey().equals("monitoring-classes")) {
-                            classes = Arrays.asList(cp.getValue().split(";"));
-                        }
-                    }
-                }
-            }
-        }
-        String new_filename = installPath + jar.getName();
-        File dest = new File(new_filename);
-        log.debug("newFileNAme: " + new_filename);
-        FileUtils.copyFile(jar, dest);
-        InstallPluginEvent event = new InstallPluginEvent(this);
-        event.setPath(new_filename);
-        event.setType(type);
-        event.setClasses(classes);
-        this.publisher.publishEvent(event);
+        //TODO implement this
         return true;
     }
 

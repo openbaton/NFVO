@@ -59,6 +59,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
         loadProperties();
+        log.debug("Properties are: " + properties);
         factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
         factory.setConcurrency(properties.getProperty("concurrency", "15"));
         return factory;
@@ -107,12 +108,17 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
     @Override
     protected void unregister() {
-        vnfmHelper.sendMessageToQueue("vnfm-unregister", vnfmManagerEndpoint);
+        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-unregister", vnfmManagerEndpoint);
     }
 
     @Override
     protected void register() {
-        vnfmHelper.sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+    }
+
+    @Override
+    protected void setVnfmHelper() {
+        this.vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelper");
     }
 }
 

@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -121,10 +122,12 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         /**
          * Send event finish
          */
-        EventFinishEvent eventFinishEvent = new EventFinishEvent(this);
+        EventFinishEvent eventFinishEvent = new EventFinishEvent();
         eventFinishEvent.setAction(action);
         eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-        this.publisher.publishEvent(eventFinishEvent);
+        EventFinishNFVO event = new EventFinishNFVO(this);
+        event.setEventNFVO(eventFinishEvent);
+        this.publisher.publishEvent(event);
     }
 
     protected abstract void doWork() throws Exception;
