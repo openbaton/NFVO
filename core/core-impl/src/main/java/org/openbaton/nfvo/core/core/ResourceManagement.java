@@ -68,7 +68,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             log.debug("The component is Exposed? " + component.isExposed());
             VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get();
             ids.add(added.getVc_id());
-            if (component.isExposed() && added.getFloatingIps().size() == 0)
+            if (component.isExposed() && (added.getFloatingIps() == null || added.getFloatingIps().equals("")))
                 log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         }
         return ids;
