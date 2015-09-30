@@ -2,6 +2,13 @@
     dependencies {
         compile project(':vnfm-sdk')
 
+
+        compile 'org.springframework:spring-context:' + springVersion
+        compile 'org.springframework.boot:spring-boot:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+
+
         compile 'org.springframework:spring-jms:' + springVersion
         compile 'org.apache.activemq:activemq-broker:5.11.1'
         compile 'javax.jms:javax.jms-api:2.0.1'
