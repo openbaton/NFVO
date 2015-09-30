@@ -25,10 +25,6 @@ include 'main'
 include 'vim-impl', 'vim-int'
 include 'vnfm-int', 'vnfm-impl'
 include 'repository'
-<<<<<<< HEAD
-=======
-include 'security'
->>>>>>> 7b58f7012c726694c40e33e62bad848c15d19e02
 include 'catalogue'
 include 'monitoring'
 include 'exception'
@@ -45,10 +41,6 @@ project(':security').projectDir = file('security')
 
 project(':common').projectDir = file('common')
 project(':dashboard').projectDir = file('dashboard')
-<<<<<<< HEAD
-=======
-project(':security').projectDir = file('security')
->>>>>>> 7b58f7012c726694c40e33e62bad848c15d19e02
 
 project(':core-impl').projectDir = file('core/core-impl')
 project(':core-int').projectDir = file('core/core-int')
