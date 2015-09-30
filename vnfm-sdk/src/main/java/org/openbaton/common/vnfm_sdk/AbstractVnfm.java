@@ -15,11 +15,6 @@
 
 package org.openbaton.common.vnfm_sdk;
 
-import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
-import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
-import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
-import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
-import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -36,11 +31,15 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
+import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
+import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
+import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
+import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Async;
@@ -59,7 +58,6 @@ import java.util.concurrent.Future;
  */
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
-    @Autowired
     protected VnfmHelper vnfmHelper;
     protected String type;
     protected String endpoint;
@@ -75,8 +73,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     @PostConstruct
     private void init() {
+        setVnfmHelper();
         setup();
+
     }
+
+    protected abstract void setVnfmHelper();
 
     public String getType() {
         return type;
