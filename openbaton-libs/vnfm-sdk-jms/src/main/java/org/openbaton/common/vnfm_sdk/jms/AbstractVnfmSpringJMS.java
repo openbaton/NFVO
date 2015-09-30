@@ -59,6 +59,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
         factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setConnectionFactory(connectionFactory);
         loadProperties();
+        log.debug("Properties are: " + properties);
         factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
         factory.setConcurrency(properties.getProperty("concurrency", "15"));
         return factory;
