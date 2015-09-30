@@ -134,7 +134,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected void loadProperties() {
         properties = new Properties();
         try {
-            properties.load(this.getClass().getResourceAsStream("conf.properties"));
+            properties.load(AbstractVnfm.class.getResourceAsStream("conf.properties"));
         } catch (IOException e) {
             e.printStackTrace();
             log.error(e.getLocalizedMessage());
