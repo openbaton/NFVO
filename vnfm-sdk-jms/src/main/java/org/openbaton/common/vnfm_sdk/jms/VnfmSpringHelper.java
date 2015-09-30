@@ -1,10 +1,22 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.common.vnfm_sdk.jms;
 
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
-import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
@@ -41,7 +53,6 @@ public class VnfmSpringHelper extends VnfmHelper {
 
     }
 
-    @Override
     public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
         log.trace("Sending message: " + message + " to Queue: " + sendToQueueName);
 
@@ -102,8 +113,8 @@ public class VnfmSpringHelper extends VnfmHelper {
     }
 
     @Override
-    public NFVMessage sendAndReceive(Action action, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception {
-        Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(VnfmUtils.getNfvMessage(action, virtualNetworkFunctionRecord)));
+    public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
+        Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(message));
         return (NFVMessage) ((ObjectMessage) response).getObject();
     }
 
