@@ -22,15 +22,17 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.vim_impl.vim.OpenstackVIM;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.VimException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
+import org.openbaton.vim_impl.vim.OpenstackVIM;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -51,23 +53,20 @@ import java.util.Set;
  * Created by mpa on 07.05.15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners( {DependencyInjectionTestExecutionListener.class} )
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {ApplicationTest.class})
-@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class MyOpenstackVimTest {
 
-    @Autowired
+    @InjectMocks
     OpenstackVIM openstackVIM;
-
     VimInstance vimInstance;
-
     VirtualDeploymentUnit vdu;
-
     VirtualNetworkFunctionRecord vnfr;
-
     Network definedNetwork;
-
     Subnet definedSubnet;
+    @Mock
+    private ClientInterfaces client;
 
     @Before
     public void init() {
@@ -100,7 +99,7 @@ public class MyOpenstackVimTest {
 
     @Ignore
     @Test
-    public void test_flavor() throws VimException{
+    public void test_flavor() throws VimException {
         DeploymentFlavour flavor = new DeploymentFlavour();
         flavor.setFlavour_key("test_flavor");
         flavor.setRam(512);
@@ -150,7 +149,7 @@ public class MyOpenstackVimTest {
         return vimInstance;
     }
 
-    private VirtualNetworkFunctionRecord createVNFR(){
+    private VirtualNetworkFunctionRecord createVNFR() {
         VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();
         vnfr.setName("testVnfr");
         vnfr.setStatus(Status.INITIALIZED);
@@ -177,7 +176,7 @@ public class MyOpenstackVimTest {
         return vdu;
     }
 
-    private Network createNetwork(){
+    private Network createNetwork() {
         Network network = new Network();
         network.setName("test_network");
         network.setExternal(false);
@@ -185,7 +184,7 @@ public class MyOpenstackVimTest {
         return network;
     }
 
-    private Subnet createSubnet(){
+    private Subnet createSubnet() {
         Subnet subnet = new Subnet();
         subnet.setName("test_subnet");
         subnet.setCidr("192.168.123.0/24");
