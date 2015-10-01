@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/openbaton/NFVO.svg?branch=master)](https://travis-ci.org/openbaton/NFVO)
+
 # OpenBaton
 
 OpenBaton is an open source project providing a reference implementation of the NFVO and VNFM based on the ETSI [NFV MANO] specification. 
@@ -27,6 +29,6 @@ Information about OpenBaton can be found on our @[website]. Follow us on Twitter
 ### License
 
 [spring.io]:https://spring.io/
-[NFV MANO]:http://docbox.etsi.org/ISG/NFV/Open/Published/gs_NFV-MAN001v010101p%20-%20Management%20and%20Orchestration.pdf
+[NFV MANO]:http://www.etsi.org/deliver/etsi_gs/NFV-MAN/001_099/001/01.01.01_60/gs_nfv-man001v010101p.pdf
 [openbaton]:http://twitter.com/openbaton
 [website]:http://www.open-baton.org
