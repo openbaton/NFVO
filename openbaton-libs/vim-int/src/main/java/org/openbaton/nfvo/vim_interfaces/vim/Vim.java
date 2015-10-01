@@ -41,8 +41,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     public Vim(String type, int port) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin("vim-drivers",type, port);
-            log.trace("Class is: " + client.getClass().getName());
+            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, port);
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
@@ -53,8 +52,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     public Vim(String type) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin("vim-drivers",type);
-            log.trace("Class is: " + client.getClass().getName());
+            client = pluginBroker.getPlugin("localhost", "vim-drivers",type);
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
@@ -65,8 +63,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     public Vim(String type, String name) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin("vim-drivers",type,name);
-            log.trace("Class is: " + client.getClass().getName());
+            client = pluginBroker.getPlugin("localhost", "vim-drivers",type,name);
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
         } catch (NotBoundException e) {
@@ -77,8 +74,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     public Vim(String type, String name, int port) {
         pluginBroker = new PluginBroker<>();
         try {
-            client = pluginBroker.getPlugin("vim-drivers",type, name, port);
-            log.trace("Class is: " + client.getClass().getName());
+            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, name, port);
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
         } catch (NotBoundException e) {

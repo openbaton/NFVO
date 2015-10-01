@@ -74,7 +74,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     private VimBroker vimBroker;
 
     @Override
-    public VNFPackage onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
+    public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
         VNFPackage vnfPackage = new VNFPackage();
         vnfPackage.setScripts(new HashSet<Script>());
         Map<String, Object> metadata = null;
@@ -147,7 +147,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     }
                     log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
                     nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor);
-                } else if (entry.getName().endsWith(".iso")) {
+                } else if (entry.getName().endsWith(".img")) {
                     //this must be the image
                     //and has to be upladed to the RIGHT vim
                     imageFile = content;
@@ -193,7 +193,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-        return virtualNetworkFunctionDescriptor.getVnfPackage();
+        return virtualNetworkFunctionDescriptor;
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
@@ -35,7 +36,7 @@ public interface VNFPackageManagement {
      *
      * @param pack
      */
-    VNFPackage onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException;
+    VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException;
 
     /**
      * This operation allows disabling the
