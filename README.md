@@ -1,53 +1,44 @@
-# OpenBaton
+OpenBaton LIBS
+----------------
 
-OpenBaton is an open source project providing a reference implementation of the NFVO and VNFM based on the ETSI [NFV MANO] specification. 
+OpenBaton is an open source project providing a reference implementation of the NFVO and VNFM based on the [ETSI][NFV MANO] specification, is implemented in java using the [spring.io] framework. It consists of two main components: a NFVO and a generic VNFM. This project **openbaton-libs** contains modules that are shared among different projects inside the **OpenBaton** system.
 
-# Getting Started
+#### How does this works? 
 
-`openbaton` is implemented in java using the [spring.io] framework. It consists of two main components: a NFVO and a generic VNFM. This document just describes its main architecture, and the role of the different components. It provides also a guide on how to prepare the infrastructure in order to setup an ETSI NFV compliant environment. 
+As said before, **openbaton-libs** are shared folders. In order to achieve that we took advantage of git subtrees. We belive that in this way it will be easier for users since they don't have to take care of procedures for retrieving any sub-folder. If you are reading that, it means that you are a developer so it is important that you are aware of a couple of things. 
 
+###### Who contains **openbaton-libs**?
 
-# NFVO 
+The project containing **openbaton-libs** are almost all, but not all use everything available from **openbaton-libs**.
 
-# VNFM
+* [NFVO][nfvo-link]: contains **openbaton-libs** and uses almst all 
+* [Generic VNFM][generic-link]: contains openbaton-libs and uses only vnfm-sdks 
+* All the plugins contains the plugin-sdk, that in turn contains **openbaton-libs**.
+* [OpenBaton Client][client-link]: contains **openbaton-libs**, basically because of the catalogue.
 
-# Version
-0.5
+###### Ok, then?
 
-# Installation
+Well, any modification to this project needs to be reflected in all other projects, so it is extremely important that doesn't brake the status of the depending projects.
 
-```sh
-$ git clone [git-repo-url] openbaton
-$ cd openbaton
-$ ./openbaton.sh -i
-```
+#### Version
+0.6
 
-# Plugins
+##### Installation
 
-`openbaton` provides some plugins in order to interact with the most common cloud platforms available:
-* OpenStack
-* CloudStack
-* Amazon EC2
-* OpenNebula
+No installation required.
 
-# Development
+### Development
 
-Want to contribute? Great!
+Want to contribute? Great! Get in contact with us. You can find us on twitter @[openbaton]
 
-# Todo's
-
-Write Tests
-Github saving overhaul
-Code Commenting
-Night Mode
-
-
-# News and Website
+### News and Website
 Information about OpenBaton can be found on our website. Follow us on Twitter @[openbaton].
 
-# License
+### License
 
+[nfvo-link]: https://github.com/openbaton/NFVO
+[generic-link]:https://github.com/openbaton/generic-vnfm
+[client-link]: https://github.com/openbaton/openbaton-client
 [spring.io]:https://spring.io/
 [NFV MANO]:http://docbox.etsi.org/ISG/NFV/Open/Published/gs_NFV-MAN001v010101p%20-%20Management%20and%20Orchestration.pdf
-[openbaton]:http://twitter.com
-
+[openbaton]:http://twitter.com/openbaton
