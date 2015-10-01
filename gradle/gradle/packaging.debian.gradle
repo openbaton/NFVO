@@ -46,10 +46,10 @@ task openbatonDeb(type: Deb, dependsOn: [jar, installDist]) {
 
     into openbatonInstallDir
 
-    from(jar.outputs.files) {
-        into 'lib'
-    }
+    from(jar.outputs.files) { into 'lib'  }
     from('build/install/openbaton/lib') { into 'lib' }
+    from('plugins/vim-drivers/') { into 'lib' }
+    from('plugins/monitoring/') { into 'lib' }
 
     from('build/install/openbaton/bin/openbaton') { into 'bin' }
     from('etc/openbaton.properties') { into '/etc/openbaton/' }

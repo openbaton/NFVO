@@ -98,6 +98,7 @@ function start {
     check_already_running
     if [ 0 -eq $? ]
         then
+	    screen -X eval "chdir $PWD"
 	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
 	    screen -c .screenrc -r -p 0
     fi
@@ -139,14 +140,7 @@ function end {
 }
 function usage {
     echo -e "Open-Baton\n"
-    echo -e "Usage:\n\t ./openbaton.sh <option>\n\t"
-    echo -e "where option is"
-    echo -e "\t\t * compile"
-    echo -e "\t\t * start"
-    echo -e "\t\t * stop"
-    echo -e "\t\t * test"
-    echo -e "\t\t * kill"
-    echo -e "\t\t * clean"
+    echo -e "Usage:\n\t ./openbaton.sh [compile|start|stop|test|kill|clean]"
 }
 
 ##
