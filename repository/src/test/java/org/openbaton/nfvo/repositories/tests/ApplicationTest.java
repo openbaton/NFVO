@@ -34,9 +34,9 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableAutoConfiguration
-@EntityScan(basePackages = "org.openbaton.catalogue")
-@ComponentScan(basePackageClasses = {NetworkServiceDescriptorRepository.class})
-@EnableJpaRepositories(basePackages = "org.openbaton.nfvo.repositories")
+@EntityScan(basePackages = "org.openbaton")
+@ComponentScan(basePackages = "org.openbaton")
+@EnableJpaRepositories(basePackages = "org.openbaton")
 public class ApplicationTest {
 
     /**

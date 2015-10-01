@@ -16,10 +16,14 @@
 
 package org.openbaton.nfvo.api;
 
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +35,18 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
 public class RestVNFPackage {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private VimManagement vimManagement;
 
     @Autowired
     private VNFPackageManagement vnfPackageManagement;
@@ -50,7 +60,14 @@ public class RestVNFPackage {
     VNFPackage onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
-            return vnfPackageManagement.onboard(bytes);
+            VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes);
+            HashMap<String, VimInstance> vimInstances = new HashMap<>();
+            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
+                vimInstances.put(virtualDeploymentUnit.getVimInstance().getId(), virtualDeploymentUnit.getVimInstance());
+            }
+            for (VimInstance vimInstance : vimInstances.values())
+                vimManagement.refresh(vimInstance);
+            return virtualNetworkFunctionDescriptor.getVnfPackage();
         } else throw new IOException("File is empty!");
     }
 

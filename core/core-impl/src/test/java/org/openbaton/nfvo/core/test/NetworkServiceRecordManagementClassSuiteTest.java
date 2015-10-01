@@ -59,6 +59,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
@@ -145,7 +146,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Test
     public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
         NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
-        when(resourceManagement.release(any(VirtualDeploymentUnit.class),any(VNFCInstance.class))).thenReturn(new AsyncResult<Void>(null));
+        when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class))).thenReturn(new AsyncResult<Void>(null));
         when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
         Configuration system = new Configuration();
         system.setConfigurationParameters(new HashSet<ConfigurationParameter>());
@@ -367,7 +368,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                         vimInstance.setName("vim_instance");
                         vimInstance.setType("test");
                         vdu.setVimInstance(vimInstance);
-
                         add(vdu);
                     }
                 });
