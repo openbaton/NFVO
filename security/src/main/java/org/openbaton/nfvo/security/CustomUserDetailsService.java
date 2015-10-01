@@ -16,7 +16,7 @@
 
 package org.openbaton.nfvo.security;
 
-import org.openbaton.nfvo.security.UserRepository;
+import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.catalogue.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
