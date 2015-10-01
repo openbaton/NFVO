@@ -48,7 +48,7 @@ public class NetworkServiceRecord implements Serializable{
      * */
 
     @OneToOne(cascade = CascadeType.REFRESH)
-     private NetworkServiceDeploymentFlavour service_deployment_flavour;
+    private NetworkServiceDeploymentFlavour service_deployment_flavour;
     private String vendor;
     private String version;
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)

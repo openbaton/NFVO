@@ -353,11 +353,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
         }
 
-        vnfcInstance.setFloatingIps(new HashSet<String>());
         vnfcInstance.setIps(new HashSet<Ip>());
 
         if (floatingIp){
-            vnfcInstance.getFloatingIps().add(server.getFloatingIp());
+            vnfcInstance.setFloatingIps(server.getFloatingIp());
         }
 
         if (vdu.getVnfc_instance() == null)
