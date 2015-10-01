@@ -33,6 +33,8 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.repositories.ImageRepository;
+import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -44,6 +46,7 @@ import java.util.HashSet;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +63,12 @@ public class VimManagementClassSuiteTest {
 
     @Mock
     private VimRepository vimRepository;
+
+    @Mock
+    private ImageRepository imageRepository;
+
+    @Mock
+    private NetworkRepository networkRepository;
 
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
@@ -148,6 +157,8 @@ public class VimManagementClassSuiteTest {
         Vim vim = mock(Vim.class);
         when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
         when(vimBroker.getVim(anyString())).thenReturn(vim);
+        doNothing().when(imageRepository).delete(any(NFVImage.class));
+        doNothing().when(networkRepository).delete(any(Network.class));
     }
 
     @Test
