@@ -99,8 +99,8 @@ function start {
     if [ 0 -eq $? ]
         then
 	    screen -X eval "chdir $PWD"
-	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-	    screen -c .screenrc -r -p 0
+	    screen -c screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    screen -c screenrc -r -p 0
     fi
 }
 
