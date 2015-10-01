@@ -20,23 +20,21 @@ The project containing **openbaton-libs** are almost all, but not all use everyt
 
 Well, any modification to this project needs to be reflected in all other projects, so it is extremely important that doesn't brake the status of the depending projects.
 
-# Version
+#### Version
 0.6
 
-# Installation
+##### Installation
 
 No installation required.
 
-# Plugins
-
-# Development
+### Development
 
 Want to contribute? Great! Get in contact with us. You can find us on twitter @[openbaton]
 
-# News and Website
+### News and Website
 Information about OpenBaton can be found on our website. Follow us on Twitter @[openbaton].
 
-# License
+### License
 
 [nfvo-link]: https://github.com/openbaton/NFVO
 [generic-link]:https://github.com/openbaton/generic-vnfm
