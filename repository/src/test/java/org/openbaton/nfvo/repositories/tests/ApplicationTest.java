@@ -38,9 +38,9 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableAutoConfiguration
-@EntityScan(basePackageClasses = {VimInstance.class, NetworkServiceDescriptor.class, AbstractVirtualLink.class, NetworkServiceRecord.class})
-@ComponentScan(basePackageClasses = {NetworkServiceDescriptorRepository.class})
-@EnableJpaRepositories(basePackageClasses = {NetworkServiceDescriptorRepository.class})
+@EntityScan(basePackages = "org.openbaton")
+@ComponentScan(basePackages = "org.openbaton")
+@EnableJpaRepositories(basePackages = "org.openbaton")
 public class ApplicationTest {
 
     /**
