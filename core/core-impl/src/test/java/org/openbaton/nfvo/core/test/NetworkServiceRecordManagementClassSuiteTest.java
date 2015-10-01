@@ -26,9 +26,9 @@ import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.clients.exceptions.VimDriverException;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
@@ -42,6 +42,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
@@ -107,12 +109,15 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     }
 
     @Before
-    public void init() throws VimException, VimDriverException, ExecutionException, InterruptedException {
+    public void init() throws ExecutionException, InterruptedException, VimDriverException, VimException {
         MockitoAnnotations.initMocks(this);
-        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new ArrayList<String>(){{add("mocked_id");}});
+        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new ArrayList<String>() {{
+            add("mocked_id");
+        }});
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
-        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyBoolean() )).thenReturn(new AsyncResult<String>("mocked_id"));
+        VNFCInstance vnfcInstance = new VNFCInstance();
+        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyBoolean() )).thenReturn(new AsyncResult<>(vnfcInstance));
         when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
         log.info("Starting test");
     }
@@ -141,7 +146,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Test
     public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
         NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
-        when(resourceManagement.release(any(VirtualDeploymentUnit.class), )).thenReturn(new AsyncResult<Void>(null));
+        when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class))).thenReturn(new AsyncResult<Void>(null));
         when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
         Configuration system = new Configuration();
         system.setConfigurationParameters(new HashSet<ConfigurationParameter>());
@@ -350,6 +355,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                         }});
                         vdu.setComputation_requirement("high_requirements");
                         vdu.setVnfc(new HashSet<VNFComponent>());
+                        vdu.setVnfc_instance(new HashSet<VNFCInstance>());
                         vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
                         vdu.setMonitoring_parameter(new HashSet<String>() {
                             {
