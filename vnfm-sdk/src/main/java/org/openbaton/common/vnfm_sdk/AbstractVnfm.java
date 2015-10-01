@@ -74,9 +74,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     @PostConstruct
     private void init() {
         setVnfmHelper();
-        executor = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("concurrency", "15")));
         setup();
-
+        executor = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("concurrency", "15")));
     }
 
     protected abstract void setVnfmHelper();
