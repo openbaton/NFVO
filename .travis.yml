@@ -1,0 +1,10 @@
+language: java
+jdk:
+ - oraclejdk7
+ - openjdk7
+before_install:
+ - chmod +x gradlew
+notifications:
+  email:
+    - giuseppe.carella@fokus.fraunhofer.de
+    - lorenzo.tomasini@fokus.fraunhofer.de
