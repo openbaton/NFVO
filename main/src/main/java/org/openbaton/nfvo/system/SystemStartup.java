@@ -19,7 +19,7 @@ package org.openbaton.nfvo.system;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.nfvo.plugin.utils.PluginStartup;
+import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
