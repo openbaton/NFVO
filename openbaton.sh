@@ -10,31 +10,33 @@ _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
     sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
+    if [ $? -ne 0 ]; then
+        echo "ERROR: activemq is not running properly (check the problem in ${_openbaton_base}/${_message_queue_base}/data/activemq.log) "
+	exit 1
+    fi
 }
 
 function start_activemq_osx {
     sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
+    if [ $? -ne 0 ]; then
+        echo "ERROR: activemq is not running properly (check the problem in ${_openbaton_base}/${_message_queue_base}/data/activemq.log) "
+	exit 1
+    fi
 }
 
 function check_activemq {
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	ps -a | grep -v grep | grep activemq > /dev/null
-    	result=$?
-        if [ "${result}" -eq "0" ]; then
-         	echo "activemq service running, everything is fine"
-        else
-          	echo "activemq is not running, starting it:"
+	ps -aux | grep -v grep | grep activemq > /dev/null
+        if [ $? -ne 0 ]; then
+          	echo "activemq is not running, let's try to start it..."
             	start_activemq_linux
         fi
     elif [[ "$OSTYPE" == "darwin"* ]]; then
 	ps aux | grep -v grep | grep activemq > /dev/null
-        result=$?
-         if [ "${result}" -eq "0" ]; then
-          	echo "activemq service running, everything is fine"
-         else
-           	echo "activemq is not running, starting it:"
+        if [ $? -ne 0 ]; then
+          	echo "activemq is not running, let's try to start it..."
             	start_activemq_osx
-         fi
+        fi
     fi
 }
 
@@ -49,8 +51,8 @@ function start_mysql_linux {
 
 function check_mysql {
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	resul=$(pgrep mysql | wc -l);
-        if [ "${result}" -eq "0" ]; then
+	result=$(pgrep mysql | wc -l);
+        if [ ${result} -eq 0 ]; then
                 read -p "mysql is down, would you like to start it ([y]/n):" yn
 		case $yn in
 			[Yy]* ) start_mysql_linux ; break;;
@@ -94,13 +96,13 @@ function start {
     fi
 
     check_activemq
-    check_mysql
+    #check_mysql
     check_already_running
     if [ 0 -eq $? ]
         then
-	    screen -X eval "chdir $PWD"
-	    screen -c .screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-	    screen -c .screenrc -r -p 0
+	    #screen -X eval "chdir $PWD"
+	    screen -c screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    #screen -c screenrc -r -p 0
     fi
 }
 
