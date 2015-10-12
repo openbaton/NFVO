@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.main;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.openbaton.nfvo.plugin.utils.PluginStartup;
+import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
