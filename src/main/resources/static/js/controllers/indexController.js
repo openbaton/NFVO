@@ -31,7 +31,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         $window.location.reload();
     };
 
-//    http.get('/api/rest/orchestrator/v2/services/').success(function(data) {
+//    http.get('/api/rest/orchestrator/v2/packages/').success(function(data) {
 //        $scope.numberServices = data.length;
 //
 //    });

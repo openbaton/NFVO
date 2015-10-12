@@ -10,13 +10,13 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/contents.html',
                 controller: 'MenuCtrl'
             }).
-            when('/services', {
-                templateUrl: 'pages/services/services.html',
-                controller: 'ServiceCtrl'
+            when('/packages', {
+                templateUrl: 'pages/packages/packages.html',
+                controller: 'PackageCtrl'
             }).
-            when('/services/:serviceid', {
-                templateUrl: 'pages/services/serviceinfo.html',
-                controller: 'ServiceCtrl'
+            when('/packages/:packageid', {
+                templateUrl: 'pages/packages/packageinfo.html',
+                controller: 'PackageCtrl'
             }).
             when('/nsdescriptors', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
@@ -125,10 +125,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/chains/:chainid', {
                 templateUrl: 'pages/chains/chaininfo.html',
                 controller: 'ChainsCtrl'
-            }).
-            when('/dragdrop', {
-                templateUrl: 'pages/tabset.html',
-                controller: 'DragDropCtrl'
             }).
             when('/copyright', {
                 templateUrl: 'pages/copyright.html',

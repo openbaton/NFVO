@@ -1,11 +1,11 @@
 var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
-    var url = '/api/v1/ns-descriptors';
-    //var url = 'http://localhost:8080/api/v1/ns-descriptors';
-    var urlRecord = '/api/v1/ns-records';
-    //var urlRecord = 'http://localhost:8080/api/v1/ns-records';
-    var urlVim = '/api/v1/datacenters';
-    //var urlVim = 'http://localhost:8080/api/v1/datacenters';
+    //var url = '/api/v1/ns-descriptors';
+    var url = 'http://localhost:8080/api/v1/ns-descriptors';
+    //var urlRecord = '/api/v1/ns-records';
+    var urlRecord = 'http://localhost:8080/api/v1/ns-records';
+    //var urlVim = '/api/v1/datacenters';
+    var urlVim = 'http://localhost:8080/api/v1/datacenters';
 
     //var url ='http://80.96.122.80:8080/api/v1/ns-descriptors';
     //var urlRecord ='http://80.96.122.80:8080/api/v1/ns-records';
@@ -417,7 +417,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         $scope.toggle = false;
         $scope.file !== '';
-        //        $scope.services = [];
+        //        $scope.packages = [];
     };
 
 

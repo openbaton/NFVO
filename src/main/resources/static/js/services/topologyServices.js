@@ -7,7 +7,7 @@ angular.module('app')
         /* Function for painting the Topology graph
          *
          * @param {type} topology
-         * @returns {undefined} paints the topology with services and relations
+         * @returns {undefined} paints the topology with packages and relations
          */
         topologies.Jsplumb = function (topology, type) {
             console.log(topology);
@@ -105,7 +105,7 @@ angular.module('app')
 
 
             /*
-             * Function for finding the Relation between all services in a Topology deleting
+             * Function for finding the Relation between all packages in a Topology deleting
              * the double lines
              */
             function checkExist(catRel, rel) {
