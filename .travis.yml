@@ -5,6 +5,13 @@ jdk:
 before_install:
  - chmod +x gradlew
 notifications:
+  slack: openbaton:0mU0eqEY8Dcm0sWeFiGrKvFe
   email:
-    - giuseppe.carella@fokus.fraunhofer.de
-    - lorenzo.tomasini@fokus.fraunhofer.de
+    - notifications@openbaton.org
+cache:
+  directories:
+  - $HOME/.m2
+script: 
+ - ./gradlew build
+after_success:
+ - curl http://localhost:8080/ 

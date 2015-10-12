@@ -87,18 +87,18 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
         log.debug("Active ip is: " + activeIp);
         String result = "#!/bin/bash\n" +
+                "echo \"deb http://193.175.132.176/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
+                "apt-get install git -y\n" +
+                "wget -O - http://193.175.132.176/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
-                "apt-get install -y git python-pip\n" +
-                "git clone " + gitRepoEms + " -b " + branch + " /opt/ems-deb\n" +
-                "dpkg -i /opt/ems-deb/ems_1.0-1.deb\n" +
-                "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
+                "apt-get install ems\n" +
+                "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
-                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-
-                "sudo /opt/openbaton/ems/ems.sh start\n";
+                "service ems.sh start\n";
         return result;
     }
 
