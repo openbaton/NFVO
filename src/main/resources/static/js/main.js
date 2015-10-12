@@ -24,13 +24,13 @@ require({
         authService: "services/authService",
         servicesServices: "services/servicesServices",
         topologyServices: "services/topologyServices",
-        servicesController: "controllers/servicesController",
+        packageController: "controllers/packageController",
         vimInstanceController: "controllers/vimInstanceController",
         nsdController: "controllers/nsdController",
         nsrController: "controllers/nsrController",
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
-        indexController: "controllers/indexController",
-        dragDropController: "controllers/dragDropController"
+        dropzone: "libs/dropzone",
+        indexController: "controllers/indexController"
     },
     shim: {
         jquery: {
@@ -110,8 +110,8 @@ require({
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService','authService']
         },
-        servicesController: {
-            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        packageController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService','dropzone']
         },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService']
@@ -122,8 +122,9 @@ require({
         httpService: {
             deps: ['app']
         },
-        dragDropController: {
-            deps: ['app', 'httpService', 'jquery_jsPlumb', 'servicesServices']
+        dropzone:{
+            deps: ['jquery'],
+            exports: 'Dropzone'
         }
 
     }
@@ -138,10 +139,9 @@ require({
     'angular_route',
     'indexController',
     'nsdController',
-    'servicesController',
+    'packageController',
     'nsrController',
-    'vimInstanceController',
-    'dragDropController'
+    'vimInstanceController'
 ], function (require) {
     return require(['bootstrap']);
 });
