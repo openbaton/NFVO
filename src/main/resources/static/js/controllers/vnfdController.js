@@ -1,10 +1,10 @@
 var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService) {
 
-//var url = '/api/v1/vnf-descriptors/';
-    var url = 'http://localhost:8080/api/v1/vnf-descriptors/';
-
-    //var urlVim = '/api/v1/datacenters';
-    var urlVim = 'http://localhost:8080/api/v1/datacenters/';
+    var url = '/api/v1/vnf-descriptors/';
+    //var url = 'http://localhost:8080/api/v1/vnf-descriptors/';
+    //
+    var urlVim = '/api/v1/datacenters';
+    //var urlVim = 'http://localhost:8080/api/v1/datacenters/';
 
 
     loadTable();
