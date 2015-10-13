@@ -326,13 +326,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                int i = 1;
                 for (Ip ip : vnfcInstance.getIps()) {
                     ConfigurationParameter cp = new ConfigurationParameter();
-                    cp.setConfKey(ip.getNetName() + i);
+                    cp.setConfKey(ip.getNetName());
                     cp.setValue(ip.getIp());
                     virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
-                    i++;
                 }
             }
         }
