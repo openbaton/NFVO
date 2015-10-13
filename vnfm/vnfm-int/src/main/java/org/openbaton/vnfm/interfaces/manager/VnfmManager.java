@@ -16,6 +16,8 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -45,4 +47,6 @@ public interface VnfmManager {
     Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;
 
     Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException;
+
+    void addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws NotFoundException;
 }

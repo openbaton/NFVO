@@ -18,16 +18,15 @@ package org.openbaton.nfvo.vnfm_reg;
 
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -329,6 +328,29 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         vnfmSender.sendCommand(orVnfmGenericMessage, endpoint);
         return new AsyncResult<Void>(null);
+    }
+
+    @Override
+    public void addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws NotFoundException {
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
+        if (endpoint == null) {
+            throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
+        }
+
+        OrVnfmScalingMessage message = new OrVnfmScalingMessage();
+        message.setAction(Action.SCALE);
+        message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+        message.setComponent(component);
+
+        VnfmSender vnfmSender;
+        try {
+
+            vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+        } catch (BeansException e) {
+            throw new NotFoundException(e);
+        }
+
+        vnfmSender.sendCommand(message, endpoint);
     }
 
     @Override
