@@ -17,6 +17,7 @@
 dependencies {
 
     compile project(':repository')
+    compile project(':plugin')
 
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'commons-io:commons-io:2.4'

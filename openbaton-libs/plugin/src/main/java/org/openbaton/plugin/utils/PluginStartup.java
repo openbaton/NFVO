@@ -32,10 +32,20 @@ public class PluginStartup {
 
     private static Map<String, Process> processes = new HashMap<>();
 
+    public static void installPlugin(String name, String path, String registryip, String port) throws IOException {
+        log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
+        File file = new File("plugin-" + name + ".log");
+        processBuilder.redirectErrorStream(true);
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
+        log.trace("ProcessBuilder is: " + processBuilder);
+        Process p = processBuilder.start();
+        processes.put(path,p);
+    }
+
     private static void installPlugin(String path, boolean waitForPlugin, String registryip, String port) throws IOException {
         String pluginName = path.substring(path.lastIndexOf("/") + 1, path.length());
 
-//        StringTokenizer st = new StringTokenizer(pluginName, "-");
         String name = pluginName.substring(0,pluginName.indexOf("-"));
         log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
