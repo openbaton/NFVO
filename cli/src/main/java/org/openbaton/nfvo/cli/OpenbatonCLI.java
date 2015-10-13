@@ -23,6 +23,7 @@ import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.PluginEndpointRepository;
+import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.util.*;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing
@@ -52,8 +52,8 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     private final static Map<String, String> helpCommandList = new HashMap<String, String>() {{
         put("help", "Print the usage");
         put("exit", "Exit the application");
-        put("installVim", "install vim driver plugin");
-        put("installMonitor", "install monitoring plugin");
+        put("installPlugin", "install a plugin");
+        put("listPlugins", "list all registered plugin");
         put("print properties", "print all the properties");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -124,18 +124,42 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
                 reader.clearScreen();
             } else if (line.equalsIgnoreCase("help")) {
                 usage();
-            } else if (line.startsWith("installVim ")) {
-                installPlugin(line, "vim");
-            } else if (line.startsWith("installMonitor ")) {
-                installPlugin(line, "monitor");
+            } else if (line.startsWith("installPlugin ")) {
+                installPlugin(line);
+            }else if (line.startsWith("listPlugins")) {
+                System.out.println(listPlugins());
             } else if (line.equalsIgnoreCase("")) {
                 continue;
             } else usage();
         }
     }
 
-    private boolean installPlugin(String line, String type) throws IOException {
-        //TODO implement this
+    private String listPlugins() {
+        try {
+            return Arrays.asList(LocateRegistry.getRegistry().list()).toString();
+        } catch (RemoteException e) {
+            return e.getMessage();
+        }
+    }
+
+    private boolean installPlugin(String line) throws IOException {
+        StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
+        stringTokenizer.nextToken(); // installPlugin
+        String path = null;
+        if (stringTokenizer.hasMoreTokens()) {
+            path = stringTokenizer.nextToken();
+        } else {
+            log.error("please provide path and name");
+            return false;
+        }
+        String name = null;
+        if (stringTokenizer.hasMoreTokens()) {
+            name = stringTokenizer.nextToken();
+        } else {
+            log.error("please provide path and name");
+            return false;
+        }
+        PluginStartup.installPlugin(name, path, "localhost", "1099");
         return true;
     }
 

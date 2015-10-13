@@ -16,14 +16,15 @@
 
 package org.openbaton.nfvo.system;
 
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -42,12 +43,23 @@ import java.util.*;
  */
 @Service
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
+@ConfigurationProperties
 class SystemStartup implements CommandLineRunner {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ConfigurationRepository configurationRepository;
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    private Map<String, Object> properties;
 
     @Override
     public void run(String... args) throws Exception {
@@ -64,6 +76,7 @@ class SystemStartup implements CommandLineRunner {
         c.setName("system");
         c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
+        log.debug("Properties are: " + getProperties());
 
         /**
          * Adding properties from file
@@ -101,7 +114,9 @@ class SystemStartup implements CommandLineRunner {
         startRegistry(c);
         configurationRepository.save(c);
 
-        startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
+        if (Boolean.parseBoolean(properties.getProperty("install-plugin","true"))) {
+            startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
+        }
     }
 
     private void startPlugins(String folderPath) throws IOException {
