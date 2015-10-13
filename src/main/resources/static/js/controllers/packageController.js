@@ -1,8 +1,8 @@
 var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
-    //var url = '/api/v1/vnf-packages/';
-    var url = 'http://localhost:8080/api/v1/vnf-packages/';
+    var url = '/api/v1/vnf-packages/';
+    //var url = 'http://localhost:8080/api/v1/vnf-packages/';
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
@@ -50,13 +50,6 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     };
 
-    $scope.launchService = function (service) {
-        var serv = angular.copy(service);
-        serviceAPI.cleanService(serv);
-        serv.instanceName = serv.serviceType + '-' + serviceAPI.getRandom();
-        $scope.serviceEdit = _.omit(serv, 'maxNumInst', 'minNumInst', 'networkIds', 'flavour');
-
-    };
 
     $scope.updateService = function (service) {
         $scope.serviceEdit = service;
@@ -120,7 +113,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             var previewTemplate = previewNode.parentNode.innerHTML;
             previewNode.parentNode.removeChild(previewNode);
 
-            var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            var myDropzone = new Dropzone('#my-dropzone', { // Make the whole body a dropzone
                 url: url, // Set the url
                 method: "POST",
                 parallelUploads: 20,
@@ -153,6 +146,8 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
+                showOk("Uploaded the VNF Package");
+                loadTable();
             });
 
 
