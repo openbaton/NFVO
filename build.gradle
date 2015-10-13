@@ -33,7 +33,6 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 apply from: 'gradle/gradle/helpers.gradle'
-version = '0.5-SNAPSHOT'
 
 apply from: 'gradle/gradle/command.line.helper.gradle'
 apply from: 'gradle/gradle/git.helpers.gradle'
