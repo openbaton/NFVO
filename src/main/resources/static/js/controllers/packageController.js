@@ -1,8 +1,8 @@
 var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
-    //var url = '/api/v1/vnf-packages/';
-    var url = 'http://localhost:8080/api/v1/vnf-packages/';
+    var url = '/api/v1/vnf-packages/';
+    //var url = 'http://localhost:8080/api/v1/vnf-packages/';
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
