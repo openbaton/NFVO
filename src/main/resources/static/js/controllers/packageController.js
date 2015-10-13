@@ -1,8 +1,8 @@
 var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
-    var url = '/api/v1/vnf-packages/';
-    //var url = 'http://localhost:8080/api/v1/vnf-packages/';
+    //var url = '/api/v1/vnf-packages/';
+    var url = 'http://localhost:8080/api/v1/vnf-packages/';
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
@@ -22,46 +22,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 showError(status, response);
             });
     };
-    $scope.updateServicePut = function (service) {
-        var id = service.id;
-        serviceAPI.cleanService(service);
-
-        delete service.locations;
-        console.log(service);
-
-        $('.modal').modal('hide');
-
-        http.put(url + id, service)
-            .success(function (response) {
-                $('.modal').modal('hide');
-
-                showOk('Service ' + service.serviceType + ' Updated.');
-                loadTable();
-
-            })
-            .error(function (data, status) {
-                $('.modal').modal('hide');
-
-                showError(data, status);
-                loadTable();
-
-            });
 
 
-    };
 
-
-    $scope.updateService = function (service) {
-        $scope.serviceEdit = service;
-    };
 
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-    $scope.showData = function (data) {
-        $cookieStore.put('service', data);
-    };
+
 
     function loadTable() {
         if (!angular.isUndefined($routeParams.packageid))
@@ -113,7 +82,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             var previewTemplate = previewNode.parentNode.innerHTML;
             previewNode.parentNode.removeChild(previewNode);
 
-            var myDropzone = new Dropzone('#my-dropzone', { // Make the whole body a dropzone
+            var myDropzone = new Dropzone('#my-dropzone', {
                 url: url, // Set the url
                 method: "POST",
                 parallelUploads: 20,
@@ -159,9 +128,6 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             };
         }
     });
-
-
-    // UPLOAD CLASS DEFINITION
 
 
 });
