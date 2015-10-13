@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -114,4 +115,6 @@ public interface ResourceManagement {
      * resources.
      */
     void releaseReservation(VirtualDeploymentUnit vdu);
+
+    String allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd) throws InterruptedException, ExecutionException, VimException, VimDriverException;
 }

@@ -16,16 +16,10 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -46,55 +40,56 @@ public class ScaledTask extends AbstractTask {
 
     @Override
     protected void doWork() throws Exception {
-        VnfmSender vnfmSender;
-        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-
-        log.debug("NFVO: SCALED");
-        log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " shoud be in status scaling --> " + virtualNetworkFunctionRecord.getStatus());
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
-        //Updating VDUs
-        Set<VirtualDeploymentUnit> vdus = new HashSet<>();
-        boolean found = false;
-        for (VirtualDeploymentUnit vdu_manager : virtualNetworkFunctionRecord.getVdu()) {
-            //VDU ID is null -> NEW
-            if (vdu_manager.getId() == null) {
-                vdus.add(vdu_manager);
-                log.debug("SCALED: Added new VDU " + vdu_manager);
-                continue;
-            }
-            for (VirtualDeploymentUnit vdu_nfvo : virtualNetworkFunctionRecord_nfvo.getVdu()) {
-                //Found VDU -> Updating
-                if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
-                    found = true;
-                    log.debug("SCALED: Updating VDU " + vdu_nfvo.getId());
-                    vdu_nfvo.setVimInstance(vdu_manager.getVimInstance());
-                    vdu_nfvo.setComputation_requirement(vdu_manager.getComputation_requirement());
-                    vdu_nfvo.setHigh_availability(vdu_manager.getHigh_availability());
-                    vdu_nfvo.setScale_in_out(vdu_manager.getScale_in_out());
-                    vdu_nfvo.setVdu_constraint(vdu_manager.getVdu_constraint());
-                    vdu_nfvo.setVirtual_memory_resource_element(vdu_manager.getVirtual_memory_resource_element());
-                    vdu_nfvo.setVirtual_network_bandwidth_resource(vdu_manager.getVirtual_network_bandwidth_resource());
-                    vdu_nfvo.setVm_image(vdu_manager.getVm_image());
-                    //Updating VNFCInstances
-                    vdu_nfvo.setVnfc_instance(updateVNFCInstances(vdu_nfvo.getVnfc_instance(), vdu_manager.getVnfc_instance()));
-                    log.debug("SCALED: VNFCInstances of VDU " + vdu_nfvo.getId() + ": " + vdu_nfvo.getVnfc_instance());
-                    vdus.add(vdu_nfvo);
-                    break;
-                }
-            }
-            //VDU was not found -> NEW
-            if (!found) {
-                vdus.add(vdu_manager);
-                log.debug("SCALED: Added new VDU " + vdu_manager.getId());
-            }
-        }
-        virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
-        log.debug("SCALED: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
-        virtualNetworkFunctionRecord_nfvo.setTask("scaled");
-        virtualNetworkFunctionRecord_nfvo.setStatus(Status.ACTIVE);
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
-        log.info("SCALED: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
-        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED), getTempDestination());
+        log.debug("NFVO: VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName() + " has finished scaling");
+//        VnfmSender vnfmSender;
+//        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+//
+//        log.debug("NFVO: SCALED");
+//        log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " shoud be in status scaling --> " + virtualNetworkFunctionRecord.getStatus());
+//        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
+//        //Updating VDUs
+//        Set<VirtualDeploymentUnit> vdus = new HashSet<>();
+//        boolean found = false;
+//        for (VirtualDeploymentUnit vdu_manager : virtualNetworkFunctionRecord.getVdu()) {
+//            //VDU ID is null -> NEW
+//            if (vdu_manager.getId() == null) {
+//                vdus.add(vdu_manager);
+//                log.debug("SCALED: Added new VDU " + vdu_manager);
+//                continue;
+//            }
+//            for (VirtualDeploymentUnit vdu_nfvo : virtualNetworkFunctionRecord_nfvo.getVdu()) {
+//                //Found VDU -> Updating
+//                if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
+//                    found = true;
+//                    log.debug("SCALED: Updating VDU " + vdu_nfvo.getId());
+//                    vdu_nfvo.setVimInstance(vdu_manager.getVimInstance());
+//                    vdu_nfvo.setComputation_requirement(vdu_manager.getComputation_requirement());
+//                    vdu_nfvo.setHigh_availability(vdu_manager.getHigh_availability());
+//                    vdu_nfvo.setScale_in_out(vdu_manager.getScale_in_out());
+//                    vdu_nfvo.setVdu_constraint(vdu_manager.getVdu_constraint());
+//                    vdu_nfvo.setVirtual_memory_resource_element(vdu_manager.getVirtual_memory_resource_element());
+//                    vdu_nfvo.setVirtual_network_bandwidth_resource(vdu_manager.getVirtual_network_bandwidth_resource());
+//                    vdu_nfvo.setVm_image(vdu_manager.getVm_image());
+//                    //Updating VNFCInstances
+//                    vdu_nfvo.setVnfc_instance(updateVNFCInstances(vdu_nfvo.getVnfc_instance(), vdu_manager.getVnfc_instance()));
+//                    log.debug("SCALED: VNFCInstances of VDU " + vdu_nfvo.getId() + ": " + vdu_nfvo.getVnfc_instance());
+//                    vdus.add(vdu_nfvo);
+//                    break;
+//                }
+//            }
+//            //VDU was not found -> NEW
+//            if (!found) {
+//                vdus.add(vdu_manager);
+//                log.debug("SCALED: Added new VDU " + vdu_manager.getId());
+//            }
+//        }
+//        virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
+//        log.debug("SCALED: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
+//        virtualNetworkFunctionRecord_nfvo.setTask("scaled");
+//        virtualNetworkFunctionRecord_nfvo.setStatus(Status.ACTIVE);
+//        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
+//        log.info("SCALED: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
+//        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED), getTempDestination());
     }
 
     private Set<VNFCInstance> updateVNFCInstances(Set<VNFCInstance> vnfcInstances_nfvo, Set<VNFCInstance> vnfcInstances_manager) {

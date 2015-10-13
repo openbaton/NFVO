@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.exceptions.*;
@@ -92,4 +93,14 @@ public interface NetworkServiceRecordManagement {
      * @param idVnfd of VNFDependency
      */
     void deleteVNFDependency(String idNsr, String idVnfd);
+
+    /**
+     * This method will ad a {@Link VNFCInstance} into a NetworkServiceRecord to a specific VirtualNetworkFunctionRecord
+     * @param id of the NetworkServiceRecord
+     * @param idVnf of the VirtualNetworkFunctionRecord
+     * @param idVdu of the VirtualDeploymentUnit chosen
+     * @param component
+     * @return the new VNFCInstance
+     */
+    void addVNFCInstance(String id, String idVnf, String idVdu, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException;
 }

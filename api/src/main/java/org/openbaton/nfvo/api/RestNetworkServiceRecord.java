@@ -17,10 +17,8 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
@@ -172,6 +170,13 @@ public class RestNetworkServiceRecord {
             @PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf) throws NotFoundException {
         networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf);
 
+    }
+
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException {
+        log.trace("Received: " + component);
+        networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
