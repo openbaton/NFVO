@@ -2,7 +2,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
 
     var url = '/api/v1/ns-records';
     //var url = 'http://localhost:8080/api/v1/ns-records';
-    //var url ='http://80.96.122.80:8080/api/v1/ns-records';
+
 
 
     loadTable();

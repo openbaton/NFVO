@@ -25,14 +25,6 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
-        <div class="row">
-            <div class="col-sm-8 col-lg-2">
-                <div class="form-group">
-                    <label for="searchInput">Search</label>
-                    <input class="form-control" type="text" id="searchInput" ng-model="search.name">
-                </div>
-            </div>
-        </div>
         <div class="table-responsive">
 
             <table
