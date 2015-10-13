@@ -30,7 +30,8 @@ require({
         nsrController: "controllers/nsrController",
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
         dropzone: "libs/dropzone",
-        indexController: "controllers/indexController"
+        indexController: "controllers/indexController",
+        vnfdController: "controllers/vnfdController"
     },
     shim: {
         jquery: {
@@ -110,6 +111,9 @@ require({
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService','authService']
         },
+        vnfdController: {
+            deps: ['app', 'servicesServices', 'httpService','authService']
+        },
         packageController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService','dropzone']
         },
@@ -139,6 +143,7 @@ require({
     'angular_route',
     'indexController',
     'nsdController',
+    'vnfdController',
     'packageController',
     'nsrController',
     'vimInstanceController'

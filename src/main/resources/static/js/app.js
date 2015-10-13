@@ -26,6 +26,18 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
                 controller: 'NsdCtrl'
             }).
+            when('/vnfdescriptors/', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptors.html',
+                controller: 'VnfdCtrl'
+            }).
+            when('/vnfdescriptors/:vnfdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptor.html',
+                controller: 'VnfdCtrl'
+            }).
+            when('/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vdu.html',
+                controller: 'VnfdCtrl'
+            }).
             when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/', {
                 templateUrl: 'pages/nsdescriptors/vnfdescriptors.html',
                 controller: 'NsdCtrl'
@@ -81,26 +93,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/nsrecords/:nsrecordId/vnfdependencies/:vnfdependencyId', {
                 templateUrl: 'pages/nsrecords/vnfdependency.html',
                 controller: 'NsrCtrl'
-            }).
-            when('/infrastructures', {
-                templateUrl: 'pages/infrastructures/infrastructures.html',
-                controller: 'InfrastructureCtrl'
-            }).
-            when('/infrastructures/:infrastructureid', {
-                templateUrl: 'pages/infrastructures/infrastructureinfo.html',
-                controller: 'InfrastructureCtrl'
-            }).
-            when('/switches', {
-                templateUrl: 'pages/switches/switches.html',
-                controller: 'SwitchCtrl'
-            }).
-            when('/switches/:switchid', {
-                templateUrl: 'pages/switches/switchinfo.html',
-                controller: 'SwitchCtrl'
-            }).
-            when('/flow/:flowid', {
-                templateUrl: 'pages/switches/flow.html',
-                controller: 'SwitchCtrl'
             }).
             when('/vim-instances', {
                 templateUrl: 'pages/vim-instances/vim-instances.html',
