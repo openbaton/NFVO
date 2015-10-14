@@ -91,6 +91,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "apt-get install git -y\n" +
                 "wget -O - http://193.175.132.176/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
+                "apt-get install -y python-pip" +
                 "apt-get install ems\n" +
                 "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
@@ -98,7 +99,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-                "service ems.sh start\n";
+                "/opt/openbaton/ems/ems.sh start\n";
         return result;
     }
 
