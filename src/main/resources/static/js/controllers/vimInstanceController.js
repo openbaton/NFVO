@@ -41,7 +41,11 @@ angular.module('app').
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        showError(data, status);
+                        if (status === 400)
+                            showError(status, "Bad request: your json is not well formatted");
+                        else
+                            showError(status, data);
+
                     });
             } else if ($scope.textTopologyJson !== '') {
                 console.log($scope.textTopologyJson);
@@ -51,7 +55,10 @@ angular.module('app').
                         $scope.file = '';
                     })
                     .error(function (data, status) {
-                        showError(data, status);
+                        if (status === 400)
+                            showError(status, "Bad request: your json is not well formatted");
+                        else
+                            showError(status, data);
 
                     });
             }
@@ -166,8 +173,8 @@ angular.module('app').
         }
 
 
-        function showError(data, status) {
-            console.log('DATA: ' + data + ' STATUS: ' + status)
+        function showError(status, data) {
+            console.log('DATA: ' + data + ' STATUS: ' + status);
             $scope.alerts.push({
                 type: 'danger',
                 msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
