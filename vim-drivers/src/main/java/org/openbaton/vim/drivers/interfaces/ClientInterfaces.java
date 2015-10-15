@@ -57,6 +57,8 @@ public interface ClientInterfaces extends Remote {
 
     NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
 
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url) throws RemoteException;
+
     NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
 
     NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
