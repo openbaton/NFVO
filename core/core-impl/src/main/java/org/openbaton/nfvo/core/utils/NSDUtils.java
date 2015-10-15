@@ -253,7 +253,7 @@ public class NSDUtils {
                 if (virtualDeploymentUnit.getScale_in_out() < 1)
                     throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be at least 1");
                 if (virtualDeploymentUnit.getScale_in_out() < virtualDeploymentUnit.getVnfc().size()){
-                    throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be less than the number of starting VNFComponent: " + virtualDeploymentUnit.getVnfc().size());
+                    throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must not be less than the number of starting VNFComponent: " + virtualDeploymentUnit.getVnfc().size());
                 }
 
                 for (DeploymentFlavour deploymentFlavour : virtualDeploymentUnit.getVimInstance().getFlavours()){
