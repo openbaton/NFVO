@@ -141,4 +141,22 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
             log.debug("There are the following not initialized vnfr sources:" + res);
         return res;
     }
+
+    @Override
+    public VNFRecordDependency getDependencyForAVNFRecordTarget(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord){
+        NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
+        if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+            Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+
+            for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
+                vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
+
+                if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())){
+                    return vnfRecordDependency;
+                }
+
+            }
+        }
+        return null;
+    }
 }

@@ -23,6 +23,7 @@ import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
+import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -30,8 +31,8 @@ import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFCRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.nfvo.repositories.VduRepository;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
@@ -84,7 +85,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     private NetworkManagement networkManagement;
 
     @Autowired
-    private VduRepository vduRepository;
+    private DependencyManagement dependencyManagement;
+
+    @Autowired
+    private VNFCRepository vnfcRepository;
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
@@ -175,8 +179,15 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         log.info("Adding VNFComponent to VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
         virtualDeploymentUnit.getVnfc().add(component);
+        vnfcRepository.save(component);
+        nsrRepository.save(networkServiceRecord);
+        log.debug("new VNFComponent is " + component);
 
-        vnfmManager.addVnfc(virtualNetworkFunctionRecord,virtualDeploymentUnit,component);
+        VNFRecordDependency dependency = dependencyManagement.getDependencyForAVNFRecordTarget(virtualNetworkFunctionRecord);
+
+        log.debug("Found Dependency: " + dependency);
+
+        vnfmManager.addVnfc(virtualNetworkFunctionRecord,virtualDeploymentUnit,component, dependency);
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {

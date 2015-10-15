@@ -48,6 +48,7 @@ public class ScalingTask extends AbstractTask {
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
         log.debug("NFVO: SCALING");
+        log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " is in status --> " + virtualNetworkFunctionRecord.getStatus());
 
         saveVirtualNetworkFunctionRecord();
@@ -71,10 +72,11 @@ public class ScalingTask extends AbstractTask {
             }
         }
 
+        log.debug("The component to add is: " + componentToAdd);
+
         log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
 
-        saveVirtualNetworkFunctionRecord();
-
+        log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED), getTempDestination());
     }
 

@@ -23,6 +23,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.*;
@@ -331,7 +332,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
-    public void addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws NotFoundException {
+    public void addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component, VNFRecordDependency dependency) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
@@ -341,7 +342,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         message.setAction(Action.SCALE);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setComponent(component);
-
+        message.setDependency(dependency);
         VnfmSender vnfmSender;
         try {
 
