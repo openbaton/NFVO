@@ -41,6 +41,7 @@ public class ScaledTask extends AbstractTask {
     @Override
     protected void doWork() throws Exception {
         log.debug("NFVO: VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName() + " has finished scaling");
+        log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
 //        VnfmSender vnfmSender;
 //        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 //
@@ -90,6 +91,7 @@ public class ScaledTask extends AbstractTask {
 //        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
 //        log.info("SCALED: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
 //        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED), getTempDestination());
+        saveVirtualNetworkFunctionRecord();
     }
 
     private Set<VNFCInstance> updateVNFCInstances(Set<VNFCInstance> vnfcInstances_nfvo, Set<VNFCInstance> vnfcInstances_manager) {

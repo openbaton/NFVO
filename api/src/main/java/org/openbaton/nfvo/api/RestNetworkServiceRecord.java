@@ -174,7 +174,7 @@ public class RestNetworkServiceRecord {
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException {
+    public void addVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException {
         log.trace("Received: " + component);
         networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component);
     }

@@ -33,6 +33,7 @@ public class VimInstance implements Serializable {
 
     @Version
     private int version = 0;
+    @Column(unique = true)
     private String name;
     private String authUrl;
     private String tenant;

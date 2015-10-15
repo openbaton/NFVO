@@ -70,7 +70,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     private ApplicationEventPublisher publisher;
 
     protected void saveVirtualNetworkFunctionRecord() {
-        log.debug("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
+        log.trace("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
         if (virtualNetworkFunctionRecord.getId() == null)
             virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
         else
@@ -117,7 +117,19 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                     throw new RuntimeException(e1);
                 }
             }
-            log.error("There was an uncaught exception. Message is: " + e.getMessage());
+            if (!log.isTraceEnabled())
+                log.error("There was an uncaught exception. Message is: " + e.getMessage());
+            else
+                log.error("There was an uncaught exception. ", e);
+
+            EventFinishEvent eventFinishEvent = new EventFinishEvent();
+            eventFinishEvent.setAction(Action.ERROR);
+            virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+            eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+            EventFinishNFVO event = new EventFinishNFVO(this);
+            event.setEventNFVO(eventFinishEvent);
+            this.publisher.publishEvent(event);
+            return;
         }
         /**
          * Send event finish
