@@ -62,7 +62,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         List<String> ids = new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
-        virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName());
+        String hostname = virtualNetworkFunctionRecord.getName().replaceAll("_", "-");
+        log.debug("Hostname is: " + hostname);
+        virtualDeploymentUnit.setHostname(hostname);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
             log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
             log.debug("The component is Exposed? " + component.isExposed());
