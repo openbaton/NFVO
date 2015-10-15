@@ -59,12 +59,19 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
+        List<String> ids = new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
-        virtualDeploymentUnit.setHostname(virtualNetworkFunctionRecord.getName());
-        List<String> ids = new ArrayList<>();
+        String hostname = virtualNetworkFunctionRecord.getName().replaceAll("_", "-");
+        log.debug("Hostname is: " + hostname);
+        virtualDeploymentUnit.setHostname(hostname);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
-            ids.add(allocateVNFC(virtualDeploymentUnit, virtualNetworkFunctionRecord, vim, component));
+            log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
+            log.debug("The component is Exposed? " + component.isExposed());
+            VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get();
+            ids.add(added.getVc_id());
+            if (component.isExposed() && (added.getFloatingIps() == null || added.getFloatingIps().equals("")))
+                log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         }
         return ids;
     }
@@ -95,14 +102,15 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "apt-get install git -y\n" +
                 "wget -O - http://193.175.132.176/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
+                "apt-get install -y python-pip\n" +
                 "apt-get install ems\n" +
                 "echo [ems] > /etc/openbaton/ems/conf.ini\n"+
                 "echo orch_ip=" + activeIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
-                "echo \"type="+endpoint+"\" >> /etc/openbaton/ems/conf.ini\n" +
+                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-                "service ems.sh start\n";
+                "/opt/openbaton/ems/ems.sh start\n";
         return result;
     }
 
