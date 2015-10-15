@@ -1,6 +1,7 @@
 package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
@@ -11,6 +12,7 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
 
     private VNFComponent component;
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    private VNFRecordDependency dependency;
 
     public VNFComponent getComponent() {
         return component;
@@ -34,5 +36,13 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
                 "component=" + component +
                 ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
                 '}';
+    }
+
+    public void setDependency(VNFRecordDependency dependency) {
+        this.dependency = dependency;
+    }
+
+    public VNFRecordDependency getDependency() {
+        return dependency;
     }
 }
