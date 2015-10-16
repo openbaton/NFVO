@@ -17,7 +17,6 @@ package org.openbaton.common.vnfm_sdk.jms;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
-import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
@@ -29,9 +28,9 @@ import javax.jms.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Properties;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by lto on 23/09/15.
@@ -115,7 +114,7 @@ public class VnfmSpringHelper extends VnfmHelper {
         String res;
 
         Connection connection = connectionFactory.createConnection();
-        Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer consumer = session.createConsumer(session.createQueue(queueName));
         connection.start();
         res = ((TextMessage)consumer.receive(Long.parseLong(properties.getProperty("ems-timeout","200000")))).getText();
