@@ -45,10 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lto on 22/07/15.
@@ -92,6 +89,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             throw new IOException();
         }
         TarArchiveEntry entry;
+        Map<String, Object> imageDetails = new HashMap<>();
         while ((entry = (TarArchiveEntry) myTarFile.getNextEntry()) != null) {
             /* Get the name of the file */
             if (entry.isFile() && !entry.getName().startsWith("./._")) {
@@ -114,27 +112,48 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     vnfPackage.setName((String) metadata.get("name"));
                     if (metadata.containsKey("scripts-link"))
                         vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
-                    if (metadata.containsKey("image-link"))
-                        vnfPackage.setImageLink((String) metadata.get("image-link"));
-
-                    Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image");
-                    //Check if all required keys are available
-                    String[] REQUIRED_IMAGE_KEYS = new String[]{"name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"};
-                    for (String requiredKey : REQUIRED_IMAGE_KEYS) {
-                        if (!imageConfig.containsKey(requiredKey)) {
-                            throw new NotFoundException("Not found " + requiredKey + " of image in Metadata.yaml");
+                    if (metadata.containsKey("image")) {
+                        imageDetails = (Map<String, Object>) metadata.get("image");
+                        String[] REQUIRED_IMAGE_DETAILS = new String[]{"upload"};
+                        log.debug("image: " + imageDetails);
+                        for (String requiredKey : REQUIRED_IMAGE_DETAILS) {
+                            if (!imageDetails.containsKey(requiredKey)) {
+                                throw new NotFoundException("Not found key: " + requiredKey + "of image in Metadata.yaml");
+                            }
+                            if (imageDetails.get(requiredKey) == null) {
+                                throw new NullPointerException("Not defined value of key: " + requiredKey + " of image in Metadata.yaml");
+                            }
                         }
-                        if (imageConfig.get(requiredKey) == null) {
-                            throw new NullPointerException("Not defined " + requiredKey + " of image in Metadata.yaml");
+                        //If upload==true -> create a new Image
+                        if (imageDetails.get("upload") == true || imageDetails.get("upload").equals("check")) {
+                            vnfPackage.setImageLink((String) imageDetails.get("link"));
+                            if (metadata.containsKey("image-config")) {
+                                log.debug("image-config: " + metadata.get("image-config"));
+                                Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
+                                //Check if all required keys are available
+                                String[] REQUIRED_IMAGE_CONFIG = new String[]{"name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"};
+                                for (String requiredKey : REQUIRED_IMAGE_CONFIG) {
+                                    if (!imageConfig.containsKey(requiredKey)) {
+                                        throw new NotFoundException("Not found key: " + requiredKey + " of image-config in Metadata.yaml");
+                                    }
+                                    if (imageConfig.get(requiredKey) == null) {
+                                        throw new NullPointerException("Not defined value of key: " + requiredKey + " of image-config in Metadata.yaml");
+                                    }
+                                }
+                                image.setName((String) imageConfig.get("name"));
+                                image.setDiskFormat((String) imageConfig.get("diskFormat"));
+                                image.setContainerFormat((String) imageConfig.get("containerFormat"));
+                                image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
+                                image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
+                                image.setMinRam((Integer) imageConfig.get("minRam"));
+                                image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
+                            } else {
+                                throw new NotFoundException("The image-config is not defined. Please define it to upload a new image");
+                            }
                         }
+                    } else {
+                        throw new NotFoundException("The image details are not defined. Please define it to use the right image");
                     }
-                    image.setName((String) imageConfig.get("name"));
-                    image.setDiskFormat((String) imageConfig.get("diskFormat"));
-                    image.setContainerFormat((String) imageConfig.get("containerFormat"));
-                    image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
-                    image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
-                    image.setMinRam((Integer) imageConfig.get("minRam"));
-                    image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
                 } else if (entry.getName().endsWith(".json")) {
                     //this must be the vnfd
                     //and has to be onboarded in the catalogue
@@ -165,28 +184,103 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         }
         if (vnfPackage.getScriptsLink() != null) {
             if (vnfPackage.getScripts().size() > 0) {
-                log.debug("Remove scripts got by scripts/ because the scripts-link is defined");
+                log.debug("VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
                 vnfPackage.setScripts(new HashSet<Script>());
             }
         }
         List<String> vimInstances = new ArrayList<>();
-        if (vnfPackage.getImageLink() == null) {
-            if (imageFile == null) {
-                throw new NotFoundException("VNFPackageManagement: Not found image file and image-link is null");
-            } else {
-                //imageStream = new FileInputStream(imageFile);
+        if (imageDetails.get("upload").equals("check")) {
+            if (vnfPackage.getImageLink() == null && imageFile == null) {
+                throw new NotFoundException("VNFPackageManagement: For option upload=check you must to define an image. Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
+            }
+        }
+
+        if (imageDetails.get("upload") == true) {
+            log.debug("VNFPackageManagement: Uploading a new Image");
+            if (vnfPackage.getImageLink() == null && imageFile == null) {
+                throw new NotFoundException("VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
+            } else if (vnfPackage.getImageLink() != null) {
+                log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                     if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
                         Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
+                        image = vim.add(vdu.getVimInstance(), image, vnfPackage.getImageLink());
+                        if (vdu.getVm_image() == null)
+                            vdu.setVm_image(new HashSet<String>());
+                        vdu.getVm_image().add(image.getExtId());
+                        vimInstances.add(vdu.getVimInstance().getId());
+                    }
+                }
+            } else if (imageFile != null) {
+                log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
+                for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+                    if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
+                        Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
                         image = vim.add(vdu.getVimInstance(), image, imageFile);
                         if (vdu.getVm_image() == null)
                             vdu.setVm_image(new HashSet<String>());
-                        vdu.getVm_image().add(image.getName());
+                        vdu.getVm_image().add(image.getExtId());
                         vimInstances.add(vdu.getVimInstance().getId());
                     }
                 }
             }
+        } else {
+            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+                boolean found = false;
+                //First, check for image ids
+                for (NFVImage nfvImage : vdu.getVimInstance().getImages()) {
+                    if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
+                        if (found == false) {
+                            vdu.getVm_image().add(nfvImage.getExtId());
+                            found = true;
+                        } else {
+                            throw new NotFoundException("VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know which one to choose");
+                        }
+                    }
+                }
+                //If no one was found, check for the names
+                if (found == false) {
+                    for (NFVImage nfvImage : vdu.getVimInstance().getImages()) {
+                        if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
+                            if (found == false) {
+                                vdu.getVm_image().add(nfvImage.getExtId());
+                                found = true;
+                            } else {
+                                throw new NotFoundException("VNFPackageManagement: Multiple images found with the same name. Do not know which one to choose. To avoid this, define the id");
+                            }
+                        }
+                    }
+                }
+                //if no image was found with the defined ids or names, the image doesn't exist
+                if (found == false) {
+                    if (imageDetails.get("upload").equals("check")) {
+                        if (vnfPackage.getImageLink() == null && imageFile == null) {
+                            throw new NotFoundException("VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
+                        }
+                        if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
+                            Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                            image = vim.add(vdu.getVimInstance(), image, vnfPackage.getImageLink());
+                            if (vdu.getVm_image() == null)
+                                vdu.setVm_image(new HashSet<String>());
+                            vdu.getVm_image().add(image.getExtId());
+                            vimInstances.add(vdu.getVimInstance().getId());
+                        } else if (imageFile != null) {
+                            Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
+                            image = vim.add(vdu.getVimInstance(), image, imageFile);
+                            if (vdu.getVm_image() == null)
+                                vdu.setVm_image(new HashSet<String>());
+                            vimInstances.add(vdu.getVimInstance().getId());
+                            vdu.getVm_image().add(image.getExtId());
+                        }
+                    } else {
+                        throw new NotFoundException("VNFPackageManagement: Neither the defined ids nor the names were found");
+                    }
+                }
+            }
         }
+
         vnfPackage.setImage(image);
         myTarFile.close();
 
