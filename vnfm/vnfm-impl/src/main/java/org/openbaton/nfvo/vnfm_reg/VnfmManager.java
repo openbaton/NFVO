@@ -292,7 +292,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     @Override
     @Async
-    public Future<Void> modify(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException {
+    public Future<Void> sendMessageToVNFR(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getEndpoint());
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecordDest.getType() + " (endpoint = " + virtualNetworkFunctionRecordDest.getEndpoint() + ") is not registered");
@@ -328,11 +328,11 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         vnfmSender.sendCommand(orVnfmGenericMessage, endpoint);
-        return new AsyncResult<Void>(null);
+        return new AsyncResult<>(null);
     }
 
     @Override
-    public void addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component, VNFRecordDependency dependency) throws NotFoundException {
+    public Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component, VNFRecordDependency dependency) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
@@ -352,6 +352,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         vnfmSender.sendCommand(message, endpoint);
+        return new AsyncResult<>(null);
     }
 
     @Override

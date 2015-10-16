@@ -20,6 +20,8 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.exceptions.NotFoundException;
 
+import java.util.List;
+
 
 /**
  * Created by lto on 30/06/15.
@@ -30,4 +32,6 @@ public interface DependencyManagement {
     void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     VNFRecordDependency getDependencyForAVNFRecordTarget(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+    List<VNFRecordDependency> getDependencyForAVNFRecordSource(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

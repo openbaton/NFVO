@@ -183,11 +183,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         nsrRepository.save(networkServiceRecord);
         log.debug("new VNFComponent is " + component);
 
-        VNFRecordDependency dependency = dependencyManagement.getDependencyForAVNFRecordTarget(virtualNetworkFunctionRecord);
+        VNFRecordDependency dependencyTarget = dependencyManagement.getDependencyForAVNFRecordTarget(virtualNetworkFunctionRecord);
 
-        log.debug("Found Dependency: " + dependency);
+        log.debug("Found Dependency: " + dependencyTarget);
 
-        vnfmManager.addVnfc(virtualNetworkFunctionRecord,virtualDeploymentUnit,component, dependency);
+        vnfmManager.addVnfc(virtualNetworkFunctionRecord,virtualDeploymentUnit,component, dependencyTarget);
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
