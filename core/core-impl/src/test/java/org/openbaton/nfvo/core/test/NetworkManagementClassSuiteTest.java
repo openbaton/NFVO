@@ -288,6 +288,11 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
+        public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url) throws VimException {
+            return null;
+        }
+
+        @Override
         public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
 
         }
