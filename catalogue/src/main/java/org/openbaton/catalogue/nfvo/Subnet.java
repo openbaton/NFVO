@@ -36,6 +36,7 @@ public class Subnet implements Serializable {
     private String extId;
     private String networkId;
     private String cidr;
+    private String gatewayIp;
 
     public Subnet() {
     }
@@ -93,15 +94,24 @@ public class Subnet implements Serializable {
         this.networkId = networkId;
     }
 
+    public String getGatewayIp() {
+        return gatewayIp;
+    }
+
+    public void setGatewayIp(String gatewayIp) {
+        this.gatewayIp = gatewayIp;
+    }
+
     @Override
     public String toString() {
         return "Subnet{" +
                 "id='" + id + '\'' +
+                ", version=" + version +
                 ", name='" + name + '\'' +
-                ", version='" + version +
                 ", extId='" + extId + '\'' +
                 ", networkId='" + networkId + '\'' +
                 ", cidr='" + cidr + '\'' +
+                ", gatewayIp='" + gatewayIp + '\'' +
                 '}';
     }
 }
