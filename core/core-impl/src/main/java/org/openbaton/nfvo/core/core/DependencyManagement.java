@@ -36,9 +36,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lto on 30/06/15.
@@ -80,10 +78,10 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                         dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
                         log.debug("Found " + notInitIds.size() + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
                     } else {
-                        //send modify to VNFR
+                        //send sendMessageToVNFR to VNFR
                         OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
                         orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-                        vnfmManager.modify(virtualNetworkFunctionRecord, orVnfmGenericMessage);
+                        vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
                     }
                     return dep;
                 }
@@ -158,5 +156,24 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
             }
         }
         return null;
+    }
+
+    @Override
+    public List<VNFRecordDependency> getDependencyForAVNFRecordSource(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        List<VNFRecordDependency> res = new ArrayList<>();
+        NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
+        if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+            Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+
+            for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
+                vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
+
+                log.trace("Checking if " + virtualNetworkFunctionRecord.getName() + " is source for " + vnfRecordDependency);
+                if (vnfRecordDependency.getIdType().containsKey(virtualNetworkFunctionRecord.getName())){
+                    res.add(vnfRecordDependency);
+                }
+            }
+        }
+        return res;
     }
 }

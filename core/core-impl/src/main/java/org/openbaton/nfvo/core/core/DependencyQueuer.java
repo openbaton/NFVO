@@ -106,7 +106,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
                     log.debug("SENDING MODIFY");
                     OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(target, Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-                    vnfmManager.modify(target, orVnfmGenericMessage);
+                    vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);
                     dependencyIdToBeRemoved.add(dependencyId);
                 }
             }
