@@ -55,9 +55,8 @@ public class RestVNFPackage {
      * Adds a new VNFPackage to the VNFPackages repository
      */
     @RequestMapping(method = RequestMethod.POST)
-    public
     @ResponseBody
-    VNFPackage onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
+    public VNFPackage onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes);
