@@ -68,6 +68,18 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
+    public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url ) throws VimException {
+        try {
+            NFVImage addedImage = client.addImage(vimInstance, image, image_url);
+            log.debug("Image with name: " + image.getName() + " added successfully.");
+            return addedImage;
+        } catch (Exception e) {
+            log.warn("Image with name: " + image.getName() + " not added successfully.", e);
+            throw new VimException("Image with name: " + image.getName() + " not added successfully.");
+        }
+    }
+
+    @Override
     public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException{
         try {
             NFVImage updatedImage = client.updateImage(vimInstance, image);
