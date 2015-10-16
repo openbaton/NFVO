@@ -20,6 +20,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -36,7 +37,16 @@ public interface ImageManagement {
      * @param imageFile
      */
 	NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException;
-	
+
+    /**
+     * This operation allows adding new VNF software
+     * images to the image repository.
+     * @param vimInstance
+     * @param image
+     * @param image_url
+     */
+    NFVImage add(VimInstance vimInstance, NFVImage image, String image_url) throws VimException;
+
 	/**
 	 * This operation allows deleting in the VNF software 
 	 * images from the image repository.
