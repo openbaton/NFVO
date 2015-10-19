@@ -32,7 +32,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @ConfigurationProperties(prefix = "nfvo.security")
 public class ResourceServer extends ResourceServerConfigurerAdapter {
 
-    private Boolean enabled;
+    private boolean enabled;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
