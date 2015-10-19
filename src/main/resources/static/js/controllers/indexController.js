@@ -89,10 +89,13 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 
     $scope.checkSecurity = function () {
-        console.log($scope.URL + "/oauth/token");
-        $http.get($scope.URL + "/oauth/token")
+        console.log($scope.URL + "/api/v1/security");
+        $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);
+                if (data === "false"){
+                    AuthService.loginGuest($scope.URL);
+                }
             })
             .error(function (data, status) {
                 if (status == 404) {
