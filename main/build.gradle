@@ -28,10 +28,8 @@ dependencies {
     compile project(':repository')
     compile project(':catalogue')
     compile project(':plugin')
-   
-    if (enableSecurity == 'true') {
-        runtime project(':security')
-    }
+
+    runtime project(':security')
 
     runtime project(':dashboard')
     runtime project(':core-impl')

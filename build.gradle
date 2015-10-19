@@ -56,7 +56,6 @@ project.ext {
      * gradle Related Vars
      */
     mainClass = 'org.openbaton.nfvo.main.Application'
-    enableSecurity = false
     //------------------------------------------------//
 }
 
