@@ -83,7 +83,7 @@ public class VirtualDeploymentUnit implements Serializable {
     private Set<VNFComponent> vnfc;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private Set<VNFCInstance> vnfc_instance;
+    protected Set<VNFCInstance> vnfc_instance;
 
     /**
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,
