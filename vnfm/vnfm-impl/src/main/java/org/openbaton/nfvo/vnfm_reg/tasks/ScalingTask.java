@@ -59,7 +59,7 @@ public class ScalingTask extends AbstractTask {
             for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
                 boolean found = false;
                 for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                    if (vnfComponent.getId().equals(vnfcInstance.getVnfc_reference())){
+                    if (vnfComponent.getId().equals(vnfcInstance.getVnfComponent().getId())){
                         found = true;
                         break;
                     }

@@ -170,7 +170,7 @@ public class UpdatevnfrTask extends AbstractTask {
                     vnfcInstance_nfvo.setHostname(vnfcInstance_manager.getHostname());
                     vnfcInstance_nfvo.setVim_id(vnfcInstance_manager.getVim_id());
                     vnfcInstance_nfvo.setVc_id(vnfcInstance_manager.getVc_id());
-                    vnfcInstance_nfvo.setVnfc_reference(vnfcInstance_manager.getVnfc_reference());
+                    vnfcInstance_nfvo.setVnfComponent(vnfcInstance_manager.getVnfComponent());
                     vnfcInstance_nfvo.setConnection_point(updateVNFDConnectionPoints(vnfcInstance_nfvo.getConnection_point(), vnfcInstance_manager.getConnection_point()));
                     //Add updated VNFCInstance
                     instances.add(vnfcInstance_nfvo);
