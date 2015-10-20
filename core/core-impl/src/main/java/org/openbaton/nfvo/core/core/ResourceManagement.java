@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.core;
 
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -35,9 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -77,20 +76,28 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         virtualDeploymentUnit.setHostname(hostname);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
             log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
-            log.debug("The component is Exposed? " + component.isExposed());
-            VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get();
+            Map<String, String> floatinIps = new HashMap<>();
+            for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
+                floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+            }
+            log.info("FloatingIp chosen are: " + floatinIps);
+            VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
             ids.add(added.getVc_id());
-            if (component.isExposed() && (added.getFloatingIps() == null || added.getFloatingIps().equals("")))
-                log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
+            if (floatinIps.size() > 0 && (added.getFloatingIps().size() == 0))
+                log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available?");
         }
         return ids;
     }
 
     private String allocateVNFC(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim, VNFComponent component) throws InterruptedException, ExecutionException, VimException, VimDriverException {
         log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
-        log.debug("The component is Exposed? " + component.isExposed());
-        VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), component.isExposed()).get();
-        if (component.isExposed() && (added.getFloatingIps() == null || added.getFloatingIps().equals("")))
+        Map<String, String> floatinIps = new HashMap<>();
+        for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
+            floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+        }
+        log.info("FloatingIp chosen are: " + floatinIps);
+        VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
+        if (floatinIps.size() > 0 && added.getFloatingIps().size() == 0)
             log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         return added.getVim_id();
     }
