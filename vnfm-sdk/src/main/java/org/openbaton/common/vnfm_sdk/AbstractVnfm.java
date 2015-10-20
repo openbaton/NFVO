@@ -172,7 +172,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     VNFCInstance vnfcInstance_new = null;
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
                         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
-                                if (vnfcInstance.getVnfc_reference().equals(component.getId())) {
+                                if (vnfcInstance_new.getVnfComponent().getId().equals(component.getId())) {
                                     vnfcInstance_new = vnfcInstance;
                                     fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
                                     found = true;
