@@ -41,10 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.AsyncResult;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import static org.mockito.Matchers.any;
@@ -338,7 +335,7 @@ public class NetworkManagementClassSuiteTest {
         }
 
         @Override
-        public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimException, VimDriverException {
+        public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException, VimDriverException {
             return null;
         }
 
