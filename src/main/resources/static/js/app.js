@@ -162,16 +162,14 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
 
 angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
-    var url = '/api/v1';
-    //var url = 'http://localhost:8080/api/v1';
-    //var url = 'http://80.96.122.80:8080/api/v1';
-//    http.syncGet('/api/rest/admin/v2/configs/').then(function(data)
-//    {
-//        $scope.config = data;
-////        console.log($scope.config.parameters);
-//
-//    });
+    //var url = '/api/v1';
+    var url = 'http://localhost:8080/api/v1';
 
+    http.get(url+'/configurations/')
+        .success(function(data,status){
+            console.log(data);
+            $scope.config = data[0];
+        });
 
     $scope.numberNSR = 0;
     $scope.numberNSD = 0;
@@ -210,7 +208,7 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
-        http.post('/api/rest/admin/v2/configs/', config)
+        http.put(url+'/configurations/', config)
             .success(function (response) {
                 $('.modal').modal('hide');
                 alert('Configurations Updated! ' + response);
@@ -221,10 +219,6 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
                 alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
             });
     };
-
-//    window.onresize = function() {
-//        window.location.reload();
-//    };
 
 
 });

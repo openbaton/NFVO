@@ -1,14 +1,27 @@
 angular.module('app')
     .factory('http', function ($http, $q, $cookieStore) {
 
+        var customHeaders = {};
+        if ($cookieStore.get('token') === '')
+            customHeaders = {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            };
+        else {
+
+            customHeaders = {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + $cookieStore.get('token')
+            };
+        }
+
         var http = {};
         http.get = function (url) {
             return $http({
                 url: url,
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + $cookieStore.get('token')
-                }
+                headers: customHeaders
             })
         };
 
@@ -16,17 +29,11 @@ angular.module('app')
         http.post = function (url, data) {
             console.log(data);
             $('#modalSend').modal('show');
-            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
-            console.log(headerAutorization);
             return $http({
                 url: url,
                 method: 'POST',
                 data: data,
-                headers: {
-                    'Authorization': headerAutorization,
-                    'Accept': 'application/json',
-                    'Content-type': 'application/json'
-                }
+                headers: customHeaders
             });
 
         };
@@ -45,30 +52,20 @@ angular.module('app')
         };
         http.put = function (url, data) {
             $('#modalSend').modal('show');
-            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
-            console.log(headerAutorization);
             return $http({
                 url: url,
                 method: 'PUT',
                 data: data,
-                headers: {
-                    'Authorization': headerAutorization,
-                    'Accept': 'application/json',
-                    'Content-type': 'application/json'
-                }
+                headers: customHeaders
             });
         };
 
         http.delete = function (url) {
             $('#modalSend').modal('show');
-            var headerAutorization = 'Bearer ' + $cookieStore.get('token');
-            console.log(headerAutorization);
             return $http({
                 url: url,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': headerAutorization
-                }
+                headers: customHeaders
             });
         };
 
@@ -81,4 +78,5 @@ angular.module('app')
         };
 
         return http;
-    });
+    })
+;
