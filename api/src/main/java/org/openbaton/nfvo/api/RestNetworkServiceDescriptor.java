@@ -25,7 +25,6 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.openbaton.nfvo.core.interfaces.SecurityManagement;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +42,6 @@ import java.util.concurrent.ExecutionException;
 public class RestNetworkServiceDescriptor {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private SecurityManagement securityManagement;
 
     @Autowired
     private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
@@ -165,7 +161,7 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VirtualNetworkFunctionDescriptor updateVNF(         @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,           @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) {
+    public VirtualNetworkFunctionDescriptor updateVNF(@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor, @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) {
         return networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor);
     }
 

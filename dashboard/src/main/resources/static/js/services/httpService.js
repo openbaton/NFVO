@@ -3,6 +3,7 @@ angular.module('app')
 
         var http = {};
         http.get = function (url) {
+            console.log("COOKIE: "+ $cookieStore.get('token'))
             return $http({
                 url: url,
                 method: 'GET',
