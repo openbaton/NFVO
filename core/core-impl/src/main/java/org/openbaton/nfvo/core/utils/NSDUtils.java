@@ -21,6 +21,7 @@ import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
@@ -232,9 +233,10 @@ public class NSDUtils {
         Set<String> internalVirtualLink = new HashSet<>();
         Set<String> virtualLinkDescriptors= new HashSet<>();
 
-        for (VirtualLinkDescriptor virtualLinkDescriptor1 : networkServiceDescriptor.getVld()){
-            virtualLinkDescriptors.add(virtualLinkDescriptor1.getName());
-        }
+        if (networkServiceDescriptor.getVld() != null)
+            for (VirtualLinkDescriptor virtualLinkDescriptor1 : networkServiceDescriptor.getVld()){
+                virtualLinkDescriptors.add(virtualLinkDescriptor1.getName());
+            }
 
 
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
@@ -242,50 +244,57 @@ public class NSDUtils {
             names.clear();
             internalVirtualLink.clear();
 
-            for (DeploymentFlavour deploymentFlavour : virtualNetworkFunctionDescriptor.getDeployment_flavour()) {
-                names.add(deploymentFlavour.getFlavour_key());
-            }
-
-            for (InternalVirtualLink internalVirtualLink1 : virtualNetworkFunctionDescriptor.getVirtual_link()){
-                internalVirtualLink.add(internalVirtualLink1.getName());
-            }
-
-            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-
-                if (virtualDeploymentUnit.getScale_in_out() < 1)
-                    throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be at least 1");
-                if (virtualDeploymentUnit.getScale_in_out() < virtualDeploymentUnit.getVnfc().size()){
-                    throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must not be less than the number of starting VNFComponent: " + virtualDeploymentUnit.getVnfc().size());
+            if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null)
+                for (DeploymentFlavour deploymentFlavour : virtualNetworkFunctionDescriptor.getDeployment_flavour()) {
+                    names.add(deploymentFlavour.getFlavour_key());
                 }
+            else
+                virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>());
 
-                for (DeploymentFlavour deploymentFlavour : virtualDeploymentUnit.getVimInstance().getFlavours()){
-                    flavors.add(deploymentFlavour.getFlavour_key());
+            if (virtualNetworkFunctionDescriptor.getVirtual_link() != null)
+                for (InternalVirtualLink internalVirtualLink1 : virtualNetworkFunctionDescriptor.getVirtual_link()){
+                    internalVirtualLink.add(internalVirtualLink1.getName());
                 }
+            else
+                virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
+            if (virtualNetworkFunctionDescriptor.getVdu() != null)
+                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
 
-                for (NFVImage image : virtualDeploymentUnit.getVimInstance().getImages()){
-                    imageNames.add(image.getName());
-                    imageIds.add(image.getExtId());
-                }
+                    if (virtualDeploymentUnit.getScale_in_out() < 1)
+                        throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be at least 1");
+                    if (virtualDeploymentUnit.getScale_in_out() < virtualDeploymentUnit.getVnfc().size()){
+                        throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must not be less than the number of starting VNFComponent: " + virtualDeploymentUnit.getVnfc().size());
+                    }
 
-                //All "names" must be contained in the "flavors"
-                if (!flavors.containsAll(names)){
-                    throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, not all DeploymentFlavour" + names + " are contained into the flavors of the vimInstance chosen. Please choose one from: " + flavors );
-                }
-                for (String image : virtualDeploymentUnit.getVm_image()){
-                    if (!imageNames.contains(image) && !imageIds.contains(image))
-                        throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, image" + image + " is not contained into the images of the vimInstance chosen. Please choose one from: " + imageNames + " or from " + imageIds);
-                }
-                flavors.clear();
+                    for (DeploymentFlavour deploymentFlavour : virtualDeploymentUnit.getVimInstance().getFlavours()){
+                        flavors.add(deploymentFlavour.getFlavour_key());
+                    }
 
-                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()){
-                    for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()){
-                        if (!internalVirtualLink.contains(connectionPoint.getVirtual_link_reference())){
-                            throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the virtualLinkReference " + connectionPoint.getVirtual_link_reference() + " of a VNFComponent is not contained in the InternalVirtualLink " + internalVirtualLink);
+                    for (NFVImage image : virtualDeploymentUnit.getVimInstance().getImages()){
+                        imageNames.add(image.getName());
+                        imageIds.add(image.getExtId());
+                    }
+
+                    //All "names" must be contained in the "flavors"
+                    if (!flavors.containsAll(names)){
+                        throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, not all DeploymentFlavour" + names + " are contained into the flavors of the vimInstance chosen. Please choose one from: " + flavors );
+                    }
+                    for (String image : virtualDeploymentUnit.getVm_image()){
+                        if (!imageNames.contains(image) && !imageIds.contains(image))
+                            throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, image" + image + " is not contained into the images of the vimInstance chosen. Please choose one from: " + imageNames + " or from " + imageIds);
+                    }
+                    flavors.clear();
+
+                    for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()){
+                        for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()){
+                            if (!internalVirtualLink.contains(connectionPoint.getVirtual_link_reference())){
+                                throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the virtualLinkReference " + connectionPoint.getVirtual_link_reference() + " of a VNFComponent is not contained in the InternalVirtualLink " + internalVirtualLink);
+                            }
                         }
                     }
                 }
-            }
-
+            else
+                virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>());
             if (!virtualLinkDescriptors.containsAll(internalVirtualLink)){
                 throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": the InternalVirtualLinks " + internalVirtualLink + " are not contained in the VirtualLinkDescriptors " + virtualLinkDescriptors);
             }

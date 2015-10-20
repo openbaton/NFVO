@@ -16,6 +16,9 @@
 
 package org.openbaton.nfvo.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +29,12 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 
 @Configuration
 @EnableResourceServer
+@ConfigurationProperties(prefix = "nfvo.security")
 public class ResourceServer extends ResourceServerConfigurerAdapter {
+
+    private boolean enabled;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -41,34 +49,51 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
 //                .disable();
 
         // API calls
-        http
-                .authorizeRequests()
-                .regexMatchers(HttpMethod.POST, "/api/v1/")
-                .access("#oauth2.hasScope('write')")
-                .and()
-                        //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                .and()
-                .exceptionHandling();
 
-        // API calls
-        http
-                .authorizeRequests()
-                .antMatchers("/api/**")
-                .access("#oauth2.hasScope('write')")
-                .and()
-                        //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                .and()
-                .exceptionHandling();
+        if (enabled) {
+            log.debug("Security is enabled");
+            http
+                    .authorizeRequests()
+                    .regexMatchers(HttpMethod.POST, "/api/v1/")
+                    .access("#oauth2.hasScope('write')")
+                    .and()
+                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                    .and()
+                    .exceptionHandling();
+
+            // API calls
+            http
+                    .authorizeRequests()
+                    .antMatchers("/api/**")
+                    .access("#oauth2.hasScope('write')")
+                    .and()
+                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                    .and()
+                    .exceptionHandling();
+        }else {
+            log.warn("Security is not enabled!");
+            http
+                    .authorizeRequests().anyRequest().permitAll();
+        }
     }
 
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId(OAuth2AuthorizationServerConfig.RESOURCE_ID);
+    }
+
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
 }
