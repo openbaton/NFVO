@@ -17,6 +17,7 @@ package org.openbaton.common.vnfm_sdk;
 
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -31,6 +32,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -108,7 +110,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void query();
 
     @Override
-    public abstract void scale();
+    public abstract VirtualNetworkFunctionRecord scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance component, Object scripts, VNFRecordDependency dependency) throws Exception;
 
     @Override
     public abstract void checkInstantiationFeasibility();
@@ -153,7 +155,42 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             OrVnfmGenericMessage orVnfmGenericMessage = null;
             switch (message.getAction()) {
                 case SCALE:
-                    this.scale();
+                    OrVnfmScalingMessage scalingMessage = (OrVnfmScalingMessage) message;
+                    virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
+                    VNFRecordDependency dependency = scalingMessage.getDependency();
+                    VNFComponent component = scalingMessage.getComponent();
+
+                    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+                    log.info("Adding VNFComponent: " + component);
+
+                    OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
+                    virtualNetworkFunctionRecord = message1.getVnfr();
+
+                    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+
+                    boolean found = false;
+                    VNFCInstance vnfcInstance_new = null;
+                    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
+                                if (vnfcInstance_new.getVnfComponent().getId().equals(component.getId())) {
+                                    vnfcInstance_new = vnfcInstance;
+                                    fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
+                                    found = true;
+                                    break;
+                                }
+                        if (found)
+                            break;
+                    }
+                    if (vnfcInstance_new == null){
+                        throw new RuntimeException("no new VNFCInstance found. This should not happen...");
+                    }
+                    checkEMS(vnfcInstance_new.getHostname());
+                    Object scripts;
+                    if (virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink() != null)
+                        scripts = virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink();
+                    else
+                        scripts = virtualNetworkFunctionRecord.getVnfPackage().getScripts();
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.SCALED, this.scale(virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency));
                     break;
                 case SCALING:
                     break;
@@ -181,7 +218,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = result.get();
 
 
-                    if (properties.getProperty("allocate", "false").equalsIgnoreCase("true")) {
+                    if (properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
@@ -326,15 +363,29 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                for (Ip ip : vnfcInstance.getIps()) {
-                    ConfigurationParameter cp = new ConfigurationParameter();
-                    cp.setConfKey(ip.getNetName());
-                    cp.setValue(ip.getIp());
-                    virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
-                }
+                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
             }
         }
         log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
+    }
+
+    private void fillProvidesVNFC(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
+        for (Ip ip : vnfcInstance.getIps()) {
+            ConfigurationParameter cp = new ConfigurationParameter();
+            cp.setConfKey(ip.getNetName());
+            cp.setValue(ip.getIp());
+            virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+        }
+
+        ConfigurationParameter cp = new ConfigurationParameter();
+        cp.setConfKey("floatingIp");
+        cp.setValue(vnfcInstance.getFloatingIps());
+        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+
+        ConfigurationParameter cp1 = new ConfigurationParameter();
+        cp1.setConfKey("hostname");
+        cp1.setValue(vnfcInstance.getHostname());
+        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp1);
     }
 
     /**

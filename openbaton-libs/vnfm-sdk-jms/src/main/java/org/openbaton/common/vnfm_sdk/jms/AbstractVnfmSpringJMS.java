@@ -15,7 +15,6 @@
 
 package org.openbaton.common.vnfm_sdk.jms;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -26,9 +25,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.annotation.JmsListenerConfigurer;
-import org.springframework.jms.config.*;
+import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
+import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
 import javax.jms.*;
 
@@ -46,19 +47,14 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Autowired
     private JmsListenerContainerFactory containerFactory;
 
-//    @Bean
-//    ConnectionFactory connectionFactory() {
-//        return new ActiveMQConnectionFactory();
-//    }
-
     @Bean
-    JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setSessionTransacted(false);
         loadProperties();
         log.debug("JMSCONTAINER Properties are: " + properties);
         factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
+//        factory.setSessionTransacted(true);
         return factory;
     }
 
