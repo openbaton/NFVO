@@ -97,7 +97,7 @@ angular.module('app').
                     $scope.vimInstanceJson = {};
                 })
                 .error(function (data, status) {
-                    showError(data, status);
+                    showError(status, data);
                 });
 
         };
@@ -130,7 +130,7 @@ angular.module('app').
                     $scope.upDatacenter = data;
                 })
                 .error(function (data, status) {
-                    showError(data, status);
+                    showError(status, data);
                 });
         };
         $scope.closeAlert = function (index) {
@@ -146,7 +146,7 @@ angular.module('app').
 
                 })
                 .error(function (data, status) {
-                    showError(data, status);
+                    showError(status, data);
                 });
         };
 
@@ -159,7 +159,7 @@ angular.module('app').
                         $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
 
                     }).error(function (data, status) {
-                        showError(data, status);
+                        showError(status, data);
                     });
             else {
                 http.get(url)
@@ -167,14 +167,14 @@ angular.module('app').
                         $scope.vimInstances = response;
                     })
                     .error(function (data, status) {
-                        showError(data, status);
+                        showError(status, data);
                     });
             }
         }
 
 
-        function showError(status, data) {
-            console.log('DATA: ' + data + ' STATUS: ' + status);
+        function showError(status,data) {
+            console.log('Status: ' + status + ' Data: ' +  JSON.stringify(data));
             $scope.alerts.push({
                 type: 'danger',
                 msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
@@ -184,7 +184,6 @@ angular.module('app').
             if (status === 401) {
                 console.log(status + ' Status unauthorized')
                 AuthService.logout();
-                $window.location.reload();
             }
         }
 

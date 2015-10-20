@@ -394,10 +394,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        if (status === 400)
-                            showError(status, "Bad request: your json is not well formatted");
-                        else
-                            showError(status, data);
+                        showError(status, data);
                     });
             }
 
@@ -484,16 +481,22 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     function showError(status, data) {
-        $scope.alerts.push({
-            type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
-        });
+        if (status === 400)
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + "Bad request: your json is not well formatted"
+            });
+
+        else
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
+            });
 
         $('.modal').modal('hide');
         if (status === 401) {
             console.log(status + ' Status unauthorized')
             AuthService.logout();
-            $window.location.reload();
         }
     }
 
@@ -512,8 +515,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 })
                 .error(function (data, status) {
                     showError(status, data);
-                    //var destinationUrl = '#';
-                    //$window.location.href = destinationUrl;
+
                 });
         else
             http.get(url + '/' + $routeParams.nsdescriptorId)
@@ -524,8 +526,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 })
                 .error(function (data, status) {
                     showError(status, data);
-                    //var destinationUrl = '#';
-                    //$window.location.href = destinationUrl;
                 });
     }
 

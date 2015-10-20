@@ -24,9 +24,6 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     };
 
 
-
-
-
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
@@ -55,7 +52,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     }
 
-    function showError(status, data) {
+    function showError(data, status) {
         $scope.alerts.push({
             type: 'danger',
             msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
@@ -64,7 +61,6 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
         if (status === 401) {
             console.log(status + ' Status unauthorized')
             AuthService.logout();
-            $window.location.reload();
         }
     }
 
@@ -82,15 +78,21 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             var previewTemplate = previewNode.parentNode.innerHTML;
             previewNode.parentNode.removeChild(previewNode);
 
+            var header = {};
+
+            if ($cookieStore.get('token') !== '')
+                header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
+
             var myDropzone = new Dropzone('#my-dropzone', {
                 url: url, // Set the url
                 method: "POST",
                 parallelUploads: 20,
                 previewTemplate: previewTemplate,
                 autoQueue: false, // Make sure the files aren't queued until manually added
-                previewsContainer: "#previews" // Define the container to display the previews
-            });
+                previewsContainer: "#previews", // Define the container to display the previews
+                headers: header
 
+            });
 
 
             myDropzone.on("addedfile", function (file) {
@@ -105,9 +107,10 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 $('.progress .bar:first').width = progress + "%";
             });
 
-            myDropzone.on("sending", function (file) {
+            myDropzone.on("sending", function (file, xhr, formData) {
                 // Show the total progress bar when upload starts
                 $('.progress .bar:first').opacity = "1";
+
                 // And disable the start button
                 file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
             });

@@ -191,7 +191,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
         if (status === 401) {
             console.log(status + ' Status unauthorized')
             AuthService.logout();
-            $window.location.reload();
         }
     }
 

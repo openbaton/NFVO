@@ -28,7 +28,6 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
      */
     $scope.logout = function () {
         AuthService.logout();
-        $window.location.reload();
     };
 
 
@@ -42,7 +41,8 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    $scope.URL = 'http://localhost:8080';
+    //$scope.URL = 'http://localhost:8080';
+    $scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
@@ -66,10 +66,14 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 
     $scope.checkSecurity = function () {
-        console.log($scope.URL + "/oauth/token");
-        $http.get($scope.URL + "/oauth/token")
+        console.log($scope.URL + "/api/v1/security");
+        AuthService.removeSession();
+        $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);
+                if (data === "false"){
+                    AuthService.loginGuest($scope.URL);
+                }
             })
             .error(function (data, status) {
                 if (status == 404) {
