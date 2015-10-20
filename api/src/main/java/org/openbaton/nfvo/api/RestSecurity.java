@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/security")
 @ConfigurationProperties(prefix = "nfvo.security")
 public class RestSecurity {
-    private Boolean enabled;
+    private boolean enabled;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public Boolean getEnabled() {
