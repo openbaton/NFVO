@@ -1,0 +1,53 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VDU
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil"></i>
+                    NS Descriptors</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSD: {{nsrinfo.name}}</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
+                    VNF Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}"><i class="fa fa-pencil-square-o"></i>
+                    VNF Record</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VDU
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12" ng-show="vduId">
+                <div ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
+                    <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
+                        <h2>Virtual Deployment Unit</h2>
+                        <dl class="dl-horizontal">
+                            <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                                <dt>{{k}}</dt>
+                                <dd>{{v}}</dd>
+
+                            </spam>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd><a href="#vim-instances/{{vdu.vimInstance.id}}">{{vdu.vimInstance.name}}</a></dd>
+                         </span>
+                        </dl>
+                    </div>
+                </div>
+
+    </div>
+</div>

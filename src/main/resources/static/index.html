@@ -14,12 +14,15 @@
     <!-- Bootstrap Core CSS -->
     <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="dist/css/opensdncore.css" rel="stylesheet">
+    <link href="bower_components/bootstrap/dist/css/bootstrap-switch.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
     <link href="bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
 
     <!-- Timeline CSS -->
     <link href="dist/css/timeline.css" rel="stylesheet">
+
+    <link href="dist/css/dropzone.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="dist/css/sb-admin-2.css" rel="stylesheet">
@@ -37,10 +40,10 @@
 
 </head>
 
-<body >
+<body>
 
-<div  id="wrapper" ng-controller="LoginController">
-
+<div id="wrapper" ng-controller="LoginController">
+    <div ng-if="!loggedF()" ng-init="checkSecurity()"></div>
     <div ng-if="!loggedF()" ng-include="'login.html'"></div>
     <div ng-if="loggedF()" ng-include="'menu.html'"></div>
 </div>

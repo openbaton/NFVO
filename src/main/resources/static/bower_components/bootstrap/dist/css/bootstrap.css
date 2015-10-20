@@ -3784,7 +3784,6 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     padding: 6px 12px;
     font-size: 14px;
     font-weight: normal;
-    line-height: 1;
     color: #555;
     text-align: center;
     background-color: #eee;
@@ -5700,7 +5699,7 @@ button.close {
     border: 0;
 }
 .modal-open {
-    overflow: hidden;
+    overflow: scroll;
 }
 .modal {
     position: fixed;
@@ -5710,7 +5709,7 @@ button.close {
     left: 0;
     z-index: 1040;
     display: none;
-    overflow: hidden;
+    overflow: scroll;
     -webkit-overflow-scrolling: touch;
     outline: 0;
 }
