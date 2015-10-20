@@ -358,50 +358,46 @@ table.dataTable thead .sorting:after {
 .logo{
     width: 100%;
 }
-
+/*
 select.form-control.ng-valid.ng-dirty {
-    width: 90%;
-    right: -15px;
+    /!*width: 90%;*!/
+    /!*right: -15px;*!/
 }
 
-/*span.input-group-addon {
+/!*span.input-group-addon {
     position: relative;
     padding-left: 20px;
-}*/
+}*!/
 
 .input-group .form-control:first-child {
-    width: 90%;
-    left: 15px;
-}/*
+    /!*width: 90%;*!/
+    /!*left: 15px;*!/
+}/!*
 
 .input-group-addon:last-child {
     position: relative;
     left: -20px;
-}*/
+}*!/*/
 
-.input-group-addon:last-child {
-    /*min-width: 100px;*/
-    position: relative;
-    left: -15px;
-    padding-left: 15px;
 
-}
 
 @media(max-height:600px) {
     #footer{
         display: none;
     }
 }
-@media(max-width:768px) {
-    #footer{
-        display: none;
-    }
-}
+/*@media(max-width:768px) {*/
+    /*#footer{*/
+        /*display: none;*/
+    /*}*/
+/*}*/
 
 #footer{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: small;
     position: fixed;
     left: 20px;
-    bottom: 20px;
-    width: 150px;
+    bottom: 10px;
+    width: 250px;
     height: auto;
 }

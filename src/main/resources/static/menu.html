@@ -8,7 +8,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">OpenBaton - NETO</a>
+        <a class="navbar-brand" href="#">OpenBaton - NFVO</a>
     </div>
     <!-- /.navbar-header -->
 
@@ -25,12 +25,12 @@
         <li class="dropdown">
             <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{username}} <b class="caret"></b></a>
             <ul class="dropdown-menu">
-                <li>
+                <!--<li>
                     <a href=""><i class="fa fa-fw fa-user"></i> Profile</a>
                 </li>
                 <li>
                     <a href=""><i class="fa fa-fw fa-envelope"></i> Inbox</a>
-                </li>
+                </li>-->
                 <li>
                     <a href=""
                        data-toggle="modal"
@@ -56,7 +56,7 @@
             <ul class="nav" id="side-menu">
                 <li id="li-logo">
                     <div class="container logo">
-                        <img src="img/fokus.png" class="img-responsive"
+                        <img src="img/OpenBatonLogoTransp.png" class="img-responsive"
                              alt="Responsive image">
 
                     </div>
@@ -65,52 +65,52 @@
                 <li>
                     <a href="#"><i class="fa fa-dashboard fa-fw"></i> Overview</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa fa-cogs fa-fw"></i> Manage Service<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="#services"><i class="fa fa-cloud-upload fa-fw"></i> Virtual Network Function</a>
-                        </li>
-                        <li>
-                            <a href="#topologies"><i class="fa fa-list-alt fa-fw"></i> Network Service Record</a>
-                        </li>
-                        <li>
-                            <a href="#templates"><i class="fa fa-pencil-square-o fa-fw"></i> Network Service Descriptor</a>
-                        </li>
-                        <li>
-                            <a href="#dragdrop"><i class="fa fa-pencil-square-o"></i> Drag Drop</a>
-                        </li>
-                    </ul>
-                </li>
 
                 <li>
-                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> Manage Infrastructure<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-database fa-fw"></i> Catalogue<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#infrastructures"><i class="fa fa-sitemap"></i> Infrastructure</a>
+                            <a href="#nsdescriptors"><i class="fa fa-pencil-square-o fa-fw"></i> NS Descriptors</a>
                         </li>
                         <li>
-                            <a href="#vim-instances"><i class="fa fa-tasks"></i> Vim Instances</a>
+                            <a href="#vnfdescriptors"><i class="fa fa-file-text-o fa-fw"></i> VNF Descriptors</a>
                         </li>
                         <li>
-                            <a href="#controllers"><i class="fa fa-retweet"></i> Controllers</a>
-                        </li>
-                        <li>
-                            <a href="#switches"><i class="fa fa-random"></i> Switches</a>
-                        </li>
-                        <li>
-                            <a href="#chains"><i class="fa fa-link"></i> Chains</a>
+                            <a href="#packages"><i class="fa fa-cube fa-fw"></i> VNF Packages</a>
                         </li>
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>
-                <li class="li-logo">
-                    <div class="container logo" id="footer">
-                        <img src="img/tuberlin_logo_sw.gif" class="img-responsive"
-                             alt="Responsive image">
-                    </div>
+                <li>
+                    <a href="#"><i class="fa fa-cogs fa-fw"></i> Orchestrate NS<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+
+                        <li>
+                            <a href="#nsrecords"><i class="fa fa-list-alt fa-fw"></i> NS Records</a>
+                        </li>
+
+                     <!--   <li>
+                            <a href="#dragdrop"><i class="fa fa-pencil-square-o"></i> Drag Drop</a>
+                        </li>-->
+                    </ul>
                 </li>
+
+                <li>
+                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> Manage PoPs<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#vim-instances"><i class="fa fa-tasks"></i> PoP instances</a>
+                        </li>
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+
+                    <div class="" id="footer">
+                        <a href="#copyright"><div class="fa fa-copyright"></div> 2015 Fraunhofer FOKUS </a>
+                    </div>
+
             </ul>
+            <div></div>
         </div>
         <!-- /.sidebar-collapse -->
     </div>
@@ -143,9 +143,9 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" id="formSetting">
-                    <div class="form-group" ng-repeat="parameter in config.parameters track by $index">
-                        <label for="{{config.parameters[$index].config_key}}" class="col-sm-4 control-label">{{config.parameters[$index].config_key}}</label>
-                        <div class="col-sm-6 input-group"><input type="text" ng-model="config.parameters[$index].config_value" class="form-control parameters" id="{{config.parameters[$index].config_key}}">
+                    <div class="form-group" ng-repeat="parameter in config.configurationParameters track by $index">
+                        <label for="{{parameter.confKey}}" class="col-sm-4 control-label">{{parameter.confKey}}</label>
+                        <div class="col-sm-6 input-group"><input type="text" ng-model="config.configurationParameters[$index].value" class="form-control parameters" id="{{config.configurationParameters[$index].value}}">
                             <span class="input-group-addon">@</span>
                         </div>
                     </div>

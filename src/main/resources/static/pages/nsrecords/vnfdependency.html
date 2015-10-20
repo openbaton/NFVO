@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VNF Dependency
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil"></i>
+                    NS Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSR: {{nsrinfo.name}}</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies"><i class="fa fa-pencil-square-o"></i>
+                    VNF Dependencies</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VNF Dependency
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <div class="col-lg-12">
+            <div>
+                <div ng-repeat="vnfd in nsrinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
+                    <h2>VNF Dependency {{vnfd.name}}</h2>
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vnfd">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                        </spam>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

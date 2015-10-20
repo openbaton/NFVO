@@ -1,31 +1,43 @@
-
 angular.module('app')
-    .factory('http', function($http, $q, $cookieStore) {
+    .factory('http', function ($http, $q, $cookieStore) {
+
+        var customHeaders = {};
+        if ($cookieStore.get('token') === '')
+            customHeaders = {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            };
+        else {
+
+            customHeaders = {
+                'Accept': 'application/json',
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + $cookieStore.get('token')
+            };
+        }
 
         var http = {};
-        http.get = function(url) {
+        http.get = function (url) {
             return $http({
-                url:url,
+                url: url,
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer '+$cookieStore.get('token')
-                }})
+                headers: customHeaders
+            })
         };
 
 
-        http.post = function(url, data) {
-            console.log('Bearer '+$cookieStore.get('token'));
+        http.post = function (url, data) {
             console.log(data);
             $('#modalSend').modal('show');
             return $http({
-                url:url,
+                url: url,
                 method: 'POST',
                 data: data,
-                headers: {
-                    'Authorization': 'Bearer '+$cookieStore.get('token')
-                }})
+                headers: customHeaders
+            });
+
         };
-        http.postXML = function(url, data) {
+        http.postXML = function (url, data) {
             $('#modalSend').modal('show');
             return $http({
                 url: url,
@@ -38,23 +50,33 @@ angular.module('app')
 
             });
         };
-        http.put = function(url, data) {
+        http.put = function (url, data) {
             $('#modalSend').modal('show');
-            return $http.put(url, data);
+            return $http({
+                url: url,
+                method: 'PUT',
+                data: data,
+                headers: customHeaders
+            });
         };
 
-        http.delete = function(url) {
+        http.delete = function (url) {
             $('#modalSend').modal('show');
-            return $http.delete(url);
+            return $http({
+                url: url,
+                method: 'DELETE',
+                headers: customHeaders
+            });
         };
 
-        http.syncGet = function(url) {
+        http.syncGet = function (url) {
             var deferred = $q.defer();
-            http.get(url).success(function(data, status) {
+            http.get(url).success(function (data, status) {
                 deferred.resolve(data);
             });
             return deferred.promise;
         };
 
         return http;
-    });
+    })
+;

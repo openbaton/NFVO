@@ -1,86 +1,104 @@
-
 angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
-    .config(function($routeProvider)
-    {
+    .config(function ($routeProvider) {
 
         $routeProvider.
             when('/login', {
-                templateUrl:'login.html',
+                templateUrl: 'login.html',
                 controller: 'LoginController'
             }).
             when('/', {
                 templateUrl: 'pages/contents.html',
-                controller: ''
+                controller: 'MenuCtrl'
             }).
-            when('/services', {
-                templateUrl: 'pages/services/services.html',
-                controller: 'ServiceCtrl'
+            when('/packages', {
+                templateUrl: 'pages/packages/packages.html',
+                controller: 'PackageCtrl'
             }).
-            when('/services/:serviceid', {
-                templateUrl: 'pages/services/serviceinfo.html',
-                controller: 'ServiceCtrl'
+            when('/packages/:packageid', {
+                templateUrl: 'pages/packages/packageinfo.html',
+                controller: 'PackageCtrl'
             }).
-            when('/templates', {
-                templateUrl: 'pages/templates.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
+                controller: 'NsdCtrl'
             }).
-            when('/templates/:templateid', {
-                templateUrl: 'pages/templateinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors/:nsdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
+                controller: 'NsdCtrl'
             }).
-            when('/topologies', {
-                templateUrl: 'pages/topologies/topologies.html',
-                controller: 'TopologyCtrl'
+            when('/vnfdescriptors/', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptors.html',
+                controller: 'VnfdCtrl'
             }).
-            when('/topologies/:topologyid', {
-                templateUrl: 'pages/topologies/topologyinfo.html',
-                controller: 'TopologyCtrl'
+            when('/vnfdescriptors/:vnfdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptor.html',
+                controller: 'VnfdCtrl'
             }).
-            when('/topologies/:topologyid/graph', {
-                templateUrl: 'pages/topologies/graph.html',
-                controller: 'TopologyCtrl'
+            when('/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vdu.html',
+                controller: 'VnfdCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors.html',
+                controller: 'NsdCtrl'
             }).
-            when('/topologies/:topologyid/services/:serviceId', {
-                templateUrl: 'pages/topologies/serviceinstance.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/:vnfdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptor.html',
+                controller: 'NsdCtrl'
             }).
-            when('/topologies/:topologyid/containers/:containerId/units/', {
-                templateUrl: 'pages/topologies/unitsinfo.html',
-                controller: 'TopologyCtrl'
+            when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+                templateUrl: 'pages/nsdescriptors/vdu.html',
+                controller: 'NsdCtrl'
+            })
+            .when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId/vdus/:vduId', {
+                templateUrl: 'pages/nsrecords/vdu.html',
+                controller: 'NsrCtrl'
             }).
-            when('/infrastructures', {
-                templateUrl: 'pages/infrastructures/infrastructures.html',
-                controller: 'InfrastructureCtrl'
+            when('/nsdescriptors/:nsdescriptorId/vnfdependencies/:vnfdependencyId', {
+                templateUrl: 'pages/nsdescriptors/vnfdependency.html',
+                controller: 'NsdCtrl'
             }).
-            when('/deployed/:topologyid', {
-                templateUrl: 'pages/infrastructures/deployed.html',
-                controller: 'InfrastructureCtrl'
+            when('/nsdescriptors/:nsdescriptorId/vnfdependencies/', {
+                templateUrl: 'pages/nsdescriptors/vnfdependencies.html',
+                controller: 'NsdCtrl'
             }).
-            when('/infrastructures/:infrastructureid', {
-                templateUrl: 'pages/infrastructures/infrastructureinfo.html',
-                controller: 'InfrastructureCtrl'
+            when('/nsdescriptors/:nsdescriptorId/graph', {
+                templateUrl: 'pages/nsdescriptors/graph.html',
+                controller: 'NsdCtrl'
             }).
-            when('/switches', {
-                templateUrl: 'pages/switches/switches.html',
-                controller: 'SwitchCtrl'
+            when('/nsrecords', {
+                templateUrl: 'pages/nsrecords/nsrecords.html',
+                controller: 'NsrCtrl'
             }).
-            when('/switches/:switchid', {
-                templateUrl: 'pages/switches/switchinfo.html',
-                controller: 'SwitchCtrl'
+            when('/nsrecords/:nsrecordId', {
+                templateUrl: 'pages/nsrecords/nsrecordinfo.html',
+                controller: 'NsrCtrl'
             }).
-            when('/flow/:flowid', {
-                templateUrl: 'pages/switches/flow.html',
-                controller: 'SwitchCtrl'
+            when('/nsrecords/:nsrecordId/graph', {
+                templateUrl: 'pages/nsrecords/graph.html',
+                controller: 'NsrCtrl'
+            }).
+            when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId', {
+                templateUrl: 'pages/nsrecords/vnfrecord.html',
+                controller: 'NsrCtrl'
+            }).
+            when('/nsrecords/:nsrecordId/vnfrecords/', {
+                templateUrl: 'pages/nsrecords/vnfrecords.html',
+                controller: 'NsrCtrl'
+            }).
+            when('/nsrecords/:nsrecordId/vnfdependencies/', {
+                templateUrl: 'pages/nsrecords/vnfdependencies.html',
+                controller: 'NsrCtrl'
+            }).
+            when('/nsrecords/:nsrecordId/vnfdependencies/:vnfdependencyId', {
+                templateUrl: 'pages/nsrecords/vnfdependency.html',
+                controller: 'NsrCtrl'
             }).
             when('/vim-instances', {
                 templateUrl: 'pages/vim-instances/vim-instances.html',
                 controller: 'vimInstanceCtrl'
             }).
-            when('/vim-instances/:vim-instanceId', {
+            when('/vim-instances/:vimInstanceId', {
                 templateUrl: 'pages/vim-instances/vim-instanceinfo.html',
                 controller: 'vimInstanceCtrl'
             }).
@@ -100,9 +118,9 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/chains/chaininfo.html',
                 controller: 'ChainsCtrl'
             }).
-            when('/dragdrop', {
-                templateUrl: 'pages/tabset.html',
-                controller: 'DragDropCtrl'
+            when('/copyright', {
+                templateUrl: 'pages/copyright.html',
+                controller: ''
             }).
             otherwise({
 //                        redirectTo: '/'
@@ -116,9 +134,9 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
  *
  */
 
-angular.module('app').run(function($rootScope, $location, $cookieStore, $route) {
+angular.module('app').run(function ($rootScope, $location, $cookieStore, $route) {
     //$route.reload();
-    $rootScope.$on('$routeChangeStart', function(event, next) {
+    $rootScope.$on('$routeChangeStart', function (event, next) {
 
 //        console.log($cookieStore.get('logged'));
         if ($cookieStore.get('logged') === false || angular.isUndefined($cookieStore.get('logged'))) {
@@ -142,39 +160,65 @@ angular.module('app').run(function($rootScope, $location, $cookieStore, $route) 
  * shows the modal for changing the Settings
  */
 
-angular.module('app').controller('MenuCtrl', function($scope, http) {
+angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
+    //var url = '/api/v1';
+    var url = 'http://localhost:8080/api/v1';
 
-//    http.syncGet('/api/rest/admin/v2/configs/').then(function(data)
-//    {
-//        $scope.config = data;
-////        console.log($scope.config.parameters);
-//
-//    });
+    http.get(url+'/configurations/')
+        .success(function(data,status){
+            console.log(data);
+            $scope.config = data[0];
+        });
+
+    $scope.numberNSR = 0;
+    $scope.numberNSD = 0;
+    $scope.numberVNF = 0;
+    $scope.numberUnits = 0;
+    http.syncGet(url + '/ns-descriptors/').then(function (data) {
+        $scope.numberNSD = data.length;
+        var vnf = 0;
+        $.each(data, function (i, nsd) {
+            //console.log(nsd.vnfd.length);
+            if (!angular.isUndefined(nsd.vnfd.length))
+                vnf = vnf + nsd.vnfd.length;
+        });
+        $scope.numberVNF = vnf;
+    });
+    http.syncGet(url + '/ns-records/').then(function (data) {
+        $scope.numberNSR = data.length;
+        var units = 0;
+        $.each(data, function (i, nsr) {
+            $.each(nsr.vnfr, function (i, vnfr) {
+                $.each(vnfr.vdu, function (i, vdu) {
+                    if (!angular.isUndefined(vdu.vnfc_instance.length))
+                        units = units + vdu.vnfc_instance.length;
+                });
+
+            });
+
+        });
+        $scope.numberUnits = units;
+
+    });
 
 
-    $scope.saveSetting = function(config) {
+    $scope.saveSetting = function (config) {
         console.log(config);
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
-        http.post('/api/rest/admin/v2/configs/', config)
-            .success(function(response) {
+        http.put(url+'/configurations/', config)
+            .success(function (response) {
                 $('.modal').modal('hide');
                 alert('Configurations Updated! ' + response);
 
             })
-            .error(function(response, status) {
+            .error(function (response, status) {
                 $('.modal').modal('hide');
                 alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
             });
     };
-
-//    window.onresize = function() {
-//        window.location.reload();
-//    };
-
-
 
 
 });
