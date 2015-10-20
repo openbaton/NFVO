@@ -353,7 +353,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
         vnfcInstance.setVim_id(vdu.getVimInstance().getId());
-        vnfcInstance.setVnfc_reference(vnfComponent.getId());
+        vnfcInstance.setVnfComponent(vnfComponent);
 
         if (vnfcInstance.getConnection_point() == null)
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
