@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -120,7 +121,7 @@ public class TestVIM extends Vim {
 
     @Override
     @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
+    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.trace("Initializing " + vimInstance);
         try {

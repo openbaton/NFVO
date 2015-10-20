@@ -21,17 +21,34 @@ import javax.persistence.Entity;
 
 /**
  * Created by lto on 06/02/15.
- *
+ * <p/>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VNFDConnectionPoint extends ConnectionPoint {
     /**
      * References an internal Virtual Link (vnfd:virtual_link:id, see clause 6.3.1.3) to which other VDUs, NFs, and other types of endpoints can connect.
-     * */
+     */
     private String virtual_link_reference;
+    private String floatingIp;
 
     public VNFDConnectionPoint() {
+    }
+
+    @Override
+    public String toString() {
+        return "VNFDConnectionPoint{" +
+                "floatingIp='" + floatingIp + '\'' +
+                ", virtual_link_reference='" + virtual_link_reference + '\'' +
+                '}';
+    }
+
+    public String getFloatingIp() {
+        return floatingIp;
+    }
+
+    public void setFloatingIp(String floatingIp) {
+        this.floatingIp = floatingIp;
     }
 
     public String getVirtual_link_reference() {
