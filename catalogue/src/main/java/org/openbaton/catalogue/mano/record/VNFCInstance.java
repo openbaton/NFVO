@@ -20,6 +20,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,9 +32,12 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String vim_id;
     protected String vc_id;
     protected String hostname;
-    protected String vnfc_reference;
 
-    private String floatingIps;
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    protected VNFComponent vnfComponent;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, String> floatingIps;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ip> ips;
@@ -62,31 +66,31 @@ public class VNFCInstance extends VNFComponent implements Serializable {
         this.vc_id = vc_id;
     }
 
-    public String getVnfc_reference() {
-        return vnfc_reference;
+    public VNFComponent getVnfComponent() {
+        return vnfComponent;
     }
 
-    public void setVnfc_reference(String vnc_reference) {
-        this.vnfc_reference = vnc_reference;
+    public void setVnfComponent(VNFComponent vnfComponent) {
+        this.vnfComponent = vnfComponent;
     }
 
     @Override
     public String toString() {
         return "VNFCInstance{" +
-                "floatingIps=" + floatingIps +
-                ", vim_id='" + vim_id + '\'' +
+                "vim_id='" + vim_id + '\'' +
                 ", vc_id='" + vc_id + '\'' +
                 ", hostname='" + hostname + '\'' +
-                ", vnfc_reference='" + vnfc_reference + '\'' +
+                ", vnfComponent=" + vnfComponent +
+                ", floatingIps='" + floatingIps + '\'' +
                 ", ips=" + ips +
-                '}';
+                "} " + super.toString();
     }
 
-    public String getFloatingIps() {
+    public Map<String, String> getFloatingIps() {
         return floatingIps;
     }
 
-    public void setFloatingIps(String floatingIps) {
+    public void setFloatingIps(Map<String, String> floatingIps) {
         this.floatingIps = floatingIps;
     }
 

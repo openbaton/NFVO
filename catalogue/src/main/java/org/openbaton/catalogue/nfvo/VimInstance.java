@@ -33,6 +33,7 @@ public class VimInstance implements Serializable {
 
     @Version
     private int version = 0;
+    @Column(unique = true)
     private String name;
     private String authUrl;
     private String tenant;
@@ -43,7 +44,7 @@ public class VimInstance implements Serializable {
     private Location location;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> securityGroups;
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private Set<DeploymentFlavour> flavours;
     private String type;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

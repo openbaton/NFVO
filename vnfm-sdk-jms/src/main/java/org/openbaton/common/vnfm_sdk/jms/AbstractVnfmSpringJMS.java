@@ -48,7 +48,7 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     private JmsListenerContainerFactory containerFactory;
 
     @Bean
-    JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         loadProperties();

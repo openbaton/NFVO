@@ -293,7 +293,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
     @Override
     @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, boolean floatingIp) throws VimDriverException, VimException {
+    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimDriverException, VimException {
         VimInstance vimInstance = vdu.getVimInstance();
         log.debug("Initializing " + vimInstance.toString());
         log.debug("initialized VimInstance");
@@ -342,7 +342,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             if(vimInstance.getSecurityGroups()==null)
                 throw new NullPointerException("vimInstance.getSecurityGroups() is null");
 
-            server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIp);
+            server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIps);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -353,7 +353,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
         vnfcInstance.setVim_id(vdu.getVimInstance().getId());
-        vnfcInstance.setVnfc_reference(vnfComponent.getId());
+        vnfcInstance.setVnfComponent(vnfComponent);
 
         if (vnfcInstance.getConnection_point() == null)
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
@@ -367,9 +367,9 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
         vnfcInstance.setIps(new HashSet<Ip>());
 
-        if (floatingIp){
-            vnfcInstance.setFloatingIps(server.getFloatingIp());
-        }
+        if (floatingIps.size() != 0){
+            vnfcInstance.setFloatingIps(server.getFloatingIps());
+        } else vnfcInstance.setFloatingIps(new HashMap<String, String>());
 
         if (vdu.getVnfc_instance() == null)
             vdu.setVnfc_instance(new HashSet<VNFCInstance>());

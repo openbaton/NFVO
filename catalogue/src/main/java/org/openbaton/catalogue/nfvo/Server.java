@@ -18,36 +18,40 @@ package org.openbaton.catalogue.nfvo;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lto on 20/05/15.
  */
-@Entity
+//@Entity
 public class Server implements Serializable {
-    @Id
+//    @Id
     private String id;
-    @Version
+//    @Version
     private int version = 0;
     private String name;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private NFVImage image;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private DeploymentFlavour flavor;
 
     private String status;
     private String extendedStatus;
     private String extId;
-    private HashMap<String, List<String>> ips;
-    private String floatingIp;
-    @Temporal(TemporalType.DATE)
+
+//    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, List<String>> ips;
+
+//    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, String> floatingIps;
+
+//    @Temporal(TemporalType.DATE)
     private Date created;
-    @Temporal(TemporalType.DATE)
+//    @Temporal(TemporalType.DATE)
     private Date updated;
 
     public String getId() {
@@ -62,7 +66,7 @@ public class Server implements Serializable {
         return version;
     }
 
-    @PrePersist
+//    @PrePersist
     public void ensureId() {
         id = IdGenerator.createUUID();
     }
@@ -91,11 +95,11 @@ public class Server implements Serializable {
         this.extId = extId;
     }
 
-    public HashMap<String, List<String>> getIps() {
+    public Map<String, List<String>> getIps() {
         return ips;
     }
 
-    public void setIps(HashMap<String, List<String>> ips) {
+    public void setIps(Map<String, List<String>> ips) {
         this.ips = ips;
     }
 
@@ -139,27 +143,29 @@ public class Server implements Serializable {
         this.flavor = flavor;
     }
 
-    public String getFloatingIp() {
-        return floatingIp;
+    public Map<String, String> getFloatingIps() {
+        return floatingIps;
     }
 
-    public void setFloatingIp(String floatingIp) {
-        this.floatingIp = floatingIp;
+    public void setFloatingIps(Map<String, String> floatingIps) {
+        this.floatingIps = floatingIps;
     }
 
     @Override
     public String toString() {
         return "Server{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", extendedStatus='" + status + '\'' +
+                "created=" + created +
+                ", id='" + id + '\'' +
                 ", version=" + version +
+                ", name='" + name + '\'' +
+                ", image=" + image +
+                ", flavor=" + flavor +
+                ", status='" + status + '\'' +
+                ", extendedStatus='" + extendedStatus + '\'' +
                 ", extId='" + extId + '\'' +
-                ", ips='" + ips + '\'' +
-                ", floatingIp='" + floatingIp + '\'' +
-                ", created='" + created + '\'' +
-                ", updated='" + updated + '\'' +
+                ", ips=" + ips +
+                ", floatingIps=" + floatingIps +
+                ", updated=" + updated +
                 '}';
     }
 }
