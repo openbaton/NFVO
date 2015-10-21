@@ -147,9 +147,9 @@ public class VNFRUtils {
                     VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
                     connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
                     connectionPoint_new.setType(connectionPoint.getType());
+                    connectionPoint_new.setFloatingIp(connectionPoint.getFloatingIp());
                     connectionPoints.add(connectionPoint_new);
                 }
-                component_new.setExposed(component.isExposed());
                 component_new.setConnection_point(connectionPoints);
                 vnfComponents.add(component_new);
             }
