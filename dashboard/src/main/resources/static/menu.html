@@ -73,7 +73,10 @@
                             <a href="#nsdescriptors"><i class="fa fa-pencil-square-o fa-fw"></i> NS Descriptors</a>
                         </li>
                         <li>
-                            <a href="#services"><i class="fa fa-cloud-upload fa-fw"></i> VNF Packages</a>
+                            <a href="#vnfdescriptors"><i class="fa fa-file-text-o fa-fw"></i> VNF Descriptors</a>
+                        </li>
+                        <li>
+                            <a href="#packages"><i class="fa fa-cube fa-fw"></i> VNF Packages</a>
                         </li>
                     </ul>
                     <!-- /.nav-second-level -->
@@ -140,9 +143,9 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" id="formSetting">
-                    <div class="form-group" ng-repeat="parameter in config.parameters track by $index">
-                        <label for="{{config.parameters[$index].config_key}}" class="col-sm-4 control-label">{{config.parameters[$index].config_key}}</label>
-                        <div class="col-sm-6 input-group"><input type="text" ng-model="config.parameters[$index].config_value" class="form-control parameters" id="{{config.parameters[$index].config_key}}">
+                    <div class="form-group" ng-repeat="parameter in config.configurationParameters track by $index">
+                        <label for="{{parameter.confKey}}" class="col-sm-4 control-label">{{parameter.confKey}}</label>
+                        <div class="col-sm-6 input-group"><input type="text" ng-model="config.configurationParameters[$index].value" class="form-control parameters" id="{{config.configurationParameters[$index].value}}">
                             <span class="input-group-addon">@</span>
                         </div>
                     </div>
