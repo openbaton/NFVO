@@ -59,7 +59,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
@@ -117,7 +116,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
         VNFCInstance vnfcInstance = new VNFCInstance();
-        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyBoolean() )).thenReturn(new AsyncResult<>(vnfcInstance));
+        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyMap())).thenReturn(new AsyncResult<>(vnfcInstance));
         when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
         log.info("Starting test");
     }
