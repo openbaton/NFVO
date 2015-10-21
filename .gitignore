@@ -2,6 +2,7 @@
 
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
+!plugins/*
 
 *.zip
 *.java.hsp
