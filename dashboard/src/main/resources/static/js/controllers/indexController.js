@@ -28,31 +28,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
      */
     $scope.logout = function () {
         AuthService.logout();
-        $window.location.reload();
     };
-
-//    http.get('/api/rest/orchestrator/v2/services/').success(function(data) {
-//        $scope.numberServices = data.length;
-//
-//    });
-
-//    http.get('/api/rest/orchestrator/v2/nsrecords/').success(function(data) {
-//        $scope.numberTopologies = data.length;
-//
-//        var numUinit = 0;
-//        $.each(data, function(i, obj) {
-//            $.each(obj.serviceContainers, function(ind, v) {
-//                numUinit += v.relationElements.length;
-//            });
-//        });
-//        $scope.numberUnits = numUinit;
-//    });
-
-
-//    http.get('/api/rest/admin/v2/templates/').success(function(data) {
-//        $scope.numberTemplates = data.length;
-//
-//    });
 
 
 });
@@ -65,7 +41,8 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    $scope.URL = 'http://localhost:8080';
+    //$scope.URL = 'http://localhost:8080';
+    $scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
@@ -90,6 +67,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
     $scope.checkSecurity = function () {
         console.log($scope.URL + "/api/v1/security");
+        AuthService.removeSession();
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);

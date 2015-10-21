@@ -20,7 +20,7 @@ angular.module('app').factory('serviceAPI', function(http, $q) {
      */
     services.getServices = function() {
         var deferred = $q.defer();
-        http.get('/api/rest/orchestrator/v2/services').success(function(data, status) {
+        http.get('/api/rest/orchestrator/v2/packages').success(function(data, status) {
             deferred.resolve(data);
         });
         return deferred.promise;
@@ -171,7 +171,7 @@ angular.module('app').factory('serviceAPI', function(http, $q) {
      *
      * @returns {Array}
      */
-    //services.getRelations = function() {
+    //packages.getRelations = function() {
     //    var relations = [];
     //    http.get('/api/rest/orchestrator/v2/relations').success(function(data, status) {
     //        relations = data;
