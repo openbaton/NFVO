@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VDU
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li class="">
+                <a href="#vnfdescriptors/"><i class="fa fa-file-text-o"></i>
+                    VNF Descriptors</a>
+            </li>
+            <li class="">
+                <a href="#vnfdescriptors/{{vnfdescriptorId}}"><i class="fa fa-file-text-o"></i>
+                    VNF Descriptor</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VDU
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer" ng-show="vnfdinfo">
+        <div class="col-lg-12">
+            <div>
+
+                    <span ng-init="vnfdInfo=vnfdinfo"></span>
+                <div ng-repeat="vdu in vnfdinfo.vdu" ng-show="vdu.id==vduId">
+                    <h2>Virtual Deployment Unit</h2>
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+
+                        </spam>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd>{{vdu.vimInstance.name}}</dd>
+                         </span>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,13 +10,13 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/contents.html',
                 controller: 'MenuCtrl'
             }).
-            when('/services', {
-                templateUrl: 'pages/services/services.html',
-                controller: 'ServiceCtrl'
+            when('/packages', {
+                templateUrl: 'pages/packages/packages.html',
+                controller: 'PackageCtrl'
             }).
-            when('/services/:serviceid', {
-                templateUrl: 'pages/services/serviceinfo.html',
-                controller: 'ServiceCtrl'
+            when('/packages/:packageid', {
+                templateUrl: 'pages/packages/packageinfo.html',
+                controller: 'PackageCtrl'
             }).
             when('/nsdescriptors', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
@@ -25,6 +25,18 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/nsdescriptors/:nsdescriptorId', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptorinfo.html',
                 controller: 'NsdCtrl'
+            }).
+            when('/vnfdescriptors/', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptors.html',
+                controller: 'VnfdCtrl'
+            }).
+            when('/vnfdescriptors/:vnfdescriptorId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vnfdescriptor.html',
+                controller: 'VnfdCtrl'
+            }).
+            when('/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+                templateUrl: 'pages/nsdescriptors/vnfdescriptors/vdu.html',
+                controller: 'VnfdCtrl'
             }).
             when('/nsdescriptors/:nsdescriptorId/vnfdescriptors/', {
                 templateUrl: 'pages/nsdescriptors/vnfdescriptors.html',
@@ -82,26 +94,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/nsrecords/vnfdependency.html',
                 controller: 'NsrCtrl'
             }).
-            when('/infrastructures', {
-                templateUrl: 'pages/infrastructures/infrastructures.html',
-                controller: 'InfrastructureCtrl'
-            }).
-            when('/infrastructures/:infrastructureid', {
-                templateUrl: 'pages/infrastructures/infrastructureinfo.html',
-                controller: 'InfrastructureCtrl'
-            }).
-            when('/switches', {
-                templateUrl: 'pages/switches/switches.html',
-                controller: 'SwitchCtrl'
-            }).
-            when('/switches/:switchid', {
-                templateUrl: 'pages/switches/switchinfo.html',
-                controller: 'SwitchCtrl'
-            }).
-            when('/flow/:flowid', {
-                templateUrl: 'pages/switches/flow.html',
-                controller: 'SwitchCtrl'
-            }).
             when('/vim-instances', {
                 templateUrl: 'pages/vim-instances/vim-instances.html',
                 controller: 'vimInstanceCtrl'
@@ -125,10 +117,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/chains/:chainid', {
                 templateUrl: 'pages/chains/chaininfo.html',
                 controller: 'ChainsCtrl'
-            }).
-            when('/dragdrop', {
-                templateUrl: 'pages/tabset.html',
-                controller: 'DragDropCtrl'
             }).
             when('/copyright', {
                 templateUrl: 'pages/copyright.html',
@@ -174,16 +162,14 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
 
 angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
-    var url = '/api/v1';
-    //var url = 'http://localhost:8080/api/v1';
-    //var url = 'http://80.96.122.80:8080/api/v1';
-//    http.syncGet('/api/rest/admin/v2/configs/').then(function(data)
-//    {
-//        $scope.config = data;
-////        console.log($scope.config.parameters);
-//
-//    });
+    //var url = '/api/v1';
+    var url = 'http://localhost:8080/api/v1';
 
+    http.get(url+'/configurations/')
+        .success(function(data,status){
+            console.log(data);
+            $scope.config = data[0];
+        });
 
     $scope.numberNSR = 0;
     $scope.numberNSD = 0;
@@ -222,7 +208,7 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
-        http.post('/api/rest/admin/v2/configs/', config)
+        http.put(url+'/configurations/', config)
             .success(function (response) {
                 $('.modal').modal('hide');
                 alert('Configurations Updated! ' + response);
@@ -233,10 +219,6 @@ angular.module('app').controller('MenuCtrl', function ($scope, http) {
                 alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
             });
     };
-
-//    window.onresize = function() {
-//        window.location.reload();
-//    };
 
 
 });
