@@ -362,6 +362,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
             connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
             connectionPoint_vnfci.setType(connectionPoint.getType());
+            for (Map.Entry<String, String> entry:server.getFloatingIps().entrySet())
+                if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
+                    connectionPoint_vnfci.setFloatingIp(entry.getValue());
+
             vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
         }
 
