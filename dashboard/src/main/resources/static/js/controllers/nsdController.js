@@ -7,8 +7,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     var urlVim = '/api/v1/datacenters';
     //var urlVim = 'http://localhost:8080/api/v1/datacenters';
 
-    //var url ='http://80.96.122.80:8080/api/v1/ns-descriptors';
-    //var urlRecord ='http://80.96.122.80:8080/api/v1/ns-records';
 
     loadTable();
 
@@ -18,15 +16,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
-        $scope.showSetting=state;
+        $scope.showSetting = state;
         console.log($scope.showSetting);
-        $scope.$apply(function() {
+        $scope.$apply(function () {
             $scope.showSetting;
         });
 
     });
 
-    $scope.nsdToSend={};
+    $scope.nsdToSend = {};
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
@@ -59,7 +57,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             $scope.selection.push(image);
         }
         console.log($scope.selection);
-        $scope.vduCreate.vm_image= $scope.selection;
+        $scope.vduCreate.vm_image = $scope.selection;
     };
     $scope.addVDU = function () {
         $http.get('descriptors/vnfd/vdu.json')
@@ -123,14 +121,14 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $(".modal-backdrop").height(height)
     }
 
-    $scope.saveVirtualLink = function(vl){
+    $scope.saveVirtualLink = function (vl) {
 //console.log(vl);
         var obj = {};
-        obj[vl.key]=vl.value;
+        obj[vl.key] = vl.value;
         $scope.nsdCreate.vld.push(obj);
     };
 
-    $scope.deleteVirtualLink= function(index){
+    $scope.deleteVirtualLink = function (index) {
         $scope.nsdCreate.vld.splice(index, 1);
     };
     $scope.addVNDtoNSD = function () {
@@ -180,11 +178,10 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     if (!angular.isUndefined($routeParams.vnfdependencyId))
         $scope.vnfdependencyId = $routeParams.vnfdependencyId;
 
-    if (!angular.isUndefined($routeParams.vduId)){
-        $scope.vduId= $routeParams.vduId;
-        console.log(  $scope.vduId);
+    if (!angular.isUndefined($routeParams.vduId)) {
+        $scope.vduId = $routeParams.vduId;
+        console.log($scope.vduId);
     }
-
 
 
     $scope.storeNSDF = function (nsdCreate) {
@@ -251,7 +248,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
 
-
     $scope.deleteDFC = function (index) {
         $scope.depFlavor.df_constraint.splice(index, 1);
     };
@@ -265,7 +261,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.vnfdCreate.lifecycle_event.splice(index, 1);
     };
 
-    $scope.addLifecycle = function(){
+    $scope.addLifecycle = function () {
         $scope.vnfdCreate.lifecycle_event.push(angular.copy($scope.lifecycle_event));
     };
 
@@ -398,7 +394,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, JSON.stringify(data));
+                        showError(status, data);
                     });
             }
 
@@ -410,16 +406,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, JSON.stringify(data));
+                        showError(status, data);
                     });
             }
         }
 
         $scope.toggle = false;
         $scope.file !== '';
-        //        $scope.services = [];
+        //        $scope.packages = [];
     };
-
 
 
     $scope.isEmpty = function (obj) {
@@ -441,7 +436,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    $scope.launchOption= function(data){
+    $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
         $('#madalLaunch').modal('show');
     };
@@ -450,7 +445,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         console.log($scope.nsdToSend);
         http.post(urlRecord + '/' + $scope.nsdToSend.id)
             .success(function (response) {
-                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id+"<\/a>");
+                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
             .error(function (data, status) {
                 showError(status, data);
@@ -486,16 +481,22 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     function showError(status, data) {
-        $scope.alerts.push({
-            type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
-        });
+        if (status === 400)
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + "Bad request: your json is not well formatted"
+            });
+
+        else
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
+            });
 
         $('.modal').modal('hide');
         if (status === 401) {
             console.log(status + ' Status unauthorized')
             AuthService.logout();
-            $window.location.reload();
         }
     }
 
@@ -505,7 +506,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     }
 
     function loadTable() {
-        //if (!$('#jsonInfo').hasClass('in'))
+
         if (angular.isUndefined($routeParams.nsdescriptorId))
             http.get(url)
                 .success(function (response, status) {
@@ -514,8 +515,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 })
                 .error(function (data, status) {
                     showError(status, data);
-                    //var destinationUrl = '#';
-                    //$window.location.href = destinationUrl;
+
                 });
         else
             http.get(url + '/' + $routeParams.nsdescriptorId)
@@ -526,8 +526,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 })
                 .error(function (data, status) {
                     showError(status, data);
-                    //var destinationUrl = '#';
-                    //$window.location.href = destinationUrl;
                 });
     }
 
