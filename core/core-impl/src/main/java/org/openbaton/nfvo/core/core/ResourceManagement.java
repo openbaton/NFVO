@@ -78,12 +78,13 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
             Map<String, String> floatinIps = new HashMap<>();
             for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
-                floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+                if (connectionPoint.getFloatingIp() != null)
+                    floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
             }
             log.info("FloatingIp chosen are: " + floatinIps);
             VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
             ids.add(added.getVc_id());
-            if (floatinIps.size() > 0 && (added.getFloatingIps().size() == 0))
+            if (floatinIps.size() > 0 && (added.getFloatingIps() == null || added.getFloatingIps().size() == 0))
                 log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available?");
         }
         return ids;
@@ -115,12 +116,13 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
         log.debug("Active ip is: " + brokerIp);
         String result = "#!/bin/bash\n" +
-                "echo \"deb http://193.175.132.176/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
+                "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
                 "apt-get install git -y\n" +
-                "wget -O - http://193.175.132.176/public.gpg.key | apt-key add -\n" +
+                "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
                 "apt-get install -y python-pip\n" +
-                "apt-get install ems\n" +
+                "apt-get install -y ems\n" +
+                "mkdir -p /etc/openbaton/ems\n" +
                 "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
