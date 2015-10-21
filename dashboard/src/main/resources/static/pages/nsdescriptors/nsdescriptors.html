@@ -19,11 +19,11 @@
                 title="Create a new Network Service Descriptor" data-toggle="modal"
                 data-target="#modalFile">Upload NSD
         </button>
-        <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
+       <!-- <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
                 title="Create a new Network Service Descriptor" data-toggle="modal"
                 ng-style="{'margin-right':'20px'}"
                 data-target="#modalForm">Create NSD
-        </button>
+        </button>-->
 
     </div>
 </div>
@@ -205,7 +205,7 @@
                                         <div class="col-lg-12">Virtual Machine Images
                                             <a class="pull-right" title="Add a New VMI" href=""
                                                ng-click="toggle = !toggle">
-                                                <i class="fa fa-plus-square"> Add </i></a></div>
+                                                </a></div>
                                     </h4>
                                     <div class="col-lg-offset-2" ng-repeat="vim in vimInstances">
 
@@ -226,22 +226,7 @@
                                     <br/>
                                     <br/>
 
-                                    <div class="form-group">
-                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
 
-                                        <div class="col-sm-6">
-                                            <div class="form-group input-group">
-                                                <input class="form-control" type="text" ng-model="newValue">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueVMI(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-                                            </div>
-                                        </div>
-
-                                    </div>
 
                                 </div>
                             </div>
@@ -591,7 +576,7 @@
                         data-dismiss="modal">Close
                 </button>
                 <button type="button" id="editAddNVNFD"
-                        ng-click="addVNDtoNSD()" class="btn btn-primary">Save VNFD
+                        ng-click="sendVNFD()" class="btn btn-primary">Save VNFD
                 </button>
             </div>
         </div>

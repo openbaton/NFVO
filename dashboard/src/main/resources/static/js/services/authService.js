@@ -42,9 +42,12 @@ angular.module('app').factory('AuthService', function($http, Session, $location,
         return !!Session.userName;
     };
 
+    authService.removeSession = function() {
+        Session.destroy();
+    };
+
     authService.logout = function() {
         Session.destroy();
-//        console.log(Session);
         $window.location.reload();
     };
 
