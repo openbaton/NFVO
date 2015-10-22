@@ -52,7 +52,7 @@ public class RestEventSender implements EventSender {
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             Gson mapper = new GsonBuilder().create();
-            String json = "{action:'" + event.getAction() + "',payload:'" + mapper.toJson(event.getPayload()) + "'}";
+            String json = "{\"action:\"" + event.getAction() + "\", \"payload\":" + mapper.toJson(event.getPayload()) + "}";
 
             log.trace("body is: " + json);
 
