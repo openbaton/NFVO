@@ -377,10 +377,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
         }
 
-        for (Map.Entry<String, String > fip : vnfcInstance.getFloatingIps().entrySet()) {
+        for (Ip fip : vnfcInstance.getFloatingIps()) {
             ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setConfKey(fip.getKey()+"_floatingIp");
-            cp.setValue(fip.getValue());
+            cp.setConfKey(fip.getNetName()+"_floatingIp");
+            cp.setValue(fip.getIp());
             virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
         }
 
