@@ -16,8 +16,11 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class StartTask extends AbstractTask {
+
+    @Autowired
+    private VNFCInstanceRepository vnfcInstanceRepository;
 
     @Override
     public boolean isAsync() {
@@ -38,8 +44,23 @@ public class StartTask extends AbstractTask {
         log.debug("----> STARTED VNFR: " + virtualNetworkFunctionRecord.getName());
         log.debug("vnfr arrived version= " + virtualNetworkFunctionRecord.getHb_version());
 
-        VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
-        log.debug("vnfr existing version= " + existingvnfr.getHb_version());
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+//        VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
+//        log.debug("vnfr existing version= " + existingvnfr.getHb_version());
+
+        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+
+                vnfcInstanceRepository.save(vnfcInstance);
+                log.debug("VNFCI " + vnfcInstance);
+            }
+        }
+
+//        for (VirtualDeploymentUnit virtualDeploymentUnit : existingvnfr.getVdu()){
+//            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+//                log.debug("VNFCI EXISTING " + vnfcInstance);
+//            }
+//        }
+
+        saveVirtualNetworkFunctionRecord();
     }
 }
