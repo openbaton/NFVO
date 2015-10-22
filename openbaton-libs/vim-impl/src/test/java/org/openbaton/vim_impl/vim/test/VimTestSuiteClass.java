@@ -123,10 +123,10 @@ public class VimTestSuiteClass {
         server.setExtId(environment.getProperty("mocked_id"));
         server.setIps(new HashMap<String, List<String>>());
         //TODO use the method launchInstanceAndWait properly
-        when(clientInterfaces.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyBoolean())).thenReturn(server);
+        when(clientInterfaces.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyMap())).thenReturn(server);
 
         try {
-            Future<VNFCInstance> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
+            Future<VNFCInstance> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
             String expectedId = id.get().getVc_id();
             log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
             Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -144,7 +144,7 @@ public class VimTestSuiteClass {
         vdu.getVm_image().removeAll(vdu.getVm_image());
 
         exception.expect(VimException.class);
-        openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", false);
+        openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
     }
 
     @Test
