@@ -370,10 +370,16 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         }
 
         vnfcInstance.setIps(new HashSet<Ip>());
+        vnfcInstance.setFloatingIps(new HashSet<Ip>());
 
         if (floatingIps.size() != 0){
-            vnfcInstance.setFloatingIps(server.getFloatingIps());
-        } else vnfcInstance.setFloatingIps(new HashMap<String, String>());
+            for (Map.Entry<String, String> fip: server.getFloatingIps().entrySet()) {
+                Ip ip = new Ip();
+                ip.setNetName(fip.getKey());
+                ip.setIp(fip.getValue());
+                vnfcInstance.getFloatingIps().add(ip);
+            }
+        }
 
         if (vdu.getVnfc_instance() == null)
             vdu.setVnfc_instance(new HashSet<VNFCInstance>());
