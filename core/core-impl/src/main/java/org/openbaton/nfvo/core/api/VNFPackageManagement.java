@@ -125,7 +125,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                             }
                         }
                         //If upload==true -> create a new Image
-                        if (imageDetails.get("upload") == true || imageDetails.get("upload").equals("check")) {
+                        if (imageDetails.get("upload").equals("true") || imageDetails.get("upload").equals("check")) {
                             vnfPackage.setImageLink((String) imageDetails.get("link"));
                             if (metadata.containsKey("image-config")) {
                                 log.debug("image-config: " + metadata.get("image-config"));
@@ -195,7 +195,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             }
         }
 
-        if (imageDetails.get("upload") == true) {
+        if (imageDetails.get("upload").equals("true")) {
             log.debug("VNFPackageManagement: Uploading a new Image");
             if (vnfPackage.getImageLink() == null && imageFile == null) {
                 throw new NotFoundException("VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
