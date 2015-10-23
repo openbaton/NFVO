@@ -98,6 +98,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         }
         log.info("FloatingIp chosen are: " + floatinIps);
         VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
+        added.setVnfComponent(component);
         if (floatinIps.size() > 0 && added.getFloatingIps().size() == 0)
             log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         return added.getVim_id();

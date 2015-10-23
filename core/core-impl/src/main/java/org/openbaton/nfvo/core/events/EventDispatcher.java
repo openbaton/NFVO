@@ -134,8 +134,10 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     @Override
     @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String id) throws NotFoundException {
-        if (eventEndpointRepository.exists(id))
+        if (eventEndpointRepository.exists(id)) {
+            log.info("Removing EventEndpoint with id: " + id);
             eventEndpointRepository.delete(id);
+        }
     }
 
 }
