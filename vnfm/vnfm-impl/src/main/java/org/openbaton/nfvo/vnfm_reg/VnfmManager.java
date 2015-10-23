@@ -26,8 +26,8 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -35,6 +35,7 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -228,12 +229,17 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         if (nfvMessage.getAction().ordinal() == Action.INSTANTIATE.ordinal()) {
             VnfmOrInstantiateMessage vnfmOrInstantiate = (VnfmOrInstantiateMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrInstantiate.getVirtualNetworkFunctionRecord();
+        } else if (nfvMessage.getAction().ordinal() == Action.SCALED.ordinal()) {
+            VnfmOrScaledMessage vnfmOrScaled = (VnfmOrScaledMessage) nfvMessage;
+            virtualNetworkFunctionRecord = vnfmOrScaled.getVirtualNetworkFunctionRecord();
+            ((ScaledTask) task).setVnfcInstance(vnfmOrScaled.getVnfcInstance());
         } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
             task.setTempDestination(tempDestination);
         }
+
         virtualNetworkFunctionRecord.setTask(actionName);
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 

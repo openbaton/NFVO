@@ -231,40 +231,18 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                     }
                 }
             }
-
-//            Set<Event> events = new HashSet<Event>();
-//            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
-//                events.add(lifecycleEvent.getEvent());
-//            }
-//
-//            /*if (!events.contains(Event.ALLOCATE)) {
-//                if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionDescriptor) == false)
-//                    throw new QuotaExceededException("Quota exceeded on the deployment of " + virtualNetworkFunctionDescriptor.getName());
-//                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()) {
-//                    ids.add(resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionDescriptor));
-//                }
-//            }*/
         }
-
-//        for (String id : ids) {
-//            log.debug("Created VDU with id: " + id);
-//        }
 
         NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
 
-        vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
 
-        /*log.debug("VNFR are: ");
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()){
-            log.debug(vnfr.getName());
-        }*/
         /**
          * now check for the requires pointing to the nfvo
          */
         //TODO check where to put this
-        /*for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()){
                 log.debug("Checking parameter: " + configurationParameter.getConfKey());
                 if (configurationParameter.getConfKey().startsWith("nfvo:")){ //the parameters known from the nfvo
@@ -277,8 +255,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                     }
                 }
             }
-        }*/
+        }
 
+        vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
 
         return networkServiceRecord;
     }
@@ -303,6 +282,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+        if (networkServiceRecord == null){
+            throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
+        }
         Configuration configuration = configurationManagement.queryByName("system");
 
         boolean checkStatus = true;
