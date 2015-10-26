@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,9 +51,12 @@ public class PluginStartup {
         String name = pluginName.substring(0,pluginName.indexOf("-"));
         log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
-        File file = new File("plugin-" + name + ".log");
+        Date dNow = new Date( );
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
+
+        File file = new File("plugin-" + name + "_" + ft.format(dNow)+ ".log");
         processBuilder.redirectErrorStream(true);
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
         log.trace("ProcessBuilder is: " + processBuilder);
         Process p = processBuilder.start();
         if (waitForPlugin)

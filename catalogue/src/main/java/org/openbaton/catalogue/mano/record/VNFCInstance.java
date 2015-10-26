@@ -20,7 +20,6 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,8 +35,8 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     protected VNFComponent vnfComponent;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> floatingIps;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Ip> floatingIps;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ip> ips;
@@ -86,11 +85,11 @@ public class VNFCInstance extends VNFComponent implements Serializable {
                 "} " + super.toString();
     }
 
-    public Map<String, String> getFloatingIps() {
+    public Set<Ip> getFloatingIps() {
         return floatingIps;
     }
 
-    public void setFloatingIps(Map<String, String> floatingIps) {
+    public void setFloatingIps(Set<Ip> floatingIps) {
         this.floatingIps = floatingIps;
     }
 
