@@ -11,11 +11,11 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 controller: 'MenuCtrl'
             }).
             when('/packages', {
-                templateUrl: 'pages/packages/packages.html',
+                templateUrl: 'pages/packages/vnfmanagers.html',
                 controller: 'PackageCtrl'
             }).
             when('/packages/:packageid', {
-                templateUrl: 'pages/packages/packageinfo.html',
+                templateUrl: 'pages/packages/vnfmanagerinfo.html',
                 controller: 'PackageCtrl'
             }).
             when('/nsdescriptors', {
@@ -73,6 +73,14 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/nsrecords/:nsrecordId', {
                 templateUrl: 'pages/nsrecords/nsrecordinfo.html',
                 controller: 'NsrCtrl'
+            }).
+            when('/vnfmanagers', {
+                templateUrl: 'pages/vnfmanagers/vnfmanagers.html',
+                controller: 'VnfManagerCtrl'
+            }).
+            when('/vnfmanagers/:vnfmanagerId', {
+                templateUrl: 'pages/vnfmanagers/vnfmanagerinfo.html',
+                controller: 'VnfManagerCtrl'
             }).
             when('/nsrecords/:nsrecordId/graph', {
                 templateUrl: 'pages/nsrecords/graph.html',
@@ -163,7 +171,8 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
 angular.module('app').controller('MenuCtrl', function ($scope, http) {
     $scope.config = {};
     //var url = '/api/v1';
-    var url = 'http://localhost:8080/api/v1';
+    //var url = 'http://localhost:8080/api/v1';
+    var url = 'http://80.96.122.80:8080/api/v1';
 
     http.get(url+'/configurations/')
         .success(function(data,status){

@@ -31,6 +31,8 @@ require({
         jquery_jsPlumb: "libs/jquery/jquery.jsPlumb-1.5.3-min",
         dropzone: "libs/dropzone",
         indexController: "controllers/indexController",
+        vnfcomponentController: "controllers/vnfcomponentController",
+        vnfmanagerController: "controllers/vnfmanagerController",
         vnfdController: "controllers/vnfdController"
     },
     shim: {
@@ -111,6 +113,12 @@ require({
         vimInstanceController: {
             deps: ['app', 'servicesServices', 'httpService','authService']
         },
+        vnfmanagerController: {
+            deps: ['app', 'servicesServices', 'httpService','authService']
+        },
+        vnfcomponentController: {
+            deps: ['app', 'servicesServices', 'httpService','authService']
+        },
         vnfdController: {
             deps: ['app', 'servicesServices', 'httpService','authService']
         },
@@ -144,6 +152,8 @@ require({
     'indexController',
     'nsdController',
     'vnfdController',
+    'vnfcomponentController',
+    'vnfmanagerController',
     'packageController',
     'nsrController',
     'vimInstanceController'

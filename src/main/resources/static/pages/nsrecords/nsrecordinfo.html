@@ -102,7 +102,7 @@
                         </spam>
                     </spam>
                 </dd>-->
-                <tab heading="VNF Forward Graph Descriptor" ng-show="nsrinfo.vnffgd>0">
+                <tab heading="VNF Forward Graph Descriptor" ng-if="nsrinfo.vnffgd.length>0">
                     <div ng-show="nsrinfo.vnffgd>0">
                         <dt>VNF Forward Graph Descriptor:</dt>
                         <dd>
@@ -115,8 +115,8 @@
                     </div>
 
                 </tab>
-                <tab heading="VNF Dependencies">
-                    <div class="table-responsive" ng-show="nsrinfo.vnf_dependency.length > 0">
+                <tab heading="VNF Dependencies"  ng-if="nsrinfo.vnf_dependency.length > 0">
+                    <div class="table-responsive">
                         <h3>VNF Dependencies</h3>
                         <table
                                 class="table table-bordered table-striped table-hover tablesorter"
