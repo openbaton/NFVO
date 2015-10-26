@@ -88,10 +88,22 @@
                                     <td>{{vdu.vm_image}}</td>
                                     <td>{{vdu.vimInstanceName}}</td>
                                     <td>
-                                                <span ng-repeat="vnfci in vdu.vnfc_instance">
-                                                <span ng-repeat="(k,v) in vnfci">
-                                                <b>{{k}}</b>: {{v}}
-
+                                            <span ng-repeat="vnfci in vdu.vnfc_instance">
+                                                <span>
+                                                    <b>hostname</b>: {{vnfci.hostname}},
+                                                    <b>floatingIps</b>: {{vnfci.floatingIps}}
+                                                    <span ng-repeat="cp in vnfci.vnfComponent.connection_point">
+                                                        <b>floatingIp</b>: {{cp.floatingIp}}
+                                                        <b>virtual_link_reference</b>: {{cp.virtual_link_reference}}
+                                                    </span>
+                                                </span>
+                                                <span ng-repeat="ips in vnfci.ips">
+                                                <ul>
+                                                    <li>
+                                                        <b>netName</b>: {{ips.netName}},
+                                                        <b>ip</b>: {{ips.ip}}
+                                                    </li>
+                                                </ul>
                                                 </span>
                                             </span>
                                     </td>

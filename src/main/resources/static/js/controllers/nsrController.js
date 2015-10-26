@@ -1,7 +1,9 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope,$http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
     var url = '/api/v1/ns-records';
+
     //var url = 'http://localhost:8080/api/v1/ns-records';
+    //var url = 'http://80.96.122.80:8080/api/v1/ns-records';
 
 
 
@@ -213,7 +215,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
     };
 
     function loadTable() {
-        //if (!$('#jsonInfo').hasClass('in'))
         if (angular.isUndefined($routeParams.nsrecordId))
             http.get(url)
                 .success(function (response, status) {
@@ -238,6 +239,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $compile
                     //var destinationUrl = '#';
                     //$window.location.href = destinationUrl;
                 });
+
+
     }
 
 
