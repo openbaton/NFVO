@@ -1,0 +1,53 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            VNF Managers
+            <small> List of VFN Managers</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-plug"></i> VNF Packages</li>
+        </ol>
+    </div>
+</div>
+<!-- /.row -->
+
+<div class="row top-buffer">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-show="vnfmanagers.length>0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter">
+                <thead>
+                <tr>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'type'; reverse = !reverse">type <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'endpointType'; reverse = !reverse">endpointType <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'endpoint'; reverse = !reverse">endpoint <i class="fa fa-sort"></i></th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="data in vnfmanagers| filter:search|orderBy:predicate:reverse">
+                    <td><a href="#vnfmanagers/{{data.id}}">{{data.id}} </a></td>
+                    <td>{{data.version}}</td>
+                    <td>{{data.type}}</td>
+                    <td>{{data.endpointType}}</td>
+                    <td>{{data.endpoint}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
