@@ -171,13 +171,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     boolean found = false;
                     VNFCInstance vnfcInstance_new = null;
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
-                                if (vnfcInstance_new.getVnfComponent().getId().equals(component.getId())) {
-                                    vnfcInstance_new = vnfcInstance;
-                                    fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
-                                    found = true;
-                                    break;
-                                }
+                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+                            if (vnfcInstance.getVnfComponent().getId().equals(component.getId())) {
+                                vnfcInstance_new = vnfcInstance;
+                                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
+                                found = true;
+                                log.debug("VNFComponentInstance FOUND : " + vnfcInstance_new.getVnfComponent());
+                                break;
+                            }
+                        }
                         if (found)
                             break;
                     }
@@ -190,7 +192,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink();
                     else
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScripts();
-                    nfvMessage = VnfmUtils.getNfvMessage(Action.SCALED, this.scale(virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency));
+                    nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, this.scale(virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency), vnfcInstance_new);
                     break;
                 case SCALING:
                     break;
@@ -377,10 +379,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
         }
 
-        for (Map.Entry<String, String > fip : vnfcInstance.getFloatingIps().entrySet()) {
+        for (Ip fip : vnfcInstance.getFloatingIps()) {
             ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setConfKey(fip.getKey()+"_floatingIp");
-            cp.setValue(fip.getValue());
+            cp.setConfKey(fip.getNetName()+"_floatingIp");
+            cp.setValue(fip.getIp());
             virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
         }
 
