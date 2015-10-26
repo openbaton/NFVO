@@ -49,8 +49,8 @@
             <br/>
             <br/>
             <tabset>
-                <tab heading="VNF Descriptors">
-                    <div class="table-responsive" ng-if="nsdinfo.vnfd.length > 0">
+                <tab heading="VNF Descriptors" ng-if="nsdinfo.vnfd.length > 0">
+                    <div class="table-responsive">
                         <h3>VNF Descriptors</h3>
                         <table
                                 class="table table-bordered table-striped table-hover tablesorter"
@@ -100,7 +100,7 @@
                         </table>
                     </div>
                 </tab>
-                <tab heading="VNF Forward Graph Descriptor" ng-show="nsdinfo.vnffgd>0">
+                <tab heading="VNF Forward Graph Descriptor" ng-if="nsdinfo.vnffgd.length>0">
                     <div ng-show="nsdinfo.vnffgd>0">
                         <dt>VNF Forward Graph Descriptor</dt>
                         <dd>
@@ -112,8 +112,8 @@
                         </dd>
                     </div>
                 </tab>
-                <tab heading="VNF Dependencies">
-                    <div class="table-responsive" ng-show="nsdinfo.vnf_dependency.length > 0">
+                <tab heading="VNF Dependencies" ng-if="nsdinfo.vnf_dependency.length > 0">
+                    <div class="table-responsive" >
                         <h3>VNF Dependencies</h3>
                         <table
                                 class="table table-bordered table-striped table-hover tablesorter"

@@ -102,9 +102,9 @@
                                             <i
                                                     class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
+                                        <!--<th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
                                                 class="fa fa-sort"></i>
-                                        </th>
+                                        </th>-->
                                         <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                                 class="fa fa-sort"></i>
                                         </th>
@@ -119,9 +119,14 @@
                                         <td>{{vdu.version}}</td>
                                         <td>{{vdu.vm_image}}</td>
                                         <td>{{vdu.vimInstanceName}}</td>
-                                        <td>{{vdu.vnfc_instance}}</td>
+                                        <!--<td>{{vdu.vnfc_instance}}</td>-->
                                         <td>
-                                            <span ng-repeat="vnfc in vdu.vnfc"> {{vnfc.connection_point}} </span>
+                                            <ul ng-repeat="vnfc in vdu.vnfc">
+                                            <li ng-repeat="cp in vnfc.connection_point">
+                                                <b>virtual_link_reference</b>: {{cp.virtual_link_reference}}
+                                                <b>floatingIp</b>: {{cp.floatingIp}}
+                                            </li>
+                                            </ul>
                                         </td>
                                     </tr>
                                     </tbody>
