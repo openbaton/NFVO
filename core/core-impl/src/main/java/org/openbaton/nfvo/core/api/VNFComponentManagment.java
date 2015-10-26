@@ -29,7 +29,22 @@ public class VNFComponentManagment implements org.openbaton.nfvo.core.interfaces
     @Autowired
     private VNFCRepository vnfcRepository;
 
+    /**
+     * Return the list of VNFComponent
+     * @return Iterable<VNFComponent>
+     */
     public Iterable<VNFComponent> query(){
        return vnfcRepository.findAll();
+    }
+
+    /**
+     * Returns the VNFComponent selected by id
+     *
+     * @param id of VNFComponent
+     * @return VNFComponent
+     */
+    @Override
+    public VNFComponent query(String id) {
+        return vnfcRepository.findFirstById(id);
     }
 }
