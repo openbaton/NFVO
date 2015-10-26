@@ -1,6 +1,5 @@
 package org.openbaton.plugin.interfaces;
 
-import org.openbaton.plugin.PluginStarter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
