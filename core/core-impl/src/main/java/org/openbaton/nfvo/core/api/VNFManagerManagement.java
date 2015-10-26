@@ -33,4 +33,9 @@ public class VNFManagerManagement implements org.openbaton.nfvo.core.interfaces.
     public Iterable<VnfmManagerEndpoint> query(){
        return vnfmManagerEndpointRepository.findAll();
     }
+
+
+    public VnfmManagerEndpoint query(String id) {
+        return vnfmManagerEndpointRepository.findFirstById(id);
+    }
 }

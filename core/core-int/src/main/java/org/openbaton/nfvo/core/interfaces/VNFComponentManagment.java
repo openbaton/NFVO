@@ -29,5 +29,11 @@ public interface VNFComponentManagment {
          */
         Iterable<VNFComponent> query();
 
+        /**
+         * Returns the VNFComponent selected by id
+         * @param id of VNFComponent
+         * @return VNFComponent
+         */
+        VNFComponent query(String id);
 
 }

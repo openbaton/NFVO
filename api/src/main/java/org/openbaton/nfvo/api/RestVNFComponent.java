@@ -22,14 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/v1/vnfcomponent")
+@RequestMapping("/api/v1/vnfcomponents")
 public class RestVNFComponent {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -41,5 +38,11 @@ public class RestVNFComponent {
     @ResponseStatus(HttpStatus.OK)
     public Iterable<VNFComponent> findAll() {
         return vnfComponentManagment.query();
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public VNFComponent findById(@PathVariable("id") String id) {
+        return vnfComponentManagment.query(id);
     }
 }

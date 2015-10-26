@@ -26,4 +26,12 @@ public interface VNFManagerManagement {
      */
     Iterable<VnfmManagerEndpoint> query();
 
+    /**
+     * Returns the VnfmManagerEndpoint selected by id
+     *
+     * @param id of VnfmManagerEndpoint
+     * @return VnfmManagerEndpoint
+     */
+    VnfmManagerEndpoint query(String id);
+
 }
