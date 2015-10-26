@@ -38,7 +38,7 @@ public interface ResourcePerformanceManagement extends Remote {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	Item getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException;
+	List<Item> getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException;
 
 	/**
 	 * This operation allows providing notifications with performance
