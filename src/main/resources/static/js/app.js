@@ -110,22 +110,6 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/vim-instances/vim-instanceinfo.html',
                 controller: 'vimInstanceCtrl'
             }).
-            when('/controllers/:controllerid', {
-                templateUrl: 'pages/controllers/controllerinfo.html',
-                controller: 'ControllerCtrl'
-            }).
-            when('/controllers', {
-                templateUrl: 'pages/controllers/controllers.html',
-                controller: 'ControllerCtrl'
-            }).
-            when('/chains', {
-                templateUrl: 'pages/chains/chains.html',
-                controller: 'ChainsCtrl'
-            }).
-            when('/chains/:chainid', {
-                templateUrl: 'pages/chains/chaininfo.html',
-                controller: 'ChainsCtrl'
-            }).
             when('/copyright', {
                 templateUrl: 'pages/copyright.html',
                 controller: ''
