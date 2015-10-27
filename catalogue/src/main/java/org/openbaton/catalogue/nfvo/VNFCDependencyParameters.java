@@ -25,14 +25,22 @@ import java.util.Map;
  * Created by lto on 21/08/15.
  */
 @Entity
-public class DependencyParameters implements Serializable {
-
+public class VNFCDependencyParameters implements Serializable {
+    private String vnfcId;
     @Id
     private String id;
     @Version
     private int version = 0;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> parameters;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Map<String, DependencyParameters> parameters;
+
+    public String getVnfcId() {
+        return vnfcId;
+    }
+
+    public void setVnfcId(String vnfcId) {
+        this.vnfcId = vnfcId;
+    }
 
     @PrePersist
     public void ensureId() {
@@ -55,18 +63,19 @@ public class DependencyParameters implements Serializable {
         this.version = version;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, DependencyParameters> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameters(Map<String, DependencyParameters> parameters) {
         this.parameters = parameters;
     }
 
     @Override
     public String toString() {
-        return "DependencyParameters{" +
+        return "VNFCDependencyParameters{" +
                 "id='" + id + '\'' +
+                ", vnfcId='" + vnfcId + '\'' +
                 ", version=" + version +
                 ", parameters=" + parameters +
                 '}';
