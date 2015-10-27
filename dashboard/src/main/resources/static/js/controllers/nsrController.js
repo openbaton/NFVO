@@ -1,11 +1,6 @@
 var app = angular.module('app').controller('NsrCtrl', function ($scope,$http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
-    var url = '/api/v1/ns-records';
-
-    //var url = 'http://localhost:8080/api/v1/ns-records';
-    //var url = 'http://80.96.122.80:8080/api/v1/ns-records';
-
-
+    var url = $cookieStore.get('URL')+"/api/v1/ns-records";
 
     loadTable();
 
