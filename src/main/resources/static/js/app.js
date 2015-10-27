@@ -8,14 +8,14 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             }).
             when('/', {
                 templateUrl: 'pages/contents.html',
-                controller: 'MenuCtrl'
+                controller: 'IndexCtrl'
             }).
             when('/packages', {
-                templateUrl: 'pages/packages/vnfmanagers.html',
+                templateUrl: 'pages/packages/packages.html',
                 controller: 'PackageCtrl'
             }).
             when('/packages/:packageid', {
-                templateUrl: 'pages/packages/vnfmanagerinfo.html',
+                templateUrl: 'pages/packages/packageinfo.html',
                 controller: 'PackageCtrl'
             }).
             when('/nsdescriptors', {
@@ -169,65 +169,7 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
  */
 
 angular.module('app').controller('MenuCtrl', function ($scope, http) {
-    $scope.config = {};
-    //var url = '/api/v1';
-    //var url = 'http://localhost:8080/api/v1';
-    var url = 'http://80.96.122.80:8080/api/v1';
 
-    http.get(url+'/configurations/')
-        .success(function(data,status){
-            console.log(data);
-            $scope.config = data[0];
-        });
-
-    $scope.numberNSR = 0;
-    $scope.numberNSD = 0;
-    $scope.numberVNF = 0;
-    $scope.numberUnits = 0;
-    http.syncGet(url + '/ns-descriptors/').then(function (data) {
-        $scope.numberNSD = data.length;
-        var vnf = 0;
-        $.each(data, function (i, nsd) {
-            //console.log(nsd.vnfd.length);
-            if (!angular.isUndefined(nsd.vnfd.length))
-                vnf = vnf + nsd.vnfd.length;
-        });
-        $scope.numberVNF = vnf;
-    });
-    http.syncGet(url + '/ns-records/').then(function (data) {
-        $scope.numberNSR = data.length;
-        var units = 0;
-        $.each(data, function (i, nsr) {
-            $.each(nsr.vnfr, function (i, vnfr) {
-                $.each(vnfr.vdu, function (i, vdu) {
-                    if (!angular.isUndefined(vdu.vnfc_instance.length))
-                        units = units + vdu.vnfc_instance.length;
-                });
-
-            });
-
-        });
-        $scope.numberUnits = units;
-
-    });
-
-
-    $scope.saveSetting = function (config) {
-        console.log(config);
-        $('.modal').modal('hide');
-        $('#modalSend').modal('show');
-
-        http.put(url+'/configurations/', config)
-            .success(function (response) {
-                $('.modal').modal('hide');
-                alert('Configurations Updated! ' + response);
-
-            })
-            .error(function (response, status) {
-                $('.modal').modal('hide');
-                alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
-            });
-    };
 
 
 });
