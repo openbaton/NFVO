@@ -17,15 +17,19 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
+import org.openbaton.nfvo.repositories.VNFRecordDependencyRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +52,12 @@ public class ScaledTask extends AbstractTask {
 
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
+
+    @Autowired
+    private VNFRecordDependencyRepository vnfRecordDependencyRepository;
+
+    @Autowired
+    private VNFCInstanceRepository vnfcInstanceRepository;
 
     private VNFCInstance vnfcInstance;
 
@@ -74,7 +84,6 @@ public class ScaledTask extends AbstractTask {
         List<VNFRecordDependency> dependenciesSource = dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
         log.debug(virtualNetworkFunctionRecord.getName() + " is source of " + dependenciesSource.size() + " dependencies");
 
-        //TODO set up dependencies, HOW TO DO WHEN multiple VNFC???
         for (VNFRecordDependency dependency : dependenciesSource) {
             for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
                 if (vnfr.getName().equals(dependency.getTarget())) {
@@ -97,19 +106,61 @@ public class ScaledTask extends AbstractTask {
                         parametersNew.put(entry.getKey(), entry.getValue());
                     }
 
-                    for (Ip ip : vnfcInstance.getFloatingIps())
-                        parametersNew.put(ip.getNetName() + "_floatingIp", ip.getIp());
-
-                    for (Ip ip : vnfcInstance.getIps())
-                        parametersNew.put(ip.getNetName(), ip.getIp());
-
-                    parametersNew.put("hostname", vnfcInstance.getHostname());
-
                     dependencyParameters.getParameters().putAll(parametersNew);
                     dependency_new.getParameters().put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
 
+                    dependency_new.setVnfcParameters(new HashMap<String, VNFCDependencyParameters>());
+                    VNFCDependencyParameters vnfcDependencyParameters = new VNFCDependencyParameters();
+                    vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
+
+                    DependencyParameters vnfcDP = new DependencyParameters();
+                    vnfcDP.setParameters(new HashMap<String, String>());
+
+                    for (Ip ip : vnfcInstance.getFloatingIps())
+                        vnfcDP.getParameters().put(ip.getNetName() + "_floatingIp",ip.getIp());
+
+                    for (Ip ip : vnfcInstance.getIps())
+                        vnfcDP.getParameters().put(ip.getNetName(), ip.getIp());
+
+                    vnfcDP.getParameters().put("hostname", vnfcInstance.getHostname());
+
+                    String vnfcId = "";
+
+                    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+                        for (VNFCInstance vnfcInstance1 : vdu.getVnfc_instance()) {
+                            if (vnfcInstance.getVc_id().equals(vnfcInstance1.getVc_id())) {
+                                vnfcId = vnfcInstance1.getId();
+                                break;
+                            }
+                        }
+                        if (vnfcInstance.getId() != null){
+                            break;
+                        }
+                    }
+                    log.debug("Added VNFCInstance: " + vnfcInstance);
+
+//                    vnfcInstanceRepository.save(vnfcInstance);
+
+                    vnfcDependencyParameters.getParameters().put(vnfcId, vnfcDP);
+
+                    dependency_new.getVnfcParameters().put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
+                    if (dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()) == null) {
+                        VNFCDependencyParameters vnfcDependencyParameters1 = new VNFCDependencyParameters();
+                        vnfcDependencyParameters1.setParameters(new HashMap<String, DependencyParameters>());
+                        dependency.getVnfcParameters().put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters1);
+                    }
+                    if (dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()).getParameters() == null)
+                        dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()).setParameters(new HashMap<String, DependencyParameters>());
+                    dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()).getParameters().putAll(vnfcDependencyParameters.getParameters());
+
+
                     dependency_new.setTarget(dependency.getTarget());
+
                     message.setVnfrd(dependency_new);
+
+                    //need to update dependency
+                    vnfRecordDependencyRepository.save(dependency);
+                    log.debug("Dependency updated: " + dependency);
 
                     vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 }

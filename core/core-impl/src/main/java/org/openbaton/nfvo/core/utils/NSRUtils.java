@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.slf4j.Logger;
@@ -117,6 +118,14 @@ public class NSRUtils {
 
                     if (virtualNetworkFunctionDescriptor.getName().equals(vnfDependency.getTarget().getName()))
                         vnfRecordDependency.setTarget(virtualNetworkFunctionDescriptor.getName());
+
+
+
+                    vnfRecordDependency.setVnfcParameters(new HashMap<String, VNFCDependencyParameters>());
+                    VNFCDependencyParameters vnfcDependencyParameters = new VNFCDependencyParameters();
+                    vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
+
+                    vnfRecordDependency.getVnfcParameters().put(virtualNetworkFunctionDescriptor.getType(),vnfcDependencyParameters);
                 }
                 log.debug("Adding dependency " + vnfRecordDependency);
                 networkServiceRecord.getVnf_dependency().add(vnfRecordDependency);
