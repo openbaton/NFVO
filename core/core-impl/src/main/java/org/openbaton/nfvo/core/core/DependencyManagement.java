@@ -16,13 +16,13 @@
 
 package org.openbaton.nfvo.core.core;
 
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -93,30 +93,52 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
 
     @Override
     public synchronized void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
-        if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
-            Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+        List<VNFRecordDependency> vnfRecordDependencies = getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
-            for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
-                vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
+        for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
 
-                DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
-                if (dp != null) {
-                    for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
-                        for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
-                            if (cp.getConfKey().equals(keyValueDep.getKey())) {
-                                log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
-                                keyValueDep.setValue(cp.getValue());
-                                break;
-                            }
+            DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
+            if (dp != null) {
+                for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
+                    for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
+                        if (cp.getConfKey().equals(keyValueDep.getKey())) {
+                            log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
+                            keyValueDep.setValue(cp.getValue());
+                            break;
                         }
                     }
-                    vnfrDependencyRepository.save(vnfRecordDependency);
                 }
-                log.debug("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters());
+
             }
 
+            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
+                for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+
+                    log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
+                    log.debug("VNFRecordDependency is " + vnfRecordDependency);
+                    VNFCDependencyParameters vnfcDependencyParameters = vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());
+                    log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
+
+                    if (vnfcDependencyParameters != null) {
+                        if (vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()) == null) {
+                            DependencyParameters dependencyParameters = new DependencyParameters();
+                            dependencyParameters.setParameters(new HashMap<String, String>());
+                            vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
+                        }
+                        for (Ip ip : vnfcInstance.getIps())
+                            vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName(), ip.getIp());
+
+                        for (Ip ip : vnfcInstance.getFloatingIps())
+                            vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
+
+                        vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put("hostname", vnfcInstance.getHostname());
+                    }
+                }
+
+            vnfrDependencyRepository.save(vnfRecordDependency);
+            log.debug("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters());
         }
+
     }
 
     private Set<String> getNotInitializedVnfrSource(Set<String> ids, NetworkServiceRecord nsr) {
@@ -141,7 +163,7 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public VNFRecordDependency getDependencyForAVNFRecordTarget(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord){
+    public VNFRecordDependency getDependencyForAVNFRecordTarget(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
@@ -149,7 +171,7 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
             for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
                 vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
 
-                if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())){
+                if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
                     return vnfRecordDependency;
                 }
 
@@ -169,7 +191,7 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                 vnfRecordDependency = vnfrDependencyRepository.findOne(vnfRecordDependency.getId());
 
                 log.trace("Checking if " + virtualNetworkFunctionRecord.getName() + " is source for " + vnfRecordDependency);
-                if (vnfRecordDependency.getIdType().containsKey(virtualNetworkFunctionRecord.getName())){
+                if (vnfRecordDependency.getIdType().containsKey(virtualNetworkFunctionRecord.getName())) {
                     res.add(vnfRecordDependency);
                 }
             }
