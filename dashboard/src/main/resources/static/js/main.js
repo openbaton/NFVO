@@ -111,22 +111,22 @@ require({
             deps: ['app', 'servicesServices', 'httpService', 'underscore', 'topologyServices', 'angular_cookies', 'bootstrapSwitch','authService','underscore']
         },
         vimInstanceController: {
-            deps: ['app', 'servicesServices', 'httpService','authService']
+            deps: ['app', 'servicesServices', 'httpService','authService', 'angular_cookies']
         },
         vnfmanagerController: {
-            deps: ['app', 'servicesServices', 'httpService','authService']
+            deps: ['app', 'servicesServices', 'httpService','authService', 'angular_cookies']
         },
         vnfcomponentController: {
-            deps: ['app', 'servicesServices', 'httpService','authService']
+            deps: ['app', 'servicesServices', 'httpService','authService', 'angular_cookies']
         },
         vnfdController: {
-            deps: ['app', 'servicesServices', 'httpService','authService']
+            deps: ['app', 'servicesServices', 'httpService','authService', 'angular_cookies']
         },
         packageController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService','dropzone']
         },
         indexController: {
-            deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService']
+            deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService', 'angular_cookies']
         },
         topologyServices: {
             deps: ['app', 'httpService', 'd3', 'jquery_jsPlumb', 'underscore','servicesServices']
