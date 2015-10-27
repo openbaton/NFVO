@@ -16,6 +16,7 @@
 package org.openbaton.catalogue.mano.record;
 
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -33,24 +34,29 @@ public class VNFRecordDependency implements Serializable {
     @Version
     private int version = 0;
 
-    //@OneToOne(cascade = {CascadeType.REFRESH/*, CascadeType.MERGE*/}, fetch = FetchType.EAGER)
     private String target;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Map<String, DependencyParameters> parameters;
-
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Map<String, VNFCDependencyParameters> vnfcParameters;
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, String> idType;
-
-//    @Enumerated(EnumType.STRING)
-//    private Status status;
 
     public VNFRecordDependency() {
     }
 
+    public Map<String, VNFCDependencyParameters> getVnfcParameters() {
+        return vnfcParameters;
+    }
+
+    public void setVnfcParameters(Map<String, VNFCDependencyParameters> vnfcParameters) {
+        this.vnfcParameters = vnfcParameters;
+    }
+
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
 
     public Map<String, String> getIdType() {
@@ -59,17 +65,6 @@ public class VNFRecordDependency implements Serializable {
 
     public void setIdType(Map<String, String> idType) {
         this.idType = idType;
-    }
-
-    @Override
-    public String toString() {
-        return "VNFRecordDependency{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", target="+target+
-                ", parameters=" + parameters +
-                ", idType=" + idType +
-                '}';
     }
 
     public Map<String, DependencyParameters> getParameters() {
@@ -104,11 +99,15 @@ public class VNFRecordDependency implements Serializable {
         this.target = target;
     }
 
-//    public Status getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(Status status) {
-//        this.status = status;
-//    }
+    @Override
+    public String toString() {
+        return "VNFRecordDependency{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", target='" + target + '\'' +
+                ", parameters=" + parameters +
+                ", vnfcParameters=" + vnfcParameters +
+                ", idType=" + idType +
+                '}';
+    }
 }
