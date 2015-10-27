@@ -1,12 +1,10 @@
 var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
-    var url = '/api/v1/ns-descriptors';
-    //var url = 'http://localhost:8080/api/v1/ns-descriptors';
-    var urlRecord = '/api/v1/ns-records';
-    //var urlRecord = 'http://localhost:8080/api/v1/ns-records';
-    var urlVim = '/api/v1/datacenters';
-    //var urlVim = 'http://localhost:8080/api/v1/datacenters';
+    var baseURL= $cookieStore.get('URL')+"/api/v1";
 
+    var url = baseURL+ '/ns-descriptors';
+    var urlRecord = baseURL+ '/ns-records';
+    var urlVim = baseURL+'/datacenters';
 
     loadTable();
 

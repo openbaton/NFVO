@@ -1,4 +1,6 @@
-<div id="wrapper" ng-controller="IndexCtrl">
+<div ng-controller="IndexCtrl">
+
+<div id="wrapper">
 <!-- Navigation -->
 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
@@ -13,28 +15,11 @@
     <!-- /.navbar-header -->
 
     <ul class="nav navbar-top-links navbar-right">
-
-        <!--<li class="dropdown messages-dropdown">-->
-        <!--<a href=""-->
-        <!--data-toggle="modal"-->
-        <!--data-target="#modalSetting">-->
-        <!--<i class="fa fa fa-cog"></i> Settings-->
-        <!--</a>-->
-        <!--</li>-->
-
         <li class="dropdown">
             <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{username}} <b class="caret"></b></a>
             <ul class="dropdown-menu">
-                <!--<li>
-                    <a href=""><i class="fa fa-fw fa-user"></i> Profile</a>
-                </li>
                 <li>
-                    <a href=""><i class="fa fa-fw fa-envelope"></i> Inbox</a>
-                </li>-->
-                <li>
-                    <a href=""
-                       data-toggle="modal"
-                       data-target="#modalSetting"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                    <a href="" ng-click="loadSettings()"><i class="fa fa-fw fa-gear"></i> Settings</a>
                 </li>
                 <li class="divider"></li>
                 <li>
@@ -42,12 +27,6 @@
                 </li>
             </ul>
         </li>
-
-
-        <!-- /.dropdown -->
-
-
-        <!-- /.dropdown -->
     </ul>
     <!-- /.navbar-top-links -->
 
@@ -74,6 +53,9 @@
                         </li>
                         <li>
                             <a href="#vnfdescriptors"><i class="fa fa-file-text-o fa-fw"></i> VNF Descriptors</a>
+                        </li>
+                        <li>
+                            <a href="#vnfmanagers"><i class="fa fa-plug fa-fw"></i> VNF Managers</a>
                         </li>
                         <li>
                             <a href="#packages"><i class="fa fa-cube fa-fw"></i> VNF Packages</a>
@@ -133,7 +115,7 @@
 
 
 
-<div class="modal" id="modalSetting" ng-controller="MenuCtrl">
+<div class="modal" id="modalSetting">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -161,8 +143,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal " id="modalSend" data-backdrop="static"
-     data-keyboard="false">
+<div class="modal " id="modalSend" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -185,4 +166,5 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+</div>
 

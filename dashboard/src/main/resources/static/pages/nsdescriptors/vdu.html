@@ -39,7 +39,7 @@
                 <div ng-repeat="vdu in vnfd.vdu" ng-show="vdu.id==vduId">
                     <h2>Virtual Deployment Unit</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance' && k!='vnfc_instance'">
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
 
@@ -49,6 +49,52 @@
                                  <dd><a href="#vim-instances/{{vdu.vimInstance.id}}">{{vdu.vimInstance.name}}</a></dd>
                          </span>
                     </dl>
+                    <tabset ng-if="vdu.vnfc_instance.length > 0">
+                        <tab heading="VNFC Instance" >
+                            <div class="table-responsive">
+                                <h3>VNFC Instances</h3>
+                                <table
+                                        class="table table-bordered table-striped table-hover tablesorter"
+                                        id="vnfrepTabletable">
+                                    <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'hostname'; reverse = !reverse">Hostname <i
+                                                class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                                                class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'connection_point'; reverse = !reverse">connection point
+                                            <i class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'ips'; reverse = !reverse">ips <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'vnfComponent'; reverse = !reverse">vnfComponent <i
+                                                class="fa fa-sort"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="vnfci in vdu.vnfc_instance | orderBy:predicate:reverse">
+                                        <!--<td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a></td>-->
+                                        <td>{{vnfci.hostname}}</td>
+                                        <td>{{vnfci.version}}</td>
+                                        <td>
+                                            <p ng-repeat="cp in vnfci.connection_point"
+                                               title="virtual link reference">
+                                                <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
+                                            </p>
+                                        </td>
+                                        <td><p ng-repeat="ip in vnfci.ips" title="netName"><b>{{ip.netName}}</b>: {{ip.ip}}
+                                        </p></td>
+                                        <td>
+                                            <p ng-repeat="cp in vnfci.vnfComponent.connection_point"
+                                               title="virtual link reference">
+                                                <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </tab>
+                    </tabset>
                 </div>
                 </div>
             </div>
