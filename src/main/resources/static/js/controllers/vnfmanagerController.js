@@ -1,8 +1,7 @@
 angular.module('app').
-    controller('VnfManagerCtrl', function ($scope, $routeParams, http, $location, AuthService) {
+    controller('VnfManagerCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore) {
 
-        var url = '/api/v1/vnfmanagers/';
-        //var url = 'http://localhost:8080/api/v1/vnfmanagers/';
+        var url = $cookieStore.get('URL')+"/api/v1/vnfmanagers";
 
         $scope.alerts = [];
 
