@@ -73,18 +73,16 @@ public class ConfigurationManagementClassSuiteTest {
 
     @Test
     public void nfvImageManagementUpdateTest() {
-        Configuration configuration_exp = createConfigutation();
-        when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
-
-        Configuration configuration_new = createConfigutation();
-        configuration_new.setName("UpdatedName");
+        Configuration configutation = createConfigutation();
+        Configuration configuration2 = createConfigutation();
+        configuration2.setName("UpdatedName");
         ConfigurationParameter configurationParameter = new ConfigurationParameter();
         configurationParameter.setConfKey("new_key");
         configurationParameter.setValue("new_value");
-        configuration_new.getConfigurationParameters().add(configurationParameter);
-        configuration_exp = configurationManagement.update(configuration_new, configuration_exp.getId());
-
-        assertEqualsConfiguration(configuration_exp, configuration_new);
+        configuration2.getConfigurationParameters().add(configurationParameter);
+        when(configurationManagement.update(configuration2, configutation.getId())).thenReturn(configuration2);
+        configutation = configurationManagement.update(configuration2, configutation.getId());
+        assertEqualsConfiguration(configutation, configuration2);
 
     }
 

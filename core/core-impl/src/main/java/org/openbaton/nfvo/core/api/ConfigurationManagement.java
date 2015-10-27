@@ -44,12 +44,9 @@ public class ConfigurationManagement implements org.openbaton.nfvo.core.interfac
     }
 
     @Override
-    public Configuration update(Configuration configuration_new, String id) {
-        Configuration old = configurationRepository.findOne(id);
-        old.setName(configuration_new.getName());
-        old.setConfigurationParameters(configuration_new.getConfigurationParameters());
-        return old;
-
+    public Configuration update(Configuration newConfiguration, String id) {
+        configurationRepository.exists(id);
+        return configurationRepository.save(newConfiguration);
     }
 
     @Override

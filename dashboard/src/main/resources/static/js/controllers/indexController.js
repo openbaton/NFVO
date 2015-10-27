@@ -1,37 +1,4 @@
 var app = angular.module('app');
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService) {
-    $('#side-menu').metisMenu();
-
-    $scope.logged = $cookieStore.get('logged');
-    console.log($scope.logged);
-    $location.replace();
-
-    /**
-     * Checks if the user is logged
-     * @returns {unresolved}
-     */
-    $scope.loggedF = function () {
-        return $scope.logged;
-    };
-
-    if ($scope.logged)
-        console.log('Ok Logged');
-    $location.replace();
-    $scope.username = $cookieStore.get('userName');
-
-    console.log($scope.username);
-
-
-    /**
-     * Delete the session of the user
-     * @returns {undefined}
-     */
-    $scope.logout = function () {
-        AuthService.logout();
-    };
-
-
-});
 
 /**
  *
@@ -99,3 +66,111 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 
 });
+
+app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http) {
+    $('#side-menu').metisMenu();
+
+    var url = $cookieStore.get('URL')+"/api/v1";
+
+    $scope.config={};
+
+    getConfig();
+
+    function getConfig(){
+
+        http.get(url + '/configurations/')
+            .success(function (data, status) {
+                console.log(data);
+                $.each(data, function (i, conf) {
+                    if (conf.name === "system") {
+                        $scope.config = conf;
+                    }
+                })
+            });
+    }
+
+    $scope.loadSettings=function() {
+        getConfig();
+        $("#modalSetting").modal('show');
+
+    };
+
+    $scope.logged = $cookieStore.get('logged');
+    console.log($scope.logged);
+    $location.replace();
+
+
+    $scope.numberNSR = 0;
+    $scope.numberNSD = 0;
+    $scope.numberVNF = 0;
+    $scope.numberUnits = 0;
+    http.syncGet(url + '/ns-descriptors/').then(function (data) {
+        $scope.numberNSD = data.length;
+        var vnf = 0;
+        $.each(data, function (i, nsd) {
+            //console.log(nsd.vnfd.length);
+            if (!angular.isUndefined(nsd.vnfd.length))
+                vnf = vnf + nsd.vnfd.length;
+        });
+        $scope.numberVNF = vnf;
+    });
+    http.syncGet(url + '/ns-records/').then(function (data) {
+        $scope.numberNSR = data.length;
+        var units = 0;
+        $.each(data, function (i, nsr) {
+            $.each(nsr.vnfr, function (i, vnfr) {
+                $.each(vnfr.vdu, function (i, vdu) {
+                    if (!angular.isUndefined(vdu.vnfc_instance.length))
+                        units = units + vdu.vnfc_instance.length;
+                });
+            });
+        });
+        $scope.numberUnits = units;
+    });
+
+
+    $scope.saveSetting = function (config) {
+        console.log(config);
+        $('.modal').modal('hide');
+        $('#modalSend').modal('show');
+
+        http.put(url+'/configurations/'+config.id, config)
+            .success(function (response) {
+                $('.modal').modal('hide');
+                alert('Configurations Updated! ');
+
+            })
+            .error(function (response, status) {
+                $('.modal').modal('hide');
+                alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
+            });
+    };
+
+    /**
+     * Checks if the user is logged
+     * @returns {unresolved}
+     */
+    $scope.loggedF = function () {
+        return $scope.logged;
+    };
+
+    if ($scope.logged)
+        console.log('Ok Logged');
+    $location.replace();
+    $scope.username = $cookieStore.get('userName');
+
+    console.log($scope.username);
+
+
+    /**
+     * Delete the session of the user
+     * @returns {undefined}
+     */
+    $scope.logout = function () {
+        AuthService.logout();
+    };
+
+
+});
+
+
