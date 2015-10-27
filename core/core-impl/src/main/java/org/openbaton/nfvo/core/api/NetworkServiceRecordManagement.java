@@ -303,6 +303,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+	if (networkServiceRecord == null){
+            throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
+        }
         Configuration configuration = configurationManagement.queryByName("system");
 
         boolean checkStatus = true;
