@@ -35,9 +35,9 @@ public class Item implements Serializable{
 
     private String metric;
 
-    private String hostExtId;
+    private String hostId;
 
-    private String vnfcInstanceId;
+    private String hostname;
     private String lastValue;
     private String value;
 
@@ -50,8 +50,8 @@ public class Item implements Serializable{
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", metric='" + metric + '\'' +
-                ", hostExtId='" + hostExtId + '\'' +
-                ", vnfcInstanceId='" + vnfcInstanceId + '\'' +
+                ", hostId='" + hostId + '\'' +
+                ", hostname='" + hostname + '\'' +
                 ", lastValue='" + lastValue + '\'' +
                 ", value='" + value + '\'' +
                 '}';
@@ -86,20 +86,20 @@ public class Item implements Serializable{
         this.metric = metric;
     }
 
-    public String getHostExtId() {
-        return hostExtId;
+    public String getHostId() {
+        return hostId;
     }
 
-    public void setHostExtId(String hostExtId) {
-        this.hostExtId = hostExtId;
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 
-    public String getVnfcInstanceId() {
-        return vnfcInstanceId;
+    public String getHostname() {
+        return hostname;
     }
 
-    public void setVnfcInstanceId(String vduId) {
-        this.vnfcInstanceId = vnfcInstanceId;
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public String getLastValue() {
