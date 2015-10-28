@@ -225,10 +225,12 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
-        log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
+        log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
+        if (!log.isTraceEnabled())
+            log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
         NetworkServiceRecord networkServiceRecord;
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-        log.trace("Creating " + networkServiceRecord);
+        log.debug("Creating " + networkServiceRecord);
 
         /*
          * Getting the vim based on the VDU datacenter type
@@ -276,6 +278,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
          * now check for the requires pointing to the nfvo
          */
         //TODO check where to put this
+        if (networkServiceRecord.getVnfr() != null)
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
             for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()){
                 log.debug("Checking parameter: " + configurationParameter.getConfKey());

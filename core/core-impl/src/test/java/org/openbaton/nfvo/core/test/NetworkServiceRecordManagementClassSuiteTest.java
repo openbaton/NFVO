@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -159,11 +161,18 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Test
     public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
         final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
+        when(nsrRepository.save(any(NetworkServiceRecord.class))).thenAnswer(new Answer<NetworkServiceRecord>() {
+            @Override
+            public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (NetworkServiceRecord) args[0];
+            }
+        });
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
         }});
         nsrManagement.onboard(nsd_exp);
-    }
+        }
 
     @Test
     public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
@@ -171,6 +180,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
          * Initial settings
          */
         NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
+
+        when(nsrRepository.save(any(NetworkServiceRecord.class))).thenAnswer( new Answer<NetworkServiceRecord>() {
+            @Override
+            public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (NetworkServiceRecord) args[0];
+            }
+        });
 
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
         LifecycleEvent event = new LifecycleEvent();
@@ -200,6 +217,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         /**
          * Initial settings
          */
+
+        when(nsrRepository.save(any(NetworkServiceRecord.class))).thenAnswer( new Answer<NetworkServiceRecord>() {
+            @Override
+            public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (NetworkServiceRecord) args[0];
+            }
+        });
         NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
         when(nsdRepository.findFirstById(anyString())).thenReturn(networkServiceDescriptor);
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = networkServiceDescriptor.getVnfd().iterator().next();
@@ -248,6 +273,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     private NetworkServiceDescriptor createNetworkServiceDescriptor() {
         final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
         nsd.setVendor("FOKUS");
+        nsd.setName("TestNSD");
         nsd.setMonitoring_parameter(new HashSet<String>());
         nsd.getMonitoring_parameter().add("monitor1");
         nsd.getMonitoring_parameter().add("monitor2");
