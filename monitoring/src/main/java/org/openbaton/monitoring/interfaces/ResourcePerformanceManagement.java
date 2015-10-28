@@ -20,6 +20,8 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Item;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Created by mpa on 30/04/15.
@@ -36,13 +38,11 @@ public interface ResourcePerformanceManagement extends Remote {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	Item getMeasurementResults(VNFCInstance vnfcInstance, String metric, String period);
+	List<Item> getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException;
 
 	/**
 	 * This operation allows providing notifications with performance
 	 * measurement results on virtualised resources.
 	 */
-	void notifyResults();
-
-	String getType();
+	void notifyResults() throws RemoteException;
 }

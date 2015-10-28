@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.rmi.RemoteException;
 
 /**
  * Created by lto on 05/08/15.
@@ -49,7 +50,7 @@ public class MonitoringManager {
         return null;
     }
 
-    public void notifyResults(){
+    public void notifyResults() throws RemoteException {
         resourcePerformanceManagement.notifyResults();
     }
 }
