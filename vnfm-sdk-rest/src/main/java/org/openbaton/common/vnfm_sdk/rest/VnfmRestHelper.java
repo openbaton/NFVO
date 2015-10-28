@@ -119,11 +119,11 @@ public class VnfmRestHelper extends VnfmHelper {
     }
 
     public void register(VnfmManagerEndpoint body) {
-        this.post("admin/v1/vnfm-register", mapper.toJson(body));
+        this.post("admin/v1/vnfm-subscribe", mapper.toJson(body));
     }
 
     public void unregister(VnfmManagerEndpoint body) {
-        this.post("admin/v1/vnfm-unregister", mapper.toJson(body));
+        this.post("admin/v1/vnfm-unsubscribe", mapper.toJson(body));
     }
 
     public HttpStatus getStatus() {
