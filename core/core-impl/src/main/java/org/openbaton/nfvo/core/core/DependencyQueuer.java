@@ -87,23 +87,23 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
 
                     VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
 
+                    log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
+
                     //get the vnfr target by its name
                     VirtualNetworkFunctionRecord target = null;
                     for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
                         if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
                             target = vnfrRepository.findOne(vnfr.getId());
-                    log.debug("Target version is: " + target.getHb_version());
+                    log.info("Found target of relation: " + target.getName());
 
                     for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
                         if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
-                            log.debug("THE EVENT CONFIGURE HAS THESE SCRIPTS: " + lifecycleEvent.getLifecycle_events());
                             LinkedHashSet<String> strings = new LinkedHashSet<>();
                             strings.addAll(lifecycleEvent.getLifecycle_events());
                             lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
-                            log.debug("NOW THE EVENT CONFIGURE HAS THESE SCRIPTS: " + lifecycleEvent.getLifecycle_events());
                         }
                     }
-                    log.debug("SENDING MODIFY");
+                    log.debug("Sending MODIFY");
                     OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(target, Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
                     vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);
