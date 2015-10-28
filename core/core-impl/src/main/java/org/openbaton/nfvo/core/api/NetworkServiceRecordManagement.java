@@ -134,33 +134,29 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
+    public void addVNFCInstance(String id, String idVnf, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException {
+        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveStateAndSetScaling(id);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+
+        VirtualDeploymentUnit virtualDeploymentUnit = virtualNetworkFunctionRecord.getVdu().iterator().next();
+        if (virtualDeploymentUnit == null){
+            throw new NotFoundException("No VirtualDeploymentUnit found");
+        }
+
+        scaleIN(networkServiceRecord,virtualNetworkFunctionRecord,virtualDeploymentUnit,component);
+    }
+
+    @Override
     public void addVNFCInstance(String id, String idVnf, String idVdu, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException {
-        NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
-        if (networkServiceRecord == null)
-            throw new NotFoundException("No NetworkServiceRecord found with id " + id);
+        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveStateAndSetScaling(id);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
-        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal()){
-            throw new WrongStatusException("NetworkServiceDescriptor must be in ACTIVE state");
-        }
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr()){
-            if (virtualNetworkFunctionRecord1.getId().equals(idVnf)){
-                virtualNetworkFunctionRecord = virtualNetworkFunctionRecord1;
-                break;
-            }
-        }
-        if (virtualNetworkFunctionRecord == null)
-            throw new NotFoundException("No VirtualNetworkFunctionRecord found with id " + idVnf);
+        VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
 
-        VirtualDeploymentUnit virtualDeploymentUnit = null;
-        for (VirtualDeploymentUnit virtualDeploymentUnit1 : virtualNetworkFunctionRecord.getVdu()){
-            if (virtualDeploymentUnit1.getId().equals(idVdu)){
-                virtualDeploymentUnit = virtualDeploymentUnit1;
-            }
-        }
-        if (virtualDeploymentUnit == null)
-            throw new NotFoundException("No VirtualDeploymentUnit found with id " + idVdu);
+        scaleIN(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
+    }
 
+    private void scaleIN(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws BadFormatException, NotFoundException {
         List<String> componentNetworks = new ArrayList<>();
 
         for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
@@ -188,6 +184,44 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         log.debug("Found Dependency: " + dependencyTarget);
 
         vnfmManager.addVnfc(virtualNetworkFunctionRecord,virtualDeploymentUnit,component, dependencyTarget);
+    }
+
+    private VirtualDeploymentUnit getVirtualDeploymentUnit(String idVdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
+        VirtualDeploymentUnit virtualDeploymentUnit = null;
+        for (VirtualDeploymentUnit virtualDeploymentUnit1 : virtualNetworkFunctionRecord.getVdu()){
+            if (virtualDeploymentUnit1.getId().equals(idVdu)){
+                virtualDeploymentUnit = virtualDeploymentUnit1;
+            }
+        }
+        if (virtualDeploymentUnit == null)
+            throw new NotFoundException("No VirtualDeploymentUnit found with id " + idVdu);
+        return virtualDeploymentUnit;
+    }
+
+    private VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idVnf, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr()){
+            if (virtualNetworkFunctionRecord1.getId().equals(idVnf)){
+                virtualNetworkFunctionRecord = virtualNetworkFunctionRecord1;
+                break;
+            }
+        }
+        if (virtualNetworkFunctionRecord == null)
+            throw new NotFoundException("No VirtualNetworkFunctionRecord found with id " + idVnf);
+        return virtualNetworkFunctionRecord;
+    }
+
+    private synchronized NetworkServiceRecord getNetworkServiceRecordInActiveStateAndSetScaling(String id) throws NotFoundException, WrongStatusException {
+        NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+        if (networkServiceRecord == null)
+            throw new NotFoundException("No NetworkServiceRecord found with id " + id);
+
+        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal()){
+            throw new WrongStatusException("NetworkServiceDescriptor must be in ACTIVE state");
+        }
+        networkServiceRecord.setStatus(Status.SCALING);
+
+        return nsrRepository.save(networkServiceRecord);
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
