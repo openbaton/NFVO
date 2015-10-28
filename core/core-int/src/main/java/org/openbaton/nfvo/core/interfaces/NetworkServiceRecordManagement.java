@@ -103,4 +103,6 @@ public interface NetworkServiceRecordManagement {
      * @return the new VNFCInstance
      */
     void addVNFCInstance(String id, String idVnf, String idVdu, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException;
+
+    void addVNFCInstance(String id, String idVnf, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException;
 }
