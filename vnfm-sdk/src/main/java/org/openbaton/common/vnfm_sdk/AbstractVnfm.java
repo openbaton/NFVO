@@ -152,7 +152,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             NFVMessage nfvMessage = null;
             OrVnfmGenericMessage orVnfmGenericMessage = null;
             switch (message.getAction()) {
-                case SCALE:
+                case SCALE_IN:
                     OrVnfmScalingMessage scalingMessage = (OrVnfmScalingMessage) message;
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFRecordDependency dependency = scalingMessage.getDependency();
