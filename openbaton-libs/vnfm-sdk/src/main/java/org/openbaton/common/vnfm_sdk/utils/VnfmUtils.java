@@ -17,11 +17,13 @@ package org.openbaton.common.vnfm_sdk.utils;
 
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 
 import java.util.Collection;
 
@@ -37,6 +39,14 @@ public class VnfmUtils {
         else
             nfvMessage = new VnfmOrGenericMessage(payload, action);
         return nfvMessage;
+    }
+
+    public static NFVMessage getNfvMessageScaled(Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
+        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
+        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
+        vnfmOrScaledMessage.setAction(action);
+        return vnfmOrScaledMessage;
     }
 
     public static LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
