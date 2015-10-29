@@ -15,7 +15,6 @@
 
 package org.openbaton.common.vnfm_sdk;
 
-import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -25,7 +24,6 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -171,13 +169,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     boolean found = false;
                     VNFCInstance vnfcInstance_new = null;
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
-                                if (vnfcInstance_new.getVnfComponent().getId().equals(component.getId())) {
-                                    vnfcInstance_new = vnfcInstance;
-                                    fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
-                                    found = true;
-                                    break;
-                                }
+                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+                            if (vnfcInstance.getVnfComponent().getId().equals(component.getId())) {
+                                vnfcInstance_new = vnfcInstance;
+                                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
+                                found = true;
+                                log.debug("VNFComponentInstance FOUND : " + vnfcInstance_new.getVnfComponent());
+                                break;
+                            }
+                        }
                         if (found)
                             break;
                     }
@@ -190,7 +190,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink();
                     else
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScripts();
-                    nfvMessage = VnfmUtils.getNfvMessage(Action.SCALED, this.scale(virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency));
+                    nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, this.scale(virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency), vnfcInstance_new);
                     break;
                 case SCALING:
                     break;
@@ -359,35 +359,35 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected abstract void checkEmsStarted(String vduHostname);
 
     private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        fillSpecificProvides(virtualNetworkFunctionRecord);
-
-        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
-            }
-        }
-        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
+//        fillSpecificProvides(virtualNetworkFunctionRecord);
+//
+//        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+//            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+//                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
+//            }
+//        }
+//        log.debug("Provides is: " + virtualNetworkFunctionRecord.getProvides());
     }
 
     private void fillProvidesVNFC(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
-        for (Ip ip : vnfcInstance.getIps()) {
-            ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setConfKey(ip.getNetName());
-            cp.setValue(ip.getIp());
-            virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
-        }
-
-        for (Ip fip : vnfcInstance.getFloatingIps()) {
-            ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setConfKey(fip.getNetName()+"_floatingIp");
-            cp.setValue(fip.getIp());
-            virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
-        }
-
-        ConfigurationParameter cp1 = new ConfigurationParameter();
-        cp1.setConfKey("hostname");
-        cp1.setValue(vnfcInstance.getHostname());
-        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp1);
+//        for (Ip ip : vnfcInstance.getIps()) {
+//            ConfigurationParameter cp = new ConfigurationParameter();
+//            cp.setConfKey(ip.getNetName());
+//            cp.setValue(ip.getIp());
+//            virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+//        }
+//
+//        for (Ip fip : vnfcInstance.getFloatingIps()) {
+//            ConfigurationParameter cp = new ConfigurationParameter();
+//            cp.setConfKey(fip.getNetName()+"_floatingIp");
+//            cp.setValue(fip.getIp());
+//            virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp);
+//        }
+//
+//        ConfigurationParameter cp1 = new ConfigurationParameter();
+//        cp1.setConfKey("hostname");
+//        cp1.setValue(vnfcInstance.getHostname());
+//        virtualNetworkFunctionRecord.getProvides().getConfigurationParameters().add(cp1);
     }
 
     /**
