@@ -3,7 +3,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 /**
  * Created by mob on 29.10.15.
  */
-public enum MonitoringParam {
+public enum Metric {
     AGENT_PING,
 
     NET_DNS,

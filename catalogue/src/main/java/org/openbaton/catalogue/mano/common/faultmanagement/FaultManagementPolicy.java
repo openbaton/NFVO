@@ -10,22 +10,19 @@ import java.util.Set;
  * Created by mob on 29.10.15.
  */
 @Entity
-public class FaultManagementPolicy implements Serializable{
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class FaultManagementPolicy implements Serializable{
     @Id
-    private String id;
+    protected String id;
     @Version
-    private int version = 0;
-    private String name;
-    private int vduSelector;
-    private int cooldown;
-    private int period;
-    private PerceivedSeverity severity;
-    private FaultManagementVNFCAction action;
+    protected int version = 0;
+    protected String name;
+    protected int cooldown;
+    protected int period;
+    protected PerceivedSeverity severity;
 
     @OneToMany
     private Set<Criteria> criteriaSet;
-
-    public FaultManagementPolicy(){}
 
     @PrePersist
     public void ensureId(){
@@ -34,16 +31,6 @@ public class FaultManagementPolicy implements Serializable{
 
     public void setName(String name) {
         this.name = name;
-    }
-    public String getName() {
-        return name;
-    }
-    public int getVduSelector() {
-        return vduSelector;
-    }
-
-    public void setVduSelector(int vduSelector) {
-        this.vduSelector = vduSelector;
     }
 
     public int getCooldown() {
@@ -68,14 +55,6 @@ public class FaultManagementPolicy implements Serializable{
 
     public void setSeverity(PerceivedSeverity severity) {
         this.severity = severity;
-    }
-
-    public FaultManagementVNFCAction getAction() {
-        return action;
-    }
-
-    public void setAction(FaultManagementVNFCAction action) {
-        this.action = action;
     }
 
     public Set<Criteria> getCriteriaSet() {
