@@ -17,11 +17,13 @@ package org.openbaton.common.vnfm_sdk.utils;
 
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 
 import java.util.Collection;
 
@@ -39,11 +41,27 @@ public class VnfmUtils {
         return nfvMessage;
     }
 
+    public static NFVMessage getNfvMessageScaled(Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
+        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
+        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
+        vnfmOrScaledMessage.setAction(action);
+        return vnfmOrScaledMessage;
+    }
+
     public static LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
         for (LifecycleEvent lce : events)
             if (lce.getEvent().ordinal() == event.ordinal()) {
                 return lce;
             }
         return null;
+    }
+
+    public static NFVMessage getNfvMessageScaledOut(VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
+        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
+        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
+        vnfmOrScaledMessage.setAction(Action.SCALE_OUT);
+        return vnfmOrScaledMessage;
     }
 }
