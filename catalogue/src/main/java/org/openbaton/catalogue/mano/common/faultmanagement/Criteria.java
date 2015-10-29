@@ -19,7 +19,7 @@ public class Criteria implements Serializable {
     private int version = 0;
 
     private String name;
-    private MonitoringParam parameter_ref;
+    private Metric parameter_ref;
     private String comparison_operator;
     private String threshold;
 
@@ -38,11 +38,11 @@ public class Criteria implements Serializable {
         this.name = name;
     }
 
-    public MonitoringParam getParameter_ref() {
+    public Metric getParameter_ref() {
         return parameter_ref;
     }
 
-    public void setParameter_ref(MonitoringParam parameter_ref) {
+    public void setParameter_ref(Metric parameter_ref) {
         this.parameter_ref = parameter_ref;
     }
 
