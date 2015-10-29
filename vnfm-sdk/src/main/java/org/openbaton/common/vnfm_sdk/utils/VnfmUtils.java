@@ -56,4 +56,12 @@ public class VnfmUtils {
             }
         return null;
     }
+
+    public static NFVMessage getNfvMessageScaledOut(VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
+        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
+        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
+        vnfmOrScaledMessage.setAction(Action.SCALE_OUT);
+        return vnfmOrScaledMessage;
+    }
 }

@@ -19,6 +19,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
 
 /**
  * Created by mpa on 05/05/15.
@@ -44,12 +45,13 @@ public interface VNFLifecycleManagement {
 	/**
 	 * This operation allows scaling 
 	 * (out/in, up/down) a VNF instance.
+	 * @param scaleOut
 	 * @param virtualNetworkFunctionRecord
 	 * @param component
 	 * @param scripts
 	 * @param dependency
 	 */
-	VirtualNetworkFunctionRecord scale(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance component, Object scripts, VNFRecordDependency dependency) throws Exception;
+	VirtualNetworkFunctionRecord scale(Action scaleOut, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance component, Object scripts, VNFRecordDependency dependency) throws Exception;
 	
 	/**
 	 * This operation allows verifying if 
