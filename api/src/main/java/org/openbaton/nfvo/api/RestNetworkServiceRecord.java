@@ -186,6 +186,18 @@ public class RestNetworkServiceRecord {
         networkServiceRecordManagement.addVNFCInstance(id, idVnf, component);
     }
 
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI);
+    }
+
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf);
+    }
+
     @RequestMapping(value = "{id}/vnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public VirtualNetworkFunctionRecord postVNFR(

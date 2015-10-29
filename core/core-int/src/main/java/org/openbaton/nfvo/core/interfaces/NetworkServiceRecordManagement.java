@@ -95,7 +95,8 @@ public interface NetworkServiceRecordManagement {
     void deleteVNFDependency(String idNsr, String idVnfd);
 
     /**
-     * This method will ad a {@Link VNFCInstance} into a NetworkServiceRecord to a specific VirtualNetworkFunctionRecord
+     * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord
+     *
      * @param id of the NetworkServiceRecord
      * @param idVnf of the VirtualNetworkFunctionRecord
      * @param idVdu of the VirtualDeploymentUnit chosen
@@ -104,5 +105,33 @@ public interface NetworkServiceRecordManagement {
      */
     void addVNFCInstance(String id, String idVnf, String idVdu, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException;
 
+    /**
+     * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific VirtualNetworkFunctionRecord. The VirtualDeploymentUnit is randomly chosen
+     *
+     * @param id
+     * @param idVnf
+     * @param component
+     * @throws NotFoundException
+     * @throws BadFormatException
+     * @throws WrongStatusException
+     */
     void addVNFCInstance(String id, String idVnf, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException;
+
+    /**
+     * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific VirtualNetworkFunctionRecord. VirtualDeploymentUnit will be randomly chosen.
+     *
+     * @param id
+     * @param idVnf
+     */
+    void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
+
+    /**
+     * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
+     *
+     * @param id
+     * @param idVnf
+     * @param idVdu
+     * @param idVNFCI
+     */
+    void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
 }

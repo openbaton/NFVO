@@ -173,7 +173,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
             case ALLOCATE_RESOURCES:
                 status = Status.NULL;
                 break;
-            case SCALE:
+            case SCALE_IN:
                 break;
             case SCALING:
                 status = Status.SCALING;
