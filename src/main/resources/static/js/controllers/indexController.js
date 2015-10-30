@@ -10,6 +10,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
     $scope.URL = '';
+    //$scope.URL = 'http://80.96.122.80:8080';
     $scope.credential = {
         "username": '',
         "password": '',
@@ -38,7 +39,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);
-                if (data === "false"){
+                if (data === "false") {
                     AuthService.loginGuest($scope.URL);
                 }
             })
@@ -60,23 +61,28 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
-        console.log($scope.loginError)
+        setTimeout(showLoginError, 2000);
     };
 
+    function showLoginError() {
+        $scope.$apply(function () {
+            $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
+            console.log($scope.loginError);
+        });
+    }
 
 });
 
 app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http) {
     $('#side-menu').metisMenu();
 
-    var url = $cookieStore.get('URL')+"/api/v1";
+    var url = $cookieStore.get('URL') + "/api/v1";
 
-    $scope.config={};
+    $scope.config = {};
 
     getConfig();
 
-    function getConfig(){
+    function getConfig() {
 
         http.get(url + '/configurations/')
             .success(function (data, status) {
@@ -89,7 +95,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
             });
     }
 
-    $scope.loadSettings=function() {
+    $scope.loadSettings = function () {
         getConfig();
         $("#modalSetting").modal('show');
 
@@ -134,7 +140,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
-        http.put(url+'/configurations/'+config.id, config)
+        http.put(url + '/configurations/' + config.id, config)
             .success(function (response) {
                 $('.modal').modal('hide');
                 alert('Configurations Updated! ');
