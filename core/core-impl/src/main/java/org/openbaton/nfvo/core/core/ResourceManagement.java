@@ -29,6 +29,7 @@ import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -48,9 +49,11 @@ import java.util.concurrent.Future;
 @ConfigurationProperties(prefix = "activemq")
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
-//    private static final String gitRepoEms = "https://gitlab.fokus.fraunhofer.de/openbaton/ems-public.git";
-//    private static final String branch = "develop";
     private String brokerIp;
+
+    @Value("${nfvo.monitoring.ip}")
+    private String monitoringIp;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
@@ -116,11 +119,23 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         String url = properties.getProperty("spring.activemq.broker-url");
         String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
         log.debug("Active ip is: " + brokerIp);
+        log.debug("Monitoring ip is: " + monitoringIp);
         String result = "#!/bin/bash\n" +
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
                 "apt-get install git -y\n" +
                 "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
-                "apt-get update\n" +
+                "apt-get update\n";
+
+        if (monitoringIp != null){
+            result += " echo \"Installing zabbix-agent for server at _address\"\n" +
+                    "sudo apt-get install -y zabbix-agent\n" +
+                    "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive=" + monitoringIp + ":10051/g' -e 's/Server=127.0.0.1/Server=" + monitoringIp + "/g' -e 's/Hostname=/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n" +
+                    "sudo service zabbix-agent restart\n" +
+                    "sudo rm zabbix-release_2.2-1+precise_all.deb\n" +
+                    "echo \"finished installing zabbix-agent!\"\n";
+        }
+
+        result +=
                 "apt-get install -y python-pip\n" +
                 "apt-get install -y ems\n" +
                 "mkdir -p /etc/openbaton/ems\n" +
@@ -131,6 +146,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
                 "/opt/openbaton/ems/ems.sh start\n";
+
         return result;
     }
 
