@@ -148,7 +148,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleIN(networkServiceRecord,virtualNetworkFunctionRecord,virtualDeploymentUnit,component);
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
     }
 
     @Override
@@ -163,10 +163,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleIN(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
     }
 
-    private void scaleIN(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws BadFormatException, NotFoundException {
+    private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws BadFormatException, NotFoundException {
         List<String> componentNetworks = new ArrayList<>();
 
         for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
@@ -233,7 +233,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord,virtualNetworkFunctionRecord,virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
     }
 
     private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI) throws NotFoundException {

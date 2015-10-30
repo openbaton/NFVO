@@ -342,7 +342,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
-        message.setAction(Action.SCALE_IN);
+        message.setAction(Action.SCALE_OUT);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setComponent(component);
         message.setDependency(dependency);
@@ -368,7 +368,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
 
-        message.setAction(Action.SCALE_OUT);
+        message.setAction(Action.SCALE_IN);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setVnfcInstance(vnfcInstance);
         VnfmSender vnfmSender;
