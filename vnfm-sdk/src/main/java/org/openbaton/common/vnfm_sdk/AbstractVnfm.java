@@ -381,11 +381,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     }
 
     /**
-     * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecord from the VirtualNetworkFunctionDescriptor
+     * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecordShort from the VirtualNetworkFunctionDescriptor
      *
      * @param virtualNetworkFunctionDescriptor
      * @param extension
-     * @return The new VirtualNetworkFunctionRecord
+     * @return The new VirtualNetworkFunctionRecordShort
      * @throws BadFormatException
      * @throws NotFoundException
      */
@@ -400,7 +400,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     }
                 }
             }
-            log.debug("Created VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord);
+            log.debug("Created VirtualNetworkFunctionRecordShort: " + virtualNetworkFunctionRecord);
             return virtualNetworkFunctionRecord;
         } catch (NotFoundException e) {
             e.printStackTrace();
