@@ -82,8 +82,9 @@
                                             Action
                                             <span class="caret"></span></button>
                                         <ul class="dropdown-menu" role="menu">
-                                            <li><a href="" data-toggle="modal" data-target="#modalAdd"
-                                                   ng-click="launch(nsd)">Launch</a>
+                                            <li><a href="" data-toggle="modal" data-target="#modalPolicy" ng-click="selectedVNFR(vnfr)">Add
+                                                VNFCI</a></li>
+                                            <li><a href="" ng-click="removeVNFCI(vnfr)">Remove VNFCI</a></li>
                                             </li>
                                             <li class="divider"></li>
                                             <li><a href="" ng-click="deleteVNFR(vnfr)">Delete</a></li>
@@ -115,7 +116,7 @@
                     </div>
 
                 </tab>
-                <tab heading="VNF Dependencies"  ng-if="nsrinfo.vnf_dependency.length > 0">
+                <tab heading="VNF Dependencies" ng-if="nsrinfo.vnf_dependency.length > 0">
                     <div class="table-responsive">
                         <h3>VNF Dependencies</h3>
                         <table
@@ -194,6 +195,80 @@
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"
                         data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="modalPolicy">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceLabel">Add a Virtual Network Functions Component Instance</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="">
+                        <div class="">
+                            <h4 class="">
+                                <div class="col-lg-12">VNFCI
+                                    <a class="pull-right" title="Add a New VNFCI" href=""
+                                       ng-click="addNewCP()">
+                                        <i class="fa fa-plus-square"> Add </i></a></div>
+                            </h4>
+                        </div>
+                        <div>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <div class="form-group" ng-repeat="cp in vnfci.connection_point track by $index">
+                                <div class="row" >
+           <!--                             <label for="floatingIp" class="col-lg-2 control-label">floatingIp</label>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                                   ng-model="vnfci.connection_point[$index]['floatingIp']"/>
+                                        </div>-->
+                                    <div class="col-sm-4 col-lg-offset-1">
+                                        <label for="floatingIp" class="control-label">floatingIp</label>
+                                        <select name="floatingIp" class="form-control modal-select"
+                                                ng-init="vnfci.connection_point[$index]['floatingIp'] = floatingIps[0]" ng-model="vnfci.connection_point[$index]['floatingIp']"
+                                                ng-options="floatingIps as floatingIps for floatingIps in floatingIps| orderBy:'floatingIps':false"></select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label for="virtual_link_reference" class="control-label">virtual_link</label>
+                                    <select name="virtual_link_reference" class="form-control modal-select"
+                                            ng-init="vnfci.connection_point[$index]['virtual_link_reference'] = virtual_links[0]" ng-model="vnfci.connection_point[$index]['virtual_link_reference']"
+                                            ng-options="virtual_links as virtual_links for virtual_links in virtual_links| orderBy:'virtual_links':false"></select>
+                                        </div>
+                                        <!--<div class="col-sm-3">
+                                            <input type="text" class="form-control" id="virtual_link_reference"
+                                                   name="virtual_link_reference"
+                                                   ng-model="vnfci.connection_point[$index]['virtual_link_reference']"/>
+
+                                        </div>-->
+                                        <h2><a ng-click="deleteCPfromVNFCI($index)"><li class="fa fa-trash"></li></a></h2>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="addPolicy" class="btn btn-primary" ng-click="addVNFCI()">
+                    Add VNFCI
                 </button>
             </div>
         </div>
