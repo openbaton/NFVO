@@ -108,6 +108,14 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                             break;
                         }
                     }
+
+                    for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()) {
+                        if (cp.getConfKey().equals(keyValueDep.getKey())) {
+                            log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
+                            keyValueDep.setValue(cp.getValue());
+                            break;
+                        }
+                    }
                 }
 
             }
