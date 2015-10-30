@@ -36,12 +36,24 @@ public class VirtualDeploymentUnit implements Serializable {
     private String id;
     @Version
     private int version = 0;
+
+    /**
+     * A unique identifier of this VDU within the scope
+     * of the VNFD, including version functional
+     * * description and other identification information.
+     * This will be used to refer to VDU when defining
+     * relationships between them.
+     */
+    private String name;
     /**
      * This provides a reference to a VM image
      * NOTE: A cardinality of zero allows for creating empty virtualisation containers as per (ETSI GS NFV-SWA 001 [i.8]).
      */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vm_image;
+
+
+
     /**
      * Describe the required computation resources characteristics (e.g. processing power, number of virtual CPUs, etc.),
      * including Key Quality Indicators (KQIs) for performance and reliability/availability.
@@ -213,12 +225,21 @@ public class VirtualDeploymentUnit implements Serializable {
         this.monitoring_parameter = monitoring_parameter;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "VirtualDeploymentUnit{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", vm_image=" + vm_image +
+                ", name='" + name + '\'' +
                 ", computation_requirement='" + computation_requirement + '\'' +
                 ", virtual_memory_resource_element='" + virtual_memory_resource_element + '\'' +
                 ", virtual_network_bandwidth_resource='" + virtual_network_bandwidth_resource + '\'' +
@@ -227,10 +248,11 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", high_availability=" + high_availability +
                 ", scale_in_out=" + scale_in_out +
                 ", vnfc=" + vnfc +
-                ", hostname=" + hostname +
                 ", vnfc_instance=" + vnfc_instance +
-                ", vimInstanceName=" + vimInstanceName +
                 ", monitoring_parameter=" + monitoring_parameter +
+                ", vimInstance=" + vimInstance +
+                ", hostname='" + hostname + '\'' +
+                ", vimInstanceName='" + vimInstanceName + '\'' +
                 '}';
     }
 
