@@ -28,9 +28,12 @@
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="col-lg-12">
 
-            <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
+            <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId" ng-init="selectedVNFR(vnfr)">
                 <dl class="dl-horizontal">
                     <span ng-repeat="(k,v) in vnfr" ng-show="v != null"
                           ng-if="k!='vdu' && k!='lifecycle_event' && k!='virtual_link'">
@@ -61,9 +64,7 @@
                                     <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
-                                            class="fa fa-sort"></i>
-                                    </th>
+
                                     <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">
                                         vimInstanceName
                                         <i
@@ -76,7 +77,8 @@
                                     <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    </th>
+                                    <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -85,14 +87,17 @@
                                         <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
                                     </td>
                                     <td>{{vdu.version}}</td>
-                                    <td>{{vdu.vm_image}}</td>
+
                                     <td>{{vdu.vimInstanceName}}</td>
                                     <td>
                                             <span ng-repeat="vnfci in vdu.vnfc_instance">
                                                 <span>
                                                     <b>hostname</b>: {{vnfci.hostname}},
-                                                    <b>floatingIps</b>: {{vnfci.floatingIps}}
-                                                    <span ng-repeat="cp in vnfci.vnfComponent.connection_point">
+                                                    <b>floatingIps</b>:
+                                                        <span title="netName" ng-repeat="fip in vnfci.floatingIps">{{fip.netName}}: {{fip.ip}}</span>
+                                                    <br/>
+                                                    <span title="vnfComponent"
+                                                          ng-repeat="cp in vnfci.vnfComponent.connection_point">
                                                         <b>floatingIp</b>: {{cp.floatingIp}}
                                                         <b>virtual_link_reference</b>: {{cp.virtual_link_reference}}
                                                     </span>
@@ -108,15 +113,22 @@
                                             </span>
                                     </td>
                                     <td>
-                                                               <span ng-repeat="vnfc in vdu.vnfc">
-                                <span ng-repeat="cp in vnfc.connection_point">
-                                <span ng-repeat="(k,v) in cp">
-                                                <b>{{k}}</b>: {{v}}
-
-                                                </span>
+                                        <span ng-repeat="vnfc in vdu.vnfc">
+                                            <span ng-repeat="cp in vnfc.connection_point">
+                                                <span ng-repeat="(k,v) in cp">
+                                                    <b>{{k}}</b>: {{v}}
                                                 </span>
                                             </span>
-                                        <!--<span ng-repeat="vnfc in vdu.vnfc"> {{vnfc.connection_point}} </span>-->
+                                        </span>
+                                    </td>
+                                    <td>{{vdu.scale_in_out}}</td>
+                                    <td class="col-lg-2">
+
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <button type="button" class="btn btn-default" ng-click="removeVNFCItoVDU(vdu)">-</button>
+                                            <button type="button" class="btn btn-default disabled">{{vdu.vnfc_instance.length}}</button>
+                                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalPolicy" ng-click="selectedVDU(vdu)">+</button>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -197,6 +209,62 @@
             <br/>
 
 
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="modalPolicy">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceLabel">Add a Virtual Network Functions Component Instance</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="">
+                        <div class="">
+                            <h4 class="">
+                                <div class="col-lg-12">VNFCI
+                                    <a class="pull-right" title="Add a New VNFCI" href=""
+                                       ng-click="addNewCP()">
+                                        <i class="fa fa-plus-square"> Add </i></a></div>
+                            </h4>
+                        </div>
+                        <div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <div class="form-group" ng-repeat="cp in vnfci.connection_point track by $index">
+                                <div class="row" >
+                                    <div class="col-sm-4 col-lg-offset-1">
+                                        <label for="floatingIp" class="control-label">floatingIp</label>
+                                        <select name="floatingIp" class="form-control modal-select"
+                                                ng-init="vnfci.connection_point[$index]['floatingIp'] = floatingIps[0]" ng-model="vnfci.connection_point[$index]['floatingIp']"
+                                                ng-options="floatingIps as floatingIps for floatingIps in floatingIps| orderBy:'floatingIps':false"></select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label for="virtual_link_reference" class="control-label">virtual_link</label>
+                                        <select name="virtual_link_reference" class="form-control modal-select"
+                                                ng-init="vnfci.connection_point[$index]['virtual_link_reference'] = virtual_links[0]" ng-model="vnfci.connection_point[$index]['virtual_link_reference']"
+                                                ng-options="virtual_links as virtual_links for virtual_links in virtual_links| orderBy:'virtual_links':false"></select>
+                                    </div>
+                                    <h2><a ng-click="deleteCPfromVNFCI($index)"><li class="fa fa-trash"></li></a></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="addPolicy" class="btn btn-primary" ng-click="addVNFCItoVDU()">
+                    Add VNFCI
+                </button>
+            </div>
         </div>
     </div>
 </div>
