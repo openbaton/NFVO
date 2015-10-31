@@ -297,6 +297,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     console.log(response);
                     $scope.nsrinfo = response;
                     $scope.nsrJSON = JSON.stringify(response, undefined, 4);
+
                     //topologiesAPI.Jsplumb(response);
                 })
                 .error(function (data, status) {
