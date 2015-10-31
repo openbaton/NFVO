@@ -9,8 +9,7 @@ var app = angular.module('app');
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
-    //$scope.URL = '';
-    $scope.URL = 'http://80.96.122.80:8080';
+    $scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
@@ -39,7 +38,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);
-                if (data === "false") {
+                if (data === "false"){
                     AuthService.loginGuest($scope.URL);
                 }
             })
