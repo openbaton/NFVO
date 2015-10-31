@@ -80,5 +80,18 @@ public class Criteria implements Serializable {
         this.statistic = statistic;
     }
 
+    @Override
+    public String toString() {
+        return "Criteria{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", vdu_selector='" + vdu_selector + '\'' +
+                ", parameter_ref=" + parameter_ref +
+                ", statistic='" + statistic + '\'' +
+                ", comparison_operator='" + comparison_operator + '\'' +
+                ", threshold='" + threshold + '\'' +
+                '}';
+    }
 
 }
