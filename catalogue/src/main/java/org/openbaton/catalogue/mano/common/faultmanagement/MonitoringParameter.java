@@ -4,6 +4,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mob on 29.10.15.
@@ -19,7 +20,7 @@ public class MonitoringParameter {
     private Metric metric;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> params;
+    private Map<String,String> params;
 
     public MonitoringParameter(){}
     
@@ -35,11 +36,21 @@ public class MonitoringParameter {
         this.metric = metric;
     }
 
-    public List<String> getParams() {
+    public Map<String, String> getParams() {
         return params;
     }
 
-    public void setParams(List<String> params) {
+    public void setParams(Map<String, String> params) {
         this.params = params;
+    }
+
+    @Override
+    public String toString() {
+        return "MonitoringParameter{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", metric=" + metric +
+                ", params=" + params +
+                '}';
     }
 }
