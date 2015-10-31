@@ -89,8 +89,23 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 previewTemplate: previewTemplate,
                 autoQueue: false, // Make sure the files aren't queued until manually added
                 previewsContainer: "#previews", // Define the container to display the previews
-                headers: header
+                headers: header,
+                init: function() {
+                    this.on("success", function (file, responseText) {
+                        console.log(responseText);
+                        $scope.$apply(function ($scope) {
+                            showOk("Uploaded the VNF Package");
+                            loadTable();
+                        });
 
+                    });
+                    this.on("error", function (file, responseText) {
+                        console.log(responseText);
+                        $scope.$apply(function ($scope) {
+                            showError(responseText.message, "422");
+                        });
+                    });
+                }
             });
 
 
@@ -114,12 +129,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
             });
 
+            myDropzone.options.ui
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
-                showOk("Uploaded the VNF Package");
-                loadTable();
+
             });
+
+
+
 
 
             $(".start").onclick = function () {
