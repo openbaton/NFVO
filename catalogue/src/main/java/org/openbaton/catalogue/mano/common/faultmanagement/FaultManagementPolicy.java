@@ -4,6 +4,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,7 +23,7 @@ public abstract class FaultManagementPolicy implements Serializable{
     protected PerceivedSeverity severity;
 
     @OneToMany
-    private Set<Criteria> criteriaSet;
+    protected Set<Criteria> criteria;
 
     @PrePersist
     public void ensureId(){
@@ -57,14 +58,28 @@ public abstract class FaultManagementPolicy implements Serializable{
         this.severity = severity;
     }
 
-    public Set<Criteria> getCriteriaSet() {
-        return criteriaSet;
+    public Set<Criteria> getCriteria() {
+        return criteria;
     }
 
-    public void setCriteriaSet(Set<Criteria> criteriaSet) {
-        this.criteriaSet = criteriaSet;
+    public void setCriteria(Set<Criteria> criteria) {
+        this.criteria = criteria;
     }
 
+    public String getName() {
+        return name;
+    }
 
-
+    @Override
+    public String toString() {
+        return "FaultManagementPolicy{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", cooldown=" + cooldown +
+                ", period=" + period +
+                ", severity=" + severity +
+                ", criteria=" + criteria +
+                '}';
+    }
 }

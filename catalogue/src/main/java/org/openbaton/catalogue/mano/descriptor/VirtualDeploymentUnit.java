@@ -15,6 +15,7 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import org.openbaton.catalogue.mano.common.faultmanagement.MonitoringParameter;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -101,8 +102,8 @@ public class VirtualDeploymentUnit implements Serializable {
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,
      * CPU-utilisation, bandwidth-consumption, VNFC downtime, etc.
      */
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> monitoring_parameter;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<MonitoringParameter> monitoring_parameter;
 
 //    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
@@ -217,29 +218,13 @@ public class VirtualDeploymentUnit implements Serializable {
         this.vnfc = vnfc;
     }
 
-    public Set<String> getMonitoring_parameter() {
-        return monitoring_parameter;
-    }
-
-    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
-        this.monitoring_parameter = monitoring_parameter;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public String toString() {
         return "VirtualDeploymentUnit{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
-                ", vm_image=" + vm_image +
                 ", name='" + name + '\'' +
+                ", vm_image=" + vm_image +
                 ", computation_requirement='" + computation_requirement + '\'' +
                 ", virtual_memory_resource_element='" + virtual_memory_resource_element + '\'' +
                 ", virtual_network_bandwidth_resource='" + virtual_network_bandwidth_resource + '\'' +
@@ -254,6 +239,22 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", hostname='" + hostname + '\'' +
                 ", vimInstanceName='" + vimInstanceName + '\'' +
                 '}';
+    }
+
+    public Set<MonitoringParameter> getMonitoring_parameter() {
+        return monitoring_parameter;
+    }
+
+    public void setMonitoring_parameter(Set<MonitoringParameter> monitoring_parameter) {
+        this.monitoring_parameter = monitoring_parameter;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public VimInstance getVimInstance() {
