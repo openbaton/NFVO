@@ -67,9 +67,10 @@ public class NSDUtils {
         Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             if (vnfd.getId() != null) {
-                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findOne(vnfd.getId());
+                log.debug("VNFD to fetch is: " + vnfd.getId());
+                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
                 log.trace("VNFD fetched: " + vnfd_new);
-                if (log.isDebugEnabled())
+                if (!log.isTraceEnabled())
                     log.debug("Fetched VNFD: " + vnfd_new.getName());
                 if (vnfd_new == null) {
                     throw new NotFoundException("Not found VNFD with id: " + vnfd.getId() + ". Please do not specify an id if you want to create one VirtualNetworkFunctionDescriptor. Or pick one existing");
