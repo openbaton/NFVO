@@ -18,6 +18,7 @@ package org.openbaton.catalogue.mano.record;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
@@ -158,7 +159,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Set<String> runtime_policy_info;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<FaultManagementPolicy> faultManagementPolicy;
+    private Set<VNFFaultManagementPolicy> faultManagementPolicy;
 
     private String name;
     private String type;
@@ -443,11 +444,11 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 '}';
     }
 
-    public Set<FaultManagementPolicy> getFaultManagementPolicy() {
+    public Set<VNFFaultManagementPolicy> getFaultManagementPolicy() {
         return faultManagementPolicy;
     }
 
-    public void setFaultManagementPolicy(Set<FaultManagementPolicy> faultManagementPolicy) {
+    public void setFaultManagementPolicy(Set<VNFFaultManagementPolicy> faultManagementPolicy) {
         this.faultManagementPolicy = faultManagementPolicy;
     }
 
