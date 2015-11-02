@@ -10,7 +10,6 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
     $scope.URL = '';
-    //$scope.URL = 'http://80.96.122.80:8080';
     $scope.credential = {
         "username": '',
         "password": '',
