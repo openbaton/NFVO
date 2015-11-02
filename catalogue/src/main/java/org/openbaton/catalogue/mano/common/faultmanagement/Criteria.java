@@ -38,19 +38,19 @@ public class Criteria implements Serializable {
         this.name = name;
     }
 
-    public Metric getParameter_ref() {
+    public Metric getParameterRef() {
         return parameter_ref;
     }
 
-    public void setParameter_ref(Metric parameter_ref) {
+    public void setParameterRef(Metric parameter_ref) {
         this.parameter_ref = parameter_ref;
     }
 
-    public String getComparison_operator() {
+    public String getComparisonOperator() {
         return comparison_operator;
     }
 
-    public void setComparison_operator(String comparison_operator) {
+    public void setComparisonOperator(String comparison_operator) {
         this.comparison_operator = comparison_operator;
     }
 
