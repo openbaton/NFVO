@@ -48,16 +48,15 @@
                             <span ng-if="!$last">, </span>
                             </span>
                     </td>
-
-                </tr>
-                <tr>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
-                            <span class="caret"></span></button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="" ng-click="deletePackage(data)">Delete</a></li>
-                        </ul>
-                    </div>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="deletePackage(data)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>
