@@ -233,7 +233,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = result.get();
 
 
-                    if (properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
