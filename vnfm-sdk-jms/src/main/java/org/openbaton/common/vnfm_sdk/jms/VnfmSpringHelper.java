@@ -117,7 +117,11 @@ public class VnfmSpringHelper extends VnfmHelper {
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer consumer = session.createConsumer(session.createQueue(queueName));
         connection.start();
-        res = ((TextMessage)consumer.receive(Long.parseLong(properties.getProperty("ems-timeout","200000")))).getText();
+        String scriptMaxTime = properties.getProperty("script-max-time");
+        if (scriptMaxTime != null)
+            res = ((TextMessage)consumer.receive(Long.parseLong(scriptMaxTime))).getText();
+        else
+            res = ((TextMessage)consumer.receive()).getText();
         log.debug("Received Text from " + queueName + ": " + res);
         consumer.close();
         session.close();
