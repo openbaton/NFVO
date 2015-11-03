@@ -146,7 +146,7 @@ public class NSDUtils {
             else
                 vnfDependency.setSource(vnfSource);
 
-            VirtualNetworkFunctionDescriptor vnfTarget = getVnfdFromNSD(source.getName(), networkServiceDescriptor);
+            VirtualNetworkFunctionDescriptor vnfTarget = getVnfdFromNSD(target.getName(), networkServiceDescriptor);
             if (vnfTarget == null)
                 throw new NotFoundException("VNFD target name" + source.getName() + " was not found in the NetworkServiceDescriptor");
             else
