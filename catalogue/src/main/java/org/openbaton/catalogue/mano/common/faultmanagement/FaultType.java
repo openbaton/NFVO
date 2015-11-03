@@ -4,6 +4,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
  * Created by mob on 26.10.15.
  */
 public enum FaultType {
+
     //Compute faults
     COMPUTE,
     COMPUTE_HOGS,
@@ -31,4 +32,7 @@ public enum FaultType {
     IO_STORAGE_BLOCK_WRITE_CORRUPTION,
     IO_STORAGE_BLOCK_WRITE_DROP,
     IO_STORAGE_BLOCK_WRITE_DELAY,
+
+    //SERVICE FAULT
+    VNF_NOT_AVAILABLE
 }

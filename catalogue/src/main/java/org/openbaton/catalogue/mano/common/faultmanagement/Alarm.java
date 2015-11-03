@@ -21,10 +21,10 @@ public class Alarm {
     @ManyToOne
     private VirtualNetworkFunctionDescriptor vnfd;
 
-    private Date alarmRaisedTime;
+    private String alarmRaisedTime;
     private AlarmState alarmState;
     private PerceivedSeverity perceivedSeverity;
-    private Date eventTime;
+    private String eventTime;
     private FaultType faultType;
     private String probableCause;
     private boolean isRootCause;
@@ -51,11 +51,11 @@ public class Alarm {
         this.vnfd = vnfd;
     }
 
-    public Date getAlarmRaisedTime() {
+    public String getAlarmRaisedTime() {
         return alarmRaisedTime;
     }
 
-    public void setAlarmRaisedTime(Date alarmRaisedTime) {
+    public void setAlarmRaisedTime(String alarmRaisedTime) {
         this.alarmRaisedTime = alarmRaisedTime;
     }
 
@@ -75,11 +75,11 @@ public class Alarm {
         this.perceivedSeverity = perceivedSeverity;
     }
 
-    public Date getEventTime() {
+    public String getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(Date eventTime) {
+    public void setEventTime(String eventTime) {
         this.eventTime = eventTime;
     }
 
