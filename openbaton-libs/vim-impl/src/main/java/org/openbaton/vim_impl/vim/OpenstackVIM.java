@@ -18,16 +18,15 @@ package org.openbaton.vim_impl.vim;
 
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -46,17 +45,19 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
 
     public OpenstackVIM(String name, int port) {
-        super("openstack",name, port);
+        super("openstack", name, port);
     }
+
     public OpenstackVIM() {
         super("openstack");
     }
+
     public OpenstackVIM(int port) {
-        super("openstack",port);
+        super("openstack", port);
     }
-    
+
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile ) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
             NFVImage addedImage = client.addImage(vimInstance, image, imageFile);
             log.debug("Image with name: " + image.getName() + " added successfully.");
@@ -68,7 +69,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url ) throws VimException {
+    public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url) throws VimException {
         try {
             NFVImage addedImage = client.addImage(vimInstance, image, image_url);
             log.debug("Image with name: " + image.getName() + " added successfully.");
@@ -80,7 +81,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException{
+    public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
         try {
             NFVImage updatedImage = client.updateImage(vimInstance, image);
             log.debug("Image with id: " + image.getId() + " updated successfully.");
@@ -92,7 +93,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException{
+    public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
             client.copyImage(vimInstance, image, imageFile);
             log.debug("Image with id: " + image.getId() + " copied successfully.");
@@ -208,7 +209,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         Set<Subnet> updatedSubnets = new HashSet<Subnet>();
         List<String> updatedSubnetExtIds = new ArrayList<String>();
         for (Subnet subnet : network.getSubnets()) {
-            if (subnet.getExtId()!=null){
+            if (subnet.getExtId() != null) {
                 try {
                     Subnet updatedSubnet = client.updateSubnet(vimInstance, updatedNetwork, subnet);
                     log.debug("Subnet with id: " + subnet.getId() + " updated successfully.");
@@ -252,7 +253,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     }
 
     @Override
-    public void delete(VimInstance vimInstance, Network network) throws VimException{
+    public void delete(VimInstance vimInstance, Network network) throws VimException {
         boolean isDeleted = false;
         try {
             isDeleted = client.deleteNetwork(vimInstance, network.getExtId());
@@ -309,37 +310,33 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
         Set<String> networks = new HashSet<String>();
         for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-            for (InternalVirtualLink internalVirtualLink : vnfr.getVirtual_link()) {
 
-                log.debug("InternalVirtualLink is: " + internalVirtualLink);
-
-                if (vnfdConnectionPoint. getVirtual_link_reference().equals(internalVirtualLink.getName())) {
-                    networks.add(internalVirtualLink.getExtId());
-                }
-            }
+            for (Network net : vimInstance.getNetworks())
+                if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
+                    networks.add(net.getExtId());
         }
 
         String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
         vdu.setHostname(vnfr.getName());
-        String hostname = vdu.getHostname() + "-" + ((int)(Math.random()*1000));
+        String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 1000));
 
         log.debug("Params are: hostname:" + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
         Server server;
 
         try {
-            if(vimInstance==null)
+            if (vimInstance == null)
                 throw new NullPointerException("VimInstance is null");
-            if(hostname==null)
+            if (hostname == null)
                 throw new NullPointerException("hostname is null");
-            if(image==null)
+            if (image == null)
                 throw new NullPointerException("image is null");
-            if(flavorExtId==null)
+            if (flavorExtId == null)
                 throw new NullPointerException("flavorExtId is null");
-            if(vimInstance.getKeyPair()==null)
+            if (vimInstance.getKeyPair() == null)
                 throw new NullPointerException("vimInstance.getKeyPair() is null");
-            if(networks==null)
+            if (networks == null)
                 throw new NullPointerException("networks is null");
-            if(vimInstance.getSecurityGroups()==null)
+            if (vimInstance.getSecurityGroups() == null)
                 throw new NullPointerException("vimInstance.getSecurityGroups() is null");
 
             server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIps);
@@ -362,7 +359,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
             connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
             connectionPoint_vnfci.setType(connectionPoint.getType());
-            for (Map.Entry<String, String> entry:server.getFloatingIps().entrySet())
+            for (Map.Entry<String, String> entry : server.getFloatingIps().entrySet())
                 if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
                     connectionPoint_vnfci.setFloatingIp(entry.getValue());
 
@@ -372,8 +369,8 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         vnfcInstance.setIps(new HashSet<Ip>());
         vnfcInstance.setFloatingIps(new HashSet<Ip>());
 
-        if (floatingIps.size() != 0){
-            for (Map.Entry<String, String> fip: server.getFloatingIps().entrySet()) {
+        if (floatingIps.size() != 0) {
+            for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
                 Ip ip = new Ip();
                 ip.setNetName(fip.getKey());
                 ip.setIp(fip.getValue());
@@ -384,7 +381,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         if (vdu.getVnfc_instance() == null)
             vdu.setVnfc_instance(new HashSet<VNFCInstance>());
 
-        for (Map.Entry<String,List<String>> network : server.getIps().entrySet()) {
+        for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
             Ip ip = new Ip();
             ip.setNetName(network.getKey());
             ip.setIp(network.getValue().iterator().next());
@@ -393,13 +390,12 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 vnfr.getVnf_address().add(ip1);
             }
         }
-        vdu.getVnfc_instance().add(vnfcInstance);
         return new AsyncResult<>(vnfcInstance);
     }
 
     private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
-        for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()){
-            if (deploymentFlavour.getFlavour_key().equals(key) || deploymentFlavour.getExtId().equals(key) || deploymentFlavour.getId().equals(key)){
+        for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
+            if (deploymentFlavour.getFlavour_key().equals(key) || deploymentFlavour.getExtId().equals(key) || deploymentFlavour.getId().equals(key)) {
                 return deploymentFlavour.getExtId();
             }
         }
@@ -419,8 +415,8 @@ public class OpenstackVIM extends Vim {// TODO and so on...
     //     TODO choose the right image (DONE)
     private String chooseImage(Collection<String> vm_images, VimInstance vimInstance) throws VimException {
         if (vm_images != null && vm_images.size() > 0) {
-            for (String image : vm_images){
-                for (NFVImage nfvImage : vimInstance.getImages()){
+            for (String image : vm_images) {
+                for (NFVImage nfvImage : vimInstance.getImages()) {
                     if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId()))
                         return nfvImage.getExtId();
                 }

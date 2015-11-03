@@ -68,10 +68,10 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
 
     @Override
     public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
+        List<Future<VNFCInstance>> instances = new ArrayList<>();
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
-        List<String> ids = new ArrayList<>();
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
         String hostname = virtualNetworkFunctionRecord.getName().replaceAll("_", "-");
@@ -79,16 +79,31 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         virtualDeploymentUnit.setHostname(hostname);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
             log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
-            Map<String, String> floatinIps = new HashMap<>();
+            Map<String, String> floatingIps = new HashMap<>();
             for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
                 if (connectionPoint.getFloatingIp() != null)
-                    floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+                    floatingIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
             }
-            log.info("FloatingIp chosen are: " + floatinIps);
-            VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
-            ids.add(added.getVc_id());
-            if (floatinIps.size() > 0 && (added.getFloatingIps() == null || added.getFloatingIps().size() == 0))
-                log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available?");
+            log.info("FloatingIp chosen are: " + floatingIps);
+            Future<VNFCInstance> added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatingIps);
+            instances.add(added);
+        }
+        List<String> ids = new ArrayList<>();
+        for (Future<VNFCInstance> futureInstance : instances) {
+            VNFCInstance instance = futureInstance.get();
+            virtualDeploymentUnit.getVnfc_instance().add(instance);
+            ids.add(instance.getId());
+            log.debug("Launched VM with id: " + instance.getId());
+            Map<String, String> floatingIps = new HashMap<>();
+            for (VNFDConnectionPoint connectionPoint : instance.getVnfComponent().getConnection_point()){
+                if (connectionPoint.getFloatingIp() != null)
+                    floatingIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+            }
+            if (floatingIps.size() != instance.getFloatingIps().size()) {
+                log.warn("NFVO wasn't able to all associate FloatingIPs. Is there enough available?");
+                log.debug("Expected FloatingIPs: " + floatingIps);
+                log.debug("Real FloatingIPs: " + instance.getFloatingIps());
+            }
         }
         return ids;
     }
@@ -101,7 +116,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         }
         log.info("FloatingIp chosen are: " + floatinIps);
         VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
-        added.setVnfComponent(component);
+        virtualDeploymentUnit.getVnfc_instance().add(added);
         if (floatinIps.size() > 0 && added.getFloatingIps().size() == 0)
             log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
         return added.getVim_id();
@@ -180,6 +195,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Removing vnfcInstance: " + vnfcInstance);
         vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance()).get();
+        virtualDeploymentUnit.getVnfc().remove(vnfcInstance.getVnfComponent());
         return new AsyncResult<>(null);
     }
 
