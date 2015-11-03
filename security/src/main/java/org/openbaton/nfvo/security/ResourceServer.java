@@ -38,6 +38,8 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+        http.headers()
+                .frameOptions().disable();
 //        http
 //                .requestMatchers().antMatchers("/api/v1/", "/api/v1/**")
 //                .and()
