@@ -27,7 +27,9 @@ public enum Metric {
     SYSTEM_CPU_UTIL,
 
     SYSTEM_STAT,
-    SYSTEM_SWAP,
+    SYSTEM_SWAP_IN,
+    SYSTEM_SWAP_OUT,
+    SYSTEM_SWAP_SIZE,
     SYSTEM_UPTIME,
     SYSTEM_USERS_NUM,
 
