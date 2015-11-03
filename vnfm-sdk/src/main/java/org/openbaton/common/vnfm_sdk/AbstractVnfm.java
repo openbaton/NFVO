@@ -152,15 +152,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             NFVMessage nfvMessage = null;
             OrVnfmGenericMessage orVnfmGenericMessage = null;
             switch (message.getAction()) {
-                case SCALE_OUT:
+                case SCALE_IN:
                     OrVnfmScalingMessage scalingMessage = (OrVnfmScalingMessage) message;
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFCInstance vnfcInstanceToRemove = scalingMessage.getVnfcInstance();
 
-                    virtualNetworkFunctionRecord = this.scale(Action.SCALE_OUT,virtualNetworkFunctionRecord,vnfcInstanceToRemove,null,null);
+                    virtualNetworkFunctionRecord = this.scale(Action.SCALE_IN,virtualNetworkFunctionRecord,vnfcInstanceToRemove,null,null);
                     nfvMessage = null;
                     break;
-                case SCALE_IN:
+                case SCALE_OUT:
                     scalingMessage = (OrVnfmScalingMessage) message;
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFRecordDependency dependency = scalingMessage.getDependency();
@@ -169,11 +169,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
 
-                    OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
-                    virtualNetworkFunctionRecord = message1.getVnfr();
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
 
-                    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
-
+                        NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
+                        if (message2 instanceof OrVnfmGenericMessage) {
+                            OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
+                            virtualNetworkFunctionRecord = message1.getVnfr();
+                            log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+                        }else if (message2 instanceof OrVnfmErrorMessage){
+                            this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
+                            return;
+                        }
+                    }
                     boolean found = false;
                     VNFCInstance vnfcInstance_new = null;
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
@@ -198,7 +205,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink();
                     else
                         scripts = virtualNetworkFunctionRecord.getVnfPackage().getScripts();
-                    nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, this.scale(Action.SCALE_IN, virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency), vnfcInstance_new);
+                    nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, this.scale(Action.SCALE_OUT, virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency), vnfcInstance_new);
                     break;
                 case SCALING:
                     break;
@@ -226,7 +233,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = result.get();
 
 
-                    if (properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
