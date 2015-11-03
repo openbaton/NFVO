@@ -390,7 +390,6 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 vnfr.getVnf_address().add(ip1);
             }
         }
-        vdu.getVnfc_instance().add(vnfcInstance);
         return new AsyncResult<>(vnfcInstance);
     }
 
