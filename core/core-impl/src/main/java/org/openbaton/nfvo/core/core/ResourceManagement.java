@@ -160,7 +160,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-                "/opt/openbaton/ems/ems.sh start\n";
+                "service ems restart\n";
 
         return result;
     }
