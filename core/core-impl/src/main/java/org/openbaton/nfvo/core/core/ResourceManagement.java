@@ -141,7 +141,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n";
 
-        if (monitoringIp != null || monitoringIp.equals("")){
+        if (monitoringIp != null && !monitoringIp.equals("")){
             result += " echo \"Installing zabbix-agent for server at _address\"\n" +
                     "sudo apt-get install -y zabbix-agent\n" +
                     "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive=" + monitoringIp + ":10051/g' -e 's/Server=127.0.0.1/Server=" + monitoringIp + "/g' -e 's/Hostname=/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n" +
@@ -160,7 +160,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
-                "/opt/openbaton/ems/ems.sh start\n";
+                "service ems restart\n";
 
         return result;
     }
