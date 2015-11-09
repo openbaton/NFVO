@@ -1,13 +1,10 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,8 +15,7 @@ public class Alarm {
     @Id
     private String alarmId;
 
-    @ManyToOne
-    private VirtualNetworkFunctionDescriptor vnfd;
+    private String vnfrId;
 
     private String alarmRaisedTime;
     private AlarmState alarmState;
@@ -43,12 +39,12 @@ public class Alarm {
         return alarmId;
     }
 
-    public VirtualNetworkFunctionDescriptor getVnfd() {
-        return vnfd;
+    public String getVnfrId() {
+        return vnfrId;
     }
 
-    public void setVnfd(VirtualNetworkFunctionDescriptor vnfd) {
-        this.vnfd = vnfd;
+    public void setVnfrId(String vnfrId) {
+        this.vnfrId = vnfrId;
     }
 
     public String getAlarmRaisedTime() {
@@ -127,7 +123,7 @@ public class Alarm {
     public String toString() {
         return "Alarm{" +
                 "alarmId='" + alarmId + '\'' +
-                ", vnfd=" + vnfd +
+                ", vnfrId=" + vnfrId +
                 ", alarmRaisedTime=" + alarmRaisedTime +
                 ", alarmState=" + alarmState +
                 ", perceivedSeverity=" + perceivedSeverity +
