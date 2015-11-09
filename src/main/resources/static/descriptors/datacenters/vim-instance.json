@@ -5,7 +5,7 @@
   "username":"test_username",
   "password":"test_password",
   "keyPair":"test_keyPair",
-  "securityGroup": [
+  "securityGroups": [
     "test_security_group1",
     "test_security_group2",
     "test_security_group3"
