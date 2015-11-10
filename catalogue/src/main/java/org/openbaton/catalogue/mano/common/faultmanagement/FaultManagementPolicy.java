@@ -70,6 +70,10 @@ public abstract class FaultManagementPolicy implements Serializable{
         return name;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "FaultManagementPolicy{" +

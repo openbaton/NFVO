@@ -15,7 +15,7 @@ public class Alarm {
     @Id
     private String alarmId;
 
-    private String vnfrId;
+    private String resourceId;
 
     private String alarmRaisedTime;
     private AlarmState alarmState;
@@ -39,12 +39,12 @@ public class Alarm {
         return alarmId;
     }
 
-    public String getVnfrId() {
-        return vnfrId;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setVnfrId(String vnfrId) {
-        this.vnfrId = vnfrId;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     public String getAlarmRaisedTime() {
@@ -123,7 +123,7 @@ public class Alarm {
     public String toString() {
         return "Alarm{" +
                 "alarmId='" + alarmId + '\'' +
-                ", vnfrId=" + vnfrId +
+                ", resourceId=" + resourceId +
                 ", alarmRaisedTime=" + alarmRaisedTime +
                 ", alarmState=" + alarmState +
                 ", perceivedSeverity=" + perceivedSeverity +
