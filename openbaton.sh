@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source gradle.properties
+source ./gradle.properties
 
 _version=${version}
 
