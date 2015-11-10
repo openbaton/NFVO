@@ -337,7 +337,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
                 OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
                 log.error(errorMessage.getMessage());
-                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage(), errorMessage.getVnfr());
+                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage());
             }
             OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
             log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
