@@ -72,7 +72,7 @@ public class TestVIM extends Vim {
     public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
         try {
             return client.listFlavors(vimInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -83,7 +83,7 @@ public class TestVIM extends Vim {
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
             return this.client.addImage(vimInstance, image, imageFile);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -108,7 +108,7 @@ public class TestVIM extends Vim {
     public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
         try {
             return client.listImages(vimInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -165,7 +165,7 @@ public class TestVIM extends Vim {
             String id = server.getId();
             log.debug("launched instance with id " + id);
             return new AsyncResult<>(vnfcInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -176,7 +176,7 @@ public class TestVIM extends Vim {
 
         try {
             return client.listServer(vimInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -247,7 +247,7 @@ public class TestVIM extends Vim {
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
         try {
             return this.client.listNetworks(vimInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -262,7 +262,7 @@ public class TestVIM extends Vim {
     public Quota getQuota(VimInstance vimInstance) throws VimException {
         try {
             return this.client.getQuota(vimInstance);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
