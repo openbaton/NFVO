@@ -17,6 +17,7 @@ package org.openbaton.common.vnfm_sdk.jms;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
+import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
@@ -110,7 +111,7 @@ public class VnfmSpringHelper extends VnfmHelper {
      * @return
      * @throws JMSException
      */
-    public String receiveTextFromQueue(String queueName) throws JMSException, ExecutionException, InterruptedException {
+    public String receiveTextFromQueue(String queueName) throws JMSException, ExecutionException, InterruptedException, VnfmSdkException {
         String res;
 
         Connection connection = connectionFactory.createConnection();
@@ -118,8 +119,13 @@ public class VnfmSpringHelper extends VnfmHelper {
         MessageConsumer consumer = session.createConsumer(session.createQueue(queueName));
         connection.start();
         String scriptMaxTime = properties.getProperty("script-max-time");
-        if (scriptMaxTime != null)
-            res = ((TextMessage)consumer.receive(Long.parseLong(scriptMaxTime))).getText();
+        if (scriptMaxTime != null) {
+            TextMessage textMessage = (TextMessage) consumer.receive(Long.parseLong(scriptMaxTime));
+            if (textMessage != null)
+                res = textMessage.getText();
+            else
+                throw new VnfmSdkException("No message got from queue " + queueName + " after " + scriptMaxTime);
+        }
         else
             res = ((TextMessage)consumer.receive()).getText();
         log.debug("Received Text from " + queueName + ": " + res);
