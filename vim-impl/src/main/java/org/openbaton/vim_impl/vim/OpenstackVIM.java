@@ -62,7 +62,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             NFVImage addedImage = client.addImage(vimInstance, image, imageFile);
             log.info("Added Image with name: " + image.getName() + " to VimInstance " + vimInstance.getName());
             return addedImage;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not added Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not added Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -75,7 +75,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             NFVImage addedImage = client.addImage(vimInstance, image, image_url);
             log.info("Added Image with name: " + image.getName() + " to VimInstance " + vimInstance.getName());
             return addedImage;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not added Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not added Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -88,7 +88,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             NFVImage updatedImage = client.updateImage(vimInstance, image);
             log.info("Updated Image with name: " + image.getName() + " on VimInstance " + vimInstance.getName());
             return updatedImage;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not updated Image with name: " + image.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not updated Image with name: " + image.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -100,7 +100,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             log.debug("Copying image with name " + image.getName() + " to VimInstance " + vimInstance.getName() + " using image file");
             client.copyImage(vimInstance, image, imageFile);
             log.info("Copied Image with name: " + image.getName() + " to VimInstance " + vimInstance.getName());
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not copied Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not copied Image with name: " + image.getName() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -118,7 +118,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 log.warn("Not deleted Image with name: " + image.getName() + " successfully on VimInstance " + vimInstance.getName());
                 throw new VimException("Not deleted Image with id: " + image.getId() + " successfully on VimInstance " + vimInstance.getName());
             }
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not deleted Image with name: " + image.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not deleted Image with name: " + image.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -132,7 +132,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             DeploymentFlavour flavor = client.addFlavor(vimInstance, deploymentFlavour);
             log.info("Added Flavor with name: " + deploymentFlavour.getFlavour_key() + " to VimInstance " + vimInstance.getName());
             return flavor;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not added Flavor with name: " + deploymentFlavour.getFlavour_key() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not added Image with name: " + deploymentFlavour.getFlavour_key() + " successfully to VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -145,7 +145,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             DeploymentFlavour flavor = client.updateFlavor(vimInstance, deploymentFlavour);
             log.info("Updated Flavor with name: " + deploymentFlavour.getId() + " on VimInstance " + vimInstance.getName());
             return flavor;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not updated Flavor with name: " + deploymentFlavour.getFlavour_key() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not updated Flavor with name: " + deploymentFlavour.getFlavour_key() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -163,7 +163,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 log.error("Not deleted DeploymentFlavor with name: " + deploymentFlavour.getFlavour_key() + " successfully from VimInstance " + vimInstance.getName());
                 throw new VimException("Not deleted Flavor with id: " + deploymentFlavour.getFlavour_key() + " successfully from VimInstance " + vimInstance.getName());
             }
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not deleted DeploymentFlavor with name: " + deploymentFlavour.getFlavour_key() + " successfully from VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not deleted DeploymentFlavor with name: " + deploymentFlavour.getFlavour_key() + " successfully from VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -177,7 +177,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             List<DeploymentFlavour> flavors = client.listFlavors(vimInstance);
             log.info("Listed DeploymentFlavors of VimInstance " + vimInstance.getName());
             return flavors;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed DeploymentFlavors successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not listed DeploymentFlavors successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -190,7 +190,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             log.debug("Creating Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
             createdNetwork = client.createNetwork(vimInstance, network);
             log.info("Created Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not created Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not created Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -203,7 +203,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 log.info("Created Subnet with name: " + subnet.getName() + " on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
                 createdSubnet.setNetworkId(createdNetwork.getId());
                 createdSubnets.add(createdSubnet);
-            } catch (VimDriverException e) {
+            } catch (Exception e) {
                 log.error("Not created Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstnace " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                 throw new VimException("Not created Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstnace " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             }
@@ -220,7 +220,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             log.debug("Updating Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
             updatedNetwork = client.updateNetwork(vimInstance, network);
             log.info("Updated Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not updated Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not updated Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -236,7 +236,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                     updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(updatedSubnet);
                     updatedSubnetExtIds.add(updatedSubnet.getExtId());
-                } catch (VimDriverException e) {
+                } catch (Exception e) {
                     log.error("Not updated Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                     throw new VimException("Not updated Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                 }
@@ -248,7 +248,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                     createdSubnet.setNetworkId(updatedNetwork.getId().toString());
                     updatedSubnets.add(createdSubnet);
                     updatedSubnetExtIds.add(createdSubnet.getExtId());
-                } catch (VimDriverException e) {
+                } catch (Exception e) {
                     log.error("Not created Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                     throw new VimException("Not created Subnet with name: " + subnet.getName() + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                 }
@@ -260,7 +260,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             log.debug("Listing all Subnet IDs of Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
             existingSubnetExtIds = client.getSubnetsExtIds(vimInstance, updatedNetwork.getExtId());
             log.debug("Listed all Subnet IDs of Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + " -> Subnet IDs: " + existingSubnetExtIds);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed Subnets of Network with name: " + network.getName() + " successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not listed Subnets of Network with name: " + network.getName() + " successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -270,7 +270,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                     log.debug("Deleting Subnet with id: " + existingSubnetExtId + " on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
                     client.deleteSubnet(vimInstance, existingSubnetExtId);
                     log.debug("Deleted Subnet with id: " + existingSubnetExtId + " on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName());
-                } catch (VimDriverException e) {
+                } catch (Exception e) {
                     log.debug("Not Deleted Subnet with id: " + existingSubnetExtId + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                     throw new VimException("Not Deleted Subnet with id: " + existingSubnetExtId + " successfully on Network with name: " + network.getName() + " on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
                 }
@@ -292,7 +292,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
                 log.error("Not deleted Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName());
                 throw new VimException("Not deleted Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName());
             }
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not deleted Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not deleted Network with name: " + network.getName() + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -305,7 +305,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             Network network = client.getNetworkById(vimInstance, id);
             log.info("Found Network with id: " + network.getId() + " on VimInstance " + vimInstance.getName() + " -> Network: " + network);
             return network;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not found Network with id: " + id + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not found Network with id: " + id + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -318,7 +318,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             List<Network> networks = client.listNetworks(vimInstance);
             log.info("Listed Networks of VimInstance " + vimInstance.getName() + " -> Networks: " + networks);
             return networks;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed Networks successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not listed Networks successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -381,7 +381,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
 
             server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIps);
             log.debug("Launched VM with hostname " + hostname + " successfully with ExtId " + server.getExtId() + " on VimInstance " + vimInstance.getName());
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -455,7 +455,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             List<Server> servers = client.listServer(vimInstance);
             log.debug("Listed VMs of VimInstance " + vimInstance.getName() + " -> VMs: " + servers);
             return servers;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed VMs successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
             throw new VimException("Not listed VMs successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
         }
@@ -486,7 +486,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
             List<NFVImage> images = client.listImages(vimInstance);
             log.debug("Listed Images of VimInstance " + vimInstance.getName() + " -> Images: " + images);
             return images;
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed Images successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not listed Images successfully of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -519,7 +519,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         try {
             client.deleteServerByIdAndWait(vimInstance, vnfcInstance.getVc_id());
             log.debug("Removed VM with ExtId: " + vnfcInstance.getVc_id() + " from VimInstance " + vimInstance.getName());
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not removed VM with ExtId " + vnfcInstance.getVc_id() + " successfully from VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not removed VM with ExtId " + vnfcInstance.getVc_id() + " successfully from VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
@@ -553,7 +553,7 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         try {
             quota = client.getQuota(vimInstance);
             log.debug("Listed Quota successfully for Tenant " + vimInstance.getTenant() + " of VimInstance " + vimInstance.getName() + " -> Quota: " + quota);
-        } catch (VimDriverException e) {
+        } catch (Exception e) {
             log.error("Not listed Quota successfully for Tenant " + vimInstance.getTenant() + " of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             throw new VimException("Not listed Quota successfully for Tenant " + vimInstance.getTenant() + " of VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
         }
