@@ -17,10 +17,7 @@
 package org.openbaton.nfvo.api.exceptions;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -41,13 +38,17 @@ import javax.persistence.NoResultException;
  */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler({NotFoundException.class, NoResultException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
-        log.error("Exception with message " + e.getMessage() + " was thrown");
+        if (log.isDebugEnabled()) {
+            log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
+        } else {
+            log.error("Exception was thrown -> Return message: " + e.getMessage());
+        }
         ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -55,16 +56,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
-    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class, WrongStatusException.class, UnrecognizedPropertyException.class})
+    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class, WrongStatusException.class, UnrecognizedPropertyException.class, VimException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
-        log.error("Exception with message " + e.getMessage() + " was thrown");
+        if (log.isDebugEnabled()) {
+            log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
+        } else {
+            log.error("Exception was thrown -> Return message: " + e.getMessage());
+        }
         ExceptionResource exc = new ExceptionResource("Bad Request", e.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
-
 
 }
