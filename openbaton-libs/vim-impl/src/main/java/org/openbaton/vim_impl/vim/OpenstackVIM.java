@@ -549,9 +549,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         if (vm_images != null && vm_images.size() > 0) {
             for (String image : vm_images) {
                 for (NFVImage nfvImage : vimInstance.getImages()) {
-                    if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId()))
+                    if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId())) {
                         log.info("Image choosed with name: " + nfvImage.getName() + " and ExtId: " + nfvImage.getExtId());
-                    return nfvImage.getExtId();
+                        return nfvImage.getExtId();
+                    }
                 }
             }
             throw new VimException("Not found any Image with name: " + vm_images + " on VimInstance " + vimInstance.getName());
