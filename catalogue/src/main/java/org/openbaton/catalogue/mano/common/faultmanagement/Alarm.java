@@ -2,9 +2,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -16,6 +14,7 @@ public class Alarm {
     private String alarmId;
 
     private String resourceId;
+    private String triggerId;
 
     private String alarmRaisedTime;
     private AlarmState alarmState;
@@ -24,6 +23,7 @@ public class Alarm {
     private FaultType faultType;
     private String probableCause;
     private boolean isRootCause;
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> correlatedAlarmId;
     private String faultDetails;
 
@@ -123,11 +123,12 @@ public class Alarm {
     public String toString() {
         return "Alarm{" +
                 "alarmId='" + alarmId + '\'' +
-                ", resourceId=" + resourceId +
-                ", alarmRaisedTime=" + alarmRaisedTime +
+                ", resourceId='" + resourceId + '\'' +
+                ", triggerId='" + triggerId + '\'' +
+                ", alarmRaisedTime='" + alarmRaisedTime + '\'' +
                 ", alarmState=" + alarmState +
                 ", perceivedSeverity=" + perceivedSeverity +
-                ", eventTime=" + eventTime +
+                ", eventTime='" + eventTime + '\'' +
                 ", faultType=" + faultType +
                 ", probableCause='" + probableCause + '\'' +
                 ", isRootCause=" + isRootCause +
@@ -135,4 +136,13 @@ public class Alarm {
                 ", faultDetails='" + faultDetails + '\'' +
                 '}';
     }
+
+    public String getTriggerId() {
+        return triggerId;
+    }
+
+    public void setTriggerId(String triggerId) {
+        this.triggerId = triggerId;
+    }
+
 }
