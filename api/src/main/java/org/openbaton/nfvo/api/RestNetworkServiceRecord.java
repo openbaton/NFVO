@@ -73,7 +73,7 @@ public class RestNetworkServiceRecord {
      * @param id : the id of Network Service Descriptor
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NotFoundException {
         try {
             networkServiceRecordManagement.delete(id);
