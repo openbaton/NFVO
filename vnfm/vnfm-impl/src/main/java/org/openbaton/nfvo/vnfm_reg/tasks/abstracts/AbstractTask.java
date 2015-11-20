@@ -117,7 +117,7 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                     throw new RuntimeException(e1);
                 }
             }
-            if (!log.isTraceEnabled())
+            if (log.isInfoEnabled())
                 log.error("There was an uncaught exception. Message is: " + e.getMessage());
             else
                 log.error("There was an uncaught exception. ", e);
