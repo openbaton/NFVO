@@ -1,11 +1,11 @@
 #!/bin/bash
 
-source gradle.properties
+source ./gradle.properties
 
 _version=${version}
 
 _openbaton_base="/opt/openbaton/"
-_message_queue_base="apache-activemq-5.11.1"
+_message_queue_base="apache-activemq-5.11.3"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {

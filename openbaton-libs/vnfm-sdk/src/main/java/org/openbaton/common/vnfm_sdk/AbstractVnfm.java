@@ -169,7 +169,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
 
-                    if (properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
 
                         NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
                         if (message2 instanceof OrVnfmGenericMessage) {
@@ -233,7 +233,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = result.get();
 
 
-                    if (properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
@@ -337,7 +337,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
                 OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
                 log.error(errorMessage.getMessage());
-                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage(), errorMessage.getVnfr());
+                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage());
             }
             OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
             log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());

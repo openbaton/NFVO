@@ -35,56 +35,56 @@ public interface ClientInterfaces extends Remote {
      */
     String interfaceVersion = "1.0";
 
-    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws RemoteException;
+    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws RemoteException, VimDriverException;
 //    void init(VimInstance vimInstance);
 
-    List<NFVImage> listImages(VimInstance vimInstance) throws RemoteException;
+    List<NFVImage> listImages(VimInstance vimInstance) throws RemoteException, VimDriverException;
 
-    List<Server> listServer(VimInstance vimInstance) throws RemoteException;
+    List<Server> listServer(VimInstance vimInstance) throws RemoteException, VimDriverException;
 
-    List<Network> listNetworks(VimInstance vimInstance) throws RemoteException;
+    List<Network> listNetworks(VimInstance vimInstance) throws RemoteException, VimDriverException;
 
-    List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws RemoteException;
+    List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws RemoteException, VimDriverException;
 
-    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s, Map<String, String> floatingIps) throws VimDriverException, RemoteException;
+    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s, Map<String, String> floatingIps) throws RemoteException, VimDriverException;
 
-    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws VimDriverException, RemoteException;
+    Server launchInstanceAndWait(VimInstance vimInstance, String hostname, String image, String extId, String keyPair, Set<String> networks, Set<String> securityGroups, String s) throws RemoteException, VimDriverException;
 
-    void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws RemoteException;
+    void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws RemoteException, VimDriverException;
 
-    Network createNetwork(VimInstance vimInstance, Network network) throws RemoteException;
+    Network createNetwork(VimInstance vimInstance, Network network) throws RemoteException, VimDriverException;
 
-    DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException;
+    DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException, VimDriverException;
 
-    NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException, VimDriverException;
 
-    NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url) throws RemoteException;
+    NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url) throws RemoteException, VimDriverException;
 
-    NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
+    NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws RemoteException, VimDriverException;
 
-    NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException;
+    NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws RemoteException, VimDriverException;
 
-    boolean deleteImage(VimInstance vimInstance, NFVImage image) throws RemoteException;
+    boolean deleteImage(VimInstance vimInstance, NFVImage image) throws RemoteException, VimDriverException;
 
-    DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException, RemoteException;
+    DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws RemoteException, VimDriverException;
 
-    boolean deleteFlavor(VimInstance vimInstance, String extId) throws RemoteException;
+    boolean deleteFlavor(VimInstance vimInstance, String extId) throws RemoteException, VimDriverException;
 
-    Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet) throws RemoteException;
+    Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet) throws RemoteException, VimDriverException;
 
-    Network updateNetwork(VimInstance vimInstance, Network network) throws RemoteException;
+    Network updateNetwork(VimInstance vimInstance, Network network) throws RemoteException, VimDriverException;
 
-    Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet) throws RemoteException;
+    Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet) throws RemoteException, VimDriverException;
 
-    List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId) throws RemoteException;
+    List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId) throws RemoteException, VimDriverException;
 
-    boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId) throws RemoteException;
+    boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId) throws RemoteException, VimDriverException;
 
-    boolean deleteNetwork(VimInstance vimInstance, String extId) throws RemoteException;
+    boolean deleteNetwork(VimInstance vimInstance, String extId) throws RemoteException, VimDriverException;
 
-    Network getNetworkById(VimInstance vimInstance, String id) throws RemoteException;
+    Network getNetworkById(VimInstance vimInstance, String id) throws RemoteException, VimDriverException;
 
-    Quota getQuota(VimInstance vimInstance) throws RemoteException;
+    Quota getQuota(VimInstance vimInstance) throws RemoteException, VimDriverException;
 
-    String getType(VimInstance vimInstance) throws RemoteException;
+    String getType(VimInstance vimInstance) throws RemoteException, VimDriverException;
 }
