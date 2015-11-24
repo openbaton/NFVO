@@ -94,10 +94,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     private VduRepository vduRepository;
 
     @Value("${nfvo.delete.all-status:}")
-    private boolean deleteInAllStatus;
+    private String deleteInAllStatus;
 
     @Value("${nfvo.delete.wait:}")
-    private boolean waitForDelete;
+    private String waitForDelete;
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
@@ -419,7 +419,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
 
-        if (!deleteInAllStatus) {
+
+        if (deleteInAllStatus != null && !deleteInAllStatus.equals("")&& !Boolean.parseBoolean(deleteInAllStatus)) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
@@ -446,7 +447,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             }
         }
 
-        if (waitForDelete)
+        if (waitForDelete != null && !waitForDelete.equals("")&& Boolean.parseBoolean(waitForDelete))
             for (Future<Void> result : futures) {
                 result.get();
                 log.debug("Deleted VDU");
