@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.common.vnfm_sdk.jms;
+package org.openbaton.common.vnfm_sdk.amqp;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
