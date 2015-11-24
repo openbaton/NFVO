@@ -19,12 +19,12 @@ package org.openbaton.nfvo.vnfm_reg.tasks;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -48,7 +48,7 @@ public class UpdatevnfrTask extends AbstractTask {
     private VnfmRegister vnfmRegister;
 
     @Override
-    protected void doWork() throws Exception {
+    protected NFVMessage doWork() throws Exception {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
@@ -113,7 +113,9 @@ public class UpdatevnfrTask extends AbstractTask {
         log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
         log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
-        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALING), getTempDestination());
+        OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALING);
+//        vnfmSender.sendCommand(nfvMessage, getTempDestination());
+        return nfvMessage;
     }
 
     private Set<VNFComponent> updateVNFComponents(Set<VNFComponent> vnfComponents_nfvo, Set<VNFComponent> vnfComponents_manager) {

@@ -32,12 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -46,7 +48,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-@ConfigurationProperties(prefix = "activemq")
+@ConfigurationProperties(prefix = "nfvo.rabbit")
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
     private String brokerIp;
@@ -78,14 +80,15 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         log.debug("Hostname is: " + hostname);
         virtualDeploymentUnit.setHostname(hostname);
         for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
-            log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
+            String userData = getUserData(virtualNetworkFunctionRecord.getEndpoint());
+            log.trace("UserData is: " + userData);
             Map<String, String> floatingIps = new HashMap<>();
-            for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
+            for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
                 if (connectionPoint.getFloatingIp() != null)
-                    floatingIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+                    floatingIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
             }
             log.info("FloatingIp chosen are: " + floatingIps);
-            Future<VNFCInstance> added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatingIps);
+            Future<VNFCInstance> added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, userData, floatingIps);
             instances.add(added);
         }
         List<String> ids = new ArrayList<>();
@@ -95,9 +98,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             ids.add(instance.getId());
             log.debug("Launched VM with id: " + instance.getId());
             Map<String, String> floatingIps = new HashMap<>();
-            for (VNFDConnectionPoint connectionPoint : instance.getVnfComponent().getConnection_point()){
+            for (VNFDConnectionPoint connectionPoint : instance.getVnfComponent().getConnection_point()) {
                 if (connectionPoint.getFloatingIp() != null)
-                    floatingIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+                    floatingIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
             }
             if (floatingIps.size() != instance.getFloatingIps().size()) {
                 log.warn("NFVO wasn't able to all associate FloatingIPs. Is there enough available?");
@@ -111,8 +114,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private String allocateVNFC(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim, VNFComponent component) throws InterruptedException, ExecutionException, VimException, VimDriverException {
         log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
         Map<String, String> floatinIps = new HashMap<>();
-        for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
-            floatinIps.put(connectionPoint.getVirtual_link_reference(),connectionPoint.getFloatingIp());
+        for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
+            floatinIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
         }
         log.info("FloatingIp chosen are: " + floatinIps);
         VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
@@ -123,25 +126,17 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     private String getUserData(String endpoint) {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream("/etc/openbaton/openbaton.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        log.debug("Loaded: " + properties);
-        String url = properties.getProperty("spring.activemq.broker-url");
-        String activeIp = (String) url.subSequence(6, url.indexOf(":61616"));
-        log.debug("Active ip is: " + brokerIp);
+        log.debug("Broker ip is: " + brokerIp);
         log.debug("Monitoring ip is: " + monitoringIp);
         String result = "#!/bin/bash\n" +
+                "adduser user\n" +
+                "echo -e \"password\\npassword\" | (passwd user)\n" +
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
                 "apt-get install git -y\n" +
                 "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n";
 
-        if (monitoringIp != null && !monitoringIp.equals("")){
+        if (monitoringIp != null && !monitoringIp.equals("")) {
             result += " echo \"Installing zabbix-agent for server at _address\"\n" +
                     "sudo apt-get install -y zabbix-agent\n" +
                     "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive=" + monitoringIp + ":10051/g' -e 's/Server=127.0.0.1/Server=" + monitoringIp + "/g' -e 's/Hostname=/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n" +
@@ -151,8 +146,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         }
 
         result +=
-                "apt-get install -y python-pip\n" +
-                "apt-get install -y ems\n" +
+//                "apt-get install -y python-pip\n" +
+                "apt-get install -y ems-0.15-test\n" +
                 "mkdir -p /etc/openbaton/ems\n" +
                 "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
@@ -160,6 +155,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
+
                 "service ems restart\n";
 
         return result;
@@ -191,6 +187,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     @Override
+    @Async
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException {
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
         log.debug("Removing vnfcInstance: " + vnfcInstance);

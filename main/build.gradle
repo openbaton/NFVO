@@ -28,6 +28,7 @@ dependencies {
     compile project(':repository')
     compile project(':catalogue')
     compile project(':plugin')
+    compile project(':core-int')
 
     runtime project(':security')
 
@@ -43,4 +44,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     testCompile 'org.hsqldb:hsqldb:2.3.2'
+
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 }

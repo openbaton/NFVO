@@ -43,11 +43,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jms.support.JmsHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jms.Destination;
 import java.util.concurrent.ExecutionException;
 
 
@@ -79,7 +76,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
     @Override
     @RequestMapping(value = "vnfm-core-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void actionFinished(@RequestBody Object nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException {
+    public String actionFinished(@RequestBody String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException {
+        //TODO rewrite this or better remove it
         log.debug("CORE: Received: " + nfvMessage);
         String  action = mapper.fromJson(mapper.toJson(nfvMessage), JsonObject.class).get("action").getAsString();
         NFVMessage message;
@@ -91,7 +89,23 @@ public class VnfmReceiverRest implements VnfmReceiver {
             message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrGenericMessage.class);
             log.trace("DESERIALIZED: " + message);
         }
-        vnfmManager.executeAction(message, tempDestination);
+        return vnfmManager.executeAction(message, null);
+    }
+
+    @Override
+    public void actionFinishedVoid(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException {
+        log.debug("CORE: Received: " + nfvMessage);
+        String  action = mapper.fromJson(mapper.toJson(nfvMessage), JsonObject.class).get("action").getAsString();
+        NFVMessage message;
+        if (action.equals("INSTANTIATE")) {
+            message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrInstantiateMessage.class);
+            log.trace("DESERIALIZED: " + message);
+        }
+        else{
+            message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrGenericMessage.class);
+            log.trace("DESERIALIZED: " + message);
+        }
+        vnfmManager.executeAction(message, null);
     }
 
     @RequestMapping(value = "vnfm-core-grant", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -42,12 +43,15 @@ public class InstantiateTask extends AbstractTask {
     private DependencyQueuer dependencyQueuer;
 
     @Override
-    protected void doWork() throws Exception {
+    protected NFVMessage doWork() throws Exception {
 
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
+        VirtualNetworkFunctionRecord existing = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+        log.debug("VNFR arrived version= " + virtualNetworkFunctionRecord.getHb_version());
+        log.debug("VNFR existing version= " + existing.getHb_version());
         saveVirtualNetworkFunctionRecord();
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
@@ -65,6 +69,7 @@ public class InstantiateTask extends AbstractTask {
             log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
+        return null;
     }
 
     @Override
