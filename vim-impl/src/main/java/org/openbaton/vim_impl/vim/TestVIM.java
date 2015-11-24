@@ -17,15 +17,16 @@
 package org.openbaton.vim_impl.vim;
 
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -131,9 +132,9 @@ public class TestVIM extends Vim {
             securityGroups.add("secGroup_id");
 
             Server server = client.launchInstanceAndWait(vimInstance, vdu.getHostname(), vimInstance.getImages().iterator().next().getExtId(), "flavor", "keypair", networks, securityGroups, "#userdate");
-            VNFCInstance component = new VNFCInstance();
-            component.setVc_id(server.getExtId());
-            component.setVim_id(vdu.getVimInstance().getId());
+//            VNFCInstance component = new VNFCInstance();
+//            component.setVc_id(server.getExtId());
+//            component.setVim_id(vdu.getVimInstance().getId());
 
 
             VNFCInstance vnfcInstance = new VNFCInstance();
@@ -155,6 +156,10 @@ public class TestVIM extends Vim {
 
             if (vdu.getVnfc_instance() == null)
                 vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+
+            vnfcInstance.setVnfComponent(vnfComponent);
+            vnfcInstance.setFloatingIps(new HashSet<Ip>());
+            vnfcInstance.setIps(new HashSet<Ip>());
             vdu.getVnfc_instance().add(vnfcInstance);
 
             for (String network : server.getIps().keySet()) {
