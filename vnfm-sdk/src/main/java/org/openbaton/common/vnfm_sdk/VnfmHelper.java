@@ -29,4 +29,5 @@ public abstract class VnfmHelper {
     public abstract void sendToNfvo(NFVMessage nfvMessage);
 
     public abstract NFVMessage sendAndReceive(NFVMessage nfvMessage) throws Exception;
+    public abstract String sendAndReceive(String message, String queueName) throws Exception;
 }
