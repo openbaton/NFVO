@@ -37,7 +37,12 @@ public class PluginStartup {
     public static void installPlugin(String name, String path, String registryip, String port) throws IOException {
         log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
-        File file = new File("plugin-" + name + ".log");
+        Date dNow = new Date( );
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
+        File dir = new File("./plugin-logs/");
+        if (!dir.exists())
+            dir.mkdirs();
+        File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow)+ ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
         log.trace("ProcessBuilder is: " + processBuilder);
@@ -53,8 +58,10 @@ public class PluginStartup {
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
-
-        File file = new File("plugin-" + name + "_" + ft.format(dNow)+ ".log");
+        File dir = new File("./plugin-logs/");
+        if (!dir.exists())
+            dir.mkdirs();
+        File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow)+ ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
         log.trace("ProcessBuilder is: " + processBuilder);
