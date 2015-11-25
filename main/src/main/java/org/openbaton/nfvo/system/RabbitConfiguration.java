@@ -196,7 +196,8 @@ public class RabbitConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName_vnfmCoreActions);
-//        container.setConcurrentConsumers(vnfmConcurrency);
+        container.setConcurrentConsumers(5);
+        container.setMaxConcurrentConsumers(15);
         container.setMessageListener(listenerAdapter);
         return container;
     }
@@ -207,7 +208,8 @@ public class RabbitConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName_vnfmCoreActionsReply);
-//        container.setConcurrentConsumers(vnfmConcurrency);
+        container.setConcurrentConsumers(5);
+        container.setMaxConcurrentConsumers(15);
         container.setMessageListener(listenerAdapter);
         return container;
     }
