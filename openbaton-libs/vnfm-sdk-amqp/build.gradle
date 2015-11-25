@@ -1,0 +1,13 @@
+
+    dependencies {
+        compile project(':vnfm-sdk')
+
+
+        compile 'org.springframework:spring-context:' + springVersion
+        compile 'org.springframework.boot:spring-boot:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+        compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+
+        compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
