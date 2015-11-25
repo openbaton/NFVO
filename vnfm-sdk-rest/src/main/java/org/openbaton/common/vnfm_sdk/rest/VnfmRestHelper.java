@@ -90,6 +90,11 @@ public class VnfmRestHelper extends VnfmHelper {
         return mapper.fromJson(this.post(path, mapper.toJson(message)), OrVnfmGenericMessage.class);
     }
 
+    @Override
+    public String sendAndReceive(String message, String queueName) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
     private String get(String path) {
         HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);

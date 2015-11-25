@@ -145,4 +145,9 @@ public class VnfmSpringHelper extends VnfmHelper {
         Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(message));
         return (NFVMessage) ((ObjectMessage) response).getObject();
     }
+
+    @Override
+    public String sendAndReceive(String message, String queueName) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 }
