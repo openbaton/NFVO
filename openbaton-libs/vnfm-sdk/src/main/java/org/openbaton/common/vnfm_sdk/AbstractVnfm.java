@@ -73,12 +73,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     @PostConstruct
     private void init() {
-        setVnfmHelper();
         setup();
         executor = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("concurrency", "15")));
     }
-
-    protected abstract void setVnfmHelper();
 
     public String getType() {
         return type;
@@ -274,7 +271,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             if (e instanceof VnfmSdkException){
                 VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
                 if (vnfmSdkException.getVnfr() != null){
-                    log.debug("sending vnfr with version: " + vnfmSdkException.getVnfr().getHb_version());
+                    log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
                     vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
                     return;
                 }
@@ -301,7 +298,6 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             } catch (Exception e) {
                 throw new VnfmSdkException("Not able to grant operation", e);
             }
-            log.debug("" + response);
             if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
                 throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage(), ((OrVnfmErrorMessage) response).getVnfr());
             }
