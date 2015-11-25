@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.common.vnfm_sdk.amqp;
+package org.openbaton.common.vnfm_sdk.jms;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -144,5 +144,10 @@ public class VnfmSpringHelper extends VnfmHelper {
     public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
         Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(message));
         return (NFVMessage) ((ObjectMessage) response).getObject();
+    }
+
+    @Override
+    public String sendAndReceive(String message, String queueName) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

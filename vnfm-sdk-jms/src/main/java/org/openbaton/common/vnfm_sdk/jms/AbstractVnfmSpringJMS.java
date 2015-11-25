@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.common.vnfm_sdk.amqp;
+package org.openbaton.common.vnfm_sdk.jms;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
@@ -109,11 +109,6 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
     @Override
     protected void register() {
         ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
-    }
-
-    @Override
-    protected void setVnfmHelper() {
-        this.vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelper");
     }
 }
 
