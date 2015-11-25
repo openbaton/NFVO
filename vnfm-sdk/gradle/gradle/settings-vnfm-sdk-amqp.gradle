@@ -15,15 +15,9 @@
  */
 
 include 'catalogue'
-include 'vim-drivers'
-include 'exception'
-include 'plugin'
-include 'vim-impl'
-include 'vim-int'
 include 'vnfm-sdk'
-include 'vnfm-sdk-jms'
 include 'vnfm-sdk-amqp'
-include 'vnfm-sdk-rest'
-include 'monitoring'
-include 'utils'
 
+//project(':catalogue').projectDir = file('../../catalogue')
+//project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')
+//project(':vnfm-sdk-jms').projectDir = file('../../vnfm-sdk-jms')
