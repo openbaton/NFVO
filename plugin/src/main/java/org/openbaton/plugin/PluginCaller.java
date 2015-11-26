@@ -11,6 +11,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,9 @@ public class PluginCaller {
     private final QueueingConsumer consumer;
     private final String pluginId;
     private final String exchange = "plugin-exchange";
+    private final String brokerIp;
+    private final String username;
+    private final String password;
     private String replyQueueName;
     private Channel channel;
     private Connection connection;
@@ -37,6 +41,9 @@ public class PluginCaller {
 
     public PluginCaller(String pluginId, String brokerIp, String username, String password, int port) throws IOException, TimeoutException, NotFoundException {
         this.pluginId = getFullPluginId(pluginId, brokerIp, username, password);
+        this.brokerIp = brokerIp;
+        this.username = username;
+        this.password = password;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(brokerIp);
         if (username != null)
@@ -68,7 +75,13 @@ public class PluginCaller {
         throw new NotFoundException("no plugin found with name: " + pluginId);
     }
 
-    public Serializable executeRPC(String methodName, Collection<Serializable> args, Class returnType) throws IOException, InterruptedException {
+    public Serializable executeRPC(String methodName, Collection<Serializable> args, Class returnType) throws IOException, InterruptedException, PluginException {
+
+        //Check if plugin is still up
+
+        if (!RabbitManager.getQueues(brokerIp,username,password).contains(pluginId))
+            throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
+
         String response;
         String corrId = java.util.UUID.randomUUID().toString();
         PluginMessage pluginMessage = new PluginMessage();
@@ -84,21 +97,25 @@ public class PluginCaller {
 
         channel.basicPublish(exchange, pluginId, props, message.getBytes());
 
+        if (returnType != null) {
 
-        while (true) {
-            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-            if (delivery.getProperties().getCorrelationId().equals(corrId)) {
+            while (true) {
+                QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+                if (delivery.getProperties().getCorrelationId().equals(corrId)) {
 
-                response = new String(delivery.getBody());
-                log.trace("received: " + response);
-                break;
+                    response = new String(delivery.getBody());
+                    log.trace("received: " + response);
+                    break;
+                }
             }
-        }
 
-        JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
-        JsonArray answer = jsonObject.getAsJsonArray("answer");
-        log.trace("answer is: " + answer);
-        return (Serializable) gson.fromJson(answer, returnType);
+            JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
+            JsonArray answer = jsonObject.getAsJsonArray("answer");
+            log.trace("answer is: " + answer);
+            return (Serializable) gson.fromJson(answer, returnType);
+        }
+        else
+            return null;
     }
 
 }
