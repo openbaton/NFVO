@@ -52,6 +52,10 @@ import java.util.concurrent.Future;
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
     private String brokerIp;
+    @Value("${spring.rabbitmq.username:}")
+    private String username;
+    @Value("${spring.rabbitmq.password:}")
+    private String password;
 
     @Value("${nfvo.monitoring.ip:}")
     private String monitoringIp;
@@ -126,6 +130,11 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     private String getUserData(String endpoint) {
+        if (username == null)
+            username = "admin";
+        if (password == null)
+            password = "openbaton";
+
         log.debug("Broker ip is: " + brokerIp);
         log.debug("Monitoring ip is: " + monitoringIp);
         String result = "#!/bin/bash\n" +
@@ -147,10 +156,12 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
 
         result +=
 //                "apt-get install -y python-pip\n" +
-                "apt-get install -y ems-0.15-test\n" +
+                "apt-get install -y ems-0.15-SNAPSHOT\n" +
                 "mkdir -p /etc/openbaton/ems\n" +
                 "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                 "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
+                "echo username=" + username + " >> /etc/openbaton/ems/conf.ini\n" +
+                "echo password=" + password + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
                 "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +

@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.annotation.Scope;
@@ -40,14 +41,14 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class AmazonVIM extends Vim {
 
-    public AmazonVIM(String name, int port) {
+    public AmazonVIM(String name, int port) throws PluginException {
         super("amazon",name, port);
     }
-    public AmazonVIM() {
+    public AmazonVIM() throws PluginException {
         super("amazon");
     }
-    public AmazonVIM(int port) {
-        super("amazon",port);
+    public AmazonVIM(int port) throws PluginException {
+        super("amazon");
     }
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {

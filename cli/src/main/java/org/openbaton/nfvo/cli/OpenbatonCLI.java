@@ -54,7 +54,6 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         put("exit", "Exit the application");
         put("installPlugin", "install a plugin");
         put("listPlugins", "list all registered plugin");
-        put("print properties", "print all the properties");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
@@ -159,7 +158,14 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             log.error("please provide path and name");
             return false;
         }
-        PluginStartup.installPlugin(name, path, "localhost", "1099");
+        int consumers;
+        if (stringTokenizer.hasMoreTokens()) {
+            consumers = Integer.parseInt(stringTokenizer.nextToken());
+        } else {
+            log.error("please provide number of active consumers");
+            return false;
+        }
+        PluginStartup.installPlugin(name, path, "localhost", "1099", consumers);
         return true;
     }
 
