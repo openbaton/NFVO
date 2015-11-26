@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 public class MyVim extends Vim implements org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement {
 
     public MyVim() throws PluginException {
-        super("test");
+        super();
         this.setClient(mock(VimDriverCaller.class));
     }
 
