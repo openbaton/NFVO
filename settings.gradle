@@ -25,4 +25,5 @@ include 'vnfm-sdk-jms'
 include 'vnfm-sdk-amqp'
 include 'vnfm-sdk-rest'
 include 'monitoring'
+include 'utils'
 
