@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
@@ -32,7 +33,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,14 +45,14 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class TestVIM extends Vim {
 
-    public TestVIM(String name, int port) {
+    public TestVIM(String name, int port) throws PluginException {
         super("test",name, port);
     }
-    public TestVIM() {
+    public TestVIM() throws PluginException {
         super("test");
     }
-    public TestVIM(int port) {
-        super("test",port);
+    public TestVIM(int port) throws PluginException {
+        super("test");
     }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {

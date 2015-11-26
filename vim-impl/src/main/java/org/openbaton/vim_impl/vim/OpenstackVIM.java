@@ -24,9 +24,9 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -43,16 +43,16 @@ import java.util.concurrent.Future;
 public class OpenstackVIM extends Vim {// TODO and so on...
 
 
-    public OpenstackVIM(String name, int port) {
+    public OpenstackVIM(String name, int port) throws PluginException {
         super("openstack", name, port);
     }
 
-    public OpenstackVIM() {
+    public OpenstackVIM() throws PluginException {
         super("openstack");
     }
 
-    public OpenstackVIM(int port) {
-        super("openstack", port);
+    public OpenstackVIM(int port) throws PluginException {
+        super("openstack");
     }
 
     @Override
