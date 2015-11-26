@@ -117,7 +117,8 @@ public class RabbitConfiguration {
 //        if (concurrency > 0)
 //            container.setConcurrentConsumers(concurrency);
 //        else
-//            container.setConcurrentConsumers(5);
+            container.setConcurrentConsumers(5);
+            container.setMaxConcurrentConsumers(15);
         container.setMessageListener(listenerAdapter);
         return container;
     }
@@ -131,6 +132,8 @@ public class RabbitConfiguration {
 //            container.setConcurrentConsumers(concurrency);
 //        else
 //            container.setConcurrentConsumers(5);
+        container.setConcurrentConsumers(1);
+        container.setMaxConcurrentConsumers(15);
         container.setMessageListener(listenerAdapter);
         return container;
     }
