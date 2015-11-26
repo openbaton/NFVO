@@ -1,10 +1,10 @@
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.12'
 
-    compile 'com.rabbitmq:amqp-client:3.5.6'
-
     compile project(":catalogue")
     compile project(":utils")
 
-    compile 'com.google.code.gson:gson:2.5'
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+
 }
