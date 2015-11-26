@@ -40,7 +40,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     private ConfigurableApplicationContext context;
 
     public Vim(String type, String brokerIp, int port) throws PluginException {
-        if (client == null || context == null) {
+        if (client == null && context != null) {
             pluginBroker = new PluginBroker<>();
             client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp, port, type);
             if (client == null) {
