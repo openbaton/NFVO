@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.test;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,24 +26,28 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.core.NetworkManagement;
 import org.openbaton.nfvo.repositories.NetworkRepository;
-import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.vim.drivers.VimDriverCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
-import java.util.concurrent.Future;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -51,6 +56,9 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 20/04/15.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@org.springframework.context.annotation.Configuration
+@ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 public class NetworkManagementClassSuiteTest {
 
     @Rule
@@ -59,13 +67,22 @@ public class NetworkManagementClassSuiteTest {
     @Mock
     public VimBroker vimBroker;
 
+    @Mock
+    private VimDriverCaller vimDriverCaller;
+
     private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
     @InjectMocks
     private NetworkManagement networkManagement;
 
+    @InjectMocks
+    private MyVim myVim;
+
     @Mock
     private NetworkRepository networkRepository;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     @AfterClass
     public static void shutdown() {
@@ -84,8 +101,8 @@ public class NetworkManagementClassSuiteTest {
     }
 
     @Test
-    public void networkManagementUpdateTest() throws VimException {
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
+    public void networkManagementUpdateTest() throws VimException, PluginException {
+        when(vimBroker.getVim(anyString())).thenReturn(myVim);
         Network network = createNetwork();
         network.setName("UpdatedName");
         network.setExternal(true);
@@ -121,10 +138,10 @@ public class NetworkManagementClassSuiteTest {
     }
 
     @Test
-    public void networkManagementAddTest() throws VimException {
+    public void networkManagementAddTest() throws VimException, PluginException {
         Network network_exp = createNetwork();
         when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
+        when(vimBroker.getVim(anyString())).thenReturn(myVim);
 
         Network network_new = networkManagement.add(createVimInstance(), network_exp);
 
@@ -150,9 +167,9 @@ public class NetworkManagementClassSuiteTest {
     }
 
     @Test
-    public void networkManagementDeleteTest() throws VimException {
+    public void networkManagementDeleteTest() throws VimException, PluginException {
         Network network_exp = createNetwork();
-        when(vimBroker.getVim(anyString())).thenReturn(new MyVim("test"));
+        when(vimBroker.getVim(anyString())).thenReturn(myVim);
         when(networkRepository.findOne(network_exp.getId())).thenReturn(network_exp);
         networkManagement.delete(createVimInstance(), network_exp);
         when(networkRepository.findOne(anyString())).thenReturn(null);
@@ -241,159 +258,5 @@ public class NetworkManagementClassSuiteTest {
         return vimInstance;
     }
 
-    private class MyVim extends Vim implements org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement {
-
-        public MyVim(String type, int port) {
-            super(type, port);
-        }
-
-        public MyVim(String type, String name, int port) {
-            super(type, name, port);
-        }
-
-        public MyVim(String type, String name) {
-            super(type, name);
-        }
-
-        public MyVim(String type) {
-            super(type);
-        }
-
-        @Override
-        public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
-            return null;
-        }
-
-        @Override
-        public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException {
-
-        }
-
-        @Override
-        public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
-            return null;
-        }
-
-        @Override
-        public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
-            return null;
-        }
-
-        @Override
-        public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
-            return null;
-        }
-
-        @Override
-        public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url) throws VimException {
-            return null;
-        }
-
-        @Override
-        public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
-
-        }
-
-        @Override
-        public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
-            return null;
-        }
-
-        @Override
-        public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
-            return null;
-        }
-
-        @Override
-        public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
-
-        }
-
-        @Override
-        public Network add(VimInstance vimInstance, Network network) throws VimException {
-            return network;
-        }
-
-        @Override
-        public void delete(VimInstance vimInstance, Network network) throws VimException {
-
-        }
-
-        @Override
-        public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
-            return updatingNetwork;
-        }
-
-        @Override
-        public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
-            return null;
-        }
-
-        @Override
-        public Network query(VimInstance vimInstance, String extId) throws VimException {
-            return null;
-        }
-
-        @Override
-        public AsyncResult<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException, VimDriverException {
-            return null;
-        }
-
-        @Override
-        public List<Server> queryResources(VimInstance vimInstance) throws VimException {
-            return null;
-        }
-
-        @Override
-        public void update(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public void scale(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public void migrate(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public void operate(VirtualDeploymentUnit vdu, String operation) throws VimException {
-
-        }
-
-        @Override
-        public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException {
-            return null;
-
-        }
-
-        @Override
-        public void createReservation(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public void queryReservation() throws VimException {
-
-        }
-
-        @Override
-        public void updateReservation(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public void releaseReservation(VirtualDeploymentUnit vdu) throws VimException {
-
-        }
-
-        @Override
-        public Quota getQuota(VimInstance vimInstance) {
-            return null;
-        }
-    }
 
 }

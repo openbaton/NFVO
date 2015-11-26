@@ -32,14 +32,14 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.openbaton.vim.drivers.VimDriverCaller;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
 import org.openbaton.vim_impl.vim.TestVIM;
-import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class VimTestSuiteClass {
     private OpenstackVIM openstackVIM;
 
     @Mock
-    private ClientInterfaces clientInterfaces;
+    private VimDriverCaller clientInterfaces;
     /**
      * TODO add all other tests
      */
@@ -95,6 +95,7 @@ public class VimTestSuiteClass {
     public void init() {
         MockitoAnnotations.initMocks(this);
         vimBroker = (VimBroker) context.getBean("vimBroker","openstack");
+        openstackVIM.setClient(clientInterfaces);
     }
 
     @Test
