@@ -34,9 +34,10 @@ public class PluginStartup {
 
     private static Map<String, Process> processes = new HashMap<>();
 
-    public static void installPlugin(String name, String path, String registryip, String port) throws IOException {
-        log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
+    public static void installPlugin(String name, String path, String brokerIp, String port, int consumers) throws IOException {
+        log.debug("Running: java -jar " + path + " " + name + " localhost " + port + " " + consumers);
+        //java -jar build/libs/openstack-plugin-0.10-SNAPSHOT.jar openstack localhost 5672 10
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, brokerIp, port, ""+consumers);
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
         File dir = new File("./plugin-logs/");
@@ -50,12 +51,12 @@ public class PluginStartup {
         processes.put(path,p);
     }
 
-    private static void installPlugin(String path, boolean waitForPlugin, String registryip, String port) throws IOException {
+    private static void installPlugin(String path, boolean waitForPlugin, String brokerIp, String port, int consumers) throws IOException {
         String pluginName = path.substring(path.lastIndexOf("/") + 1, path.length());
 
         String name = pluginName.substring(0,pluginName.indexOf("-"));
-        log.trace("Running: java -jar " + path + " " + name + " localhost "+ port);
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, registryip, port);
+        log.debug("Running: java -jar " + path + " " + name + " localhost "+ port + " " + consumers);
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, brokerIp, port, ""+consumers);
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
         File dir = new File("./plugin-logs/");
@@ -75,17 +76,17 @@ public class PluginStartup {
         processes.put(path,p);
     }
 
-    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String port) throws IOException {
+    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String port, int consumers) throws IOException {
 
         File folder = new File(folderPath);
 
         if (folder.isDirectory()){
             for (File jar : folder.listFiles()) {
                 if (jar.getAbsolutePath().endsWith(".jar"))
-                    installPlugin(jar.getAbsolutePath(), waitForPlugin, registryip, port);
+                    installPlugin(jar.getAbsolutePath(), waitForPlugin, registryip, port, consumers);
                 else
                     if (jar.isDirectory())
-                        startPluginRecursive(jar.getAbsolutePath(), waitForPlugin,registryip, port);
+                        startPluginRecursive(jar.getAbsolutePath(), waitForPlugin,registryip, port, consumers);
                     else
                         log.warn(jar.getAbsolutePath() + " is not a jar file");
             }

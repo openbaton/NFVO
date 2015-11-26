@@ -23,6 +23,7 @@ import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
@@ -50,6 +51,9 @@ class SystemStartup implements CommandLineRunner {
 
     @Autowired
     private ConfigurationRepository configurationRepository;
+
+    @Value("${nfvo.plugin.active.consumers:}")
+    private String numConsumers;
 
     public Map<String, Object> getProperties() {
         return properties;
@@ -120,7 +124,9 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException {
-        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "1099");
+        if (numConsumers == null)
+            numConsumers = "" + 5;
+        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "5672", Integer.parseInt(numConsumers));
     }
 
     private void startRegistry(Configuration configuration) throws RemoteException {
