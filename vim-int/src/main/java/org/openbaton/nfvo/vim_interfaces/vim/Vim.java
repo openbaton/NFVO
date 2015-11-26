@@ -34,43 +34,56 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public abstract class Vim implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
-
     protected VimDriverCaller client;
-
+    protected PluginBroker<ClientInterfaces> pluginBroker;
     @Autowired
     private ConfigurableApplicationContext context;
 
-    protected PluginBroker<ClientInterfaces> pluginBroker;
-
     public Vim(String type, String brokerIp, int port) throws PluginException {
-        pluginBroker = new PluginBroker<>();
-        client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp,port,type);
-        if (client == null){
-            throw new PluginException("No bean of VimDriverCaller found");
+        if (client == null && context != null) {
+            pluginBroker = new PluginBroker<>();
+            client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp, port, type);
+            if (client == null) {
+                throw new PluginException("No bean of VimDriverCaller found");
+            }
         }
     }
 
     public Vim(String type) throws PluginException {
-        pluginBroker = new PluginBroker<>();
-        client = (VimDriverCaller) context.getBean("vimDriverCaller", type);
-        if (client == null){
-            throw new PluginException("No bean of VimDriverCaller found");
+        if (client == null && context != null) {
+            pluginBroker = new PluginBroker<>();
+            client = (VimDriverCaller) context.getBean("vimDriverCaller", type);
+            if (client == null) {
+                throw new PluginException("No bean of VimDriverCaller found");
+            }
         }
     }
 
     public Vim(String type, String name) throws PluginException {
-        pluginBroker = new PluginBroker<>();
-        client = (VimDriverCaller) context.getBean("vimDriverCaller", name, type);
-        if (client == null){
-            throw new PluginException("No bean of VimDriverCaller found");
+        if (client == null && context != null) {
+            pluginBroker = new PluginBroker<>();
+            client = (VimDriverCaller) context.getBean("vimDriverCaller", name, type);
+            if (client == null) {
+                throw new PluginException("No bean of VimDriverCaller found");
+            }
         }
     }
 
     public Vim(String type, String username, String password, String brokerIp) throws PluginException {
-        pluginBroker = new PluginBroker<>();
-        client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp, username, password, type);
-        if (client == null){
-            throw new PluginException("No bean of VimDriverCaller found");
+        if (client == null && context != null) {
+            pluginBroker = new PluginBroker<>();
+            client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp, username, password, type);
+            if (client == null) {
+                throw new PluginException("No bean of VimDriverCaller found");
+            }
         }
+    }
+
+    public VimDriverCaller getClient() {
+        return client;
+    }
+
+    public void setClient(VimDriverCaller client) {
+        this.client = client;
     }
 }
