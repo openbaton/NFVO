@@ -18,6 +18,7 @@ package org.openbaton.monitoring.interfaces;
 
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Item;
+import org.openbaton.exceptions.MonitoringException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -38,11 +39,11 @@ public interface ResourcePerformanceManagement extends Remote {
 	 * This operation allows collecting performance measurement results 
 	 * generated on virtualised resources.
 	 */
-	List<Item> getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException;
+	List<Item> getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException, MonitoringException;
 
 	/**
 	 * This operation allows providing notifications with performance
 	 * measurement results on virtualised resources.
 	 */
-	void notifyResults() throws RemoteException;
+	void notifyResults() throws RemoteException, MonitoringException;
 }
