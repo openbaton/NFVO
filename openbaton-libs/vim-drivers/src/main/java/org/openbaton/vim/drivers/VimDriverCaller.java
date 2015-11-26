@@ -1,17 +1,21 @@
 package org.openbaton.vim.drivers;
 
+import com.google.gson.reflect.TypeToken;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.plugin.PluginCaller;
+import org.openbaton.plugin.utils.PluginCaller;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vim.drivers.interfaces.VimDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -25,20 +29,22 @@ public class VimDriverCaller extends VimDriver {
 
     private PluginCaller pluginCaller;
 
+    Logger log = LoggerFactory.getLogger(this.getClass());
+
     public VimDriverCaller(String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672);
+        pluginCaller = new PluginCaller("vim-drivers." + type, "localhost", "admin", "openbaton", 5672);
     }
 
     public VimDriverCaller(String name, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type + "." + name, "localhost", "admin", "openbaton", 5672);
+        pluginCaller = new PluginCaller("vim-drivers." + type + "." + name, "localhost", "admin", "openbaton", 5672);
     }
 
     public VimDriverCaller(String brokerIp, int port, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type, brokerIp, "admin", "openbaton", port);
+        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, "admin", "openbaton", port);
     }
 
     public VimDriverCaller(String brokerIp, String username, String password, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type, brokerIp, username, password, 5672);
+        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, username, password, 5672);
     }
 
     @Override
@@ -70,14 +76,18 @@ public class VimDriverCaller extends VimDriver {
         List<Serializable> params = new LinkedList<>();
         params.add(vimInstance);
         Serializable res;
+        Type listType = new TypeToken<ArrayList<NFVImage>>() { }.getType();
         try {
-            res = pluginCaller.executeRPC("listImages", params, List.class);
+            res = pluginCaller.executeRPC("listImages", params, listType);
         } catch (IOException e) {
             throw new VimDriverException(e.getMessage());
         } catch (InterruptedException e) {
             throw new VimDriverException(e.getMessage());
         } catch (PluginException e) {
             throw new VimDriverException(e.getMessage());
+        }
+        for (Object obj : (List) res){
+            log.debug(obj.toString());
         }
         return (List<NFVImage>) res;
     }
@@ -88,7 +98,8 @@ public class VimDriverCaller extends VimDriver {
         params.add(vimInstance);
         Serializable res;
         try {
-            res = pluginCaller.executeRPC("listServer", params, List.class);
+            Type listType = new TypeToken<ArrayList<Server>>() { }.getType();
+            res = pluginCaller.executeRPC("listServer", params, listType);
         } catch (IOException e) {
             throw new VimDriverException(e.getMessage());
         } catch (InterruptedException e) {
@@ -105,7 +116,8 @@ public class VimDriverCaller extends VimDriver {
         params.add(vimInstance);
         Serializable res;
         try {
-            res = pluginCaller.executeRPC("listNetworks", params, List.class);
+            Type listType = new TypeToken<ArrayList<Network>>() { }.getType();
+            res = pluginCaller.executeRPC("listNetworks", params, listType);
         } catch (IOException e) {
             throw new VimDriverException(e.getMessage());
         } catch (InterruptedException e) {
@@ -122,7 +134,8 @@ public class VimDriverCaller extends VimDriver {
         params.add(vimInstance);
         Serializable res;
         try {
-            res = pluginCaller.executeRPC("listFlavours", params, List.class);
+            Type listType = new TypeToken<ArrayList<DeploymentFlavour>>() { }.getType();
+            res = pluginCaller.executeRPC("listFlavors", params, listType);
         } catch (IOException e) {
             throw new VimDriverException(e.getMessage());
         } catch (InterruptedException e) {
@@ -428,7 +441,8 @@ public class VimDriverCaller extends VimDriver {
         params.add(network_extId);
         Serializable res;
         try {
-            res = pluginCaller.executeRPC("getSubnetsExtIds", params, List.class);
+            Type listType = new TypeToken<ArrayList<String>>() { }.getType();
+            res = pluginCaller.executeRPC("getSubnetsExtIds", params, listType);
         } catch (IOException e) {
             throw new VimDriverException(e.getMessage());
         } catch (InterruptedException e) {

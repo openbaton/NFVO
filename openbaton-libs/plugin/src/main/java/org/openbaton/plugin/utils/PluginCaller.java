@@ -1,4 +1,4 @@
-package org.openbaton.plugin;
+package org.openbaton.plugin.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -67,7 +68,7 @@ public class PluginCaller {
     }
 
     private String getFullPluginId(String pluginId, String brokerIp, String username, String password) throws IOException, NotFoundException {
-        List<String> queues = RabbitManager.getQueues(brokerIp,username,password);
+        List<String> queues = RabbitManager.getQueues(brokerIp, username, password);
         for (String queue: queues){
             if (queue.startsWith(pluginId))
                 return queue;
@@ -75,7 +76,7 @@ public class PluginCaller {
         throw new NotFoundException("no plugin found with name: " + pluginId);
     }
 
-    public Serializable executeRPC(String methodName, Collection<Serializable> args, Class returnType) throws IOException, InterruptedException, PluginException {
+    public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType) throws IOException, InterruptedException, PluginException {
 
         //Check if plugin is still up
 
@@ -110,9 +111,18 @@ public class PluginCaller {
             }
 
             JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
-            JsonArray answer = jsonObject.getAsJsonArray("answer");
-            log.trace("answer is: " + answer);
-            return (Serializable) gson.fromJson(answer, returnType);
+            JsonArray answerArray = null;
+            JsonObject answerObject = null;
+            try {
+                answerArray = jsonObject.getAsJsonArray("answer");
+                log.trace("answer is: " + answerArray);
+                return (Serializable) gson.fromJson(answerArray, returnType);
+            } catch (java.lang.ClassCastException e) {
+                answerObject = jsonObject.getAsJsonObject("answer");
+                log.trace("answer is: " + answerObject);
+                return (Serializable) gson.fromJson(answerObject, returnType);
+            }
+
         }
         else
             return null;

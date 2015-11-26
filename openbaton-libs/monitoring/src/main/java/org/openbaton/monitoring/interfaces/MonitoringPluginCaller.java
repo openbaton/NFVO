@@ -4,7 +4,7 @@ import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.plugin.PluginCaller;
+import org.openbaton.plugin.utils.PluginCaller;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
