@@ -55,6 +55,9 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
         }
     }
 
+    public Vim() {
+    }
+
     public Vim(String type) throws PluginException {
         try {
 //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(type);
