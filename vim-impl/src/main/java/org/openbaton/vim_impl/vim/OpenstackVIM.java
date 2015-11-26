@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.annotation.Scope;
@@ -42,16 +43,16 @@ import java.util.concurrent.Future;
 public class OpenstackVIM extends Vim {// TODO and so on...
 
 
-    public OpenstackVIM(String name, int port) {
+    public OpenstackVIM(String name, int port) throws PluginException {
         super("openstack", name, port);
     }
 
-    public OpenstackVIM() {
+    public OpenstackVIM() throws PluginException {
         super("openstack");
     }
 
-    public OpenstackVIM(int port) {
-        super("openstack", port);
+    public OpenstackVIM(int port) throws PluginException {
+        super("openstack");
     }
 
     @Override
@@ -548,9 +549,10 @@ public class OpenstackVIM extends Vim {// TODO and so on...
         if (vm_images != null && vm_images.size() > 0) {
             for (String image : vm_images) {
                 for (NFVImage nfvImage : vimInstance.getImages()) {
-                    if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId()))
+                    if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId())) {
                         log.info("Image choosed with name: " + nfvImage.getName() + " and ExtId: " + nfvImage.getExtId());
-                    return nfvImage.getExtId();
+                        return nfvImage.getExtId();
+                    }
                 }
             }
             throw new VimException("Not found any Image with name: " + vm_images + " on VimInstance " + vimInstance.getName());

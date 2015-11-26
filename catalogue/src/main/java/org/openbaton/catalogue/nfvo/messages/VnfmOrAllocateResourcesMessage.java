@@ -16,9 +16,9 @@
 package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
 import java.util.Set;
 
