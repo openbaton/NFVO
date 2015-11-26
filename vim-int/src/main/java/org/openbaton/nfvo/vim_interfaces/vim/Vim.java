@@ -16,17 +16,18 @@
 
 package org.openbaton.nfvo.vim_interfaces.vim;
 
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.vim_interfaces.flavor_management.DeploymentFlavorManagement;
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
-import org.openbaton.plugin.utils.PluginBroker;
 import org.openbaton.nfvo.vim_interfaces.image_management.ImageManagement;
 import org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement;
 import org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement;
+import org.openbaton.plugin.utils.PluginBroker;
+import org.openbaton.vim.drivers.VimDriverCaller;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Created by mpa on 12.06.15.
@@ -34,51 +35,42 @@ import java.rmi.RemoteException;
 public abstract class Vim implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected ClientInterfaces client;
+    protected VimDriverCaller client;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     protected PluginBroker<ClientInterfaces> pluginBroker;
 
-    public Vim(String type, int port) {
+    public Vim(String type, String brokerIp, int port) throws PluginException {
         pluginBroker = new PluginBroker<>();
-        try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, port);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+        client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp,port,type);
+        if (client == null){
+            throw new PluginException("No bean of VimDriverCaller found");
         }
     }
 
-    public Vim(String type) {
+    public Vim(String type) throws PluginException {
         pluginBroker = new PluginBroker<>();
-        try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+        client = (VimDriverCaller) context.getBean("vimDriverCaller", type);
+        if (client == null){
+            throw new PluginException("No bean of VimDriverCaller found");
         }
     }
 
-    public Vim(String type, String name) {
+    public Vim(String type, String name) throws PluginException {
         pluginBroker = new PluginBroker<>();
-        try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type,name);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+        client = (VimDriverCaller) context.getBean("vimDriverCaller", name, type);
+        if (client == null){
+            throw new PluginException("No bean of VimDriverCaller found");
         }
     }
 
-    public Vim(String type, String name, int port) {
+    public Vim(String type, String username, String password, String brokerIp) throws PluginException {
         pluginBroker = new PluginBroker<>();
-        try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, name, port);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+        client = (VimDriverCaller) context.getBean("vimDriverCaller", brokerIp, username, password, type);
+        if (client == null){
+            throw new PluginException("No bean of VimDriverCaller found");
         }
     }
 }

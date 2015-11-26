@@ -4,7 +4,6 @@ dependencies {
     compile 'com.rabbitmq:amqp-client:3.5.6'
 
     compile project(":catalogue")
-    compile project(":exception")
     compile project(":utils")
 
     compile 'com.google.code.gson:gson:2.5'
