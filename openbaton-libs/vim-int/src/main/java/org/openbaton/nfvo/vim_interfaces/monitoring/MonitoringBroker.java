@@ -15,13 +15,13 @@
 
 package org.openbaton.nfvo.vim_interfaces.monitoring;
 
-import org.openbaton.monitoring.interfaces.ResourcePerformanceManagement;
+import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManagement;
 
 /**
  * Created by lto on 05/08/15.
  */
 public interface MonitoringBroker {
-    void addAgent(ResourcePerformanceManagement resourcePerformanceManagement, String type);
+    void addAgent(VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement, String type);
 
-    ResourcePerformanceManagement getAvailableMonitoringAgent();
+    VirtualisedResourcesPerformanceManagement getAvailableMonitoringAgent();
 }
