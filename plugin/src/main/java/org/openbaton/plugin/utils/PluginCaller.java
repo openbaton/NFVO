@@ -1,9 +1,6 @@
 package org.openbaton.plugin.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -113,15 +110,22 @@ public class PluginCaller {
             JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
             JsonArray answerArray = null;
             JsonObject answerObject = null;
-            try {
-                answerArray = jsonObject.getAsJsonArray("answer");
-                log.trace("answer is: " + answerArray);
-                return (Serializable) gson.fromJson(answerArray, returnType);
-            } catch (java.lang.ClassCastException e) {
-                answerObject = jsonObject.getAsJsonObject("answer");
-                log.trace("answer is: " + answerObject);
-                return (Serializable) gson.fromJson(answerObject, returnType);
-            }
+            JsonPrimitive answerPrimitive = null;
+
+
+            JsonElement answerJson = jsonObject.get("answer");
+
+            Serializable ret=null;
+
+            if (answerJson.isJsonPrimitive()){
+                ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
+            }else if (answerJson.isJsonArray()){
+                ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
+            }else
+                ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
+
+            log.trace("answer is: " + ret);
+            return ret;
 
         }
         else
