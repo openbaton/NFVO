@@ -30,15 +30,18 @@ public abstract class VimDriver extends UnicastRemoteObject implements ClientInt
 
         log.debug("Loading properties");
         try {
-            properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
-            if (properties.getProperty("external-properties-file") != null) {
-                File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
-                if (externalPropertiesFile.exists()) {
-                    log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
-                    InputStream is = new FileInputStream(externalPropertiesFile);
-                    properties.load(is);
-                } else {
-                    log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
+            InputStream resourceAsStream = this.getClass().getResourceAsStream("/plugin.conf.properties");
+            if (resourceAsStream != null) {
+                properties.load(resourceAsStream);
+                if (properties.getProperty("external-properties-file") != null) {
+                    File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
+                    if (externalPropertiesFile.exists()) {
+                        log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
+                        InputStream is = new FileInputStream(externalPropertiesFile);
+                        properties.load(is);
+                    } else {
+                        log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
+                    }
                 }
             }
         } catch (IOException e) {
