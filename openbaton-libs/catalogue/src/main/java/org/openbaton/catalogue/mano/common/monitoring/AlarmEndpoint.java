@@ -97,14 +97,14 @@ public class AlarmEndpoint implements Serializable {
 
     @Override
     public String toString() {
-        return "EventEndpoint{" +
+        return "AlarmEndpoint{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
                 ", resourceId='" + resourceId + '\'' +
                 ", type=" + type +
                 ", endpoint='" + endpoint + '\'' +
+                ", perceivedSeverity=" + perceivedSeverity +
                 '}';
-
     }
 }
