@@ -19,6 +19,7 @@ import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.NetworkServiceDeploymentFlavour;
+import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -71,6 +72,10 @@ public class NetworkServiceRecord implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<PhysicalNetworkFunctionRecord> pnfr;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<FaultManagementPolicy> faultManagementPolicy;
+
     /**
      * The reference to the Network Service Descriptor used to instantiate this Network Service.
      * */
@@ -295,6 +300,14 @@ public class NetworkServiceRecord implements Serializable{
         this.name = name;
     }
 
+    public Set<FaultManagementPolicy> getFaultManagementPolicy() {
+        return faultManagementPolicy;
+    }
+
+    public void setFaultManagementPolicy(Set<FaultManagementPolicy> faultManagementPolicy) {
+        this.faultManagementPolicy = faultManagementPolicy;
+    }
+
     @Override
     public String toString() {
         return "NetworkServiceRecord{" +
@@ -307,11 +320,12 @@ public class NetworkServiceRecord implements Serializable{
                 ", version='" + version + '\'' +
                 ", vlr=" + vlr +
                 ", vnfr=" + vnfr +
-                ", lifecycle_event=" + lifecycle_event +
                 ", vnf_dependency=" + vnf_dependency +
+                ", lifecycle_event=" + lifecycle_event +
                 ", vnffgr=" + vnffgr +
                 ", pnfr=" + pnfr +
-                ", descriptor_reference=" + descriptor_reference +
+                ", faultManagementPolicy=" + faultManagementPolicy +
+                ", descriptor_reference='" + descriptor_reference + '\'' +
                 ", resource_reservation='" + resource_reservation + '\'' +
                 ", runtime_policy_info='" + runtime_policy_info + '\'' +
                 ", status=" + status +
