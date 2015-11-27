@@ -20,5 +20,6 @@ package org.openbaton.catalogue.nfvo;
  */
 public enum EndpointType {
     JMS,
+    RABBIT,
     REST;
 }
