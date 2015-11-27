@@ -1,5 +1,7 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
+import org.openbaton.catalogue.mano.common.monitoring.Alarm;
+
 /**
  * Created by mob on 27.10.15.
  */
