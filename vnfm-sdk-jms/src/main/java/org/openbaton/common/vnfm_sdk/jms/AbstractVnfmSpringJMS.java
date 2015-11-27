@@ -103,12 +103,12 @@ public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements Mess
 
     @Override
     protected void unregister() {
-        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-unregister", vnfmManagerEndpoint);
+        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-unsubscribe", vnfmManagerEndpoint);
     }
 
     @Override
     protected void register() {
-        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-register", vnfmManagerEndpoint);
+        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-subscribe", vnfmManagerEndpoint);
     }
 }
 

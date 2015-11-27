@@ -33,7 +33,7 @@ public interface VNFLifecycleManagement {
 	 * @param virtualNetworkFunctionRecord
 	 * @param scripts
 	 */
-	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	//CoreMessage instantiate(VirtualNetworkFunctionRecordShort virtualNetworkFunctionRecord);
 
 	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts) throws Exception;
 	/**

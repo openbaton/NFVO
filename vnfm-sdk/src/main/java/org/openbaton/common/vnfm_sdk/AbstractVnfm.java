@@ -384,11 +384,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     }
 
     /**
-     * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecord from the VirtualNetworkFunctionDescriptor
+     * This method can be overwritten in case you want a specific initialization of the VirtualNetworkFunctionRecordShort from the VirtualNetworkFunctionDescriptor
      *
      * @param virtualNetworkFunctionDescriptor
      * @param extension
-     * @return The new VirtualNetworkFunctionRecord
+     * @return The new VirtualNetworkFunctionRecordShort
      * @throws BadFormatException
      * @throws NotFoundException
      */
@@ -403,7 +403,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     }
                 }
             }
-            log.debug("Created VirtualNetworkFunctionRecord: " + virtualNetworkFunctionRecord);
+            log.debug("Created VirtualNetworkFunctionRecordShort: " + virtualNetworkFunctionRecord);
             return virtualNetworkFunctionRecord;
         } catch (NotFoundException e) {
             e.printStackTrace();
@@ -421,17 +421,17 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract VirtualNetworkFunctionRecord configure(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
     /**
-     * This method unregister the VNFM in the NFVO
+     * This method unsubscribe the VNFM in the NFVO
      */
     protected abstract void unregister();
 
     /**
-     * This method register the VNFM to the NFVO sending the right endpoint
+     * This method subscribe the VNFM to the NFVO sending the right endpoint
      */
     protected abstract void register();
 
     /**
-     * This method setups the VNFM and then register it to the NFVO. We recommend to not change this method or at least
+     * This method setups the VNFM and then subscribe it to the NFVO. We recommend to not change this method or at least
      * to override calling super()
      */
     protected void setup() {
