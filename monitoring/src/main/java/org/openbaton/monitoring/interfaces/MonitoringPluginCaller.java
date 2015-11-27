@@ -1,7 +1,9 @@
 package org.openbaton.monitoring.interfaces;
 
+import com.google.gson.reflect.TypeToken;
 import org.openbaton.catalogue.mano.common.monitoring.*;
 import org.openbaton.catalogue.nfvo.Item;
+import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,43 +42,6 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     }
 
     private PluginCaller pluginCaller;
-
-    /*@Override
-    public List<Item> getMeasurementResults(List<String> hostnames, List<String> metrics, String period) throws RemoteException, MonitoringException {
-
-        List<Serializable> params = new ArrayList<>();
-        params.add((Serializable) hostnames);
-        params.add((Serializable) metrics);
-        params.add(period);
-        Serializable res = null;
-        try {
-
-
-            res = pluginCaller.executeRPC("getMeasurementResults", params, List.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }catch (PluginException e) {
-            throw new MonitoringException(e.getMessage());
-        }
-        return (List<Item>) res;
-    }
-
-    @Override
-    public void notifyResults() throws RemoteException, MonitoringException {
-
-        try {
-            pluginCaller.executeRPC("notifyResults", null, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }catch (PluginException e) {
-            throw new MonitoringException(e.getMessage());
-        }
-
-    }*/
 
     public static void main(String[] args) throws IOException, TimeoutException, NotFoundException, ExecutionException, InterruptedException {
 
@@ -113,7 +79,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("subscribeForFault", params, List.class);
+            res = pluginCaller.executeRPC("subscribeForFault", params, String.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -131,7 +97,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("unsubscribeForFault", params, List.class);
+            res = pluginCaller.executeRPC("unsubscribeForFault", params, String.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -155,7 +121,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("getAlarmList", params, List.class);
+            Type listType = new TypeToken<ArrayList<Alarm>>() { }.getType();
+            res = pluginCaller.executeRPC("getAlarmList", params, listType);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -177,7 +144,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("createPMJob", params, List.class);
+            res = pluginCaller.executeRPC("createPMJob", params, String.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -194,8 +161,9 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
         params.add((Serializable)itemIdsToDelete);
 
         Serializable res = null;
+        Type listType = new TypeToken<ArrayList<String>>() { }.getType();
         try {
-            res = pluginCaller.executeRPC("deletePMJob", params, List.class);
+            res = pluginCaller.executeRPC("deletePMJob", params, listType);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -215,8 +183,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
         Serializable res = null;
         try {
 
-
-            res = pluginCaller.executeRPC("queryPMJob", params, List.class);
+            Type listType = new TypeToken<ArrayList<Item>>() { }.getType();
+            res = pluginCaller.executeRPC("queryPMJob", params, listType);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -247,7 +215,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("createThreshold", params, List.class);
+            res = pluginCaller.executeRPC("createThreshold", params, String.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -265,7 +233,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
         Serializable res = null;
         try {
-            res = pluginCaller.executeRPC("deleteThreshold", params, List.class);
+            Type listType = new TypeToken<ArrayList<String>>() { }.getType();
+            res = pluginCaller.executeRPC("deleteThreshold", params, listType);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
