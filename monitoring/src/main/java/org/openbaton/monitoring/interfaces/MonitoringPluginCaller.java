@@ -3,7 +3,6 @@ package org.openbaton.monitoring.interfaces;
 import com.google.gson.reflect.TypeToken;
 import org.openbaton.catalogue.mano.common.monitoring.*;
 import org.openbaton.catalogue.nfvo.Item;
-import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -206,9 +205,9 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     }
 
     @Override
-    public String createThreshold(List<ObjectSelection> objectSelectors, String performanceMetric, ThresholdType thresholdType, ThresholdDetails thresholdDetails) throws MonitoringException {
+    public String createThreshold(ObjectSelection objectSelector, String performanceMetric, ThresholdType thresholdType, ThresholdDetails thresholdDetails) throws MonitoringException {
         List<Serializable> params = new ArrayList<>();
-        params.add((Serializable) objectSelectors);
+        params.add(objectSelector);
         params.add(performanceMetric);
         params.add(thresholdType);
         params.add(thresholdDetails);
