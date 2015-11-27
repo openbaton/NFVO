@@ -108,25 +108,25 @@ public class PluginCaller {
             }
 
             JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
-            JsonArray answerArray = null;
-            JsonObject answerObject = null;
-            JsonPrimitive answerPrimitive = null;
 
+            JsonElement exceptionJson = jsonObject.get("exception");
+            if (exceptionJson == null) {
+                JsonElement answerJson = jsonObject.get("answer");
 
-            JsonElement answerJson = jsonObject.get("answer");
+                Serializable ret = null;
 
-            Serializable ret=null;
+                if (answerJson.isJsonPrimitive()) {
+                    ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
+                } else if (answerJson.isJsonArray()) {
+                    ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
+                } else
+                    ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
 
-            if (answerJson.isJsonPrimitive()){
-                ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
-            }else if (answerJson.isJsonArray()){
-                ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
-            }else
-                ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
-
-            log.trace("answer is: " + ret);
-            return ret;
-
+                log.trace("answer is: " + ret);
+                return ret;
+            }else {
+                throw new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+            }
         }
         else
             return null;
