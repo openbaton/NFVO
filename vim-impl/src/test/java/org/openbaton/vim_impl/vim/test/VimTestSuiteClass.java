@@ -19,7 +19,6 @@ package org.openbaton.vim_impl.vim.test;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -40,6 +39,10 @@ import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
 import org.openbaton.vim_impl.vim.TestVIM;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,20 +67,29 @@ import static org.mockito.Mockito.when;
 /**
  * Created by lto on 21/05/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = {"mocked_id=1234567890", "port: 4242"})
+@PrepareForTest({Vim.class})
 public class VimTestSuiteClass {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @InjectMocks
-    private OpenstackVIM openstackVIM;
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     @Mock
-    private VimDriverCaller clientInterfaces;
+    private VimDriverCaller vimDriverCaller;
+
+    //@InjectMocks
+    //@Qualifier("OpenstackVim")
+    private OpenstackVIM openstackVIM;
+
     /**
      * TODO add all other tests
      */
@@ -85,23 +97,20 @@ public class VimTestSuiteClass {
     @Autowired
     private Environment environment;
 
+    @Autowired
     private VimBroker vimBroker;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private ConfigurableApplicationContext context;
 
     @Before
-    public void init() {
+    public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
-//        vimBroker = (VimBroker) context.getBean("vimBroker","openstack");
-//        openstackVIM.setClient(clientInterfaces);
+        PowerMockito.whenNew(VimDriverCaller.class).withParameterTypes(String.class).withArguments("openstack").thenReturn(vimDriverCaller);
+        openstackVIM = new OpenstackVIM();
     }
 
     @Test
-    @Ignore
     public void testVimBrokers() {
-
         Assert.assertNotNull(vimBroker);
         Vim testVIM = vimBroker.getVim("test");
         Assert.assertEquals(testVIM.getClass(), TestVIM.class);
@@ -113,7 +122,6 @@ public class VimTestSuiteClass {
     }
 
     @Test
-    @Ignore
     public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
         VirtualDeploymentUnit vdu = createVDU();
         VirtualNetworkFunctionRecord vnfr = createVNFR();
@@ -126,7 +134,7 @@ public class VimTestSuiteClass {
         server.setExtId(environment.getProperty("mocked_id"));
         server.setIps(new HashMap<String, List<String>>());
         //TODO use the method launchInstanceAndWait properly
-        when(clientInterfaces.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyMap())).thenReturn(server);
+        when(vimDriverCaller.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyMap())).thenReturn(server);
 
         try {
             Future<VNFCInstance> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
