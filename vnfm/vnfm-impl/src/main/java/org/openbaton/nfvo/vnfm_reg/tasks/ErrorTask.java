@@ -36,7 +36,12 @@ public class ErrorTask extends AbstractTask {
 
     @Override
     public NFVMessage doWork() throws Exception {
-        log.debug("Existing HBVerison: " + vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId()).getHb_version());
+        try {
+            log.debug("Existing HBVerison: " + vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId()).getHb_version());
+        }catch (Exception e) {
+            if (log.isDebugEnabled())
+                log.error(e.getMessage(),e);
+        }
         log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
         log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
         virtualNetworkFunctionRecord.setStatus(Status.ERROR);
