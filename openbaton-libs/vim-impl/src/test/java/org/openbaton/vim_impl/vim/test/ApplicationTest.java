@@ -16,13 +16,12 @@
 
 package org.openbaton.vim_impl.vim.test;
 
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
+import org.openbaton.vim.drivers.VimDriverCaller;
 import org.openbaton.vim_impl.vim.broker.VimBroker;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by lto on 30/04/15.
@@ -32,10 +31,10 @@ import static org.mockito.Mockito.mock;
 public class ApplicationTest {
 
     @Bean
-    ClientInterfaces openstackClient(){
-        ClientInterfaces clientInterfaces = mock(ClientInterfaces.class);
-
-        return clientInterfaces;
+    VimDriverCaller vimDriverCaller() {
+        VimDriverCaller vimDriverCaller = PowerMockito.mock(VimDriverCaller.class);
+        return vimDriverCaller;
     }
+
 
 }
