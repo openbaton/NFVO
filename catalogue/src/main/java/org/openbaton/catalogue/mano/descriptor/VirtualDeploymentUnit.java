@@ -15,11 +15,10 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.mano.common.faultmanagement.MonitoringParameter;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -102,8 +101,8 @@ public class VirtualDeploymentUnit implements Serializable {
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,
      * CPU-utilisation, bandwidth-consumption, VNFC downtime, etc.
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<MonitoringParameter> monitoring_parameter;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> monitoring_parameter;
 
 //    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
@@ -241,11 +240,11 @@ public class VirtualDeploymentUnit implements Serializable {
                 '}';
     }
 
-    public Set<MonitoringParameter> getMonitoring_parameter() {
+    public Set<String> getMonitoring_parameter() {
         return monitoring_parameter;
     }
 
-    public void setMonitoring_parameter(Set<MonitoringParameter> monitoring_parameter) {
+    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
         this.monitoring_parameter = monitoring_parameter;
     }
 
