@@ -1,5 +1,6 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
+import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
