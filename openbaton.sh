@@ -159,6 +159,44 @@ function tests {
     ./gradlew test
 }
 
+function update {
+    echo "~~~~~~~~~~~~~~~~~~~~OpenBaton UPDATE~~~~~~~~~~~~~~~~~~~~"
+    echo "                                                        "
+    echo "              updating to version 0.15"
+    echo "                                                        "
+
+    echo "installing new requirements:"
+    echo "*) rabbitmq"
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        sudo apt-get update
+        sudo apt-get install -y rabbitmq-server
+
+        ulimit -S -n 4096
+
+        sudo rabbitmqctl add_user admin openbaton
+        sudo rabbitmqctl set_user_tags admin administrator
+        sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+        sudo rabbitmq-plugins enable rabbitmq_management
+
+        sudo service rabbitmq-server restart
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        brew update
+        brew install rabbitmq
+
+        ulimit -S -n 4096
+
+        rabbitmqctl add_user admin openbaton
+        rabbitmqctl set_user_tags admin administrator
+        rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+        rabbitmq-plugins enable rabbitmq_management
+
+        rabbitmqctl stop
+        rabbitmq-server start -detached
+    fi
+}
+
 function clean {
     ./gradlew clean
 }
@@ -193,6 +231,8 @@ do
             start ;;
         "start" )
             start ;;
+        "update" )
+            update ;;
         "stop" )
             stop ;;
         "restart" )
