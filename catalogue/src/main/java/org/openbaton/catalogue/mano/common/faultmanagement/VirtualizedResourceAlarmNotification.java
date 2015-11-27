@@ -1,5 +1,6 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
+import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 
 /**
