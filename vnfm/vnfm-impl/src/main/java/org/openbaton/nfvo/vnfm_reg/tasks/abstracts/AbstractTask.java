@@ -123,10 +123,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
                     throw new RuntimeException(e1);
                 }
             }
-            if (log.isInfoEnabled())
-                log.error("There was an uncaught exception. Message is: " + e.getMessage());
-            else
+            if (log.isDebugEnabled()) {
                 log.error("There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask() + ". ", e);
+            } else {
+                log.error("There was an uncaught exception. Message is: " + e.getMessage());
+            }
 
             EventFinishEvent eventFinishEvent = new EventFinishEvent();
             eventFinishEvent.setAction(Action.ERROR);
