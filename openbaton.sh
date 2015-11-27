@@ -40,6 +40,31 @@ function check_activemq {
     fi
 }
 
+function check_rabbitmq {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	ps -aux | grep -v grep | grep rabbitmq > /dev/null
+        if [ $? -ne 0 ]; then
+          	echo "rabbit is not running, let's try to start it..."
+            	start_rabbitmq
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+	ps aux | grep -v grep | grep rabbitmq > /dev/null
+        if [ $? -ne 0 ]; then
+          	echo "rabbitmq is not running, let's try to start it..."
+            	start_rabbitmq
+        fi
+    fi
+}
+
+
+function start_rabbitmq {
+    `rabbitmq-server -detached`
+    if [ $? -ne 0 ]; then
+        echo "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log) "
+        exit 1
+    fi
+}
+
 function start_mysql_osx {
     sudo /usr/local/mysql/support-files/mysql.server start
 }
@@ -95,7 +120,8 @@ function start {
             compile
     fi
 
-    check_activemq
+#    check_activemq
+    check_rabbitmq
     #check_mysql
     check_already_running
     if [ 0 -eq $? ]
