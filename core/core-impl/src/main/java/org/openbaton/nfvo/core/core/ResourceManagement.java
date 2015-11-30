@@ -61,7 +61,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private String monitoringIp;
 
     @Value("${nfvo.ems.queue.autodelete:}")
-    private boolean emsAutodelete;
+    private String emsAutodelete;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
@@ -135,6 +135,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private String getUserData(String endpoint) {
         if (username == null)
             username = "admin";
+        if (emsAutodelete == null)
+            emsAutodelete = "true";
         if (password == null)
             password = "openbaton";
 
