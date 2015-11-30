@@ -29,9 +29,28 @@ public class RabbitConfiguration {
     final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
     final static String queueName_eventRegister = "nfvo.event.register";
     final static String queueName_eventUnregister = "nfvo.event.unregister";
+
     private boolean autodelete;
     private boolean durable;
     private boolean exclusive;
+    private int minConcurrency;
+    private int maxConcurrency;
+
+    public int getMaxConcurrency() {
+        return maxConcurrency;
+    }
+
+    public void setMaxConcurrency(int maxConcurrency) {
+        this.maxConcurrency = maxConcurrency;
+    }
+
+    public int getMinConcurrency() {
+        return minConcurrency;
+    }
+
+    public void setMinConcurrency(int minConcurrency) {
+        this.minConcurrency = minConcurrency;
+    }
 
     public boolean isAutodelete() {
         return autodelete;
@@ -196,8 +215,13 @@ public class RabbitConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName_vnfmCoreActions);
-        container.setConcurrentConsumers(5);
-        container.setMaxConcurrentConsumers(15);
+        if (minConcurrency <= 0 || maxConcurrency <= 0 || minConcurrency > maxConcurrency) {
+            container.setConcurrentConsumers(5);
+            container.setMaxConcurrentConsumers(15);
+        }else {
+            container.setConcurrentConsumers(minConcurrency);
+            container.setMaxConcurrentConsumers(maxConcurrency);
+        }
         container.setMessageListener(listenerAdapter);
         return container;
     }
@@ -208,8 +232,13 @@ public class RabbitConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName_vnfmCoreActionsReply);
-        container.setConcurrentConsumers(5);
-        container.setMaxConcurrentConsumers(15);
+        if (minConcurrency <= 0 || maxConcurrency <= 0 || minConcurrency > maxConcurrency) {
+            container.setConcurrentConsumers(5);
+            container.setMaxConcurrentConsumers(15);
+        }else {
+            container.setConcurrentConsumers(minConcurrency);
+            container.setMaxConcurrentConsumers(maxConcurrency);
+        }
         container.setMessageListener(listenerAdapter);
         return container;
     }
