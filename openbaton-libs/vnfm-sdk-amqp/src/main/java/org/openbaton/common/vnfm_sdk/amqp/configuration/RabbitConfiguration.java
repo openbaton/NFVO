@@ -35,14 +35,23 @@ public class RabbitConfiguration {
     private boolean autodelete;
     private boolean durable;
     private boolean exclusive;
-    private int concurrency;
+    private int minConcurrency;
+    private int maxConcurrency;
 
-    public int getConcurrency() {
-        return concurrency;
+    public int getMaxConcurrency() {
+        return maxConcurrency;
     }
 
-    public void setConcurrency(int concurrency) {
-        this.concurrency = concurrency;
+    public void setMaxConcurrency(int maxConcurrency) {
+        this.maxConcurrency = maxConcurrency;
+    }
+
+    public int getMinConcurrency() {
+        return minConcurrency;
+    }
+
+    public void setMinConcurrency(int minConcurrency) {
+        this.minConcurrency = minConcurrency;
     }
 
     public boolean isAutodelete() {
@@ -114,8 +123,13 @@ public class RabbitConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName_nfvoGenericActions);
-        container.setConcurrentConsumers(5);
-        container.setMaxConcurrentConsumers(15);
+        if (minConcurrency <= 0 || maxConcurrency <= 0 || minConcurrency > maxConcurrency) {
+            container.setConcurrentConsumers(5);
+            container.setMaxConcurrentConsumers(15);
+        }else {
+            container.setConcurrentConsumers(minConcurrency);
+            container.setMaxConcurrentConsumers(maxConcurrency);
+        }
         container.setMessageListener(listenerAdapter);
         return container;
     }
