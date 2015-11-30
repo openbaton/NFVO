@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableRabbit
-@ConfigurationProperties(prefix = "nfvo.rabbitmq")
+@ConfigurationProperties(prefix = "nfvo.rabbit")
 public class RabbitConfiguration {
     final static String queueName_vnfmRegister = "nfvo.vnfm.register";
     final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";

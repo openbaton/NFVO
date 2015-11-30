@@ -164,7 +164,6 @@ function update {
     echo "                                                        "
     echo "              updating to version 0.15"
     echo "                                                        "
-
     echo "installing new requirements:"
     echo "*) rabbitmq"
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
