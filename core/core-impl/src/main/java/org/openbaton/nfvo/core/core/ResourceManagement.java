@@ -60,6 +60,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     @Value("${nfvo.monitoring.ip:}")
     private String monitoringIp;
 
+    @Value("${nfvo.ems.queue.autodelete:}")
+    private boolean emsAutodelete;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
@@ -162,6 +165,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
                 "echo username=" + username + " >> /etc/openbaton/ems/conf.ini\n" +
                 "echo password=" + password + " >> /etc/openbaton/ems/conf.ini\n" +
+                "echo autodelete=" + emsAutodelete + " >> /etc/openbaton/ems/conf.ini\n" +
                 "export hn=`hostname`\n" +
                 "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
                 "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
