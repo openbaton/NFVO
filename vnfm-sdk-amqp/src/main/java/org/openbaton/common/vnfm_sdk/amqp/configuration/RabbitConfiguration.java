@@ -19,6 +19,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Created by lto on 09/11/15.
  */
@@ -30,7 +33,7 @@ public class RabbitConfiguration {
     public final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
     public final static String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
     public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
-    public final static String queueName_nfvoGenericActions = "nfvo.generic.actions";
+    public static String queueName_nfvoGenericActions = "nfvo.type.actions";
     public final static String queueName_emsRegistrator = "ems.generic.register";
 
     private boolean autodelete;
@@ -93,6 +96,14 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue_genericVnfmActions() {
+        Properties properties = new Properties();
+
+        try {
+            properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        queueName_nfvoGenericActions = "nfvo." + properties.getProperty("type") + ".actions";
         return new Queue(queueName_nfvoGenericActions, durable, exclusive, autodelete);
     }
 
