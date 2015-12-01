@@ -19,6 +19,8 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
     compile 'javax.jms:javax.jms-api:2.0.1'
-    compile "org.springframework:spring-jms:" + springVersion
     compile 'com.google.code.gson:gson:2.3.1'
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+    //TODO to be removed
+    compile "org.springframework:spring-jms:" + springVersion
 }

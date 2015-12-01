@@ -7,6 +7,8 @@ import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.plugin.utils.PluginCaller;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +25,34 @@ import java.util.concurrent.*;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties(prefix = "nfvo.rabbit")
 public class MonitoringPluginCaller extends MonitoringPlugin {
-    public MonitoringPluginCaller(String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672);
+
+    public String getManagementPort() {
+        return managementPort;
     }
 
-    public MonitoringPluginCaller(String name, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type +"."+name, "localhost", "admin", "openbaton", 5672);
+    public void setManagementPort(String managementPort) {
+        this.managementPort = managementPort;
     }
 
-    public MonitoringPluginCaller(String brokerIp, int port, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor." + type, brokerIp, "admin", "openbaton", port);
+    @Value("${nfvo.rabbit.management.port:}")
+    private String  managementPort;
+
+    public MonitoringPluginCaller(String type,String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672, Integer.parseInt(managementPort));
     }
 
-    public MonitoringPluginCaller(String brokerIp, String username, String password, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("monitor."+ type, brokerIp, username, password, 5672);
+    public MonitoringPluginCaller(String name, String type,String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("monitor." + type +"."+name, "localhost", "admin", "openbaton", 5672, Integer.parseInt(managementPort));
+    }
+
+    public MonitoringPluginCaller(String brokerIp, int port, String type,String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("monitor." + type, brokerIp, "admin", "openbaton", port, Integer.parseInt(managementPort));
+    }
+
+    public MonitoringPluginCaller(String brokerIp, String username, String password, String type,String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("monitor."+ type, brokerIp, username, password, 5672, Integer.parseInt(managementPort));
     }
 
     private PluginCaller pluginCaller;
