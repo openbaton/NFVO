@@ -124,7 +124,7 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException {
-        if (numConsumers == null)
+        if (numConsumers == null || numConsumers.equals(""))
             numConsumers = "" + 5;
         PluginStartup.startPluginRecursive(folderPath, false, "localhost", "5672", Integer.parseInt(numConsumers));
     }
