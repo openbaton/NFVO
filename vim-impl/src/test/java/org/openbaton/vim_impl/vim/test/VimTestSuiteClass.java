@@ -105,8 +105,8 @@ public class VimTestSuiteClass {
     @Before
     public void init() throws Exception {
         MockitoAnnotations.initMocks(this);
-        PowerMockito.whenNew(VimDriverCaller.class).withParameterTypes(String.class).withArguments("openstack").thenReturn(vimDriverCaller);
-        openstackVIM = new OpenstackVIM();
+        PowerMockito.whenNew(VimDriverCaller.class).withParameterTypes(String.class,String.class).withArguments("openstack","15672").thenReturn(vimDriverCaller);
+        openstackVIM = new OpenstackVIM("15672");
     }
 
     @Test
