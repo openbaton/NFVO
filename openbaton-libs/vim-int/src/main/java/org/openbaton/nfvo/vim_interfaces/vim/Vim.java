@@ -25,6 +25,7 @@ import org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement;
 import org.openbaton.vim.drivers.VimDriverCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -36,16 +37,19 @@ import java.util.concurrent.TimeoutException;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties(prefix = "nfvo.rabbit")
 public abstract class Vim implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-
     protected VimDriverCaller client;
 
-    public Vim(String type, String brokerIp, int port) throws PluginException {
+    public Vim(String type, String brokerIp, int port, String managementPort) throws PluginException {
         try {
 //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(brokerIp, port, type);
-            client = new VimDriverCaller(brokerIp, port, type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(brokerIp, port, type, managementPort);
         } catch (TimeoutException e) {
             throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         } catch (IOException e) {
@@ -58,10 +62,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
     public Vim() {
     }
 
-    public Vim(String type) throws PluginException {
+    public Vim(String type, String managementPort) throws PluginException {
         try {
 //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(type);
-            client = new VimDriverCaller(type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(type, managementPort);
         } catch (TimeoutException e) {
             throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         } catch (IOException e) {
@@ -71,10 +78,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
         }
     }
 
-    public Vim(String type, String name) throws PluginException {
+    public Vim(String type, String name, String managementPort) throws PluginException {
         try {
 //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(name, type);
-            client = new VimDriverCaller(name, type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(name, type, managementPort);
         } catch (TimeoutException e) {
             throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         } catch (IOException e) {
@@ -84,10 +94,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
         }
     }
 
-    public Vim(String type, String username, String password, String brokerIp) throws PluginException {
+    public Vim(String type, String username, String password, String brokerIp, String managementPort) throws PluginException {
         try {
 //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(brokerIp,username,password,type);
-            client = new VimDriverCaller(brokerIp,username,password,type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(brokerIp,username,password,type, managementPort);
         } catch (TimeoutException e) {
             throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         } catch (IOException e) {

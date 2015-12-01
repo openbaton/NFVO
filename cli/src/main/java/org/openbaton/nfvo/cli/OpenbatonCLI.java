@@ -64,6 +64,16 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
     private String username;
     @Value("${spring.rabbitmq.password:}")
     private String password;
+    @Value("${nfvo.rabbit.management.port:}")
+    private String port;
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
     @Autowired
     private PluginEndpointRepository pluginEndpointRepository;
     private ApplicationEventPublisher publisher;
@@ -141,17 +151,25 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             } else if (line.startsWith("installPlugin ")) {
                 installPlugin(line);
             } else if (line.startsWith("listPlugins")) {
-                System.out.println(listPlugins());
+                StringTokenizer stringTokenizer = new StringTokenizer(line);
+                stringTokenizer.nextToken();
+                if (stringTokenizer.hasMoreTokens()) {
+                    System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
+                }
+                    else if (port != null){
+                    System.out.println(listPlugins(Integer.parseInt(port)));
+                }else System.out.println(listPlugins(15672));
+
             } else if (line.equalsIgnoreCase("")) {
                 continue;
             } else usage();
         }
     }
 
-    private String listPlugins() {
+    private String listPlugins(int port) {
         try {
             List<String> plugins = new ArrayList<>();
-            List<String> queues = RabbitManager.getQueues(brokerIp, username, password);
+            List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
             for (String queue : queues) {
                 if (queue.startsWith("vim-driver") || queue.startsWith("monitor"))
                     plugins.add(queue);

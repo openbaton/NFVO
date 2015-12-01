@@ -33,7 +33,7 @@ import java.io.Serializable;
  */
 @Service
 @Scope
-public class JmsSender implements Sender {
+public class RabbitSender implements Sender {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
