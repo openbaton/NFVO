@@ -137,7 +137,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
         endpoint = (String) properties.get("endpoint");
         type = (String) properties.get("type");
-        endpointType = properties.getProperty("endpoint-type", "JMS");
+        endpointType = properties.getProperty("endpoint-type", "RABBIT");
     }
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
