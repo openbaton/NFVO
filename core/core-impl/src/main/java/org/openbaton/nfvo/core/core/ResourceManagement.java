@@ -142,15 +142,15 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     private String getUserData(String endpoint) {
-        if (username == null)
+        if (username == null || username.equals(""))
             username = "admin";
-        if (emsAutodelete == null)
+        if (emsAutodelete == null || emsAutodelete.equals(""))
             emsAutodelete = "true";
-        if (password == null)
+        if (password == null || password.equals(""))
             password = "openbaton";
-        if (emsHeartbeat == null)
+        if (emsHeartbeat == null || emsHeartbeat.equals(""))
             emsHeartbeat = "60";
-        if (emsAutodelete == null)
+        if (emsAutodelete == null || emsAutodelete.equals(""))
             emsAutodelete = "true";
 
 
