@@ -34,7 +34,7 @@ public class RabbitConfiguration {
     public final static String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
     public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
     public static String queueName_nfvoGenericActions = "nfvo.type.actions";
-    public final static String queueName_emsRegistrator = "ems.generic.register";
+    public static String queueName_emsRegistrator = "ems.generic.register";
 
     private boolean autodelete;
     private boolean durable;
@@ -109,6 +109,15 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue_emsRegistrator() {
+        Properties properties = new Properties();
+
+        try {
+            properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        queueName_emsRegistrator = "ems." + properties.getProperty("type") + ".register";
+
         return new Queue(queueName_emsRegistrator, durable, exclusive, autodelete);
     }
 
