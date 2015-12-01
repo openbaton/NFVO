@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope
-public class JmsVnfmSender implements VnfmSender {
+public class RabbitVnfmSender implements VnfmSender {
 
     @Autowired
     private Gson gson;
