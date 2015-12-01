@@ -51,21 +51,30 @@ import java.util.concurrent.Future;
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
+    //TODO get from RabbitConfiguration
+    private final static String exchangeName = "openbaton-exchange";
     private String brokerIp;
     @Value("${spring.rabbitmq.username:}")
     private String username;
     @Value("${spring.rabbitmq.password:}")
     private String password;
-
     @Value("${nfvo.monitoring.ip:}")
     private String monitoringIp;
-
     @Value("${nfvo.ems.queue.autodelete:}")
     private String emsAutodelete;
-
+    @Value("${nfvo.ems.queue.heartbeat:}")
+    private String emsHeartbeat;
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
+
+    public String getEmsHeartbeat() {
+        return emsHeartbeat;
+    }
+
+    public void setEmsHeartbeat(String emsHeartbeat) {
+        this.emsHeartbeat = emsHeartbeat;
+    }
 
     public String getBrokerIp() {
         return brokerIp;
@@ -139,6 +148,11 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             emsAutodelete = "true";
         if (password == null)
             password = "openbaton";
+        if (emsHeartbeat == null)
+            emsHeartbeat = "60";
+        if (emsAutodelete == null)
+            emsAutodelete = "true";
+
 
         log.debug("Broker ip is: " + brokerIp);
         log.debug("Monitoring ip is: " + monitoringIp);
@@ -162,18 +176,20 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         result +=
 //                "apt-get install -y python-pip\n" +
                 "apt-get install -y ems-0.15-SNAPSHOT\n" +
-                "mkdir -p /etc/openbaton/ems\n" +
-                "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
-                "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
-                "echo username=" + username + " >> /etc/openbaton/ems/conf.ini\n" +
-                "echo password=" + password + " >> /etc/openbaton/ems/conf.ini\n" +
-                "echo autodelete=" + emsAutodelete + " >> /etc/openbaton/ems/conf.ini\n" +
-                "export hn=`hostname`\n" +
-                "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
-                "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
-                "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
+                        "mkdir -p /etc/openbaton/ems\n" +
+                        "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
+                        "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo username=" + username + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo password=" + password + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo exchange=" + exchangeName + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo heartbeat=" + emsHeartbeat + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo autodelete=" + emsAutodelete + " >> /etc/openbaton/ems/conf.ini\n" +
+                        "export hn=`hostname`\n" +
+                        "echo \"type=" + endpoint + "\" >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n" +
+                        "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n" +
 
-                "service ems restart\n";
+                        "service ems restart\n";
 
         return result;
     }
