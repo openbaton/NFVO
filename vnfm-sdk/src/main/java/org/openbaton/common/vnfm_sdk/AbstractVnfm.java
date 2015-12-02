@@ -137,7 +137,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
         endpoint = (String) properties.get("endpoint");
         type = (String) properties.get("type");
-        endpointType = properties.getProperty("endpoint-type", "JMS");
+        endpointType = properties.getProperty("endpoint-type", "RABBIT");
     }
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
@@ -229,11 +229,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     Future<VirtualNetworkFunctionRecord> result = executor.submit(grantOperation);
                     virtualNetworkFunctionRecord = result.get();
 
-                    log.debug("");
-                    log.debug("");
-                    log.debug("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
-                    log.debug("");
-                    log.debug("");
+                    log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
 
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
