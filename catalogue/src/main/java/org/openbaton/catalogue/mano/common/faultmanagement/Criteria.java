@@ -46,12 +46,28 @@ public class Criteria implements Serializable {
         this.parameter_ref = parameter_ref;
     }
 
-    public String getComparisonOperator() {
+    public String getComparison_operator() {
         return comparison_operator;
     }
 
-    public void setComparisonOperator(String comparison_operator) {
+    public void setComparison_operator(String comparison_operator) {
         this.comparison_operator = comparison_operator;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getThreshold() {

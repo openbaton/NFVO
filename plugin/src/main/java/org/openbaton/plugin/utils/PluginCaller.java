@@ -37,8 +37,11 @@ public class PluginCaller {
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public PluginCaller(String pluginId, String brokerIp, String username, String password, int port) throws IOException, TimeoutException, NotFoundException {
-        this.pluginId = getFullPluginId(pluginId, brokerIp, username, password);
+    private int managementPort;
+
+    public PluginCaller(String pluginId, String brokerIp, String username, String password, int port, int managementPort) throws IOException, TimeoutException, NotFoundException {
+        this.pluginId = getFullPluginId(pluginId, brokerIp, username, password, managementPort);
+        this.managementPort = managementPort;
         this.brokerIp = brokerIp;
         this.username = username;
         this.password = password;
@@ -64,8 +67,8 @@ public class PluginCaller {
         channel.basicConsume(replyQueueName, true, consumer);
     }
 
-    private String getFullPluginId(String pluginId, String brokerIp, String username, String password) throws IOException, NotFoundException {
-        List<String> queues = RabbitManager.getQueues(brokerIp, username, password);
+    private String getFullPluginId(String pluginId, String brokerIp, String username, String password, int port) throws IOException, NotFoundException {
+        List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
         for (String queue: queues){
             if (queue.startsWith(pluginId))
                 return queue;
@@ -77,7 +80,7 @@ public class PluginCaller {
 
         //Check if plugin is still up
 
-        if (!RabbitManager.getQueues(brokerIp,username,password).contains(pluginId))
+        if (!RabbitManager.getQueues(brokerIp,username,password, managementPort).contains(pluginId))
             throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
 
         String response;

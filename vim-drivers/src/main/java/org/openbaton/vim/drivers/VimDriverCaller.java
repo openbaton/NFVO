@@ -31,20 +31,20 @@ public class VimDriverCaller extends VimDriver {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public VimDriverCaller(String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("vim-drivers." + type, "localhost", "admin", "openbaton", 5672);
+    public VimDriverCaller(String type, String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("vim-drivers." + type, "localhost", "admin", "openbaton", 5672, Integer.parseInt(managementPort));
     }
 
-    public VimDriverCaller(String name, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("vim-drivers." + type + "." + name, "localhost", "admin", "openbaton", 5672);
+    public VimDriverCaller(String name, String type, String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("vim-drivers." + type + "." + name, "localhost", "admin", "openbaton", 5672, Integer.parseInt(managementPort));
     }
 
-    public VimDriverCaller(String brokerIp, int port, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, "admin", "openbaton", port);
+    public VimDriverCaller(String brokerIp, int port, String type, String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, "admin", "openbaton", port, Integer.parseInt(managementPort));
     }
 
-    public VimDriverCaller(String brokerIp, String username, String password, String type) throws IOException, TimeoutException, NotFoundException {
-        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, username, password, 5672);
+    public VimDriverCaller(String brokerIp, String username, String password, String type, String managementPort) throws IOException, TimeoutException, NotFoundException {
+        pluginCaller = new PluginCaller("vim-drivers." + type, brokerIp, username, password, 5672, Integer.parseInt(managementPort));
     }
 
     @Override
