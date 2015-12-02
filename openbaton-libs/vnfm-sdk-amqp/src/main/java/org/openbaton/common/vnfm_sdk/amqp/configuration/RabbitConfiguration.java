@@ -13,10 +13,14 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created by lto on 09/11/15.
@@ -29,14 +33,21 @@ public class RabbitConfiguration {
     public final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
     public final static String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
     public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
-    public final static String queueName_nfvoGenericActions = "nfvo.generic.actions";
-    public final static String queueName_emsRegistrator = "ems.generic.register";
+    public static String queueName_nfvoGenericActions = "nfvo.type.actions";
+    public static String queueName_emsRegistrator = "ems.generic.register";
 
     private boolean autodelete;
     private boolean durable;
     private boolean exclusive;
     private int minConcurrency;
     private int maxConcurrency;
+
+    @Autowired(required = false)
+    private EmsRegistrator registrator;
+
+    @Autowired(required = false)
+    @Qualifier("listenerAdapter_emsRegistrator")
+    private MessageListenerAdapter listenerAdapter_emsRegistrator;
 
     public int getMaxConcurrency() {
         return maxConcurrency;
@@ -85,11 +96,28 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue_genericVnfmActions() {
+        Properties properties = new Properties();
+
+        try {
+            properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        queueName_nfvoGenericActions = "nfvo." + properties.getProperty("type") + ".actions";
         return new Queue(queueName_nfvoGenericActions, durable, exclusive, autodelete);
     }
 
     @Bean
     Queue queue_emsRegistrator() {
+        Properties properties = new Properties();
+
+        try {
+            properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        queueName_emsRegistrator = "ems." + properties.getProperty("type") + ".register";
+
         return new Queue(queueName_emsRegistrator, durable, exclusive, autodelete);
     }
 
@@ -114,8 +142,11 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter_emsRegistrator(EmsRegistrator receiver) {
-        return new MessageListenerAdapter(receiver, "register");
+    MessageListenerAdapter listenerAdapter_emsRegistrator() {
+        if (registrator != null)
+            return new MessageListenerAdapter(registrator, "register");
+        else
+            return null;
     }
 
     @Bean
@@ -135,13 +166,17 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    SimpleMessageListenerContainer container_emsRegistrator(ConnectionFactory connectionFactory, @Qualifier("listenerAdapter_emsRegistrator") MessageListenerAdapter listenerAdapter) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName_emsRegistrator);
-        container.setConcurrentConsumers(1);
-        container.setMaxConcurrentConsumers(15);
-        container.setMessageListener(listenerAdapter);
-        return container;
+    SimpleMessageListenerContainer container_emsRegistrator(ConnectionFactory connectionFactory) {
+        if (listenerAdapter_emsRegistrator != null) {
+            SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+            container.setConnectionFactory(connectionFactory);
+            container.setQueueNames(queueName_emsRegistrator);
+            container.setConcurrentConsumers(1);
+            container.setMaxConcurrentConsumers(15);
+            container.setMessageListener(listenerAdapter_emsRegistrator);
+            return container;
+        }
+        else
+            return null;
     }
 }
