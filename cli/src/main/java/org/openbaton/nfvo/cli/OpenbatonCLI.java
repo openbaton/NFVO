@@ -156,7 +156,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
                 if (stringTokenizer.hasMoreTokens()) {
                     System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
                 }
-                    else if (port != null){
+                    else if (port != null && !port.equals("")){
                     System.out.println(listPlugins(Integer.parseInt(port)));
                 }else System.out.println(listPlugins(15672));
 
