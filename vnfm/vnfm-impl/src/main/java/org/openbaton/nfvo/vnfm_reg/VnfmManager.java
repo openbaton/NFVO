@@ -329,7 +329,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             throw new NotFoundException(e);
         }
 
-        log.debug("Sending message " + nfvMessage.getAction() + " to endpoint " + endpoint);
+        log.debug("Sending message " + nfvMessage.getAction() + " to " + virtualNetworkFunctionRecordDest.getName());
         vnfmSender.sendCommand(nfvMessage, endpoint);
         return new AsyncResult<Void>(null);
     }
