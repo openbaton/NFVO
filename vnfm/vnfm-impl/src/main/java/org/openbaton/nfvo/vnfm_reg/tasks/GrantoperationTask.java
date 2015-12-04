@@ -16,23 +16,23 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
-import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 /**
  * Created by lto on 06/08/15.
@@ -56,7 +56,7 @@ public class GrantoperationTask extends AbstractTask {
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
-            lifecycleEvent.setLifecycle_events(new LinkedList<String>());
+            lifecycleEvent.setLifecycle_events(new ArrayList<String>());
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
@@ -64,13 +64,11 @@ public class GrantoperationTask extends AbstractTask {
             saveVirtualNetworkFunctionRecord();
             log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
-//            vnfmSender.sendCommand(nfvMessage, getTempDestination());
             return nfvMessage;
         } else {
             // there are not enough resources for deploying VNFR
             saveVirtualNetworkFunctionRecord();
             OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
-//            vnfmSender.sendCommand(nfvMessage, getTempDestination());
             return nfvMessage;
         }
     }
