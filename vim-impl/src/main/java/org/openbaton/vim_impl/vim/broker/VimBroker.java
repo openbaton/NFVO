@@ -20,12 +20,13 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -39,28 +40,40 @@ import java.util.List;
  */
 @Service
 @Scope
+@ConfigurationProperties(prefix = "nfvo.rabbit.management")
 public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroker {
 
+    private String port;
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private ConfigurableApplicationContext context;
-
     private HashMap<String, ClientInterfaces> clientInterfaces;
 
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
     @PostConstruct
-    private void init(){
+    private void init() {
+        log.debug("MANAGEMENT_PORT is: " + port);
+        if (port == null){
+            port = "15672";
+        }
         this.clientInterfaces = new HashMap<>();
     }
 
     @Override
-    public void addClient(ClientInterfaces client, String type){
+    public void addClient(ClientInterfaces client, String type) {
         log.info("Registered client of type: " + type);
         this.clientInterfaces.put(type, client);
     }
 
     @Override
-    public ClientInterfaces getClient(String type){
+    public ClientInterfaces getClient(String type) {
         return this.clientInterfaces.get(type);
     }
 
@@ -68,11 +81,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     public Vim getVim(String type, String name) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM",type, name);
+                return (Vim) context.getBean("testVIM", type, name, this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM",type, name);
+                return (Vim) context.getBean("openstackVIM", type, name, this.port);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM",type, name);
+                return (Vim) context.getBean("amazonVIM", type, name, this.port);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -82,11 +95,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     public Vim getVim(String type) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM");
+                return (Vim) context.getBean("testVIM", this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM");
+                return (Vim) context.getBean("openstackVIM", port);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM");
+                return (Vim) context.getBean("amazonVIM", this.port);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -96,11 +109,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     public Vim getVim(String type, int port) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", port);
+                return (Vim) context.getBean("testVIM", port, this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM",port);
+                return (Vim) context.getBean("openstackVIM", port, this.port);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM",port);
+                return (Vim) context.getBean("amazonVIM", port, this.port);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -110,11 +123,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     public Vim getVim(String type, String name, String port) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port));
+                return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port), this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port));
+                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port), this.port);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port));
+                return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port), this.port);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -133,12 +146,12 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             //Subtract floatingIps
 
             //Subtract instances
-            leftQuota.setInstances(leftQuota.getInstances()-1);
+            leftQuota.setInstances(leftQuota.getInstances() - 1);
             //Subtract used ram and cpus
             // TODO check whenever the library/rest command work.
             DeploymentFlavour flavor = server.getFlavor();
-            leftQuota.setRam(leftQuota.getRam()-flavor.getRam());
-            leftQuota.setCores(leftQuota.getCores()-flavor.getVcpus());
+            leftQuota.setRam(leftQuota.getRam() - flavor.getRam());
+            leftQuota.setCores(leftQuota.getCores() - flavor.getVcpus());
             // TODO add floating ips when quota command will work...
         }
         return leftQuota;
