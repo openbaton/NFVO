@@ -113,7 +113,7 @@ public class NetworkManagementClassSuiteTest {
 
         Assert.assertEquals(updated_network.getName(), network.getName());
         Assert.assertEquals(updated_network.getExtId(), network.getExtId());
-        Assert.assertEquals(updated_network.isExternal(), network.isExternal());
+        Assert.assertEquals(updated_network.getExternal(), network.getExternal());
     }
 
     private Network createNetwork() {
@@ -148,7 +148,7 @@ public class NetworkManagementClassSuiteTest {
         Assert.assertEquals(network_exp.getId(), network_new.getId());
         Assert.assertEquals(network_exp.getName(), network_new.getName());
         Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-        Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
+        Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class NetworkManagementClassSuiteTest {
         Assert.assertEquals(network_exp.getId(), network_new.getId());
         Assert.assertEquals(network_exp.getName(), network_new.getName());
         Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-        Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
+        Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
     }
 
     @Test

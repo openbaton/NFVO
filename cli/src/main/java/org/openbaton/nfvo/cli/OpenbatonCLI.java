@@ -134,7 +134,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
         String line;
         PrintWriter out = new PrintWriter(reader.getOutput());
-        List<Completer> completors = new LinkedList<>();
+        List<Completer> completors = new ArrayList<>();
         completors.add(new StringsCompleter(helpCommandList.keySet()));
         completors.add(new FileNameCompleter());
         reader.addCompleter(new ArgumentCompleter(completors));
@@ -156,7 +156,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
                 if (stringTokenizer.hasMoreTokens()) {
                     System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
                 }
-                    else if (port != null){
+                    else if (port != null && !port.equals("")){
                     System.out.println(listPlugins(Integer.parseInt(port)));
                 }else System.out.println(listPlugins(15672));
 
@@ -207,7 +207,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             log.error("please provide number of active consumers");
             return false;
         }
-        PluginStartup.installPlugin(name, path, "localhost", "1099", consumers);
+        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers);
         return true;
     }
 

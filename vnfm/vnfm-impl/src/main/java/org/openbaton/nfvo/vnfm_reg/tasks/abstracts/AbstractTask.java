@@ -76,10 +76,14 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
     protected void saveVirtualNetworkFunctionRecord() {
         log.trace("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-        if (virtualNetworkFunctionRecord.getId() == null)
+        if (virtualNetworkFunctionRecord.getId() == null) {
+
             virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        else
+        }
+        else {
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        }
+
     }
 
     public Action getAction() {
