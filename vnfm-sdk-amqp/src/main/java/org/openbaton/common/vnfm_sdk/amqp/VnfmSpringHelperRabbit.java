@@ -106,7 +106,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
         rabbitTemplate.afterPropertiesSet();
 
         log.debug("Sending to: " + queueName);
-        String res = (String) rabbitTemplate.convertSendAndReceive(queueName, message);
+        String res = (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange",queueName, message);
         log.debug("Received from EMS: " + res);
         return res;
     }
