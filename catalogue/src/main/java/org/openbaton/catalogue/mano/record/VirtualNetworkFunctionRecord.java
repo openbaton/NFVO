@@ -158,7 +158,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Set<String> runtime_policy_info;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<VNFFaultManagementPolicy> faultManagementPolicy;
+    private Set<VNFFaultManagementPolicy> fault_management_policy;
 
     private String name;
     private String type;
@@ -431,7 +431,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 ", notification=" + notification +
                 ", audit_log='" + audit_log + '\'' +
                 ", runtime_policy_info=" + runtime_policy_info +
-                ", faultManagementPolicy=" + faultManagementPolicy +
+                ", fault_management_policy=" + fault_management_policy +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
@@ -443,12 +443,12 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 '}';
     }
 
-    public Set<VNFFaultManagementPolicy> getFaultManagementPolicy() {
-        return faultManagementPolicy;
+    public Set<VNFFaultManagementPolicy> getFault_management_policy() {
+        return fault_management_policy;
     }
 
-    public void setFaultManagementPolicy(Set<VNFFaultManagementPolicy> faultManagementPolicy) {
-        this.faultManagementPolicy = faultManagementPolicy;
+    public void setFault_management_policy(Set<VNFFaultManagementPolicy> fault_management_policy) {
+        this.fault_management_policy = fault_management_policy;
     }
 
     public Configuration getRequires() {
