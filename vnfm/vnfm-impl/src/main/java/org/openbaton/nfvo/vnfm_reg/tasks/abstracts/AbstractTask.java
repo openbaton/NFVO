@@ -199,6 +199,9 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;
                 break;
+            case HEAL:
+                status = Status.ACTIVE;
+                break;
             case GRANT_OPERATION:
                 status = Status.NULL;
                 break;
