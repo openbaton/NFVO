@@ -25,6 +25,7 @@ public enum Action {
     SCALE_OUT,
     SCALING,
     ERROR,
+    HEAL,
     RELEASE_RESOURCES,
     INSTANTIATE,
     MODIFY,
