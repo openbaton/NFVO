@@ -34,6 +34,7 @@ public class Network implements Serializable {
     private String extId;
     private Boolean external = false;
     private Boolean shared = false;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Subnet> subnets;
 
@@ -65,20 +66,20 @@ public class Network implements Serializable {
         id=IdGenerator.createUUID();
     }
 
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     public String getName() {
@@ -89,19 +90,7 @@ public class Network implements Serializable {
         this.name = name;
     }
 
-    public String getExtId() {
-        return extId;
-    }
-
-    public void setExtId(String extId) {
-        this.extId = extId;
-    }
-
-    public Boolean isExternal() {
-        return external;
-    }
-
-    public Boolean isShared() {
+    public Boolean getShared() {
         return shared;
     }
 
@@ -115,5 +104,13 @@ public class Network implements Serializable {
 
     public void setSubnets(Set<Subnet> subnets) {
         this.subnets = subnets;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }
