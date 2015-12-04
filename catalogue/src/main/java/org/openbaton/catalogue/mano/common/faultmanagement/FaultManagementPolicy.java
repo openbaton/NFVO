@@ -23,7 +23,7 @@ public abstract class FaultManagementPolicy implements Serializable{
     protected int period;
     protected PerceivedSeverity severity;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     protected Set<Criteria> criteria;
 
     @PrePersist
