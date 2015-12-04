@@ -212,7 +212,7 @@ public class VNFRUtils {
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()) {
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new LinkedList<String>());
+            lifecycleEvent_new.setLifecycle_events(new ArrayList<String>());
             for (String event : lifecycleEvent.getLifecycle_events()) {
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }
