@@ -41,14 +41,14 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class AmazonVIM extends Vim {
 
-    public AmazonVIM(String name, int port) throws PluginException {
-        super("amazon",name, port);
+    public AmazonVIM(String name, int port, String managementPort) throws PluginException {
+        super("amazon",name, port, managementPort);
     }
-    public AmazonVIM() throws PluginException {
-        super("amazon");
+    public AmazonVIM(String managementPort) throws PluginException {
+        super("amazon", managementPort);
     }
-    public AmazonVIM(int port) throws PluginException {
-        super("amazon");
+    public AmazonVIM(int port, String managementPort) throws PluginException {
+        super("amazon", managementPort);
     }
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
