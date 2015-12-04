@@ -17,14 +17,13 @@ package org.openbaton.catalogue.mano.record;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -64,9 +63,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     /**
      * Record of significant VNF lifecycle event (e.g. creation, scale up/down, configuration changes)
      */
-    @OneToMany(cascade = {CascadeType.ALL/*, CascadeType.REMOVE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event;
-    @OneToMany(cascade = {CascadeType.ALL/*CascadeType.MERGE, CascadeType.PERSIST*/}, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<LifecycleEvent> lifecycle_event_history;
     /**
      * A language attribute may be specified to identify default localisation/language
