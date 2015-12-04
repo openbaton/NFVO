@@ -73,7 +73,7 @@ public class PluginCaller {
             if (queue.startsWith(pluginId))
                 return queue;
         }
-        throw new NotFoundException("no plugin found with name: " + pluginId);
+        throw new NotFoundException("no plugin found with name: " + pluginId + " into queues: " + queues);
     }
 
     public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType) throws IOException, InterruptedException, PluginException {
