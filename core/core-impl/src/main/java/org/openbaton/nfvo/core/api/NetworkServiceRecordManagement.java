@@ -21,6 +21,8 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -291,6 +293,18 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("No VirtualDeploymentUnit found with id " + idVdu);
         return virtualDeploymentUnit;
     }
+    private VNFCInstance getVNFCInstance(String idVNFCInstance, VirtualDeploymentUnit vdu) throws NotFoundException {
+        VNFCInstance vnfcInstance = null;
+        for (VNFCInstance currentVnfcInstance : vdu.getVnfc_instance()) {
+            if (currentVnfcInstance.getId().equals(idVNFCInstance)) {
+                vnfcInstance = currentVnfcInstance;
+                break;
+            }
+        }
+        if (vnfcInstance == null)
+            throw new NotFoundException("No VnfcInstance found with id " + idVNFCInstance);
+        return vnfcInstance;
+    }
 
     private VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idVnf, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
@@ -405,6 +419,27 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Override
     public Iterable<NetworkServiceRecord> query() {
         return nsrRepository.findAll();
+    }
+
+    @Override
+    public void executeAction(NFVMessage nfvMessage,String nsrId, String idVnf, String idVdu, String idVNFCI) throws NotFoundException {
+
+        NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(nsrId);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+
+        VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+        VNFCInstance vnfcInstance = getVNFCInstance(idVNFCI,virtualDeploymentUnit);
+        switch (nfvMessage.getAction()) {
+            case HEAL:
+                // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
+                // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
+                OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
+                log.debug("Received Heal message: "+orVnfmHealVNFRequestMessage);
+                orVnfmHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                orVnfmHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
+                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord,orVnfmHealVNFRequestMessage);
+                break;
+        }
     }
 
     @Override
