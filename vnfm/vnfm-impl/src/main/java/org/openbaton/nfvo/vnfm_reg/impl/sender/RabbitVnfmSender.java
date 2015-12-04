@@ -47,7 +47,8 @@ public class RabbitVnfmSender implements VnfmSender {
     public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
         String destinationName = "nfvo." + endpoint.getType() + ".actions";
         log.debug("Sending NFVMessage with action: " + nfvMessage.getAction() + " to endpoint: " + endpoint);
-        rabbitTemplate.convertAndSend(destinationName, gson.toJson(nfvMessage));
+        String json = gson.toJson(nfvMessage);
+        rabbitTemplate.convertAndSend(destinationName, json);
     }
 
     @Override
