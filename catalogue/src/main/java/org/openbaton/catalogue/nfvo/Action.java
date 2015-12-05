@@ -29,6 +29,7 @@ public enum Action {
     RELEASE_RESOURCES,
     INSTANTIATE,
     MODIFY,
+    HEAL,
     UPDATEVNFR,
     SCALED,
     RELEASE_RESOURCES_FINISH,
