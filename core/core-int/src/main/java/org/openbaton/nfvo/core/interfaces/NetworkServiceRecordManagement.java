@@ -20,6 +20,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 
@@ -64,6 +65,8 @@ public interface NetworkServiceRecordManagement {
      * related VNFFGD and VLD.
      */
     Iterable<NetworkServiceRecord> query();
+
+    void executeAction(NFVMessage nfvMessage,String nsrId,String idVnf,String idVdu, String idVNFCI) throws NotFoundException;
 
     NetworkServiceRecord query(String id);
 
