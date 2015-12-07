@@ -3,6 +3,7 @@ package org.openbaton.nfvo.common.configuration;
 import com.google.gson.*;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
@@ -33,6 +34,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
                 break;
             case "SCALED":
                 result = gson.fromJson(json, VnfmOrScaledMessage.class);
+                break;
+            case "HEAL":
+                result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
                 break;
             default:
                 result = gson.fromJson(json, VnfmOrGenericMessage.class);

@@ -32,6 +32,7 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -237,7 +238,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             VnfmOrScaledMessage vnfmOrScaled = (VnfmOrScaledMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrScaled.getVirtualNetworkFunctionRecord();
             ((ScaledTask) task).setVnfcInstance(vnfmOrScaled.getVnfcInstance());
-        } else {
+        } else if (nfvMessage.getAction().ordinal() == Action.HEAL.ordinal()) {
+            OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
+            virtualNetworkFunctionRecord = orVnfmHealVNFRequestMessage.getVirtualNetworkFunctionRecord();
+        }else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
