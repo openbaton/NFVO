@@ -138,6 +138,23 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         Vim vim = getVim(vimInstance.getType());
 
         Quota maximalQuota = vim.getQuota(vimInstance);
+
+        if (maximalQuota.getInstances() == -1) {
+            maximalQuota.setInstances(Integer.MAX_VALUE);
+        }
+        if (maximalQuota.getRam() == -1) {
+            maximalQuota.setRam(Integer.MAX_VALUE);
+        }
+        if (maximalQuota.getCores() == -1) {
+            maximalQuota.setCores(Integer.MAX_VALUE);
+        }
+        if (maximalQuota.getKeyPairs() == -1) {
+            maximalQuota.setKeyPairs(Integer.MAX_VALUE);
+        }
+        if (maximalQuota.getFloatingIps() == -1) {
+            maximalQuota.setFloatingIps(Integer.MAX_VALUE);
+        }
+
         Quota leftQuota = maximalQuota;
 
         List<Server> servers = vim.queryResources(vimInstance);
