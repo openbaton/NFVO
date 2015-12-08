@@ -27,10 +27,7 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -111,7 +108,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     public abstract void checkInstantiationFeasibility();
 
     @Override
-    public abstract void heal();
+    public abstract VirtualNetworkFunctionRecord heal(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance component, String cause) throws Exception;
 
     @Override
     public abstract void updateSoftware();
@@ -249,6 +246,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
+                    break;
+                case HEAL:
+                    OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause()));
                     break;
                 case INSTANTIATE_FINISH:
                     break;
