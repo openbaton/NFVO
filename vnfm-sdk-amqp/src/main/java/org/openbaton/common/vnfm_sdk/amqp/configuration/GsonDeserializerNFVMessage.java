@@ -2,11 +2,8 @@ package org.openbaton.common.vnfm_sdk.amqp.configuration;
 
 import com.google.gson.*;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
                 break;
             case "SCALING":
                 result = gson.fromJson(json, OrVnfmScalingMessage.class);
+                break;
+            case "HEAL":
+                result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
                 break;
             case "ERROR":
                 result = gson.fromJson(json, OrVnfmErrorMessage.class);
