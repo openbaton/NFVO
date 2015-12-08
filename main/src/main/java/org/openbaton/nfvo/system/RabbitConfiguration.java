@@ -93,7 +93,12 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue_vnfmRegister() {
-        return new Queue(queueName_vnfmRegister, durable, exclusive, autodelete);
+        try {
+            return new Queue(queueName_vnfmRegister, true, exclusive, autodelete);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Bean

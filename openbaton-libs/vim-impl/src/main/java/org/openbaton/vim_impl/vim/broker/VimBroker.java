@@ -97,7 +97,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", port);
+                return (Vim) context.getBean("openstackVIM", this.port);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", this.port);
             default:
