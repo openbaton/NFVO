@@ -36,7 +36,7 @@ public class RabbitConfiguration {
     public static String queueName_nfvoGenericActions = "nfvo.type.actions";
     public static String queueName_emsRegistrator = "ems.generic.register";
 
-    private boolean autodelete;
+    private boolean autodelete = true;
     private boolean durable;
     private boolean exclusive;
     private int minConcurrency;
