@@ -19,8 +19,13 @@ import com.google.gson.Gson;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -40,9 +45,45 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     @Autowired
     private Gson gson;
 
+    @Value("${vnfm.rabbitmq.autodelete}")
+    private boolean autodelete = true;
+    @Value("${vnfm.rabbitmq.durable}")
+    private boolean durable;
+    @Value("${vnfm.rabbitmq.exclusive}")
+    private boolean exclusive;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    private RabbitAdmin rabbitAdmin;
+
+    @Autowired
+    private ConnectionFactory connectionFactory;
+
     private int timeout;
+
+    public boolean isExclusive() {
+        return exclusive;
+    }
+
+    public void setExclusive(boolean exclusive) {
+        this.exclusive = exclusive;
+    }
+
+    public boolean isDurable() {
+        return durable;
+    }
+
+    public void setDurable(boolean durable) {
+        this.durable = durable;
+    }
+
+    public boolean isAutodelete() {
+        return autodelete;
+    }
+
+    public void setAutodelete(boolean autodelete) {
+        this.autodelete = autodelete;
+    }
 
     public int getTimeout() {
         return timeout;
@@ -55,10 +96,14 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     @PostConstruct
     private void init() throws IOException {
         log.info("Initialization of VnfmSpringHelperRabbit");
+        rabbitAdmin = new RabbitAdmin(connectionFactory);
     }
 
     public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
         log.debug("Sending message to Queue:  " + sendToQueueName);
+
+        rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
+        rabbitAdmin.declareBinding(new Binding(sendToQueueName, Binding.DestinationType.QUEUE, "openbaton-exchange", sendToQueueName, null));
 
         rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
     }
@@ -106,7 +151,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
         rabbitTemplate.afterPropertiesSet();
 
         log.debug("Sending to: " + queueName);
-        String res = (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange",queueName, message);
+        String res = (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
         log.debug("Received from EMS: " + res);
         return res;
     }
