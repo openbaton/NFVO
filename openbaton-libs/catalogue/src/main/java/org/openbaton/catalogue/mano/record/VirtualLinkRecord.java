@@ -86,8 +86,10 @@ public class VirtualLinkRecord extends AbstractVirtualLink implements Serializab
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> audit_log;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> connection;
+
     public VirtualLinkRecord() {
     }
 
