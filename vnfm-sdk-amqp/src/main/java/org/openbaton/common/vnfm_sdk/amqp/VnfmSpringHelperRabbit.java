@@ -102,8 +102,10 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
         log.debug("Sending message to Queue:  " + sendToQueueName);
 
-        rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
-        rabbitAdmin.declareBinding(new Binding(sendToQueueName, Binding.DestinationType.QUEUE, "openbaton-exchange", sendToQueueName, null));
+        if (sendToQueueName.equals(RabbitConfiguration.queueName_vnfmRegister)) {
+            rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
+            rabbitAdmin.declareBinding(new Binding(sendToQueueName, Binding.DestinationType.QUEUE, "openbaton-exchange", sendToQueueName, null));
+        }
 
         rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
     }
