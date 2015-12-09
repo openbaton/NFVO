@@ -20,6 +20,8 @@ package org.openbaton.nfvo.core.events;
  * Created by lto on 03/06/15.
  */
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
@@ -35,8 +37,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -53,14 +53,19 @@ import java.io.IOException;
 class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.nfvo.core.interfaces.EventDispatcher {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Autowired
     private EventEndpointRepository eventEndpointRepository;
     @Autowired
     private ConfigurableApplicationContext context;
 
     @Override
-    @JmsListener(destination = "event-register", containerFactory = "queueJmsContainerFactory")
-    public EventEndpoint register(@Payload EventEndpoint endpoint) {
+    public EventEndpoint register(String endpoint_json) {
+        EventEndpoint endpoint = gson.fromJson(endpoint_json,EventEndpoint.class);
+        return saveEventEndpoint(endpoint);
+    }
+
+    public EventEndpoint saveEventEndpoint(EventEndpoint endpoint) {
         EventEndpoint save = eventEndpointRepository.save(endpoint);
         log.info("Registered event endpoint" + save);
         return save;
@@ -132,7 +137,6 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     }
 
     @Override
-    @JmsListener(destination = "event-unregister", containerFactory = "queueJmsContainerFactory")
     public void unregister(String id) throws NotFoundException {
         if (eventEndpointRepository.exists(id)) {
             log.info("Removing EventEndpoint with id: " + id);

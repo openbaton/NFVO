@@ -26,7 +26,7 @@ public interface VnfmRegister {
 
     Iterable<VnfmManagerEndpoint> listVnfm();
 
-    void addManagerEndpoint(VnfmManagerEndpoint endpoint);
+    void addManagerEndpoint(String endpoint);
 
     VnfmManagerEndpoint getVnfm(String type) throws NotFoundException;
 }

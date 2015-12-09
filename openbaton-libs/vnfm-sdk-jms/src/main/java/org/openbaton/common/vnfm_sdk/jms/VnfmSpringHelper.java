@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-package org.openbaton.common.vnfm_sdk.jms;
+package org.openbaton.common.vnfm_sdk.amqp;
 
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
+import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
@@ -110,14 +111,23 @@ public class VnfmSpringHelper extends VnfmHelper {
      * @return
      * @throws JMSException
      */
-    public String receiveTextFromQueue(String queueName) throws JMSException, ExecutionException, InterruptedException {
+    public String receiveTextFromQueue(String queueName) throws JMSException, ExecutionException, InterruptedException, VnfmSdkException {
         String res;
 
         Connection connection = connectionFactory.createConnection();
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer consumer = session.createConsumer(session.createQueue(queueName));
         connection.start();
-        res = ((TextMessage)consumer.receive(Long.parseLong(properties.getProperty("ems-timeout","200000")))).getText();
+        String scriptMaxTime = properties.getProperty("script-max-time");
+        if (scriptMaxTime != null) {
+            TextMessage textMessage = (TextMessage) consumer.receive(Long.parseLong(scriptMaxTime));
+            if (textMessage != null)
+                res = textMessage.getText();
+            else
+                throw new VnfmSdkException("No message got from queue " + queueName + " after " + scriptMaxTime);
+        }
+        else
+            res = ((TextMessage)consumer.receive()).getText();
         log.debug("Received Text from " + queueName + ": " + res);
         consumer.close();
         session.close();
@@ -134,5 +144,10 @@ public class VnfmSpringHelper extends VnfmHelper {
     public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
         Message response = this.jmsTemplate.sendAndReceive(nfvoQueue, getObjectMessageCreator(message));
         return (NFVMessage) ((ObjectMessage) response).getObject();
+    }
+
+    @Override
+    public String sendAndReceive(String message, String queueName) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

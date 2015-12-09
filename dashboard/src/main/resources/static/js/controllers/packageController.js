@@ -1,7 +1,7 @@
 var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
-    var url = $cookieStore.get('URL')+"/api/v1/vnf-packages/";
+    var url = $cookieStore.get('URL') + "/api/v1/vnf-packages/";
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
@@ -18,7 +18,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 loadTable();
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response,status);
             });
     };
 
@@ -87,10 +87,33 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 method: "POST",
                 parallelUploads: 20,
                 previewTemplate: previewTemplate,
-                autoQueue: false, // Make sure the files aren't queued until manually added
+                autoProcessQueue: false, // Make sure the files aren't queued until manually added
                 previewsContainer: "#previews", // Define the container to display the previews
-                headers: header
+                headers: header,
+                init: function () {
+                    var submitButton = document.querySelector("#submit-all")
+                    myDropzone = this; // closure
 
+                    submitButton.addEventListener("click", function () {
+                        $scope.$apply(function ($scope) {
+                            myDropzone.processQueue();
+                            loadTable();
+                        });
+                    });
+                    this.on("queuecomplete", function (file, responseText) {
+                        $scope.$apply(function ($scope) {
+                            showOk("Uploaded the VNF Package");
+                            loadTable();
+                        });
+
+                    });
+                    this.on("error", function (file, responseText) {
+                        console.log(responseText);
+                        $scope.$apply(function ($scope) {
+                            showError(responseText.message, "422");
+                        });
+                    });
+                }
             });
 
 
@@ -114,12 +137,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
             });
 
+            myDropzone.options.ui
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
-                showOk("Uploaded the VNF Package");
-                loadTable();
+
             });
+
+
+
 
 
             $(".start").onclick = function () {

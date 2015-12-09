@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.exceptions.NotFoundException;
@@ -36,6 +38,7 @@ public class RestEvent {
     //	TODO add log prints
 //	private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Autowired
     private EventDispatcher eventDispatcher;
@@ -49,7 +52,8 @@ public class RestEvent {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint) {
-        return eventDispatcher.register(endpoint);
+
+        return eventDispatcher.register(gson.toJson(endpoint));
     }
 
     /**

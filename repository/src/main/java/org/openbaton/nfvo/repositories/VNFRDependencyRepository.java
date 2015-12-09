@@ -23,5 +23,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by lto on 06/05/15.
  */
 public interface VNFRDependencyRepository extends CrudRepository<VNFRecordDependency, String> {
-
+    VNFRecordDependency findFirstById(String id);
 }

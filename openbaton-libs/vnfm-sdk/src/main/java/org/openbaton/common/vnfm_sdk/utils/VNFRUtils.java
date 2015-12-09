@@ -19,6 +19,7 @@ import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -76,6 +77,17 @@ public class VNFRUtils {
                 virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
             }
         }
+
+        //Set Faultmanagement policies
+        Set<VNFFaultManagementPolicy> vnfFaultManagementPolicies= new HashSet<>();
+        if(vnfd.getFault_management_policy()!=null){
+            log.debug("Adding the fault management policies: "+vnfd.getFault_management_policy());
+            for(VNFFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()){
+                vnfFaultManagementPolicies.add(vnffmp);
+            }
+        }
+        virtualNetworkFunctionRecord.setFault_management_policy(vnfFaultManagementPolicies);
+        //Set Faultmanagement policies end
 
         Configuration provides = new Configuration();
         provides.setConfigurationParameters(new HashSet<ConfigurationParameter>());
@@ -200,7 +212,7 @@ public class VNFRUtils {
         for (LifecycleEvent lifecycleEvent : vnfd.getLifecycle_event()) {
             LifecycleEvent lifecycleEvent_new = new LifecycleEvent();
             lifecycleEvent_new.setEvent(lifecycleEvent.getEvent());
-            lifecycleEvent_new.setLifecycle_events(new LinkedList<String>());
+            lifecycleEvent_new.setLifecycle_events(new ArrayList<String>());
             for (String event : lifecycleEvent.getLifecycle_events()) {
                 lifecycleEvent_new.getLifecycle_events().add(event);
             }

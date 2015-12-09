@@ -56,10 +56,10 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
         FileSystemUtils.deleteRecursively(new File("activemq-data"));
         Logger log = LoggerFactory.getLogger(Application.class);
 
+        log.info("Starting OpenBaton...");
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 
         context.registerShutdownHook();
-        log.info("Started OpenBaton");
 
         for (String name : context.getBeanDefinitionNames())
             log.trace(name);
