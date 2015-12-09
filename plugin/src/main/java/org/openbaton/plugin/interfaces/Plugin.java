@@ -41,7 +41,9 @@ public abstract class Plugin extends UnicastRemoteObject {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+        } catch (Exception e){
+
         }
         log.debug("Loaded properties: " + properties);
     }

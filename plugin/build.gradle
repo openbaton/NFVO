@@ -1,3 +1,10 @@
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.12'
+
+    compile project(":catalogue")
+    compile project(":utils")
+
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+
 }

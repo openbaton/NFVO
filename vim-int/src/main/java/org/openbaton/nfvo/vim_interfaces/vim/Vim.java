@@ -16,69 +16,105 @@
 
 package org.openbaton.nfvo.vim_interfaces.vim;
 
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.vim_interfaces.flavor_management.DeploymentFlavorManagement;
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
-import org.openbaton.plugin.utils.PluginBroker;
 import org.openbaton.nfvo.vim_interfaces.image_management.ImageManagement;
 import org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement;
 import org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement;
+import org.openbaton.vim.drivers.VimDriverCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by mpa on 12.06.15.
  */
+@Service
+@Scope("prototype")
+@ConfigurationProperties(prefix = "nfvo.rabbit")
 public abstract class Vim implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected ClientInterfaces client;
+    protected VimDriverCaller client;
 
-    protected PluginBroker<ClientInterfaces> pluginBroker;
-
-    public Vim(String type, int port) {
-        pluginBroker = new PluginBroker<>();
+    public Vim(String type, String brokerIp, int port, String managementPort) throws PluginException {
         try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, port);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+//            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(brokerIp, port, type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(brokerIp, port, type, managementPort);
+        } catch (TimeoutException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (NotFoundException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         }
     }
 
-    public Vim(String type) {
-        pluginBroker = new PluginBroker<>();
+    public Vim() {
+    }
+
+    public Vim(String type, String managementPort) throws PluginException {
         try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+//            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(type, managementPort);
+        } catch (TimeoutException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (NotFoundException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         }
     }
 
-    public Vim(String type, String name) {
-        pluginBroker = new PluginBroker<>();
+    public Vim(String type, String name, String managementPort) throws PluginException {
         try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type,name);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+//            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(name, type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(name, type, managementPort);
+        } catch (TimeoutException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (NotFoundException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         }
     }
 
-    public Vim(String type, String name, int port) {
-        pluginBroker = new PluginBroker<>();
+    public Vim(String type, String username, String password, String brokerIp, String managementPort) throws PluginException {
         try {
-            client = pluginBroker.getPlugin("localhost", "vim-drivers",type, name, port);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-        } catch (NotBoundException e) {
-            log.error("No plugin found for type: " + type);
+//            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(brokerIp,username,password,type);
+            if (managementPort == null){
+                managementPort = "15672";
+            }
+            client = new VimDriverCaller(brokerIp,username,password,type, managementPort);
+        } catch (TimeoutException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+        } catch (NotFoundException e) {
+            throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
         }
+    }
+
+    public VimDriverCaller getClient() {
+        return client;
+    }
+
+    public void setClient(VimDriverCaller client) {
+        this.client = client;
     }
 }

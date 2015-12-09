@@ -43,7 +43,13 @@ public class VnfmSdkException extends Exception {
         vnfr = null;
     }
 
+    public VnfmSdkException(String message, Throwable throwable, VirtualNetworkFunctionRecord vnfr) {
+        super(message,throwable);
+        this.vnfr = vnfr;
+    }
+
     public VnfmSdkException(String message, VirtualNetworkFunctionRecord vnfr) {
+        super(message);
         this.vnfr = vnfr;
     }
 

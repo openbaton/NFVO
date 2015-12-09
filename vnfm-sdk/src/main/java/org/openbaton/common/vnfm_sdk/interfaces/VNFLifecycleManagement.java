@@ -33,7 +33,7 @@ public interface VNFLifecycleManagement {
 	 * @param virtualNetworkFunctionRecord
 	 * @param scripts
 	 */
-	//CoreMessage instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+	//CoreMessage instantiate(VirtualNetworkFunctionRecordShort virtualNetworkFunctionRecord);
 
 	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts) throws Exception;
 	/**
@@ -63,7 +63,7 @@ public interface VNFLifecycleManagement {
 	 * This operation allows verifying if 
 	 * the VNF instantiation is possible.
 	 */
-	void heal();
+	VirtualNetworkFunctionRecord heal(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance component, String cause) throws Exception;
 	
 	/**
 	 * This operation allows applying a minor/limited 
