@@ -17,21 +17,22 @@
 package org.openbaton.vim_impl.vim;
 
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +45,14 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class TestVIM extends Vim {
 
-    public TestVIM(String name, int port) {
-        super("test",name, port);
+    public TestVIM(String name, int port, String managementPort) throws PluginException {
+        super("test",name, port, managementPort);
     }
-    public TestVIM() {
-        super("test");
+    public TestVIM(String managementPort) throws PluginException {
+        super("test", managementPort);
     }
-    public TestVIM(int port) {
-        super("test",port);
+    public TestVIM(int port, String managementPort) throws PluginException {
+        super("test", managementPort);
     }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
@@ -72,7 +73,7 @@ public class TestVIM extends Vim {
     public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException {
         try {
             return client.listFlavors(vimInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -83,7 +84,7 @@ public class TestVIM extends Vim {
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         try {
             return this.client.addImage(vimInstance, image, imageFile);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -108,7 +109,7 @@ public class TestVIM extends Vim {
     public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
         try {
             return client.listImages(vimInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -131,9 +132,9 @@ public class TestVIM extends Vim {
             securityGroups.add("secGroup_id");
 
             Server server = client.launchInstanceAndWait(vimInstance, vdu.getHostname(), vimInstance.getImages().iterator().next().getExtId(), "flavor", "keypair", networks, securityGroups, "#userdate");
-            VNFCInstance component = new VNFCInstance();
-            component.setVc_id(server.getExtId());
-            component.setVim_id(vdu.getVimInstance().getId());
+//            VNFCInstance component = new VNFCInstance();
+//            component.setVc_id(server.getExtId());
+//            component.setVim_id(vdu.getVimInstance().getId());
 
 
             VNFCInstance vnfcInstance = new VNFCInstance();
@@ -155,6 +156,10 @@ public class TestVIM extends Vim {
 
             if (vdu.getVnfc_instance() == null)
                 vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+
+            vnfcInstance.setVnfComponent(vnfComponent);
+            vnfcInstance.setFloatingIps(new HashSet<Ip>());
+            vnfcInstance.setIps(new HashSet<Ip>());
             vdu.getVnfc_instance().add(vnfcInstance);
 
             for (String network : server.getIps().keySet()) {
@@ -165,7 +170,7 @@ public class TestVIM extends Vim {
             String id = server.getId();
             log.debug("launched instance with id " + id);
             return new AsyncResult<>(vnfcInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -176,7 +181,7 @@ public class TestVIM extends Vim {
 
         try {
             return client.listServer(vimInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -247,7 +252,7 @@ public class TestVIM extends Vim {
     public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
         try {
             return this.client.listNetworks(vimInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }
@@ -262,7 +267,7 @@ public class TestVIM extends Vim {
     public Quota getQuota(VimInstance vimInstance) throws VimException {
         try {
             return this.client.getQuota(vimInstance);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new VimException(e);
         }

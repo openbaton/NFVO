@@ -22,6 +22,8 @@ include 'vim-impl'
 include 'vim-int'
 include 'vnfm-sdk'
 include 'vnfm-sdk-jms'
+include 'vnfm-sdk-amqp'
 include 'vnfm-sdk-rest'
 include 'monitoring'
+include 'utils'
 
