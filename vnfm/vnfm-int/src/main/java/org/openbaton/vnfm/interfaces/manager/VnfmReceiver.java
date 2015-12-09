@@ -18,15 +18,15 @@ package org.openbaton.vnfm.interfaces.manager;
 
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
-import org.springframework.jms.support.JmsHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 
-import javax.jms.Destination;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lto on 08/07/15.
  */
 public interface VnfmReceiver {
 
-    public void actionFinished(Object nfvMessage, @Header(name = JmsHeaders.REPLY_TO, required = false) Destination tempDestination) throws NotFoundException, VimException;
+    String actionFinished(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException;
+
+    void actionFinishedVoid(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException;
 }

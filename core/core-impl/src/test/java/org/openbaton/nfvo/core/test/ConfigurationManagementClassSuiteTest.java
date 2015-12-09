@@ -112,8 +112,8 @@ public class ConfigurationManagementClassSuiteTest {
     private void assertEqualsNetwork(Network network_exp, Network network_new) {
         Assert.assertEquals(network_exp.getName(), network_new.getName());
         Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-        Assert.assertEquals(network_exp.isExternal(), network_new.isExternal());
-        Assert.assertEquals(network_exp.isShared(), network_new.isShared());
+        Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+        Assert.assertEquals(network_exp.getShared(), network_new.getShared());
         Assert.assertEquals(network_exp.getSubnets().size(), network_new.getSubnets().size());
     }
 

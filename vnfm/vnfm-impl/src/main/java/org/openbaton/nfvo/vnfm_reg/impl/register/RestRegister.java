@@ -16,8 +16,8 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,16 +38,16 @@ public class RestRegister extends VnfmRegister {
     @Override
     @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
+    public void addManagerEndpoint(@RequestBody @Valid String endpoint) {
         log.debug("Received: " + endpoint);
-        this.register(endpoint);
+        this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
     }
 
     @Override
     @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
+    public void removeManagerEndpoint(@RequestBody @Valid String endpoint) {
         log.debug("Unregistering endpoint: " + endpoint);
-        this.unregister(endpoint);
+        this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
     }
 }

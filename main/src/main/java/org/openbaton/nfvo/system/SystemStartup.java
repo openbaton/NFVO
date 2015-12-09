@@ -23,6 +23,7 @@ import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
@@ -51,15 +52,15 @@ class SystemStartup implements CommandLineRunner {
     @Autowired
     private ConfigurationRepository configurationRepository;
 
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
+    @Value("${nfvo.plugin.active.consumers:}")
+    private String numConsumers;
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
-    }
-
-    private Map<String, Object> properties;
+    @Value("${spring.rabbitmq.username:}")
+    private String username;
+    @Value("${spring.rabbitmq.password:}")
+    private String password;
+    @Value("${nfvo.rabbit.management.port:}")
+    private String  managementPort;
 
     @Override
     public void run(String... args) throws Exception {
@@ -76,8 +77,6 @@ class SystemStartup implements CommandLineRunner {
         c.setName("system");
         c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
-        log.debug("Properties are: " + getProperties());
-
         /**
          * Adding properties from file
          */
@@ -93,7 +92,6 @@ class SystemStartup implements CommandLineRunner {
          */
 
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-
         for (NetworkInterface netint : Collections.list(nets)) {
             ConfigurationParameter cp = new ConfigurationParameter();
             log.trace("Display name: " + netint.getDisplayName());
@@ -111,7 +109,6 @@ class SystemStartup implements CommandLineRunner {
         }
 
 
-        startRegistry(c);
         configurationRepository.save(c);
 
         if (Boolean.parseBoolean(properties.getProperty("install-plugin","true"))) {
@@ -120,7 +117,15 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException {
-        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "1099");
+        if (numConsumers == null || numConsumers.equals(""))
+            numConsumers = "" + 5;
+        if (username == null || username.equals(""))
+            username = "admin";
+        if (password == null || password.equals(""))
+            password = "openbaton";
+        if (managementPort == null || managementPort.equals(""))
+            managementPort = "15672";
+        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort);
     }
 
     private void startRegistry(Configuration configuration) throws RemoteException {

@@ -33,7 +33,7 @@ import java.util.Collection;
 public class VnfmUtils {
 
     public static NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
-        NFVMessage nfvMessage = null;
+        NFVMessage nfvMessage;
         if (Action.INSTANTIATE.ordinal() == action.ordinal())
             nfvMessage = new VnfmOrInstantiateMessage(payload);
         else
@@ -55,13 +55,5 @@ public class VnfmUtils {
                 return lce;
             }
         return null;
-    }
-
-    public static NFVMessage getNfvMessageScaledOut(VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
-        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
-        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
-        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
-        vnfmOrScaledMessage.setAction(Action.SCALE_OUT);
-        return vnfmOrScaledMessage;
     }
 }

@@ -22,18 +22,13 @@ import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.nfvo.core.interfaces.EventSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import java.util.concurrent.Future;
 
 /**
@@ -41,10 +36,10 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope
-public class JmsEventSender implements EventSender {
+public class RabbitEventSender implements EventSender {
 
     @Autowired
-    private JmsTemplate jmsTemplate;
+    private RabbitTemplate rabbitTemplate;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -54,14 +49,7 @@ public class JmsEventSender implements EventSender {
         log.debug("Sending message: " + event + " to endpoint: " + endpoint);
         log.info("Sending message: " + event.getAction() + " to endpoint: " + endpoint.getName());
         final String json = "{action:'" + event.getAction() + "',payload:'" + new Gson().toJson(event.getPayload()) + "'}";
-        MessageCreator messageCreator = new MessageCreator() {
-            @Override
-            public Message createMessage(Session session) throws JMSException {
-                TextMessage objectMessage = session.createTextMessage(json);
-                return objectMessage;
-            }
-        };
-        jmsTemplate.send(endpoint.getEndpoint(), messageCreator);
+        rabbitTemplate.convertAndSend(endpoint.getEndpoint(), json);
 
         return new AsyncResult<>(null);
     }

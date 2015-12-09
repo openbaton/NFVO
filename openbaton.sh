@@ -1,11 +1,11 @@
 #!/bin/bash
 
-source gradle.properties
+source ./gradle.properties
 
 _version=${version}
 
 _openbaton_base="/opt/openbaton/"
-_message_queue_base="apache-activemq-5.11.1"
+_message_queue_base="apache-activemq-5.11.3"
 _openbaton_config_file=/etc/openbaton/openbaton.properties
 
 function start_activemq_linux {
@@ -37,6 +37,31 @@ function check_activemq {
           	echo "activemq is not running, let's try to start it..."
             	start_activemq_osx
         fi
+    fi
+}
+
+function check_rabbitmq {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	ps -aux | grep -v grep | grep rabbitmq > /dev/null
+        if [ $? -ne 0 ]; then
+          	echo "rabbit is not running, let's try to start it..."
+            	start_rabbitmq
+        fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+	ps aux | grep -v grep | grep rabbitmq > /dev/null
+        if [ $? -ne 0 ]; then
+          	echo "rabbitmq is not running, let's try to start it..."
+            	start_rabbitmq
+        fi
+    fi
+}
+
+
+function start_rabbitmq {
+    `rabbitmq-server -detached`
+    if [ $? -ne 0 ]; then
+        echo "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log) "
+        exit 1
     fi
 }
 
@@ -95,7 +120,8 @@ function start {
             compile
     fi
 
-    check_activemq
+#    check_activemq
+    check_rabbitmq
     #check_mysql
     check_already_running
     if [ 0 -eq $? ]
@@ -133,6 +159,43 @@ function tests {
     ./gradlew test
 }
 
+function update {
+    echo "~~~~~~~~~~~~~~~~~~~~OpenBaton UPDATE~~~~~~~~~~~~~~~~~~~~"
+    echo "                                                        "
+    echo "              updating to version 0.15"
+    echo "                                                        "
+    echo "installing new requirements:"
+    echo "*) rabbitmq"
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        sudo apt-get update
+        sudo apt-get install -y rabbitmq-server
+
+        ulimit -S -n 4096
+
+        sudo rabbitmqctl add_user admin openbaton
+        sudo rabbitmqctl set_user_tags admin administrator
+        sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+        sudo rabbitmq-plugins enable rabbitmq_management
+
+        sudo service rabbitmq-server restart
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        brew update
+        brew install rabbitmq
+
+        ulimit -S -n 4096
+
+        rabbitmqctl add_user admin openbaton
+        rabbitmqctl set_user_tags admin administrator
+        rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+        rabbitmq-plugins enable rabbitmq_management
+
+        rabbitmqctl stop
+        rabbitmq-server start -detached
+    fi
+}
+
 function clean {
     ./gradlew clean
 }
@@ -167,6 +230,8 @@ do
             start ;;
         "start" )
             start ;;
+        "update" )
+            update ;;
         "stop" )
             stop ;;
         "restart" )

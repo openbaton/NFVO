@@ -1,0 +1,15 @@
+
+dependencies {
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+
+    compile 'com.rabbitmq:amqp-client:3.5.6'
+    compile 'com.google.code.gson:gson:2.5'
+
+    compile 'org.apache.httpcomponents:httpclient:4.5.1'
+
+    compile project(":exception")
+    compile project(":catalogue")
+}

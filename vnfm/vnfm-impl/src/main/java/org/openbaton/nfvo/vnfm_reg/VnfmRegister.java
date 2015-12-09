@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg;
 
+import com.google.gson.Gson;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.NotFoundException;
@@ -39,6 +40,9 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     @Autowired
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
+    @Autowired
+    protected Gson gson;
+
     @Override
     public Iterable<VnfmManagerEndpoint> listVnfm() {
         return this.vnfmManagerEndpointRepository.findAll();
@@ -55,11 +59,11 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     }
 
     @Override
-    public void addManagerEndpoint(VnfmManagerEndpoint endpoint) {
+    public void addManagerEndpoint(String endpoint) {
         throw new UnsupportedOperationException();
     }
 
-    public void removeManagerEndpoint(@Payload VnfmManagerEndpoint endpoint) {
+    public void removeManagerEndpoint(@Payload String endpoint) {
         throw new UnsupportedOperationException();
     }
 
@@ -78,7 +82,9 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     public void unregister(VnfmManagerEndpoint endpoint) {
         Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmManagerEndpointRepository.findAll();
         for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
-            if (vnfmManagerEndpoint.getEndpoint() != null && vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType() != null && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
+//            if (vnfmManagerEndpoint.getEndpoint() != null && vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType() != null && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
+            if (endpoint.getType().equals(vnfmManagerEndpoint.getType())){
+                log.info("Unregistered vnfm: " + endpoint.getType());
                 this.vnfmManagerEndpointRepository.delete(endpoint);
                 return;
             }

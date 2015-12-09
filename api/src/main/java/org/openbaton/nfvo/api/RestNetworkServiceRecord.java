@@ -19,6 +19,7 @@ package org.openbaton.nfvo.api;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
@@ -172,31 +173,43 @@ public class RestNetworkServiceRecord {
 
     }
 
-    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException {
         log.trace("Received: " + component);
         networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component);
     }
 
-    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException {
         log.trace("Received: " + component);
         networkServiceRecordManagement.addVNFCInstance(id, idVnf, component);
     }
 
-    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
         networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI);
     }
 
-    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
         networkServiceRecordManagement.deleteVNFCInstance(id, idVnf);
     }
+
+    // Rest method for execute actions at different level
+    @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}/actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void postAction(@RequestBody @Valid NFVMessage nfvMessage, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException {
+        log.debug("Received: " + nfvMessage);
+        networkServiceRecordManagement.executeAction(nfvMessage,id,idVnf,idVdu,idVNFCI);
+    }
+
+
+
 
     @RequestMapping(value = "{id}/vnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
