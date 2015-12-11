@@ -11,12 +11,14 @@ public class ThresholdDetails implements Serializable{
     private String triggerOperator;
     private PerceivedSeverity perceivedSeverity;
     private String value;
+    private String hostOperator;
 
-    public ThresholdDetails(String function, String value, String triggerOperator) {
+    public ThresholdDetails(String function, String triggerOperator, PerceivedSeverity perceivedSeverity, String value, String hostOperator) {
         this.function = function;
-        this.value = value;
         this.triggerOperator = triggerOperator;
-        this.perceivedSeverity=PerceivedSeverity.INDETERMINATE;
+        this.perceivedSeverity = perceivedSeverity;
+        this.value = value;
+        this.hostOperator = hostOperator;
     }
 
     public String getFunction() {
@@ -39,6 +41,14 @@ public class ThresholdDetails implements Serializable{
         return value;
     }
 
+    public String getHostOperator() {
+        return hostOperator;
+    }
+
+    public void setHostOperator(String hostOperator) {
+        this.hostOperator = hostOperator;
+    }
+
     public void setValue(String value) {
         this.value = value;
     }
@@ -49,5 +59,16 @@ public class ThresholdDetails implements Serializable{
 
     public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
         this.perceivedSeverity = perceivedSeverity;
+    }
+
+    @Override
+    public String toString() {
+        return "ThresholdDetails{" +
+                "function='" + function + '\'' +
+                ", triggerOperator='" + triggerOperator + '\'' +
+                ", perceivedSeverity=" + perceivedSeverity +
+                ", value='" + value + '\'' +
+                ", hostOperator='" + hostOperator + '\'' +
+                '}';
     }
 }
