@@ -26,6 +26,7 @@ import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -44,10 +45,20 @@ import java.util.List;
 public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroker {
 
     private String port;
+    @Value("${nfvo.vim.drivers.allowInfiniteQuota:}")
+    private String allowInfiniteQuota;
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ConfigurableApplicationContext context;
     private HashMap<String, ClientInterfaces> clientInterfaces;
+
+    public String getAllowInfiniteQuota() {
+        return allowInfiniteQuota;
+    }
+
+    public void setAllowInfiniteQuota(String allowInfiniteQuota) {
+        this.allowInfiniteQuota = allowInfiniteQuota;
+    }
 
     public String getPort() {
         return port;
@@ -60,7 +71,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     @PostConstruct
     private void init() {
         log.debug("MANAGEMENT_PORT is: " + port);
-        if (port == null){
+        if (port == null) {
             port = "15672";
         }
         this.clientInterfaces = new HashMap<>();
@@ -97,7 +108,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", port);
+                return (Vim) context.getBean("openstackVIM", this.port);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", this.port);
             default:
@@ -138,6 +149,29 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         Vim vim = getVim(vimInstance.getType());
 
         Quota maximalQuota = vim.getQuota(vimInstance);
+
+        if (allowInfiniteQuota != null && allowInfiniteQuota.equalsIgnoreCase("true")) {
+            if (maximalQuota.getInstances() == -1) {
+                maximalQuota.setInstances(Integer.MAX_VALUE);
+            }
+            if (maximalQuota.getRam() == -1) {
+                maximalQuota.setRam(Integer.MAX_VALUE);
+            }
+            if (maximalQuota.getCores() == -1) {
+                maximalQuota.setCores(Integer.MAX_VALUE);
+            }
+            if (maximalQuota.getKeyPairs() == -1) {
+                maximalQuota.setKeyPairs(Integer.MAX_VALUE);
+            }
+            if (maximalQuota.getFloatingIps() == -1) {
+                maximalQuota.setFloatingIps(Integer.MAX_VALUE);
+            }
+        } else {
+            if (maximalQuota.getInstances() < 0 || maximalQuota.getRam() < 0 || maximalQuota.getCores() < 0 || maximalQuota.getKeyPairs() < 0 || maximalQuota.getFloatingIps() < 0) {
+                log.error("Infinite quota are not allowed. Please set nfvo.vim.drivers.allowInfiniteQuota to true or change the quota in your VIM installation");
+                throw new VimException("Infinite quota are not allowed. Please set nfvo.vim.drivers.allowInfiniteQuota to true or change the quota in your VIM installation");
+            }
+        }
         Quota leftQuota = maximalQuota;
 
         List<Server> servers = vim.queryResources(vimInstance);
