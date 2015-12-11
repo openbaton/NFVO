@@ -163,7 +163,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
 
-                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "false").equalsIgnoreCase("true")) {
 
                         NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
                         if (message2 instanceof OrVnfmGenericMessage) {
@@ -228,7 +228,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
                     log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
 
-                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "false").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
