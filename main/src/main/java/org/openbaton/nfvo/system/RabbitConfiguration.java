@@ -88,7 +88,7 @@ public class RabbitConfiguration {
 
     @Bean
     Queue queue_vnfmUnregister() {
-        return new Queue(queueName_vnfmUnregister, durable, exclusive, autodelete);
+        return new Queue(queueName_vnfmUnregister, true, exclusive, autodelete);
     }
 
     @Bean
