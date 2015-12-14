@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 
 /**
  * Created by lto on 11/06/15.
@@ -67,6 +68,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
+    private static final Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+
 
     public String getEmsHeartbeat() {
         return emsHeartbeat;
@@ -141,7 +144,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         return added.getVim_id();
     }
 
-    private String getUserData(String endpoint) {
+    private String getUserData(String endpoint) throws VimException {
+        log.debug("Broker ip is: " + brokerIp);
+        log.debug("Monitoring ip is: " + monitoringIp);
         if (username == null || username.equals(""))
             username = "admin";
         if (emsAutodelete == null || emsAutodelete.equals(""))
@@ -152,10 +157,10 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             emsHeartbeat = "60";
         if (emsAutodelete == null || emsAutodelete.equals(""))
             emsAutodelete = "true";
+        brokerIp = brokerIp.trim();
+        if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches())
+            throw new VimException("nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
 
-
-        log.debug("Broker ip is: " + brokerIp);
-        log.debug("Monitoring ip is: " + monitoringIp);
         String result = "#!/bin/bash\n" +
                 "adduser user\n" +
                 "echo -e \"password\\npassword\" | (passwd user)\n" +

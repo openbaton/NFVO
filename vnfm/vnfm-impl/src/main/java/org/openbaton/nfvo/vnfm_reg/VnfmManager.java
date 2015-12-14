@@ -32,7 +32,6 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -61,8 +60,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by lto on 08/07/15.
@@ -71,9 +68,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
-    final static String queueName_eventRegister = "event-register";
-    final static String queueName_eventUnregister = "event-unregister";
-    private final static Lock lock = new ReentrantLock(true);
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     @Qualifier("vnfmRegister")
@@ -92,12 +86,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private NetworkServiceDescriptorRepository nsdRepository;
     @Autowired
     private Gson gson;
-    private double random;
 
     @Override
     public void init() {
-
-        this.random = Math.random();
 
         /**
          * Asynchronous thread executor configuration
@@ -264,9 +255,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Override
     public synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
-//        lock.lock();
-        log.debug("Thread: " + Thread.currentThread().getId() + " started findAndSet. Random number is: " + random);
-
         if (virtualNetworkFunctionRecord == null) {
             return;
         }
@@ -307,7 +295,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         log.debug("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
-//        lock.unlock();
     }
 
     private void publishEvent(Action action, Serializable payload) {
