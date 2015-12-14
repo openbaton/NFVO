@@ -58,6 +58,7 @@ public class PluginStartup {
             return;
         }
         List<String> queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+        int waitTime = 30;
         while (queuesNew.size() != queues.size() + 1) {
             try {
                 Thread.sleep(500);
@@ -66,6 +67,10 @@ public class PluginStartup {
                 return;
             }
             queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+            waitTime--;
+            if (waitTime == 0){
+                log.error("After 15 seconds the plugin is not started.");
+            }
         }
 
         for (String pluginId : queuesNew) {
@@ -102,6 +107,7 @@ public class PluginStartup {
         }
         if (waitForPlugin) {
             List<String> queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+            int waitTime = 30;
             while (queuesNew.size() != queues.size() + 1) {
                 try {
                     Thread.sleep(500);
@@ -110,6 +116,10 @@ public class PluginStartup {
                     return;
                 }
                 queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+                waitTime--;
+                if (waitTime == 0){
+                    log.error("After 15 seconds the plugin is not started.");
+                }
             }
             for (String pluginId : queuesNew) {
                 if (!queues.contains(pluginId)) {

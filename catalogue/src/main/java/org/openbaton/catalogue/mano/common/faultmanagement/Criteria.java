@@ -20,6 +20,8 @@ public class Criteria implements Serializable {
 
     private String name;
     private String parameter_ref;
+    private String function;
+    private VNFCSelector vnfc_selector;
     private String comparison_operator;
     private String threshold;
 
@@ -70,6 +72,24 @@ public class Criteria implements Serializable {
         this.id = id;
     }
 
+
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
+    public VNFCSelector getVnfc_selector() {
+        return vnfc_selector;
+    }
+
+    public void setVnfc_selector(VNFCSelector vnfc_selector) {
+        this.vnfc_selector = vnfc_selector;
+    }
+
     public String getThreshold() {
         return threshold;
     }
@@ -77,14 +97,15 @@ public class Criteria implements Serializable {
     public void setThreshold(String threshold) {
         this.threshold = threshold;
     }
-
     @Override
     public String toString() {
         return "Criteria{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
-                ", parameter_ref=" + parameter_ref +
+                ", parameter_ref='" + parameter_ref + '\'' +
+                ", function='" + function + '\'' +
+                ", vnfc_selector=" + vnfc_selector +
                 ", comparison_operator='" + comparison_operator + '\'' +
                 ", threshold='" + threshold + '\'' +
                 '}';
