@@ -48,9 +48,9 @@ public class RabbitEventSender implements EventSender {
 
         log.debug("Sending message: " + event + " to endpoint: " + endpoint);
         log.info("Sending message: " + event.getAction() + " to endpoint: " + endpoint.getName());
-        final String json = "{action:'" + event.getAction() + "',payload:" + new Gson().toJson(event.getPayload()) + "}";
-        log.trace("Event bodz is: " + json);
-	rabbitTemplate.convertAndSend(endpoint.getEndpoint(), json);
+        final String json = "{\"action\":\"" + event.getAction() + "\",\"payload\":" + new Gson().toJson(event.getPayload()) + "}";
+        log.trace("Event body is: " + json);
+	    rabbitTemplate.convertAndSend(endpoint.getEndpoint(), json);
 
         return new AsyncResult<>(null);
     }
