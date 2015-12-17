@@ -66,7 +66,9 @@ public class PluginCaller {
         consumer = new QueueingConsumer(channel);
         channel.basicConsume(replyQueueName, true, consumer);
     }
-
+    public void close() throws Exception {
+        connection.close();
+    }
     private String getFullPluginId(String pluginId, String brokerIp, String username, String password, int port) throws IOException, NotFoundException {
         List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
         for (String queue: queues){
