@@ -34,6 +34,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.openbaton.plugin.utils.RabbitPluginBroker;
 import org.openbaton.vim.drivers.VimDriverCaller;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
@@ -86,7 +87,10 @@ public class VimTestSuiteClass {
     @Mock
     private VimDriverCaller vimDriverCaller;
 
-    //@InjectMocks
+    @Mock
+    private RabbitPluginBroker rabbitPluginBroker;
+
+//    @InjectMocks
     //@Qualifier("OpenstackVim")
     private OpenstackVIM openstackVIM;
 

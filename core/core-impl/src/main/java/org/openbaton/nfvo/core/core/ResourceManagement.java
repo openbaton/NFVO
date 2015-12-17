@@ -65,6 +65,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private String emsAutodelete;
     @Value("${nfvo.ems.queue.heartbeat:}")
     private String emsHeartbeat;
+    @Value("${nfvo.ems.version:}")
+    private String emsVersion;
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
@@ -157,6 +159,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             emsHeartbeat = "60";
         if (emsAutodelete == null || emsAutodelete.equals(""))
             emsAutodelete = "true";
+        if (emsVersion == null || emsVersion.equals(""))
+            emsAutodelete = "0.15-SNAPSHOT";
         brokerIp = brokerIp.trim();
         if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches()) {
             throw new VimException("nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
@@ -181,7 +185,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
 
         result +=
 //                "apt-get install -y python-pip\n" +
-                "apt-get install -y ems-0.15-SNAPSHOT\n" +
+                "apt-get install -y ems-" + emsVersion + "\n" +
                         "mkdir -p /etc/openbaton/ems\n" +
                         "echo [ems] > /etc/openbaton/ems/conf.ini\n" +
                         "echo orch_ip=" + brokerIp + " >> /etc/openbaton/ems/conf.ini\n" +
