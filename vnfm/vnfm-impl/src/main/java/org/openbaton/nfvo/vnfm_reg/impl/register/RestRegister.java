@@ -24,8 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 /**
  * Created by lto on 27/05/15.
  */
@@ -35,18 +33,24 @@ public class RestRegister extends VnfmRegister {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/vnfm-subscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addManagerEndpoint(@RequestBody @Valid String endpoint) {
+    public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
+        addManagerEndpoint(gson.toJson(endpoint));
+    }
+
+    public void addManagerEndpoint(String endpoint) {
         log.debug("Received: " + endpoint);
         this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
     }
 
-    @Override
-    @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeManagerEndpoint(@RequestBody @Valid String endpoint) {
+    @RequestMapping(value = "/vnfm-unsubscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
+        removeManagerEndpoint(gson.toJson(endpoint));
+    }
+
+    public void removeManagerEndpoint(String endpoint) {
         log.debug("Unregistering endpoint: " + endpoint);
         this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
     }
