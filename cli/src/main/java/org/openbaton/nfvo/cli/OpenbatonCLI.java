@@ -25,9 +25,11 @@ import org.openbaton.plugin.utils.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -53,6 +55,7 @@ public class OpenbatonCLI implements CommandLineRunner {
         put("installPlugin", "install a plugin");
         put("uninstallPlugin", "uninstall a plugin");
         put("listPlugins", "list all registered plugin");
+        put("listBeans", "list all registered Beans");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     private String brokerIp;
@@ -64,6 +67,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     private String port;
     @Value("${nfvo.rabbit.management.port:}")
     private String  managementPort;
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     private static void exit(int status) {
         System.exit(status);
@@ -139,6 +144,9 @@ public class OpenbatonCLI implements CommandLineRunner {
             line = line.trim();
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
                 exit(0);
+            } else if (line.equalsIgnoreCase("listBeans")) {
+                for (String name: context.getBeanDefinitionNames())
+                    System.out.println(name);
             } else if (line.equalsIgnoreCase("cls")) {
                 reader.clearScreen();
             } else if (line.equalsIgnoreCase("help")) {
