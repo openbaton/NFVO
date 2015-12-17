@@ -18,13 +18,12 @@ package org.openbaton.nfvo.repositories;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by dbo on 21/09/15.
  */
-@org.springframework.transaction.annotation.Transactional(readOnly = true)
+@Transactional(readOnly = true)
 public class VimRepositoryImpl implements VimRepositoryCustom {
 
     @Autowired

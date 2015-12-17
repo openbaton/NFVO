@@ -16,8 +16,6 @@
 
 package org.openbaton.nfvo.core.core;
 
-import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -85,7 +83,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
                 sourceList.remove(vnfrSourceName + nsrFather.getId());
                 if (sourceList.size() == 0) {
 
-                    VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findOne(dependencyId);
+                    VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findFirstById(dependencyId);
 
                     log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
 
@@ -93,17 +91,17 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
                     VirtualNetworkFunctionRecord target = null;
                     for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
                         if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
-                            target = vnfrRepository.findOne(vnfr.getId());
+                            target = vnfrRepository.findFirstById(vnfr.getId());
                     log.info("Found target of relation: " + target.getName());
 
-                    for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
-                        if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
-                            LinkedHashSet<String> strings = new LinkedHashSet<>();
-                            strings.addAll(lifecycleEvent.getLifecycle_events());
-                            lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
-                        }
-                    }
-                    log.debug("Sending MODIFY");
+//                    for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
+//                        if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
+//                            LinkedHashSet<String> strings = new LinkedHashSet<>();
+//                            strings.addAll(lifecycleEvent.getLifecycle_events());
+//                            lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
+//                        }
+//                    }
+                    log.debug("Sending MODIFY to " + target.getName());
                     OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(target, Action.MODIFY);
                     orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
                     vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);

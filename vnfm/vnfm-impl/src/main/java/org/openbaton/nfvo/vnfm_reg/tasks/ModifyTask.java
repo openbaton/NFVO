@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.record.Status;
@@ -41,7 +42,7 @@ public class ModifyTask extends AbstractTask {
     private VNFRDependencyRepository vnfrDependencyRepository;
 
     @Override
-    protected void doWork() throws Exception {
+    protected NFVMessage doWork() throws Exception {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
@@ -51,6 +52,7 @@ public class ModifyTask extends AbstractTask {
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+        return null;
     }
 
     @Override

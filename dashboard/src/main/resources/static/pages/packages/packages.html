@@ -35,7 +35,7 @@
                     <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'image'; reverse = !reverse">Image <i class="fa fa-sort"></i></th>
-
+                    <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,7 +48,15 @@
                             <span ng-if="!$last">, </span>
                             </span>
                     </td>
-
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="deletePackage(data)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -116,6 +124,7 @@
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">Close
                 </button>
+                <button type="button" id="submit-all" class="btn btn-primary">Send All</button>
             </div>
         </div>
     </div>

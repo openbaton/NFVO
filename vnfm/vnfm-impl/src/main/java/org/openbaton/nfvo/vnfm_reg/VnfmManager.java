@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg;
 
+import com.google.gson.Gson;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -36,6 +37,7 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,44 +54,42 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import javax.jms.Destination;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
  * Created by lto on 08/07/15.
  */
 @Service
-@Scope("singleton")
+@Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     @Qualifier("vnfmRegister")
     private VnfmRegister vnfmRegister;
-
     private ApplicationEventPublisher publisher;
-
     private ThreadPoolTaskExecutor asyncExecutor;
-
     @Autowired
     private ConfigurableApplicationContext context;
-
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     @Autowired
     private ConfigurationManagement configurationManagement;
-
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
-
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
+    @Autowired
+    private Gson gson;
 
     @Override
     public void init() {
+
         /**
          * Asynchronous thread executor configuration
          */
@@ -212,7 +212,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
-    public void executeAction(NFVMessage nfvMessage, Destination tempDestination) throws VimException, NotFoundException {
+    public String executeAction(NFVMessage nfvMessage, String tempDestination) throws VimException, NotFoundException, ExecutionException, InterruptedException {
 
         String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
         String beanName = actionName + "Task";
@@ -229,7 +229,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             VnfmOrScaledMessage vnfmOrScaled = (VnfmOrScaledMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrScaled.getVirtualNetworkFunctionRecord();
             ((ScaledTask) task).setVnfcInstance(vnfmOrScaled.getVnfcInstance());
-        } else {
+        } else if (nfvMessage.getAction().ordinal() == Action.HEAL.ordinal()) {
+            OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
+            virtualNetworkFunctionRecord = orVnfmHealVNFRequestMessage.getVirtualNetworkFunctionRecord();
+        }else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
@@ -241,13 +244,21 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-        asyncExecutor.submit(task);
+        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
+            return gson.toJson(asyncExecutor.submit(task).get());
+        else {
+            asyncExecutor.submit(task);
+            return null;
+        }
     }
 
-    private synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    @Override
+    public synchronized void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
-        if (virtualNetworkFunctionRecord == null)
+        if (virtualNetworkFunctionRecord == null) {
             return;
+        }
+
 
         log.debug("The nsr id is: " + virtualNetworkFunctionRecord.getParent_ns_id());
 
@@ -274,7 +285,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal()) {
             //Check if all vnfr have been received from the vnfm
-            boolean nsrFilledWithAllVnfr = nsdRepository.findOne(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
+            boolean nsrFilledWithAllVnfr = nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
             if (nsrFilledWithAllVnfr)
                 publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
             else log.debug("Nsr is ACTIVE but not all vnfr have been received");
@@ -282,6 +293,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
             nsrRepository.delete(networkServiceRecord);
         }
+
+        log.debug("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
     }
 
     private void publishEvent(Action action, Serializable payload) {
@@ -307,7 +320,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             throw new NotFoundException(e);
         }
 
-        log.debug("Sending message " + nfvMessage.getAction() + " to endpoint " + endpoint);
+        log.debug("Sending message " + nfvMessage.getAction() + " to " + virtualNetworkFunctionRecordDest.getName());
         vnfmSender.sendCommand(nfvMessage, endpoint);
         return new AsyncResult<Void>(null);
     }
@@ -342,7 +355,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
-        message.setAction(Action.SCALE_IN);
+        message.setAction(Action.SCALE_OUT);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setComponent(component);
         message.setDependency(dependency);
@@ -368,7 +381,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
 
-        message.setAction(Action.SCALE_OUT);
+        message.setAction(Action.SCALE_IN);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setVnfcInstance(vnfcInstance);
         VnfmSender vnfmSender;
@@ -389,7 +402,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
-    public void onApplicationEvent(EventFinishNFVO event) {
+    public synchronized void onApplicationEvent(EventFinishNFVO event) {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = event.getEventNFVO().getVirtualNetworkFunctionRecord();
         publishEvent(event.getEventNFVO().getAction(), virtualNetworkFunctionRecord);
         if ((event.getEventNFVO().getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (event.getEventNFVO().getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {

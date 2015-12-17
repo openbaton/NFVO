@@ -21,15 +21,15 @@ import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
-import org.openbaton.nfvo.repositories.PluginEndpointRepository;
 import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.*;
 
 /**
@@ -47,22 +46,29 @@ import java.util.*;
  */
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublisherAware {
+@ConfigurationProperties(prefix = "nfvo.rabbit")
+public class OpenbatonCLI implements CommandLineRunner {
 
     private final static Map<String, String> helpCommandList = new HashMap<String, String>() {{
         put("help", "Print the usage");
         put("exit", "Exit the application");
         put("installPlugin", "install a plugin");
+        put("uninstallPlugin", "uninstall a plugin");
         put("listPlugins", "list all registered plugin");
-        put("print properties", "print all the properties");
+        put("listBeans", "list all registered Beans");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+    private String brokerIp;
+    @Value("${spring.rabbitmq.username:}")
+    private String username;
+    @Value("${spring.rabbitmq.password:}")
+    private String password;
+    @Value("${nfvo.rabbit.management.port:}")
+    private String port;
+    @Value("${nfvo.rabbit.management.port:}")
+    private String  managementPort;
     @Autowired
-    private PluginEndpointRepository pluginEndpointRepository;
-    private ApplicationEventPublisher publisher;
-
-    @Autowired
-    private ConfigurationRepository configurationRepository;
+    private ConfigurableApplicationContext context;
 
     private static void exit(int status) {
         System.exit(status);
@@ -72,8 +78,10 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
         System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
         System.out.println("Available commands are");
-        for (Object entry : helpCommandList.entrySet()) {
-            System.out.println("\t" + ((Map.Entry) entry).getKey() + ":\t" + ((Map.Entry) entry).getValue());
+
+        for (Map.Entry<String, String> entry : helpCommandList.entrySet()) {
+            String format = "%-80s%s%n";
+            System.out.printf(format, entry.getKey() + ":", entry.getValue());
         }
         System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
     }
@@ -90,6 +98,22 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         } catch (Exception e) {
             openbatonCLI.log.error(e.getMessage());
         }
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getBrokerIp() {
+        return brokerIp;
+    }
+
+    public void setBrokerIp(String brokerIp) {
+        this.brokerIp = brokerIp;
     }
 
     /**
@@ -110,7 +134,7 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
         }
         String line;
         PrintWriter out = new PrintWriter(reader.getOutput());
-        List<Completer> completors = new LinkedList<>();
+        List<Completer> completors = new ArrayList<>();
         completors.add(new StringsCompleter(helpCommandList.keySet()));
         completors.add(new FileNameCompleter());
         reader.addCompleter(new ArgumentCompleter(completors));
@@ -120,32 +144,61 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             line = line.trim();
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
                 exit(0);
+            } else if (line.equalsIgnoreCase("listBeans")) {
+                for (String name: context.getBeanDefinitionNames())
+                    System.out.println(name);
             } else if (line.equalsIgnoreCase("cls")) {
                 reader.clearScreen();
             } else if (line.equalsIgnoreCase("help")) {
                 usage();
             } else if (line.startsWith("installPlugin ")) {
                 installPlugin(line);
-            }else if (line.startsWith("listPlugins")) {
-                System.out.println(listPlugins());
+            } else if (line.startsWith("uninstallPlugin ")) {
+                uninstallPlugin(line);
+            } else if (line.startsWith("listPlugins")) {
+                StringTokenizer stringTokenizer = new StringTokenizer(line);
+                stringTokenizer.nextToken();
+                if (stringTokenizer.hasMoreTokens()) {
+                    System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
+                } else if (port != null && !port.equals("")) {
+                    System.out.println(listPlugins(Integer.parseInt(port)));
+                } else System.out.println(listPlugins(15672));
+
             } else if (line.equalsIgnoreCase("")) {
                 continue;
             } else usage();
         }
     }
 
-    private String listPlugins() {
+    private void uninstallPlugin(String line) {
+        StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
+        stringTokenizer.nextToken(); // uninstallPlugin
+        String pluginId = stringTokenizer.nextToken();
+
+        PluginStartup.uninstallPlugin(pluginId);
+    }
+
+    private String listPlugins(int port) {
         try {
-            return Arrays.asList(LocateRegistry.getRegistry().list()).toString();
+            List<String> plugins = new ArrayList<>();
+            List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
+            for (String queue : queues) {
+                if (queue.startsWith("vim-driver") || queue.startsWith("monitor"))
+                    plugins.add(queue);
+            }
+            return plugins.toString();
         } catch (RemoteException e) {
             return e.getMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return "error retrieving plugin list";
     }
 
     private boolean installPlugin(String line) throws IOException {
         StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
         stringTokenizer.nextToken(); // installPlugin
-        String path = null;
+        String path;
         if (stringTokenizer.hasMoreTokens()) {
             path = stringTokenizer.nextToken();
         } else {
@@ -159,13 +212,30 @@ public class OpenbatonCLI implements CommandLineRunner, ApplicationEventPublishe
             log.error("please provide path and name");
             return false;
         }
-        PluginStartup.installPlugin(name, path, "localhost", "1099");
+        int consumers;
+        if (stringTokenizer.hasMoreTokens()) {
+            consumers = Integer.parseInt(stringTokenizer.nextToken());
+        } else {
+            log.error("please provide number of active consumers");
+            return false;
+        }
+        if (stringTokenizer.hasMoreTokens()) {
+            username = stringTokenizer.nextToken();
+            if (!stringTokenizer.hasMoreTokens()) {
+                log.error("please provide password too");
+                return false;
+            }
+            password = stringTokenizer.nextToken();
+        } else {
+            if (username == null || username.equals(""))
+                username = "admin";
+            if (password == null || password.equals(""))
+                password = "openbaton";
+        }
+        if (managementPort == null || managementPort.equals(""))
+            managementPort = "15672";
+        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers, username, password, managementPort);
         return true;
-    }
-
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.publisher = applicationEventPublisher;
     }
 }
 

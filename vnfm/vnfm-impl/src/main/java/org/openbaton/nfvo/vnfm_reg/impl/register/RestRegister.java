@@ -16,15 +16,13 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 /**
  * Created by lto on 27/05/15.
@@ -35,19 +33,25 @@ public class RestRegister extends VnfmRegister {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/vnfm-subscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
-        log.debug("Received: " + endpoint);
-        this.register(endpoint);
+    public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
+        addManagerEndpoint(gson.toJson(endpoint));
     }
 
-    @Override
-    @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeManagerEndpoint(@RequestBody @Valid VnfmManagerEndpoint endpoint) {
+    public void addManagerEndpoint(String endpoint) {
+        log.debug("Received: " + endpoint);
+        this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+    }
+
+    @RequestMapping(value = "/vnfm-unsubscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
+        removeManagerEndpoint(gson.toJson(endpoint));
+    }
+
+    public void removeManagerEndpoint(String endpoint) {
         log.debug("Unregistering endpoint: " + endpoint);
-        this.unregister(endpoint);
+        this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
     }
 }

@@ -15,19 +15,10 @@
  */
 
 dependencies {
-
-    compile 'org.springframework.boot:spring-boot:' + springBootVersion
-    compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
-    compile 'org.springframework:spring-jms:' + springVersion
-    compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
-    compile 'org.aspectj:aspectjweaver:1.8.6'
-
-    compile 'org.apache.activemq:activemq-pool:5.9.0'
-
-
     compile project(':repository')
     compile project(':catalogue')
     compile project(':plugin')
+    compile project(':core-int')
 
     runtime project(':security')
 
@@ -39,8 +30,21 @@ dependencies {
     runtime project(':repository')
     runtime project(':vnfm-impl')
 
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+    compile 'org.springframework:spring-jms:' + springVersion
+    compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+
+
+    compile 'org.aspectj:aspectjweaver:1.8.6'
+
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'junit:junit:4.12'
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     testCompile 'org.hsqldb:hsqldb:2.3.2'
+
+
+//TODO to be removed
+    compile 'org.apache.activemq:activemq-pool:5.9.0'
 }

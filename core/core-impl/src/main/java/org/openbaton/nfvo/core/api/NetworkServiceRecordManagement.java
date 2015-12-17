@@ -21,6 +21,8 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -35,6 +37,8 @@ import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +54,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties
 public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -89,6 +94,12 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Autowired
     private VduRepository vduRepository;
+
+    @Value("${nfvo.delete.all-status:}")
+    private String deleteInAllStatus;
+
+    @Value("${nfvo.delete.wait:}")
+    private String waitForDelete;
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
@@ -139,16 +150,16 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
         VirtualDeploymentUnit virtualDeploymentUnit = virtualNetworkFunctionRecord.getVdu().iterator().next();
-        if (virtualDeploymentUnit == null){
+        if (virtualDeploymentUnit == null) {
             throw new NotFoundException("No VirtualDeploymentUnit found");
         }
 
-        if (virtualDeploymentUnit.getScale_in_out() == virtualDeploymentUnit.getVnfc_instance().size()){
+        if (virtualDeploymentUnit.getScale_in_out() == virtualDeploymentUnit.getVnfc_instance().size()) {
             throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
         }
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleIN(networkServiceRecord,virtualNetworkFunctionRecord,virtualDeploymentUnit,component);
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
     }
 
     @Override
@@ -158,28 +169,28 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
 
-        if (virtualDeploymentUnit.getScale_in_out() == virtualDeploymentUnit.getVnfc_instance().size()){
+        if (virtualDeploymentUnit.getScale_in_out() == virtualDeploymentUnit.getVnfc_instance().size()) {
             throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
         }
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleIN(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component);
     }
 
-    private void scaleIN(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws BadFormatException, NotFoundException {
+    private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component) throws BadFormatException, NotFoundException {
         List<String> componentNetworks = new ArrayList<>();
 
-        for (VNFDConnectionPoint connectionPoint : component.getConnection_point()){
+        for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
             componentNetworks.add(connectionPoint.getVirtual_link_reference());
         }
 
         List<String> vnfrNetworks = new ArrayList<>();
 
-        for (InternalVirtualLink virtualLink : virtualNetworkFunctionRecord.getVirtual_link()){
+        for (InternalVirtualLink virtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
             vnfrNetworks.add(virtualLink.getName());
         }
 
-        if (!vnfrNetworks.containsAll(componentNetworks)){
+        if (!vnfrNetworks.containsAll(componentNetworks)) {
             throw new BadFormatException("Not all the network exist in the InternalVirtualLinks. They need to be included in these names: " + vnfrNetworks);
         }
 
@@ -202,11 +213,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
         VirtualDeploymentUnit virtualDeploymentUnit = virtualNetworkFunctionRecord.getVdu().iterator().next();
-        if (virtualDeploymentUnit == null){
+        if (virtualDeploymentUnit == null) {
             throw new NotFoundException("No VirtualDeploymentUnit found");
         }
 
-        if (virtualDeploymentUnit.getVnfc_instance().size() == 1){
+        if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
             throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
         }
 
@@ -226,14 +237,14 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
 
-        if (virtualDeploymentUnit.getVnfc_instance().size() == 1){
+        if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
 
             throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
         }
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord,virtualNetworkFunctionRecord,virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
     }
 
     private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI) throws NotFoundException {
@@ -247,7 +258,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws NotFoundException, InterruptedException, ExecutionException, VimException {
         List<VNFRecordDependency> dependencySource = dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
-        if (dependencySource.size() != 0){
+        if (dependencySource.size() != 0) {
             for (VNFRecordDependency dependency : dependencySource) {
                 for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr())
                     if (virtualNetworkFunctionRecord1.getName().equals(dependency.getTarget()))
@@ -273,8 +284,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     private VirtualDeploymentUnit getVirtualDeploymentUnit(String idVdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
         VirtualDeploymentUnit virtualDeploymentUnit = null;
-        for (VirtualDeploymentUnit virtualDeploymentUnit1 : virtualNetworkFunctionRecord.getVdu()){
-            if (virtualDeploymentUnit1.getId().equals(idVdu)){
+        for (VirtualDeploymentUnit virtualDeploymentUnit1 : virtualNetworkFunctionRecord.getVdu()) {
+            if (virtualDeploymentUnit1.getId().equals(idVdu)) {
                 virtualDeploymentUnit = virtualDeploymentUnit1;
             }
         }
@@ -282,11 +293,23 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("No VirtualDeploymentUnit found with id " + idVdu);
         return virtualDeploymentUnit;
     }
+    private VNFCInstance getVNFCInstance(String idVNFCInstance, VirtualDeploymentUnit vdu) throws NotFoundException {
+        VNFCInstance vnfcInstance = null;
+        for (VNFCInstance currentVnfcInstance : vdu.getVnfc_instance()) {
+            if (currentVnfcInstance.getId().equals(idVNFCInstance)) {
+                vnfcInstance = currentVnfcInstance;
+                break;
+            }
+        }
+        if (vnfcInstance == null)
+            throw new NotFoundException("No VnfcInstance found with id " + idVNFCInstance);
+        return vnfcInstance;
+    }
 
     private VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idVnf, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr()){
-            if (virtualNetworkFunctionRecord1.getId().equals(idVnf)){
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr()) {
+            if (virtualNetworkFunctionRecord1.getId().equals(idVnf)) {
                 virtualNetworkFunctionRecord = virtualNetworkFunctionRecord1;
                 break;
             }
@@ -301,7 +324,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         if (networkServiceRecord == null)
             throw new NotFoundException("No NetworkServiceRecord found with id " + id);
 
-        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal()){
+        if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal()) {
             throw new WrongStatusException("NetworkServiceDescriptor must be in ACTIVE state");
         }
 
@@ -309,12 +332,15 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     private NetworkServiceRecord deployNSR(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, VimException, InterruptedException, ExecutionException, VimDriverException, QuotaExceededException {
-        log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
-        if (!log.isTraceEnabled())
-            log.debug("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
+        log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
+        log.debug("VNFD are: ");
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd())
+            log.debug("\t" + virtualNetworkFunctionDescriptor.getName());
+
+        log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord;
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-        log.debug("Creating " + networkServiceRecord);
+        log.trace("Creating " + networkServiceRecord);
 
         /*
          * Getting the vim based on the VDU datacenter type
@@ -363,20 +389,20 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
          */
         //TODO check where to put this
         if (networkServiceRecord.getVnfr() != null)
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()){
-            for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()){
-                log.debug("Checking parameter: " + configurationParameter.getConfKey());
-                if (configurationParameter.getConfKey().startsWith("nfvo:")){ //the parameters known from the nfvo
-                    String[] params = configurationParameter.getConfKey().split("\\:");
-                    for (ConfigurationParameter configurationParameterSystem : configurationManagement.queryByName("system").getConfigurationParameters()){
-                        if (configurationParameterSystem.getConfKey().equals(params[1])){
-                            log.debug("Found parameter: " + configurationParameterSystem);
-                            configurationParameter.setValue(configurationParameterSystem.getValue());
+            for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+                for (ConfigurationParameter configurationParameter : virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()) {
+                    log.debug("Checking parameter: " + configurationParameter.getConfKey());
+                    if (configurationParameter.getConfKey().startsWith("nfvo:")) { //the parameters known from the nfvo
+                        String[] params = configurationParameter.getConfKey().split("\\:");
+                        for (ConfigurationParameter configurationParameterSystem : configurationManagement.queryByName("system").getConfigurationParameters()) {
+                            if (configurationParameterSystem.getConfKey().equals(params[1])) {
+                                log.debug("Found parameter: " + configurationParameterSystem);
+                                configurationParameter.setValue(configurationParameterSystem.getValue());
+                            }
                         }
                     }
                 }
             }
-        }
 
         vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord);
 
@@ -396,6 +422,27 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
+    public void executeAction(NFVMessage nfvMessage,String nsrId, String idVnf, String idVdu, String idVNFCI) throws NotFoundException {
+
+        NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(nsrId);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+
+        VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+        VNFCInstance vnfcInstance = getVNFCInstance(idVNFCI,virtualDeploymentUnit);
+        switch (nfvMessage.getAction()) {
+            case HEAL:
+                // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
+                // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
+                OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
+                log.debug("Received Heal message: "+orVnfmHealVNFRequestMessage);
+                orVnfmHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                orVnfmHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
+                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord,orVnfmHealVNFRequestMessage);
+                break;
+        }
+    }
+
+    @Override
     public NetworkServiceRecord query(String id) {
         return nsrRepository.findFirstById(id);
     }
@@ -403,26 +450,14 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
-        if (networkServiceRecord == null){
+        if (networkServiceRecord == null) {
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
-        Configuration configuration = configurationManagement.queryByName("system");
 
-        boolean checkStatus = true;
 
-        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters()) {
-            if (configurationParameter.getConfKey().equals("delete-on-all-status")) {
-                if (configurationParameter.getValue().equalsIgnoreCase("true")) {
-                    checkStatus = false;
-                    break;
-                }
-            }
-        }
-
-        if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
-            throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
-
-        if (checkStatus) {
+        if (deleteInAllStatus != null && !deleteInAllStatus.equals("")&& !Boolean.parseBoolean(deleteInAllStatus)) {
+            if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
+                throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
@@ -433,7 +468,6 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             Set<Event> events = new HashSet<Event>();
             for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
                 events.add(lifecycleEvent.getEvent());
-                log.debug("found " + lifecycleEvent.getEvent());
             }
             if (!events.contains(Event.RELEASE)) {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
@@ -448,10 +482,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             }
         }
 
-        for (Future<Void> result : futures) {
-            result.get();
-            log.debug("Deleted VDU");
-        }
+        if (waitForDelete != null && !waitForDelete.equals("")&& Boolean.parseBoolean(waitForDelete))
+            for (Future<Void> result : futures) {
+                result.get();
+                log.debug("Deleted VDU");
+            }
 
         if (!release) {
             ApplicationEventNFVO event = new ApplicationEventNFVO(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);

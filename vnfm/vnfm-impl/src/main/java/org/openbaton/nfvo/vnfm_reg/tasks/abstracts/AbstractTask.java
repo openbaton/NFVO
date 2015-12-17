@@ -16,19 +16,22 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
-import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.util.EventFinishEvent;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
+import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
+import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +44,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.jms.Destination;
+import java.util.concurrent.Callable;
 
 /**
  * Created by lto on 06/08/15.
@@ -52,17 +55,19 @@ import javax.jms.Destination;
  */
 @Service
 @Scope("prototype")
-public abstract class AbstractTask implements Runnable, ApplicationEventPublisherAware {
+public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
     protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
     protected Action action;
     @Autowired
     @Qualifier("vnfmRegister")
     protected VnfmRegister vnfmRegister;
-    protected Destination tempDestination;
+    protected String tempDestination;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     protected VNFRecordDependency dependency;
     @Autowired
     protected VNFRRepository vnfrRepository;
+    @Autowired
+    protected VnfmManager vnfmManager;
     @Autowired
     protected NetworkServiceRecordRepository networkServiceRecordRepository;
     @Autowired
@@ -71,10 +76,14 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
 
     protected void saveVirtualNetworkFunctionRecord() {
         log.trace("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-        if (virtualNetworkFunctionRecord.getId() == null)
+        if (virtualNetworkFunctionRecord.getId() == null) {
+
             virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        else
+        }
+        else {
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        }
+
     }
 
     public Action getAction() {
@@ -94,10 +103,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
     }
 
     @Override
-    public void run() {
+    public NFVMessage call() {
         changeStatus();
+        NFVMessage result = null;
         try {
-            this.doWork();
+            result = this.doWork();
         } catch (Exception e) {
             VnfmSender vnfmSender;
             try {
@@ -117,10 +127,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                     throw new RuntimeException(e1);
                 }
             }
-            if (!log.isTraceEnabled())
+            if (log.isDebugEnabled()) {
+                log.error("There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask() + ". ", e);
+            } else {
                 log.error("There was an uncaught exception. Message is: " + e.getMessage());
-            else
-                log.error("There was an uncaught exception. ", e);
+            }
 
             EventFinishEvent eventFinishEvent = new EventFinishEvent();
             eventFinishEvent.setAction(Action.ERROR);
@@ -129,20 +140,25 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
             EventFinishNFVO event = new EventFinishNFVO(this);
             event.setEventNFVO(eventFinishEvent);
             this.publisher.publishEvent(event);
-            return;
         }
         /**
          * Send event finish
          */
-        EventFinishEvent eventFinishEvent = new EventFinishEvent();
-        eventFinishEvent.setAction(action);
-        eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-        EventFinishNFVO event = new EventFinishNFVO(this);
-        event.setEventNFVO(eventFinishEvent);
-        this.publisher.publishEvent(event);
+        if (result == null) {
+            if ((action.ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (action.ordinal() != Action.GRANT_OPERATION.ordinal())) {
+                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+            }
+            ApplicationEventNFVO eventPublic = new ApplicationEventNFVO(action, virtualNetworkFunctionRecord);
+            EventNFVO eventNFVO = new EventNFVO(this);
+            eventNFVO.setEventNFVO(eventPublic);
+            log.debug("Publishing event: " + eventPublic);
+            publisher.publishEvent(eventNFVO);
+            return null;
+        }else
+            return result;
     }
 
-    protected abstract void doWork() throws Exception;
+    protected abstract NFVMessage doWork() throws Exception;
 
     public boolean isAsync() {
         return true;
@@ -158,11 +174,11 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
         return (VnfmSender) this.context.getBean(senderName);
     }
 
-    protected Destination getTempDestination() {
+    protected String getTempDestination() {
         return tempDestination;
     }
 
-    public void setTempDestination(Destination tempDestination) {
+    public void setTempDestination(String  tempDestination) {
         this.tempDestination = tempDestination;
     }
 
@@ -186,6 +202,9 @@ public abstract class AbstractTask implements Runnable, ApplicationEventPublishe
                 break;
             case RELEASE_RESOURCES:
                 status = Status.TERMINATED;
+                break;
+            case HEAL:
+                status = Status.ACTIVE;
                 break;
             case GRANT_OPERATION:
                 status = Status.NULL;

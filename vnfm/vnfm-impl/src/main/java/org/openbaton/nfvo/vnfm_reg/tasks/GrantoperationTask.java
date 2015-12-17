@@ -16,22 +16,23 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
-import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 /**
  * Created by lto on 06/08/15.
@@ -48,25 +49,27 @@ public class GrantoperationTask extends AbstractTask {
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
     @Override
-    protected void doWork() throws Exception {
+    protected NFVMessage doWork() throws Exception {
 
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
-            lifecycleEvent.setLifecycle_events(new LinkedList<String>());
+            lifecycleEvent.setLifecycle_events(new ArrayList<String>());
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
             log.debug("SENDING GRANT LIFECYCLE OPERATION on temp queue:" + getTempDestination());
             saveVirtualNetworkFunctionRecord();
             log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
-            vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION), getTempDestination());
+            OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
+            return nfvMessage;
         } else {
             // there are not enough resources for deploying VNFR
             saveVirtualNetworkFunctionRecord();
-            vnfmSender.sendCommand(new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName()), getTempDestination());
+            OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
+            return nfvMessage;
         }
     }
 
