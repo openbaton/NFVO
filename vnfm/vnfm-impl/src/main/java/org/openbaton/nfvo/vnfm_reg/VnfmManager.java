@@ -285,7 +285,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal()) {
             //Check if all vnfr have been received from the vnfm
-            boolean nsrFilledWithAllVnfr = nsdRepository.findOne(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
+            boolean nsrFilledWithAllVnfr = nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() == networkServiceRecord.getVnfr().size();
             if (nsrFilledWithAllVnfr)
                 publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
             else log.debug("Nsr is ACTIVE but not all vnfr have been received");
