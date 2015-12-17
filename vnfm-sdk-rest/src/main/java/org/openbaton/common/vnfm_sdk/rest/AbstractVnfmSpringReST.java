@@ -21,7 +21,6 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
-import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,8 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     @Override
     protected void setup() {
-        this.vnfmRestHelper = (VnfmRestHelper) vnfmHelper;
+        this.vnfmRestHelper = (VnfmRestHelper) context.getBean("vnfmRestHelper");
+        this.vnfmHelper = vnfmRestHelper;
         super.setup();
     }
 
@@ -70,9 +70,9 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         JsonElement action = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage, JsonObject.class).get("action");
         log.debug("json Action is: " + action.getAsString());
         if (action.getAsString().equals("INSTANTIATE"))
-            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage,OrVnfmInstantiateMessage.class);
+            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage, OrVnfmInstantiateMessage.class);
         else
-            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage,OrVnfmGenericMessage.class);
+            message = vnfmRestHelper.getMapper().fromJson(jsonNfvMessage, OrVnfmGenericMessage.class);
         try {
             this.onAction(message);
         } catch (NotFoundException e) {
@@ -84,8 +84,4 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         }
     }
 
-    @Override
-    protected void setVnfmHelper() {
-        this.vnfmHelper = (VnfmHelper) context.getBean("vnfmRestHelper");
-    }
 }

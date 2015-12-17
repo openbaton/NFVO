@@ -90,6 +90,11 @@ public class VnfmRestHelper extends VnfmHelper {
         return mapper.fromJson(this.post(path, mapper.toJson(message)), OrVnfmGenericMessage.class);
     }
 
+    @Override
+    public String sendAndReceive(String message, String queueName) throws Exception {
+        return this.post("",message);
+    }
+
     private String get(String path) {
         HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
@@ -119,11 +124,11 @@ public class VnfmRestHelper extends VnfmHelper {
     }
 
     public void register(VnfmManagerEndpoint body) {
-        this.post("admin/v1/vnfm-register", mapper.toJson(body));
+        this.post("admin/v1/vnfm-subscribe", mapper.toJson(body));
     }
 
     public void unregister(VnfmManagerEndpoint body) {
-        this.post("admin/v1/vnfm-unregister", mapper.toJson(body));
+        this.post("admin/v1/vnfm-unsubscribe", mapper.toJson(body));
     }
 
     public HttpStatus getStatus() {
