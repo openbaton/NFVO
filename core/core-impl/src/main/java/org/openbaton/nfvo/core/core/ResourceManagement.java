@@ -158,16 +158,17 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         if (emsAutodelete == null || emsAutodelete.equals(""))
             emsAutodelete = "true";
         brokerIp = brokerIp.trim();
-        if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches())
+        if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches()) {
             throw new VimException("nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
+        }
 
         String result = "#!/bin/bash\n" +
                 "adduser user\n" +
                 "echo -e \"password\\npassword\" | (passwd user)\n" +
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
+                "apt-get update\n" +
                 "apt-get install git -y\n" +
-                "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
-                "apt-get update\n";
+                "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n";
 
         if (monitoringIp != null && !monitoringIp.equals("")) {
             result += " echo \"Installing zabbix-agent for server at _address\"\n" +
