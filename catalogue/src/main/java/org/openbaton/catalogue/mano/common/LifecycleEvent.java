@@ -79,7 +79,7 @@ public class LifecycleEvent implements Serializable{
 				"id='" + id + '\'' +
 				", version=" + version +
 				", event=" + event +
-				", lifecycle_events=" + lifecycle_events +
+//				", lifecycle_events=" + lifecycle_events +
 				'}';
 	}
 
