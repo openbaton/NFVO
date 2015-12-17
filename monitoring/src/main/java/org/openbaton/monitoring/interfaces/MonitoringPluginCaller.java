@@ -57,6 +57,10 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
     private PluginCaller pluginCaller;
 
+    public void stop() throws Exception {
+        pluginCaller.close();
+    }
+
     public static void main(String[] args) throws IOException, TimeoutException, NotFoundException, ExecutionException, InterruptedException {
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
