@@ -18,6 +18,8 @@ package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,27 +42,29 @@ public class StartTask extends AbstractTask {
     }
 
     @Override
-    public void doWork() throws Exception {
+    public NFVMessage doWork() throws Exception {
         log.debug("----> STARTED VNFR: " + virtualNetworkFunctionRecord.getName());
+        VirtualNetworkFunctionRecord existing = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
         log.debug("vnfr arrived version= " + virtualNetworkFunctionRecord.getHb_version());
+        log.debug("vnfr existing version= " + existing.getHb_version());
 
 //        VirtualNetworkFunctionRecord existingvnfr = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
 //        log.debug("vnfr existing version= " + existingvnfr.getHb_version());
 
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
             for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
-
-                vnfcInstanceRepository.save(vnfcInstance);
-                log.debug("VNFCI " + vnfcInstance);
+//                vnfcInstanceRepository.save(vnfcInstance);
+                log.debug("VNFCI arrived version: " + vnfcInstance.getVersion());
             }
         }
 
-//        for (VirtualDeploymentUnit virtualDeploymentUnit : existingvnfr.getVdu()){
-//            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
-//                log.debug("VNFCI EXISTING " + vnfcInstance);
-//            }
-//        }
+        for (VirtualDeploymentUnit virtualDeploymentUnit : existing.getVdu()){
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
+                log.debug("VNFCI existing version: " + vnfcInstance.getVersion());
+            }
+        }
 
         saveVirtualNetworkFunctionRecord();
+        return null;
     }
 }

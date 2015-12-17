@@ -15,7 +15,8 @@
     {
       "connection_point":[
         {
-          "virtual_link_reference":"private"
+          "virtual_link_reference":"private",
+          "floatingIp":"random"
         }
       ]
     }

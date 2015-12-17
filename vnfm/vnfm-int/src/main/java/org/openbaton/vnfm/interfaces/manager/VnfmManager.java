@@ -16,21 +16,20 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 
-import javax.jms.Destination;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -43,7 +42,7 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
-    void executeAction(NFVMessage message, Destination tempDestination) throws VimException, NotFoundException;
+    String executeAction(NFVMessage message, String tempDestination) throws VimException, NotFoundException, ExecutionException, InterruptedException;
 
     @Async
     Future<Void> sendMessageToVNFR(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;
@@ -54,4 +53,6 @@ public interface VnfmManager {
     Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent component, VNFRecordDependency dependency) throws NotFoundException;
 
     Future<Void> removeVnfcDependency(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) throws NotFoundException;
+
+    void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

@@ -67,8 +67,11 @@ public class NSDUtils {
         Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             if (vnfd.getId() != null) {
-                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findOne(vnfd.getId());
-                log.debug("VNFD fetched: " + vnfd_new);
+                log.debug("VNFD to fetch is: " + vnfd.getId());
+                VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
+                log.trace("VNFD fetched: " + vnfd_new);
+                if (!log.isTraceEnabled())
+                    log.debug("Fetched VNFD: " + vnfd_new.getName());
                 if (vnfd_new == null) {
                     throw new NotFoundException("Not found VNFD with id: " + vnfd.getId() + ". Please do not specify an id if you want to create one VirtualNetworkFunctionDescriptor. Or pick one existing");
                 }
@@ -137,26 +140,18 @@ public class NSDUtils {
                 throw new BadFormatException("Source name and Target name must be defined in the request json file");
             }
 
-            boolean sourceFound = false;
-            boolean targetFound = false;
-            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
-                sourceFound = false;
-                targetFound = false;
-                if (virtualNetworkFunctionDescriptor.getName().equals(source.getName())) {
-                    vnfDependency.setSource(virtualNetworkFunctionDescriptor);
-                    sourceFound = true;
-                    log.trace("Found source " + virtualNetworkFunctionDescriptor.getName());
-                } else if (virtualNetworkFunctionDescriptor.getName().equals(target.getName())) {
-                    vnfDependency.setTarget(virtualNetworkFunctionDescriptor);
-                    targetFound = true;
-                    log.trace("Found target " + virtualNetworkFunctionDescriptor.getName());
-                }
-            }
+            VirtualNetworkFunctionDescriptor vnfSource = getVnfdFromNSD(source.getName(), networkServiceDescriptor);
+            if (vnfSource == null)
+                throw new NotFoundException("VNFD source name" + source.getName() + " was not found in the NetworkServiceDescriptor");
+            else
+                vnfDependency.setSource(vnfSource);
 
-            if (!(sourceFound || targetFound)) {
-                String name = sourceFound ? target.getName() : source.getName();
-                throw new NotFoundException(name + " was not found in the NetworkServiceDescriptor");
-            }
+            VirtualNetworkFunctionDescriptor vnfTarget = getVnfdFromNSD(target.getName(), networkServiceDescriptor);
+            if (vnfTarget == null)
+                throw new NotFoundException("VNFD target name" + source.getName() + " was not found in the NetworkServiceDescriptor");
+            else
+                vnfDependency.setTarget(vnfTarget);
+
             // Add an edge to the graph
             g.addEdge(source.getName(), target.getName());
         }
@@ -172,6 +167,15 @@ public class NSDUtils {
                     break;
                 }
         }
+    }
+
+    private VirtualNetworkFunctionDescriptor getVnfdFromNSD(String name, NetworkServiceDescriptor networkServiceDescriptor) {
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+            if (virtualNetworkFunctionDescriptor.getName().equals(name))
+                return virtualNetworkFunctionDescriptor;
+        }
+
+        return null;
     }
 
     /**
@@ -206,7 +210,9 @@ public class NSDUtils {
             }
         }
 
-        log.debug("New dependencies are: " + newDependencies);
+        log.debug("New Dependencies are: ");
+        for (VNFDependency dependency : newDependencies)
+            log.debug("" + dependency);
         networkServiceDescriptor.setVnf_dependency(newDependencies);
     }
 

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Fraunhofer FOKUS
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.vim.drivers.interfaces;
 
 import org.slf4j.Logger;
@@ -30,15 +45,18 @@ public abstract class VimDriver extends UnicastRemoteObject implements ClientInt
 
         log.debug("Loading properties");
         try {
-            properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
-            if (properties.getProperty("external-properties-file") != null) {
-                File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
-                if (externalPropertiesFile.exists()) {
-                    log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
-                    InputStream is = new FileInputStream(externalPropertiesFile);
-                    properties.load(is);
-                } else {
-                    log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
+            InputStream resourceAsStream = this.getClass().getResourceAsStream("/plugin.conf.properties");
+            if (resourceAsStream != null) {
+                properties.load(resourceAsStream);
+                if (properties.getProperty("external-properties-file") != null) {
+                    File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
+                    if (externalPropertiesFile.exists()) {
+                        log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
+                        InputStream is = new FileInputStream(externalPropertiesFile);
+                        properties.load(is);
+                    } else {
+                        log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
+                    }
                 }
             }
         } catch (IOException e) {

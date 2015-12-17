@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.jms.Destination;
 
 /**
  * Created by lto on 03/06/15.
@@ -92,15 +91,19 @@ public class RestVnfmSender implements VnfmSender {
     }
 
     @Override
-    public void sendCommand(NFVMessage nfvMessage, Destination tempDestination) {
+    public void sendCommand(NFVMessage nfvMessage, String tempDestination) {
         String json = mapper.toJson(nfvMessage);
-        log.debug("Sending message: " + json + " to url " + tempDestination);
+        if (log.isTraceEnabled())
+            log.trace("Sending message: " + json + " to url " + tempDestination);
+        else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
         throw new UnsupportedOperationException("not implemented");
     }
 
     public void sendToVnfm(NFVMessage nfvMessage, String url) {
         String json = mapper.toJson(nfvMessage);
-        log.debug("Sending message: " + json + " to url " + url);
+        if (log.isTraceEnabled())
+            log.trace("Sending message: " + json + " to url " + url);
+        else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
         this.post(json, url);
     }
 }

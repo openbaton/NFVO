@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.catalogue.mano.record.Status;
 import org.springframework.context.annotation.Scope;
@@ -34,11 +35,17 @@ public class ErrorTask extends AbstractTask {
     }
 
     @Override
-    public void doWork() throws Exception {
-        log.debug("Existing HBVerison: " + vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId()).getHb_version());
+    public NFVMessage doWork() throws Exception {
+        try {
+            log.debug("Existing HBVerison: " + vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId()).getHb_version());
+        }catch (Exception e) {
+            if (log.isDebugEnabled())
+                log.error(e.getMessage(),e);
+        }
         log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
         log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
         virtualNetworkFunctionRecord.setStatus(Status.ERROR);
         saveVirtualNetworkFunctionRecord();
+        return null;
     }
 }

@@ -30,7 +30,7 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
  * An external application can register to a specific event sending an EndpointEvent through JMS or Rest.
  */
 public interface EventDispatcher {
-    EventEndpoint register(EventEndpoint endpoint);
+    EventEndpoint register(String endpoint_json);
 
     void dispatchEvent(EventNFVO event);
 

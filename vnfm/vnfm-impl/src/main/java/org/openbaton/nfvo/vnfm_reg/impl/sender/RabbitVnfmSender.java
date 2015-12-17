@@ -16,40 +16,46 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
+import com.google.gson.Gson;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.nfvo.common.utils.jms.JmsSender;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import javax.jms.Destination;
 
 /**
  * Created by lto on 03/06/15.
  */
 @Service
 @Scope
-public class JmsVnfmSender implements VnfmSender {
+public class RabbitVnfmSender implements VnfmSender {
 
     @Autowired
-    private JmsSender jmsSender;
+    private Gson gson;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
-        String destinationName = "core-" + endpoint.getType() + "-actions";
-        log.trace("Sending NFVMessage with action: " + nfvMessage.getAction() + " to endpoint: " + endpoint);
-        jmsSender.send(destinationName, nfvMessage);
+        String destinationName = "nfvo." + endpoint.getType() + ".actions";
+        log.debug("Sending NFVMessage with action: " + nfvMessage.getAction() + " to endpoint: " + endpoint);
+        String json = gson.toJson(nfvMessage);
+        rabbitTemplate.convertAndSend(destinationName, json);
     }
 
     @Override
-    public void sendCommand(final NFVMessage nfvMessage, Destination tempDestination) {
+    public void sendCommand(final NFVMessage nfvMessage, String tempDestination) {
         log.trace("Sending NFVMessage with action: " + nfvMessage.getAction() + " to tempQueue: " + tempDestination);
-        jmsSender.send(tempDestination, nfvMessage);
+
+        rabbitTemplate.setReplyQueue(new Queue(tempDestination));
+        rabbitTemplate.convertAndSend(tempDestination, gson.toJson(nfvMessage));
     }
 }

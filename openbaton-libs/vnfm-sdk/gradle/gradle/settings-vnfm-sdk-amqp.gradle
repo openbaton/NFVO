@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-dependencies {
-    runtime project(':vnfm-impl')
-}
+include 'catalogue'
+include 'vnfm-sdk'
+include 'vnfm-sdk-amqp'
+
+//project(':catalogue').projectDir = file('../../catalogue')
+//project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')
+//project(':vnfm-sdk-jms').projectDir = file('../../vnfm-sdk-jms')
