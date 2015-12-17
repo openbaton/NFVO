@@ -46,7 +46,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     @Override
     protected void setup() {
-        this.vnfmRestHelper = (VnfmRestHelper) vnfmHelper;
+        this.vnfmRestHelper = (VnfmRestHelper) context.getBean("vnfmRestHelper");
         super.setup();
     }
 
