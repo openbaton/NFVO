@@ -166,9 +166,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "adduser user\n" +
                 "echo -e \"password\\npassword\" | (passwd user)\n" +
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
+                "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
-                "apt-get install git -y\n" +
-                "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n";
+                "apt-get install git -y\n";
 
         if (monitoringIp != null && !monitoringIp.equals("")) {
             result += " echo \"Installing zabbix-agent for server at _address\"\n" +
