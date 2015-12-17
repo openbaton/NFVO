@@ -27,7 +27,7 @@ import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -43,17 +43,29 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class OpenstackVIM extends Vim {
 
+    public OpenstackVIM(String name, int port, String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", name, port, managementPort, context);
+    }
+
+    public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", managementPort, context);
+    }
+
+    public OpenstackVIM(int port, String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", managementPort, context);
+    }
+
 
     public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-        super("openstack", name, port, managementPort);
+        super("openstack", name, port, managementPort, null);
     }
 
     public OpenstackVIM(String managementPort) throws PluginException {
-        super("openstack", managementPort);
+        super("openstack", managementPort, null);
     }
 
     public OpenstackVIM(int port, String managementPort) throws PluginException {
-        super("openstack", managementPort);
+        super("openstack", managementPort, null);
     }
 
     @Override
