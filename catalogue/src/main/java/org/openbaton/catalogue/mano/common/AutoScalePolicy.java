@@ -15,45 +15,71 @@
 
 package org.openbaton.catalogue.mano.common;
 
+import org.openbaton.catalogue.mano.common.monitoring.Alarm;
+import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * Created by lto on 06/02/15.
- *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * Created by mpa on 15/12/15.
  */
 @Entity
-public class AutoScalePolicy implements Serializable{
+public class AutoScalePolicy implements Serializable {
 	@Id
 	private String id;
 	@Version
 	private int version = 0;
 
-	private String action;
-	private String metric;
-	private String statistic;
-	private String comparisonOperator;
+	private String name;
+
+	private String threshold;
+
 	private int period;
-	private int threshold;
+
 	private int cooldown;
 
+	@Enumerated(EnumType.STRING)
+	private ScalingMode mode;
+
+	@Enumerated(EnumType.STRING)
+	private ScalingType type;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<ScalingAlarm> alarms;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<ScalingAction> actions;
+
 	@PrePersist
-	public void ensureId(){
-		id=IdGenerator.createUUID();
+	public void ensureId() {
+		id = IdGenerator.createUUID();
 	}
 
-	public String getMetric() {
-		return metric;
+	public String getId() {
+		return id;
 	}
 
-	public void setMetric(String metric) {
-		this.metric = metric;
+	public int getVersion() {
+		return version;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(String threshold) {
+		this.threshold = threshold;
 	}
 
 	public int getPeriod() {
@@ -64,14 +90,6 @@ public class AutoScalePolicy implements Serializable{
 		this.period = period;
 	}
 
-	public int getThreshold() {
-		return threshold;
-	}
-
-	public void setThreshold(int threshold) {
-		this.threshold = threshold;
-	}
-
 	public int getCooldown() {
 		return cooldown;
 	}
@@ -80,36 +98,51 @@ public class AutoScalePolicy implements Serializable{
 		this.cooldown = cooldown;
 	}
 
-	public String getStatistic() {
-		return statistic;
+	public ScalingMode getMode() {
+		return mode;
 	}
 
-	public void setStatistic(String statistic) {
-		this.statistic = statistic;
+	public void setMode(ScalingMode mode) {
+		this.mode = mode;
 	}
 
-	public String getComparisonOperator() {
-		return comparisonOperator;
+	public ScalingType getType() {
+		return type;
 	}
 
-	public void setComparisonOperator(String comparisonOperator) {
-		this.comparisonOperator = comparisonOperator;
+	public void setType(ScalingType type) {
+		this.type = type;
 	}
 
-	public String getId() {
-		return id;
+	public Set<ScalingAlarm> getAlarms() {
+		return alarms;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setAlarms(Set<ScalingAlarm> alarms) {
+		this.alarms = alarms;
 	}
 
-	public String getAction() {
-
-		return action;
+	public Set<ScalingAction> getActions() {
+		return actions;
 	}
 
-	public void setAction(String action) {
-		this.action = action;
+	public void setActions(Set<ScalingAction> actions) {
+		this.actions = actions;
+	}
+
+	@Override
+	public String toString() {
+		return "AutoScalePolicy{" +
+				"id='" + id + '\'' +
+				", version=" + version +
+				", name='" + name + '\'' +
+				", threshold='" + threshold + '\'' +
+				", period=" + period +
+				", cooldown=" + cooldown +
+				", mode=" + mode +
+				", type=" + type +
+				", alarms=" + alarms +
+				", actions=" + actions +
+				'}';
 	}
 }
