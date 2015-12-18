@@ -46,13 +46,13 @@ import java.util.concurrent.Future;
 public class TestVIM extends Vim {
 
     public TestVIM(String name, int port, String managementPort) throws PluginException {
-        super("test",name, port, managementPort);
+        super("test",name, port, managementPort, null);
     }
     public TestVIM(String managementPort) throws PluginException {
-        super("test", managementPort);
+        super("test", managementPort, null);
     }
     public TestVIM(int port, String managementPort) throws PluginException {
-        super("test", managementPort);
+        super("test", managementPort, null);
     }
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {

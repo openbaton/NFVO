@@ -92,7 +92,7 @@ public class VnfmRestHelper extends VnfmHelper {
 
     @Override
     public String sendAndReceive(String message, String queueName) throws Exception {
-        throw new UnsupportedOperationException();
+        return this.post("",message);
     }
 
     private String get(String path) {
