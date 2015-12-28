@@ -35,7 +35,9 @@ public class AutoScalePolicy implements Serializable {
 
 	private String name;
 
-	private String threshold;
+	private double threshold;
+
+	private String comparisonOperator;
 
 	private int period;
 
@@ -74,12 +76,20 @@ public class AutoScalePolicy implements Serializable {
 		this.name = name;
 	}
 
-	public String getThreshold() {
+	public double getThreshold() {
 		return threshold;
 	}
 
-	public void setThreshold(String threshold) {
+	public void setThreshold(double threshold) {
 		this.threshold = threshold;
+	}
+
+	public String getComparisonOperator() {
+		return comparisonOperator;
+	}
+
+	public void setComparisonOperator(String comparisonOperator) {
+		this.comparisonOperator = comparisonOperator;
 	}
 
 	public int getPeriod() {
@@ -137,6 +147,7 @@ public class AutoScalePolicy implements Serializable {
 				", version=" + version +
 				", name='" + name + '\'' +
 				", threshold='" + threshold + '\'' +
+				", comparisonOperator='" + comparisonOperator + '\'' +
 				", period=" + period +
 				", cooldown=" + cooldown +
 				", mode=" + mode +

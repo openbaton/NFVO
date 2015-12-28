@@ -39,7 +39,7 @@ public class ScalingAlarm implements Serializable{
 	private String comparisonOperator;
 	private double threshold;
 
-	private String weight;
+	private double weight;
 
 	@PrePersist
 	public void ensureId() {
@@ -86,11 +86,11 @@ public class ScalingAlarm implements Serializable{
 		this.threshold = threshold;
 	}
 
-	public String getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 
-	public void setWeight(String weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 

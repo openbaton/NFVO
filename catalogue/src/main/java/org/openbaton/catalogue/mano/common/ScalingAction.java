@@ -33,7 +33,7 @@ public class ScalingAction implements Serializable{
 	@Version
 	private int version = 0;
 
-	private String name;
+	private ScalingActionType type;
 
 	private String value;
 
@@ -50,12 +50,12 @@ public class ScalingAction implements Serializable{
 		return version;
 	}
 
-	public String getName() {
-		return name;
+	public ScalingActionType getType() {
+		return type;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setType(ScalingActionType type) {
+		this.type = type;
 	}
 
 	public String getValue() {
@@ -71,7 +71,7 @@ public class ScalingAction implements Serializable{
 		return "ScalingAction{" +
 				"id='" + id + '\'' +
 				", version=" + version +
-				", name='" + name + '\'' +
+				", type=" + type +
 				", value='" + value + '\'' +
 				'}';
 	}
