@@ -15,10 +15,7 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
@@ -135,13 +132,29 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         for (AutoScalePolicy autoScalePolicy : vnfd.getAuto_scale_policy()) {
             AutoScalePolicy newAutoScalePolicy = new AutoScalePolicy();
-            newAutoScalePolicy.setAction(autoScalePolicy.getAction());
-            newAutoScalePolicy.setComparisonOperator(autoScalePolicy.getComparisonOperator());
+            newAutoScalePolicy.setName(autoScalePolicy.getName());
+            newAutoScalePolicy.setType(autoScalePolicy.getType());
             newAutoScalePolicy.setCooldown(autoScalePolicy.getCooldown());
-            newAutoScalePolicy.setMetric(autoScalePolicy.getMetric());
             newAutoScalePolicy.setPeriod(autoScalePolicy.getPeriod());
-            newAutoScalePolicy.setStatistic(autoScalePolicy.getStatistic());
             newAutoScalePolicy.setThreshold(autoScalePolicy.getThreshold());
+            newAutoScalePolicy.setMode(autoScalePolicy.getMode());
+            newAutoScalePolicy.setActions(new HashSet<ScalingAction>());
+            for (ScalingAction action : autoScalePolicy.getActions()) {
+                ScalingAction newAction = new ScalingAction();
+                newAction.setValue(action.getValue());
+                newAction.setType(action.getType());
+                newAutoScalePolicy.getActions().add(newAction);
+            }
+            newAutoScalePolicy.setAlarms(new HashSet<ScalingAlarm>());
+            for (ScalingAlarm alarm : autoScalePolicy.getAlarms()) {
+                ScalingAlarm newAlarm = new ScalingAlarm();
+                newAlarm.setComparisonOperator(alarm.getComparisonOperator());
+                newAlarm.setMetric(alarm.getMetric());
+                newAlarm.setStatistic(alarm.getStatistic());
+                newAlarm.setThreshold(alarm.getThreshold());
+                newAlarm.setWeight(alarm.getWeight());
+                newAutoScalePolicy.getAlarms().add(newAlarm);
+            }
             virtualNetworkFunctionRecord.getAuto_scale_policy().add(newAutoScalePolicy);
         }
 
