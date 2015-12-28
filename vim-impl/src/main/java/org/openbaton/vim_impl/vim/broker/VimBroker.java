@@ -94,7 +94,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", type, name, this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", type, name, this.port);
+                return (Vim) context.getBean("openstackVIM", type, name, this.port, context);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", type, name, this.port);
             default:
@@ -108,7 +108,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", this.port);
+                return (Vim) context.getBean("openstackVIM", this.port, context);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", this.port);
             default:
@@ -122,7 +122,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", port, this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", port, this.port);
+                return (Vim) context.getBean("openstackVIM", port, this.port, context);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", port, this.port);
             default:
@@ -136,7 +136,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             case "test":
                 return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port), this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port), this.port);
+                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port), this.port, context);
             case "amazon":
                 return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port), this.port);
             default:
