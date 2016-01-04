@@ -17,10 +17,7 @@ package org.openbaton.catalogue.mano.common;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -33,6 +30,7 @@ public class ScalingAction implements Serializable{
 	@Version
 	private int version = 0;
 
+	@Enumerated(EnumType.STRING)
 	private ScalingActionType type;
 
 	private String value;
