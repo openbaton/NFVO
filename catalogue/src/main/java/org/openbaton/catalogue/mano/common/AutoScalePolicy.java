@@ -49,10 +49,10 @@ public class AutoScalePolicy implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ScalingType type;
 
-	@ElementCollection(fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<ScalingAlarm> alarms;
 
-	@ElementCollection(fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<ScalingAction> actions;
 
 	@PrePersist
