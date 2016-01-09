@@ -136,6 +136,7 @@ public class VNFRUtils {
             newAutoScalePolicy.setType(autoScalePolicy.getType());
             newAutoScalePolicy.setCooldown(autoScalePolicy.getCooldown());
             newAutoScalePolicy.setPeriod(autoScalePolicy.getPeriod());
+            newAutoScalePolicy.setComparisonOperator(autoScalePolicy.getComparisonOperator());
             newAutoScalePolicy.setThreshold(autoScalePolicy.getThreshold());
             newAutoScalePolicy.setMode(autoScalePolicy.getMode());
             newAutoScalePolicy.setActions(new HashSet<ScalingAction>());
