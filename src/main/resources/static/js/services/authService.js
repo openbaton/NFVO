@@ -21,7 +21,7 @@ angular.module('app').factory('AuthService', function($http, Session, $location,
             data: "username="+credentials.username+"&password="+credentials.password+"&grant_type="+credentials.grant_type})
             .then(function(res) {
                 console.log(res);
-                Session.create(URL, res.data.access_token, credentials.username, true);
+                Session.create(URL, res.data.value, credentials.username, true);
                 $location.path("/");
                 $window.location.reload();
                 return;
