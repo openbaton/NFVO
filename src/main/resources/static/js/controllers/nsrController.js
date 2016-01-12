@@ -16,12 +16,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         {active: false}
     ];
 
-    $scope.selectedVDU=function(vdu){
-        $scope.vduSelected=vdu;
-    };
-    $scope.addVNFCI = function () {
-        console.log($scope.vnfci);
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances',$scope.vnfci)
+    $scope.addVNFCI = function (data) {
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances')
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -44,17 +40,17 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.removeVNFCItoVDU = function (vdu) {
         http.delete(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances')
             .success(function (response) {
-                showOk('Removed the Virtual Network Function Component Instance to Vdu with id: ' + vdu.id + '.');
+                showOk('Removed the Virtual Network Function Component Instance to Vdu with id: '+vdu.id+'.');
                 loadTable();
             })
             .error(function (data, status) {
                 showError(status, data);
             });
     };
-    $scope.addVNFCItoVDU = function () {
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances',$scope.vnfci)
+    $scope.addVNFCItoVDU = function (vdu) {
+        console.log(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances')
             .success(function (response) {
-                showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
+                showOk('Added a Virtual Network Function Component Instance to Vdu with id: '+vdu.id+'.');
                 loadTable();
             })
             .error(function (data, status) {
@@ -78,15 +74,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         });
     };
 
-    $scope.editCP = [];
-    $scope.vnfci = {connection_point: []};
-    $scope.cp = {
-        "floatingIp": "random",
-        "virtual_link_reference": "private"
-    };
-    $scope.addNewCP = function () {
-        $scope.vnfci.connection_point.push(angular.copy($scope.cp))
-    };
+
     $scope.checkIP = function (str) {
         if (str === '')
             return true;
@@ -129,6 +117,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     .success(function (response) {
                         showOk('Network Service Descriptors stored!');
                         loadTable();
+
+                        //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
                         showError(status, data);
@@ -140,6 +130,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     .success(function (response) {
                         showOk('Definition created!');
                         loadTable();
+                        //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
                         showError(status, data);
@@ -186,28 +177,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         return k2.indexOf(k1) > -1;
     };
 
-    $scope.selectedVNFR = function (vnfr) {
-        $scope.vnfrSelected=vnfr;
-        $scope.virtual_links = [];
-        $scope.floatingIps = [];
-        $scope.floatingIps.push("random");
 
-        $.each(vnfr.vdu, function (ind, vdu) {
-            $.each(vdu.vnfc_instance, function (ind, vnfci) {
-                $.each(vnfci.floatingIps, function (ind, floatingIp) {
-                    $scope.floatingIps.push(floatingIp.ip)
-                })
-            })
-        });
-        $.each(vnfr.virtual_link, function (ind, virtual_link) {
-            $scope.virtual_links.push(virtual_link.name)
-        });
-        console.log($scope.floatingIps);
-        console.log($scope.virtual_links);
-    };
-    $scope.deleteCPfromVNFCI = function (index) {
-        $scope.vnfci.connection_point.splice(index, 1);
-    };
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
@@ -294,10 +264,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         else
             http.get(url + $routeParams.nsrecordId)
                 .success(function (response, status) {
-                    console.log(response);
                     $scope.nsrinfo = response;
                     $scope.nsrJSON = JSON.stringify(response, undefined, 4);
-
+                    console.log(response);
                     //topologiesAPI.Jsplumb(response);
                 })
                 .error(function (data, status) {
