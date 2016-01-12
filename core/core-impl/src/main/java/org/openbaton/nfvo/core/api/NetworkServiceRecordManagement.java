@@ -16,8 +16,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
@@ -45,9 +43,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Created by lto on 11/05/15.
@@ -462,39 +458,39 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
 
-        List<Future<Void>> futures = new ArrayList<Future<Void>>();
-        boolean release = false;
+//        List<Future<Void>> futures = new ArrayList<Future<Void>>();
+//        boolean release = false;
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
-            Set<Event> events = new HashSet<Event>();
-            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
-                events.add(lifecycleEvent.getEvent());
-            }
-            if (!events.contains(Event.RELEASE)) {
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                        futures.add(resourceManagement.release(virtualDeploymentUnit, vnfcInstance));
-                    }
-                }
-                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-            } else {
-                release = true;
+//            Set<Event> events = new HashSet<Event>();
+//            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
+//                events.add(lifecycleEvent.getEvent());
+//            }
+//            if (!events.contains(Event.RELEASE)) {
+//                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+//                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+//                        futures.add(resourceManagement.release(virtualDeploymentUnit, vnfcInstance));
+//                    }
+//                }
+//                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
+//            } else {
+//                release = true;
                 vnfmManager.release(virtualNetworkFunctionRecord);
-            }
+//            }
         }
 
-        if (waitForDelete != null && !waitForDelete.equals("")&& Boolean.parseBoolean(waitForDelete))
-            for (Future<Void> result : futures) {
-                result.get();
-                log.debug("Deleted VDU");
-            }
+//        if (waitForDelete != null && !waitForDelete.equals("")&& Boolean.parseBoolean(waitForDelete))
+//            for (Future<Void> result : futures) {
+//                result.get();
+//                log.debug("Deleted VDU");
+//            }
 
-        if (!release) {
-            ApplicationEventNFVO event = new ApplicationEventNFVO(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
-            EventNFVO eventNFVO = new EventNFVO(this);
-            eventNFVO.setEventNFVO(event);
-            log.debug("Publishing event: " + event);
-            publisher.dispatchEvent(eventNFVO);
-            nsrRepository.delete(networkServiceRecord);
-        }
+//        if (!release) {
+//            ApplicationEventNFVO event = new ApplicationEventNFVO(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
+//            EventNFVO eventNFVO = new EventNFVO(this);
+//            eventNFVO.setEventNFVO(event);
+//            log.debug("Publishing event: " + event);
+//            publisher.dispatchEvent(eventNFVO);
+//            nsrRepository.delete(networkServiceRecord);
+//        }
     }
 }

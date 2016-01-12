@@ -259,7 +259,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             return;
         }
 
-
         log.debug("The nsr id is: " + virtualNetworkFunctionRecord.getParent_ns_id());
 
         Status status = Status.TERMINATED;
