@@ -38,7 +38,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
                 console.log(data);
-                if (data === "false"){
+                if (data === "false") {
                     AuthService.loginGuest($scope.URL);
                 }
             })
@@ -60,7 +60,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        setTimeout(showLoginError, 1000);
+        setTimeout(showLoginError, 2000);
     };
 
     function showLoginError() {
