@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.*;
 import org.openbaton.catalogue.mano.common.Security;
@@ -68,7 +69,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
      * including any related VNFFGD and VLD.
      */
     @Override
-    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
 
         nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 

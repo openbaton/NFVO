@@ -25,9 +25,10 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,11 @@ import java.util.HashSet;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties
 public class GrantoperationTask extends AbstractTask {
+
+    @Value("${nfvo.quota.check:")
+    private String checkQuota;
 
     @Autowired
     @Qualifier("vnfmRegister")
@@ -51,9 +56,7 @@ public class GrantoperationTask extends AbstractTask {
     @Override
     protected NFVMessage doWork() throws Exception {
 
-        VnfmSender vnfmSender;
-        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-        if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
+        if (checkQuota != null && Boolean.parseBoolean(checkQuota) == false) {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
             lifecycleEvent.setLifecycle_events(new ArrayList<String>());
@@ -65,11 +68,26 @@ public class GrantoperationTask extends AbstractTask {
             log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
             return nfvMessage;
-        } else {
-            // there are not enough resources for deploying VNFR
-            saveVirtualNetworkFunctionRecord();
-            OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
-            return nfvMessage;
+        }
+        else{
+            if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
+                LifecycleEvent lifecycleEvent = new LifecycleEvent();
+                lifecycleEvent.setEvent(Event.GRANTED);
+                lifecycleEvent.setLifecycle_events(new ArrayList<String>());
+                if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
+                    virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+                virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+                log.debug("SENDING GRANT LIFECYCLE OPERATION on temp queue:" + getTempDestination());
+                saveVirtualNetworkFunctionRecord();
+                log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
+                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
+                return nfvMessage;
+            } else {
+                // there are not enough resources for deploying VNFR
+                saveVirtualNetworkFunctionRecord();
+                OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
+                return nfvMessage;
+            }
         }
     }
 

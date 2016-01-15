@@ -33,6 +33,7 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
@@ -97,7 +98,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementEnableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public void nsdManagementEnableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
@@ -111,7 +112,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         nsd_exp.setEnabled(true);
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
@@ -143,7 +144,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
 
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
@@ -165,7 +166,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
