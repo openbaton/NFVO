@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
@@ -56,8 +57,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -87,9 +87,11 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Autowired
     private Gson gson;
 
+    private static Map<String, Map<String, Integer>> vnfrNames;
     @Override
     public void init() {
 
+        vnfrNames  = new LinkedHashMap<>();
         /**
          * Asynchronous thread executor configuration
          */
@@ -160,9 +162,40 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     }
 
+    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+            @Override
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
     @Override
     @Async
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
+
+        // fill up the vnfr
+        Set<VNFRecordDependency> dependencies = networkServiceRecord.getVnf_dependency();
+
+        vnfrNames.put(networkServiceRecord.getId(),new HashMap<String, Integer>());
+
+        Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
+
+        // calculate dependencies
+        fillVnfrNames(networkServiceDescriptor, dependencies, vnfrNamesWeighted);
+
+        vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
+
+        log.debug("VNFRs ordered by depednencies: " + vnfrNamesWeighted);
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
 
@@ -196,6 +229,30 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             vnfmSender.sendCommand(message, endpoint);
         }
         return new AsyncResult<>(null);
+    }
+
+    private void fillVnfrNames(NetworkServiceDescriptor networkServiceDescriptor, Set<VNFRecordDependency> dependencies, Map<String, Integer> vnfrNamesWeighted) {
+//        for (VNFRecordDependency dependency : dependencies) {
+//            if (vnfrNamesWeighted.containsKey(dependency.getTarget()))
+//                vnfrNamesWeighted.put(dependency.getTarget(), getWeightForVNFR());
+//            else
+//                vnfrNamesWeighted.put(dependency.getTarget(), 1);
+//        }
+
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd())
+            vnfrNamesWeighted.put(virtualNetworkFunctionDescriptor.getName(), getWeightForVNFR(virtualNetworkFunctionDescriptor,networkServiceDescriptor));
+    }
+
+    private int getWeightForVNFR(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, NetworkServiceDescriptor networkServiceDescriptor) {
+        int result = 0;
+        for (VNFDependency dependency : networkServiceDescriptor.getVnf_dependency()){
+            if (dependency.getTarget().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
+                result++;
+                result += getWeightForVNFR(dependency.getSource(), networkServiceDescriptor);
+            }
+        }
+
+        return result;
     }
 
     //As a default operation of the NFVO, it get always the first DeploymentFlavour!
@@ -242,7 +299,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         virtualNetworkFunctionRecord.setTask(actionName);
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
-        log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
+        log.debug("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
         if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
             return gson.toJson(asyncExecutor.submit(task).get());
@@ -412,5 +469,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Override
     public void run(String... args) throws Exception {
         init();
+    }
+
+    @Override
+    public Map<String, Map<String, Integer>> getVnfrNames() {
+        return vnfrNames;
     }
 }

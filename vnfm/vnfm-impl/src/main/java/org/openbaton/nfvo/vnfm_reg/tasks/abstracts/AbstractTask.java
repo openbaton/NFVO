@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -43,7 +44,9 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -74,13 +77,12 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     private ConfigurableApplicationContext context;
     private ApplicationEventPublisher publisher;
 
-    protected void saveVirtualNetworkFunctionRecord() {
+    @Transactional
+    protected synchronized void saveVirtualNetworkFunctionRecord() {
         log.trace("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
         if (virtualNetworkFunctionRecord.getId() == null) {
-
             virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        }
-        else {
+        } else {
             virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
         }
 
@@ -118,10 +120,10 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             }
             NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
             if (getTempDestination() != null) {
-                vnfmSender.sendCommand(message,getTempDestination());
-            }else {
+                vnfmSender.sendCommand(message, getTempDestination());
+            } else {
                 try {
-                    vnfmSender.sendCommand(message,vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
                 } catch (NotFoundException e1) {
                     e1.printStackTrace();
                     throw new RuntimeException(e1);
@@ -154,7 +156,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             log.debug("Publishing event: " + eventPublic);
             publisher.publishEvent(eventNFVO);
             return null;
-        }else
+        } else
             return result;
     }
 
@@ -178,7 +180,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         return tempDestination;
     }
 
-    public void setTempDestination(String  tempDestination) {
+    public void setTempDestination(String tempDestination) {
         this.tempDestination = tempDestination;
     }
 
@@ -233,5 +235,34 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
     public void setDependency(VNFRecordDependency dependency) {
         this.dependency = dependency;
+    }
+
+    protected VirtualNetworkFunctionRecord getNextToCallStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        Map<String, Integer> vnfrNames = vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id());
+
+        log.debug("List of VNFRs to start: " + vnfrNames);
+
+        if (vnfrNames.size() > 0)
+            for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
+                vnfrNames.remove(entry.getKey());
+                for (VirtualNetworkFunctionRecord vnfr : networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getVnfr()) {
+                    if (vnfr.getName().equals(entry.getKey())) {
+                        return vnfr;
+                    }
+                }
+
+                return null;
+            }
+
+        return null;
+    }
+
+    protected boolean allVnfrInInactive(NetworkServiceRecord nsr) {
+        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr())
+            if (virtualNetworkFunctionRecord.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
+                log.debug("VNFR " + virtualNetworkFunctionRecord.getName() + " is in state: " + virtualNetworkFunctionRecord.getStatus());
+                return false;
+            }
+        return true;
     }
 }

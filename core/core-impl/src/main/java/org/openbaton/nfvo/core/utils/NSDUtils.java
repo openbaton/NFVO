@@ -26,6 +26,7 @@ import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -33,6 +34,7 @@ import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -45,10 +47,21 @@ import java.util.Set;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties(prefix = "nfvo.start")
 public class NSDUtils {
 
     @Autowired
     private VimRepository vimRepository;
+
+    public String getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(String ordered) {
+        this.ordered = ordered;
+    }
+
+    private String ordered;
 
     @Autowired
     private VNFDRepository vnfdRepository;
@@ -116,7 +129,7 @@ public class NSDUtils {
         }
     }
 
-    public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException {
+    public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, CyclicDependenciesException {
         /**
          * Fetching dependencies
          */
@@ -164,6 +177,8 @@ public class NSDUtils {
             for (List<String> cycle : cycles)
                 if (cycle.contains(vnfd.getName())) {
                     vnfd.setCyclicDependency(true);
+                    if (ordered != null && Boolean.parseBoolean(ordered.trim()))
+                        throw new CyclicDependenciesException("There is a cyclic exception and ordered start is selected. This cannot work.");
                     break;
                 }
         }

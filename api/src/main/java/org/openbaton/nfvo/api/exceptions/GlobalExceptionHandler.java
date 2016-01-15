@@ -56,7 +56,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
-    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class, WrongStatusException.class, UnrecognizedPropertyException.class, VimException.class})
+    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class, WrongStatusException.class, UnrecognizedPropertyException.class, VimException.class, CyclicDependenciesException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
         if (log.isDebugEnabled()) {
