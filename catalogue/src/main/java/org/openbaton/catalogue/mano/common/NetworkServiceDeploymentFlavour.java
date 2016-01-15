@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- * <p/>
+ * <p>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity

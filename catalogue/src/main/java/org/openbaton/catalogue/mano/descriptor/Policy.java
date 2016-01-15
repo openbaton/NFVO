@@ -25,9 +25,9 @@ import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
- * <p/>
+ * <p>
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- * <p/>
+ * <p>
  * A policy or rule to apply to the NFP
  */
 @Entity

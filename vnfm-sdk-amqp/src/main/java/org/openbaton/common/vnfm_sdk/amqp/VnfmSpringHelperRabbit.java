@@ -113,7 +113,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
 
     /**
      * This method should be used for receiving text message from EMS
-     * <p/>
+     * <p>
      * resp = {
      * 'output': out,          // the output of the command
      * 'err': err,             // the error outputs of the commands

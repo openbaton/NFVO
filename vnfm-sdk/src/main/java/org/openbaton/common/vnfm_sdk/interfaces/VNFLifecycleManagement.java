@@ -29,7 +29,6 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param scriptsLink
 	 * @param virtualNetworkFunctionRecord
 	 * @param scripts
 	 */

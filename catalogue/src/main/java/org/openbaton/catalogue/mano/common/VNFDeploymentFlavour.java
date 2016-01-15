@@ -33,7 +33,7 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
     private Set<String> df_constraint;
 
     /**
-     * Examples include Control-plane VDU & Data-plane VDU & Load Balancer VDU Each needs a VDU element to support the
+     * Examples include Control-plane VDU, Data-plane VDU, Load Balancer VDU. Each needs a VDU element to support the
      * deployment flavour of 10k calls-per-sec of vPGW, Control-plane VDU may specify 3 VMs each with 4 GB vRAM, 2 vCPU, 32 GB
      * virtual storage, etc. Data-plane VDU may specify 2 VMs each with 8 GB vRAM, 4 vCPU, 64 GB virtual storage, etc.
      * */
