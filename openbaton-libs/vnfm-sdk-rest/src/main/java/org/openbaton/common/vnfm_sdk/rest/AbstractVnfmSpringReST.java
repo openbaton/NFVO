@@ -37,12 +37,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @SpringBootApplication
 @RestController
+
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     private VnfmRestHelper vnfmRestHelper;
-
     @Autowired
     private ConfigurableApplicationContext context;
+
 
     @Override
     protected void setup() {
@@ -52,12 +53,12 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
     }
 
     @Override
-    protected void unregister(){
+    protected void unregister() {
         vnfmRestHelper.unregister(vnfmManagerEndpoint);
     }
 
     @Override
-    protected void register(){
+    protected void register() {
         vnfmRestHelper.register(vnfmManagerEndpoint);
     }
 
