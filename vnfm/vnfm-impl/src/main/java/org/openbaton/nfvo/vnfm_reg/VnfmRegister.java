@@ -85,7 +85,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
 //            if (vnfmManagerEndpoint.getEndpoint() != null && vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType() != null && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
             if (endpoint.getType().equals(vnfmManagerEndpoint.getType())){
                 log.info("Unregistered vnfm: " + endpoint.getType());
-                this.vnfmManagerEndpointRepository.delete(endpoint);
+                this.vnfmManagerEndpointRepository.delete(vnfmManagerEndpoint.getId());
                 return;
             }
         }
