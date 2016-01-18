@@ -23,6 +23,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,20 +36,20 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
     private Map<String, String> extension;
-    private VimInstance vimInstance;
+    private List<VimInstance> vimInstances;
     private VNFPackage vnfPackage;
 
     public OrVnfmInstantiateMessage() {
         this.action = Action.INSTANTIATE;
     }
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extension, VimInstance vimInstance, VNFPackage vnfPackage) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extension, List<VimInstance> vimInstances, VNFPackage vnfPackage) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
         this.extension = extension;
-        this.vimInstance = vimInstance;
+        this.vimInstances = vimInstances;
         this.action = Action.INSTANTIATE;
         this.vnfPackage = vnfPackage;
     }
@@ -61,12 +62,12 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
         this.vnfPackage = vnfPackage;
     }
 
-    public VimInstance getVimInstance() {
-        return vimInstance;
+    public List<VimInstance> getVimInstances() {
+        return vimInstances;
     }
 
-    public void setVimInstance(VimInstance vimInstance) {
-        this.vimInstance = vimInstance;
+    public void setVimInstances(List<VimInstance> vimInstances) {
+        this.vimInstances = vimInstances;
     }
 
     public VirtualNetworkFunctionDescriptor getVnfd() {
@@ -116,7 +117,7 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
                 ", vnfdf=" + vnfdf +
                 ", vnfInstanceName='" + vnfInstanceName + '\'' +
                 ", vlrs=" + vlrs +
-                ", vimInstance=" + vimInstance;
+                ", vimInstances=" + vimInstances;
         if (vnfPackage != null) result += ", vnfPackage=" + vnfPackage.getName();
         else result += ", vnfPackage=" + vnfPackage;
         result += ", extension=" + extension + '}';
