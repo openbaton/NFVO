@@ -56,7 +56,8 @@ public class InstantiateTask extends AbstractTask {
         log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
         VirtualNetworkFunctionRecord existing = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
         log.debug("VNFR arrived version= " + virtualNetworkFunctionRecord.getHb_version());
-        log.debug("VNFR existing version= " + existing.getHb_version());
+        if (existing != null)
+            log.debug("VNFR existing version= " + existing.getHb_version());
         saveVirtualNetworkFunctionRecord();
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
