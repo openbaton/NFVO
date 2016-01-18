@@ -415,8 +415,7 @@ public class OpenstackVIM extends Vim {
 
     @Override
     @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException {
-        VimInstance vimInstance = vdu.getVimInstance();
+    public Future<VNFCInstance> allocate(VimInstance vimInstance, VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException {
         log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
         log.debug("VDU is : " + vdu.toString());
         log.debug("VNFR is : " + vnfr.toString());
@@ -480,7 +479,7 @@ public class OpenstackVIM extends Vim {
         VNFCInstance vnfcInstance = new VNFCInstance();
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
-        vnfcInstance.setVim_id(vdu.getVimInstance().getId());
+        vnfcInstance.setVim_id(vimInstance.getId());
         vnfcInstance.setVnfComponent(vnfComponent);
 
         if (vnfcInstance.getConnection_point() == null)
