@@ -32,7 +32,7 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String vc_id;
     protected String hostname;
 
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     protected VNFComponent vnfComponent;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
