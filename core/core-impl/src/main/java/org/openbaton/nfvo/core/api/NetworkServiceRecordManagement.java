@@ -289,6 +289,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("No VirtualDeploymentUnit found with id " + idVdu);
         return virtualDeploymentUnit;
     }
+
     private VNFCInstance getVNFCInstance(String idVNFCInstance, VirtualDeploymentUnit vdu) throws NotFoundException {
         VNFCInstance vnfcInstance = null;
         for (VNFCInstance currentVnfcInstance : vdu.getVnfc_instance()) {
@@ -418,22 +419,22 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
-    public void executeAction(NFVMessage nfvMessage,String nsrId, String idVnf, String idVdu, String idVNFCI) throws NotFoundException {
+    public void executeAction(NFVMessage nfvMessage, String nsrId, String idVnf, String idVdu, String idVNFCI) throws NotFoundException {
 
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(nsrId);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
         VirtualDeploymentUnit virtualDeploymentUnit = getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
-        VNFCInstance vnfcInstance = getVNFCInstance(idVNFCI,virtualDeploymentUnit);
+        VNFCInstance vnfcInstance = getVNFCInstance(idVNFCI, virtualDeploymentUnit);
         switch (nfvMessage.getAction()) {
             case HEAL:
                 // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
                 // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
                 OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
-                log.debug("Received Heal message: "+orVnfmHealVNFRequestMessage);
+                log.debug("Received Heal message: " + orVnfmHealVNFRequestMessage);
                 orVnfmHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                 orVnfmHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
-                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord,orVnfmHealVNFRequestMessage);
+                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmHealVNFRequestMessage);
                 break;
         }
     }
@@ -451,46 +452,18 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
 
 
-        if (deleteInAllStatus != null && !deleteInAllStatus.equals("")&& !Boolean.parseBoolean(deleteInAllStatus)) {
+        if (deleteInAllStatus != null && !deleteInAllStatus.equals("") && !Boolean.parseBoolean(deleteInAllStatus)) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
 
-//        List<Future<Void>> futures = new ArrayList<Future<Void>>();
-//        boolean release = false;
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
-//            Set<Event> events = new HashSet<Event>();
-//            for (LifecycleEvent lifecycleEvent : virtualNetworkFunctionRecord.getLifecycle_event()) {
-//                events.add(lifecycleEvent.getEvent());
-//            }
-//            if (!events.contains(Event.RELEASE)) {
-//                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-//                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-//                        futures.add(resourceManagement.release(virtualDeploymentUnit, vnfcInstance));
-//                    }
-//                }
-//                virtualNetworkFunctionRecord.setStatus(Status.TERMINATED);
-//            } else {
-//                release = true;
+        if (networkServiceRecord.getVnfr().size() > 0)
+            for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
                 vnfmManager.release(virtualNetworkFunctionRecord);
-//            }
-        }
-
-//        if (waitForDelete != null && !waitForDelete.equals("")&& Boolean.parseBoolean(waitForDelete))
-//            for (Future<Void> result : futures) {
-//                result.get();
-//                log.debug("Deleted VDU");
-//            }
-
-//        if (!release) {
-//            ApplicationEventNFVO event = new ApplicationEventNFVO(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
-//            EventNFVO eventNFVO = new EventNFVO(this);
-//            eventNFVO.setEventNFVO(event);
-//            log.debug("Publishing event: " + event);
-//            publisher.dispatchEvent(eventNFVO);
-//            nsrRepository.delete(networkServiceRecord);
-//        }
+            }
+        else
+            nsrRepository.delete(networkServiceRecord.getId());
     }
 }
