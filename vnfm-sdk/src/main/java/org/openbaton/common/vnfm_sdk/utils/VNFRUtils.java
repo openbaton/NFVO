@@ -103,23 +103,23 @@ public class VNFRUtils {
             }
         }
 
-        if (vnfd.getVnfPackage() != null) {
+        if (vnfd.getVnfPackageId() != null) {
             VNFPackage vnfPackage = new VNFPackage();
-            vnfPackage.setImageLink(vnfd.getVnfPackage().getImageLink());
-            vnfPackage.setScriptsLink(vnfd.getVnfPackage().getScriptsLink());
-            vnfPackage.setName(vnfd.getVnfPackage().getName());
+            vnfPackage.setImageLink(vnfd.getVnfPackageId().getImageLink());
+            vnfPackage.setScriptsLink(vnfd.getVnfPackageId().getScriptsLink());
+            vnfPackage.setName(vnfd.getVnfPackageId().getName());
 
             //TODO check for ordering
             vnfPackage.setScripts(new HashSet<Script>());
 
-            for (Script script : vnfd.getVnfPackage().getScripts()) {
+            for (Script script : vnfd.getVnfPackageId().getScripts()) {
                 Script s = new Script();
                 s.setName(script.getName());
                 s.setPayload(script.getPayload());
                 vnfPackage.getScripts().add(s);
             }
 
-            vnfPackage.setImage(vnfd.getVnfPackage().getImage());
+            vnfPackage.setImage(vnfd.getVnfPackageId().getImage());
         }
 
         if (vnfd.getEndpoint() != null) {
