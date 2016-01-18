@@ -28,7 +28,10 @@ public class Alarm {
     @Id
     private String alarmId;
     private String triggerId;
+
     private String resourceId;
+
+    private AlarmType alarmType;
 
     private String alarmRaisedTime;
     private AlarmState alarmState;
@@ -93,6 +96,33 @@ public class Alarm {
         this.perceivedSeverity = perceivedSeverity;
     }
 
+    @Override
+    public String toString() {
+        return "Alarm{" +
+                "alarmId='" + alarmId + '\'' +
+                ", triggerId='" + triggerId + '\'' +
+                ", resourceId='" + resourceId + '\'' +
+                ", alarmType=" + alarmType +
+                ", alarmRaisedTime='" + alarmRaisedTime + '\'' +
+                ", alarmState=" + alarmState +
+                ", perceivedSeverity=" + perceivedSeverity +
+                ", eventTime='" + eventTime + '\'' +
+                ", faultType=" + faultType +
+                ", probableCause='" + probableCause + '\'' +
+                ", isRootCause=" + isRootCause +
+                ", correlatedAlarmId=" + correlatedAlarmId +
+                ", faultDetails='" + faultDetails + '\'' +
+                '}';
+    }
+
+    public AlarmType getAlarmType() {
+        return alarmType;
+    }
+
+    public void setAlarmType(AlarmType alarmType) {
+        this.alarmType = alarmType;
+    }
+
     public String getEventTime() {
         return eventTime;
     }
@@ -141,21 +171,4 @@ public class Alarm {
         this.faultDetails = faultDetails;
     }
 
-    @Override
-    public String toString() {
-        return "Alarm{" +
-                "alarmId='" + alarmId + '\'' +
-                ", triggerId='" + triggerId + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", alarmRaisedTime='" + alarmRaisedTime + '\'' +
-                ", alarmState=" + alarmState +
-                ", perceivedSeverity=" + perceivedSeverity +
-                ", eventTime='" + eventTime + '\'' +
-                ", faultType=" + faultType +
-                ", probableCause='" + probableCause + '\'' +
-                ", isRootCause=" + isRootCause +
-                ", correlatedAlarmId=" + correlatedAlarmId +
-                ", faultDetails='" + faultDetails + '\'' +
-                '}';
-    }
 }
