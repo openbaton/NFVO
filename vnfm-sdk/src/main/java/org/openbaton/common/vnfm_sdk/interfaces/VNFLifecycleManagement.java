@@ -20,6 +20,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 
 /**
  * Created by mpa on 05/05/15.
@@ -32,10 +33,11 @@ public interface VNFLifecycleManagement {
 	 * @param scriptsLink
 	 * @param virtualNetworkFunctionRecord
 	 * @param scripts
+	 * @param vimInstance
 	 */
 	//CoreMessage instantiate(VirtualNetworkFunctionRecordShort virtualNetworkFunctionRecord);
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts) throws Exception;
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts, VimInstance vimInstance) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.

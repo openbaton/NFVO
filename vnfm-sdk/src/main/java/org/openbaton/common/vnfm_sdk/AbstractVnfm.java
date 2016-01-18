@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.*;
@@ -54,12 +55,12 @@ import java.util.concurrent.Future;
  */
 public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
-    protected VnfmHelper vnfmHelper;
     protected static String type;
     protected static String endpoint;
     protected static String endpointType;
     protected static Properties properties;
     protected static Logger log = LoggerFactory.getLogger(AbstractVnfm.class);
+    protected VnfmHelper vnfmHelper;
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     private ExecutorService executor;
 
@@ -151,7 +152,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFCInstance vnfcInstanceToRemove = scalingMessage.getVnfcInstance();
 
-                    virtualNetworkFunctionRecord = this.scale(Action.SCALE_IN,virtualNetworkFunctionRecord,vnfcInstanceToRemove,null,null);
+                    virtualNetworkFunctionRecord = this.scale(Action.SCALE_IN, virtualNetworkFunctionRecord, vnfcInstanceToRemove, null, null);
                     nfvMessage = null;
                     break;
                 case SCALE_OUT:
@@ -170,7 +171,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                             OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
                             virtualNetworkFunctionRecord = message1.getVnfr();
                             log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
-                        }else if (message2 instanceof OrVnfmErrorMessage){
+                        } else if (message2 instanceof OrVnfmErrorMessage) {
                             this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
                             return;
                         }
@@ -190,15 +191,15 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         if (found)
                             break;
                     }
-                    if (vnfcInstance_new == null){
+                    if (vnfcInstance_new == null) {
                         throw new RuntimeException("no new VNFCInstance found. This should not happen...");
                     }
                     checkEMS(vnfcInstance_new.getHostname());
                     Object scripts;
-                    if (virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink() != null)
-                        scripts = virtualNetworkFunctionRecord.getVnfPackage().getScriptsLink();
+                    if (scalingMessage.getVnfPackage().getScriptsLink() != null)
+                        scripts = scalingMessage.getVnfPackage().getScriptsLink();
                     else
-                        scripts = virtualNetworkFunctionRecord.getVnfPackage().getScripts();
+                        scripts = scalingMessage.getVnfPackage().getScripts();
                     nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, this.scale(Action.SCALE_OUT, virtualNetworkFunctionRecord, vnfcInstance_new, scripts, dependency), vnfcInstance_new);
                     break;
                 case SCALING:
@@ -220,7 +221,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVnfd().getName(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtention());
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstance());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     Future<VirtualNetworkFunctionRecord> result = executor.submit(grantOperation);
@@ -231,6 +232,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                        allocateResources.setVimInstance(orVnfmInstantiateMessage.getVimInstance());
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
                     }
                     setupProvides(virtualNetworkFunctionRecord);
@@ -239,17 +241,17 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
                             checkEMS(vnfcInstance.getHostname());
 
-                    if (orVnfmInstantiateMessage.getScriptsLink() != null)
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getScriptsLink());
+                    if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstance());
                     else
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getScripts());
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstance());
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
                     break;
                 case HEAL:
                     OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
-                    nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause()));
+                    nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(), orVnfmHealMessage.getVnfcInstance(), orVnfmHealMessage.getCause()));
                     break;
                 case INSTANTIATE_FINISH:
                     break;
@@ -270,92 +272,22 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             }
         } catch (Exception e) {
             log.error("ERROR: ", e);
-            if (e instanceof VnfmSdkException){
+            if (e instanceof VnfmSdkException) {
                 VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
-                if (vnfmSdkException.getVnfr() != null){
+                if (vnfmSdkException.getVnfr() != null) {
                     log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
                     vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
                     return;
                 }
-            }
-            else if (e.getCause() instanceof VnfmSdkException){
+            } else if (e.getCause() instanceof VnfmSdkException) {
                 VnfmSdkException vnfmSdkException = (VnfmSdkException) e.getCause();
-                if (vnfmSdkException.getVnfr() != null){
+                if (vnfmSdkException.getVnfr() != null) {
                     log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
                     vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
                     return;
                 }
             }
             vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
-        }
-    }
-
-    class GrantOperation implements Callable<VirtualNetworkFunctionRecord> {
-        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-            return virtualNetworkFunctionRecord;
-        }
-
-        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-        }
-
-        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-
-        private VirtualNetworkFunctionRecord grantLifecycleOperation() throws VnfmSdkException {
-            NFVMessage response;
-            try {
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.GRANT_OPERATION, virtualNetworkFunctionRecord));
-            } catch (Exception e) {
-                throw new VnfmSdkException("Not able to grant operation", e,virtualNetworkFunctionRecord);
-            }
-            if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-                throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage(), ((OrVnfmErrorMessage) response).getVnfr());
-            }
-            OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
-            return orVnfmGenericMessage.getVnfr();
-        }
-
-        @Override
-        public VirtualNetworkFunctionRecord call() throws Exception {
-            return this.grantLifecycleOperation();
-        }
-    }
-
-    class AllocateResources implements Callable<VirtualNetworkFunctionRecord> {
-        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-            return virtualNetworkFunctionRecord;
-        }
-
-        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-        }
-
-
-        public VirtualNetworkFunctionRecord allocateResources() throws VnfmSdkException {
-            NFVMessage response;
-            try {
-
-
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.ALLOCATE_RESOURCES, virtualNetworkFunctionRecord));
-            } catch (Exception e) {
-                log.error("" + e.getMessage());
-                throw new VnfmSdkException("Not able to allocate Resources", e,virtualNetworkFunctionRecord);
-            }
-            if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-                OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
-                log.error(errorMessage.getMessage());
-                virtualNetworkFunctionRecord = errorMessage.getVnfr();
-                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage(), virtualNetworkFunctionRecord);
-            }
-            OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
-            log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
-            return orVnfmGenericMessage.getVnfr();
-        }
-
-        @Override
-        public VirtualNetworkFunctionRecord call() throws Exception {
-            return this.allocateResources();
         }
     }
 
@@ -405,9 +337,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      * @throws BadFormatException
      * @throws NotFoundException
      */
-    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, String vnfInstanceName, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension) throws BadFormatException, NotFoundException {
+    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension, VimInstance vimInstance) throws BadFormatException, NotFoundException {
         try {
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords);
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords, vimInstance);
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
                 for (VirtualLinkRecord virtualLinkRecord : virtualLinkRecords) {
                     if (internalVirtualLink.getName().equals(virtualLinkRecord.getName())) {
@@ -455,5 +387,80 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         log.debug("creating VnfmManagerEndpoint for vnfm endpointType: " + this.endpointType);
         vnfmManagerEndpoint.setEndpointType(EndpointType.valueOf(this.endpointType));
         register();
+    }
+
+    class GrantOperation implements Callable<VirtualNetworkFunctionRecord> {
+        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+
+        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+            return virtualNetworkFunctionRecord;
+        }
+
+        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+        }
+
+        private VirtualNetworkFunctionRecord grantLifecycleOperation() throws VnfmSdkException {
+            NFVMessage response;
+            try {
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.GRANT_OPERATION, virtualNetworkFunctionRecord));
+            } catch (Exception e) {
+                throw new VnfmSdkException("Not able to grant operation", e, virtualNetworkFunctionRecord);
+            }
+            if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+                throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage(), ((OrVnfmErrorMessage) response).getVnfr());
+            }
+            OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+            return orVnfmGenericMessage.getVnfr();
+        }
+
+        @Override
+        public VirtualNetworkFunctionRecord call() throws Exception {
+            return this.grantLifecycleOperation();
+        }
+    }
+
+    class AllocateResources implements Callable<VirtualNetworkFunctionRecord> {
+        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+        private VimInstance vimInstance;
+
+        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+            return virtualNetworkFunctionRecord;
+        }
+
+        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+        }
+
+
+        public VirtualNetworkFunctionRecord allocateResources() throws VnfmSdkException {
+            NFVMessage response;
+            try {
+
+
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(this.vimInstance, virtualNetworkFunctionRecord));
+            } catch (Exception e) {
+                log.error("" + e.getMessage());
+                throw new VnfmSdkException("Not able to allocate Resources", e, virtualNetworkFunctionRecord);
+            }
+            if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+                OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) response;
+                log.error(errorMessage.getMessage());
+                virtualNetworkFunctionRecord = errorMessage.getVnfr();
+                throw new VnfmSdkException("Not able to allocate Resources because: " + errorMessage.getMessage(), virtualNetworkFunctionRecord);
+            }
+            OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
+            log.debug("Received from ALLOCATE: " + orVnfmGenericMessage.getVnfr());
+            return orVnfmGenericMessage.getVnfr();
+        }
+
+        @Override
+        public VirtualNetworkFunctionRecord call() throws Exception {
+            return this.allocateResources();
+        }
+
+        public void setVimInstance(VimInstance vimInstance) {
+            this.vimInstance = vimInstance;
+        }
     }
 }

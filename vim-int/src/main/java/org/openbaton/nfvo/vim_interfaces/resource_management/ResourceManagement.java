@@ -41,7 +41,7 @@ public interface ResourceManagement {
 	 * assignment of a virtualised resource to the VNF, as 
 	 * indicated by the consumer functional block.
 	 */
-	Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException, VimDriverException;
+	Future<VNFCInstance> allocate(VimInstance vimInstance, VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException, VimDriverException;
 	
 	/**
 	 * This operation allows querying a virtualised resource, 
