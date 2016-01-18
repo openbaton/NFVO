@@ -139,9 +139,10 @@ public class VimTestSuiteClass {
         server.setIps(new HashMap<String, List<String>>());
         //TODO use the method launchInstanceAndWait properly
         when(vimDriverCaller.launchInstanceAndWait(any(VimInstance.class), anyString(), anyString(), anyString(), anyString(), anySet(), anySet(), anyString(), anyMap())).thenReturn(server);
-
+        VimInstance vimInstance = createVIM();
         try {
-            Future<VNFCInstance> id = openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
+
+            Future<VNFCInstance> id = openstackVIM.allocate(vimInstance,vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
             String expectedId = id.get().getVc_id();
             log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
             Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -159,7 +160,7 @@ public class VimTestSuiteClass {
         vdu.getVm_image().removeAll(vdu.getVm_image());
 
         exception.expect(VimException.class);
-        openstackVIM.allocate(vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
+        openstackVIM.allocate(vimInstance, vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
     }
 
     @Test
@@ -191,19 +192,7 @@ public class VimTestSuiteClass {
 
     private VirtualDeploymentUnit createVDU() {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-        VimInstance vimInstance = new VimInstance();
-        vimInstance.setName("mock_vim_instance");
-        vimInstance.setSecurityGroups(new HashSet<String>() {{
-            add("mock_vim_instance");
-        }});
-        vimInstance.setKeyPair("test");
-        vimInstance.setImages(new HashSet<NFVImage>() {{
-            NFVImage nfvImage = new NFVImage();
-            nfvImage.setName("image_1234");
-            nfvImage.setExtId("ext_id");
-            add(nfvImage);
-        }});
-        vdu.setVimInstance(vimInstance);
+        VimInstance vimInstance = createVIM();
         HashSet<VNFComponent> vnfc = new HashSet<>();
         vnfc.add(new VNFComponent());
         vdu.setVnfc(vnfc);
@@ -222,5 +211,27 @@ public class VimTestSuiteClass {
         deploymentFlavour.setFlavour_key("m1.small");
         vimInstance.getFlavours().add(deploymentFlavour);
         return vdu;
+    }
+
+    private VimInstance createVIM() {
+        VimInstance vimInstance = new VimInstance();
+        vimInstance.setName("mock_vim_instance");
+        vimInstance.setSecurityGroups(new HashSet<String>() {{
+            add("mock_vim_instance");
+        }});
+        vimInstance.setKeyPair("test");
+        HashSet<DeploymentFlavour> flavours = new HashSet<>();
+        DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
+        deploymentFlavour.setExtId("ext_id1");
+        deploymentFlavour.setFlavour_key("m1.small");
+        flavours.add(deploymentFlavour);
+        vimInstance.setFlavours(flavours);
+        vimInstance.setImages(new HashSet<NFVImage>() {{
+            NFVImage nfvImage = new NFVImage();
+            nfvImage.setName("image_1234");
+            nfvImage.setExtId("ext_id");
+            add(nfvImage);
+        }});
+        return vimInstance;
     }
 }

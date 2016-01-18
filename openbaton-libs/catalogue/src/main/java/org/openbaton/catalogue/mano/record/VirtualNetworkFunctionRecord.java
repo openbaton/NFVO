@@ -23,7 +23,6 @@ import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPol
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -163,8 +162,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private String name;
     private String type;
     private String endpoint;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private VNFPackage vnfPackage;
     private String task;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration requires;
@@ -435,7 +432,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
                 ", task='" + task + '\'' +
                 ", requires=" + requires +
                 ", provides=" + provides +
@@ -465,14 +461,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public void setProvides(Configuration provides) {
         this.provides = provides;
-    }
-
-    public VNFPackage getVnfPackage() {
-        return vnfPackage;
-    }
-
-    public void setVnfPackage(VNFPackage vnfPackage) {
-        this.vnfPackage = vnfPackage;
     }
 
     public String getTask() {
