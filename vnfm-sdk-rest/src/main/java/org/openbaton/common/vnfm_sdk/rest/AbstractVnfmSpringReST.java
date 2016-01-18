@@ -62,7 +62,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
         vnfmRestHelper.register(vnfmManagerEndpoint);
     }
 
-    @RequestMapping(value = "/core-dummy-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/core-rest-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
         log.debug("Received: " + jsonNfvMessage);
