@@ -28,7 +28,7 @@
                         <spam ng-repeat="(k,v) in vnfdinfo" ng-show="v != null"
                               ng-if="k!='vdu' && k!='deployment_flavour' ">
 
-                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackage'">
+                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackageId'">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
                             </spam>
@@ -54,7 +54,7 @@
                                     </span>
                                 </dd>
                             </spam>
-                            <spam ng-if="k=='vnfPackage'">
+                            <spam ng-if="k=='vnfPackageId'">
                                 <dt>{{k}}</dt>
                                 <dd>
                                        <span ng-repeat="(k,v1) in v">

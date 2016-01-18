@@ -10,20 +10,20 @@
             <li><a href="#vim-instances"><i class="fa fa-tasks"></i>
                 VIM instances</a></li>
             <li class="active"><i class="fa fa-bar-chart-o"></i>
-                {{vimInstance.name}}
+                {{vimInstances.name}}
             </li>
         </ol>
     </div>
 </div>
 <div class="row">
-    <h3>Vim instance Name: {{vimInstance.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco"
+    <h3>Vim instance Name: {{vimInstances.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco"
                                                                                      class="fa fa-refresh"></i>
     </a></h3>
     <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
 
-    <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
+    <!--<h4><a href="#/vim-instances/{{vimInstances.id}}/networks" >Networks<i class=""></i></a></h4>-->
     <dl class="dl-horizontal">
-        <span class="dl-horizontal" ng-repeat="(key,value) in vimInstance">
+        <span class="dl-horizontal" ng-repeat="(key,value) in vimInstances">
             <span ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks'">
                 <dt>{{key}}:</dt>
                 <dd>{{value}}</dd>
@@ -40,9 +40,9 @@
 <tabset>
 
     <tab heading="Networks">
-        <div ng-if="vimInstance.networks.length>0">
+        <div ng-if="vimInstances.networks.length>0">
             <h4>Networks</h4>
-            <!--{{vimInstance.networks[0]}}-->
+            <!--{{vimInstances.networks[0]}}-->
             <table
                     class="table table-bordered table-striped table-hover tablesorter"
                     id="nsdTabletable">
@@ -66,7 +66,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
+                <tr ng-repeat="network in vimInstances.networks| orderBy:predicate:reverse">
                     <td>{{network.id}}</td>
                     <td>{{network.version}}</td>
                     <td>{{network.name}}</td>
@@ -81,9 +81,9 @@
         </div>
     </tab>
     <tab heading="Images">
-        <div ng-if="vimInstance.images.length>0">
+        <div ng-if="vimInstances.images.length>0">
             <h4>Images</h4>
-            <!--{{vimInstance.images[0]}}-->
+            <!--{{vimInstances.images[0]}}-->
             <table
                     class="table table-bordered table-striped table-hover tablesorter"
                     id="nsdTabletable">
@@ -106,7 +106,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
+                <tr ng-repeat="image in vimInstances.images| orderBy:predicate:reverse">
                     <td>{{image.id}}</td>
                     <td>{{image.version}}</td>
                     <td>{{image.extId}}</td>
@@ -121,7 +121,7 @@
         </div>
     </tab>
     <tab heading="Flavours">
-        <div ng-if="vimInstance.flavours.length>0">
+        <div ng-if="vimInstances.flavours.length>0">
             <h4>Flavours</h4>
             <table
                     class="table table-bordered table-striped table-hover tablesorter"
@@ -142,7 +142,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="flavour in vimInstance.flavours| orderBy:predicate:reverse">
+                <tr ng-repeat="flavour in vimInstances.flavours| orderBy:predicate:reverse">
                     <td>{{flavour.id}}</td>
                     <td>{{flavour.flavour_key}}</td>
                     <td>{{flavour.extId}}</td>
@@ -170,7 +170,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">JSON of VIM instance: {{vimInstance.name}}</h4>
+                <h4 class="modal-title" id="myModalLabel">JSON of VIM instance: {{vimInstances.name}}</h4>
             </div>
             <div class="modal-body">
                 <pre id="json">{{vimInstanceJSON}}</pre>

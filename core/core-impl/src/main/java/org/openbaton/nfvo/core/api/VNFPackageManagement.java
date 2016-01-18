@@ -27,10 +27,12 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -69,6 +71,9 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
 
     @Autowired
     private VimBroker vimBroker;
+
+    @Autowired
+    private VimRepository vimInstanceRepository;
 
     @Override
     public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
@@ -202,27 +207,29 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             } else if (vnfPackage.getImageLink() != null) {
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-                    if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-                        Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
-                        image = vim.add(vdu.getVimInstance(), image, vnfPackage.getImageLink());
+                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
+                    if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                        Vim vim = vimBroker.getVim(vimInstance.getType());
+                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                        image = vim.add(vimInstance, image, vnfPackage.getImageLink());
                         if (vdu.getVm_image() == null)
                             vdu.setVm_image(new HashSet<String>());
                         vdu.getVm_image().add(image.getExtId());
-                        vimInstances.add(vdu.getVimInstance().getId());
+                        vimInstances.add(vimInstance.getId());
                     }
                 }
             } else if (imageFile != null) {
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-                    if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-                        Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
-                        image = vim.add(vdu.getVimInstance(), image, imageFile);
+                    VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
+                    if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                        Vim vim = vimBroker.getVim(vimInstance.getType());
+                        log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                        image = vim.add(vimInstance, image, imageFile);
                         if (vdu.getVm_image() == null)
                             vdu.setVm_image(new HashSet<String>());
                         vdu.getVm_image().add(image.getExtId());
-                        vimInstances.add(vdu.getVimInstance().getId());
+                        vimInstances.add(vimInstance.getId());
                     }
                 }
             }
@@ -231,10 +238,11 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 throw new NotFoundException("VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find the right image.");
             }
             for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+                VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
                 boolean found = false;
                 //First, check for image ids
                 if (imageDetails.containsKey("ids")) {
-                    for (NFVImage nfvImage : vdu.getVimInstance().getImages()) {
+                    for (NFVImage nfvImage : vimInstance.getImages()) {
                         if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
                             if (found == false) {
                                 vdu.getVm_image().add(nfvImage.getExtId());
@@ -248,7 +256,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 //If no one was found, check for the names
                 if (found == false) {
                     if (imageDetails.containsKey("names")) {
-                        for (NFVImage nfvImage : vdu.getVimInstance().getImages()) {
+                        for (NFVImage nfvImage : vimInstance.getImages()) {
                             if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
                                 if (found == false) {
                                     vdu.getVm_image().add(nfvImage.getExtId());
@@ -267,24 +275,24 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                             throw new NotFoundException("VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
                         } else if (vnfPackage.getImageLink() != null) {
                             log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
-                            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-                                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
-                                image = vim.add(vdu.getVimInstance(), image, vnfPackage.getImageLink());
+                            if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                                Vim vim = vimBroker.getVim(vimInstance.getType());
+                                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                                image = vim.add(vimInstance, image, vnfPackage.getImageLink());
                                 if (vdu.getVm_image() == null)
                                     vdu.setVm_image(new HashSet<String>());
                                 vdu.getVm_image().add(image.getExtId());
-                                vimInstances.add(vdu.getVimInstance().getId());
+                                vimInstances.add(vimInstance.getId());
                             }
                         } else if (imageFile != null) {
                             log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
-                            if (!vimInstances.contains(vdu.getVimInstance().getId())) { // check if we didn't already upload it
-                                Vim vim = vimBroker.getVim(vdu.getVimInstance().getType());
-                                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vdu.getVimInstance().getName());
-                                image = vim.add(vdu.getVimInstance(), image, imageFile);
+                            if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                                Vim vim = vimBroker.getVim(vimInstance.getType());
+                                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                                image = vim.add(vimInstance, image, imageFile);
                                 if (vdu.getVm_image() == null)
                                     vdu.setVm_image(new HashSet<String>());
-                                vimInstances.add(vdu.getVimInstance().getId());
+                                vimInstances.add(vimInstance.getId());
                                 vdu.getVm_image().add(image.getExtId());
                             }
                         }
@@ -298,11 +306,11 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         }
         vnfPackage.setImage(image);
         myTarFile.close();
-
-        virtualNetworkFunctionDescriptor.setVnfPackage(vnfPackage);
+        vnfPackageRepository.save(vnfPackage);
+        virtualNetworkFunctionDescriptor.setVnfPackageId(vnfPackage.getId());
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-        log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackage().getId() + ") successfully");
+        log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackageId() + ") successfully");
         return virtualNetworkFunctionDescriptor;
     }
 

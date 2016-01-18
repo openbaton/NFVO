@@ -118,7 +118,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
         VNFCInstance vnfcInstance = new VNFCInstance();
-        when(vim.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyMap())).thenReturn(new AsyncResult<>(vnfcInstance));
+        when(vim.allocate(any(VimInstance.class), any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyMap())).thenReturn(new AsyncResult<>(vnfcInstance));
         when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
         log.info("Starting test");
     }
@@ -196,10 +196,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         event.getLifecycle_events().add("command_1");
         virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
         final VimInstance vimInstance = createVimInstance();
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
-            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-                virtualDeploymentUnit.setVimInstance(vimInstance);
-            }
+//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
+//            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
+//                virtualDeploymentUnit.setVimInstance(vimInstance);
+//            }
         when(nsdRepository.findFirstById(anyString())).thenReturn(networkServiceDescriptor);
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(vimInstance);
@@ -238,10 +238,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             add(vimInstance);
         }});
 
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
-            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-                virtualDeploymentUnit.setVimInstance(vimInstance);
-            }
+//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
+//            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
+//                virtualDeploymentUnit.setVimInstance(vimInstance);
+//            }
 
         /**
          * Real Method
@@ -340,7 +340,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 VimInstance vimInstance = new VimInstance();
                 vimInstance.setName("vim_instance");
                 vimInstance.setType("test");
-                vdu.setVimInstance(vimInstance);
                 add(vdu);
             }
         });
@@ -392,7 +391,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                         VimInstance vimInstance = new VimInstance();
                         vimInstance.setName("vim_instance");
                         vimInstance.setType("test");
-                        vdu.setVimInstance(vimInstance);
                         add(vdu);
                     }
                 });

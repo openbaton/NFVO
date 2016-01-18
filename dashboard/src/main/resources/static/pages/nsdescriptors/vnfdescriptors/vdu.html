@@ -31,14 +31,14 @@
                 <div ng-repeat="vdu in vnfdinfo.vdu" ng-show="vdu.id==vduId">
                     <h2>Virtual Deployment Unit</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstances'">
                             <dt>{{k}}</dt>
                             <dd>{{v}}</dd>
 
                         </spam>
-                         <span ng-if="vdu.vimInstance">
-                                 <dt>vimInstance</dt>
-                                 <dd>{{vdu.vimInstance.name}}</dd>
+                         <span ng-if="vdu.vimInstances">
+                                 <dt>vimInstances</dt>
+                                 <dd>{{vdu.vimInstances.name}}</dd>
                          </span>
                     </dl>
                 </div>

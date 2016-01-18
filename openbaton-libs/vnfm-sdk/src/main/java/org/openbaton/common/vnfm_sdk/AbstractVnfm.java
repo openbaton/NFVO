@@ -221,7 +221,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstance());
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     Future<VirtualNetworkFunctionRecord> result = executor.submit(grantOperation);
@@ -232,7 +232,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                        allocateResources.setVimInstance(orVnfmInstantiateMessage.getVimInstance());
+                        allocateResources.setVimInstance(orVnfmInstantiateMessage.getVimInstances());
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
                     }
                     setupProvides(virtualNetworkFunctionRecord);
@@ -242,9 +242,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                             checkEMS(vnfcInstance.getHostname());
 
                     if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstance());
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
                     else
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstance());
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
