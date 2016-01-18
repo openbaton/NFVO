@@ -21,6 +21,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -49,10 +50,20 @@ public class PluginCaller {
     private String replyQueueName;
     private Channel channel;
     private Connection connection;
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter()).setPrettyPrinting().create();
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private int managementPort;
+
+    private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
+        public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return Base64.decodeBase64(json.getAsString());
+        }
+
+        public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(Base64.encodeBase64String(src));
+        }
+    }
 
     public PluginCaller(String pluginId, String brokerIp, String username, String password, int port, int managementPort) throws IOException, TimeoutException, NotFoundException {
         this.pluginId = getFullPluginId(pluginId, brokerIp, username, password, managementPort);
