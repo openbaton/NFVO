@@ -117,8 +117,8 @@ public class NSDUtils {
             boolean fetched = false;
             for (VimInstance vimInstance : vimInstances) {
                 if ((vimInstance.getName() != null && vimInstance.getName().equals(name_id)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
-                    vdu.setVimInstance(vimInstance);
-                    log.debug("Found vimInstance: " + vimInstance);
+//                    vdu.setVimInstances(vimInstance);
+                    log.info("Found vimInstance: " + vimInstance.getName());
                     fetched = true;
                     break;
                 }
@@ -280,18 +280,18 @@ public class NSDUtils {
                 virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
             if (virtualNetworkFunctionDescriptor.getVdu() != null)
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-
+                    VimInstance vimInstance = vimRepository.findFirstByName(virtualDeploymentUnit.getVimInstanceName());
                     if (virtualDeploymentUnit.getScale_in_out() < 1)
                         throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be at least 1");
                     if (virtualDeploymentUnit.getScale_in_out() < virtualDeploymentUnit.getVnfc().size()){
                         throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must not be less than the number of starting VNFComponent: " + virtualDeploymentUnit.getVnfc().size());
                     }
 
-                    for (DeploymentFlavour deploymentFlavour : virtualDeploymentUnit.getVimInstance().getFlavours()){
+                    for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()){
                         flavors.add(deploymentFlavour.getFlavour_key());
                     }
 
-                    for (NFVImage image : virtualDeploymentUnit.getVimInstance().getImages()){
+                    for (NFVImage image : vimInstance.getImages()){
                         imageNames.add(image.getName());
                         imageIds.add(image.getExtId());
                     }

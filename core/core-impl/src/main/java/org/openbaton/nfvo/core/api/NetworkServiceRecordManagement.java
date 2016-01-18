@@ -97,6 +97,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Value("${nfvo.delete.wait:}")
     private String waitForDelete;
 
+    @Autowired
+    private VimRepository vimInstanceRepository;
+
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
         log.debug("Looking for NetworkServiceDescriptor with id: " + idNsd);
@@ -345,11 +348,12 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
             for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
                 for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+                    VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
                     for (VNFComponent vnfc : vdu.getVnfc()) {
                         for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
                             if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
                                 boolean networkExists = false;
-                                for (Network network : vdu.getVimInstance().getNetworks()) {
+                                for (Network network : vimInstance.getNetworks()) {
                                     if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
                                         networkExists = true;
                                         vlr.setStatus(LinkStatus.NORMALOPERATION);
@@ -363,7 +367,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                                     Network network = new Network();
                                     network.setName(vlr.getName());
                                     network.setSubnets(new HashSet<Subnet>());
-                                    network = networkManagement.add(vdu.getVimInstance(), network);
+                                    network = networkManagement.add(vimInstance, network);
                                     vlr.setStatus(LinkStatus.NORMALOPERATION);
                                     vlr.setVim_id(vdu.getId());
                                     vlr.setExtId(network.getExtId());

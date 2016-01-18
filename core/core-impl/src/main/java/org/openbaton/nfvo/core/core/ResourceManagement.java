@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vim.drivers.exceptions.VimDriverException;
 import org.slf4j.Logger;
@@ -70,6 +71,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
+    @Autowired
+    private VimRepository vimInstanceRepository;
+
     private static final Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
 
@@ -93,7 +97,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, VimDriverException, ExecutionException, InterruptedException {
         List<Future<VNFCInstance>> instances = new ArrayList<>();
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
-        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        VimInstance vimInstance = vimInstanceRepository.findFirstByName(virtualDeploymentUnit.getVimInstanceName());
+        vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
@@ -109,7 +114,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                     floatingIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
             }
             log.info("FloatingIp chosen are: " + floatingIps);
-            Future<VNFCInstance> added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, userData, floatingIps);
+            Future<VNFCInstance> added = vim.allocate(vimInstance,virtualDeploymentUnit, virtualNetworkFunctionRecord, component, userData, floatingIps);
             instances.add(added);
         }
         List<String> ids = new ArrayList<>();
@@ -132,14 +137,14 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         return ids;
     }
 
-    private String allocateVNFC(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim, VNFComponent component) throws InterruptedException, ExecutionException, VimException, VimDriverException {
+    private String allocateVNFC(VimInstance vimInstance, VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim, VNFComponent component) throws InterruptedException, ExecutionException, VimException, VimDriverException {
         log.trace("UserData is: " + getUserData(virtualNetworkFunctionRecord.getEndpoint()));
         Map<String, String> floatinIps = new HashMap<>();
         for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
             floatinIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
         }
         log.info("FloatingIp chosen are: " + floatinIps);
-        VNFCInstance added = vim.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
+        VNFCInstance added = vim.allocate(vimInstance, virtualDeploymentUnit, virtualNetworkFunctionRecord, component, getUserData(virtualNetworkFunctionRecord.getEndpoint()), floatinIps).get();
         virtualDeploymentUnit.getVnfc_instance().add(added);
         if (floatinIps.size() > 0 && added.getFloatingIps().size() == 0)
             log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
@@ -232,9 +237,10 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     @Override
     @Async
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException {
-        org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        VimInstance vimInstance = vimInstanceRepository.findFirstByName(virtualDeploymentUnit.getVimInstanceName());
+        org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Removing vnfcInstance: " + vnfcInstance);
-        vim.release(vnfcInstance, virtualDeploymentUnit.getVimInstance()).get();
+        vim.release(vnfcInstance, vimInstance).get();
         virtualDeploymentUnit.getVnfc().remove(vnfcInstance.getVnfComponent());
         return new AsyncResult<>(null);
     }
@@ -262,10 +268,11 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     @Override
     public String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd) throws InterruptedException, ExecutionException, VimException, VimDriverException {
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
-        vim = vimBroker.getVim(virtualDeploymentUnit.getVimInstance().getType());
+        VimInstance vimInstance = vimInstanceRepository.findFirstByName(virtualDeploymentUnit.getVimInstanceName());
+        vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
-        return allocateVNFC(virtualDeploymentUnit, virtualNetworkFunctionRecord, vim, componentToAdd);
+        return allocateVNFC(vimInstance, virtualDeploymentUnit, virtualNetworkFunctionRecord, vim, componentToAdd);
     }
 }

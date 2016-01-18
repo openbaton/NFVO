@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
@@ -82,8 +81,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String type;
     @JsonIgnore
     private String endpoint;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private VNFPackage vnfPackage;
+    private String vnfPackageId;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> requires;
     @ElementCollection(fetch = FetchType.EAGER)
@@ -126,7 +124,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
+                ", vnfPackageId=" + vnfPackageId +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 ", cyclicDependency=" + cyclicDependency +
@@ -248,12 +246,12 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         this.type = type;
     }
 
-    public VNFPackage getVnfPackage() {
-        return vnfPackage;
+    public String  getVnfPackageId() {
+        return vnfPackageId;
     }
 
-    public void setVnfPackage(VNFPackage vnfPackage) {
-        this.vnfPackage = vnfPackage;
+    public void setVnfPackageId(String  vnfPackageId) {
+        this.vnfPackageId = vnfPackageId;
     }
 
     public Set<LifecycleEvent> getLifecycle_event() {

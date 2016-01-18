@@ -23,10 +23,9 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
@@ -47,8 +46,7 @@ public class GrantoperationTask extends AbstractTask {
     private String checkQuota;
 
     @Autowired
-    @Qualifier("vnfmRegister")
-    private VnfmRegister vnfmRegister;
+    private VimRepository vimRepository;
 
     @Autowired
     private VNFLifecycleOperationGranting lifecycleOperationGranting;

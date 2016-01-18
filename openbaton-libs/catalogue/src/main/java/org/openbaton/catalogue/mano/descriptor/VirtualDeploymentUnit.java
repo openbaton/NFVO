@@ -255,11 +255,11 @@ public class VirtualDeploymentUnit implements Serializable {
         this.name = name;
     }
 
-//    public VimInstance getVimInstance() {
+//    public VimInstance getVimInstances() {
 //        return vimInstance;
 //    }
 //
-//    public void setVimInstance(VimInstance vimInstance) {
+//    public void setVimInstances(VimInstance vimInstance) {
 //        this.vimInstance = vimInstance;
 //    }
 
