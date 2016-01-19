@@ -48,7 +48,7 @@
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
                     <div class="form-group" ng-repeat="(key,value) in vduCreate"
-                         ng-if="key!='vimInstances' && key!='lifecycle_event' && key!='monitoring_parameter'
+                         ng-if="key!='vimInstance' && key!='lifecycle_event' && key!='monitoring_parameter'
                          && key!='vm_image'&& key!='vnfc'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
@@ -58,11 +58,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="vimInstances" class="col-sm-4 control-label">vimInstances</label>
+                        <label for="vimInstance" class="col-sm-4 control-label">vimInstance</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="vimInstances" name="{{key}}"
-                                   ng-model="vduCreate['vimInstances']['name']"/>
+                            <input type="text" class="form-control" id="vimInstance" name="{{key}}"
+                                   ng-model="vduCreate['vimInstance']['name']"/>
                         </div>
 
 

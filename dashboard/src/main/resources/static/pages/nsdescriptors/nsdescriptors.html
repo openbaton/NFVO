@@ -138,7 +138,7 @@
 
                         <div class="col-sm-6">
                             <!--          <select type="text" class="form-control" id="vimInstanceName" name="{{key}}"
-                                             ng-model="vduCreate['vimInstances']['name']"/>-->
+                                             ng-model="vduCreate['vimInstance']['name']"/>-->
                             <select name="typeSelect" class="form-control modal-select"
                                     ng-model="vduCreate['vimInstanceName']"
 
@@ -767,12 +767,12 @@
 
                                     <div class="row">
                                         <spam ng-repeat="(key,value) in vnfd "
-                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackageLocation'">
+                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackage'">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last"><br/></spam>
                                         </spam>
-                                        <span ng-if="vnfd.vnfPackageLocation"><b>vnfPackageLocation:</b>
-                                        <span ng-repeat="(key,value) in vnfd.vnfPackageLocation">
+                                        <span ng-if="vnfd.vnfPackage"><b>vnfPackage:</b>
+                                        <span ng-repeat="(key,value) in vnfd.vnfPackage">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last">,</spam>
                                         </span>
@@ -829,7 +829,7 @@
                     <div class="row">
                         <!--{{lifecycle_event}}-->
                         <div class="form-group" ng-repeat="(key,value) in lifecycle_event"
-                             ng-if="key!='vimInstances' && key!='lifecycle_events'">
+                             ng-if="key!='vimInstance' && key!='lifecycle_events'">
                             <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                             <div class="col-sm-6">
