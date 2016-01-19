@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -232,7 +233,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                        allocateResources.setVimInstance(orVnfmInstantiateMessage.getVimInstances());
+                        allocateResources.setVimInstances(orVnfmInstantiateMessage.getVimInstances());
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
                     }
                     setupProvides(virtualNetworkFunctionRecord);
@@ -337,9 +338,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      * @throws BadFormatException
      * @throws NotFoundException
      */
-    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension, VimInstance vimInstance) throws BadFormatException, NotFoundException {
+    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension, List<VimInstance> vimInstances) throws BadFormatException, NotFoundException {
         try {
-            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords, vimInstance);
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords, vimInstances);
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
                 for (VirtualLinkRecord virtualLinkRecord : virtualLinkRecords) {
                     if (internalVirtualLink.getName().equals(virtualLinkRecord.getName())) {
@@ -422,7 +423,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     class AllocateResources implements Callable<VirtualNetworkFunctionRecord> {
         private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        private VimInstance vimInstance;
+        private List<VimInstance> vimInstances;
 
         public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
             return virtualNetworkFunctionRecord;
@@ -438,7 +439,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             try {
 
 
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(this.vimInstance, virtualNetworkFunctionRecord));
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(this.vimInstances, virtualNetworkFunctionRecord));
             } catch (Exception e) {
                 log.error("" + e.getMessage());
                 throw new VnfmSdkException("Not able to allocate Resources", e, virtualNetworkFunctionRecord);
@@ -459,8 +460,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             return this.allocateResources();
         }
 
-        public void setVimInstance(VimInstance vimInstance) {
-            this.vimInstance = vimInstance;
+        public void setVimInstances(List<VimInstance> vimInstances) {
+            this.vimInstances = vimInstances;
         }
     }
 }
