@@ -81,7 +81,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String type;
     @JsonIgnore
     private String endpoint;
-    private String vnfPackageId;
+    private String vnfPackageLocation;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> requires;
     @ElementCollection(fetch = FetchType.EAGER)
@@ -124,7 +124,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackageId=" + vnfPackageId +
+                ", vnfPackageLocation=" + vnfPackageLocation +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 ", cyclicDependency=" + cyclicDependency +
@@ -246,12 +246,12 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         this.type = type;
     }
 
-    public String  getVnfPackageId() {
-        return vnfPackageId;
+    public String getVnfPackageLocation() {
+        return vnfPackageLocation;
     }
 
-    public void setVnfPackageId(String  vnfPackageId) {
-        this.vnfPackageId = vnfPackageId;
+    public void setVnfPackageLocation(String vnfPackageLocation) {
+        this.vnfPackageLocation = vnfPackageLocation;
     }
 
     public Set<LifecycleEvent> getLifecycle_event() {
