@@ -439,7 +439,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             try {
 
 
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(this.vimInstances, virtualNetworkFunctionRecord));
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(virtualNetworkFunctionRecord));
             } catch (Exception e) {
                 log.error("" + e.getMessage());
                 throw new VnfmSdkException("Not able to allocate Resources", e, virtualNetworkFunctionRecord);
