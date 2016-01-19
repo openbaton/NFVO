@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -64,7 +64,6 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     @Autowired
     @Qualifier("vnfmRegister")
     protected VnfmRegister vnfmRegister;
-    protected String tempDestination;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     protected VNFRecordDependency dependency;
     @Autowired
@@ -119,15 +118,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
                 throw new RuntimeException(e1);
             }
             NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-            if (getTempDestination() != null) {
-                vnfmSender.sendCommand(message, getTempDestination());
-            } else {
-                try {
-                    vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-                } catch (NotFoundException e1) {
-                    e1.printStackTrace();
-                    throw new RuntimeException(e1);
-                }
+            try {
+                vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+            } catch (NotFoundException e1) {
+                e1.printStackTrace();
+                throw new RuntimeException(e1);
             }
             if (log.isDebugEnabled()) {
                 log.error("There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask() + ". ", e);
@@ -174,14 +169,6 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     protected VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
         String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
         return (VnfmSender) this.context.getBean(senderName);
-    }
-
-    protected String getTempDestination() {
-        return tempDestination;
-    }
-
-    public void setTempDestination(String tempDestination) {
-        this.tempDestination = tempDestination;
     }
 
     protected void changeStatus() {

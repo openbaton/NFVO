@@ -2,11 +2,8 @@ package org.openbaton.nfvo.common.configuration;
 
 import com.google.gson.*;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,8 +25,11 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
         String action = json.getAsJsonObject().get("action").getAsString();
         NFVMessage result;
         switch (action){
+            case "ALLOCATE_RESOURCES":
+                result = gson.fromJson(json, VnfmOrAllocateResourcesMessage.class);
+                break;
             case "INSTANTIATE":
-                log.debug("gson is: " + gson);
+                log.trace("gson is: " + gson);
                 result = gson.fromJson(json, VnfmOrInstantiateMessage.class);
                 break;
             case "SCALED":

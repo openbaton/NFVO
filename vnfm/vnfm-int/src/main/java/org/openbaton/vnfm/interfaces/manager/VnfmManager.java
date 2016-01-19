@@ -45,7 +45,7 @@ public interface VnfmManager {
 
     VnfmSender getVnfmSender(EndpointType endpointType);
 
-    String executeAction(NFVMessage message, String tempDestination) throws VimException, NotFoundException, ExecutionException, InterruptedException;
+    String executeAction(NFVMessage message) throws VimException, NotFoundException, ExecutionException, InterruptedException;
 
     @Async
     Future<Void> sendMessageToVNFR(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;

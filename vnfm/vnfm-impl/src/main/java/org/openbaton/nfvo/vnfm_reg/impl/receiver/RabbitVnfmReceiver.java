@@ -49,7 +49,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
         log.debug("CORE: Received: " + message.getAction());
 
         log.debug("----------Executing ACTION: " + message.getAction());
-        String res = vnfmManager.executeAction(message, null);
+        String res = vnfmManager.executeAction(message);
         log.debug("-----------Finished ACTION: " + message.getAction());
         return res;
     }
@@ -60,7 +60,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
         log.debug("CORE: Received: " + message.getAction());
 
         log.debug("----------Executing ACTION: " + message.getAction());
-        vnfmManager.executeAction(message, null);
+        vnfmManager.executeAction(message);
         log.debug("-----------Finished ACTION: " + message.getAction());
     }
 }
