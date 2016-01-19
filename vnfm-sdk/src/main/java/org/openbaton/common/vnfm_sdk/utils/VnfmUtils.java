@@ -28,13 +28,14 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by lto on 23/09/15.
  */
 public class VnfmUtils {
 
-    public static NFVMessage getNfvInstantiateMessage(VimInstance vimInstance, VirtualNetworkFunctionRecord payload) {
+    public static NFVMessage getNfvInstantiateMessage(List<VimInstance> vimInstance, VirtualNetworkFunctionRecord payload) {
         NFVMessage nfvMessage = new VnfmOrAllocateResourcesMessage(payload,vimInstance);
         return nfvMessage;
     }

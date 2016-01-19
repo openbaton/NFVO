@@ -25,7 +25,9 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -40,7 +42,7 @@ public class VNFRUtils {
 
     private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr, VimInstance vimInstance) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr, List<VimInstance> vimInstances) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
@@ -49,12 +51,12 @@ public class VNFRUtils {
         Configuration configuration = new Configuration();
         if (vnfd.getConfigurations() != null) {
             configuration.setName(vnfd.getConfigurations().getName());
-        }else
+        } else
             configuration.setName(virtualNetworkFunctionRecord.getName());
 
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         if (vnfd.getConfigurations() != null) {
-            for (ConfigurationParameter configurationParameter: vnfd.getConfigurations().getConfigurationParameters()){
+            for (ConfigurationParameter configurationParameter : vnfd.getConfigurations().getConfigurationParameters()) {
                 ConfigurationParameter cp = new ConfigurationParameter();
                 cp.setConfKey(configurationParameter.getConfKey());
                 cp.setValue(configurationParameter.getValue());
@@ -79,10 +81,10 @@ public class VNFRUtils {
         }
 
         //Set Faultmanagement policies
-        Set<VNFFaultManagementPolicy> vnfFaultManagementPolicies= new HashSet<>();
-        if(vnfd.getFault_management_policy()!=null){
-            log.debug("Adding the fault management policies: "+vnfd.getFault_management_policy());
-            for(VNFFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()){
+        Set<VNFFaultManagementPolicy> vnfFaultManagementPolicies = new HashSet<>();
+        if (vnfd.getFault_management_policy() != null) {
+            log.debug("Adding the fault management policies: " + vnfd.getFault_management_policy());
+            for (VNFFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()) {
                 vnfFaultManagementPolicies.add(vnffmp);
             }
         }
@@ -103,29 +105,29 @@ public class VNFRUtils {
             }
         }
 
-        if (vnfd.getVnfPackageId() != null) {
-            VNFPackage vnfPackage = new VNFPackage();
-            vnfPackage.setImageLink(vnfd.getVnfPackageId().getImageLink());
-            vnfPackage.setScriptsLink(vnfd.getVnfPackageId().getScriptsLink());
-            vnfPackage.setName(vnfd.getVnfPackageId().getName());
-
-            //TODO check for ordering
-            vnfPackage.setScripts(new HashSet<Script>());
-
-            for (Script script : vnfd.getVnfPackageId().getScripts()) {
-                Script s = new Script();
-                s.setName(script.getName());
-                s.setPayload(script.getPayload());
-                vnfPackage.getScripts().add(s);
-            }
-
-            vnfPackage.setImage(vnfd.getVnfPackageId().getImage());
-        }
+//        if (vnfd.getVnfPackageId() != null) {
+//            VNFPackage vnfPackage = new VNFPackage();
+//            vnfPackage.setImageLink(vnfd.getVnfPackageId().getImageLink());
+//            vnfPackage.setScriptsLink(vnfd.getVnfPackageId().getScriptsLink());
+//            vnfPackage.setName(vnfd.getVnfPackageId().getName());
+//
+//            //TODO check for ordering
+//            vnfPackage.setScripts(new HashSet<Script>());
+//
+//            for (Script script : vnfd.getVnfPackageId().getScripts()) {
+//                Script s = new Script();
+//                s.setName(script.getName());
+//                s.setPayload(script.getPayload());
+//                vnfPackage.getScripts().add(s);
+//            }
+//
+//            vnfPackage.setImage(vnfd.getVnfPackageId().getImage());
+//        }
+        virtualNetworkFunctionRecord.setPackageId(vnfd.getVnfPackageId());
 
         if (vnfd.getEndpoint() != null) {
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
-        }
-        else
+        } else
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getType());
 
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
@@ -199,8 +201,12 @@ public class VNFRUtils {
         // TODO find a way to choose between deployment flavors and create the new one
         virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vimInstance)) {
-                throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vimInstance);
+            for (VimInstance vi : vimInstances) {
+                if (virtualDeploymentUnit.getVimInstanceName().equals(vi.getName())) {
+                    if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
+                        throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+                    }
+                }
             }
         }
 
@@ -224,8 +230,8 @@ public class VNFRUtils {
             InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
             internalVirtualLink_new.setName(internalVirtualLink.getName());
 
-            for (VirtualLinkRecord virtualLinkRecord : vlr){
-                if (virtualLinkRecord.getName().equals(internalVirtualLink_new.getName())){
+            for (VirtualLinkRecord virtualLinkRecord : vlr) {
+                if (virtualLinkRecord.getName().equals(internalVirtualLink_new.getName())) {
                     internalVirtualLink_new.setExtId(virtualLinkRecord.getExtId());
                 }
             }

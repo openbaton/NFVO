@@ -169,6 +169,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Configuration provides;
     @JsonIgnore
     private boolean cyclicDependency;
+    private String packageId;
 
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
@@ -402,43 +403,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "VirtualNetworkFunctionRecord{" +
-                "id='" + id + '\'' +
-                ", hb_version=" + hb_version +
-                ", auto_scale_policy=" + auto_scale_policy +
-                ", connection_point=" + connection_point +
-                ", deployment_flavour_key='" + deployment_flavour_key + '\'' +
-                ", configurations=" + configurations +
-                ", lifecycle_event=" + lifecycle_event +
-                ", lifecycle_event_history=" + lifecycle_event_history +
-                ", localization='" + localization + '\'' +
-                ", monitoring_parameter=" + monitoring_parameter +
-                ", vdu=" + vdu +
-                ", vendor='" + vendor + '\'' +
-                ", version='" + version + '\'' +
-                ", virtual_link=" + virtual_link +
-                ", parent_ns_id='" + parent_ns_id + '\'' +
-                ", descriptor_reference='" + descriptor_reference + '\'' +
-                ", vnfm_id='" + vnfm_id + '\'' +
-                ", connected_external_virtual_link=" + connected_external_virtual_link +
-                ", vnf_address=" + vnf_address +
-                ", status=" + status +
-                ", notification=" + notification +
-                ", audit_log='" + audit_log + '\'' +
-                ", runtime_policy_info=" + runtime_policy_info +
-                ", fault_management_policy=" + fault_management_policy +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", endpoint='" + endpoint + '\'' +
-                ", task='" + task + '\'' +
-                ", requires=" + requires +
-                ", provides=" + provides +
-                ", cyclicDependency=" + cyclicDependency +
-                '}';
-    }
-
     public Set<VNFFaultManagementPolicy> getFault_management_policy() {
         return fault_management_policy;
     }
@@ -469,5 +433,51 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
     public void setTask(String task) {
         this.task = task;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    @Override
+    public String toString() {
+        return "VirtualNetworkFunctionRecord{" +
+                "audit_log='" + audit_log + '\'' +
+                ", id='" + id + '\'' +
+                ", hb_version=" + hb_version +
+                ", auto_scale_policy=" + auto_scale_policy +
+                ", connection_point=" + connection_point +
+                ", deployment_flavour_key='" + deployment_flavour_key + '\'' +
+                ", configurations=" + configurations +
+                ", lifecycle_event=" + lifecycle_event +
+                ", lifecycle_event_history=" + lifecycle_event_history +
+                ", localization='" + localization + '\'' +
+                ", monitoring_parameter=" + monitoring_parameter +
+                ", vdu=" + vdu +
+                ", vendor='" + vendor + '\'' +
+                ", version='" + version + '\'' +
+                ", virtual_link=" + virtual_link +
+                ", parent_ns_id='" + parent_ns_id + '\'' +
+                ", descriptor_reference='" + descriptor_reference + '\'' +
+                ", vnfm_id='" + vnfm_id + '\'' +
+                ", connected_external_virtual_link=" + connected_external_virtual_link +
+                ", vnf_address=" + vnf_address +
+                ", status=" + status +
+                ", notification=" + notification +
+                ", runtime_policy_info=" + runtime_policy_info +
+                ", fault_management_policy=" + fault_management_policy +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", endpoint='" + endpoint + '\'' +
+                ", task='" + task + '\'' +
+                ", requires=" + requires +
+                ", provides=" + provides +
+                ", cyclicDependency=" + cyclicDependency +
+                ", packageId='" + packageId + '\'' +
+                '}';
     }
 }
