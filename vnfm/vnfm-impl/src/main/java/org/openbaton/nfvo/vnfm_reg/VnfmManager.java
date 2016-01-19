@@ -265,7 +265,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
-    public String executeAction(NFVMessage nfvMessage, String tempDestination) throws VimException, NotFoundException, ExecutionException, InterruptedException {
+    public String executeAction(NFVMessage nfvMessage) throws VimException, NotFoundException, ExecutionException, InterruptedException {
 
         String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
         String beanName = actionName + "Task";
@@ -289,7 +289,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
-            task.setTempDestination(tempDestination);
         }
 
         virtualNetworkFunctionRecord.setTask(actionName);

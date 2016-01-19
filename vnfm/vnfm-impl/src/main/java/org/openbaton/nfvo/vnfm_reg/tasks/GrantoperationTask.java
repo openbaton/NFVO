@@ -23,7 +23,6 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,9 +45,6 @@ public class GrantoperationTask extends AbstractTask {
     private String checkQuota;
 
     @Autowired
-    private VimRepository vimRepository;
-
-    @Autowired
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
     @Override
@@ -61,7 +57,6 @@ public class GrantoperationTask extends AbstractTask {
             if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-            log.debug("SENDING GRANT LIFECYCLE OPERATION on temp queue:" + getTempDestination());
             saveVirtualNetworkFunctionRecord();
             log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
             OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
@@ -75,7 +70,6 @@ public class GrantoperationTask extends AbstractTask {
                 if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null)
                     virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-                log.debug("SENDING GRANT LIFECYCLE OPERATION on temp queue:" + getTempDestination());
                 saveVirtualNetworkFunctionRecord();
                 log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
                 OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
