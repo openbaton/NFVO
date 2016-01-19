@@ -307,10 +307,10 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         vnfPackage.setImage(image);
         myTarFile.close();
         vnfPackageRepository.save(vnfPackage);
-        virtualNetworkFunctionDescriptor.setVnfPackageId(vnfPackage.getId());
+        virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-        log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackageId() + ") successfully");
+        log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + ") successfully");
         return virtualNetworkFunctionDescriptor;
     }
 
@@ -343,6 +343,11 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     @Override
     public void delete(String id) {
         //TODO remove image in the VIM
-        vnfPackageRepository.delete(vnfPackageRepository.findOne(id));
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll())
+            if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
+                vnfdRepository.delete(virtualNetworkFunctionDescriptor.getId());
+                break;
+            }
+        vnfPackageRepository.delete(id);
     }
 }

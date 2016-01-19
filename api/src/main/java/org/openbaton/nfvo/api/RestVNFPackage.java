@@ -62,7 +62,7 @@ public class RestVNFPackage {
 //            }
 //            for (VimInstance vimInstance : vimInstances.values())
 //                vimManagement.refresh(vimInstance);
-            return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageId() + "\"}";
+            return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
         } else throw new IOException("File is empty!");
     }
 

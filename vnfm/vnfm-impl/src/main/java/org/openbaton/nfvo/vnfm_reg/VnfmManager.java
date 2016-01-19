@@ -41,7 +41,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
@@ -66,6 +68,7 @@ import java.util.concurrent.Future;
 @Service
 @Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
+@ConfigurationProperties
 public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
     private static Map<String, Map<String, Integer>> vnfrNames;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -90,6 +93,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private VimRepository vimInstanceRepository;
     @Autowired
     private Gson gson;
+    @Value("${nfvo.start.ordered:")
+    private String ordered;
 
     private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list =
@@ -194,7 +199,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
 
         // calculate dependencies
-        fillVnfrNames(networkServiceDescriptor, dependencies, vnfrNamesWeighted);
+        if (ordered != null && Boolean.parseBoolean(ordered))
+            fillVnfrNames(networkServiceDescriptor, dependencies, vnfrNamesWeighted);
 
         vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
 
@@ -214,7 +220,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             // Setting extension in CoreMassage
 
             NFVMessage message;
-            VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageId());
+            VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
             message = new OrVnfmInstantiateMessage(vnfd, getDeploymentFlavour(vnfd), vnfd.getName(), networkServiceRecord.getVlr(), extension, vimInstances, vnfPackage);
 
             VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
@@ -285,6 +291,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         } else if (nfvMessage.getAction().ordinal() == Action.HEAL.ordinal()) {
             OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
             virtualNetworkFunctionRecord = orVnfmHealVNFRequestMessage.getVirtualNetworkFunctionRecord();
+        } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
+            VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage = (VnfmOrAllocateResourcesMessage) nfvMessage;
+            virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
         } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();

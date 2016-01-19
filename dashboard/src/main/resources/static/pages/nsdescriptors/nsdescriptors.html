@@ -767,12 +767,12 @@
 
                                     <div class="row">
                                         <spam ng-repeat="(key,value) in vnfd "
-                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackageId'">
+                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackageLocation'">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last"><br/></spam>
                                         </spam>
-                                        <span ng-if="vnfd.vnfPackageId"><b>vnfPackageId:</b>
-                                        <span ng-repeat="(key,value) in vnfd.vnfPackageId">
+                                        <span ng-if="vnfd.vnfPackageLocation"><b>vnfPackageLocation:</b>
+                                        <span ng-repeat="(key,value) in vnfd.vnfPackageLocation">
                                             <b>{{key}}</b>: {{value}}
                                             <spam ng-if="!$last">,</spam>
                                         </span>

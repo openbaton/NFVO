@@ -105,25 +105,25 @@ public class VNFRUtils {
             }
         }
 
-//        if (vnfd.getVnfPackageId() != null) {
+//        if (vnfd.getVnfPackageLocation() != null) {
 //            VNFPackage vnfPackage = new VNFPackage();
-//            vnfPackage.setImageLink(vnfd.getVnfPackageId().getImageLink());
-//            vnfPackage.setScriptsLink(vnfd.getVnfPackageId().getScriptsLink());
-//            vnfPackage.setName(vnfd.getVnfPackageId().getName());
+//            vnfPackage.setImageLink(vnfd.getVnfPackageLocation().getImageLink());
+//            vnfPackage.setScriptsLink(vnfd.getVnfPackageLocation().getScriptsLink());
+//            vnfPackage.setName(vnfd.getVnfPackageLocation().getName());
 //
 //            //TODO check for ordering
 //            vnfPackage.setScripts(new HashSet<Script>());
 //
-//            for (Script script : vnfd.getVnfPackageId().getScripts()) {
+//            for (Script script : vnfd.getVnfPackageLocation().getScripts()) {
 //                Script s = new Script();
 //                s.setName(script.getName());
 //                s.setPayload(script.getPayload());
 //                vnfPackage.getScripts().add(s);
 //            }
 //
-//            vnfPackage.setImage(vnfd.getVnfPackageId().getImage());
+//            vnfPackage.setImage(vnfd.getVnfPackageLocation().getImage());
 //        }
-        virtualNetworkFunctionRecord.setPackageId(vnfd.getVnfPackageId());
+        virtualNetworkFunctionRecord.setPackageId(vnfd.getVnfPackageLocation());
 
         if (vnfd.getEndpoint() != null) {
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
