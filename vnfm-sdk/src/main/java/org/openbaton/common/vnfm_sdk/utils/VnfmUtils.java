@@ -36,7 +36,7 @@ import java.util.List;
 public class VnfmUtils {
 
     public static NFVMessage getNfvInstantiateMessage(List<VimInstance> vimInstance, VirtualNetworkFunctionRecord payload) {
-        NFVMessage nfvMessage = new VnfmOrAllocateResourcesMessage(payload,vimInstance);
+        NFVMessage nfvMessage = new VnfmOrAllocateResourcesMessage(payload);
         return nfvMessage;
     }
 
