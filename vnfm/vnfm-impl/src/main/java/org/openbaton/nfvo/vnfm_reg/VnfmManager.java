@@ -305,7 +305,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         log.debug("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
+        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal())
             return gson.toJson(asyncExecutor.submit(task).get());
         else {
             asyncExecutor.submit(task);
@@ -417,6 +417,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
         message.setAction(Action.SCALE_OUT);
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+        message.setVnfPackage(vnfPackageRepository.findFirstById(virtualNetworkFunctionRecord.getPackageId()));
         message.setComponent(component);
         message.setDependency(dependency);
         VnfmSender vnfmSender;
