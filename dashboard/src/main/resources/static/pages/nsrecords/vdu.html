@@ -36,7 +36,7 @@
             <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
                 <h2>Virtual Deployment Unit</h2>
                 <dl class="dl-horizontal">
-                    <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstances' && k!='vnfc' && k!='vnfc_instance'">
+                    <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance' && k!='vnfc' && k!='vnfc_instance'">
                         <dt>{{k}}</dt>
                         <dd>{{v}}</dd>
                     </spam>
@@ -60,9 +60,9 @@
                         </dd>
                         </span>
                     </spam>
-                         <span ng-if="vdu.vimInstances">
-                                 <dt>vimInstances</dt>
-                                 <dd><a href="#vim-instances/{{vdu.vimInstances.id}}">{{vdu.vimInstances.name}}</a></dd>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd><a href="#vim-instances/{{vdu.vimInstance.id}}">{{vdu.vimInstance.name}}</a></dd>
                          </span>
                 </dl>
                 <tabset ng-if="vdu.vnfc_instance.length > 0">
