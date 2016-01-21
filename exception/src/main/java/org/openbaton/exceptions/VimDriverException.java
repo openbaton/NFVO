@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.vim.drivers.exceptions;
+package org.openbaton.exceptions;
 
 import org.openbaton.catalogue.nfvo.Server;
 
