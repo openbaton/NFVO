@@ -28,10 +28,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -40,6 +37,7 @@ import org.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +63,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     @Mock
     private NetworkServiceDescriptorRepository nsdRepository;
     @Mock
+    private VnfPackageRepository vnfPackageRepository ;
+    @Mock
     private NSDUtils nsdUtils;
     @Mock
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
@@ -83,6 +83,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         MockitoAnnotations.initMocks(this);
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(nsdRepository.save(any(NetworkServiceDescriptor.class))).thenReturn(nsd_exp);
+
+        when(vnfPackageRepository.save(any(VNFPackage.class))).thenReturn(new VNFPackage());
 
         when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
             VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
@@ -244,6 +246,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
                         add(vdu);
                     }
                 });
+        virtualNetworkFunctionDescriptor.setVnfPackageLocation("http://we.love.small.boobs.com");
         return virtualNetworkFunctionDescriptor;
     }
 
