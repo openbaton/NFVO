@@ -17,7 +17,7 @@ package org.openbaton.vim.drivers.interfaces;
 
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimDriverException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
