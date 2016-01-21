@@ -31,6 +31,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
+import org.openbaton.nfvo.repositories.ScriptRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -71,7 +72,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
 
     @Autowired
     private VimBroker vimBroker;
-
+    @Autowired
+    private ScriptRepository scriptRepository;
     @Autowired
     private VimRepository vimInstanceRepository;
 
@@ -349,5 +351,10 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 break;
             }
         vnfPackageRepository.delete(id);
+    }
+
+    @Override
+    public Script updateScript(Script script) {
+        return scriptRepository.save(script);
     }
 }

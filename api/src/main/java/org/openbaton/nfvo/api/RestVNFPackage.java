@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
@@ -51,7 +52,7 @@ public class RestVNFPackage {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public String  onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
+    public String onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes);
@@ -87,6 +88,31 @@ public class RestVNFPackage {
     public Iterable<VNFPackage> findAll() {
         return vnfPackageManagement.query();
     }
+
+    @RequestMapping(value = "{id}/scripts/{scriptId}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getScript(@PathVariable("id") String id, @PathVariable("scriptId") String scriptId) throws NotFoundException {
+        VNFPackage vnfPackage = vnfPackageManagement.query(id);
+        for (Script script : vnfPackage.getScripts()) {
+            if (script.getId().equals(scriptId)) {
+                return new String(script.getPayload());
+            }
+        }
+        throw new NotFoundException("Script with id " + scriptId + " was not found into package with id " + id);
+    }
+
+    @RequestMapping(value = "{id}/scripts/{scriptId}", method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public String updateScript(@PathVariable("id") String id, @PathVariable("scriptId") String scriptId, @RequestBody String scriptNew) throws NotFoundException {
+        VNFPackage vnfPackage = vnfPackageManagement.query(id);
+        for (Script script : vnfPackage.getScripts()) {
+            if (script.getId().equals(scriptId)) {
+                script.setPayload(scriptNew.getBytes());
+                script = vnfPackageManagement.updateScript(script);
+                return new String(script.getPayload());
+            }
+        }
+        throw new NotFoundException("Script with id " + scriptId + " was not found into package with id " + id);
+    }
+
 
     /**
      * Returns the VNFPackage selected by id
