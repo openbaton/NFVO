@@ -300,6 +300,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
         }
 
+        if (!nsrRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
+            return null;
+
         virtualNetworkFunctionRecord.setTask(actionName);
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 

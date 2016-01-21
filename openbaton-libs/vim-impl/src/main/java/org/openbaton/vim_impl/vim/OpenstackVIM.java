@@ -25,9 +25,9 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.openbaton.exceptions.VimDriverException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
@@ -478,36 +478,7 @@ public class OpenstackVIM extends Vim {
             VimDriverException vimDriverException = (VimDriverException) e.getCause();
             server = vimDriverException.getServer();
             if (server != null) {
-                vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server);
-                if (vdu.getVnfc_instance() == null) {
-                    vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-                }
-                vnfcInstance.setVnfComponent(vnfComponent);
-
-                vnfcInstance.setIps(new HashSet<Ip>());
-                vnfcInstance.setFloatingIps(new HashSet<Ip>());
-
-                if (floatingIps.size() != 0) {
-                    for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
-                        Ip ip = new Ip();
-                        ip.setNetName(fip.getKey());
-                        ip.setIp(fip.getValue());
-                        vnfcInstance.getFloatingIps().add(ip);
-                    }
-                }
-
-                if (vdu.getVnfc_instance() == null)
-                    vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-
-                for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
-                    Ip ip = new Ip();
-                    ip.setNetName(network.getKey());
-                    ip.setIp(network.getValue().iterator().next());
-                    vnfcInstance.getIps().add(ip);
-                    for (String ip1 : server.getIps().get(network.getKey())) {
-                        vnfr.getVnf_address().add(ip1);
-                    }
-                }
+                vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
             }
             throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e, vnfcInstance);
         } catch (RemoteException e) {
@@ -516,13 +487,13 @@ public class OpenstackVIM extends Vim {
         }
 
         log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
-        VNFCInstance vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server);
+        VNFCInstance vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
 
         log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
         return new AsyncResult<>(vnfcInstance);
     }
 
-    private VNFCInstance getVnfcInstanceFromServer(VimInstance vimInstance, VNFComponent vnfComponent, String hostname, Server server) {
+    private VNFCInstance getVnfcInstanceFromServer(VimInstance vimInstance, VNFComponent vnfComponent, String hostname, Server server, VirtualDeploymentUnit vdu, Map<String, String> floatingIps, VirtualNetworkFunctionRecord vnfr) {
         VNFCInstance vnfcInstance = new VNFCInstance();
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
@@ -541,6 +512,35 @@ public class OpenstackVIM extends Vim {
                     connectionPoint_vnfci.setFloatingIp(entry.getValue());
 
             vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
+        }
+        if (vdu.getVnfc_instance() == null) {
+            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+        }
+        vnfcInstance.setVnfComponent(vnfComponent);
+
+        vnfcInstance.setIps(new HashSet<Ip>());
+        vnfcInstance.setFloatingIps(new HashSet<Ip>());
+
+        if (floatingIps.size() != 0) {
+            for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
+                Ip ip = new Ip();
+                ip.setNetName(fip.getKey());
+                ip.setIp(fip.getValue());
+                vnfcInstance.getFloatingIps().add(ip);
+            }
+        }
+
+        if (vdu.getVnfc_instance() == null)
+            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+
+        for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
+            Ip ip = new Ip();
+            ip.setNetName(network.getKey());
+            ip.setIp(network.getValue().iterator().next());
+            vnfcInstance.getIps().add(ip);
+            for (String ip1 : server.getIps().get(network.getKey())) {
+                vnfr.getVnf_address().add(ip1);
+            }
         }
         return vnfcInstance;
     }
