@@ -27,12 +27,14 @@ import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.exceptions.VimDriverException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -466,21 +468,66 @@ public class OpenstackVIM extends Vim {
 
             server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIps);
             log.debug("Launched VM with hostname " + hostname + " with ExtId " + server.getExtId() + " on VimInstance " + vimInstance.getName());
-        } catch (Exception e) {
+        } catch (VimDriverException e) {
             if (log.isDebugEnabled()) {
                 log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             } else {
                 log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
             }
-            throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
+            VNFCInstance vnfcInstance = null;
+            VimDriverException vimDriverException = (VimDriverException) e.getCause();
+            server = vimDriverException.getServer();
+            if (server != null) {
+                vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server);
+                if (vdu.getVnfc_instance() == null) {
+                    vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+                }
+                vnfcInstance.setVnfComponent(vnfComponent);
+
+                vnfcInstance.setIps(new HashSet<Ip>());
+                vnfcInstance.setFloatingIps(new HashSet<Ip>());
+
+                if (floatingIps.size() != 0) {
+                    for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
+                        Ip ip = new Ip();
+                        ip.setNetName(fip.getKey());
+                        ip.setIp(fip.getValue());
+                        vnfcInstance.getFloatingIps().add(ip);
+                    }
+                }
+
+                if (vdu.getVnfc_instance() == null)
+                    vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+
+                for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
+                    Ip ip = new Ip();
+                    ip.setNetName(network.getKey());
+                    ip.setIp(network.getValue().iterator().next());
+                    vnfcInstance.getIps().add(ip);
+                    for (String ip1 : server.getIps().get(network.getKey())) {
+                        vnfr.getVnf_address().add(ip1);
+                    }
+                }
+            }
+            throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e, vnfcInstance);
+        } catch (RemoteException e) {
+            log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
+            throw new VimException(e);
         }
 
         log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
+        VNFCInstance vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server);
+
+        log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
+        return new AsyncResult<>(vnfcInstance);
+    }
+
+    private VNFCInstance getVnfcInstanceFromServer(VimInstance vimInstance, VNFComponent vnfComponent, String hostname, Server server) {
         VNFCInstance vnfcInstance = new VNFCInstance();
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
         vnfcInstance.setVim_id(vimInstance.getId());
-        vnfcInstance.setVnfComponent(vnfComponent);
+
 
         if (vnfcInstance.getConnection_point() == null)
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
@@ -495,33 +542,7 @@ public class OpenstackVIM extends Vim {
 
             vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
         }
-
-        vnfcInstance.setIps(new HashSet<Ip>());
-        vnfcInstance.setFloatingIps(new HashSet<Ip>());
-
-        if (floatingIps.size() != 0) {
-            for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
-                Ip ip = new Ip();
-                ip.setNetName(fip.getKey());
-                ip.setIp(fip.getValue());
-                vnfcInstance.getFloatingIps().add(ip);
-            }
-        }
-
-        if (vdu.getVnfc_instance() == null)
-            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-
-        for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
-            Ip ip = new Ip();
-            ip.setNetName(network.getKey());
-            ip.setIp(network.getValue().iterator().next());
-            vnfcInstance.getIps().add(ip);
-            for (String ip1 : server.getIps().get(network.getKey())) {
-                vnfr.getVnf_address().add(ip1);
-            }
-        }
-        log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
-        return new AsyncResult<>(vnfcInstance);
+        return vnfcInstance;
     }
 
     private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
