@@ -463,10 +463,12 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
         }
 
-        if (networkServiceRecord.getVnfr().size() > 0)
+        if (networkServiceRecord.getVnfr().size() > 0) {
+            networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
                 vnfmManager.release(virtualNetworkFunctionRecord);
             }
+        }
         else
             nsrRepository.delete(networkServiceRecord.getId());
     }

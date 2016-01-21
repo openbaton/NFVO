@@ -93,7 +93,8 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
                 } else { // this is an id pointing to a package already existing
                     // nothing to do here i think...
                 }
-            }
+            } else
+                throw new NetworkServiceIntegrityException("vnfPackageLocation cannot be null! Either put a link to git or a link to a package");
 
         }
 
