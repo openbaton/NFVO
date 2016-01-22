@@ -25,6 +25,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +158,14 @@ public class PluginCaller {
                 log.trace("answer is: " + ret);
                 return ret;
             }else {
-                throw new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+                PluginException pluginException;
+                try {
+                    pluginException = new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
+                    log.debug("Got Vim Driver Exception with server: " + ((VimDriverException) pluginException.getCause()).getServer());
+                } catch (Exception e){
+                    pluginException = new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+                }
+                throw pluginException;
             }
         }
         else
