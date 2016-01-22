@@ -22,6 +22,36 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             });
     };
 
+    $scope.deleteScript = function (data) {
+        http.delete(url +$routeParams.packageid+'/scripts/'+ data.id)
+            .success(function (response) {
+                showOk('Script deleted.');
+
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
+    $scope.editScript = function (data) {
+        http.get(url +$routeParams.packageid+'/scripts/'+ data.id)
+            .success(function (response) {
+                $scope.scriptToEdit = response;
+                $scope.editingScript = data;
+                $("#modalEditScript").modal("show");
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
+    $scope.sendScript = function (scriptToEdit) {
+        http.put(url +$routeParams.packageid+'/scripts/'+ $scope.editingScript.id, scriptToEdit)
+            .success(function (response) {
+                showOk('Script updated!');
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
