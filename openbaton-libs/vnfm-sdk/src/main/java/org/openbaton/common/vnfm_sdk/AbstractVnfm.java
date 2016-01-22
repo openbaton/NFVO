@@ -241,11 +241,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
                         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
                             checkEMS(vnfcInstance.getHostname());
-
-                    if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
-                    else
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
+                    if (orVnfmInstantiateMessage.getVnfPackage() != null) {
+                        if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
+                        else
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
+                    } else {
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, null, orVnfmInstantiateMessage.getVimInstances());
+                    }
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
