@@ -165,7 +165,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
 
-                    if (!properties.getProperty("allocate", "false").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
 
                         NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
                         if (message2 instanceof OrVnfmGenericMessage) {
@@ -230,7 +230,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
                     log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
 
-                    if (!properties.getProperty("allocate", "false").equalsIgnoreCase("true")) {
+                    if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                         allocateResources.setVimInstances(orVnfmInstantiateMessage.getVimInstances());
@@ -241,11 +241,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
                         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
                             checkEMS(vnfcInstance.getHostname());
-
-                    if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
-                    else
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
+                    if (orVnfmInstantiateMessage.getVnfPackage() != null) {
+                        if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
+                        else
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
+                    } else {
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, null, orVnfmInstantiateMessage.getVimInstances());
+                    }
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;
                 case RELEASE_RESOURCES_FINISH:
