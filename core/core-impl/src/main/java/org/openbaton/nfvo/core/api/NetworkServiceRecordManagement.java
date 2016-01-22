@@ -104,6 +104,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
         log.debug("Looking for NetworkServiceDescriptor with id: " + idNsd);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
+        if (networkServiceDescriptor == null){
+            throw new NotFoundException("NSD with id " + idNsd + " was not found");
+        }
         return deployNSR(networkServiceDescriptor);
     }
 
