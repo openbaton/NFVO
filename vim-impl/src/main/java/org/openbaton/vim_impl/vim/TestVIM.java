@@ -134,7 +134,7 @@ public class TestVIM extends Vim {
             Server server = client.launchInstanceAndWait(vimInstance, vdu.getHostname(), vimInstance.getImages().iterator().next().getExtId(), "flavor", "keypair", networks, securityGroups, "#userdate");
 //            VNFCInstance component = new VNFCInstance();
 //            component.setVc_id(server.getExtId());
-//            component.setVim_id(vdu.getVimInstance().getId());
+//            component.setVim_id(vdu.getVimName().getId());
 
 
             VNFCInstance vnfcInstance = new VNFCInstance();
