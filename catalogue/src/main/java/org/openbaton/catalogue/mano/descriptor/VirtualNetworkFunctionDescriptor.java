@@ -18,7 +18,7 @@ package org.openbaton.catalogue.mano.descriptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openbaton.catalogue.mano.common.*;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 
@@ -91,9 +91,6 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     @JsonIgnore
     private boolean cyclicDependency;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private Set<VNFFaultManagementPolicy> fault_management_policy;
-
     public VirtualNetworkFunctionDescriptor() {
     }
 
@@ -130,16 +127,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", requires=" + requires +
                 ", provides=" + provides +
                 ", cyclicDependency=" + cyclicDependency +
-                ", fault_management_policy=" + fault_management_policy +
                 '}';
-    }
-
-    public Set<VNFFaultManagementPolicy> getFault_management_policy() {
-        return fault_management_policy;
-    }
-
-    public void setFault_management_policy(Set<VNFFaultManagementPolicy> fault_management_policy) {
-        this.fault_management_policy = fault_management_policy;
     }
 
     public Set<String> getRequires() {

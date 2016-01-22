@@ -19,7 +19,7 @@ import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -79,10 +79,10 @@ public class VNFRUtils {
         }
 
         //Set Faultmanagement policies
-        Set<VNFFaultManagementPolicy> vnfFaultManagementPolicies= new HashSet<>();
+        Set<VRFaultManagementPolicy> vnfFaultManagementPolicies= new HashSet<>();
         if(vnfd.getFault_management_policy()!=null){
             log.debug("Adding the fault management policies: "+vnfd.getFault_management_policy());
-            for(VNFFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()){
+            for(VRFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()){
                 vnfFaultManagementPolicies.add(vnffmp);
             }
         }
