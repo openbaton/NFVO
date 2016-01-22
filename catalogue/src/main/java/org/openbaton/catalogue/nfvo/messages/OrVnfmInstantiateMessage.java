@@ -15,13 +15,15 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
-import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,44 +31,43 @@ import java.util.Set;
  * Created by mob on 14.09.15.
  */
 public class OrVnfmInstantiateMessage extends OrVnfmMessage {
-    private Set<Script> scripts;
-    private String scriptsLink;
     private VirtualNetworkFunctionDescriptor vnfd;
     private VNFDeploymentFlavour vnfdf;
     private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
-    private Map<String, String> extention;
+    private Map<String, String> extension;
+    private List<VimInstance> vimInstances;
+    private VNFPackage vnfPackage;
 
     public OrVnfmInstantiateMessage() {
         this.action = Action.INSTANTIATE;
     }
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extension, List<VimInstance> vimInstances, VNFPackage vnfPackage) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
         this.vlrs = vlrs;
-        this.extention = extention;
-        this.scripts = null;
+        this.extension = extension;
+        this.vimInstances = vimInstances;
         this.action = Action.INSTANTIATE;
+        this.vnfPackage = vnfPackage;
     }
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extention, String scriptLink) {
-        this(vnfd, vnfdf, vnfInstanceName, vlrs, extention);
-        this.scriptsLink = scriptLink;
+    public VNFPackage getVnfPackage() {
+        return vnfPackage;
     }
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour deploymentFlavour, String name, Set<VirtualLinkRecord> vlr, Map<String, String> extension, Set<Script> scripts) {
-        this(vnfd, deploymentFlavour, name, vlr, extension);
-        this.scripts = scripts;
+    public void setVnfPackage(VNFPackage vnfPackage) {
+        this.vnfPackage = vnfPackage;
     }
 
-    public Set<Script> getScripts() {
-        return scripts;
+    public List<VimInstance> getVimInstances() {
+        return vimInstances;
     }
 
-    public void setScripts(Set<Script> scripts) {
-        this.scripts = scripts;
+    public void setVimInstances(List<VimInstance> vimInstances) {
+        this.vimInstances = vimInstances;
     }
 
     public VirtualNetworkFunctionDescriptor getVnfd() {
@@ -101,31 +102,25 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
         this.vlrs = vlrs;
     }
 
-    public Map<String, String> getExtention() {
-        return extention;
+    public Map<String, String> getExtension() {
+        return extension;
     }
 
-    public void setExtention(Map<String, String> extention) {
-        this.extention = extention;
+    public void setExtension(Map<String, String> extension) {
+        this.extension = extension;
     }
 
     @Override
     public String toString() {
-        return "OrVnfmInstantiateMessage{" +
+        String result = "OrVnfmInstantiateMessage{" +
                 "vnfd=" + vnfd +
                 ", vnfdf=" + vnfdf +
                 ", vnfInstanceName='" + vnfInstanceName + '\'' +
                 ", vlrs=" + vlrs +
-                ", extention=" + extention +
-                '}';
-    }
-
-
-    public String getScriptsLink() {
-        return scriptsLink;
-    }
-
-    public void setScriptsLink(String link) {
-        scriptsLink = link;
+                ", vimInstances=" + vimInstances;
+        if (vnfPackage != null) result += ", vnfPackage=" + vnfPackage.getName();
+        else result += ", vnfPackage=" + vnfPackage;
+        result += ", extension=" + extension + '}';
+        return result;
     }
 }

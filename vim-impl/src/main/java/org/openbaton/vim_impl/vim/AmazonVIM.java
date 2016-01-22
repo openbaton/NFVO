@@ -25,8 +25,8 @@ import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.openbaton.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
@@ -42,13 +42,13 @@ import java.util.concurrent.Future;
 public class AmazonVIM extends Vim {
 
     public AmazonVIM(String name, int port, String managementPort) throws PluginException {
-        super("amazon",name, port, managementPort);
+        super("amazon",name, port, managementPort, null);
     }
     public AmazonVIM(String managementPort) throws PluginException {
-        super("amazon", managementPort);
+        super("amazon", managementPort, null);
     }
     public AmazonVIM(int port, String managementPort) throws PluginException {
-        super("amazon", managementPort);
+        super("amazon", managementPort, null);
     }
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
@@ -81,8 +81,7 @@ public class AmazonVIM extends Vim {
     }
 
     @Override
-    @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) {
+    public Future<VNFCInstance> allocate(VimInstance vimInstance, VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException, VimDriverException {
         throw new UnsupportedOperationException();
     }
 

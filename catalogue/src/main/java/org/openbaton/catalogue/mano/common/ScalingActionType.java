@@ -13,21 +13,24 @@
  * limitations under the License.
  */
 
-package org.openbaton.vim.drivers.exceptions;
+package org.openbaton.catalogue.mano.common;
+
+import org.openbaton.catalogue.util.IdGenerator;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
- * Created by lto on 13/07/15.
+ * Created by mpa on 15/12/15.
  */
-public class VimDriverException extends Exception {
-
-    public VimDriverException() {
-    }
-
-    public VimDriverException(String message) {
-        super(message);
-    }
-
-    public VimDriverException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public enum ScalingActionType {
+	SCALE_OUT,
+	SCALE_OUT_TO,
+	SCALE_OUT_TO_FLAVOUR,
+	SCALE_IN,
+	SCALE_IN_TO,
+	SCALE_IN_TO_FLAVOUR
 }
