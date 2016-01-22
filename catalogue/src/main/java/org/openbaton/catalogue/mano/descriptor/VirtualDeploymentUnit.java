@@ -19,7 +19,6 @@ import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -108,9 +107,9 @@ public class VirtualDeploymentUnit implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
 
-    //    @JsonIgnore
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
-    private VimInstance vimInstance;
+//    @JsonIgnore
+//    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
+//    private VimInstance vimInstance;
 
     private String hostname;
 
@@ -243,7 +242,7 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", vnfc=" + vnfc +
                 ", vnfc_instance=" + vnfc_instance +
                 ", monitoring_parameter=" + monitoring_parameter +
-                ", vimInstance=" + vimInstance +
+//                ", vimInstance=" + vimInstance +
                 ", hostname='" + hostname + '\'' +
                 ", vimInstanceName='" + vimInstanceName + '\'' +
                 '}';
@@ -269,13 +268,13 @@ public class VirtualDeploymentUnit implements Serializable {
         this.name = name;
     }
 
-    public VimInstance getVimInstance() {
-        return vimInstance;
-    }
-
-    public void setVimInstance(VimInstance vimInstance) {
-        this.vimInstance = vimInstance;
-    }
+//    public VimInstance getVimInstances() {
+//        return vimInstance;
+//    }
+//
+//    public void setVimInstances(VimInstance vimInstance) {
+//        this.vimInstance = vimInstance;
+//    }
 
     public String getHostname() {
         return hostname;

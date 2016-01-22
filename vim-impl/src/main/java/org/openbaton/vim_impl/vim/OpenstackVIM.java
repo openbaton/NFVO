@@ -25,14 +25,16 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -43,17 +45,29 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class OpenstackVIM extends Vim {
 
+    public OpenstackVIM(String name, int port, String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", name, port, managementPort, context);
+    }
+
+    public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", managementPort, context);
+    }
+
+    public OpenstackVIM(int port, String managementPort, ApplicationContext context) throws PluginException {
+        super("openstack", managementPort, context);
+    }
+
 
     public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-        super("openstack", name, port, managementPort);
+        super("openstack", name, port, managementPort, null);
     }
 
     public OpenstackVIM(String managementPort) throws PluginException {
-        super("openstack", managementPort);
+        super("openstack", managementPort, null);
     }
 
     public OpenstackVIM(int port, String managementPort) throws PluginException {
-        super("openstack", managementPort);
+        super("openstack", managementPort, null);
     }
 
     @Override
@@ -403,8 +417,7 @@ public class OpenstackVIM extends Vim {
 
     @Override
     @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException {
-        VimInstance vimInstance = vdu.getVimInstance();
+    public Future<VNFCInstance> allocate(VimInstance vimInstance, VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord vnfr, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimException {
         log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
         log.debug("VDU is : " + vdu.toString());
         log.debug("VNFR is : " + vnfr.toString());
@@ -455,21 +468,37 @@ public class OpenstackVIM extends Vim {
 
             server = client.launchInstanceAndWait(vimInstance, hostname, image, flavorExtId, vimInstance.getKeyPair(), networks, vimInstance.getSecurityGroups(), userdata, floatingIps);
             log.debug("Launched VM with hostname " + hostname + " with ExtId " + server.getExtId() + " on VimInstance " + vimInstance.getName());
-        } catch (Exception e) {
+        } catch (VimDriverException e) {
             if (log.isDebugEnabled()) {
                 log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
             } else {
                 log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
             }
-            throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e);
+            VNFCInstance vnfcInstance = null;
+            VimDriverException vimDriverException = (VimDriverException) e.getCause();
+            server = vimDriverException.getServer();
+            if (server != null) {
+                vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+            }
+            throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e, vnfcInstance);
+        } catch (RemoteException e) {
+            log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
+            throw new VimException(e);
         }
 
         log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
+        VNFCInstance vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+
+        log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
+        return new AsyncResult<>(vnfcInstance);
+    }
+
+    private VNFCInstance getVnfcInstanceFromServer(VimInstance vimInstance, VNFComponent vnfComponent, String hostname, Server server, VirtualDeploymentUnit vdu, Map<String, String> floatingIps, VirtualNetworkFunctionRecord vnfr) {
         VNFCInstance vnfcInstance = new VNFCInstance();
         vnfcInstance.setHostname(hostname);
         vnfcInstance.setVc_id(server.getExtId());
-        vnfcInstance.setVim_id(vdu.getVimInstance().getId());
-        vnfcInstance.setVnfComponent(vnfComponent);
+        vnfcInstance.setVim_id(vimInstance.getId());
+
 
         if (vnfcInstance.getConnection_point() == null)
             vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
@@ -484,6 +513,10 @@ public class OpenstackVIM extends Vim {
 
             vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
         }
+        if (vdu.getVnfc_instance() == null) {
+            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+        }
+        vnfcInstance.setVnfComponent(vnfComponent);
 
         vnfcInstance.setIps(new HashSet<Ip>());
         vnfcInstance.setFloatingIps(new HashSet<Ip>());
@@ -509,8 +542,7 @@ public class OpenstackVIM extends Vim {
                 vnfr.getVnf_address().add(ip1);
             }
         }
-        log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
-        return new AsyncResult<>(vnfcInstance);
+        return vnfcInstance;
     }
 
     private String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {

@@ -15,17 +15,16 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class VNFRUtils {
 
     private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr, List<VimInstance> vimInstances) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
@@ -49,12 +48,12 @@ public class VNFRUtils {
         Configuration configuration = new Configuration();
         if (vnfd.getConfigurations() != null) {
             configuration.setName(vnfd.getConfigurations().getName());
-        }else
+        } else
             configuration.setName(virtualNetworkFunctionRecord.getName());
 
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         if (vnfd.getConfigurations() != null) {
-            for (ConfigurationParameter configurationParameter: vnfd.getConfigurations().getConfigurationParameters()){
+            for (ConfigurationParameter configurationParameter : vnfd.getConfigurations().getConfigurationParameters()) {
                 ConfigurationParameter cp = new ConfigurationParameter();
                 cp.setConfKey(configurationParameter.getConfKey());
                 cp.setValue(configurationParameter.getValue());
@@ -77,18 +76,6 @@ public class VNFRUtils {
                 virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
             }
         }
-
-        //Set Faultmanagement policies
-        Set<VRFaultManagementPolicy> vnfFaultManagementPolicies= new HashSet<>();
-        if(vnfd.getFault_management_policy()!=null){
-            log.debug("Adding the fault management policies: "+vnfd.getFault_management_policy());
-            for(VRFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()){
-                vnfFaultManagementPolicies.add(vnffmp);
-            }
-        }
-        virtualNetworkFunctionRecord.setFault_management_policy(vnfFaultManagementPolicies);
-        //Set Faultmanagement policies end
-
         Configuration provides = new Configuration();
         provides.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         provides.setName("provides");
@@ -103,30 +90,29 @@ public class VNFRUtils {
             }
         }
 
-        if (vnfd.getVnfPackage() != null) {
-            VNFPackage vnfPackage = new VNFPackage();
-            vnfPackage.setImageLink(vnfd.getVnfPackage().getImageLink());
-            vnfPackage.setScriptsLink(vnfd.getVnfPackage().getScriptsLink());
-            vnfPackage.setName(vnfd.getVnfPackage().getName());
-
-            //TODO check for ordering
-            vnfPackage.setScripts(new HashSet<Script>());
-
-            for (Script script : vnfd.getVnfPackage().getScripts()) {
-                Script s = new Script();
-                s.setName(script.getName());
-                s.setPayload(script.getPayload());
-                vnfPackage.getScripts().add(s);
-            }
-
-            vnfPackage.setImage(vnfd.getVnfPackage().getImage());
-            virtualNetworkFunctionRecord.setVnfPackage(vnfPackage);
-        }
+//        if (vnfd.getVnfPackageLocation() != null) {
+//            VNFPackage vnfPackage = new VNFPackage();
+//            vnfPackage.setImageLink(vnfd.getVnfPackageLocation().getImageLink());
+//            vnfPackage.setScriptsLink(vnfd.getVnfPackageLocation().getScriptsLink());
+//            vnfPackage.setName(vnfd.getVnfPackageLocation().getName());
+//
+//            //TODO check for ordering
+//            vnfPackage.setScripts(new HashSet<Script>());
+//
+//            for (Script script : vnfd.getVnfPackageLocation().getScripts()) {
+//                Script s = new Script();
+//                s.setName(script.getName());
+//                s.setPayload(script.getPayload());
+//                vnfPackage.getScripts().add(s);
+//            }
+//
+//            vnfPackage.setImage(vnfd.getVnfPackageLocation().getImage());
+//        }
+        virtualNetworkFunctionRecord.setPackageId(vnfd.getVnfPackageLocation());
 
         if (vnfd.getEndpoint() != null) {
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getEndpoint());
-        }
-        else
+        } else
             virtualNetworkFunctionRecord.setEndpoint(vnfd.getType());
 
         virtualNetworkFunctionRecord.setMonitoring_parameter(new HashSet<String>());
@@ -135,13 +121,30 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
         for (AutoScalePolicy autoScalePolicy : vnfd.getAuto_scale_policy()) {
             AutoScalePolicy newAutoScalePolicy = new AutoScalePolicy();
-            newAutoScalePolicy.setAction(autoScalePolicy.getAction());
-            newAutoScalePolicy.setComparisonOperator(autoScalePolicy.getComparisonOperator());
+            newAutoScalePolicy.setName(autoScalePolicy.getName());
+            newAutoScalePolicy.setType(autoScalePolicy.getType());
             newAutoScalePolicy.setCooldown(autoScalePolicy.getCooldown());
-            newAutoScalePolicy.setMetric(autoScalePolicy.getMetric());
             newAutoScalePolicy.setPeriod(autoScalePolicy.getPeriod());
-            newAutoScalePolicy.setStatistic(autoScalePolicy.getStatistic());
+            newAutoScalePolicy.setComparisonOperator(autoScalePolicy.getComparisonOperator());
             newAutoScalePolicy.setThreshold(autoScalePolicy.getThreshold());
+            newAutoScalePolicy.setMode(autoScalePolicy.getMode());
+            newAutoScalePolicy.setActions(new HashSet<ScalingAction>());
+            for (ScalingAction action : autoScalePolicy.getActions()) {
+                ScalingAction newAction = new ScalingAction();
+                newAction.setValue(action.getValue());
+                newAction.setType(action.getType());
+                newAutoScalePolicy.getActions().add(newAction);
+            }
+            newAutoScalePolicy.setAlarms(new HashSet<ScalingAlarm>());
+            for (ScalingAlarm alarm : autoScalePolicy.getAlarms()) {
+                ScalingAlarm newAlarm = new ScalingAlarm();
+                newAlarm.setComparisonOperator(alarm.getComparisonOperator());
+                newAlarm.setMetric(alarm.getMetric());
+                newAlarm.setStatistic(alarm.getStatistic());
+                newAlarm.setThreshold(alarm.getThreshold());
+                newAlarm.setWeight(alarm.getWeight());
+                newAutoScalePolicy.getAlarms().add(newAlarm);
+            }
             virtualNetworkFunctionRecord.getAuto_scale_policy().add(newAutoScalePolicy);
         }
 
@@ -189,9 +192,19 @@ public class VNFRUtils {
             vmImages.addAll(virtualDeploymentUnit.getVm_image());
             vdu_new.setVm_image(vmImages);
 
+            //Set Faultmanagement policies
+            Set<VRFaultManagementPolicy> vrFaultManagementPolicies = new HashSet<>();
+            if (virtualDeploymentUnit.getFault_management_policy() != null) {
+                log.debug("Adding the fault management policies: " + virtualDeploymentUnit.getFault_management_policy());
+                for (VRFaultManagementPolicy vnffmp : virtualDeploymentUnit.getFault_management_policy()) {
+                    vrFaultManagementPolicies.add(vnffmp);
+                }
+            }
+            vdu_new.setFault_management_policy(vrFaultManagementPolicies);
+            //Set Faultmanagement policies end
+
             vdu_new.setVirtual_network_bandwidth_resource(virtualDeploymentUnit.getVirtual_network_bandwidth_resource());
             vdu_new.setVirtual_memory_resource_element(virtualDeploymentUnit.getVirtual_memory_resource_element());
-            vdu_new.setVimInstance(virtualDeploymentUnit.getVimInstance());
             virtualNetworkFunctionRecord.getVdu().add(vdu_new);
         }
         virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
@@ -201,8 +214,12 @@ public class VNFRUtils {
         // TODO find a way to choose between deployment flavors and create the new one
         virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), virtualDeploymentUnit.getVimInstance())) {
-                throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + virtualDeploymentUnit.getVimInstance());
+            for (VimInstance vi : vimInstances) {
+                if (virtualDeploymentUnit.getVimInstanceName().equals(vi.getName())) {
+                    if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
+                        throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+                    }
+                }
             }
         }
 
@@ -226,8 +243,8 @@ public class VNFRUtils {
             InternalVirtualLink internalVirtualLink_new = new InternalVirtualLink();
             internalVirtualLink_new.setName(internalVirtualLink.getName());
 
-            for (VirtualLinkRecord virtualLinkRecord : vlr){
-                if (virtualLinkRecord.getName().equals(internalVirtualLink_new.getName())){
+            for (VirtualLinkRecord virtualLinkRecord : vlr) {
+                if (virtualLinkRecord.getName().equals(internalVirtualLink_new.getName())) {
                     internalVirtualLink_new.setExtId(virtualLinkRecord.getExtId());
                 }
             }
