@@ -75,11 +75,11 @@ public class ScalingTask extends AbstractTask {
 
         log.debug("The component to add is: " + componentToAdd);
 
-        log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
+        log.debug("Added new component int the vim with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
 
         log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
         OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
-//        vnfmSender.sendCommand(nfvMessage, getTempDestination());
+        //vnfmSender.sendCommand(nfvMessage, getTempDestination());
         return nfvMessage;
     }
 
