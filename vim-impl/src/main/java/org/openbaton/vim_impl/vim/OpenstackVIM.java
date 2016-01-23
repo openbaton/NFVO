@@ -444,6 +444,8 @@ public class OpenstackVIM extends Vim {
         String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 1000));
         log.debug("Generated Hostname: " + hostname);
 
+        userdata = userdata.replace("#Hostname=","Hostname="+hostname);
+
         log.debug("Using SecurityGroups: " + vimInstance.getSecurityGroups());
 
         log.debug("Launching VM with params: " + hostname + " - " + image + " - " + flavorExtId + " - " + vimInstance.getKeyPair() + " - " + networks + " - " + vimInstance.getSecurityGroups());
