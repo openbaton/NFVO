@@ -82,6 +82,13 @@ public class ScaledTask extends AbstractTask {
         log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
         saveVirtualNetworkFunctionRecord();
 
+        //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies
+        if(vnfcInstance!=null){
+            log.debug("The current vnfcInstance is: "+vnfcInstance.toString());
+            if(vnfcInstance.getState()!=null && vnfcInstance.getState().equals("standby"))
+                return null;
+        }
+
         List<VNFRecordDependency> dependenciesSource = dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
         log.debug(virtualNetworkFunctionRecord.getName() + " is source of " + dependenciesSource.size() + " dependencies");
 
@@ -156,6 +163,8 @@ public class ScaledTask extends AbstractTask {
 
 
                     dependency_new.setTarget(dependency.getTarget());
+
+                    //TODO Delete the failed dependency of the VNFCInstance in failed state
 
                     message.setVnfrd(dependency_new);
 

@@ -244,8 +244,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
         log.debug("Executing Task for vnfr " + virtualNetworkFunctionRecord.getName() + " cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
 
-        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
+        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal()){
             return gson.toJson(asyncExecutor.submit(task).get());
+        }
         else {
             asyncExecutor.submit(task);
             return null;
@@ -348,18 +349,22 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     @Override
     @Async
-    public Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent component, VNFRecordDependency dependency) throws NotFoundException {
+    public Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent component, VNFRecordDependency dependency,String mode) throws NotFoundException {
         VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
+
         if (endpoint == null) {
             throw new NotFoundException("VnfManager of type " + virtualNetworkFunctionRecord.getType() + " (endpoint = " + virtualNetworkFunctionRecord.getEndpoint() + ") is not registered");
         }
 
         OrVnfmScalingMessage message = new OrVnfmScalingMessage();
         message.setAction(Action.SCALE_OUT);
+
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setComponent(component);
         message.setDependency(dependency);
+        message.setMode(mode);
         VnfmSender vnfmSender;
+
         try {
 
             vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
@@ -368,6 +373,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
 
         vnfmSender.sendCommand(message, endpoint);
+        log.debug("Scale_out message sent");
+
         return new AsyncResult<>(null);
     }
 

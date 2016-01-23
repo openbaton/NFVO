@@ -177,7 +177,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         if (monitoringIp != null && !monitoringIp.equals("")) {
             result += " echo \"Installing zabbix-agent for server at _address\"\n" +
                     "sudo apt-get install -y zabbix-agent\n" +
-                    "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive=" + monitoringIp + ":10051/g' -e 's/Server=127.0.0.1/Server=" + monitoringIp + "/g' -e 's/Hostname=/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n" +
+                    "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive=" + monitoringIp + ":10051/g' -e 's/Server=127.0.0.1/Server=" + monitoringIp + "/g' -e 's/Hostname=Zabbix server/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n" +
                     "sudo service zabbix-agent restart\n" +
                     "sudo rm zabbix-release_2.2-1+precise_all.deb\n" +
                     "echo \"finished installing zabbix-agent!\"\n";
