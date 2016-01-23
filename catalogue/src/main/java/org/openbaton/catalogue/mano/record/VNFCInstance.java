@@ -31,6 +31,7 @@ public class VNFCInstance extends VNFComponent implements Serializable {
     protected String vim_id;
     protected String vc_id;
     protected String hostname;
+    protected String state;
 
     @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     protected VNFComponent vnfComponent;
@@ -65,6 +66,14 @@ public class VNFCInstance extends VNFComponent implements Serializable {
         this.vc_id = vc_id;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public VNFComponent getVnfComponent() {
         return vnfComponent;
     }
@@ -79,8 +88,9 @@ public class VNFCInstance extends VNFComponent implements Serializable {
                 "vim_id='" + vim_id + '\'' +
                 ", vc_id='" + vc_id + '\'' +
                 ", hostname='" + hostname + '\'' +
+                ", state='" + state + '\'' +
                 ", vnfComponent=" + vnfComponent +
-                ", floatingIps='" + floatingIps + '\'' +
+                ", floatingIps=" + floatingIps +
                 ", ips=" + ips +
                 "} " + super.toString();
     }
