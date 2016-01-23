@@ -15,6 +15,9 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     private VNFCInstance vnfcInstance;
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     private VNFRecordDependency dependency;
+    private String mode;
+
+
 
     public VNFCInstance getVnfcInstance() {
         return vnfcInstance;
@@ -39,13 +42,23 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
 
     @Override
     public String toString() {
         return "OrVnfmScalingMessage{" +
                 "component=" + component +
+                ", vnfcInstance=" + vnfcInstance +
                 ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                '}';
+                ", dependency=" + dependency +
+                ", mode='" + mode + '\'' +
+                "} " + super.toString();
     }
 
     public VNFRecordDependency getDependency() {

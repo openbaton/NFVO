@@ -82,7 +82,7 @@ public class VirtualDeploymentUnit implements Serializable {
      * the same VDU will co-exists with continuous data synchronization. ActivePassive: Implies that two instance of
      * the same VDU will co-exists without any data synchronization.
      */
-    @Enumerated(EnumType.STRING)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL )
     private HighAvailability high_availability;
     /**
      * Defines minimum and maximum number of instances which can be created to support scale out/in.
@@ -104,7 +104,7 @@ public class VirtualDeploymentUnit implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
 
-//    @JsonIgnore
+    //    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
     private VimInstance vimInstance;
 
