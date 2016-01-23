@@ -46,6 +46,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
             case "SCALING":
                 result = gson.fromJson(json, OrVnfmScalingMessage.class);
                 break;
+            case "SCALE_OUT":
+                result = gson.fromJson(json, OrVnfmScalingMessage.class);
+                break;
             case "HEAL":
                 result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
                 break;
