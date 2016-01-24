@@ -21,7 +21,7 @@ import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.plugin.utils.PluginCaller;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vim.drivers.interfaces.VimDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +188,7 @@ public class VimDriverCaller extends VimDriver {
         } catch (InterruptedException e) {
             throw new VimDriverException(e.getMessage());
         } catch (PluginException e) {
-            throw new VimDriverException(e.getMessage());
+            throw new VimDriverException(e.getMessage(),e.getCause());
         }
         return (Server) res;
     }
@@ -212,7 +212,7 @@ public class VimDriverCaller extends VimDriver {
         } catch (InterruptedException e) {
             throw new VimDriverException(e.getMessage());
         } catch (PluginException e) {
-            throw new VimDriverException(e.getMessage());
+            throw new VimDriverException(e.getMessage(), e.getCause());
         }
         return (Server) res;
     }
