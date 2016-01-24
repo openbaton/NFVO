@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
@@ -75,4 +76,6 @@ public interface VNFPackageManagement {
      * @param id
      */
     void delete(String id);
+
+    Script updateScript(Script script);
 }

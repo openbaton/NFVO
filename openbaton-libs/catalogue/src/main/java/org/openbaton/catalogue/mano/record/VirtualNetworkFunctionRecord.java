@@ -19,11 +19,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -157,14 +156,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<VNFFaultManagementPolicy> fault_management_policy;
-
     private String name;
     private String type;
     private String endpoint;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private VNFPackage vnfPackage;
     private String task;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration requires;
@@ -172,6 +166,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     private Configuration provides;
     @JsonIgnore
     private boolean cyclicDependency;
+    private String packageId;
 
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
@@ -405,10 +400,43 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.type = type;
     }
 
+    public Configuration getRequires() {
+        return requires;
+    }
+
+    public void setRequires(Configuration requires) {
+        this.requires = requires;
+    }
+
+    public Configuration getProvides() {
+        return provides;
+    }
+
+    public void setProvides(Configuration provides) {
+        this.provides = provides;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
     @Override
     public String toString() {
         return "VirtualNetworkFunctionRecord{" +
-                "id='" + id + '\'' +
+                "audit_log='" + audit_log + '\'' +
+                ", id='" + id + '\'' +
                 ", hb_version=" + hb_version +
                 ", auto_scale_policy=" + auto_scale_policy +
                 ", connection_point=" + connection_point +
@@ -429,57 +457,15 @@ public class VirtualNetworkFunctionRecord implements Serializable {
                 ", vnf_address=" + vnf_address +
                 ", status=" + status +
                 ", notification=" + notification +
-                ", audit_log='" + audit_log + '\'' +
                 ", runtime_policy_info=" + runtime_policy_info +
-                ", fault_management_policy=" + fault_management_policy +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
                 ", task='" + task + '\'' +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 ", cyclicDependency=" + cyclicDependency +
+                ", packageId='" + packageId + '\'' +
                 '}';
-    }
-
-    public Set<VNFFaultManagementPolicy> getFault_management_policy() {
-        return fault_management_policy;
-    }
-
-    public void setFault_management_policy(Set<VNFFaultManagementPolicy> fault_management_policy) {
-        this.fault_management_policy = fault_management_policy;
-    }
-
-    public Configuration getRequires() {
-        return requires;
-    }
-
-    public void setRequires(Configuration requires) {
-        this.requires = requires;
-    }
-
-    public Configuration getProvides() {
-        return provides;
-    }
-
-    public void setProvides(Configuration provides) {
-        this.provides = provides;
-    }
-
-    public VNFPackage getVnfPackage() {
-        return vnfPackage;
-    }
-
-    public void setVnfPackage(VNFPackage vnfPackage) {
-        this.vnfPackage = vnfPackage;
-    }
-
-    public String getTask() {
-        return task;
-    }
-
-    public void setTask(String task) {
-        this.task = task;
     }
 }

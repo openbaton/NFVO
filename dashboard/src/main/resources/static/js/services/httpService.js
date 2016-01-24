@@ -18,7 +18,16 @@ angular.module('app')
 
         var http = {};
         http.get = function (url) {
-            //console.log("COOKIE: "+ $cookieStore.get('token'))
+            if (url.indexOf("/scripts/") > -1) {
+                customHeaders['Accept'] = 'text/plain';
+                customHeaders['Content-type'] = 'text/plain';
+
+            } else {
+                customHeaders['Accept'] = 'application/json';
+                customHeaders['Content-type'] = 'application/json';
+
+            }
+
             return $http({
                 url: url,
                 method: 'GET',
@@ -53,6 +62,14 @@ angular.module('app')
         };
         http.put = function (url, data) {
             $('#modalSend').modal('show');
+            if (url.indexOf("/scripts/") > -1) {
+                customHeaders['Content-type'] = 'text/plain';
+                customHeaders['Accept'] = 'text/plain';
+            } else {
+                customHeaders['Accept'] = 'application/json';
+                customHeaders['Content-type'] = 'application/json';
+            }
+
             return $http({
                 url: url,
                 method: 'PUT',

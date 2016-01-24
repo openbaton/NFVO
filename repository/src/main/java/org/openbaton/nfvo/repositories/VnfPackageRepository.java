@@ -24,4 +24,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface VnfPackageRepository extends CrudRepository<VNFPackage, String> {
 
+    VNFPackage findFirstById(String id);
 }

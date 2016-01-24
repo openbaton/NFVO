@@ -101,6 +101,9 @@ public class RestVnfmSender implements VnfmSender {
 
     public void sendToVnfm(NFVMessage nfvMessage, String url) {
         String json = mapper.toJson(nfvMessage);
+        if (!url.endsWith("/"))
+            url += "/";
+        url += "core-rest-actions";
         if (log.isTraceEnabled())
             log.trace("Sending message: " + json + " to url " + url);
         else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);

@@ -13,16 +13,24 @@
  * limitations under the License.
  */
 
-package org.openbaton.catalogue.mano.common.faultmanagement;
+package org.openbaton.catalogue.mano.common;
+
+import org.openbaton.catalogue.util.IdGenerator;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
+import java.io.Serializable;
 
 /**
- * Created by mob on 29.10.15.
+ * Created by mpa on 15/12/15.
  */
-public enum FaultManagementVNFCAction {
-    RESTART,
-    REINSTANTIATE_SERVICE,
-    HEAL,
-    REINSTANTIATE,
-    SWITCH_TO_STANDBY,
-    SWITCH_TO_ACTIVE
+public enum ScalingActionType {
+	SCALE_OUT,
+	SCALE_OUT_TO,
+	SCALE_OUT_TO_FLAVOUR,
+	SCALE_IN,
+	SCALE_IN_TO,
+	SCALE_IN_TO_FLAVOUR
 }

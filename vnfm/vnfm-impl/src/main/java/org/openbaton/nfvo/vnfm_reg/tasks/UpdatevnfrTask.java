@@ -85,7 +85,6 @@ public class UpdatevnfrTask extends AbstractTask {
                 if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
                     found = true;
                     log.debug("Update: Updating VDU " + vdu_nfvo.getId());
-                    vdu_nfvo.setVimInstance(vdu_manager.getVimInstance());
                     vdu_nfvo.setComputation_requirement(vdu_manager.getComputation_requirement());
                     vdu_nfvo.setHigh_availability(vdu_manager.getHigh_availability());
                     vdu_nfvo.setScale_in_out(vdu_manager.getScale_in_out());
@@ -113,7 +112,7 @@ public class UpdatevnfrTask extends AbstractTask {
         log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
         log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
-        OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALING);
+        OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.UPDATEVNFR);
 //        vnfmSender.sendCommand(nfvMessage, getTempDestination());
         return nfvMessage;
     }

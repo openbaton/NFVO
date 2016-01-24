@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
 /**
@@ -31,6 +32,7 @@ public interface VNFLifecycleOperationGranting {
      * or existing VNF. The sub-type of lifecycle operation
      * is parameterized in the operation.
      *
+     * @param vimInstance
      * @param virtualNetworkFunctionRecord
      */
     boolean grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
