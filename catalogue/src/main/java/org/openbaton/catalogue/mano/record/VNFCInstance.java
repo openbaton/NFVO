@@ -17,6 +17,7 @@ package org.openbaton.catalogue.mano.record;
 
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -109,5 +110,10 @@ public class VNFCInstance extends VNFComponent implements Serializable {
 
     public void setIps(Set<Ip> ips) {
         this.ips = ips;
+    }
+
+    @PrePersist
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
 }
