@@ -37,12 +37,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @SpringBootApplication
 @RestController
+
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
     private VnfmRestHelper vnfmRestHelper;
-
     @Autowired
     private ConfigurableApplicationContext context;
+
 
     @Override
     protected void setup() {
@@ -52,16 +53,16 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
     }
 
     @Override
-    protected void unregister(){
+    protected void unregister() {
         vnfmRestHelper.unregister(vnfmManagerEndpoint);
     }
 
     @Override
-    protected void register(){
+    protected void register() {
         vnfmRestHelper.register(vnfmManagerEndpoint);
     }
 
-    @RequestMapping(value = "/core-dummy-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/core-rest-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
         log.debug("Received: " + jsonNfvMessage);

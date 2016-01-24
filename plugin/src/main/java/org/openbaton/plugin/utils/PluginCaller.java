@@ -21,9 +21,11 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +51,20 @@ public class PluginCaller {
     private String replyQueueName;
     private Channel channel;
     private Connection connection;
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter()).setPrettyPrinting().create();
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private int managementPort;
+
+    private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
+        public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return Base64.decodeBase64(json.getAsString());
+        }
+
+        public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(Base64.encodeBase64String(src));
+        }
+    }
 
     public PluginCaller(String pluginId, String brokerIp, String username, String password, int port, int managementPort) throws IOException, TimeoutException, NotFoundException {
         this.pluginId = getFullPluginId(pluginId, brokerIp, username, password, managementPort);
@@ -146,7 +158,14 @@ public class PluginCaller {
                 log.trace("answer is: " + ret);
                 return ret;
             }else {
-                throw new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+                PluginException pluginException;
+                try {
+                    pluginException = new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
+                    log.debug("Got Vim Driver Exception with server: " + ((VimDriverException) pluginException.getCause()).getServer());
+                } catch (Exception e){
+                    pluginException = new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+                }
+                throw pluginException;
             }
         }
         else
