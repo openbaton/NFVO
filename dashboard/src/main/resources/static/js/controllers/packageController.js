@@ -22,6 +22,36 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             });
     };
 
+    $scope.deleteScript = function (data) {
+        http.delete(url +$routeParams.packageid+'/scripts/'+ data.id)
+            .success(function (response) {
+                showOk('Script deleted.');
+
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
+    $scope.editScript = function (data) {
+        http.get(url +$routeParams.packageid+'/scripts/'+ data.id)
+            .success(function (response) {
+                $scope.scriptToEdit = response;
+                $scope.editingScript = data;
+                $("#modalEditScript").modal("show");
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
+    $scope.sendScript = function (scriptToEdit) {
+        http.put(url +$routeParams.packageid+'/scripts/'+ $scope.editingScript.id, scriptToEdit)
+            .success(function (response) {
+                showOk('Script updated!');
+            })
+            .error(function (response, status) {
+                showError(response,status);
+            });
+    };
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -91,7 +121,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 previewsContainer: "#previews", // Define the container to display the previews
                 headers: header,
                 init: function () {
-                    var submitButton = document.querySelector("#submit-all")
+                    var submitButton = document.querySelector("#submit-all");
                     myDropzone = this; // closure
 
                     submitButton.addEventListener("click", function () {
@@ -117,12 +147,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             });
 
 
-            myDropzone.on("addedfile", function (file) {
-                // Hookup the start button
-                file.previewElement.querySelector(".start").onclick = function () {
-                    myDropzone.enqueueFile(file);
-                };
-            });
+
 
 // Update the total progress bar
             myDropzone.on("totaluploadprogress", function (progress) {
@@ -133,11 +158,9 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 // Show the total progress bar when upload starts
                 $('.progress .bar:first').opacity = "1";
 
-                // And disable the start button
-                file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
+
             });
 
-            myDropzone.options.ui
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
@@ -146,11 +169,6 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
 
 
-
-
-            $(".start").onclick = function () {
-                myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
-            };
             $(".cancel").onclick = function () {
                 myDropzone.removeAllFiles(true);
             };

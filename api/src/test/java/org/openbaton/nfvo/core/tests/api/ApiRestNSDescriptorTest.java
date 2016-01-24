@@ -29,6 +29,7 @@ import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.api.RestNetworkServiceDescriptor;
@@ -87,7 +88,7 @@ public class ApiRestNSDescriptorTest {
     }
 
     @Test
-    public void NSDCreate() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException {
+    public void NSDCreate() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         when(nsdManagement.onboard(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
         NetworkServiceDescriptor networkServiceDescriptor2 = restNetworkService.create(networkServiceDescriptor);
         assertEquals(networkServiceDescriptor, networkServiceDescriptor2);

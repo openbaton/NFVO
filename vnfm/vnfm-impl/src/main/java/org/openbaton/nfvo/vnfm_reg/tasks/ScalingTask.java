@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -74,12 +75,16 @@ public class ScalingTask extends AbstractTask {
         }
 
         log.debug("The component to add is: " + componentToAdd);
-
-        log.debug("Added new component int the vim with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
+        try {
+            log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
+        } catch (VimException e){
+            vdu.getVnfc_instance().add(e.getVnfcInstance());
+            saveVirtualNetworkFunctionRecord();
+            throw e;
+        }
 
         log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
         OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
-        //vnfmSender.sendCommand(nfvMessage, getTempDestination());
         return nfvMessage;
     }
 

@@ -35,7 +35,7 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
             message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrGenericMessage.class);
             log.trace("DESERIALIZED: " + message);
         }
-        return vnfmManager.executeAction(message, null);
+        return vnfmManager.executeAction(message);
     }
 
     @RequestMapping(value = "vnfm-core-actions-reply", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -115,7 +115,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
             message = mapper.fromJson(nfvMessage, VnfmOrGenericMessage.class);
             log.trace("DESERIALIZED: " + message);
         }
-        vnfmManager.executeAction(message, null);
+        vnfmManager.executeAction(message);
     }
 
     @RequestMapping(value = "vnfm-core-grant", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

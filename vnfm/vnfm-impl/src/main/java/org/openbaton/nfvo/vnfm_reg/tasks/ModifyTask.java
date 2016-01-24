@@ -16,15 +16,17 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -33,30 +35,56 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties(prefix = "nfvo.start")
 public class ModifyTask extends AbstractTask {
 
     @Autowired
     private VnfmRegister vnfmRegister;
 
-    @Autowired
-    private VNFRDependencyRepository vnfrDependencyRepository;
+    private String ordered;
 
     @Override
     protected NFVMessage doWork() throws Exception {
-        VnfmSender vnfmSender;
-        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-        log.debug("NFVO: MODIFY finish");
+        log.info("MODIFY finished for vnfr: " + virtualNetworkFunctionRecord.getName());
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         saveVirtualNetworkFunctionRecord();
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
-        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+        log.debug("VNFR " + virtualNetworkFunctionRecord.getName() + " Status is: " + virtualNetworkFunctionRecord.getStatus());
+        boolean allVnfrInInactive = allVnfrInInactive(networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()));
+        log.trace("Ordered string is: \"" + ordered + "\"");
+        log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
+        log.debug("Are all VNFR in inactive? " + allVnfrInInactive);
+
+        if (ordered != null && Boolean.parseBoolean(ordered)) {
+            if (allVnfrInInactive) {
+                VirtualNetworkFunctionRecord nextToCallStart = getNextToCallStart(virtualNetworkFunctionRecord);
+                if (nextToCallStart != null) {
+                    log.debug("Calling start to vnfr: " + nextToCallStart.getName());
+                    vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id()).remove(nextToCallStart.getName());
+                    sendStart(nextToCallStart);
+                }
+            } else {
+                log.debug("Not calling start to next VNFR because not all VNFRs are in state INACTIVE");
+            }
+        } else {
+            sendStart(virtualNetworkFunctionRecord);
+        }
         return null;
+    }
+
+    private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
+        VnfmSender vnfmSender;
+        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
 
     @Override
     public boolean isAsync() {
         return true;
+    }
+
+    public void setOrdered(String ordered) {
+        this.ordered = ordered;
     }
 }

@@ -285,7 +285,6 @@ public class VirtualLinkManagementClassSuiteTest {
                         VimInstance vimInstance = new VimInstance();
                         vimInstance.setName("vim_instance");
                         vimInstance.setType("test");
-                        vdu.setVimInstance(vimInstance);
                         add(vdu);
                     }
                 });
