@@ -16,22 +16,12 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     private VNFComponent component;
     private VNFCInstance vnfcInstance;
     private VimInstance vimInstance;
-
-    @Override
-    public String toString() {
-        return "OrVnfmScalingMessage{" +
-                "component=" + component +
-                ", vnfcInstance=" + vnfcInstance +
-                ", vimInstance=" + vimInstance +
-                ", vnfPackage=" + (vnfPackage == null ? vnfPackage : vnfPackage.getName()) +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", dependency=" + dependency +
-                '}';
-    }
-
     private VNFPackage vnfPackage;
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     private VNFRecordDependency dependency;
+    private String mode;
+
+
 
     public VNFPackage getVnfPackage() {
         return vnfPackage;
@@ -72,6 +62,13 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
 
     public VNFRecordDependency getDependency() {
         return dependency;
@@ -80,4 +77,19 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     public void setDependency(VNFRecordDependency dependency) {
         this.dependency = dependency;
     }
+
+
+    @Override
+    public String toString() {
+        return "OrVnfmScalingMessage{" +
+                "component=" + component +
+                ", vnfcInstance=" + vnfcInstance +
+                ", vimInstance=" + vimInstance +
+                ", mode="+mode+
+                ", vnfPackage=" + (vnfPackage == null ? vnfPackage : vnfPackage.getName()) +
+                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
+                ", dependency=" + dependency +
+                '}';
+    }
+
 }
