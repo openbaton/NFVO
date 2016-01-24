@@ -27,7 +27,7 @@ import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
-import org.openbaton.vim.drivers.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimDriverException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -122,8 +122,7 @@ public class TestVIM extends Vim {
 
     @Override
     @Async
-    public Future<VNFCInstance> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimDriverException, VimException {
-        VimInstance vimInstance = vdu.getVimInstance();
+    public Future<VNFCInstance> allocate(VimInstance vimInstance, VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent vnfComponent, String userdata, Map<String, String> floatingIps) throws VimDriverException, VimException {
         log.trace("Initializing " + vimInstance);
         try {
             HashSet<String> networks = new HashSet<>();
@@ -132,14 +131,10 @@ public class TestVIM extends Vim {
             securityGroups.add("secGroup_id");
 
             Server server = client.launchInstanceAndWait(vimInstance, vdu.getHostname(), vimInstance.getImages().iterator().next().getExtId(), "flavor", "keypair", networks, securityGroups, "#userdate");
-//            VNFCInstance component = new VNFCInstance();
-//            component.setVc_id(server.getExtId());
-//            component.setVim_id(vdu.getVimInstance().getId());
-
 
             VNFCInstance vnfcInstance = new VNFCInstance();
             vnfcInstance.setVc_id(server.getExtId());
-            vnfcInstance.setVim_id(vdu.getVimInstance().getId());
+            vnfcInstance.setVim_id(vimInstance.getId());
 
             if (vnfcInstance.getConnection_point() == null)
                 vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
@@ -147,10 +142,7 @@ public class TestVIM extends Vim {
             for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
                 VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
                 connectionPoint_new.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-                //connectionPoint_new.setExtId(connectionPoint.getExtId());
-                //connectionPoint_new.setName(connectionPoint.getName());
                 connectionPoint_new.setType(connectionPoint.getType());
-
                 vnfcInstance.getConnection_point().add(connectionPoint_new);
             }
 

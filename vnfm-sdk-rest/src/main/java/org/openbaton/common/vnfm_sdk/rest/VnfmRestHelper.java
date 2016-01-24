@@ -25,6 +25,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -39,10 +40,12 @@ import java.io.Serializable;
  */
 @Service
 @Scope("prototype")
+@ConfigurationProperties(prefix = "vnfm.rest")
 public class VnfmRestHelper extends VnfmHelper {
-    private String server = "localhost";
-    private String port = "8080";
-    private String url = "http://" + server + ":" + port + "/";
+
+    private String server;
+    private String port;
+    private String url;
     private RestTemplate rest;
     private HttpHeaders headers;
     private HttpStatus status;
@@ -55,6 +58,15 @@ public class VnfmRestHelper extends VnfmHelper {
 
     @PostConstruct
     private void init() {
+        if (server == null) {
+            log.debug("NFVO Ip is not defined. Set to localhost");
+            server = "localhost";
+        }
+        if (port == null){
+            log.debug("NFVO port is not defined. Set to 8080");
+            port = "8080";
+        }
+        url  = "http://" + server + ":" + port + "/";
         this.mapper = new Gson();
         this.rest = new RestTemplate();
         this.rest.getMessageConverters().add(new MappingJackson2HttpMessageConverter());

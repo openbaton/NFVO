@@ -18,9 +18,8 @@ package org.openbaton.catalogue.mano.descriptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openbaton.catalogue.mano.common.*;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
@@ -82,17 +81,13 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String type;
     @JsonIgnore
     private String endpoint;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private VNFPackage vnfPackage;
+    private String vnfPackageLocation;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> requires;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> provides;
     @JsonIgnore
     private boolean cyclicDependency;
-
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private Set<VNFFaultManagementPolicy> fault_management_policy;
 
     public VirtualNetworkFunctionDescriptor() {
     }
@@ -126,20 +121,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 ", manifest_file_security=" + manifest_file_security +
                 ", type='" + type + '\'' +
                 ", endpoint='" + endpoint + '\'' +
-                ", vnfPackage=" + vnfPackage +
+                ", vnfPackageLocation=" + vnfPackageLocation +
                 ", requires=" + requires +
                 ", provides=" + provides +
                 ", cyclicDependency=" + cyclicDependency +
-                ", fault_management_policy=" + fault_management_policy +
                 '}';
-    }
-
-    public Set<VNFFaultManagementPolicy> getFault_management_policy() {
-        return fault_management_policy;
-    }
-
-    public void setFault_management_policy(Set<VNFFaultManagementPolicy> fault_management_policy) {
-        this.fault_management_policy = fault_management_policy;
     }
 
     public Set<String> getRequires() {
@@ -248,12 +234,12 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         this.type = type;
     }
 
-    public VNFPackage getVnfPackage() {
-        return vnfPackage;
+    public String getVnfPackageLocation() {
+        return vnfPackageLocation;
     }
 
-    public void setVnfPackage(VNFPackage vnfPackage) {
-        this.vnfPackage = vnfPackage;
+    public void setVnfPackageLocation(String vnfPackageLocation) {
+        this.vnfPackageLocation = vnfPackageLocation;
     }
 
     public Set<LifecycleEvent> getLifecycle_event() {
