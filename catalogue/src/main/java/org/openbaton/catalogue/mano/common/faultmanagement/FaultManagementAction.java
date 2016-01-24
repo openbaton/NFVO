@@ -18,7 +18,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 /**
  * Created by mob on 29.10.15.
  */
-public enum FaultManagementVNFCAction {
+public enum FaultManagementAction {
     RESTART,
     REINSTANTIATE_SERVICE,
     HEAL,
