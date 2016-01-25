@@ -58,4 +58,6 @@ public interface VnfmManager {
     Future<Void> removeVnfcDependency(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) throws NotFoundException;
 
     void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+    void removeVnfrName(String nsdId, String vnfrName);
 }

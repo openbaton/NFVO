@@ -503,4 +503,11 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     public Map<String, Map<String, Integer>> getVnfrNames() {
         return vnfrNames;
     }
+
+    @Override
+    public void removeVnfrName(String nsdId, String vnfrName) {
+        vnfrNames.get(nsdId).remove(vnfrName);
+        if (vnfrNames.get(nsdId).size() == 0)
+            vnfrNames.remove(nsdId);
+    }
 }
