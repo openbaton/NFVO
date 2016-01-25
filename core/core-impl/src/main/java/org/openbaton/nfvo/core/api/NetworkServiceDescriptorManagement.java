@@ -84,7 +84,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
             if (vnfd.getEndpoint() == null)
                 vnfd.setEndpoint(vnfd.getType());
             if (vnfd.getVnfPackageLocation() != null) {
-                if (urlValidator.isValid(vnfd.getVnfPackageLocation())){// this is a script link
+                if (urlValidator.isValid(vnfd.getVnfPackageLocation())) {// this is a script link
                     VNFPackage vnfPackage = new VNFPackage();
                     vnfPackage.setScriptsLink(vnfd.getVnfPackageLocation());
                     vnfPackage.setName(vnfd.getName());
@@ -94,8 +94,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
                     // nothing to do here i think...
                 }
             } else
-                throw new NetworkServiceIntegrityException("vnfPackageLocation cannot be null! Either put a link to git or a link to a package");
-
+                log.warn("vnfPackageLocation is null. Are you sure?");
         }
 
         log.info("Checking if Vnfm is running...");
@@ -106,15 +105,16 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
             boolean found = false;
             for (VnfmManagerEndpoint endpoint : endpoints) {
                 if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())) {
-                    found = true;
-                    break;
+                    if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
                 }
             }
-            if (!found) {
-                throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
-            }
         }
-
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
         nsdUtils.fetchVimInstances(networkServiceDescriptor);
@@ -127,7 +127,6 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
         log.trace("Persisting VNFDependencies");
         nsdUtils.fetchDependencies(networkServiceDescriptor);
         log.trace("Persisted VNFDependencies");
-
 
 
         networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
@@ -186,6 +185,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
      * @param id   of NetworkServiceDescriptor
      * @return the persisted VirtualNetworkFunctionDescriptor
      */
+
     public VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id) {
         return nsdRepository.addVnfd(vnfd, id);
     }

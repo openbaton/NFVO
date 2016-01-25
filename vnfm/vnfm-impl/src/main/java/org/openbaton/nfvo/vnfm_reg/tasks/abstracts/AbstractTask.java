@@ -173,7 +173,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
     protected void changeStatus() {
         log.debug("Action is: " + action);
-        Status status = null;
+        Status status = virtualNetworkFunctionRecord.getStatus();
         switch (action) {
             case ALLOCATE_RESOURCES:
                 status = Status.NULL;
