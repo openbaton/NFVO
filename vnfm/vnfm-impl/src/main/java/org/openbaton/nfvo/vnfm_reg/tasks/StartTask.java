@@ -17,9 +17,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -76,24 +74,16 @@ public class StartTask extends AbstractTask {
 
         saveVirtualNetworkFunctionRecord();
 
-        if (ordered != null && Boolean.parseBoolean(ordered) /*&& numberOfDep(networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id())) != 0*/) {
+        if (ordered != null && Boolean.parseBoolean(ordered)) {
             VirtualNetworkFunctionRecord nextToCallStart = getNextToCallStart(virtualNetworkFunctionRecord);
             if (nextToCallStart != null) {
-                log.debug("Calling start to vnfr: " + nextToCallStart.getName());
-                vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id()).remove(nextToCallStart.getName());
+                log.info("Calling START to: " + nextToCallStart.getName() + " because is the next in order");
+                vnfmManager.removeVnfrName(virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
                 sendStart(nextToCallStart);
             }
         }
 
         return null;
-    }
-
-    private int numberOfDep(NetworkServiceRecord networkServiceRecord) {
-        int res = 0;
-        for (VNFRecordDependency dependency : networkServiceRecord.getVnf_dependency())
-            if (dependency.getTarget().equals(virtualNetworkFunctionRecord.getName()))
-                res++;
-        return res;
     }
 
     private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {

@@ -48,6 +48,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by lto on 06/08/15.
@@ -59,6 +61,7 @@ import java.util.concurrent.Callable;
 @Service
 @Scope("prototype")
 public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
+    protected static Lock lock = new ReentrantLock();
     protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
     protected Action action;
     @Autowired
@@ -225,22 +228,25 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     }
 
     protected VirtualNetworkFunctionRecord getNextToCallStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+
         Map<String, Integer> vnfrNames = vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id());
 
-        log.debug("List of VNFRs to start: " + vnfrNames);
+        if (vnfrNames != null) {
 
-        if (vnfrNames.size() > 0)
-            for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
-                vnfrNames.remove(entry.getKey());
-                for (VirtualNetworkFunctionRecord vnfr : networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getVnfr()) {
-                    if (vnfr.getName().equals(entry.getKey())) {
-                        return vnfr;
+            log.debug("List of VNFRs to start: " + vnfrNames);
+
+            if (vnfrNames.size() > 0)
+                for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
+                    vnfrNames.remove(entry.getKey());
+                    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getVnfr()) {
+                        if (vnfr.getName().equals(entry.getKey())) {
+                            return vnfr;
+                        }
                     }
+
+                    return null;
                 }
-
-                return null;
-            }
-
+        }
         return null;
     }
 

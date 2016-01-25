@@ -61,11 +61,12 @@ public class ModifyTask extends AbstractTask {
                 VirtualNetworkFunctionRecord nextToCallStart = getNextToCallStart(virtualNetworkFunctionRecord);
                 if (nextToCallStart != null) {
                     log.debug("Calling start to vnfr: " + nextToCallStart.getName());
-                    vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id()).remove(nextToCallStart.getName());
+                    vnfmManager.removeVnfrName(virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
                     sendStart(nextToCallStart);
                 }
+                log.debug("Not found next VNFR to call start");
             } else {
-                log.debug("Not calling start to next VNFR because not all VNFRs are in state INACTIVE");
+                log.debug("After MODIFY of " + virtualNetworkFunctionRecord.getName() + ", not calling start to next VNFR because not all VNFRs are in state INACTIVE");
             }
         } else {
             sendStart(virtualNetworkFunctionRecord);
@@ -75,6 +76,7 @@ public class ModifyTask extends AbstractTask {
 
     private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
         VnfmSender vnfmSender;
+        log.info("Calling START to: " + virtualNetworkFunctionRecord.getName() + " after MODIFY");
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
         vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
     }
