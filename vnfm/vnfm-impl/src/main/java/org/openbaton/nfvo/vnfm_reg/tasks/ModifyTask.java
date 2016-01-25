@@ -64,6 +64,7 @@ public class ModifyTask extends AbstractTask {
                     vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id()).remove(nextToCallStart.getName());
                     sendStart(nextToCallStart);
                 }
+                log.debug("Not found next VNFR to call start");
             } else {
                 log.debug("Not calling start to next VNFR because not all VNFRs are in state INACTIVE");
             }
