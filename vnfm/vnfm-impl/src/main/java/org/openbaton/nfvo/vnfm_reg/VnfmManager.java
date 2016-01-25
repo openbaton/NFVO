@@ -93,7 +93,16 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private VimRepository vimInstanceRepository;
     @Autowired
     private Gson gson;
-    @Value("${nfvo.start.ordered:")
+
+    public String getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(String ordered) {
+        this.ordered = ordered;
+    }
+
+    @Value("${nfvo.start.ordered:}")
     private String ordered;
 
     private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
@@ -199,12 +208,13 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
 
         // calculate dependencies
-        if (ordered != null && Boolean.parseBoolean(ordered))
-            fillVnfrNames(networkServiceDescriptor, dependencies, vnfrNamesWeighted);
+        if (ordered != null && Boolean.parseBoolean(ordered)) {
+            fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
 
-        vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
+            vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
 
-        log.debug("VNFRs ordered by depednencies: " + vnfrNamesWeighted);
+            log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
+        }
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
 
@@ -240,9 +250,16 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         return new AsyncResult<>(null);
     }
 
-    private void fillVnfrNames(NetworkServiceDescriptor networkServiceDescriptor, Set<VNFRecordDependency> dependencies, Map<String, Integer> vnfrNamesWeighted) {
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd())
-            vnfrNamesWeighted.put(virtualNetworkFunctionDescriptor.getName(), getWeightForVNFR(virtualNetworkFunctionDescriptor, networkServiceDescriptor));
+    private void fillVnfrNames(NetworkServiceDescriptor networkServiceDescriptor, Map<String, Integer> vnfrNamesWeighted) {
+
+        log.debug("Checking NSD \n\n\n" + networkServiceDescriptor);
+
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
+            String virtualNetworkFunctionDescriptorName = virtualNetworkFunctionDescriptor.getName();
+            int weightForVNFR = getWeightForVNFR(virtualNetworkFunctionDescriptor, networkServiceDescriptor);
+            vnfrNamesWeighted.put(virtualNetworkFunctionDescriptorName, weightForVNFR);
+            log.debug("Set weight for " + virtualNetworkFunctionDescriptorName + " to " + weightForVNFR);
+        }
     }
 
     private int getWeightForVNFR(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, NetworkServiceDescriptor networkServiceDescriptor) {
