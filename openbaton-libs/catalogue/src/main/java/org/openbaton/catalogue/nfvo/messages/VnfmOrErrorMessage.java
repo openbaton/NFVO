@@ -7,8 +7,24 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
  * Created by lto on 26/01/16.
  */
 public class VnfmOrErrorMessage extends VnfmOrMessage {
+    private String nsrId;
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     private Exception exception;
+    public VnfmOrErrorMessage(Exception exception, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String nsrId) {
+        this.exception = exception;
+        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+        this.nsrId = nsrId;
+    }
+    public VnfmOrErrorMessage() {
+    }
+
+    public String getNsrId() {
+        return nsrId;
+    }
+
+    public void setNsrId(String nsrId) {
+        this.nsrId = nsrId;
+    }
 
     public Exception getException() {
         return exception;
@@ -30,15 +46,8 @@ public class VnfmOrErrorMessage extends VnfmOrMessage {
     public String toString() {
         return "VnfmOrErrorMessage{" +
                 "exception=" + exception +
+                ", nsrId='" + nsrId + '\'' +
                 ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
                 '}';
-    }
-
-    public VnfmOrErrorMessage(Exception exception, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.exception = exception;
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
-
-    public VnfmOrErrorMessage() {
     }
 }
