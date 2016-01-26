@@ -35,9 +35,9 @@ public class VnfmUtils {
         return nfvMessage;
     }
 
-    public static NFVMessage getNfvErrorMessage(VirtualNetworkFunctionRecord payload, Exception exception) {
+    public static NFVMessage getNfvErrorMessage(VirtualNetworkFunctionRecord payload, Exception exception, String nsrId) {
         NFVMessage nfvMessage;
-        nfvMessage = new VnfmOrErrorMessage(exception,payload);
+        nfvMessage = new VnfmOrErrorMessage(exception,payload, nsrId);
         nfvMessage.setAction(Action.ERROR);
         return nfvMessage;
     }
