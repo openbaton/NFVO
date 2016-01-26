@@ -26,8 +26,18 @@ Want to contribute? Great! Get in contact with us. You can find us on twitter @[
 ## News and Website
 Information about OpenBaton can be found on our @[website]. Follow us on Twitter @[openbaton].
 
+## Supported by
+Open Baton is a project developed by Fraunhofer FOKUS and TU Berlin. It is supported by different European publicly funded projects: 
+
+* [NUBOMEDIA][nubomedia]
+* [Mobile Cloud Networking][mcn]
+* [CogNet][cognet]
 
 [spring.io]:https://spring.io/
 [NFV MANO]:http://www.etsi.org/deliver/etsi_gs/NFV-MAN/001_099/001/01.01.01_60/gs_nfv-man001v010101p.pdf
 [openbaton]:http://twitter.com/openbaton
 [website]:http://www.open-baton.org
+[nubomedia]: https://www.nubomedia.eu/
+[mcn]: http://mobile-cloud-networking.eu/site/
+[cognet]: http://www.cognet.5g-ppp.eu/cognet-in-5gpp/
+
