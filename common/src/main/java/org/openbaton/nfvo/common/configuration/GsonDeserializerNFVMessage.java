@@ -28,6 +28,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
             case "ALLOCATE_RESOURCES":
                 result = gson.fromJson(json, VnfmOrAllocateResourcesMessage.class);
                 break;
+            case "ERROR":
+                result = gson.fromJson(json, VnfmOrErrorMessage.class);
+                break;
             case "INSTANTIATE":
                 log.trace("gson is: " + gson);
                 result = gson.fromJson(json, VnfmOrInstantiateMessage.class);
