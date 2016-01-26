@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by lto on 08/07/15.
@@ -230,8 +231,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
                     nsrId = extension.get("nsr-id");
-                    throw new NullPointerException("Fake null");
-                    /*virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
                     Future<VirtualNetworkFunctionRecord> result = executor.submit(grantOperation);
@@ -259,7 +259,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                         virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, null, orVnfmInstantiateMessage.getVimInstances());
                     }
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
-                    break;*/
+                    break;
                 case RELEASE_RESOURCES_FINISH:
                     break;
                 case HEAL:
