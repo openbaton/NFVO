@@ -15,10 +15,7 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
