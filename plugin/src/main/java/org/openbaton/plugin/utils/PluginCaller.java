@@ -133,10 +133,13 @@ public class PluginCaller {
             while (true) {
                 QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-
                     response = new String(delivery.getBody());
-                    log.trace("received: " + response);
+                    log.debug("received: " + response);
                     break;
+                } else {
+                    log.debug("Received Message with wrong correlation id");
+                    log.debug("Publish it again");
+                    channel.basicPublish(delivery.getEnvelope().getExchange(), delivery.getEnvelope().getRoutingKey(), delivery.getProperties(), delivery.getBody());
                 }
             }
 
@@ -155,7 +158,7 @@ public class PluginCaller {
                 } else
                     ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
 
-                log.trace("answer is: " + ret);
+                log.debug("answer is: " + ret);
                 return ret;
             }else {
                 PluginException pluginException;
