@@ -32,6 +32,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -93,15 +94,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private VimRepository vimInstanceRepository;
     @Autowired
     private Gson gson;
-
-    public String getOrdered() {
-        return ordered;
-    }
-
-    public void setOrdered(String ordered) {
-        this.ordered = ordered;
-    }
-
     @Value("${nfvo.start.ordered:}")
     private String ordered;
 
@@ -120,6 +112,14 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             result.put(entry.getKey(), entry.getValue());
         }
         return result;
+    }
+
+    public String getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(String ordered) {
+        this.ordered = ordered;
     }
 
     @Override
@@ -301,7 +301,13 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         task.setAction(nfvMessage.getAction());
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        if (nfvMessage.getAction().ordinal() == Action.INSTANTIATE.ordinal()) {
+        if (nfvMessage.getAction().ordinal() == Action.ERROR.ordinal()) {
+            VnfmOrErrorMessage vnfmOrErrorMessage = (VnfmOrErrorMessage) nfvMessage;
+            virtualNetworkFunctionRecord = vnfmOrErrorMessage.getVirtualNetworkFunctionRecord();
+            Exception e = vnfmOrErrorMessage.getException();
+            ((ErrorTask) task).setException(e);
+            ((ErrorTask) task).setNsrId(vnfmOrErrorMessage.getNsrId());
+        } else if (nfvMessage.getAction().ordinal() == Action.INSTANTIATE.ordinal()) {
             VnfmOrInstantiateMessage vnfmOrInstantiate = (VnfmOrInstantiateMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrInstantiate.getVirtualNetworkFunctionRecord();
         } else if (nfvMessage.getAction().ordinal() == Action.SCALED.ordinal()) {
@@ -320,14 +326,16 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
         }
 
-        if (!nsrRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
-            return null;
+        if (virtualNetworkFunctionRecord != null) {
+            if (virtualNetworkFunctionRecord.getParent_ns_id() != null)
+                if (!nsrRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
+                    return null;
 
-        virtualNetworkFunctionRecord.setTask(actionName);
-        task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+            virtualNetworkFunctionRecord.setTask(actionName);
+            task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
-        log.debug("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
-
+            log.debug("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
+        }
         if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal() || nfvMessage.getAction().ordinal() == Action.UPDATEVNFR.ordinal())
             return gson.toJson(asyncExecutor.submit(task).get());
         else {
