@@ -140,6 +140,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     }
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
+
+        String nsrId = "";
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
         try {
 
@@ -150,6 +152,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             switch (message.getAction()) {
                 case SCALE_IN:
                     OrVnfmScalingMessage scalingMessage = (OrVnfmScalingMessage) message;
+                    nsrId = scalingMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFCInstance vnfcInstanceToRemove = scalingMessage.getVnfcInstance();
 
@@ -158,6 +161,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case SCALE_OUT:
                     scalingMessage = (OrVnfmScalingMessage) message;
+                    nsrId = scalingMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFRecordDependency dependency = scalingMessage.getDependency();
                     VNFComponent component = scalingMessage.getComponent();
@@ -207,6 +211,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case ERROR:
                     OrVnfmErrorMessage errorMessage = (OrVnfmErrorMessage) message;
+                    nsrId = errorMessage.getVnfr().getParent_ns_id();
                     log.error("ERROR Received: " + errorMessage.getMessage());
                     handleError(errorMessage.getVnfr());
 
@@ -214,14 +219,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case MODIFY:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nsrId = orVnfmGenericMessage.getVnfr().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.MODIFY, this.modify(orVnfmGenericMessage.getVnfr(), orVnfmGenericMessage.getVnfrd()));
                     break;
                 case RELEASE_RESOURCES:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nsrId = orVnfmGenericMessage.getVnfr().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.RELEASE_RESOURCES, this.terminate(orVnfmGenericMessage.getVnfr()));
                     break;
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
+                    Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
+                    nsrId = extension.get("nsr-id");
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
@@ -255,16 +264,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case HEAL:
                     OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
+                    nsrId = orVnfmHealMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(), orVnfmHealMessage.getVnfcInstance(), orVnfmHealMessage.getCause()));
                     break;
                 case INSTANTIATE_FINISH:
                     break;
                 case CONFIGURE:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nsrId = orVnfmGenericMessage.getVnfr().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.CONFIGURE, configure(orVnfmGenericMessage.getVnfr()));
                     break;
                 case START:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    nsrId = orVnfmGenericMessage.getVnfr().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.START, start(orVnfmGenericMessage.getVnfr()));
                     break;
             }
@@ -280,18 +292,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
                 if (vnfmSdkException.getVnfr() != null) {
                     log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
+                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
                     return;
                 }
             } else if (e.getCause() instanceof VnfmSdkException) {
                 VnfmSdkException vnfmSdkException = (VnfmSdkException) e.getCause();
                 if (vnfmSdkException.getVnfr() != null) {
                     log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, vnfmSdkException.getVnfr()));
+                    vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
                     return;
                 }
             }
-            vnfmHelper.sendToNfvo(VnfmUtils.getNfvMessage(Action.ERROR, virtualNetworkFunctionRecord));
+            vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId));
         }
     }
 
