@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -192,7 +193,10 @@ public class RepositoriesClassSuiteTest {
                 Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getId(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getId());
                 Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getVersion(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getVersion());
                 Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getComputation_requirement(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getComputation_requirement());
-                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().getRedundancyScheme(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().getRedundancyScheme());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().getResiliencyLevel(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().getResiliencyLevel());
+                Assert.assertEquals(((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().isGeoRedundancy(), ((VirtualDeploymentUnit) ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVdu().toArray()[j]).getHigh_availability().isGeoRedundancy());
+
             }
         }
 
@@ -221,7 +225,11 @@ public class RepositoriesClassSuiteTest {
         vdu.setVnfc(new HashSet<VNFComponent>());
         vdu.setVnfc_instance(new HashSet<VNFCInstance>());
         vdu.setVimInstanceName("test");
-        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+        HighAvailability highAvailability = new HighAvailability();
+        highAvailability.setGeoRedundancy(false);
+        highAvailability.setRedundancyScheme("1:N");
+        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+        vdu.setHigh_availability(highAvailability);
         vdu.setComputation_requirement("high_requirements");
         virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>() {{
             add(vdu);

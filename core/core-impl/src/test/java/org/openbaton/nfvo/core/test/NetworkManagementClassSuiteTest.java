@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -209,7 +210,11 @@ public class NetworkManagementClassSuiteTest {
                 .setVdu(new HashSet<VirtualDeploymentUnit>() {
                     {
                         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        HighAvailability highAvailability = new HighAvailability();
+                        highAvailability.setGeoRedundancy(false);
+                        highAvailability.setRedundancyScheme("1:N");
+                        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+                        vdu.setHigh_availability(highAvailability);
                         vdu.setComputation_requirement("high_requirements");
                         VimInstance vimInstance = new VimInstance();
                         vimInstance.setName("vim_instance");

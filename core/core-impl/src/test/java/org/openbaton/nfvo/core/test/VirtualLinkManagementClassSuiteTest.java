@@ -280,7 +280,11 @@ public class VirtualLinkManagementClassSuiteTest {
                 .setVdu(new HashSet<VirtualDeploymentUnit>() {
                     {
                         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        HighAvailability highAvailability = new HighAvailability();
+                        highAvailability.setGeoRedundancy(false);
+                        highAvailability.setRedundancyScheme("1:N");
+                        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+                        vdu.setHigh_availability(highAvailability);
                         vdu.setComputation_requirement("high_requirements");
                         VimInstance vimInstance = new VimInstance();
                         vimInstance.setName("vim_instance");

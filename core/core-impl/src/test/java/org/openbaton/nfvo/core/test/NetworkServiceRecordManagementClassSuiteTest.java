@@ -326,7 +326,11 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 vdu.setVm_image(new HashSet<String>() {{
                     add("mocked_image");
                 }});
-                vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                HighAvailability highAvailability = new HighAvailability();
+                highAvailability.setGeoRedundancy(false);
+                highAvailability.setRedundancyScheme("1:N");
+                highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+                vdu.setHigh_availability(highAvailability);
                 vdu.setComputation_requirement("high_requirements");
                 vdu.setVnfc(new HashSet<VNFComponent>());
                 vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
@@ -373,7 +377,11 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 .setVdu(new HashSet<VirtualDeploymentUnit>() {
                     {
                         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-                        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+                        HighAvailability highAvailability = new HighAvailability();
+                        highAvailability.setGeoRedundancy(false);
+                        highAvailability.setRedundancyScheme("1:N");
+                        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+                        vdu.setHigh_availability(highAvailability);
                         vdu.setVm_image(new HashSet<String>() {{
                             add("mocked_image");
                         }});
