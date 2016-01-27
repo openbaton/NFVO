@@ -16,7 +16,7 @@
 package org.openbaton.common.vnfm_sdk.utils;
 
 import org.openbaton.catalogue.mano.common.*;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -76,18 +76,6 @@ public class VNFRUtils {
                 virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
             }
         }
-
-        //Set Faultmanagement policies
-        Set<VNFFaultManagementPolicy> vnfFaultManagementPolicies = new HashSet<>();
-        if (vnfd.getFault_management_policy() != null) {
-            log.debug("Adding the fault management policies: " + vnfd.getFault_management_policy());
-            for (VNFFaultManagementPolicy vnffmp : vnfd.getFault_management_policy()) {
-                vnfFaultManagementPolicies.add(vnffmp);
-            }
-        }
-        virtualNetworkFunctionRecord.setFault_management_policy(vnfFaultManagementPolicies);
-        //Set Faultmanagement policies end
-
         Configuration provides = new Configuration();
         provides.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         provides.setName("provides");
@@ -203,6 +191,17 @@ public class VNFRUtils {
             HashSet<String> vmImages = new HashSet<>();
             vmImages.addAll(virtualDeploymentUnit.getVm_image());
             vdu_new.setVm_image(vmImages);
+
+            //Set Faultmanagement policies
+            Set<VRFaultManagementPolicy> vrFaultManagementPolicies = new HashSet<>();
+            if (virtualDeploymentUnit.getFault_management_policy() != null) {
+                log.debug("Adding the fault management policies: " + virtualDeploymentUnit.getFault_management_policy());
+                for (VRFaultManagementPolicy vnffmp : virtualDeploymentUnit.getFault_management_policy()) {
+                    vrFaultManagementPolicies.add(vnffmp);
+                }
+            }
+            vdu_new.setFault_management_policy(vrFaultManagementPolicies);
+            //Set Faultmanagement policies end
 
             vdu_new.setVirtual_network_bandwidth_resource(virtualDeploymentUnit.getVirtual_network_bandwidth_resource());
             vdu_new.setVirtual_memory_resource_element(virtualDeploymentUnit.getVirtual_memory_resource_element());
