@@ -42,7 +42,6 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm {
     private ConfigurableApplicationContext context;
 
     public void onAction(String message) throws NotFoundException, BadFormatException {
-        //TODO deserialize message
 
         NFVMessage nfvMessage = gson.fromJson(message, NFVMessage.class);
 
