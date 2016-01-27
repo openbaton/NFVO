@@ -17,6 +17,7 @@ package org.openbaton.catalogue.mano.descriptor;
 
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -81,8 +82,11 @@ public class VirtualDeploymentUnit implements Serializable {
      * the same VDU will co-exists with continuous data synchronization. ActivePassive: Implies that two instance of
      * the same VDU will co-exists without any data synchronization.
      */
-    @Enumerated(EnumType.STRING)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL )
     private HighAvailability high_availability;
+
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    private Set<VRFaultManagementPolicy> fault_management_policy;
     /**
      * Defines minimum and maximum number of instances which can be created to support scale out/in.
      */
@@ -216,6 +220,10 @@ public class VirtualDeploymentUnit implements Serializable {
         this.vnfc = vnfc;
     }
 
+    public Set<String> getMonitoring_parameter() {
+        return monitoring_parameter;
+    }
+
     @Override
     public String toString() {
         return "VirtualDeploymentUnit{" +
@@ -229,6 +237,7 @@ public class VirtualDeploymentUnit implements Serializable {
                 ", lifecycle_event=" + lifecycle_event +
                 ", vdu_constraint='" + vdu_constraint + '\'' +
                 ", high_availability=" + high_availability +
+                ", fault_management_policy=" + fault_management_policy +
                 ", scale_in_out=" + scale_in_out +
                 ", vnfc=" + vnfc +
                 ", vnfc_instance=" + vnfc_instance +
@@ -239,8 +248,12 @@ public class VirtualDeploymentUnit implements Serializable {
                 '}';
     }
 
-    public Set<String> getMonitoring_parameter() {
-        return monitoring_parameter;
+    public Set<VRFaultManagementPolicy> getFault_management_policy() {
+        return fault_management_policy;
+    }
+
+    public void setFault_management_policy(Set<VRFaultManagementPolicy> fault_management_policy) {
+        this.fault_management_policy = fault_management_policy;
     }
 
     public void setMonitoring_parameter(Set<String> monitoring_parameter) {

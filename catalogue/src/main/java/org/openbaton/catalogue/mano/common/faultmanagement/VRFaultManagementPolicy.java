@@ -22,28 +22,27 @@ import java.util.Iterator;
  * Created by mob on 29.10.15.
  */
 @Entity
-public class VNFFaultManagementPolicy extends FaultManagementPolicy {
-    private FaultManagementVNFCAction action;
+public class VRFaultManagementPolicy extends FaultManagementPolicy {
+    private FaultManagementAction action;
 
-    public VNFFaultManagementPolicy(){
+    public VRFaultManagementPolicy(){
 
     }
 
-    public FaultManagementVNFCAction getAction() {
+    public FaultManagementAction getAction() {
         return action;
     }
 
-    public void setAction(FaultManagementVNFCAction action) {
+    public void setAction(FaultManagementAction action) {
         this.action = action;
     }
 
     @Override
     public String toString() {
-        String result= "VNFFaultManagementPolicy{" +
+        String result= "VRFaultManagementPolicy{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
-                ", cooldown=" + cooldown +
                 ", period=" + period +
                 ", severity=" + severity +
                 ", criteria=";
