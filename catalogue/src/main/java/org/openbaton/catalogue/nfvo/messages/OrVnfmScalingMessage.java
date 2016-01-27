@@ -22,6 +22,7 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     private String mode;
 
 
+
     public VNFPackage getVnfPackage() {
         return vnfPackage;
     }
@@ -77,13 +78,14 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
         this.dependency = dependency;
     }
 
+
     @Override
     public String toString() {
         return "OrVnfmScalingMessage{" +
                 "component=" + component +
                 ", vnfcInstance=" + vnfcInstance +
                 ", vimInstance=" + vimInstance +
-                ", mode=" + mode +
+                ", mode="+mode+
                 ", vnfPackage=" + (vnfPackage == null ? vnfPackage : vnfPackage.getName()) +
                 ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
                 ", dependency=" + dependency +
