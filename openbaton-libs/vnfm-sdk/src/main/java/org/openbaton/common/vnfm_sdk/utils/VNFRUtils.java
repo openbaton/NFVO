@@ -76,6 +76,7 @@ public class VNFRUtils {
                 virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
             }
         }
+
         Configuration provides = new Configuration();
         provides.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         provides.setName("provides");
@@ -188,20 +189,20 @@ public class VNFRUtils {
             vdu_new.setMonitoring_parameter(monitoringParameters);
             vdu_new.setVdu_constraint(virtualDeploymentUnit.getVdu_constraint());
 
-            HashSet<String> vmImages = new HashSet<>();
-            vmImages.addAll(virtualDeploymentUnit.getVm_image());
-            vdu_new.setVm_image(vmImages);
-
             //Set Faultmanagement policies
             Set<VRFaultManagementPolicy> vrFaultManagementPolicies = new HashSet<>();
             if (virtualDeploymentUnit.getFault_management_policy() != null) {
                 log.debug("Adding the fault management policies: " + virtualDeploymentUnit.getFault_management_policy());
-                for (VRFaultManagementPolicy vnffmp : virtualDeploymentUnit.getFault_management_policy()) {
-                    vrFaultManagementPolicies.add(vnffmp);
+                for (VRFaultManagementPolicy vrfmp : virtualDeploymentUnit.getFault_management_policy()) {
+                    vrFaultManagementPolicies.add(vrfmp);
                 }
             }
             vdu_new.setFault_management_policy(vrFaultManagementPolicies);
             //Set Faultmanagement policies end
+
+            HashSet<String> vmImages = new HashSet<>();
+            vmImages.addAll(virtualDeploymentUnit.getVm_image());
+            vdu_new.setVm_image(vmImages);
 
             vdu_new.setVirtual_network_bandwidth_resource(virtualDeploymentUnit.getVirtual_network_bandwidth_resource());
             vdu_new.setVirtual_memory_resource_element(virtualDeploymentUnit.getVirtual_memory_resource_element());
