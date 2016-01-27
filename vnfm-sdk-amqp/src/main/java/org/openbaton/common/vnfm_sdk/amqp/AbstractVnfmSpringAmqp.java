@@ -16,6 +16,7 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
+import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -41,7 +42,6 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm {
     private ConfigurableApplicationContext context;
 
     public void onAction(String message) throws NotFoundException, BadFormatException {
-        //TODO deserialize message
 
         NFVMessage nfvMessage = gson.fromJson(message, NFVMessage.class);
 

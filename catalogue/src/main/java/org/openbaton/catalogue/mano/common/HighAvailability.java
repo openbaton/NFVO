@@ -15,12 +15,66 @@
 
 package org.openbaton.catalogue.mano.common;
 
+import org.openbaton.catalogue.util.IdGenerator;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
+
 /**
  * Created by lto on 06/02/15.
  *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
-public enum HighAvailability {
-    ACTIVE_ACTIVE,
-    ACTIVE_PASSIVE
+@Entity
+public class HighAvailability {
+    @Id
+    private String id;
+    @Version
+    private int version = 0;
+    private ResiliencyLevel resiliencyLevel;
+    private boolean geoRedundancy;
+    private String redundancyScheme;
+
+    public HighAvailability(){
+
+    }
+
+    @PrePersist
+    public void ensureId() {
+        id = IdGenerator.createUUID();
+    }
+    public ResiliencyLevel getResiliencyLevel() {
+        return resiliencyLevel;
+    }
+
+    public void setResiliencyLevel(ResiliencyLevel resiliencyLevel) {
+        this.resiliencyLevel = resiliencyLevel;
+    }
+
+    public boolean isGeoRedundancy() {
+        return geoRedundancy;
+    }
+
+    public void setGeoRedundancy(boolean geoRedundancy) {
+        this.geoRedundancy = geoRedundancy;
+    }
+
+    public String getRedundancyScheme() {
+        return redundancyScheme;
+    }
+
+    public void setRedundancyScheme(String redundancyScheme) {
+        this.redundancyScheme = redundancyScheme;
+    }
+
+    @Override
+    public String toString() {
+        return "HighAvailability{" +
+                "resiliencyLevel=" + resiliencyLevel +
+                ", geoRedundancy=" + geoRedundancy +
+                ", redundancyScheme='" + redundancyScheme + '\'' +
+                '}';
+    }
 }
