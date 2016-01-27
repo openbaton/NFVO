@@ -160,14 +160,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     nfvMessage = null;
                     break;
                 case SCALE_OUT:
+
                     scalingMessage = (OrVnfmScalingMessage) message;
+
                     nsrId = scalingMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
                     VNFRecordDependency dependency = scalingMessage.getDependency();
                     VNFComponent component = scalingMessage.getComponent();
+                    String mode = scalingMessage.getMode();
 
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
+                    log.debug("the mode is:" + mode);
+
 
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
 
@@ -181,6 +186,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                             return;
                         }
                     }
+
                     boolean found = false;
                     VNFCInstance vnfcInstance_new = null;
                     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
@@ -199,6 +205,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     if (vnfcInstance_new == null) {
                         throw new RuntimeException("no new VNFCInstance found. This should not happen...");
                     }
+                    if(mode!=null && mode.equals("standby"))
+                        vnfcInstance_new.setState(mode);
+
                     checkEMS(vnfcInstance_new.getHostname());
                     Object scripts;
                     if (scalingMessage.getVnfPackage().getScriptsLink() != null)
@@ -266,6 +275,14 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
                     nsrId = orVnfmHealMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(), orVnfmHealMessage.getVnfcInstance(), orVnfmHealMessage.getCause()));
+                    if(orVnfmHealMessage.getCause().equals("switchToStandby")){
+                        VirtualNetworkFunctionRecord vnfrObtained=this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause());
+                        nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, vnfrObtained,orVnfmHealMessage.getVnfcInstance());
+                    }
+                    else{
+                        VirtualNetworkFunctionRecord vnfrObtained=this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause());
+                        nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL,vnfrObtained);
+                    }
                     break;
                 case INSTANTIATE_FINISH:
                     break;
