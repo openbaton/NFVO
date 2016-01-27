@@ -22,11 +22,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.nfvo.core.core.VNFLifecycleOperationGranting;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.HighAvailability;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -109,7 +106,11 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
     private VirtualDeploymentUnit createVDU(int suffix, VimInstance vimInstance) {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         vdu.setHostname("mocked_vdu_hostname_" + suffix);
-        vdu.setHigh_availability(HighAvailability.ACTIVE_ACTIVE);
+        HighAvailability highAvailability = new HighAvailability();
+        highAvailability.setGeoRedundancy(false);
+        highAvailability.setRedundancyScheme("1:N");
+        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+        vdu.setHigh_availability(highAvailability);
         vdu.setVm_image(new HashSet<String>() {{
             add("mocked_image");
         }});
