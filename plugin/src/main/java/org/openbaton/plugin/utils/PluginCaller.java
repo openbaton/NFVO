@@ -42,14 +42,11 @@ import java.util.concurrent.TimeoutException;
  */
 public class PluginCaller {
 
-    private final QueueingConsumer consumer;
     private final String pluginId;
     private final String exchange = "plugin-exchange";
     private final String brokerIp;
     private final String username;
     private final String password;
-    private String replyQueueName;
-    private Channel channel;
     private Connection connection;
     private Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter()).setPrettyPrinting().create();
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -87,14 +84,13 @@ public class PluginCaller {
         else
             factory.setPort(5672);
         connection = factory.newConnection();
-        channel = connection.createChannel();
-        replyQueueName = channel.queueDeclare().getQueue();
-        channel.queueBind(replyQueueName,exchange,replyQueueName);
-        consumer = new QueueingConsumer(channel);
-        channel.basicConsume(replyQueueName, true, consumer);
+
+//        replyQueueName = channel.queueDeclare().getQueue();
+//        channel.queueBind(replyQueueName,exchange,replyQueueName);
+//        consumer = new QueueingConsumer(channel);
+//        channel.basicConsume(replyQueueName, true, consumer);
     }
     public void close() throws IOException, TimeoutException {
-        channel.close();
         connection.close();
     }
     private String getFullPluginId(String pluginId, String brokerIp, String username, String password, int port) throws IOException, NotFoundException {
@@ -108,8 +104,13 @@ public class PluginCaller {
 
     public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType) throws IOException, InterruptedException, PluginException {
 
-        //Check if plugin is still up
+        Channel channel = connection.createChannel();
+        String replyQueueName = channel.queueDeclare().getQueue();
+        channel.queueBind(replyQueueName,exchange,replyQueueName);
+        QueueingConsumer consumer = new QueueingConsumer(channel);
+        String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
 
+        //Check if plugin is still up
         if (!RabbitManager.getQueues(brokerIp,username,password, managementPort).contains(pluginId))
             throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
 
@@ -133,13 +134,21 @@ public class PluginCaller {
             while (true) {
                 QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-
                     response = new String(delivery.getBody());
                     log.trace("received: " + response);
                     break;
+                } else {
+                    log.error("Received Message with wrong correlation id");
+                    throw new PluginException("Received Message with wrong correlation id. This should not happen, if it does please call us.");
                 }
             }
 
+            channel.queueDelete(replyQueueName);
+            try {
+                channel.close();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
             JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
 
             JsonElement exceptionJson = jsonObject.get("exception");
