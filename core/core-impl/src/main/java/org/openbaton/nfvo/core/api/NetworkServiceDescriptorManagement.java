@@ -104,16 +104,14 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
             boolean found = false;
             for (VnfmManagerEndpoint endpoint : endpoints) {
+                log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
                 if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())) {
-                    if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
+                    found = true;
+                    break;
                 }
             }
+            if (!found)
+                throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered");
         }
         log.trace("Creating " + networkServiceDescriptor);
         log.trace("Fetching Data");
