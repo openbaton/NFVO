@@ -20,7 +20,6 @@ import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -31,7 +30,6 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.*;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -67,6 +66,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Autowired
     private VNFRRepository vnfrRepository;
+
+    @Autowired
+    private VNFRecordDependencyRepository vnfRecordDependencyRepository;
 
     @Autowired
     private ConfigurationManagement configurationManagement;
@@ -105,7 +107,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
         log.debug("Looking for NetworkServiceDescriptor with id: " + idNsd);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
-        if (networkServiceDescriptor == null){
+        if (networkServiceDescriptor == null) {
             throw new NotFoundException("NSD with id " + idNsd + " was not found");
         }
         return deployNSR(networkServiceDescriptor);
@@ -162,7 +164,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component,"");
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, "");
     }
 
     @Override
@@ -178,9 +180,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component,mode);
+        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, mode);
     }
-    private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component,String mode) throws BadFormatException, NotFoundException {
+
+    private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFComponent component, String mode) throws BadFormatException, NotFoundException {
         List<String> componentNetworks = new ArrayList<>();
 
         for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
@@ -207,7 +210,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         log.debug("Found Dependency: " + dependencyTarget);
 
-        vnfmManager.addVnfc(virtualNetworkFunctionRecord, component, dependencyTarget,mode);
+        vnfmManager.addVnfc(virtualNetworkFunctionRecord, component, dependencyTarget, mode);
     }
 
     @Override
@@ -230,7 +233,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
+        scaleIn(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
     }
 
     @Override
@@ -247,7 +250,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        scaleOUT(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
+        scaleIn(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, getVNFCI(virtualDeploymentUnit, idVNFCI));
     }
 
     @Override
@@ -259,18 +262,18 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         VNFCInstance standByVNFCInstance = null;
         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-            log.debug("current vnfcinstance "+vnfcInstance+" in state" + vnfcInstance.getState());
-            if (vnfcInstance.getState()!=null && vnfcInstance.getState().equals(mode)) {
+            log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
+            if (vnfcInstance.getState() != null && vnfcInstance.getState().equals(mode)) {
                 standByVNFCInstance = vnfcInstance;
-                log.debug("VNFComponentInstance in "+mode+" mode FOUND :" + standByVNFCInstance);
+                log.debug("VNFComponentInstance in " + mode + " mode FOUND :" + standByVNFCInstance);
             }
-            if(vnfcInstance.getId().equals(failedVnfcInstance.getId())) {
+            if (vnfcInstance.getId().equals(failedVnfcInstance.getId())) {
                 vnfcInstance.setState("failed");
-                log.debug("The vnfcInstance: "+vnfcInstance.getHostname()+" is set to '"+vnfcInstance.getState()+"' state");
+                log.debug("The vnfcInstance: " + vnfcInstance.getHostname() + " is set to '" + vnfcInstance.getState() + "' state");
             }
         }
-        if(standByVNFCInstance == null)
-            throw new NotFoundException("No VNFCInstance in "+mode+" mode found, so switch to redundant VNFC is not possibile");
+        if (standByVNFCInstance == null)
+            throw new NotFoundException("No VNFCInstance in " + mode + " mode found, so switch to redundant VNFC is not possibile");
 
         //save the new state of the failedVnfcInstance
         nsrRepository.save(networkServiceRecord);
@@ -281,7 +284,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         healMessage.setVnfcInstance(standByVNFCInstance);
         healMessage.setCause("switchToStandby");
 
-        vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord,healMessage);
+        vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, healMessage);
     }
 
     private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI) throws NotFoundException {
@@ -292,20 +295,33 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         throw new NotFoundException("VNFCInstance with id " + idVNFCI + " was not found");
     }
 
-    private void scaleOUT(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws NotFoundException, InterruptedException, ExecutionException, VimException {
+    private void scaleIn(NetworkServiceRecord networkServiceRecord, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws NotFoundException, InterruptedException, ExecutionException, VimException {
         List<VNFRecordDependency> dependencySource = dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
         if (dependencySource.size() != 0) {
             for (VNFRecordDependency dependency : dependencySource) {
+                List<String> paramsToRemove = new ArrayList<>();
                 for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 : networkServiceRecord.getVnfr())
-                    if (virtualNetworkFunctionRecord1.getName().equals(dependency.getTarget()))
+                    if (virtualNetworkFunctionRecord1.getName().equals(dependency.getTarget())) {
                         vnfmManager.removeVnfcDependency(virtualNetworkFunctionRecord1, vnfcInstance);
+                        for (Map.Entry<String, VNFCDependencyParameters> parametersEntry : dependency.getVnfcParameters().entrySet()) {
+                            log.debug("Parameter: " + parametersEntry);
+                            if (parametersEntry.getValue() != null)
+                                parametersEntry.getValue().getParameters().remove(vnfcInstance.getId());
+                        }
+
+                    }
+                for (String paramToRemove : paramsToRemove)
+                    dependency.getVnfcParameters().remove(paramToRemove);
+
+                vnfRecordDependencyRepository.save(dependency);
             }
         }
 
         resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
 
         virtualDeploymentUnit.getVnfc_instance().remove(vnfcInstance);
+
 
         vduRepository.save(virtualDeploymentUnit);
 
@@ -506,8 +522,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
                 vnfmManager.release(virtualNetworkFunctionRecord);
             }
-        }
-        else
+        } else
             nsrRepository.delete(networkServiceRecord.getId());
     }
 }
