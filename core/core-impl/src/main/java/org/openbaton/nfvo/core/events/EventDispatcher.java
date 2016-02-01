@@ -74,21 +74,6 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     @Override
     public void onApplicationEvent(EventNFVO event) {
         log.debug("Received event: " + event);
-        switch (event.getEventNFVO().getAction()) {
-            case INSTANTIATE_FINISH:
-                break;
-            case ALLOCATE_RESOURCES:
-                break;
-            case ERROR:
-                break;
-            case RELEASE_RESOURCES:
-                break;
-            case INSTANTIATE:
-                break;
-            case MODIFY:
-                break;
-        }
-
         dispatchEvent(event);
     }
 

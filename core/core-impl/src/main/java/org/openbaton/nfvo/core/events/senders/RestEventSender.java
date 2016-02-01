@@ -63,12 +63,8 @@ public class RestEventSender implements EventSender {
             StringEntity params = new StringEntity(json);
             request.setEntity(params);
             HttpResponse response = httpClient.execute(request);
-            if (response.getEntity().getContentLength() != 0) {
-            } else {
-
-            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("Impossible to reach the endpoint with name: "+endpoint.getName()+ " via rest POST at url:"+endpoint.getEndpoint());
         }
         return new AsyncResult<>(null);
     }
