@@ -200,9 +200,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Async
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
 
-        // fill up the vnfr
-        Set<VNFRecordDependency> dependencies = networkServiceRecord.getVnf_dependency();
-
         vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
 
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
@@ -247,8 +244,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             } catch (BeansException e) {
                 throw new NotFoundException(e);
             }
-
             vnfmSender.sendCommand(message, endpoint);
+            log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
         }
         return new AsyncResult<>(null);
     }
@@ -334,7 +331,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             virtualNetworkFunctionRecord.setTask(actionName);
             task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
-            log.debug("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
+            log.info("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
         }
         if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal() || nfvMessage.getAction().ordinal() == Action.UPDATEVNFR.ordinal())
             return gson.toJson(asyncExecutor.submit(task).get());
