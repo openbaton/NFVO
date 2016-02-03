@@ -49,8 +49,10 @@ public class GrantoperationTask extends AbstractTask {
 
     @Override
     protected NFVMessage doWork() throws Exception {
+        log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
         if (checkQuota != null && Boolean.parseBoolean(checkQuota) == false) {
+            log.warn("Checking quota is disabled, please consider to enable it");
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
             lifecycleEvent.setLifecycle_events(new ArrayList<String>());
@@ -58,12 +60,13 @@ public class GrantoperationTask extends AbstractTask {
                 virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
             virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
             saveVirtualNetworkFunctionRecord();
-            log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
+            log.debug("Hibernate version is: " + virtualNetworkFunctionRecord.getHb_version());
             OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
             return nfvMessage;
         }
         else{
             if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
+                log.info("Finished task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
                 lifecycleEvent.setEvent(Event.GRANTED);
                 lifecycleEvent.setLifecycle_events(new ArrayList<String>());
@@ -71,11 +74,12 @@ public class GrantoperationTask extends AbstractTask {
                     virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 saveVirtualNetworkFunctionRecord();
-                log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
+                log.debug("Hibernate version is: " + virtualNetworkFunctionRecord.getHb_version());
                 OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
                 return nfvMessage;
             } else {
                 // there are not enough resources for deploying VNFR
+                log.error("Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
                 saveVirtualNetworkFunctionRecord();
                 OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
                 return nfvMessage;
