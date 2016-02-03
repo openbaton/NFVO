@@ -55,7 +55,7 @@ public class StartTask extends AbstractTask {
 
     @Override
     public NFVMessage doWork() throws Exception {
-        log.debug("----> STARTED VNFR: " + virtualNetworkFunctionRecord.getName());
+        log.info("Started VNFR: " + virtualNetworkFunctionRecord.getName());
         VirtualNetworkFunctionRecord existing = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
         log.debug("vnfr arrived version= " + virtualNetworkFunctionRecord.getHb_version());
         log.debug("vnfr existing version= " + existing.getHb_version());
