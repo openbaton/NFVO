@@ -23,6 +23,8 @@ import org.openbaton.catalogue.util.IdGenerator;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,9 @@ import java.util.Set;
 @Service
 @Scope
 public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.NetworkManagement {
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private VimBroker vimBroker;
 
@@ -44,6 +49,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
 
     @Override
     public Network add(VimInstance vimInstance, Network network) throws VimException {
+        log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
         org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
         //Define Network if values are null or empty
@@ -65,6 +71,8 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
         networkRepository.save(network);
         //Add network to VimInstance
         vimInstance.getNetworks().add(network);
+        log.info("Created Network " + network.getName());
+        log.debug("Network details: " + network);
         return network;
     }
 
