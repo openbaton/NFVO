@@ -151,6 +151,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public void addVNFCInstance(String id, String idVnf, VNFComponent component) throws NotFoundException, BadFormatException, WrongStatusException {
+        log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
@@ -169,6 +170,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public void addVNFCInstance(String id, String idVnf, String idVdu, VNFComponent component, String mode) throws NotFoundException, BadFormatException, WrongStatusException {
+        log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
@@ -215,6 +217,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+        log.info("Removing new VNFCInstance from VNFR with id: " + idVnf);
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
@@ -479,6 +482,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Override
     public void executeAction(NFVMessage nfvMessage, String nsrId, String idVnf, String idVdu, String idVNFCI) throws NotFoundException {
 
+        log.info("Executing action: " + nfvMessage.getAction() + " on VNF with id: " + idVnf);
+
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(nsrId);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
@@ -504,6 +509,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public void delete(String id) throws VimException, NotFoundException, InterruptedException, ExecutionException, WrongStatusException {
+        log.info("Removing NSR with id: " + id);
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
         if (networkServiceRecord == null) {
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
