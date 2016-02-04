@@ -254,7 +254,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
                         add(vdu);
                     }
                 });
-        virtualNetworkFunctionDescriptor.setVnfPackageLocation("http://we.love.small.boobs.com");
+        virtualNetworkFunctionDescriptor.setVnfPackageLocation("http://an.ip.here.com");
         return virtualNetworkFunctionDescriptor;
     }
 
