@@ -75,6 +75,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
     @Override
     public NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
 
+        log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
         UrlValidator urlValidator = new UrlValidator();
 
 
@@ -128,7 +129,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
 
 
         networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
-        log.debug("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
+        log.info("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
         return networkServiceDescriptor;
     }
 
@@ -196,7 +197,7 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
      */
     @Override
     public void deleteVnfDescriptor(String idNsd, String idVnfd) {
-        log.debug("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
+        log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
         nsdRepository.deleteVnfd(idNsd, idVnfd);
     }
 

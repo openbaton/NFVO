@@ -121,8 +121,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         for (Future<VNFCInstance> futureInstance : instances) {
             VNFCInstance instance = futureInstance.get();
             virtualDeploymentUnit.getVnfc_instance().add(instance);
-            ids.add(instance.getId());
-            log.debug("Launched VM with id: " + instance.getId());
+            ids.add(instance.getVc_id());
+            log.debug("Launched VM with id: " + instance.getVc_id());
             Map<String, String> floatingIps = new HashMap<>();
             for (VNFDConnectionPoint connectionPoint : instance.getVnfComponent().getConnection_point()) {
                 if (connectionPoint.getFloatingIp() != null)
@@ -134,6 +134,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 log.debug("Real FloatingIPs: " + instance.getFloatingIps());
             }
         }
+        log.info("Finished deploying VMs with external ids: " + ids);
         return ids;
     }
 

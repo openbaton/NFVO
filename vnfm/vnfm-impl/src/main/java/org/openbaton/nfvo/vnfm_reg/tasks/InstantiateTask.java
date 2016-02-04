@@ -70,10 +70,10 @@ public class InstantiateTask extends AbstractTask {
         for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
             log.debug("Current Vnfrs in the database: " + vnfr.getName());
         dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(), nsr);
-        log.debug("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
+        log.info("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
         int dep;
         dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
-        log.debug("Found " + dep + " dependencies");
+        log.info("Found " + dep + " dependencies");
         log.debug("Ordered string is: \"" + ordered + "\"");
         log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
 

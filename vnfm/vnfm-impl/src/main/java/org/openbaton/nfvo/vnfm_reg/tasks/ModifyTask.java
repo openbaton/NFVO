@@ -46,7 +46,7 @@ public class ModifyTask extends AbstractTask {
     @Override
     protected NFVMessage doWork() throws Exception {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-        log.info("MODIFY finished for vnfr: " + virtualNetworkFunctionRecord.getName());
+        log.info("MODIFY finished for VNFR: " + virtualNetworkFunctionRecord.getName());
         log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         saveVirtualNetworkFunctionRecord();
         log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
@@ -60,11 +60,10 @@ public class ModifyTask extends AbstractTask {
             if (allVnfrInInactive) {
                 VirtualNetworkFunctionRecord nextToCallStart = getNextToCallStart(virtualNetworkFunctionRecord);
                 if (nextToCallStart != null) {
-                    log.debug("Calling start to vnfr: " + nextToCallStart.getName());
                     vnfmManager.removeVnfrName(virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
                     sendStart(nextToCallStart);
                 }
-                log.debug("Not found next VNFR to call start");
+                log.info("Not found next VNFR to call start");
             } else {
                 log.debug("After MODIFY of " + virtualNetworkFunctionRecord.getName() + ", not calling start to next VNFR because not all VNFRs are in state INACTIVE");
             }
