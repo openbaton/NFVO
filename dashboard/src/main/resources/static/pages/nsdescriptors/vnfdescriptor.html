@@ -33,24 +33,32 @@
                 <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
                     <h2>VNF Descriptor: {{vnfd.name}}</h2>
                     <dl class="dl-horizontal">
+                        <dt>name</dt>
+                        <dd>{{vnfd.name}}</dd>
+                        <dt>type</dt>
+                        <dd>{{vnfd.type}}</dd>
+                        <dt>version</dt>
+                        <dd>{{vnfd.version}}</dd>
+                        <dt>vendor</dt>
+                        <dd>{{vnfd.vendor}}</dd>
+                    <span ng-if="vnfd.configurations">
+                        <dt>configurations</dt>
+                        <dd><b>name:</b> {{vnfd.configurations.name}}
+                            <b>parameters: </b>
+                        <span ng-repeat="cp in vnfd.configurations.configurationParameters">
+                            {{cp.confKey}}: {{cp.value}}<span ng-if="!$last">, </span>
+                        </span>
+
+                        </dd>
+                    </span>
                         <spam ng-repeat="(k,v) in vnfd" ng-show="v != null"
                               ng-if="k!='vdu' && k!='deployment_flavour' ">
 
-                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackage'">
+                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'&& k!='name'&& k!='type'&& k!='version'&& k!='vendor' && k!='configurations'  && k!='virtual_link' && k!='vnfPackage'">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
                             </spam>
-                            <spam ng-if="k=='lifecycle_event'">
-                                <dt>{{k}}</dt>
-                                <dd>
-                                    <span ng-repeat="lf in v">
-                                       <span ng-repeat="(k,v) in lf">
-                                            <b>{{k}}</b>: {{v}}
-                                           <span ng-if="!$last">,</span>
-                                        </span>
-                                    </span>
-                                </dd>
-                            </spam>
+
                             <spam ng-if="k=='virtual_link'">
                                 <dt>{{k}}</dt>
                                 <dd>
@@ -79,6 +87,16 @@
                             </spam>
 
                         </spam>
+                        <span ng-if="vnfd.lifecycle_event">
+                        <dt>lifecycle_event</dt>
+                        <dd>
+                            <span ng-repeat="lf in vnfd.lifecycle_event">
+                                            <b>{{lf.event}}</b>: {{lf.lifecycle_events}}
+                                           <span ng-if="!$last">,</span>
+
+                        </span>
+                        </dd>
+                    </span>
                     </dl>
                     <tabset>
                         <tab heading="Vdu">
