@@ -52,7 +52,7 @@ public class UpdatevnfrTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        log.debug("NFVO: Update VNFR");
+        log.info("Updating VNFR " + virtualNetworkFunctionRecord.getName());
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo = vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
         //Updating VNFR
         virtualNetworkFunctionRecord_nfvo.setStatus(virtualNetworkFunctionRecord.getStatus());
@@ -111,7 +111,7 @@ public class UpdatevnfrTask extends AbstractTask {
         virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
         log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
         virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
-        log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo);
+        log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo.getName());
         OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.UPDATEVNFR);
 //        vnfmSender.sendCommand(nfvMessage, getTempDestination());
         return nfvMessage;

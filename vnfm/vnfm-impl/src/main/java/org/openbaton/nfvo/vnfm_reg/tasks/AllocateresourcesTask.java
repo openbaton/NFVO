@@ -25,16 +25,14 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created by lto on 06/08/15.
@@ -50,12 +48,11 @@ public class AllocateresourcesTask extends AbstractTask {
         VnfmSender vnfmSender;
         vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-        log.debug("NFVO: ALLOCATE_RESOURCES");
+        log.info("Executing task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
         log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             try {
-                List<String> extIds = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
-                log.debug("the returned ext id is: " + extIds);
+                resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
             } catch (VimException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -63,9 +60,11 @@ public class AllocateresourcesTask extends AbstractTask {
                 lifecycleEvent.setEvent(Event.ERROR);
                 VNFCInstance vnfcInstance = e.getVnfcInstance();
 
-                log.debug("\n" + vnfcInstance);
-                if (vnfcInstance != null)
+                if (vnfcInstance != null) {
+                    log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
+                    log.debug("Details are: " + vnfcInstance);
                     vdu.getVnfc_instance().add(vnfcInstance);
+                }
                 virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
                 saveVirtualNetworkFunctionRecord();
                 OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
@@ -93,6 +92,7 @@ public class AllocateresourcesTask extends AbstractTask {
 
         OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ALLOCATE_RESOURCES);
         log.debug("Answering to RPC allocate resources: " + orVnfmGenericMessage);
+        log.info("Finished task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
         return orVnfmGenericMessage;
     }
 
