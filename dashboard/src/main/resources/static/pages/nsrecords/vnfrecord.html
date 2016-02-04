@@ -28,23 +28,65 @@
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
         <div class="col-lg-12">
-
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
                 <dl class="dl-horizontal">
+                    <dt>name</dt>
+                    <dd>{{vnfr.name}}</dd>
+                    <dt>type</dt>
+                    <dd>{{vnfr.type}}</dd>
+                    <dt>version</dt>
+                    <dd>{{vnfr.version}}</dd>
+                    <dt>vendor</dt>
+                    <dd>{{vnfr.vendor}}</dd>
+                    <span ng-if="vnfr.configurations">
+                        <dt>configurations</dt>
+                        <dd><b>name:</b> {{vnfr.configurations.name}}
+                            <b>parameters: </b>
+                        <span ng-repeat="cp in vnfr.configurations.configurationParameters">
+                            {{cp.confKey}}: {{cp.value}}<span ng-if="!$last">, </span>
+                        </span>
+
+                        </dd>
+                    </span>
                     <span ng-repeat="(k,v) in vnfr" ng-show="v != null"
-                          ng-if="k!='vdu' && k!='lifecycle_event' && k!='virtual_link'">
+                          ng-if="k!='vdu' && k!='lifecycle_event'&& k!='lifecycle_event_history' && k!='virtual_link' && k!='configurations'  && k!='name' && k!='type' && k!='vendor' && k!='version'">
                         <span ng-if="k!='requires' && k!='provides'">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
                         </span>
+
                         <span ng-if="k=='requires' || k=='provides'">
                              <hr class="hr_title">
                                 <dt>{{k}}</dt>
-                                <dd>{{v}}</dd>
+                                <dd>{{v.configurationParameters}}</dd>
                               <hr class="hr_title">
                         </span>
                     </span>
+                    <span ng-if="vnfr.lifecycle_event">
+                        <dt>lifecycle_event</dt>
+                        <dd>
+                            <span ng-repeat="lf in vnfr.lifecycle_event">
+                                            <b>{{lf.event}}</b>: {{lf.lifecycle_events}}
+                                           <span ng-if="!$last">,</span>
+
+                        </span>
+                        </dd>
+                    </span>
+                    <span ng-if="vnfr.lifecycle_event_history">
+                        <dt>lifecycle_event_history</dt>
+                        <dd>
+                            <span ng-repeat="lf in vnfr.lifecycle_event_history">
+                                            <b>{{lf.event}}</b>: {{lf.lifecycle_events}}
+                                           <span ng-if="!$last">,</span>
+
+                        </span>
+                        </dd>
+                    </span>
+
                 </dl>
 
 
@@ -74,8 +116,10 @@
                                     <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i class="fa fa-sort"></i></th>
-                                    <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i
+                                            class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i
+                                            class="fa fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -122,9 +166,15 @@
                                     <td class="col-lg-2">
 
                                         <div class="btn-group" role="group" aria-label="...">
-                                            <button type="button" class="btn btn-default" ng-click="removeVNFCItoVDU(vdu)">-</button>
-                                            <button type="button" class="btn btn-default disabled">{{vdu.vnfc_instance.length}}</button>
-                                            <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vdu)">+</button>
+                                            <button type="button" class="btn btn-default"
+                                                    ng-click="removeVNFCItoVDU(vdu)">-
+                                            </button>
+                                            <button type="button" class="btn btn-default disabled">
+                                                {{vdu.vnfc_instance.length}}
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vdu)">
+                                                +
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -147,8 +197,7 @@
                                             class="fa fa-sort"></i>
                                     </th>
                                     <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
-                                        events <i
-                                                class="fa fa-sort"></i>
+                                        events <i class="fa fa-sort"></i>
                                     </th>
 
                                 </tr>
