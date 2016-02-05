@@ -17,7 +17,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     ];
 
     $scope.addVNFCI = function (data) {
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances')
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances',{})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -48,7 +48,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
     };
     $scope.addVNFCItoVDU = function (vdu) {
-        console.log(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances')
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances',{})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance to Vdu with id: '+vdu.id+'.');
                 loadTable();
