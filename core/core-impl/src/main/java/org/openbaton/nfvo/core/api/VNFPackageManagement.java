@@ -178,6 +178,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     //and has to be upladed to the RIGHT vim
                     imageFile = content;
                     log.debug("imageFile is: " + entry.getName());
+                    throw new VimException("Uploading an image file from the VNFPackage is not supported at this moment. Please use the image link.");
                 } else if (entry.getName().startsWith("scripts/")) {
                     Script script = new Script();
                     script.setName(entry.getName().substring(8));
