@@ -64,20 +64,28 @@ public class RabbitPluginBroker {
     Monitoring plugin
      */
 
-    public Object getMonitoringPluginCaller(String type) throws TimeoutException, IOException, NotFoundException {
+    public Object getMonitoringPluginCaller(String type) {
         return context.getBean("monitoringPluginCaller", type);
     }
 
-    public Object getMonitoringPluginCaller(String name, String type) throws TimeoutException, IOException, NotFoundException {
+    public Object getMonitoringPluginCaller(String name, String type) {
         return context.getBean("monitoringPluginCaller", name, type);
     }
 
-    public Object getMonitoringPluginCaller(String brokerIp, int port, String type) throws TimeoutException, IOException, NotFoundException {
-        return context.getBean("monitoringPluginCaller", brokerIp, port, type);
+    public Object getMonitoringPluginCaller(String name, String type, String managementPort) {
+        return context.getBean("monitoringPluginCaller", name, type, managementPort);
     }
 
-    public Object getMonitoringPluginCaller(String brokerIp, String username, String password, String type) throws TimeoutException, IOException, NotFoundException {
-        return context.getBean("monitoringPluginCaller", brokerIp, username, password, type);
+    public Object getMonitoringPluginCaller(String brokerIp, String username, String password, int port, String type, String managementPort) {
+        return context.getBean("monitoringPluginCaller", brokerIp, username, password, port, type, managementPort);
+    }
+
+    public Object getMonitoringPluginCaller(String brokerIp, String username, String password, int port, String type, String name, String managementPort) {
+        return context.getBean("monitoringPluginCaller", brokerIp, username, password, port, type, name, managementPort);
+    }
+
+    public Object getMonitoringPluginCaller(String brokerIp, String username, String password, String type, String managementPort) {
+        return context.getBean("monitoringPluginCaller", brokerIp, username, password, type, managementPort);
     }
 
 }
