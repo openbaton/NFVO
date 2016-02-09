@@ -256,14 +256,14 @@ public class RestNetworkServiceRecord {
      */
 
     @RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
         NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
         return nsd.getVnf_dependency();
     }
 
     @RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public VNFRecordDependency getVNFDependency(@PathVariable("id") String id,
                                                 @PathVariable("id_vnfr") String id_vnfr) throws NotFoundException {
         NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
@@ -310,7 +310,7 @@ public class RestNetworkServiceRecord {
      * PhysicalNetworkFunctionRecord into NSD
      */
     @RequestMapping(value = "{id}/pnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
             @PathVariable("id") String id) {
         NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
@@ -327,7 +327,7 @@ public class RestNetworkServiceRecord {
      */
 
     @RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public PhysicalNetworkFunctionRecord getPhysicalNetworkFunctionRecord(
             @PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException {
         NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
