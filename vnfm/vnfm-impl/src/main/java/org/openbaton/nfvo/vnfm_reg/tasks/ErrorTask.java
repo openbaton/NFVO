@@ -45,6 +45,7 @@ public class ErrorTask extends AbstractTask {
 
     @Override
     public NFVMessage doWork() throws Exception {
+
         if (log.isDebugEnabled()){
             log.error("ERROR from VNFM: ", this.getException());
         }else log.error("ERROR from VNFM: " + this.getException().getMessage());
@@ -57,7 +58,7 @@ public class ErrorTask extends AbstractTask {
                     log.error(e.getMessage(), e);
             }
             log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
-            log.error("----> ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
+            log.error("ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
             virtualNetworkFunctionRecord.setStatus(Status.ERROR);
             saveVirtualNetworkFunctionRecord();
         }else {
