@@ -228,6 +228,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case MODIFY:
                     orVnfmGenericMessage = (OrVnfmGenericMessage) message;
+                    virtualNetworkFunctionRecord = orVnfmGenericMessage.getVnfr();
                     nsrId = orVnfmGenericMessage.getVnfr().getParent_ns_id();
                     nfvMessage = VnfmUtils.getNfvMessage(Action.MODIFY, this.modify(orVnfmGenericMessage.getVnfr(), orVnfmGenericMessage.getVnfrd()));
                     break;
