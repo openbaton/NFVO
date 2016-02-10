@@ -174,7 +174,7 @@ public class RestNetworkServiceDescriptor {
      */
 
     @RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
         NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
         return nsd.getVnf_dependency();
