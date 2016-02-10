@@ -53,13 +53,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             }
 
             if (context == null) {
-                client = new VimDriverCaller(brokerIp, port, type, managementPort);
+                client = new VimDriverCaller(brokerIp,"admin","openbaton", port, type, managementPort);
             } else {
                 log.debug("Using context: " + context.getApplicationName());
                 try {
-                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp, port, type);
+                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp,"admin","openbaton", port, type, managementPort);
                 } catch (BeansException e) {
-                    client = new VimDriverCaller(brokerIp, port, type, managementPort);
+                    client = new VimDriverCaller(brokerIp,"admin","openbaton", port, type, managementPort);
                 }
             }
 
@@ -82,13 +82,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
                 managementPort = "15672";
             }
             if (context == null) {
-                client = new VimDriverCaller(type, managementPort);
+                client = new VimDriverCaller("", type, managementPort);
             } else {
                 log.debug("Using context: " + context.getApplicationName());
                 try {
-                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(type, managementPort);
+                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller("", type, managementPort);
                 } catch (BeansException e) {
-                    client = new VimDriverCaller(type, managementPort);
+                    client = new VimDriverCaller("", type, managementPort);
                 }
             }
         } catch (TimeoutException e) {
@@ -111,7 +111,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             } else {
                 log.debug("Using context: " + context.getApplicationName());
                 try {
-                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(name, type);
+                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(name, type, managementPort);
                 }catch (BeansException e){
                     client = new VimDriverCaller(name, type, managementPort);
                 }
@@ -136,7 +136,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             } else {
                 log.debug("Using context: " + context.getApplicationName());
                 try {
-                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp, username, password, type);
+                    client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp, username, password, type, managementPort);
                 }catch (BeansException e){
                     client = new VimDriverCaller(brokerIp, username, password, type, managementPort);
                 }
