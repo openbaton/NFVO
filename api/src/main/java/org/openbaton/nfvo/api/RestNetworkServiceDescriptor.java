@@ -130,7 +130,7 @@ public class RestNetworkServiceDescriptor {
      * @
      */
     @RequestMapping(value = "{id}/vnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
             @PathVariable("id") String id) {
         NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
@@ -138,7 +138,7 @@ public class RestNetworkServiceDescriptor {
     }
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfnd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
             @PathVariable("idNsd") String idNsd, @PathVariable("idVfnd") String idVfnd) throws NotFoundException {
         return networkServiceDescriptorManagement.getVirtualNetworkFunctionDescriptor(idNsd, idVfnd);
@@ -181,7 +181,7 @@ public class RestNetworkServiceDescriptor {
     }
 
     @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public VNFDependency getVNFDependency(@PathVariable("idNsd") String idNsd,
                                           @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
 
@@ -221,7 +221,7 @@ public class RestNetworkServiceDescriptor {
      * @
      */
     @RequestMapping(value = "{id}/pnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(
             @PathVariable("id") String id) {
         NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
@@ -239,7 +239,7 @@ public class RestNetworkServiceDescriptor {
      */
 
     @RequestMapping(value = "{idNds}/pnfdescriptors/{idPnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
             @PathVariable("idNds") String idNsd, @PathVariable("idPnf") String idPnf) throws NotFoundException {
         return networkServiceDescriptorManagement.getPhysicalNetworkFunctionDescriptor(idNsd, idPnf);
@@ -298,7 +298,7 @@ public class RestNetworkServiceDescriptor {
      */
 
     @RequestMapping(value = "{id}/security", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Security getSecurity(@PathVariable("id") String id) {
         NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
         return nsd.getNsd_security();
@@ -315,7 +315,7 @@ public class RestNetworkServiceDescriptor {
 //	 * @
 //	 */
 //	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseStatus(HttpStatus.ACCEPTED)
+//	@ResponseStatus(HttpStatus.OK)
 //	public Security getSecurity(@PathVariable("id") String id,
 //			@PathVariable("id_s") String id_s)  {
 //		NetworkServiceDescriptor nsd = null;
