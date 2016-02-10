@@ -145,7 +145,7 @@ public class HealTask extends AbstractTask {
             log.debug("Dependency updated: " + dependency);
             //----
 
-            //Preparing scaling in message
+            /*//Preparing scaling in message
             OrVnfmScalingMessage orVnfmScalingMessage = new OrVnfmScalingMessage();
             orVnfmScalingMessage.setAction(Action.SCALE_IN);
             orVnfmScalingMessage.setVirtualNetworkFunctionRecord(vnfrToNotify);
@@ -156,8 +156,9 @@ public class HealTask extends AbstractTask {
             VnfmSender vnfmSender = this.getVnfmSender(vnfmManagerEndpoint.getEndpointType());
             vnfmSender.sendCommand(orVnfmScalingMessage, vnfmManagerEndpoint);
             log.debug("scaling in message sent");
-            Thread.sleep(2000);
-
+            Thread.sleep(2000);*/
+            VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());
+            VnfmSender vnfmSender = this.getVnfmSender(vnfmManagerEndpoint.getEndpointType());
 
             //Preparing modify message (with only the new dependency)
             OrVnfmGenericMessage modifyMessage = new OrVnfmGenericMessage(vnfrToNotify, Action.MODIFY);
@@ -165,8 +166,6 @@ public class HealTask extends AbstractTask {
             vnfmSender.sendCommand(modifyMessage, vnfmManagerEndpoint);
             log.debug("modify in message sent");
         }
-
-        saveVirtualNetworkFunctionRecord();
 
         log.debug("VNFR Status is: " + virtualNetworkFunctionRecord.getStatus());
 
