@@ -273,16 +273,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     break;
                 case HEAL:
                     OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
+
                     nsrId = orVnfmHealMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
-                    nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL, this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(), orVnfmHealMessage.getVnfcInstance(), orVnfmHealMessage.getCause()));
-                    if(orVnfmHealMessage.getCause().equals("switchToStandby")){
-                        VirtualNetworkFunctionRecord vnfrObtained=this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause());
-                        nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, vnfrObtained,orVnfmHealMessage.getVnfcInstance());
-                    }
-                    else{
-                        VirtualNetworkFunctionRecord vnfrObtained=this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause());
-                        nfvMessage = VnfmUtils.getNfvMessage(Action.HEAL,vnfrObtained);
-                    }
+                    VirtualNetworkFunctionRecord vnfrObtained = this.heal(orVnfmHealMessage.getVirtualNetworkFunctionRecord(),orVnfmHealMessage.getVnfcInstance(),orVnfmHealMessage.getCause());
+                    nfvMessage = VnfmUtils.getNfvMessageHealed(Action.HEAL, vnfrObtained,orVnfmHealMessage.getVnfcInstance());
+
                     break;
                 case INSTANTIATE_FINISH:
                     break;
