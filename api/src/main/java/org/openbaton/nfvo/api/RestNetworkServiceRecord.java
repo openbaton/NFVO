@@ -134,7 +134,7 @@ public class RestNetworkServiceRecord {
      * VirtualNetworkFunctionDescriptor into NSD
      */
     @RequestMapping(value = "{id}/vnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(
             @PathVariable("id") String id) {
         NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
@@ -151,7 +151,7 @@ public class RestNetworkServiceRecord {
      * @throws NotFoundException
      */
     @RequestMapping(value = "{idNsd}/vnfrecords/{idVnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
             @PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf) throws NotFoundException {
 
