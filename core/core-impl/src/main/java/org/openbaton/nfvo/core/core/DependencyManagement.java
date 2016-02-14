@@ -122,19 +122,16 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
 
             if (!vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
                 boolean set = false;
-                VNFCDependencyParameters vnfcDependencyParameters = null;
+                VNFCDependencyParameters vnfcDependencyParameters = vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());;
 
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
                     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
 
                         log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
                         log.debug("VNFRecordDependency is " + vnfRecordDependency);
-                        vnfcDependencyParameters = vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());
                         log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
 
-                        set = false;
                         if (vnfcDependencyParameters == null) {
-                            set = true;
                             vnfcDependencyParameters = new VNFCDependencyParameters();
                             vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
                         }
@@ -162,14 +159,14 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                             vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put("hostname", vnfcInstance.getHostname());
                         }
                     }
-                if (set) {
+                if (vnfcDependencyParameters != null) {
+                    log.debug("Adding vnfcDependencyParameters: " + vnfcDependencyParameters);
                     vnfRecordDependency.getVnfcParameters().put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
                 }
             }
 
-
             vnfrDependencyRepository.save(vnfRecordDependency);
-            log.info("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters());
+            log.info("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters() + " and with vnfcParameters: " + vnfRecordDependency.getVnfcParameters());
         }
 
     }
