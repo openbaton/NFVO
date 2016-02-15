@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -524,11 +525,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             case HEAL:
                 // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
                 // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
-                OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
-                log.debug("Received Heal message: " + orVnfmHealVNFRequestMessage);
-                orVnfmHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                orVnfmHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
-                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmHealVNFRequestMessage);
+                VnfmOrHealedMessage VnfmOrHealVNFRequestMessage = (VnfmOrHealedMessage) nfvMessage;
+                log.debug("Received Heal message: " + VnfmOrHealVNFRequestMessage);
+                VnfmOrHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                VnfmOrHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
+                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, VnfmOrHealVNFRequestMessage);
                 break;
         }
     }

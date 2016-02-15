@@ -33,6 +33,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -294,7 +295,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         String beanName = actionName + "Task";
         log.debug("Looking for bean called: " + beanName);
         AbstractTask task = (AbstractTask) context.getBean(beanName);
-
+        log.debug("fin qui");
+        log.debug("message: "+nfvMessage);
         task.setAction(nfvMessage.getAction());
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
@@ -312,8 +314,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             virtualNetworkFunctionRecord = vnfmOrScaled.getVirtualNetworkFunctionRecord();
             ((ScaledTask) task).setVnfcInstance(vnfmOrScaled.getVnfcInstance());
         } else if (nfvMessage.getAction().ordinal() == Action.HEAL.ordinal()) {
-            OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
-            virtualNetworkFunctionRecord = orVnfmHealVNFRequestMessage.getVirtualNetworkFunctionRecord();
+            VnfmOrHealedMessage vnfmOrHealedMessage = (VnfmOrHealedMessage) nfvMessage;
+            virtualNetworkFunctionRecord = vnfmOrHealedMessage.getVirtualNetworkFunctionRecord();
+            ((HealTask) task).setVnfcInstance(vnfmOrHealedMessage.getVnfcInstance());
+            ((HealTask) task).setCause(vnfmOrHealedMessage.getCause());
         } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
             VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage = (VnfmOrAllocateResourcesMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
