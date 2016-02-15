@@ -240,6 +240,37 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
+    public void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+        log.info("Removing new VNFCInstance from VNFR with id: " + idVnf + " in vdu: " + idVdu);
+        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+
+        VirtualDeploymentUnit virtualDeploymentUnit = null;
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()){
+            if (vdu.getId().equals(idVdu)) {
+                virtualDeploymentUnit = vdu;
+            }
+        }
+
+        if (virtualDeploymentUnit == null) {
+            throw new NotFoundException("No VirtualDeploymentUnit found");
+        }
+
+        if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
+            throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
+        }
+
+        VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
+        if (vnfcInstance == null)
+            throw new NotFoundException("No VNFCInstance was not found");
+
+        networkServiceRecord.setStatus(Status.SCALING);
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        scaleIn(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
+    }
+
+    @Override
     public void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException {
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
