@@ -58,6 +58,13 @@ public class VnfmUtils {
         vnfmOrScaledMessage.setAction(action);
         return vnfmOrScaledMessage;
     }
+    public static NFVMessage getNfvMessageHealed(Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+        VnfmOrHealedMessage vnfmOrHealedMessage = new VnfmOrHealedMessage();
+        vnfmOrHealedMessage.setVirtualNetworkFunctionRecord(payload);
+        vnfmOrHealedMessage.setVnfcInstance(vnfcInstance);
+        vnfmOrHealedMessage.setAction(action);
+        return vnfmOrHealedMessage;
+    }
 
     public static LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
         for (LifecycleEvent lce : events)
