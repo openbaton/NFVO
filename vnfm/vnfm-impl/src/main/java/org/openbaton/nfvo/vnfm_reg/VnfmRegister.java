@@ -19,6 +19,7 @@ package org.openbaton.nfvo.vnfm_reg;
 import com.google.gson.Gson;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
@@ -53,8 +54,12 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
         this.vnfmManagerEndpointRepository.save(new VnfmManagerEndpoint(type, endpoint, endpointType));
     }
 
-    protected void register(VnfmManagerEndpoint endpoint) {
+    protected void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
         log.debug("Perisisting: " + endpoint);
+        for (VnfmManagerEndpoint endpointExisting : vnfmManagerEndpointRepository.findAll()){
+            if (endpointExisting.getEndpoint().equals(endpoint.getEndpoint()) && endpointExisting.getType().equals(endpoint.getType()) && endpointExisting.getEndpointType().equals(endpoint.getEndpointType()))
+                throw new AlreadyExistingException("VnfmManagerEndpoint " + endpoint + " already exists in the DB");
+        }
         this.vnfmManagerEndpointRepository.save(endpoint);
     }
 

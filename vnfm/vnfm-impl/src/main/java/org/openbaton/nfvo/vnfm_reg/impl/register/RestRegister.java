@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,11 @@ public class RestRegister extends VnfmRegister {
 
     public void addManagerEndpoint(String endpoint) {
         log.debug("Received: " + endpoint);
-        this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+        try {
+            this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+        } catch (AlreadyExistingException e) {
+            log.warn(e.getLocalizedMessage());
+        }
     }
 
     @RequestMapping(value = "/vnfm-unsubscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
