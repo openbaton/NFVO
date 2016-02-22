@@ -38,8 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -98,11 +100,27 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Value("${nfvo.delete.all-status:}")
     private String deleteInAllStatus;
 
-    @Value("${nfvo.delete.wait:}")
+    @Value("${nfvo.delete.vnfr:false}")
     private String waitForDelete;
 
     @Autowired
     private VimRepository vimInstanceRepository;
+    @Value("${nfvo.delete.vnfr:false}")
+    private boolean removeAfterTimeout;
+    private ThreadPoolTaskExecutor asyncExecutor;
+
+    @PostConstruct
+    private void init() {
+        if (removeAfterTimeout) {
+            asyncExecutor = new ThreadPoolTaskExecutor();
+            asyncExecutor.setThreadNamePrefix("OpenbatonTask-");
+            asyncExecutor.setMaxPoolSize(30);
+            asyncExecutor.setCorePoolSize(5);
+            asyncExecutor.setQueueCapacity(0);
+            asyncExecutor.setKeepAliveSeconds(20);
+            asyncExecutor.initialize();
+        }
+    }
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
@@ -248,7 +266,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         VirtualDeploymentUnit virtualDeploymentUnit = null;
 
-        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()){
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             if (vdu.getId().equals(idVdu)) {
                 virtualDeploymentUnit = vdu;
             }
@@ -547,7 +565,6 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
 
-
         if (deleteInAllStatus != null && !deleteInAllStatus.equals("") && !Boolean.parseBoolean(deleteInAllStatus)) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
@@ -558,9 +575,49 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         if (networkServiceRecord.getVnfr().size() > 0) {
             networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+                if (removeAfterTimeout) {
+                    VNFRTerminator terminator = new VNFRTerminator();
+                    terminator.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                    this.asyncExecutor.submit(terminator);
+                }
                 vnfmManager.release(virtualNetworkFunctionRecord);
             }
         } else
             nsrRepository.delete(networkServiceRecord.getId());
+    }
+
+    @ConfigurationProperties
+    class VNFRTerminator implements Runnable {
+
+        @Value("${nfvo.delete.vnfr.wait:60}")
+        private String timeout;
+        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+
+        public String getTimeout() {
+            return timeout;
+        }
+
+        public void setTimeout(String timeout) {
+            this.timeout = timeout;
+        }
+
+        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+            return virtualNetworkFunctionRecord;
+        }
+
+        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(Integer.parseInt(timeout) * 1000);
+                if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId()))
+                    vnfmManager.terminate(virtualNetworkFunctionRecord);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

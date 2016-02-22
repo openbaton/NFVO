@@ -34,6 +34,7 @@ import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -520,5 +521,13 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         vnfrNames.get(nsdId).remove(vnfrName);
         if (vnfrNames.get(nsdId).size() == 0)
             vnfrNames.remove(nsdId);
+    }
+
+    @Override
+    public void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        AbstractTask task = new ReleaseresourcesTask();
+        task.setAction(Action.RELEASE_RESOURCES);
+        task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+        this.asyncExecutor.submit(task);
     }
 }
