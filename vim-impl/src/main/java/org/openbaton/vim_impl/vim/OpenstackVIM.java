@@ -599,12 +599,12 @@ public class OpenstackVIM extends Vim {
     public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
         log.debug("Listing all Images of VimInstance " + vimInstance.getName());
         try {
-            log.debug("Client is: " + client);
+            log.trace("Client is: " + client);
 
             List<NFVImage> images = client.listImages(vimInstance);
 
             log.info("Listed Images of VimInstance " + vimInstance.getName() + " -> Images: " + images);
-            log.debug(images.get(0).getClass().toString());
+            log.trace(images.get(0).getClass().toString());
             return images;
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
