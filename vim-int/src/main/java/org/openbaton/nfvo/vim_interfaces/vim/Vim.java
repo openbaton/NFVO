@@ -55,7 +55,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             if (context == null) {
                 client = new VimDriverCaller(brokerIp,"admin","openbaton", port, type, managementPort);
             } else {
-                log.debug("Using context: " + context.getApplicationName());
+                log.trace("Using context: " + context.getApplicationName());
                 try {
                     client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp,"admin","openbaton", port, type, managementPort);
                 } catch (BeansException e) {
@@ -84,7 +84,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             if (context == null) {
                 client = new VimDriverCaller("", type, managementPort);
             } else {
-                log.debug("Using context: " + context.getApplicationName());
+                log.trace("Using context: " + context.getApplicationName());
                 try {
                     client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller("", type, managementPort);
                 } catch (BeansException e) {
@@ -102,14 +102,13 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
 
     public Vim(String type, String name, String managementPort, ApplicationContext context) throws PluginException {
         try {
-//            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(name, type);
             if (managementPort == null) {
                 managementPort = "15672";
             }
             if (context == null) {
                 client = new VimDriverCaller(name, type, managementPort);
             } else {
-                log.debug("Using context: " + context.getApplicationName());
+                log.trace("Using context: " + context.getApplicationName());
                 try {
                     client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(name, type, managementPort);
                 }catch (BeansException e){
@@ -134,7 +133,7 @@ public abstract class Vim implements ImageManagement, ResourceManagement, Networ
             if (context == null) {
                 client = new VimDriverCaller(brokerIp, username, password, type, managementPort);
             } else {
-                log.debug("Using context: " + context.getApplicationName());
+                log.trace("Using context: " + context.getApplicationName());
                 try {
                     client = (VimDriverCaller) ((RabbitPluginBroker) context.getBean("rabbitPluginBroker")).getVimDriverCaller(brokerIp, username, password, type, managementPort);
                 }catch (BeansException e){
