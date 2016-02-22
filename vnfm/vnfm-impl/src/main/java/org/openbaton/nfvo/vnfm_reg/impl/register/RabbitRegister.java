@@ -46,7 +46,7 @@ public class RabbitRegister extends VnfmRegister {
         if (endpoint.getEndpointType() == null) {
             endpoint.setEndpointType(EndpointType.RABBIT);
         }
-        log.debug("registering: " + endpoint);
+        log.info("Registering endpoint of type: " + endpoint.getType());
         try {
             this.register(endpoint);
         } catch (AlreadyExistingException e) {

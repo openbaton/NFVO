@@ -22,6 +22,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -30,11 +31,9 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.ScriptRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -76,6 +75,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     private ScriptRepository scriptRepository;
     @Autowired
     private VimRepository vimInstanceRepository;
+    @Autowired
+    private NetworkServiceDescriptorRepository nsdRepository;
 
     @Override
     public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
@@ -344,14 +345,28 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws WrongAction {
+        log.info("Removing VNFPackage: " + id);
         //TODO remove image in the VIM
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll())
             if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
-                vnfdRepository.delete(virtualNetworkFunctionDescriptor.getId());
-                break;
+                if (!vnfdBelongsToNSD(virtualNetworkFunctionDescriptor)) {
+                    log.info("Removing VNFDescriptor: " + virtualNetworkFunctionDescriptor.getName());
+                    vnfdRepository.delete(virtualNetworkFunctionDescriptor.getId());
+                    break;
+                }else throw new WrongAction("It is not possible to remove a vnfPackage --> vnfdescriptor if the NSD is still onboarded");
             }
         vnfPackageRepository.delete(id);
+    }
+
+    private boolean vnfdBelongsToNSD(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
+        for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()){
+            for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+                if (vnfd.getId().equals(virtualNetworkFunctionDescriptor.getId()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
