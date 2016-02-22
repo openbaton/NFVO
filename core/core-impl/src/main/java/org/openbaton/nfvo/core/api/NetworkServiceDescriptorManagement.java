@@ -33,6 +33,8 @@ import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +45,13 @@ import javax.persistence.NoResultException;
  */
 @Service
 @Scope
+@ConfigurationProperties
 public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${nfvo.vnfd.cascade.delete:false}")
+    private boolean cascadeDelete;
 
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
@@ -66,6 +72,8 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
     private NSDUtils nsdUtils;
     @Autowired
     private VnfPackageRepository vnfPackageRepository;
+    @Autowired
+    private VirtualNetworkFunctionManagement virtualNetworkFunctionManagement;
 
     /**
      * This operation allows submitting and
@@ -198,7 +206,9 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
     @Override
     public void deleteVnfDescriptor(String idNsd, String idVnfd) {
         log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfdRepository.findFirstById(idVnfd);
         nsdRepository.deleteVnfd(idNsd, idVnfd);
+        vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
     }
 
     /**
@@ -363,7 +373,13 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
      */
     @Override
     public void delete(String id) {
-        log.debug("Removing NetworkServiceDescriptor with id " + id);
-        nsdRepository.delete(nsdRepository.findOne(id));
+        log.info("Removing NetworkServiceDescriptor with id " + id);
+        NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
+        nsdRepository.delete(networkServiceDescriptor);
+        if (cascadeDelete){
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+                virtualNetworkFunctionManagement.delete(virtualNetworkFunctionDescriptor.getId());
+            }
+        }
     }
 }

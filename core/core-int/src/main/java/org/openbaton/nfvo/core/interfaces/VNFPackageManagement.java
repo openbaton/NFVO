@@ -21,6 +21,7 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -75,7 +76,7 @@ public interface VNFPackageManagement {
      *
      * @param id
      */
-    void delete(String id);
+    void delete(String id) throws WrongAction;
 
     Script updateScript(Script script);
 }

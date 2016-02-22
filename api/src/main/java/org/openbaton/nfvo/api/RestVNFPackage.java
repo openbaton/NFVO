@@ -21,6 +21,7 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
@@ -68,7 +69,7 @@ public class RestVNFPackage {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) {
+    public void delete(@PathVariable("id") String id) throws WrongAction {
         vnfPackageManagement.delete(id);
     }
 
