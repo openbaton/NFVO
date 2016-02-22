@@ -56,13 +56,6 @@ public class RestVNFPackage {
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes);
-//            Not needed anymore
-//            HashMap<String, VimInstance> vimInstances = new HashMap<>();
-//            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-//                vimInstances.put(virtualDeploymentUnit.getVimInstances().getId(), virtualDeploymentUnit.getVimInstances());
-//            }
-//            for (VimInstance vimInstance : vimInstances.values())
-//                vimManagement.refresh(vimInstance);
             return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
         } else throw new IOException("File is empty!");
     }
