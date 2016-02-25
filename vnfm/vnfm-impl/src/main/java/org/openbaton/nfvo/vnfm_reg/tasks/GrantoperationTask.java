@@ -41,8 +41,16 @@ import java.util.HashSet;
 @ConfigurationProperties
 public class GrantoperationTask extends AbstractTask {
 
-    @Value("${nfvo.quota.check:")
-    private String checkQuota;
+    public boolean isCheckQuota() {
+        return checkQuota;
+    }
+
+    public void setCheckQuota(boolean checkQuota) {
+        this.checkQuota = checkQuota;
+    }
+
+    @Value("${nfvo.quota.check:true}")
+    private boolean checkQuota;
 
     @Autowired
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
@@ -51,7 +59,7 @@ public class GrantoperationTask extends AbstractTask {
     protected NFVMessage doWork() throws Exception {
         log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
-        if (checkQuota != null && Boolean.parseBoolean(checkQuota) == false) {
+        if (!checkQuota) {
             log.warn("Checking quota is disabled, please consider to enable it");
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
