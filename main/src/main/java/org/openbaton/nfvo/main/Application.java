@@ -26,16 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.util.FileSystemUtils;
 
-import javax.jms.ConnectionFactory;
 import java.io.File;
 
 /**
@@ -44,7 +39,7 @@ import java.io.File;
 
 
 @SpringBootApplication
-@EnableJms
+//@EnableJms
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
@@ -65,23 +60,23 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
             log.trace(name);
     }
 
-    @Bean
-    JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setCacheLevelName("CACHE_CONNECTION");
-        factory.setConnectionFactory(connectionFactory);
-        factory.setSessionTransacted(true);
-        return factory;
-    }
-
-    @Bean
-    JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setCacheLevelName("CACHE_CONNECTION");
-        factory.setConnectionFactory(connectionFactory);
-        factory.setPubSubDomain(true);
-        return factory;
-    }
+//    @Bean
+//    JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
+//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+//        factory.setCacheLevelName("CACHE_CONNECTION");
+//        factory.setConnectionFactory(connectionFactory);
+//        factory.setSessionTransacted(true);
+//        return factory;
+//    }
+//
+//    @Bean
+//    JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
+//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+//        factory.setCacheLevelName("CACHE_CONNECTION");
+//        factory.setConnectionFactory(connectionFactory);
+//        factory.setPubSubDomain(true);
+//        return factory;
+//    }
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
