@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -37,8 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -97,11 +100,27 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Value("${nfvo.delete.all-status:}")
     private String deleteInAllStatus;
 
-    @Value("${nfvo.delete.wait:}")
+    @Value("${nfvo.delete.vnfr:false}")
     private String waitForDelete;
 
     @Autowired
     private VimRepository vimInstanceRepository;
+    @Value("${nfvo.delete.vnfr:false}")
+    private boolean removeAfterTimeout;
+    private ThreadPoolTaskExecutor asyncExecutor;
+
+    @PostConstruct
+    private void init() {
+        if (removeAfterTimeout) {
+            asyncExecutor = new ThreadPoolTaskExecutor();
+            asyncExecutor.setThreadNamePrefix("OpenbatonTask-");
+            asyncExecutor.setMaxPoolSize(30);
+            asyncExecutor.setCorePoolSize(5);
+            asyncExecutor.setQueueCapacity(0);
+            asyncExecutor.setKeepAliveSeconds(20);
+            asyncExecutor.initialize();
+        }
+    }
 
     @Override
     public NetworkServiceRecord onboard(String idNsd) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
@@ -222,6 +241,37 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
 
         VirtualDeploymentUnit virtualDeploymentUnit = virtualNetworkFunctionRecord.getVdu().iterator().next();
+        if (virtualDeploymentUnit == null) {
+            throw new NotFoundException("No VirtualDeploymentUnit found");
+        }
+
+        if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
+            throw new WrongStatusException("The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
+        }
+
+        VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
+        if (vnfcInstance == null)
+            throw new NotFoundException("No VNFCInstance was not found");
+
+        networkServiceRecord.setStatus(Status.SCALING);
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        scaleIn(networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
+    }
+
+    @Override
+    public void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+        log.info("Removing new VNFCInstance from VNFR with id: " + idVnf + " in vdu: " + idVdu);
+        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+
+        VirtualDeploymentUnit virtualDeploymentUnit = null;
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+            if (vdu.getId().equals(idVdu)) {
+                virtualDeploymentUnit = vdu;
+            }
+        }
+
         if (virtualDeploymentUnit == null) {
             throw new NotFoundException("No VirtualDeploymentUnit found");
         }
@@ -493,11 +543,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             case HEAL:
                 // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
                 // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
-                OrVnfmHealVNFRequestMessage orVnfmHealVNFRequestMessage = (OrVnfmHealVNFRequestMessage) nfvMessage;
-                log.debug("Received Heal message: " + orVnfmHealVNFRequestMessage);
-                orVnfmHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                orVnfmHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
-                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmHealVNFRequestMessage);
+                VnfmOrHealedMessage VnfmOrHealVNFRequestMessage = (VnfmOrHealedMessage) nfvMessage;
+                log.debug("Received Heal message: " + VnfmOrHealVNFRequestMessage);
+                VnfmOrHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                VnfmOrHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
+                vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, VnfmOrHealVNFRequestMessage);
                 break;
         }
     }
@@ -515,7 +565,6 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
 
-
         if (deleteInAllStatus != null && !deleteInAllStatus.equals("") && !Boolean.parseBoolean(deleteInAllStatus)) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
@@ -526,9 +575,49 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         if (networkServiceRecord.getVnfr().size() > 0) {
             networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
             for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecord.getVnfr()) {
+                if (removeAfterTimeout) {
+                    VNFRTerminator terminator = new VNFRTerminator();
+                    terminator.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+                    this.asyncExecutor.submit(terminator);
+                }
                 vnfmManager.release(virtualNetworkFunctionRecord);
             }
         } else
             nsrRepository.delete(networkServiceRecord.getId());
+    }
+
+    @ConfigurationProperties
+    class VNFRTerminator implements Runnable {
+
+        @Value("${nfvo.delete.vnfr.wait:60}")
+        private String timeout;
+        private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+
+        public String getTimeout() {
+            return timeout;
+        }
+
+        public void setTimeout(String timeout) {
+            this.timeout = timeout;
+        }
+
+        public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+            return virtualNetworkFunctionRecord;
+        }
+
+        public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+            this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(Integer.parseInt(timeout) * 1000);
+                if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId()))
+                    vnfmManager.terminate(virtualNetworkFunctionRecord);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

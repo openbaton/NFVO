@@ -137,6 +137,10 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                         }
                         Set<String> keys = dp.getParameters().keySet();
 
+                        log.debug("Parameters requested are: " );
+                        for (String s : keys)
+                            log.debug("\t" + s);
+
                         if (vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()) == null) {
                             DependencyParameters dependencyParameters = new DependencyParameters();
                             dependencyParameters.setParameters(new HashMap<String, String>());
@@ -150,7 +154,7 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                         }
 
                         for (Ip ip : vnfcInstance.getFloatingIps()) {
-                            if (keys.contains(ip.getNetName())) {
+                            if (keys.contains(ip.getNetName() + "_floatingIp")) {
                                 log.debug("Adding " + ip.getNetName() + "=" + ip.getIp() + ". VNFCInstance ID: " + vnfcInstance.getId());
                                 vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
                             }

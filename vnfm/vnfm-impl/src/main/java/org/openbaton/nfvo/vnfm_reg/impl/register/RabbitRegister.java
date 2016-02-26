@@ -18,6 +18,7 @@ package org.openbaton.nfvo.vnfm_reg.impl.register;
 
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.slf4j.Logger;
@@ -43,10 +44,14 @@ public class RabbitRegister extends VnfmRegister {
         VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
 
         if (endpoint.getEndpointType() == null) {
-            endpoint.setEndpointType(EndpointType.JMS);
+            endpoint.setEndpointType(EndpointType.RABBIT);
         }
-        log.debug("registering: " + endpoint);
-        this.register(endpoint);
+        log.info("Registering endpoint of type: " + endpoint.getType());
+        try {
+            this.register(endpoint);
+        } catch (AlreadyExistingException e) {
+            log.warn(e.getLocalizedMessage());
+        }
     }
 
     @Override

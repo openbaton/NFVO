@@ -34,8 +34,8 @@ public class ConfigurationManagement implements org.openbaton.nfvo.core.interfac
     private ConfigurationRepository configurationRepository;
 
     @Override
-    public Configuration add(Configuration datacenter) {
-        return configurationRepository.save(datacenter);
+    public Configuration add(Configuration configuration) {
+        return configurationRepository.save(configuration);
     }
 
     @Override
