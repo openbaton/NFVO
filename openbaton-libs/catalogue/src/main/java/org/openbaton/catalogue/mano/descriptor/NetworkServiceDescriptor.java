@@ -35,7 +35,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
      * is required, for example, when the Network Service is being built
      * top-down or instantiating the member VNFs as well.
      */
-    @OneToMany(cascade = {CascadeType.ALL /*CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE */}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH /*CascadeType.REMOVE*/}, fetch = FetchType.EAGER)
     private Set<VirtualNetworkFunctionDescriptor> vnfd;
     /**
      * Describe dependencies between VNF. Defined in terms of source and target

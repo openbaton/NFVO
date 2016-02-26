@@ -60,4 +60,6 @@ public interface VnfmManager {
     void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
     void removeVnfrName(String nsdId, String vnfrName);
+
+    void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

@@ -14,16 +14,42 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.common.interfaces;
+package org.openbaton.nfvo.core.interfaces;
 
-import javax.jms.JMSException;
-import java.io.Serializable;
+import org.openbaton.catalogue.security.User;
 
-public interface Sender {
 
-    void send(String destination, Serializable message);
+/**
+ * Created by mpa on 30/04/15.
+ */
 
-    Object receiveObject(String destination) throws JMSException;
+public interface UserManagement {
 
-    String receiveText(String destination) throws JMSException;
+    /**
+     *
+     * @param user
+     */
+    User add(User user);
+
+    /**
+     *
+     * @param user
+     */
+    void delete(User user);
+
+    /**
+     *
+     * @param new_user
+     */
+    User update(User new_user);
+
+    /**
+     */
+    Iterable<User> query();
+
+    /**
+     *
+     * @param id
+     */
+    User query(String id);
 }

@@ -140,4 +140,6 @@ public interface NetworkServiceRecordManagement {
     void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
 
     void switchToRedundantVNFCInstance(String id, String idVnf, String idVdu, String idVNFC, String standby, VNFCInstance failedVnfcInstance) throws NotFoundException, WrongStatusException;
+
+    void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
 }

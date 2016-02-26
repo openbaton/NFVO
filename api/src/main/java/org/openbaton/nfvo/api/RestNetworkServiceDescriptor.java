@@ -25,7 +25,6 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.openbaton.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +41,8 @@ import java.util.concurrent.ExecutionException;
 public class RestNetworkServiceDescriptor {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
-
     @Autowired
     private NetworkServiceRecordManagement networkServiceRecordManagement;
 
@@ -75,7 +72,6 @@ public class RestNetworkServiceDescriptor {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) {
         networkServiceDescriptorManagement.delete(id);
-
     }
 
     /**
@@ -146,8 +142,7 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVirtualNetworkFunctionDescriptor(
-            @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) throws NotFoundException {
+    public void deleteVirtualNetworkFunctionDescriptor(@PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) throws NotFoundException {
         networkServiceDescriptorManagement.deleteVnfDescriptor(idNsd, idVfn);
     }
 

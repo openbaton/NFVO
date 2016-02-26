@@ -18,6 +18,7 @@ package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
@@ -41,8 +42,16 @@ import java.util.HashSet;
 @ConfigurationProperties
 public class GrantoperationTask extends AbstractTask {
 
-    @Value("${nfvo.quota.check:")
-    private String checkQuota;
+    public boolean isCheckQuota() {
+        return checkQuota;
+    }
+
+    public void setCheckQuota(boolean checkQuota) {
+        this.checkQuota = checkQuota;
+    }
+
+    @Value("${nfvo.quota.check:true}")
+    private boolean checkQuota;
 
     @Autowired
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
@@ -51,7 +60,7 @@ public class GrantoperationTask extends AbstractTask {
     protected NFVMessage doWork() throws Exception {
         log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
-        if (checkQuota != null && Boolean.parseBoolean(checkQuota) == false) {
+        if (!checkQuota) {
             log.warn("Checking quota is disabled, please consider to enable it");
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.GRANTED);
@@ -80,7 +89,9 @@ public class GrantoperationTask extends AbstractTask {
             } else {
                 // there are not enough resources for deploying VNFR
                 log.error("Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
+                virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                 saveVirtualNetworkFunctionRecord();
+                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
                 OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
                 return nfvMessage;
             }
