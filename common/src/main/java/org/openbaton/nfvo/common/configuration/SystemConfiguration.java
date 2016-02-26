@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Scope;
 @ConfigurationProperties
 public class SystemConfiguration {
 
-    @Value("${nfvo.security.enabled:false}")
-    private boolean security;
+    @Value("${server.https:false}")
+    private boolean https;
 
     @Bean
     @Scope("prototype")
@@ -33,7 +33,7 @@ public class SystemConfiguration {
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
-        if (security) {
+        if (https) {
             TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
                 @Override
                 protected void postProcessContext(Context context) {
@@ -58,7 +58,7 @@ public class SystemConfiguration {
 
         connector.setScheme("http");
         connector.setPort(8080);
-        if (security) {
+        if (https) {
             connector.setSecure(false);
             connector.setRedirectPort(8443);
         }

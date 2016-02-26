@@ -14,14 +14,42 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.repositories;
+package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.security.User;
-import org.springframework.data.repository.CrudRepository;
+
 
 /**
- * Created by gca on 25/09/15.
+ * Created by mpa on 30/04/15.
  */
-public interface UserRepository extends CrudRepository<User, String> {
-    User findFirstById(String id);
+
+public interface UserManagement {
+
+    /**
+     *
+     * @param user
+     */
+    User add(User user);
+
+    /**
+     *
+     * @param user
+     */
+    void delete(User user);
+
+    /**
+     *
+     * @param new_user
+     */
+    User update(User new_user);
+
+    /**
+     */
+    Iterable<User> query();
+
+    /**
+     *
+     * @param id
+     */
+    User query(String id);
 }
