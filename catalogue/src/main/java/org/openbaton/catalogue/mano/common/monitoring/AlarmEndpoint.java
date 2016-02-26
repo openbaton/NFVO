@@ -44,6 +44,8 @@ public class AlarmEndpoint implements Serializable {
 
     private PerceivedSeverity perceivedSeverity;
 
+    public AlarmEndpoint() {
+    }
 
     public AlarmEndpoint(String name, String resourceId, EndpointType type, String endpoint, PerceivedSeverity perceivedSeverity) {
         this.name = name;
@@ -57,9 +59,15 @@ public class AlarmEndpoint implements Serializable {
     public void ensureId() {
         id = IdGenerator.createUUID();
     }
+
     public PerceivedSeverity getPerceivedSeverity() {
         return perceivedSeverity;
     }
+
+    public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
+        this.perceivedSeverity = perceivedSeverity;
+    }
+
     public String getResourceId() {
         return resourceId;
     }
@@ -67,9 +75,7 @@ public class AlarmEndpoint implements Serializable {
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
-    public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
-        this.perceivedSeverity = perceivedSeverity;
-    }
+
     public String getId() {
         return id;
     }
