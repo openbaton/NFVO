@@ -162,7 +162,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     } else {
                         throw new NotFoundException("The image details are not defined. Please define it to use the right image");
                     }
-                } else if (entry.getName().endsWith(".json")) {
+                } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
                     //this must be the vnfd
                     //and has to be onboarded in the catalogue
                     String json = new String(content);
