@@ -113,6 +113,15 @@ function check_already_running {
         fi
 }
 
+# Check if the property nfvo.timezone is set
+# The nfvo.timezone property syncronize all the VNF with the clock of the NFVO
+function check_timezone {
+	if ! grep nfvo.timezone $_openbaton_config_file > /dev/null ; then
+		TIMEZONE=$( date +%Z )
+		echo "nfvo.timezone = $TIMEZONE" >> ${_openbaton_config_file}
+	fi
+}
+
 function start {
 
     if [ ! -d build/  ]
@@ -122,6 +131,7 @@ function start {
 
 #    check_activemq
     check_rabbitmq
+    check_timezone
     #check_mysql
     check_already_running
     if [ 0 -eq $? ]
