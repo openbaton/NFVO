@@ -33,7 +33,6 @@ dependencies {
     compile 'org.springframework:spring-context:' + springVersion
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
-//    compile 'org.springframework:spring-jms:' + springVersion
     compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 

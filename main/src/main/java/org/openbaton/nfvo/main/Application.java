@@ -29,9 +29,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.util.FileSystemUtils;
-
-import java.io.File;
 
 /**
  * Created by lto on 16/04/15.
@@ -39,7 +36,6 @@ import java.io.File;
 
 
 @SpringBootApplication
-//@EnableJms
 @ConditionalOnClass(ActiveMQConnectionFactory.class)
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
@@ -47,8 +43,6 @@ import java.io.File;
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
     public static void main(String[] args) {
-        // Clean out any ActiveMQ data from a previous run
-        FileSystemUtils.deleteRecursively(new File("activemq-data"));
         Logger log = LoggerFactory.getLogger(Application.class);
 
         log.info("Starting OpenBaton...");
@@ -59,24 +53,6 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
         for (String name : context.getBeanDefinitionNames())
             log.trace(name);
     }
-
-//    @Bean
-//    JmsListenerContainerFactory<?> queueJmsContainerFactory(ConnectionFactory connectionFactory) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setCacheLevelName("CACHE_CONNECTION");
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setSessionTransacted(true);
-//        return factory;
-//    }
-//
-//    @Bean
-//    JmsListenerContainerFactory<?> topicJmsContainerFactory(ConnectionFactory connectionFactory) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setCacheLevelName("CACHE_CONNECTION");
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setPubSubDomain(true);
-//        return factory;
-//    }
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
