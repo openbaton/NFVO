@@ -144,8 +144,13 @@
                                 <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}"
                                        ng-click="showData(nsd)">{{df.id}}</a>
                                 </td>
-                                <td>{{df.idType}}</td>
-                                <td>{{df.parameters}}</td>
+                                <td><span ng-repeat="(k,v) in df.idType">{{v}}<span ng-if="!$last">, </span></span></td>
+                                <td><span ng-repeat="(k,v) in df.parameters"><b>{{k}}</b>:
+                        <ul>
+                            <li ng-repeat="(k2,v2) in v.parameters">{{k2}}: {{v2}}</li>
+                        </ul>
+                    </span>
+                                </td>
                                 <td>{{df.version}}</td>
                                 <td>
                                     <div class="btn-group">

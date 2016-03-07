@@ -59,7 +59,7 @@
                             class="fa fa-sort"></i>
                     <th ng-click="predicate = 'shared'; reverse = !reverse">shared <i
                             class="fa fa-sort"></i>
-                    <th ng-click="predicate = 'subnets'; reverse = !reverse">subnets <i
+                    <th ng-click="predicate = 'subnets.name'; reverse = !reverse">subnets <i
                             class="fa fa-sort"></i>
                     </th>
 
@@ -73,7 +73,16 @@
                     <td>{{network.extId}}</td>
                     <td>{{network.external}}</td>
                     <td>{{network.shared}}</td>
-                    <td>{{network.subnets}}</td>
+                    <td>
+                        <span ng-repeat="sub in network.subnets">{{sub.name}}
+                            <ul>
+                                <li>extId: {{sub.extId}}</li>
+                                <li>networkId: {{sub.networkId}}</li>
+                                <li>cidr: {{sub.cidr}}</li>
+                                <li>gatewayIp: {{sub.gatewayIp}}</li>
+                            </ul>
+                        </span>
+                    </td>
 
                 </tr>
                 </tbody>
