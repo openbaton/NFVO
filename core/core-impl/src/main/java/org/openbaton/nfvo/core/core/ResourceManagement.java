@@ -56,18 +56,20 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     //TODO get from RabbitConfiguration
     private final static String exchangeName = "openbaton-exchange";
     private String brokerIp;
-    @Value("${spring.rabbitmq.username:}")
+    @Value("${spring.rabbitmq.username:admin}")
     private String username;
-    @Value("${spring.rabbitmq.password:}")
+    @Value("${spring.rabbitmq.password:openbaton}")
     private String password;
     @Value("${nfvo.monitoring.ip:}")
     private String monitoringIp;
-    @Value("${nfvo.ems.queue.autodelete:}")
+    @Value("${nfvo.ems.queue.autodelete:true}")
     private String emsAutodelete;
-    @Value("${nfvo.ems.queue.heartbeat:}")
+    @Value("${nfvo.ems.queue.heartbeat:60}")
     private String emsHeartbeat;
-    @Value("${nfvo.ems.version:}")
+    @Value("${nfvo.ems.version:0.15-SNAPSHOT}")
     private String emsVersion;
+    @Value("${nfvo.timezone:UTC}") // set timezone=UTC if the timezone property is not set
+    private String timezone;
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private VimBroker vimBroker;
@@ -155,18 +157,6 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     private String getUserData(String endpoint) throws VimException {
         log.debug("Broker ip is: " + brokerIp);
         log.debug("Monitoring ip is: " + monitoringIp);
-        if (username == null || username.equals(""))
-            username = "admin";
-        if (emsAutodelete == null || emsAutodelete.equals(""))
-            emsAutodelete = "true";
-        if (password == null || password.equals(""))
-            password = "openbaton";
-        if (emsHeartbeat == null || emsHeartbeat.equals(""))
-            emsHeartbeat = "60";
-        if (emsAutodelete == null || emsAutodelete.equals(""))
-            emsAutodelete = "true";
-        if (emsVersion == null || emsVersion.equals(""))
-            emsAutodelete = "0.15-SNAPSHOT";
         brokerIp = brokerIp.trim();
         if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches()) {
             throw new VimException("nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
@@ -178,6 +168,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
                 "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
+                "cp /usr/share/zoneinfo/"+timezone+" /etc/localtime\n"+ //synchronize the time with the timezone of the NFVO
                 "apt-get install git -y\n";
 
         if (monitoringIp != null && !monitoringIp.equals("")) {
