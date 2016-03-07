@@ -31,10 +31,10 @@ public class VirtualNetworkFunctionManagement implements org.openbaton.nfvo.core
     @Override
     public void delete(String id) {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfdRepository.findFirstById(id);
-        log.info("Removing vnfPackage with id: " + virtualNetworkFunctionDescriptor.getVnfPackageLocation());
-        vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
         log.info("Removing VNFD: " + virtualNetworkFunctionDescriptor.getName());
         vnfdRepository.delete(virtualNetworkFunctionDescriptor);
+        log.info("Removing vnfPackage with id: " + virtualNetworkFunctionDescriptor.getVnfPackageLocation());
+        vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
     }
 
     @Override
