@@ -49,31 +49,32 @@ import javax.persistence.NoResultException;
 public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Value("${nfvo.vnfd.cascade.delete:false}")
     private boolean cascadeDelete;
-
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
-
     @Autowired
     private VNFDRepository vnfdRepository;
-
     @Autowired
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
-
     @Autowired
     private VNFDependencyRepository vnfDependencyRepository;
-
     @Autowired
     private PhysicalNetworkFunctionDescriptorRepository pnfDescriptorRepository;
-
     @Autowired
     private NSDUtils nsdUtils;
     @Autowired
     private VnfPackageRepository vnfPackageRepository;
     @Autowired
     private VirtualNetworkFunctionManagement virtualNetworkFunctionManagement;
+
+    public boolean isCascadeDelete() {
+        return cascadeDelete;
+    }
+
+    public void setCascadeDelete(boolean cascadeDelete) {
+        this.cascadeDelete = cascadeDelete;
+    }
 
     /**
      * This operation allows submitting and
@@ -376,8 +377,8 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
         log.info("Removing NetworkServiceDescriptor with id " + id);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
         nsdRepository.delete(networkServiceDescriptor);
-        if (cascadeDelete){
-            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()){
+        if (cascadeDelete) {
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
                 virtualNetworkFunctionManagement.delete(virtualNetworkFunctionDescriptor.getId());
             }
         }

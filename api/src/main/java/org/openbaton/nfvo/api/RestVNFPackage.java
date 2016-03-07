@@ -23,7 +23,6 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
-import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,6 @@ import java.sql.SQLException;
 public class RestVNFPackage {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private VimManagement vimManagement;
 
     @Autowired
     private VNFPackageManagement vnfPackageManagement;

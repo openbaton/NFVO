@@ -39,6 +39,8 @@ import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -54,21 +56,19 @@ import java.util.*;
  */
 @Service
 @Scope
+@ConfigurationProperties
 public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
 
+    @Value("${vnfd.vnfp.cascade.delete:false}")
+    private boolean cascadeDelete;
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
     private Gson mapper = new GsonBuilder().create();
-
     @Autowired
     private NSDUtils nsdUtils;
-
     @Autowired
     private VnfPackageRepository vnfPackageRepository;
-
     @Autowired
     private VNFDRepository vnfdRepository;
-
     @Autowired
     private VimBroker vimBroker;
     @Autowired
@@ -77,6 +77,14 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     private VimRepository vimInstanceRepository;
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
+
+    public boolean isCascadeDelete() {
+        return cascadeDelete;
+    }
+
+    public void setCascadeDelete(boolean cascadeDelete) {
+        this.cascadeDelete = cascadeDelete;
+    }
 
     @Override
     public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
@@ -211,7 +219,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             } else if (vnfPackage.getImageLink() != null) {
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
+                    VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
                     if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
                         Vim vim = vimBroker.getVim(vimInstance.getType());
                         log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
@@ -348,20 +356,22 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     public void delete(String id) throws WrongAction {
         log.info("Removing VNFPackage: " + id);
         //TODO remove image in the VIM
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll())
-            if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
-                if (!vnfdBelongsToNSD(virtualNetworkFunctionDescriptor)) {
-                    log.info("Removing VNFDescriptor: " + virtualNetworkFunctionDescriptor.getName());
-                    vnfdRepository.delete(virtualNetworkFunctionDescriptor.getId());
-                    break;
-                }else throw new WrongAction("It is not possible to remove a vnfPackage --> vnfdescriptor if the NSD is still onboarded");
-            }
+        if (cascadeDelete)
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll())
+                if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
+                    if (!vnfdBelongsToNSD(virtualNetworkFunctionDescriptor)) {
+                        log.info("Removing VNFDescriptor: " + virtualNetworkFunctionDescriptor.getName());
+                        vnfdRepository.delete(virtualNetworkFunctionDescriptor.getId());
+                        break;
+                    } else
+                        throw new WrongAction("It is not possible to remove a vnfPackage --> vnfdescriptor if the NSD is still onboarded");
+                }
         vnfPackageRepository.delete(id);
     }
 
     private boolean vnfdBelongsToNSD(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
-        for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()){
-            for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()){
+        for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) {
+            for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
                 if (vnfd.getId().equals(virtualNetworkFunctionDescriptor.getId()))
                     return true;
             }
