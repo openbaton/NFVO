@@ -43,13 +43,16 @@
                     <dt>vendor</dt>
                     <dd>{{vnfr.vendor}}</dd>
                     <span ng-if="vnfr.configurations">
-                        <dt>configurations</dt>
-                        <dd><b>name:</b> {{vnfr.configurations.name}}
-                            <b>parameters: </b>
-                        <span ng-repeat="cp in vnfr.configurations.configurationParameters">
-                            {{cp.confKey}}: {{cp.value}}<span ng-if="!$last">, </span>
-                        </span>
-
+                        <dt>{{vnfr.configurations.name}}</dt>
+                        <dd>
+                            <pairlist ng-repeat="cp in vnfr.configurations.configurationParameters">
+                                <pair>
+                                    <key><b>{{cp.confKey}}:</b>
+                                        <key>
+                                            <value>{{cp.value}}</value>
+                                </pair>
+                                <span ng-if="!$last">,</span>
+                            </pairlist>
                         </dd>
                     </span>
                     <span ng-repeat="(k,v) in vnfr" ng-show="v != null"
@@ -66,34 +69,13 @@
                               <hr class="hr_title">
                         </span>
                     </span>
-                    <span ng-if="vnfr.lifecycle_event">
-                        <dt>lifecycle_event</dt>
-                        <dd>
-                            <span ng-repeat="lf in vnfr.lifecycle_event">
-                                            <b>{{lf.event}}</b>: {{lf.lifecycle_events}}
-                                           <span ng-if="!$last">,</span>
-
-                        </span>
-                        </dd>
-                    </span>
-                    <span ng-if="vnfr.lifecycle_event_history">
-                        <dt>lifecycle_event_history</dt>
-                        <dd>
-                            <span ng-repeat="lf in vnfr.lifecycle_event_history">
-                                            <b>{{lf.event}}</b>: {{lf.lifecycle_events}}
-                                           <span ng-if="!$last">,</span>
-
-                        </span>
-                        </dd>
-                    </span>
-
                 </dl>
 
 
                 <tabset>
                     <tab heading="Vdu">
                         <div class="table-responsive" ng-show="vnfr.vdu.length > 0">
-                            <h3>Vdu</h3>
+                            <h3>Virtual Deployment Unit</h3>
                             <table class="table table-bordered table-striped table-hover tablesorter">
                                 <thead>
                                 <tr>
@@ -109,7 +91,7 @@
                                         <i
                                                 class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance
+                                    <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc instance
                                         <i
                                                 class="fa fa-sort"></i>
                                     </th>
@@ -130,35 +112,44 @@
                                     <td>{{vdu.version}}</td>
 
                                     <td>{{vdu.vimInstanceName}}</td>
-                                    <td>
-                                            <span ng-repeat="vnfci in vdu.vnfc_instance">
-                                                <span>
-                                                    <b>hostname</b>: {{vnfci.hostname}},
-                                                    <b>floatingIps</b>:
-                                                        <span title="netName" ng-repeat="fip in vnfci.floatingIps">{{fip.netName}}: {{fip.ip}}</span>
-                                                    <br/>
-                                                    <span title="vnfComponent"
-                                                          ng-repeat="cp in vnfci.vnfComponent.connection_point">
-                                                        <b>floatingIp</b>: {{cp.floatingIp}}
-                                                        <b>virtual_link_reference</b>: {{cp.virtual_link_reference}}
-                                                    </span>
+                                    <td class=" col-lg-3">
+                                            <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
+
+
+                                                    <dl class="dl-horizontal dl-table" >
+                                                        <dt>hostname</dt>
+                                                        <dd>{{vnfci.hostname}}</dd>
+
+                                                        <dt>floatingIps</dt>
+                                                        <dd title="netName"  ng-repeat="fip in vnfci.floatingIps">
+                                                            <li>{{fip.netName}}: {{fip.ip}}</li>
+                                                        </dd>
+
+                                                        <dt>vnfComponent</dt>
+                                                        <dd title="vnfComponent"
+                                                            ng-repeat="cp in vnfci.vnfComponent.connection_point">
+                                                            <li>
+                                                                <span title="virtual_link_reference">{{cp.virtual_link_reference}}</span>:
+                                                                <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                            </li>
+                                                        </dd>
+
+
+                                                <dt>ips</dt>
+                                                <dd>
+                                                    <span ng-repeat="ips in vnfci.ips">
+                                                    <li title="netName">{{ips.netName}}: {{ips.ip}}</li>
                                                 </span>
-                                                <span ng-repeat="ips in vnfci.ips">
-                                                <ul>
-                                                    <li>
-                                                        <b>netName</b>: {{ips.netName}},
-                                                        <b>ip</b>: {{ips.ip}}
-                                                    </li>
-                                                </ul>
-                                                </span>
+                                                </dd>
+                                                </dl>
                                             </span>
                                     </td>
                                     <td>
-                                        <span ng-repeat="vnfc in vdu.vnfc">
+                                        <span class="dl-horizontal dl-table" ng-repeat="vnfc in vdu.vnfc">
                                             <span ng-repeat="cp in vnfc.connection_point">
-                                                <span ng-repeat="(k,v) in cp">
-                                                    <b>{{k}}</b>: {{v}}
-                                                </span>
+                                                    <b title="virtual_link_reference">{{cp.virtual_link_reference}}:</b>
+                                                    <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                        <span ng-if="!$last"><br/></span>
                                             </span>
                                         </span>
                                     </td>
@@ -206,8 +197,39 @@
                                 <tr ng-repeat="le in vnfr.lifecycle_event | orderBy:predicate:reverse">
                                     <td>{{le.id}}</td>
                                     <td>{{le.event}}</td>
-                                    <td>{{le.lifecycle_events}}</td>
+                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Lifecycle Event History">
+                        <div class="table-responsive" ng-show="vnfr.lifecycle_event_history.length > 0">
+                            <h3>Lifecycle Event</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'event'; reverse = !reverse">event <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
+                                        events <i class="fa fa-sort"></i>
+                                    </th>
 
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:predicate:reverse">
+                                    <td>{{le.id}}</td>
+                                    <td>{{le.event}}</td>
+                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

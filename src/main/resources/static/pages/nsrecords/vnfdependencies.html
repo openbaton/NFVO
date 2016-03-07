@@ -51,7 +51,8 @@
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
                     <th ng-click="predicate = 'idType'; reverse = !reverse">idType <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'parameters'; reverse = !reverse">Parameters <i class="fa fa-sort"></i>
+                    </th>
                     <th ng-click="predicate = 'target'; reverse = !reverse">Target <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
@@ -61,8 +62,13 @@
                 <tr ng-repeat="vnfd in nsrinfo.vnf_dependency| orderBy:predicate:reverse">
                     <td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
                     </td>
-                    <td>{{vnfd.idType}}</td>
-                    <td>{{vnfd.parameters}}</td>
+                    <td><span ng-repeat="(k,v) in vnfd.idType">{{v}}<span ng-if="!$last">, </span></span></td>
+                    <td><span ng-repeat="(k,v) in vnfd.parameters"><b>{{k}}</b>:
+                        <ul>
+                            <li ng-repeat="(k2,v2) in v.parameters">{{k2}}: {{v2}}</li>
+                        </ul>
+                    </span>
+                    </td>
                     <td>{{vnfd.target}}</td>
                     <td>{{vnfd.version}}</td>
                     <td>
