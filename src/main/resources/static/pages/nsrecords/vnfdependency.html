@@ -34,10 +34,32 @@
                 <div ng-repeat="vnfd in nsrinfo.vnf_dependency" ng-show="vnfd.id==vnfdependencyId">
                     <h2>VNF Dependency {{vnfd.name}}</h2>
                     <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vnfd">
-                            <dt>{{k}}</dt>
-                            <dd>{{v}}</dd>
-                        </spam>
+                        <dt>id</dt>
+                        <dd>{{vnfd.id}}</dd>
+                        <dt>idType</dt>
+                        <dd><span ng-repeat="(k,v) in vnfd.idType">{{v}}<span ng-if="!$last">, </span></span></dd>
+                        <dt>parameters</dt>
+                        <dd ng-repeat="(k,v) in vnfd.parameters">
+                            <span><b>{{k}}</b>:
+                            <span ng-repeat="(k,v) in v.parameters">
+                                {{k}}: {{v}}<span ng-if="!last">, </span>
+                            </span>
+                            </span>
+                        </dd>
+                        <dt>target</dt>
+                        <dd>{{vnfd.target}}</dd>
+                        <dt>version</dt>
+                        <dd>{{vnfd.version}}</dd>
+                        <dt>vnfcParameters</dt>
+                        <dd ng-repeat="(k1,v1) in vnfd.vnfcParameters">
+                            <span><b>{{k1}}</b>:
+                            <span ng-repeat="(k2,v2) in v1.parameters">
+                            <span ng-repeat="(k,v) in v2.parameters">
+                                {{k}}: {{v}}<span ng-if="!$last">, </span>
+                            </span>
+                            </span>
+                            </span>
+                        </dd>
                     </dl>
                 </div>
             </div>
