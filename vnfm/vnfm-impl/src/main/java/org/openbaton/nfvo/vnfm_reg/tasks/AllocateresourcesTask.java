@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -34,6 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * Created by lto on 06/08/15.
  */
@@ -42,6 +45,7 @@ import org.springframework.stereotype.Service;
 public class AllocateresourcesTask extends AbstractTask {
     @Autowired
     private ResourceManagement resourceManagement;
+    private Map<String, VimInstance> vims;
 
     @Override
     protected NFVMessage doWork() throws Exception {
@@ -52,7 +56,10 @@ public class AllocateresourcesTask extends AbstractTask {
         log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             try {
-                resourceManagement.allocate(vdu, virtualNetworkFunctionRecord);
+                VimInstance vimInstance = vims.get(vdu.getId());
+                if (vimInstance == null)
+                    throw new NullPointerException("Our algorithms are too complex, even for ourself, this is what abnormal IQ means :(");
+                resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, vimInstance);
             } catch (VimException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -99,5 +106,9 @@ public class AllocateresourcesTask extends AbstractTask {
     @Override
     public boolean isAsync() {
         return true;
+    }
+
+    public void setVims(Map<String, VimInstance> vimChosen) {
+        this.vims = vimChosen;
     }
 }

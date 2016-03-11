@@ -15,32 +15,41 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+
+import java.util.Map;
 
 /**
  * Created by mob on 15.09.15.
  */
 public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage{
-    private String vimId;
     private boolean grantAllowed;
+    private Map<String, VimInstance> vduVim;
+
+    @Override
+    public String toString() {
+        return "OrVnfmGrantLifecycleOperationMessage{" +
+                "grantAllowed=" + grantAllowed +
+                ", vduVim=" + vduVim +
+                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
+                '}';
+    }
+
+    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+        return virtualNetworkFunctionRecord;
+    }
+
+    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    }
+
+    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
     public OrVnfmGrantLifecycleOperationMessage() {
         this.action = Action.GRANT_OPERATION;
-    }
-
-    public OrVnfmGrantLifecycleOperationMessage(String vimId, boolean grantAllowed) {
-        this.action = Action.GRANT_OPERATION;
-        this.vimId = vimId;
-        this.grantAllowed = grantAllowed;
-    }
-
-    public String getVimId() {
-        return vimId;
-    }
-
-    public void setVimId(String vimId) {
-        this.vimId = vimId;
     }
 
     public boolean isGrantAllowed() {
@@ -51,11 +60,11 @@ public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage{
         this.grantAllowed = grantAllowed;
     }
 
-    @Override
-    public String toString() {
-        return "OrVnfmGrantLifecycleOperationMessage{" +
-                "vimId='" + vimId + '\'' +
-                ", grantAllowed=" + grantAllowed +
-                '}';
+    public Map<String, VimInstance> getVduVim() {
+        return vduVim;
+    }
+
+    public void setVduVim(Map<String, VimInstance> vduVim) {
+        this.vduVim = vduVim;
     }
 }

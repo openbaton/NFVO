@@ -32,10 +32,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.*;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -253,7 +250,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             List<VimInstance> vimInstances = new ArrayList<>();
 
             for (VirtualDeploymentUnit vdu : vnfd.getVdu())
-                vimInstances.add(vimInstanceRepository.findFirstByName(vdu.getVimInstanceName()));
+                for (String vimInstanceName : vdu.getVimInstanceName())
+                    vimInstances.add(vimInstanceRepository.findFirstByName(vimInstanceName));
 
             //Creating the extension
             Map<String, String> extension = new HashMap<>();
@@ -355,6 +353,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
             VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage = (VnfmOrAllocateResourcesMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
+            Map<String, VimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
+            ((AllocateresourcesTask) task).setVims(vimChosen);
         } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();

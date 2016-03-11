@@ -15,7 +15,10 @@
 
 package org.openbaton.utils.rabbit;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -45,10 +46,10 @@ public class RabbitManager {
 
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public static List<String> getQueues(String brokerIp, String username, String password, int port) throws IOException {
+    public static List<String> getQueues(String brokerIp, String username, String password, int managementPort) throws IOException {
         List<String> result = new ArrayList<>();
         String encoding = Base64.encodeBase64String((username + ":" + password).getBytes());
-        HttpGet httpGet = new HttpGet("http://" + brokerIp + ":" + port + "/api/queues/");
+        HttpGet httpGet = new HttpGet("http://" + brokerIp + ":" + managementPort + "/api/queues/");
         httpGet.setHeader("Authorization", "Basic " + encoding);
 
         log.debug("executing request " + httpGet.getRequestLine());

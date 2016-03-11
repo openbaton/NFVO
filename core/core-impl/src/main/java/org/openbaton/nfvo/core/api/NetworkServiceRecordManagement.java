@@ -449,36 +449,35 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
         log.trace("Creating " + networkServiceRecord);
 
-        /*
-         * Getting the vim based on the VDU datacenter type
-         */
         for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
             for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
                 for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-                    VimInstance vimInstance = vimInstanceRepository.findFirstByName(vdu.getVimInstanceName());
-                    for (VNFComponent vnfc : vdu.getVnfc()) {
-                        for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-                            if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
-                                boolean networkExists = false;
-                                for (Network network : vimInstance.getNetworks()) {
-                                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
-                                        networkExists = true;
+                    for (String vimInstanceName : vdu.getVimInstanceName()) {
+                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimInstanceName);
+                        for (VNFComponent vnfc : vdu.getVnfc()) {
+                            for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
+                                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
+                                    boolean networkExists = false;
+                                    for (Network network : vimInstance.getNetworks()) {
+                                        if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
+                                            networkExists = true;
+                                            vlr.setStatus(LinkStatus.NORMALOPERATION);
+                                            vlr.setVim_id(vdu.getId());
+                                            vlr.setExtId(network.getExtId());
+                                            vlr.getConnection().add(vnfdConnectionPoint.getId());
+                                            break;
+                                        }
+                                    }
+                                    if (networkExists == false) {
+                                        Network network = new Network();
+                                        network.setName(vlr.getName());
+                                        network.setSubnets(new HashSet<Subnet>());
+                                        network = networkManagement.add(vimInstance, network);
                                         vlr.setStatus(LinkStatus.NORMALOPERATION);
                                         vlr.setVim_id(vdu.getId());
                                         vlr.setExtId(network.getExtId());
                                         vlr.getConnection().add(vnfdConnectionPoint.getId());
-                                        break;
                                     }
-                                }
-                                if (networkExists == false) {
-                                    Network network = new Network();
-                                    network.setName(vlr.getName());
-                                    network.setSubnets(new HashSet<Subnet>());
-                                    network = networkManagement.add(vimInstance, network);
-                                    vlr.setStatus(LinkStatus.NORMALOPERATION);
-                                    vlr.setVim_id(vdu.getId());
-                                    vlr.setExtId(network.getExtId());
-                                    vlr.getConnection().add(vnfdConnectionPoint.getId());
                                 }
                             }
                         }

@@ -24,11 +24,9 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -45,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -125,8 +124,14 @@ public class VnfmReceiverRest implements VnfmReceiver {
         log.debug("CORE: Received: " + message);
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
-        if (vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
-            return new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
+        Map<String, VimInstance> vimInstances = vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
+        if (vimInstances != null) {
+            OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
+            nfvMessage.setGrantAllowed(true);
+            nfvMessage.setVduVim(vimInstances);
+            nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+//                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
+            return nfvMessage;
         } else {
             return new OrVnfmErrorMessage(saveVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord), "Not enough resources");
         }
@@ -134,12 +139,13 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
     @RequestMapping(value = "vnfm-core-allocate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public NFVMessage allocate(@RequestBody VnfmOrGenericMessage message) throws VimException {
+    public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message) throws VimException {
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = message.getVirtualNetworkFunctionRecord();
+
         try {
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
-                resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord);
+                resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, message.getVimInstances().get(virtualDeploymentUnit.getId()));
 
             for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
                 if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {

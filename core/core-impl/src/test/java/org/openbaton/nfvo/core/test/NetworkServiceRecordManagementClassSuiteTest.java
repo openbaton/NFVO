@@ -112,7 +112,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Before
     public void init() throws ExecutionException, InterruptedException, VimDriverException, VimException {
         MockitoAnnotations.initMocks(this);
-        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class))).thenReturn(new ArrayList<String>() {{
+        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), vimInstance)).thenReturn(new ArrayList<String>() {{
             add("mocked_id");
         }});
         when(vimBroker.getVim(anyString())).thenReturn(vim);
