@@ -143,6 +143,7 @@ public class OpenbatonCLI implements CommandLineRunner {
             out.flush();
             line = line.trim();
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
+                log.info("Shutting down...");
                 exit(0);
             } else if (line.equalsIgnoreCase("listBeans")) {
                 for (String name: context.getBeanDefinitionNames())
