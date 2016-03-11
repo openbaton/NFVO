@@ -67,7 +67,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     @PreDestroy
     private void shutdown() {
-        this.unregister();
+//        this.unregister();
     }
 
     @PostConstruct
