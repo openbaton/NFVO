@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-apply plugin: 'jacoco'
+//apply plugin: 'jacoco'
 
 dependencies {
     compile project(':catalogue')
@@ -29,12 +29,11 @@ dependencies {
     compile 'org.springframework:spring-context:' + springVersion
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
 
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile("org.powermock:powermock-mockito-release-full:1.6.3")
-
     testCompile 'org.springframework:spring-test:' + springVersion
-
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'commons-io:commons-io:2.4'
 }
