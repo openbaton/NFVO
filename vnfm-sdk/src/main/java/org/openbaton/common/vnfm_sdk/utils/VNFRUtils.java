@@ -216,9 +216,11 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
         for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
             for (VimInstance vi : vimInstances) {
-                if (virtualDeploymentUnit.getVimInstanceName().equals(vi.getName())) {
-                    if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
-                        throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+                for (String name : virtualDeploymentUnit.getVimInstanceName()) {
+                    if (name.equals(vi.getName())) {
+                        if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
+                            throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+                        }
                     }
                 }
             }

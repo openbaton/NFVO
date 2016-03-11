@@ -244,15 +244,19 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                    Future<VirtualNetworkFunctionRecord> result = executor.submit(grantOperation);
-                    virtualNetworkFunctionRecord = result.get();
 
-                    log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
+                    Future<OrVnfmGrantLifecycleOperationMessage> result = executor.submit(grantOperation);
+                    OrVnfmGrantLifecycleOperationMessage msg =result.get();
+
+                    virtualNetworkFunctionRecord = msg.getVirtualNetworkFunctionRecord();
+                    Map<String, VimInstance> vimInstanceChosen = msg.getVduVim();
+
+                            log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
 
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
                         allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-                        allocateResources.setVimInstances(orVnfmInstantiateMessage.getVimInstances());
+                        allocateResources.setVimInstances(vimInstanceChosen);
                         virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
                     }
                     setupProvides(virtualNetworkFunctionRecord);
@@ -420,7 +424,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         register();
     }
 
-    class GrantOperation implements Callable<VirtualNetworkFunctionRecord> {
+    class GrantOperation implements Callable<OrVnfmGrantLifecycleOperationMessage> {
         private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
         public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
@@ -431,7 +435,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
         }
 
-        private VirtualNetworkFunctionRecord grantLifecycleOperation() throws VnfmSdkException {
+        private OrVnfmGrantLifecycleOperationMessage grantLifecycleOperation() throws VnfmSdkException {
             NFVMessage response;
             try {
                 response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.GRANT_OPERATION, virtualNetworkFunctionRecord));
@@ -441,19 +445,24 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
                 throw new VnfmSdkException("Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage(), ((OrVnfmErrorMessage) response).getVnfr());
             }
-            OrVnfmGenericMessage orVnfmGenericMessage = (OrVnfmGenericMessage) response;
-            return orVnfmGenericMessage.getVnfr();
+            OrVnfmGrantLifecycleOperationMessage orVnfmGrantLifecycleOperationMessage = (OrVnfmGrantLifecycleOperationMessage) response;
+            return orVnfmGrantLifecycleOperationMessage;
         }
 
         @Override
-        public VirtualNetworkFunctionRecord call() throws Exception {
+        public OrVnfmGrantLifecycleOperationMessage call() throws Exception {
             return this.grantLifecycleOperation();
         }
     }
 
     class AllocateResources implements Callable<VirtualNetworkFunctionRecord> {
         private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-        private List<VimInstance> vimInstances;
+
+        public void setVimInstances(Map<String, VimInstance> vimInstances) {
+            this.vimInstances = vimInstances;
+        }
+
+        private Map<String, VimInstance> vimInstances;
 
         public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
             return virtualNetworkFunctionRecord;
@@ -469,7 +478,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             try {
 
 
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(virtualNetworkFunctionRecord));
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(virtualNetworkFunctionRecord, vimInstances));
             } catch (Exception e) {
                 log.error("" + e.getMessage());
                 throw new VnfmSdkException("Not able to allocate Resources", e, virtualNetworkFunctionRecord);
@@ -490,8 +499,5 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             return this.allocateResources();
         }
 
-        public void setVimInstances(List<VimInstance> vimInstances) {
-            this.vimInstances = vimInstances;
-        }
     }
 }
