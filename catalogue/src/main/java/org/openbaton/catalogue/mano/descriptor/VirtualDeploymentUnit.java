@@ -23,6 +23,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -107,14 +108,10 @@ public class VirtualDeploymentUnit implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
 
-//    @JsonIgnore
-//    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH /*TODO sure about this?*/})
-//    private VimInstance vimInstance;
-
     private String hostname;
 
-    @Column(nullable = false)
-    private String vimInstanceName;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> vimInstanceName;
 
     public VirtualDeploymentUnit() {
     }
@@ -268,13 +265,13 @@ public class VirtualDeploymentUnit implements Serializable {
         this.name = name;
     }
 
-//    public VimInstance getVimInstances() {
-//        return vimInstance;
-//    }
-//
-//    public void setVimInstances(VimInstance vimInstance) {
-//        this.vimInstance = vimInstance;
-//    }
+    public List<String> getVimInstanceName() {
+        return vimInstanceName;
+    }
+
+    public void setVimInstanceName(List<String> vimInstanceName) {
+        this.vimInstanceName = vimInstanceName;
+    }
 
     public String getHostname() {
         return hostname;
@@ -284,11 +281,4 @@ public class VirtualDeploymentUnit implements Serializable {
         this.hostname = hostname;
     }
 
-    public String getVimInstanceName() {
-        return vimInstanceName;
-    }
-
-    public void setVimInstanceName(String vimInstanceName) {
-        this.vimInstanceName = vimInstanceName;
-    }
 }
