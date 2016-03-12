@@ -128,13 +128,4 @@ class SystemStartup implements CommandLineRunner {
         PluginStartup.startPluginRecursive(folderPath, false, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort);
     }
 
-    private void startRegistry(Configuration configuration) throws RemoteException {
-        for (ConfigurationParameter configurationParameter : configuration.getConfigurationParameters())
-            if (configurationParameter.getConfKey().equals("registry-port")) {
-                LocateRegistry.createRegistry(Integer.parseInt(configurationParameter.getValue()));
-                return;
-            }
-
-        LocateRegistry.createRegistry(1099);
-    }
 }
