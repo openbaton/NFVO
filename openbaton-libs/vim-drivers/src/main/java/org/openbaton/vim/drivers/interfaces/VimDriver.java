@@ -30,13 +30,13 @@ import java.util.Properties;
 /**
  * Created by lto on 15/10/15.
  */
-public abstract class VimDriver extends UnicastRemoteObject implements ClientInterfaces {
+public abstract class VimDriver implements ClientInterfaces {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected Properties properties;
 
-    protected VimDriver() throws RemoteException {
+    protected VimDriver() {
         loadProperties();
     }
 
