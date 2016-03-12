@@ -39,7 +39,7 @@ import java.io.Serializable;
  */
 @Service
 @Scope
-@ConfigurationProperties(prefix = "vnfm.rabbitmq.sar")
+@ConfigurationProperties
 public class VnfmSpringHelperRabbit extends VnfmHelper {
 
     @Autowired
@@ -59,6 +59,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     @Autowired
     private ConnectionFactory connectionFactory;
 
+    @Value("${vnfm.rabbitmq.sar.timeout:1000}")
     private int timeout;
 
     public boolean isExclusive() {
@@ -111,24 +112,6 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     }
 
 
-    /**
-     * This method should be used for receiving text message from EMS
-     * <p/>
-     * resp = {
-     * 'output': out,          // the output of the command
-     * 'err': err,             // the error outputs of the commands
-     * 'status': status        // the exit status of the command
-     * }
-     *
-     * @param queueName
-     * @return
-     */
-    public String receiveTextFromQueue(String queueName) {
-        String res = null;
-
-        return res;
-    }
-
     @Override
     public void sendToNfvo(final NFVMessage nfvMessage) {
         sendMessageToQueue(RabbitConfiguration.queueName_vnfmCoreActions, nfvMessage);
@@ -136,8 +119,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
 
     @Override
     public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
-        if (timeout == 0)
-            timeout = 1000;
+
         rabbitTemplate.setReplyTimeout(timeout * 1000);
         rabbitTemplate.afterPropertiesSet();
         String response = (String) this.rabbitTemplate.convertSendAndReceive(RabbitConfiguration.queueName_vnfmCoreActionsReply, gson.toJson(message));
@@ -147,8 +129,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
 
     @Override
     public String sendAndReceive(String message, String queueName) throws Exception {
-        if (timeout == 0)
-            timeout = 1000;
+
         rabbitTemplate.setReplyTimeout(timeout * 1000);
         rabbitTemplate.afterPropertiesSet();
 

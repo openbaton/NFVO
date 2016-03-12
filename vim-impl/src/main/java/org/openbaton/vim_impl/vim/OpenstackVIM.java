@@ -483,9 +483,6 @@ public class OpenstackVIM extends Vim {
                 vnfcInstance = getVnfcInstanceFromServer(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
             }
             throw new VimException("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage(), e, vnfcInstance);
-        } catch (RemoteException e) {
-            log.error("Not launched VM with hostname " + hostname + " successfully on VimInstance " + vimInstance.getName() + ". Caused by: " + e.getMessage());
-            throw new VimException(e);
         }
 
         log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
