@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.main;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 @SpringBootApplication
-@ConditionalOnClass(ActiveMQConnectionFactory.class)
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
 @EnableJpaRepositories("org.openbaton")
