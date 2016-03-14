@@ -18,6 +18,7 @@ package org.openbaton.nfvo.vim_interfaces.vim;
 
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.openbaton.exceptions.VimException;
 
@@ -31,11 +32,11 @@ public interface VimBroker {
 
     Vim getVim(String type, String name);
 
-    Vim getVim(String type);
+    Vim getVim(String type) throws PluginException;
 
     Vim getVim(String type, int port);
 
     Vim getVim(String type, String name, String port);
 
-    Quota getLeftQuota(VimInstance vimInstance) throws VimException;
+    Quota getLeftQuota(VimInstance vimInstance) throws VimException, PluginException;
 }
