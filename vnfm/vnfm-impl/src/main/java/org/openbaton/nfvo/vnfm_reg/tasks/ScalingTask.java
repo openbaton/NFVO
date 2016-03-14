@@ -84,17 +84,30 @@ public class ScalingTask extends AbstractTask {
             }
         }
 
-        log.debug("The component to add is: " + componentToAdd);
+        log.info("The component to add is: " + componentToAdd);
         if (checkQuota) {
             if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
                 try {
                     log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
                 } catch (VimException e) {
                     resourceManagement.release(vdu, e.getVnfcInstance());
-                    //            vdu.getVnfc_instance().add();
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
                     saveVirtualNetworkFunctionRecord();
-                    throw e;
+                    OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+                    errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
+                    errorMessage.setVnfr(virtualNetworkFunctionRecord);
+                    errorMessage.setAction(Action.ERROR);
+                    vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+                    return errorMessage;
+                } catch (VimDriverException e){
+                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                    saveVirtualNetworkFunctionRecord();
+                    OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+                    errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
+                    errorMessage.setVnfr(virtualNetworkFunctionRecord);
+                    errorMessage.setAction(Action.ERROR);
+                    vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+                    return errorMessage;
                 }
             } else {
                 log.error("Not enough resources for scale out.");
