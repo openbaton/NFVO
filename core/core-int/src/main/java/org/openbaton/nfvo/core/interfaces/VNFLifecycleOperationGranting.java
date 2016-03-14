@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
 import java.util.Map;
@@ -35,5 +36,5 @@ public interface VNFLifecycleOperationGranting {
      * is parameterized in the operation.
      *  @param vimInstance
      * @param virtualNetworkFunctionRecord*/
-    Map<String, VimInstance> grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
+    Map<String, VimInstance> grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, PluginException;
 }

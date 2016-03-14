@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
 /**
@@ -31,7 +32,7 @@ public interface VimManagement {
      *
      * @param vimInstance
      */
-    VimInstance add(VimInstance vimInstance) throws VimException;
+    VimInstance add(VimInstance vimInstance) throws VimException, PluginException;
 
     /**
      * This operation allows deleting the datacenter
@@ -48,7 +49,7 @@ public interface VimManagement {
      * @param new_vimInstance
      * @param id
      */
-    VimInstance update(VimInstance new_vimInstance, String id) throws VimException;
+    VimInstance update(VimInstance new_vimInstance, String id) throws VimException, PluginException;
 
     /**
      * This operation allows querying the information of
@@ -62,7 +63,7 @@ public interface VimManagement {
      */
     VimInstance query(String id);
 
-    void refresh(VimInstance vimInstance) throws VimException;
+    void refresh(VimInstance vimInstance) throws VimException, PluginException;
 
     /**
      * Adds a new NFVImage to the VimInstance with id
@@ -71,7 +72,7 @@ public interface VimManagement {
      * @param image the new NFVImage
      * @return NFVImage
      */
-    NFVImage addImage(String id, NFVImage image) throws VimException;
+    NFVImage addImage(String id, NFVImage image) throws VimException, PluginException;
 
     /**
      * Returns the NFVImage with idImage from VimInstance with idVim
@@ -88,6 +89,6 @@ public interface VimManagement {
      * @param idVim
      * @param idImage
      */
-    void deleteImage(String idVim, String idImage) throws VimException;
+    void deleteImage(String idVim, String idImage) throws VimException, PluginException;
 
 }

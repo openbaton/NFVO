@@ -23,7 +23,6 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,14 +35,23 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     private String vnfInstanceName;
     private Set<VirtualLinkRecord> vlrs;
     private Map<String, String> extension;
-    private List<VimInstance> vimInstances;
+
+    public Set<VimInstance> getVimInstances() {
+        return vimInstances;
+    }
+
+    public void setVimInstances(Set<VimInstance> vimInstances) {
+        this.vimInstances = vimInstances;
+    }
+
+    private Set<VimInstance> vimInstances;
     private VNFPackage vnfPackage;
 
     public OrVnfmInstantiateMessage() {
         this.action = Action.INSTANTIATE;
     }
 
-    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extension, List<VimInstance> vimInstances, VNFPackage vnfPackage) {
+    public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd, VNFDeploymentFlavour vnfdf, String vnfInstanceName, Set<VirtualLinkRecord> vlrs, Map<String, String> extension, Set<VimInstance> vimInstances, VNFPackage vnfPackage) {
         this.vnfd = vnfd;
         this.vnfdf = vnfdf;
         this.vnfInstanceName = vnfInstanceName;
@@ -62,13 +70,6 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
         this.vnfPackage = vnfPackage;
     }
 
-    public List<VimInstance> getVimInstances() {
-        return vimInstances;
-    }
-
-    public void setVimInstances(List<VimInstance> vimInstances) {
-        this.vimInstances = vimInstances;
-    }
 
     public VirtualNetworkFunctionDescriptor getVnfd() {
         return vnfd;

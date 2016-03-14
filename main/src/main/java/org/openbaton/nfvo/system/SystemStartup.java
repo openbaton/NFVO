@@ -20,6 +20,7 @@ import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.*;
 
 /**
@@ -61,6 +60,8 @@ class SystemStartup implements CommandLineRunner {
     private String password;
     @Value("${nfvo.rabbit.management.port:}")
     private String  managementPort;
+    @Autowired
+    private VnfmManager vnfmManager;
 
     @Override
     public void run(String... args) throws Exception {
@@ -114,6 +115,8 @@ class SystemStartup implements CommandLineRunner {
         if (Boolean.parseBoolean(properties.getProperty("install-plugin","true"))) {
             startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
         }
+
+        vnfmManager.init();
     }
 
     private void startPlugins(String folderPath) throws IOException {

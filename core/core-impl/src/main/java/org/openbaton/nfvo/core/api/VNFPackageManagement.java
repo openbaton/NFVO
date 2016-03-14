@@ -30,6 +30,7 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.utils.NSDUtils;
@@ -87,7 +88,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException {
+    public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException, PluginException {
         VNFPackage vnfPackage = new VNFPackage();
         vnfPackage.setScripts(new HashSet<Script>());
         Map<String, Object> metadata = null;

@@ -28,6 +28,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
@@ -119,7 +120,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
     @RequestMapping(value = "vnfm-core-grant", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message) throws VimException {
+    public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message) throws VimException, PluginException {
 
         log.debug("CORE: Received: " + message);
 
@@ -159,6 +160,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
         } catch (ExecutionException e) {
             return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
         } catch (VimDriverException e) {
+            return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+        } catch (PluginException e) {
             return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
         }
     }

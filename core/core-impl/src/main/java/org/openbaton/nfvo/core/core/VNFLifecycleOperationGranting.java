@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -30,9 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by lto on 11/06/15.
@@ -47,7 +49,7 @@ public class VNFLifecycleOperationGranting implements org.openbaton.nfvo.core.in
     private VimRepository vimInstanceRepository;
 
     @Override
-    public Map<String, VimInstance> grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
+    public Map<String, VimInstance> grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, PluginException {
         Map<String, VimInstance> result = new HashMap<>();
 
         //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
@@ -86,7 +88,7 @@ public class VNFLifecycleOperationGranting implements org.openbaton.nfvo.core.in
         return result;
     }
 
-    private VimInstance pickVimInstance(List<String> vimInstanceNames, HashMap<VimInstance, Integer> countVDUsOnVimInstances, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
+    private VimInstance pickVimInstance(Collection<String> vimInstanceNames, HashMap<VimInstance, Integer> countVDUsOnVimInstances, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, PluginException {
         for (VimInstance vimInstance1 : countVDUsOnVimInstances.keySet()) {
             if (vimInstanceNames.contains(vimInstance1.getName())) {
                 Quota leftQuota = vimBroker.getLeftQuota(vimInstance1);

@@ -56,14 +56,14 @@ public class RestNetworkServiceRecord {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public NetworkServiceRecord create(
-            @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+            @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
         return networkServiceRecordManagement.onboard(networkServiceDescriptor);
 
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException {
+    public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
         return networkServiceRecordManagement.onboard(id);
     }
 
@@ -201,23 +201,22 @@ public class RestNetworkServiceRecord {
         log.debug("switch to a standby component");
         networkServiceRecordManagement.switchToRedundantVNFCInstance(id, idVnf, idVdu, idVNFC,"standby",failedVnfcInstance);
     }
-    ////////////
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
         networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
         networkServiceRecordManagement.deleteVNFCInstance(id, idVnf);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException {
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
         networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu);
     }
 

@@ -113,6 +113,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         try {
             result = this.doWork();
         } catch (Exception e) {
+            e.printStackTrace();
             VnfmSender vnfmSender;
             try {
                 vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());

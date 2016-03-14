@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.VimDriverException;
 
@@ -39,7 +40,7 @@ public interface ResourceManagement {
      * assignment of a virtualised resource to the VNF, as
      * indicated by the consumer functional block.
      */
-    List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance) throws VimException, VimDriverException, ExecutionException, InterruptedException, VimException;
+    List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance) throws VimException, VimDriverException, ExecutionException, InterruptedException, VimException, PluginException;
 
     /**
      * This operation allows querying a virtualised resource,
@@ -48,7 +49,7 @@ public interface ResourceManagement {
      *
      * @param vimInstance
      */
-    List<Server> query(VimInstance vimInstance) throws VimException;
+    List<Server> query(VimInstance vimInstance) throws VimException, PluginException;
 
     /**
      * This operation allows updating the configuration and/or
@@ -85,7 +86,7 @@ public interface ResourceManagement {
      * instantiated virtualised resource. This operation frees
      * resources and returns them to the NFVI resource pool.
      */
-    Future<Void> release(VirtualDeploymentUnit vdu, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException;
+    Future<Void> release(VirtualDeploymentUnit vdu, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException, PluginException;
 
     /**
      * This operation allows requesting the reservation of a set
@@ -116,5 +117,5 @@ public interface ResourceManagement {
      */
     void releaseReservation(VirtualDeploymentUnit vdu);
 
-    String allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance) throws InterruptedException, ExecutionException, VimException, VimDriverException;
+    String allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance) throws InterruptedException, ExecutionException, VimException, VimDriverException, PluginException;
 }

@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
 
@@ -34,7 +35,7 @@ public interface NetworkManagement {
      * @param vimInstance
      * @param network
      */
-    Network add(VimInstance vimInstance, Network network) throws VimException;
+    Network add(VimInstance vimInstance, Network network) throws VimException, PluginException;
 
     /**
      * This operation allows deleting in the VNF software
@@ -43,7 +44,7 @@ public interface NetworkManagement {
      * @param vimInstance
      * @param network
      */
-    void delete(VimInstance vimInstance, Network network) throws VimException;
+    void delete(VimInstance vimInstance, Network network) throws VimException, PluginException;
 
     /**
      * This operation allows updating the VNF software
@@ -52,7 +53,7 @@ public interface NetworkManagement {
      * @param vimInstance
      * @param new_network
      */
-    Network update(VimInstance vimInstance, Network new_network) throws VimException;
+    Network update(VimInstance vimInstance, Network new_network) throws VimException, PluginException;
 
     /**
      * This operation allows querying the information of

@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -78,6 +79,7 @@ public class GrantoperationTask extends AbstractTask {
             log.debug("Hibernate version is: " + virtualNetworkFunctionRecord.getHb_version());
             OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
             nfvMessage.setGrantAllowed(true);
+            nfvMessage.setVduVim(new HashMap<String, VimInstance>());
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
                 nfvMessage.getVduVim().put(virtualDeploymentUnit.getId(), vnfPlacementManagement.choseRandom(virtualDeploymentUnit.getVimInstanceName()));
             nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
@@ -86,7 +88,7 @@ public class GrantoperationTask extends AbstractTask {
         }
         else{
             Map<String, VimInstance> vimInstancesChosen = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-
+            log.debug("VimInstances chosen are: " + vimInstancesChosen);
             if (vimInstancesChosen.size() == virtualNetworkFunctionRecord.getVdu().size()) {
                 log.info("Finished task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();

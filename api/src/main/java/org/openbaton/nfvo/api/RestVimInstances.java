@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class RestVimInstances {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VimInstance create(@RequestBody @Valid VimInstance vimInstance) throws VimException {
+    public VimInstance create(@RequestBody @Valid VimInstance vimInstance) throws VimException, PluginException {
         return vimManagement.add(vimInstance);
     }
 
@@ -96,7 +97,7 @@ public class RestVimInstances {
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance,
-                              @PathVariable("id") String id) throws VimException {
+                              @PathVariable("id") String id) throws VimException, PluginException {
         return vimManagement.update(new_vimInstance, id);
     }
 
@@ -133,7 +134,7 @@ public class RestVimInstances {
      * @throws VimException
      */
     @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
-    public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage) throws VimException {
+    public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage) throws VimException, PluginException {
         return vimManagement.addImage(id, nfvImage);
     }
 
@@ -146,7 +147,7 @@ public class RestVimInstances {
      * @throws VimException
      */
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
-    public NFVImage updateImage(@PathVariable("idVim") String idVim, @RequestBody @Valid NFVImage image) throws VimException {
+    public NFVImage updateImage(@PathVariable("idVim") String idVim, @RequestBody @Valid NFVImage image) throws VimException, PluginException {
         return vimManagement.addImage(idVim, image);
     }
 
@@ -159,7 +160,7 @@ public class RestVimInstances {
      */
 
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage) throws VimException {
+    public void deleteImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage) throws VimException, PluginException {
         vimManagement.deleteImage(idVim, idImage);
     }
 
@@ -170,7 +171,7 @@ public class RestVimInstances {
      * @return Datacenter: The Datacenter selected
      */
     @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
-    public VimInstance refresh(@PathVariable("id") String id) throws VimException {
+    public VimInstance refresh(@PathVariable("id") String id) throws VimException, PluginException {
         VimInstance vimInstance = vimManagement.query(id);
         vimManagement.refresh(vimInstance);
         return vimInstance;

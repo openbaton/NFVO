@@ -17,13 +17,12 @@
 apply plugin: 'jacoco'
 
 dependencies {
+    compile project(':vim-int')
     compile project(':catalogue')
     compile project(':exception')
     compile project(':monitoring')
     compile project(':vim-drivers')
-
     compile project(':plugin')
-    compile project(':vim-int')
 
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'org.springframework:spring-context:' + springVersion
@@ -32,9 +31,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile("org.powermock:powermock-mockito-release-full:1.6.3")
-
     testCompile 'org.springframework:spring-test:' + springVersion
-
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'commons-io:commons-io:2.4'
 }

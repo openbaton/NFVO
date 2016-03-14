@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by lto on 10/03/16.
@@ -22,8 +22,8 @@ public class VnfPlacementManagement implements org.openbaton.nfvo.core.interface
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public VimInstance choseRandom(List<String> vimInstanceName) {
-        String name = vimInstanceName.get(((int)(Math.random()*1000)) % vimInstanceName.size());
+    public VimInstance choseRandom(Collection<String> vimInstanceName) {
+        String name = vimInstanceName.toArray(new String[0])[((int) (Math.random() * 1000)) % vimInstanceName.size()];
         VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
         log.info("Chosen VimInstance: " + vimInstance.getName());
         return vimInstance;

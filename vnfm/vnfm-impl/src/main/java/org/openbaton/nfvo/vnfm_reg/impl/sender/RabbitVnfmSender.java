@@ -47,7 +47,16 @@ public class RabbitVnfmSender implements VnfmSender {
     public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
         String destinationName = "nfvo." + endpoint.getType() + ".actions";
         log.debug("Sending NFVMessage with action: " + nfvMessage.getAction() + " to destination: " + destinationName);
-        String json = gson.toJson(nfvMessage);
+        log.debug("nfvMessage is: " + nfvMessage);
+        log.debug("gson is: " + gson);
+        log.debug("RabbitTmeplat is: " + rabbitTemplate);
+        String json = null;
+        try {
+            json = gson.toJson(nfvMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.debug("Json is: " + json);
         rabbitTemplate.convertAndSend(destinationName, json);
     }
 

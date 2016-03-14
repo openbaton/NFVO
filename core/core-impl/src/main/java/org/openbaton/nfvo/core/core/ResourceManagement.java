@@ -23,6 +23,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
@@ -99,7 +100,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     @Override
-    public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance) throws VimException, VimDriverException, ExecutionException, InterruptedException {
+    public List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance) throws VimException, VimDriverException, ExecutionException, InterruptedException, PluginException {
         List<Future<VNFCInstance>> instances = new ArrayList<>();
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
@@ -204,7 +205,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     @Override
-    public List<Server> query(VimInstance vimInstance) throws VimException {
+    public List<Server> query(VimInstance vimInstance) throws VimException, PluginException {
         return vimBroker.getVim(vimInstance.getType()).queryResources(vimInstance);
     }
 
@@ -230,7 +231,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
 
     @Override
     @Async
-    public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException {
+    public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException, PluginException {
         VimInstance vimInstance = vnfPlacementManagement.choseRandom(virtualDeploymentUnit.getVimInstanceName());
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Removing vnfcInstance: " + vnfcInstance);
@@ -260,7 +261,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
 
     @Override
-    public String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance) throws InterruptedException, ExecutionException, VimException, VimDriverException {
+    public String allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance) throws InterruptedException, ExecutionException, VimException, VimDriverException, PluginException {
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
