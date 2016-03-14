@@ -69,7 +69,7 @@ public class PluginStartup {
             queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
             waitTime--;
             if (waitTime == 0){
-                log.error("After 15 seconds the plugin is not started.");
+                log.error("After 30 seconds the plugin is not started.");
             }
         }
 

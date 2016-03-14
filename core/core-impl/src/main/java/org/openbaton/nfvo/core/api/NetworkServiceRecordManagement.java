@@ -109,6 +109,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     private boolean removeAfterTimeout;
     private ThreadPoolTaskExecutor asyncExecutor;
 
+    @Value("${nfvo.delete.vnfr.wait:60}")
+    private int timeout;
+
+
     @PostConstruct
     private void init() {
         if (removeAfterTimeout) {
@@ -585,20 +589,19 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             nsrRepository.delete(networkServiceRecord.getId());
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
     @ConfigurationProperties
     class VNFRTerminator implements Runnable {
 
-        @Value("${nfvo.delete.vnfr.wait:60}")
-        private String timeout;
+
         private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-
-        public String getTimeout() {
-            return timeout;
-        }
-
-        public void setTimeout(String timeout) {
-            this.timeout = timeout;
-        }
 
         public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
             return virtualNetworkFunctionRecord;
@@ -611,7 +614,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         @Override
         public void run() {
             try {
-                Thread.sleep(Integer.parseInt(timeout) * 1000);
+                Thread.sleep(timeout * 1000);
                 if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId()))
                     vnfmManager.terminate(virtualNetworkFunctionRecord);
             } catch (InterruptedException e) {
