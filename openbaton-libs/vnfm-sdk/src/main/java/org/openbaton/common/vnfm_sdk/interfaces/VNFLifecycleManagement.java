@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,13 +32,12 @@ public interface VNFLifecycleManagement {
 	
 	/**
 	 * This operation allows creating a VNF instance.
-	 * @param scripts
 	 * @param virtualNetworkFunctionRecord
 	 * @param scripts
 	 * @param vimInstances
 	 */
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts, List<VimInstance> vimInstances) throws Exception;
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts, Collection<VimInstance> vimInstances) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.
