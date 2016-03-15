@@ -43,10 +43,7 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
 
     public static void main(String[] args) {
 
-
-        log.info("Starting OpenBaton...");
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-
         context.registerShutdownHook();
     }
 

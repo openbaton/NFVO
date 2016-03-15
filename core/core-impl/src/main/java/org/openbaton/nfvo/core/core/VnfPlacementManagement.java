@@ -23,9 +23,13 @@ public class VnfPlacementManagement implements org.openbaton.nfvo.core.interface
 
     @Override
     public VimInstance choseRandom(Collection<String> vimInstanceName) {
-        String name = vimInstanceName.toArray(new String[0])[((int) (Math.random() * 1000)) % vimInstanceName.size()];
-        VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
-        log.info("Chosen VimInstance: " + vimInstance.getName());
-        return vimInstance;
+        if (vimInstanceName.size() != 0) {
+            String name = vimInstanceName.toArray(new String[0])[((int) (Math.random() * 1000)) % vimInstanceName.size()];
+            VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
+            log.info("Chosen VimInstance: " + vimInstance.getName());
+            return vimInstance;
+        } else {
+            return vimInstanceRepository.findAll().iterator().next();
+        }
     }
 }

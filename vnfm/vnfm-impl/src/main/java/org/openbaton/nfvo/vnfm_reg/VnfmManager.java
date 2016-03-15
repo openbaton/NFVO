@@ -216,16 +216,23 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             log.debug("Processing VNFD: " + vnfd.getName());
 
-            Set<VimInstance> vimInstances = new HashSet<>();
+            Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
-            for (VirtualDeploymentUnit vdu : vnfd.getVdu())
+            for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+                vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
                 for (String vimInstanceName : vdu.getVimInstanceName()) {
                     log.debug("Looking for " + vimInstanceName);
-                    vimInstances.add(vimInstanceRepository.findFirstByName(vimInstanceName));
+                    vimInstances.get(vdu.getId()).add(vimInstanceRepository.findFirstByName(vimInstanceName));
                 }
+            }
             log.debug("Found vim instances:");
-            for (VimInstance vimInstance : vimInstances){
-                log.debug("\t" + vimInstance.getName());
+            for (Map.Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()){
+
+                if (vimInstance.getValue().size() == 0)
+                    for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
+                        vimInstance.getValue().add(vimInstance1);
+
+                log.debug("\t" + vimInstance.toString());
             }
 
             //Creating the extension
