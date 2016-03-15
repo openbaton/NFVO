@@ -92,6 +92,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         return this.clientInterfaces.get(type);
     }
 
+    @Deprecated
     @Override
     public Vim getVim(String type, String name) {
         switch (type) {
