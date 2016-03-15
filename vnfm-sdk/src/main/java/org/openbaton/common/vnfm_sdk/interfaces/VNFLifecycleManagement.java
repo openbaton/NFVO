@@ -23,6 +23,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mpa on 05/05/15.
@@ -37,7 +38,7 @@ public interface VNFLifecycleManagement {
 	 * @param vimInstances
 	 */
 
-	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts, Collection<VimInstance> vimInstances) throws Exception;
+	VirtualNetworkFunctionRecord instantiate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts, Map<String, Collection<VimInstance>> vimInstances) throws Exception;
 	/**
 	 * This operation allows retrieving 
 	 * VNF instance state and attributes.

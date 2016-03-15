@@ -365,11 +365,12 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
      *
      * @param virtualNetworkFunctionDescriptor
      * @param extension
+     * @param vimInstances
      * @return The new VirtualNetworkFunctionRecordShort
      * @throws BadFormatException
      * @throws NotFoundException
      */
-    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension, Collection<VimInstance> vimInstances) throws BadFormatException, NotFoundException {
+    protected VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String flavourId, Set<VirtualLinkRecord> virtualLinkRecords, Map<String, String> extension, Map<String, Collection<VimInstance>> vimInstances) throws BadFormatException, NotFoundException {
         try {
             VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = VNFRUtils.createVirtualNetworkFunctionRecord(virtualNetworkFunctionDescriptor, flavourId, extension.get("nsr-id"), virtualLinkRecords, vimInstances);
             for (InternalVirtualLink internalVirtualLink : virtualNetworkFunctionRecord.getVirtual_link()) {
