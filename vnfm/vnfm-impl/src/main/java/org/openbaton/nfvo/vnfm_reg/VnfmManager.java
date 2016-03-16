@@ -41,12 +41,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
@@ -54,6 +54,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.*;
@@ -64,9 +65,10 @@ import java.util.concurrent.Future;
  * Created by lto on 08/07/15.
  */
 @Service
+@Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 @ConfigurationProperties
-public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
+public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO> {
 
     private static Map<String, Map<String, Integer>> vnfrNames;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -159,19 +161,15 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     }
 
     @Override
+    @PostConstruct
     public void init() {
+
+        log.debug("Running VnfmManager init");
 
         vnfrNames = new LinkedHashMap<>();
         /**
          * Asynchronous thread executor configuration
          */
-        Configuration system;
-        try {
-            system = configurationManagement.queryByName("system");
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
         this.asyncExecutor = new ThreadPoolTaskExecutor();
 
         this.asyncExecutor.setThreadNamePrefix("OpenbatonTask-");
@@ -200,7 +198,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
 
 
-        log.debug("here");
         log.debug("Ordered: " + ordered);
         if (ordered) {
             vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
@@ -211,7 +208,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
             log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
         }
-        log.debug("here");
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             log.debug("Processing VNFD: " + vnfd.getName());
@@ -231,7 +227,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
                 if (vimInstance.getValue().size() == 0)
                     for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
                         vimInstance.getValue().add(vimInstance1);
-
                 log.debug("\t" + vimInstance.toString());
             }
 
@@ -522,11 +517,11 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        log.debug("Running VnfmManager init");
-        init();
-    }
+//    @Override
+//    public void run(String... args) throws Exception {
+//        log.debug("Running VnfmManager init");
+//        init();
+//    }
 
     @Override
     public Map<String, Map<String, Integer>> getVnfrNames() {

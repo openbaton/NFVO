@@ -116,7 +116,7 @@ class SystemStartup implements CommandLineRunner {
             startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
         }
 
-        vnfmManager.init();
+//        vnfmManager.init();
     }
 
     private void startPlugins(String folderPath) throws IOException {
