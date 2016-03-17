@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.*;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.core.core.VNFLifecycleOperationGranting;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -38,7 +39,9 @@ import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -66,18 +69,19 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
     }
 
     @Test
-    public void vnfLifecycleOperationGrantingTest() throws VimException {
+    public void vnfLifecycleOperationGrantingTest() throws VimException, PluginException {
         VirtualNetworkFunctionRecord vnfr = createVirtualNetworkFunctionRecord();
-        boolean granted;
+        Map<String, VimInstance> granted;
         when(vimInstanceRepository.findFirstByName(anyString())).thenReturn(createVimInstance());
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMaxQuota());
 
         granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
-        Assert.assertTrue(granted);
+        log.debug(granted.size() + " == " + vnfr.getVdu().size());
+        Assert.assertTrue(granted.size() == vnfr.getVdu().size());
 
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMinQuota());
         granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
-        Assert.assertFalse(granted);
+        Assert.assertFalse(granted.size() == vnfr.getVdu().size());
     }
 
     private VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord() {
@@ -105,6 +109,7 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
 
     private VirtualDeploymentUnit createVDU(int suffix, VimInstance vimInstance) {
         VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+        vdu.setId("" + Math.random() * 100000);
         vdu.setHostname("mocked_vdu_hostname_" + suffix);
         HighAvailability highAvailability = new HighAvailability();
         highAvailability.setGeoRedundancy(false);
@@ -124,6 +129,9 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
         vdu.setVnfc_instance(vnfc_instance);
         vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
         vdu.setMonitoring_parameter(new HashSet<String>());
+        ArrayList<String> vimInstanceName = new ArrayList<>();
+        vimInstanceName.add(vimInstance.getName());
+        vdu.setVimInstanceName(vimInstanceName);
         return vdu;
     }
 

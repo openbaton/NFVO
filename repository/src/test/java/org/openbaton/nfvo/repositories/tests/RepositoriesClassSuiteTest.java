@@ -44,6 +44,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -224,7 +225,7 @@ public class RepositoriesClassSuiteTest {
         final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
         vdu.setVnfc(new HashSet<VNFComponent>());
         vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-        vdu.setVimInstanceName("test");
+        vdu.setVimInstanceName(Arrays.asList("test"));
         HighAvailability highAvailability = new HighAvailability();
         highAvailability.setGeoRedundancy(false);
         highAvailability.setRedundancyScheme("1:N");

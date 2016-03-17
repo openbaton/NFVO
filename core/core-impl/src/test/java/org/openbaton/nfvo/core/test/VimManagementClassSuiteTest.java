@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.core.api.VimManagement;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
@@ -94,7 +95,7 @@ public class VimManagementClassSuiteTest {
 
 
     @Test
-    public void vimManagementRefreshTest() throws VimException {
+    public void vimManagementRefreshTest() throws VimException, PluginException {
         initMocks();
         VimInstance vimInstance = createVimInstance();
         vimManagement.refresh(vimInstance);
@@ -105,7 +106,7 @@ public class VimManagementClassSuiteTest {
     }
 
     @Test
-    public void vimManagementUpdateTest() throws VimException {
+    public void vimManagementUpdateTest() throws VimException, PluginException {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -133,7 +134,7 @@ public class VimManagementClassSuiteTest {
     }
 
     @Test
-    public void nfvImageManagementAddTest() throws VimException {
+    public void nfvImageManagementAddTest() throws VimException, PluginException {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
@@ -154,7 +155,7 @@ public class VimManagementClassSuiteTest {
         Assert.assertEquals(vimInstance_exp.getNetworks().size(), vimInstance_new.getNetworks().size());
     }
 
-    private void initMocks() throws VimException {
+    private void initMocks() throws VimException, PluginException {
         Vim vim = mock(Vim.class);
         when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
         when(vimBroker.getVim(anyString())).thenReturn(vim);

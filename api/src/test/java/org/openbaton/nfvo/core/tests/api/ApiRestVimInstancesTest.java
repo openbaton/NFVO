@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.api.RestVimInstances;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
@@ -54,7 +55,7 @@ public class ApiRestVimInstancesTest {
     }
 
     @Test
-    public void createVimInstance() throws VimException {
+    public void createVimInstance() throws VimException, PluginException {
         VimInstance datacenter = new VimInstance();
         datacenter.setId("123");
         datacenter.setName("DC-1");
@@ -79,7 +80,7 @@ public class ApiRestVimInstancesTest {
     }
 
     @Test
-    public void updateVimInstance() throws VimException {
+    public void updateVimInstance() throws VimException, PluginException {
         VimInstance datacenter = new VimInstance();
         datacenter.setId("123");
         datacenter.setName("DC-1");

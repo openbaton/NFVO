@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by lto on 11/06/15.
@@ -67,10 +66,6 @@ public class VNFLifecycleOperationGranting implements org.openbaton.nfvo.core.in
                     log.debug("VimInstance: " + vdu.getVimInstanceName() + "\n VNFC: " + vdu.getVnfc() + "\nVNFCINST: " + vdu.getVnfc_instance());
                     countVDUsOnVimInstances.put(vimInstance, vdu.getVnfc().size() - vdu.getVnfc_instance().size());
                 }
-
-
-
-
             }
         }
         //Check if enough resources are available for the deployment

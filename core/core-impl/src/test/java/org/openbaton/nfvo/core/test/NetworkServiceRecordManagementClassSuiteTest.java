@@ -44,7 +44,6 @@ import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.*;
@@ -110,16 +107,22 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     }
 
     @Before
-    public void init() throws ExecutionException, InterruptedException, VimDriverException, VimException {
+    public void init() throws ExecutionException, InterruptedException, VimDriverException, VimException, PluginException {
         MockitoAnnotations.initMocks(this);
-        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), vimInstance)).thenReturn(new ArrayList<String>() {{
+        VimInstance vimInstance = createVimInstance();
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord = createVirtualNetworkFunctionDescriptor();
+        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VimInstance.class))).thenReturn(new ArrayList<String>() {{
             add("mocked_id");
         }});
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
         VNFCInstance vnfcInstance = new VNFCInstance();
         when(vim.allocate(any(VimInstance.class), any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VNFComponent.class),anyString() ,anyMap())).thenReturn(new AsyncResult<>(vnfcInstance));
-        when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(true);
+        Map<String, VimInstance> res = new HashMap<>();
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()){
+            res.put(vdu.getId(), vimInstance);
+        }
+        when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(res);
         log.info("Starting test");
     }
 
@@ -145,7 +148,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     }
 
     @Test
-    public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException {
+    public void nsrManagementDeleteTest() throws VimException, InterruptedException, ExecutionException, NamingException, NotFoundException, JMSException, WrongStatusException, PluginException {
         NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
         when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class))).thenReturn(new AsyncResult<Void>(null));
         when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
@@ -159,7 +162,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     }
 
     @Test
-    public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
+    public void nsrManagementOnboardTest1() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException, PluginException {
         final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(nsrRepository.save(any(NetworkServiceRecord.class))).thenAnswer(new Answer<NetworkServiceRecord>() {
             @Override
@@ -175,7 +178,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         }
 
     @Test
-    public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
+    public void nsrManagementOnboardTest2() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException, PluginException {
         /**
          * Initial settings
          */
@@ -213,7 +216,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     }
 
     @Test
-    public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException {
+    public void nsrManagementOnboardTest3() throws NotFoundException, InterruptedException, ExecutionException, NamingException, VimException, VimDriverException, JMSException, BadFormatException, QuotaExceededException, PluginException {
         /**
          * Initial settings
          */
