@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbaton.common.vnfm_sdk.amqp.configuration;
+package org.openbaton.common.vnfm_sdk.utils;
 
 import com.google.gson.*;
 import org.openbaton.catalogue.nfvo.Action;
@@ -41,9 +41,6 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
         switch (action){
             case "INSTANTIATE":
                 result = gson.fromJson(json, OrVnfmInstantiateMessage.class);
-                break;
-            case "GRANT_OPERATION":
-                result = gson.fromJson(json, OrVnfmGrantLifecycleOperationMessage.class);
                 break;
             case "SCALING":
                 result = gson.fromJson(json, OrVnfmScalingMessage.class);

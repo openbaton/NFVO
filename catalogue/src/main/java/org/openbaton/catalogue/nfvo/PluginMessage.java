@@ -21,14 +21,13 @@ import java.util.Collection;
 /**
  * Created by tce on 13.08.15.
  */
-public class PluginMessage implements Serializable{
+public class PluginMessage implements Serializable {
 
     private String methodName;
-
     private Class interfaceClass;
-
     private Collection<Serializable> parameters;
     private String selector;
+
 
     public String getMethodName() {
         return methodName;

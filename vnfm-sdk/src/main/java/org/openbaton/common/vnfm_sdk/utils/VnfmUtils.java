@@ -20,18 +20,22 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by lto on 23/09/15.
  */
 public class VnfmUtils {
 
-    public static NFVMessage getNfvInstantiateMessage(VirtualNetworkFunctionRecord payload) {
-        NFVMessage nfvMessage = new VnfmOrAllocateResourcesMessage(payload);
+    public static NFVMessage getNfvInstantiateMessage(VirtualNetworkFunctionRecord payload, Map<String, VimInstance> vimInstances) {
+        VnfmOrAllocateResourcesMessage nfvMessage = new VnfmOrAllocateResourcesMessage();
+        nfvMessage.setVirtualNetworkFunctionRecord(payload);
+        nfvMessage.setVimInstances(vimInstances);
         return nfvMessage;
     }
 

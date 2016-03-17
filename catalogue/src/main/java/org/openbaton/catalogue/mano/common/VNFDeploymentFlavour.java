@@ -37,7 +37,7 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
      * deployment flavour of 10k calls-per-sec of vPGW, Control-plane VDU may specify 3 VMs each with 4 GB vRAM, 2 vCPU, 32 GB
      * virtual storage, etc. Data-plane VDU may specify 2 VMs each with 8 GB vRAM, 4 vCPU, 64 GB virtual storage, etc.
      * */
-	@OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST})
+	@OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Set<CostituentVDU> costituent_vdu;
 
     public VNFDeploymentFlavour() {
