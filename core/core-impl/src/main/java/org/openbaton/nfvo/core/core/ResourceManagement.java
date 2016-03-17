@@ -23,10 +23,10 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.openbaton.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,23 +50,25 @@ import java.util.regex.Pattern;
  */
 @Service
 @Scope("prototype")
-@ConfigurationProperties(prefix = "nfvo.rabbit")
+@ConfigurationProperties
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
     //TODO get from RabbitConfiguration
     private final static String exchangeName = "openbaton-exchange";
+    private static final Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+    @Value("${nfvo.rabbit.brokerIp:127.0.0.1}")
     private String brokerIp;
     @Value("${spring.rabbitmq.username:admin}")
     private String username;
     @Value("${spring.rabbitmq.password:openbaton}")
     private String password;
+    @Value("${nfvo.ems.queue.autodelete:true}")
+    private boolean emsAutodelete;
     @Value("${nfvo.monitoring.ip:}")
     private String monitoringIp;
-    @Value("${nfvo.ems.queue.autodelete:true}")
-    private String emsAutodelete;
     @Value("${nfvo.ems.queue.heartbeat:60}")
-    private String emsHeartbeat;
-    @Value("${nfvo.ems.version:0.15-SNAPSHOT}")
+    private int emsHeartbeat;
+    @Value("${nfvo.ems.version:0.15}")
     private String emsVersion;
     @Value("${nfvo.timezone:UTC}") // set timezone=UTC if the timezone property is not set
     private String timezone;
@@ -76,15 +78,60 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     @Autowired
     private VimRepository vimInstanceRepository;
 
-    private static final Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+    public String getUsername() {
+        return username;
+    }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    public String getEmsHeartbeat() {
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getEmsHeartbeat() {
         return emsHeartbeat;
     }
 
-    public void setEmsHeartbeat(String emsHeartbeat) {
+    public void setEmsHeartbeat(int emsHeartbeat) {
         this.emsHeartbeat = emsHeartbeat;
+    }
+
+    public boolean isEmsAutodelete() {
+        return emsAutodelete;
+    }
+
+    public void setEmsAutodelete(boolean emsAutodelete) {
+        this.emsAutodelete = emsAutodelete;
+    }
+
+    public String getEmsVersion() {
+        return emsVersion;
+    }
+
+    public void setEmsVersion(String emsVersion) {
+        this.emsVersion = emsVersion;
+    }
+
+    public String getMonitoringIp() {
+        return monitoringIp;
+    }
+
+    public void setMonitoringIp(String monitoringIp) {
+        this.monitoringIp = monitoringIp;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
     public String getBrokerIp() {
@@ -116,7 +163,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                     floatingIps.put(connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
             }
             log.info("FloatingIp chosen are: " + floatingIps);
-            Future<VNFCInstance> added = vim.allocate(vimInstance,virtualDeploymentUnit, virtualNetworkFunctionRecord, component, userData, floatingIps);
+            Future<VNFCInstance> added = vim.allocate(vimInstance, virtualDeploymentUnit, virtualNetworkFunctionRecord, component, userData, floatingIps);
             instances.add(added);
         }
         List<String> ids = new ArrayList<>();
@@ -168,7 +215,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n" +
                 "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n" +
                 "apt-get update\n" +
-                "cp /usr/share/zoneinfo/"+timezone+" /etc/localtime\n"+ //synchronize the time with the timezone of the NFVO
+                "cp /usr/share/zoneinfo/" + timezone + " /etc/localtime\n" + //synchronize the time with the timezone of the NFVO
                 "apt-get install git -y\n";
 
         if (monitoringIp != null && !monitoringIp.equals("")) {
