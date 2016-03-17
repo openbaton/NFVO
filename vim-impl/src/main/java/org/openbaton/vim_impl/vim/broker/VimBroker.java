@@ -20,9 +20,13 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
+import org.openbaton.vim_impl.vim.AmazonVIM;
+import org.openbaton.vim_impl.vim.OpenstackVIM;
+import org.openbaton.vim_impl.vim.TestVIM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +92,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         return this.clientInterfaces.get(type);
     }
 
+    @Deprecated
     @Override
     public Vim getVim(String type, String name) {
         switch (type) {
@@ -103,14 +108,17 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     }
 
     @Override
-    public Vim getVim(String type) {
+    public Vim getVim(String type) throws PluginException {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", this.port);
+//                return (Vim) context.getBean("testVIM", this.port);
+                return new TestVIM(this.port);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", this.port, context);
+//                return (Vim) context.getBean("openstackVIM", this.port, context);
+                return new OpenstackVIM(this.port, context);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", this.port);
+//                return (Vim) context.getBean("amazonVIM", this.port);
+                new AmazonVIM(this.port);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -145,7 +153,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     }
 
     @Override
-    public Quota getLeftQuota(VimInstance vimInstance) throws VimException {
+    public Quota getLeftQuota(VimInstance vimInstance) throws VimException, PluginException {
         Vim vim = getVim(vimInstance.getType());
 
         Quota maximalQuota = vim.getQuota(vimInstance);
