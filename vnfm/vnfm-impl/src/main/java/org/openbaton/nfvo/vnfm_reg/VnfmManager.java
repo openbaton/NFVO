@@ -32,10 +32,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.*;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -44,7 +41,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -58,6 +54,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.*;
@@ -71,7 +68,8 @@ import java.util.concurrent.Future;
 @Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 @ConfigurationProperties
-public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO>, CommandLineRunner {
+public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware, ApplicationListener<EventFinishNFVO> {
+
     private static Map<String, Map<String, Integer>> vnfrNames;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -94,9 +92,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private VimRepository vimInstanceRepository;
     @Autowired
     private Gson gson;
-
-    @Value("${nfvo.start.ordered:}")
-    private String ordered;
+    @Value("${nfvo.start.ordered:false}")
+    private boolean ordered;
     @Value("${nfvo.vmanager.executor.maxpoolsize:30}")
     private int maxPoolSize;
     @Value("${nfvo.vmanager.executor.corepoolsize:5}")
@@ -155,78 +152,43 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         this.maxPoolSize = maxPoolSize;
     }
 
-    public String getOrdered() {
+    public boolean getOrdered() {
         return ordered;
     }
 
-    public void setOrdered(String ordered) {
+    public void setOrdered(boolean ordered) {
         this.ordered = ordered;
     }
 
     @Override
+    @PostConstruct
     public void init() {
+
+        log.debug("Running VnfmManager init");
 
         vnfrNames = new LinkedHashMap<>();
         /**
          * Asynchronous thread executor configuration
          */
-        Configuration system;
-        try {
-            system = configurationManagement.queryByName("system");
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
         this.asyncExecutor = new ThreadPoolTaskExecutor();
 
         this.asyncExecutor.setThreadNamePrefix("OpenbatonTask-");
 
-//        for (ConfigurationParameter configurationParameter : system.getConfigurationParameters()) {
-//            if (configurationParameter.getConfKey().equals("vmanager-executor-max-pool-size")) {
-//                maxPoolSize = Integer.parseInt(configurationParameter.getValue());
-//            }
-//            if (configurationParameter.getConfKey().equals("vmanager-executor-core-pool-size")) {
-//                corePoolSize = Integer.parseInt(configurationParameter.getValue());
-//            }
-//            if (configurationParameter.getConfKey().equals("vmanager-executor-queue-capacity")) {
-//                queueCapacity = Integer.parseInt(configurationParameter.getValue());
-//            }
-//            if (configurationParameter.getConfKey().equals("vmanager-keep-alive")) {
-//                keepAliveSeconds = Integer.parseInt(configurationParameter.getValue());
-//            }
-//        }
-
-//        if (maxPoolSize != 0) {
         this.asyncExecutor.setMaxPoolSize(maxPoolSize);
-//        } else {
-//            this.asyncExecutor.setMaxPoolSize(30);
-//        }
-//        if (corePoolSize != 0) {
         this.asyncExecutor.setCorePoolSize(corePoolSize);
-//        } else {
-//            this.asyncExecutor.setCorePoolSize(5);
-//        }
-//
-//        if (queueCapacity != 0) {
         this.asyncExecutor.setQueueCapacity(queueCapacity);
-//        } else {
-//            this.asyncExecutor.setQueueCapacity(0);
-//        }
-//        if (keepAliveSeconds != 0) {
         this.asyncExecutor.setKeepAliveSeconds(keepAliveSeconds);
-//        } else {
-//            this.asyncExecutor.setKeepAliveSeconds(20);
-//        }
-
 
         this.asyncExecutor.initialize();
 
+        log.debug("AsyncExecutor is: " + asyncExecutor);
+
         log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log.debug("ThreadPollTaskExecutor configuration:");
-        log.debug("MaxPoolSize = " + this.asyncExecutor.getMaxPoolSize());
-        log.debug("CorePoolSize = " + this.asyncExecutor.getCorePoolSize());
-        log.debug("QueueCapacity = " + this.asyncExecutor.getThreadPoolExecutor().getQueue().size());
-        log.debug("KeepAlive = " + this.asyncExecutor.getKeepAliveSeconds());
+        log.trace("ThreadPollTaskExecutor configuration:");
+        log.trace("MaxPoolSize = " + this.asyncExecutor.getMaxPoolSize());
+        log.trace("CorePoolSize = " + this.asyncExecutor.getCorePoolSize());
+        log.trace("QueueCapacity = " + this.asyncExecutor.getThreadPoolExecutor().getQueue().size());
+        log.trace("KeepAlive = " + this.asyncExecutor.getKeepAliveSeconds());
         log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     }
@@ -235,31 +197,45 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Async
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
 
-        vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
 
-        Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
-
-        // calculate dependencies
-        if (ordered != null && Boolean.parseBoolean(ordered)) {
+        log.debug("Ordered: " + ordered);
+        if (ordered) {
+            vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
+            log.debug("here");
+            Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
             fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
-
             vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
 
             log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
         }
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            log.debug("Processing VNFD: " + vnfd.getName());
 
-            List<VimInstance> vimInstances = new ArrayList<>();
+            Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
-            for (VirtualDeploymentUnit vdu : vnfd.getVdu())
-                vimInstances.add(vimInstanceRepository.findFirstByName(vdu.getVimInstanceName()));
+            for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+                vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
+                for (String vimInstanceName : vdu.getVimInstanceName()) {
+                    log.debug("Looking for " + vimInstanceName);
+                    vimInstances.get(vdu.getId()).add(vimInstanceRepository.findFirstByName(vimInstanceName));
+                }
+            }
+            log.debug("Found vim instances:");
+            for (Map.Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()){
+
+                if (vimInstance.getValue().size() == 0)
+                    for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
+                        vimInstance.getValue().add(vimInstance1);
+                log.debug("\t" + vimInstance.toString());
+            }
 
             //Creating the extension
             Map<String, String> extension = new HashMap<>();
             extension.put("nsr-id", networkServiceRecord.getId());
 
             // Setting extension in CoreMassage
+
 
             NFVMessage message;
             if (vnfd.getVnfPackageLocation() != null) {
@@ -329,7 +305,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         String beanName = actionName + "Task";
         log.debug("Looking for bean called: " + beanName);
         AbstractTask task = (AbstractTask) context.getBean(beanName);
-        log.debug("fin qui");
         log.debug("message: " + nfvMessage);
         task.setAction(nfvMessage.getAction());
 
@@ -355,6 +330,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
             VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage = (VnfmOrAllocateResourcesMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
+            Map<String, VimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
+            ((AllocateresourcesTask) task).setVims(vimChosen);
         } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
@@ -371,6 +348,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
             log.info("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
         }
+        log.debug("AsyncExecutor is: " + asyncExecutor);
         if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal() || nfvMessage.getAction().ordinal() == Action.UPDATEVNFR.ordinal())
             return gson.toJson(asyncExecutor.submit(task).get());
         else {
@@ -539,10 +517,11 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         }
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        init();
-    }
+//    @Override
+//    public void run(String... args) throws Exception {
+//        log.debug("Running VnfmManager init");
+//        init();
+//    }
 
     @Override
     public Map<String, Map<String, Integer>> getVnfrNames() {

@@ -38,14 +38,14 @@ public interface NetworkServiceRecordManagement {
      * validating a Network Service	Descriptor (NSD),
      * including any related VNFFGD and VLD.
      */
-    NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException;
+    NetworkServiceRecord onboard(String nsd_id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException;
 
     /**
      * This operation allows submitting and
      * validating a Network Service	Descriptor (NSD),
      * including any related VNFFGD and VLD.
      */
-    NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException;
+    NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor) throws ExecutionException, InterruptedException, VimException, NotFoundException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException;
 
     /**
      * This operation allows updating a Network
@@ -127,7 +127,7 @@ public interface NetworkServiceRecordManagement {
      * @param id
      * @param idVnf
      */
-    void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
+    void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 
     /**
      * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
@@ -137,9 +137,9 @@ public interface NetworkServiceRecordManagement {
      * @param idVdu
      * @param idVNFCI
      */
-    void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
+    void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 
     void switchToRedundantVNFCInstance(String id, String idVnf, String idVdu, String idVNFC, String standby, VNFCInstance failedVnfcInstance) throws NotFoundException, WrongStatusException;
 
-    void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException;
+    void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 }

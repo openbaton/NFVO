@@ -17,28 +17,36 @@ package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
+
+import java.util.Map;
 
 /**
  * Created by mob on 15.09.15.
  */
 public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    private Map<String, VimInstance> vimInstances;
 
     public VnfmOrAllocateResourcesMessage() {
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
-
-    public VnfmOrAllocateResourcesMessage(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
         this.action = Action.ALLOCATE_RESOURCES;
     }
 
     @Override
     public String toString() {
         return "VnfmOrAllocateResourcesMessage{" +
+                "vimInstances=" + vimInstances +
                 ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
                 '}';
+    }
+
+    public Map<String, VimInstance> getVimInstances() {
+        return vimInstances;
+    }
+
+    public void setVimInstances(Map<String, VimInstance> vimInstances) {
+        this.vimInstances = vimInstances;
     }
 
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {

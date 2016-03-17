@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,23 +36,21 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
-@EnableJpaRepositories("org.openbaton")
+@EnableJpaRepositories(value = "org.openbaton")
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
+    private static Logger log = LoggerFactory.getLogger(Application.class);
+
     public static void main(String[] args) {
-        Logger log = LoggerFactory.getLogger(Application.class);
 
-        log.info("Starting OpenBaton...");
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-
         context.registerShutdownHook();
-
-        for (String name : context.getBeanDefinitionNames())
-            log.trace(name);
     }
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
+
+        log.info("Shutting down...");
         PluginStartup.destroy();
     }
 }

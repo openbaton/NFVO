@@ -20,6 +20,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
 import org.openbaton.nfvo.repositories.NetworkRepository;
@@ -57,7 +58,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
 
     @Override
-    public VimInstance add(VimInstance vimInstance) throws VimException {
+    public VimInstance add(VimInstance vimInstance) throws VimException, PluginException {
         this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
         return vimRepository.save(vimInstance);
@@ -69,7 +70,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     @Override
-    public VimInstance update(VimInstance vimInstance, String id) throws VimException {
+    public VimInstance update(VimInstance vimInstance, String id) throws VimException, PluginException {
         vimInstance = vimRepository.save(vimInstance);
         refresh(vimInstance);
         return vimInstance;
@@ -86,7 +87,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     @Override
-    public void refresh(VimInstance vimInstance) throws VimException {
+    public void refresh(VimInstance vimInstance) throws VimException, PluginException {
         //Refreshing Images
         Set<NFVImage> images_refreshed = new HashSet<NFVImage>();
         Set<NFVImage> images_new = new HashSet<NFVImage>();
@@ -202,7 +203,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
      * @return NFVImage
      */
     @Override
-    public NFVImage addImage(String id, NFVImage image) throws VimException {
+    public NFVImage addImage(String id, NFVImage image) throws VimException, PluginException {
         image = vimRepository.addImage(id, image);
         refresh(vimRepository.findFirstById(id));
         return image;
@@ -221,7 +222,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
      * @param idImage
      */
     @Override
-    public void deleteImage(String idVim, String idImage) throws VimException {
+    public void deleteImage(String idVim, String idImage) throws VimException, PluginException {
         vimRepository.deleteImage(idVim, idImage);
         refresh(vimRepository.findFirstById(idVim));
 

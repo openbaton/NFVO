@@ -20,6 +20,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
@@ -49,7 +50,7 @@ public class RestVNFPackage {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public String onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException {
+    public String onboard(@RequestParam("file") MultipartFile file) throws IOException, VimException, NotFoundException, SQLException, PluginException {
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes);

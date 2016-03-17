@@ -20,6 +20,7 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -48,7 +49,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     private NetworkRepository networkRepository;
 
     @Override
-    public Network add(VimInstance vimInstance, Network network) throws VimException {
+    public Network add(VimInstance vimInstance, Network network) throws VimException, PluginException {
         log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
         org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
@@ -77,7 +78,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     }
 
     @Override
-    public void delete(VimInstance vimInstance, Network network) throws VimException {
+    public void delete(VimInstance vimInstance, Network network) throws VimException, PluginException {
         //Fetch Vim
         org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());
@@ -88,7 +89,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     }
 
     @Override
-    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
+    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException, PluginException {
         //Fetch Vim
         org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
         vim = vimBroker.getVim(vimInstance.getType());

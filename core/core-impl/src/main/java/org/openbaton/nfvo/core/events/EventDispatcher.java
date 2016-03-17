@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.jms.annotation.EnableJms;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ import java.io.IOException;
  */
 @Service
 @Scope
-@EnableJms
+@EnableAsync
 class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.nfvo.core.interfaces.EventDispatcher {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -58,6 +58,8 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     private EventEndpointRepository eventEndpointRepository;
     @Autowired
     private ConfigurableApplicationContext context;
+    @Autowired
+    private org.openbaton.nfvo.core.interfaces.EventManagement eventManagement;
 
     @Override
     public EventEndpoint register(String endpoint_json) {
@@ -66,8 +68,12 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     }
 
     public EventEndpoint saveEventEndpoint(EventEndpoint endpoint) {
+
         EventEndpoint save = eventEndpointRepository.save(endpoint);
         log.info("Registered event endpoint" + save);
+
+        eventManagement.removeUnreachableEndpoints();
+
         return save;
     }
 
@@ -126,6 +132,8 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
         if (eventEndpointRepository.exists(id)) {
             log.info("Removing EventEndpoint with id: " + id);
             eventEndpointRepository.delete(id);
+
+            eventManagement.removeUnreachableEndpoints();
         }
     }
 

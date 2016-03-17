@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -28,11 +29,14 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
+import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * Created by lto on 06/08/15.
@@ -47,6 +51,8 @@ public class ScalingTask extends AbstractTask {
     private VNFLifecycleOperationGranting lifecycleOperationGranting;
     @Value("${nfvo.quota.check:true}")
     private boolean checkQuota;
+    @Autowired
+    private VnfPlacementManagement vnfPlacementManagement;
 
     public boolean isCheckQuota() {
         return checkQuota;
@@ -86,9 +92,10 @@ public class ScalingTask extends AbstractTask {
 
         log.info("The component to add is: " + componentToAdd);
         if (checkQuota) {
-            if (lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord)) {
+            Map<String, VimInstance> vimInstanceMap = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
+            if (vimInstanceMap.size() == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
                 try {
-                    log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
+                    log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId())));
                 } catch (VimException e) {
                     resourceManagement.release(vdu, e.getVnfcInstance());
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
@@ -123,7 +130,7 @@ public class ScalingTask extends AbstractTask {
             }
         } else {
             try {
-                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd));
+                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName())));
             } catch (VimDriverException e) {
                 log.error(e.getLocalizedMessage());
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
