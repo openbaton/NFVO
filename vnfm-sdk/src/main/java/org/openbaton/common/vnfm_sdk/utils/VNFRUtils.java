@@ -39,7 +39,7 @@ public class VNFRUtils {
 
     private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);
 
-    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr, List<VimInstance> vimInstances) throws NotFoundException, BadFormatException {
+    public static VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord(VirtualNetworkFunctionDescriptor vnfd, String flavourKey, String nsr_id, Set<VirtualLinkRecord> vlr, Map<String, Collection<VimInstance>> vimInstances) throws NotFoundException, BadFormatException {
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
         virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
@@ -214,11 +214,13 @@ public class VNFRUtils {
 
         // TODO find a way to choose between deployment flavors and create the new one
         virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
-        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            for (VimInstance vi : vimInstances) {
-                if (virtualDeploymentUnit.getVimInstanceName().equals(vi.getName())) {
-                    if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
-                        throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+        for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
+            for (VimInstance vi : vimInstances.get(virtualDeploymentUnit.getId())) {
+                for (String name : virtualDeploymentUnit.getVimInstanceName()) {
+                    if (name.equals(vi.getName())) {
+                        if (!existsDeploymentFlavor(virtualNetworkFunctionRecord.getDeployment_flavour_key(), vi)) {
+                            throw new BadFormatException("no key " + virtualNetworkFunctionRecord.getDeployment_flavour_key() + " found in vim instance: " + vi);
+                        }
                     }
                 }
             }

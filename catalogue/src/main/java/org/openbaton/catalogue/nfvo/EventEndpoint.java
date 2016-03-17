@@ -30,13 +30,13 @@ import java.io.Serializable;
 /**
  * This class represents a Event Endpoint. When an external application want to receive events regarding a particular
  * entity it is necessary to send this object to the right URL or queue.
- *
+ * <p/>
  * This object contains:
- *  * name) must be unique, used for removing a event
- *  * type)
+ * * name) must be unique, used for removing a event
+ * * type)
  */
 @Entity
-public class EventEndpoint implements Serializable{
+public class EventEndpoint implements Serializable {
     @Id
     private String id;
     @Version
@@ -50,6 +50,40 @@ public class EventEndpoint implements Serializable{
     private EndpointType type;
     private String endpoint;
     private Action event;
+    private String description;
+    private String status;
+
+    @Override
+    public String toString() {
+        return "EventEndpoint{" +
+                "description='" + description + '\'' +
+                ", id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", networkServiceId='" + networkServiceId + '\'' +
+                ", virtualNetworkFunctionId='" + virtualNetworkFunctionId + '\'' +
+                ", type=" + type +
+                ", endpoint='" + endpoint + '\'' +
+                ", event=" + event +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getNetworkServiceId() {
         return networkServiceId;
@@ -60,9 +94,10 @@ public class EventEndpoint implements Serializable{
     }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
+
     public String getVirtualNetworkFunctionId() {
         return virtualNetworkFunctionId;
     }
@@ -117,20 +152,6 @@ public class EventEndpoint implements Serializable{
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
-    }
-
-    @Override
-    public String toString() {
-        return "EventEndpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", networkServiceId='" + networkServiceId + '\'' +
-                ", virtualNetworkFunctionId='" + virtualNetworkFunctionId + '\'' +
-                ", type=" + type +
-                ", endpoint='" + endpoint + '\'' +
-                ", event=" + event +
-                '}';
     }
 
 }
