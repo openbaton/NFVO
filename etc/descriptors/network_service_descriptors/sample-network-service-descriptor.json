@@ -1,140 +1,145 @@
 {
-  "name":"sample-NS",
-  "vendor":"Fokus",
-  "version":"0.1",
-  "vnfd":[
+  "name": "sample-NS",
+  "vendor": "Franhofer FOKUS",
+  "version": "1.1.0",
+  "vnfd": [
     {
-      "vendor":"tbr",
-      "version":"0.1",
-      "name":"server",
-      "type":"server",
-      "endpoint":"dummy",
-      "configurations":{
-        "name":"config_name",
-        "configurationParameters":[]
+      "vendor": "Franhofer FOKUS",
+      "version": "1.1.0",
+      "name": "TheServer",
+      "type": "server",
+      "endpoint": "dummy",
+      "configurations": {
+        "name": "config_name",
+        "configurationParameters": [
+          {
+            "confKey": "key1",
+            "value": "value1"
+          },
+          {
+            "confKey": "key2",
+            "value": "value2"
+          }
+        ]
       },
-      "vdu":[
+      "vdu": [
         {
-          "vm_image":[
+          "vm_image": [
             "ubuntu-14.04-server-cloudimg-amd64-disk1"
           ],
-          "vimInstanceName":"vim-instance",
-          "scale_in_out":1,
-          "vnfc":[
+          "vimInstanceName": [
+            "vim-instance"
+          ],
+          "scale_in_out": 1,
+          "vnfc": [
             {
-              "connection_point":[
+              "connection_point": [
                 {
-                  "virtual_link_reference":"private"
+                  "virtual_link_reference": "private"
                 }
               ]
             }
           ]
         }
       ],
-      "virtual_link":[
+      "virtual_link": [
         {
-          "name":"private"
+          "name": "private"
         }
       ],
-      "lifecycle_event":[
+      "lifecycle_event": [
         {
-          "event":"INSTANTIATE",
-          "lifecycle_events":[
+          "event": "INSTANTIATE",
+          "lifecycle_events": [
             "install.sh",
             "start-srv.sh"
           ]
         }
       ],
-      "deployment_flavour":[
+      "deployment_flavour": [
         {
-          "flavour_key":"m1.small"
+          "flavour_key": "m1.small"
         }
       ],
-      "vnfPackageLocation":"https://localhost/repo.git"
+      "vnfPackageLocation": "https://localhost/repo.git"
     },
     {
-      "vendor":"tbr",
-      "version":"0.1",
-      "name":"client",
-      "type":"client",
-      "endpoint":"dummy",
-      "configurations":{
-        "name":"config_name",
-        "configurationParameters":[
-
-        ]
-      },
-      "vdu":[
+      "vendor": "Fraunhofer FOKUS",
+      "version": "1.1.0",
+      "name": "TheClient",
+      "type": "client",
+      "endpoint": "dummy",
+      "vdu": [
         {
-          "vm_image":[
+          "vm_image": [
             "ubuntu-14.04-server-cloudimg-amd64-disk1"
           ],
-          "vimInstanceName":"vim-instance",
-          "scale_in_out":2,
-          "vnfc":[
+          "vimInstanceName": [
+          ],
+          "scale_in_out": 2,
+          "vnfc": [
             {
-              "connection_point":[
+              "connection_point": [
                 {
-                  "floatingIp":"random",
-                  "virtual_link_reference":"private"
+                  "floatingIp": "random",
+                  "virtual_link_reference": "private"
                 }
               ]
             },
             {
-              "connection_point":[
+              "connection_point": [
                 {
-                  "floatingIp":"random",
-                  "virtual_link_reference":"private"
+                  "floatingIp": "random",
+                  "virtual_link_reference": "private"
                 }
               ]
             }
           ]
         }
       ],
-      "virtual_link":[
+      "virtual_link": [
         {
-          "name":"private"
+          "name": "private"
         }
       ],
-      "lifecycle_event":[
+      "lifecycle_event": [
         {
-          "event":"INSTANTIATE",
-          "lifecycle_events":[
+          "event": "INSTANTIATE",
+          "lifecycle_events": [
             "install.sh"
           ]
         },
         {
-          "event":"CONFIGURE",
-          "lifecycle_events":[
+          "event": "CONFIGURE",
+          "lifecycle_events": [
             "server_start-clt.sh"
           ]
         }
       ],
-      "deployment_flavour":[
+      "deployment_flavour": [
         {
-          "flavour_key":"m1.small"
+          "flavour_key": "m1.small"
         }
       ],
-      "vnfPackageLocation":"https://localhost/repo.git"
+      "vnfPackageLocation": "https://localhost/repo.git"
     }
   ],
-  "vnffgd":[
-
+  "vnffgd": [
   ],
-  "vld":[
+  "vld": [
     {
-      "name":"private"
+      "name": "private"
     }
   ],
-  "vnf_dependency":[
+  "vnf_dependency": [
     {
-      "source":{
-        "name":"server"
+      "source": {
+        "name": "server"
       },
-      "target":{
-        "name":"client"
+      "target": {
+        "name": "client"
       },
-      "parameters":[
+      "parameters": [
         "private"
       ]
     }
