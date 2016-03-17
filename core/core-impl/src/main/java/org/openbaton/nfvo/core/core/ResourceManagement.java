@@ -163,10 +163,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             password = "openbaton";
         if (emsHeartbeat == null || emsHeartbeat.equals(""))
             emsHeartbeat = "60";
-        if (emsAutodelete == null || emsAutodelete.equals(""))
-            emsAutodelete = "true";
         if (emsVersion == null || emsVersion.equals(""))
-            emsAutodelete = "0.15-SNAPSHOT";
+            emsVersion = "0.15-SNAPSHOT";
         brokerIp = brokerIp.trim();
         if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches()) {
             throw new VimException("nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
