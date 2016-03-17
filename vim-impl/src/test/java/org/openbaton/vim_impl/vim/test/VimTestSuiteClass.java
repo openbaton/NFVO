@@ -31,6 +31,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -115,7 +116,7 @@ public class VimTestSuiteClass {
     }
 
     @Test
-    public void testVimBrokers() {
+    public void testVimBrokers() throws PluginException {
         Assert.assertNotNull(vimBroker);
         Vim testVIM = vimBroker.getVim("test");
         Assert.assertEquals(testVIM.getClass(), TestVIM.class);
