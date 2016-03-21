@@ -63,8 +63,35 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
 
     @Override
     public EventEndpoint register(String endpoint_json) {
+
         EventEndpoint endpoint = gson.fromJson(endpoint_json,EventEndpoint.class);
-        return saveEventEndpoint(endpoint);
+        if(!endpointAlreadyExists(endpoint))
+            return saveEventEndpoint(endpoint);
+        return getEndpointAlreadyRegistered(endpoint);
+    }
+
+    private boolean endpointAlreadyExists(EventEndpoint endpoint) {
+        Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
+
+        for (EventEndpoint currentEndpoint : endpoints) {
+            if(currentEndpoint.equals(endpoint)){
+                log.info("Such Endpoint already registered: "+currentEndpoint);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private EventEndpoint getEndpointAlreadyRegistered(EventEndpoint endpoint) {
+        Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
+
+        for (EventEndpoint currentEndpoint : endpoints) {
+            if(currentEndpoint.equals(endpoint)){
+                return currentEndpoint;
+            }
+        }
+        log.error("This endpoint is not already registered: "+endpoint);
+        return null;
     }
 
     public EventEndpoint saveEventEndpoint(EventEndpoint endpoint) {
