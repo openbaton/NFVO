@@ -87,6 +87,8 @@ public class GrantoperationTask extends AbstractTask {
             return nfvMessage;
         }
         else{
+            //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
+            saveVirtualNetworkFunctionRecord();
             Map<String, VimInstance> vimInstancesChosen = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
             log.debug("VimInstances chosen are: " + vimInstancesChosen);
             if (vimInstancesChosen.size() == virtualNetworkFunctionRecord.getVdu().size()) {
@@ -111,8 +113,7 @@ public class GrantoperationTask extends AbstractTask {
                 virtualNetworkFunctionRecord.setStatus(Status.ERROR);
                 saveVirtualNetworkFunctionRecord();
                 vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                OrVnfmErrorMessage nfvMessage = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
-                return nfvMessage;
+                return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, "Not enough resources for deploying VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
             }
         }
     }
