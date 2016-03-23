@@ -47,10 +47,22 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 showError(status, data);
             });
     };
+
+
+
     $scope.addVNFCItoVDU = function (vdu) {
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances',{})
+
+        $scope.connectionPoints = { "connection_point" : angular.copy(vdu.vnfc[0].connection_point)};
+        angular.forEach($scope.connectionPoints.connection_point, function(cp , index){
+            if(!angular.isUndefined(cp.id)){
+                delete cp.id;
+                delete cp.version;
+            }
+        });
+        console.log($scope.connectionPoints);
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances',$scope.connectionPoints)
             .success(function (response) {
-                showOk('Added a Virtual Network Function Component Instance to Vdu with id: '+vdu.id+'.');
+                showOk('Added a Virtual Network Function Component Instance to Vdu with id: '+ vdu.id+'.');
                 loadTable();
             })
             .error(function (data, status) {
@@ -230,6 +242,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             AuthService.logout();
         }
     }
+
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});

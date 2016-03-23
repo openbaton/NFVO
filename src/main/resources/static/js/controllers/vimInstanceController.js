@@ -6,7 +6,7 @@ angular.module('app').
         $scope.alerts = [];
         $scope.datacenter = {};
         $scope.file = '';
-
+        $scope.showPass=false;
 
         loadVIM();
 

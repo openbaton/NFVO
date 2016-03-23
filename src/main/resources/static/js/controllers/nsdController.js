@@ -436,7 +436,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
-        $('#madalLaunch').modal('show');
+        //$('#madalLaunch').modal('show');
+        $scope.launch();
     };
 
     $scope.launch = function () {

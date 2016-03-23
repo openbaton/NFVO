@@ -24,7 +24,7 @@
     <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
     <dl class="dl-horizontal">
         <span class="dl-horizontal" ng-repeat="(key,value) in vimInstance">
-            <span ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks'">
+            <span ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks' && key != 'password'">
                 <dt>{{key}}:</dt>
                 <dd>{{value}}</dd>
             </span>
@@ -34,6 +34,16 @@
                 <dd>version: {{value.version}}</dd>
                 <dd>name: {{value.name}}</dd>
             </span>
+            <span ng-if="key == 'password'">
+                 <dt>{{key}}:</dt>
+                <span ng-show="!showPass">
+                <dd>********* <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye" title="show password"> </i></a></dd>
+                </span>
+                <span ng-show="showPass">
+                    <dd>{{vimInstance.password}} <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye-slash" title="hide password"> </i></a></dd>
+                </span>
+            </span>
+
         </span>
     </dl>
 </div>
