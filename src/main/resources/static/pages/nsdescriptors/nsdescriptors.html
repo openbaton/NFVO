@@ -1291,10 +1291,10 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="dependency in nsdCreateTmp.vnf_dependency track by $index">
-                            <td>{{vnfd.type}}</td>
-                            <td>{{vnfd.name}}</td>
-                            <td>{{vnfd.endpoint}}</td>
-                            <td><a href="" ng-click="deleteVNFDfromNSD($index)"><span class="fa fa-trash"></span></a>
+                            <td>{{dependency.source.name}}</td>
+                            <td>{{dependency.target.name}}</td>
+                            <td>{{dependency.parameters}}</td>
+                            <td><a href="" ng-click="deleteDependency($index)"><span class="fa fa-trash"></span></a>
                             </td>
 
                         <tr>
@@ -1306,9 +1306,9 @@
                 <button type="button" id="closeModal" class="btn btn-default"
                         data-dismiss="modal">Close
                 </button>
-                <button ng-class="{'disabled': !containerSelected}" type="button" id="addService"
-                        class="btn btn-primary" ng-click="sendServiceToAdd(serviceContainer)">Add
-                    Services Container
+                <button type="button" id="addService"
+                        class="btn btn-primary" ng-click="sendNSDCreate()">Add
+                    Save NSD
                 </button>
             </div>
         </div>
@@ -1363,30 +1363,33 @@
                         <br/>
                         <br/>
                         <div class="row">
-                        <div class="col-lg-6">
+                            <div class="col-lg-12">
 
-                            <div class="form-group">
-                                <label for="newValue" class="col-sm-4 control-label">Parameters</label>
+                                <div class="form-group">
+                                    <label for="newValue" class="col-sm-4 control-label">Parameters</label>
 
-                                <div class="col-sm-6">
-                                    <div class="form-group input-group">
-                                        <input class="form-control" type="text" ng-model="newValue">
+                                    <div class="col-sm-6">
+                                        <div class="form-group input-group">
+                                            <input class="form-control" type="text" ng-model="newValue">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="addParam(newValue)"
                                                 ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
+                                        </div>
                                     </div>
+
                                 </div>
 
                             </div>
-
                         </div>
-                        </div>
-                        <br/>
-                        <br/>
 
+                        <ul>
+                            <li ng-repeat="par in dependency.parameters track by $index">{{par}}
+                                <a href="" ng-click="removeParam($index)"><span class="fa fa-trash"></span></a>
+                            </li>
+                        </ul>
 
                     </div>
                 </form>
@@ -1396,7 +1399,7 @@
                         data-dismiss="modal">Close
                 </button>
                 <button type="button" id=""
-                        ng-click="launch()" class="btn btn-primary">Launch the NSD
+                        ng-click="saveDependency()" class="btn btn-primary">Save Dependency
                 </button>
             </div>
 

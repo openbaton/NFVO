@@ -52,8 +52,32 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
         delete $scope.selectedVNFD;
     };
+
+    $scope.saveDependency =function(){
+        $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
+        console.log($scope.nsdCreateTmp.vnf_dependency);
+        console.log($scope.dependency);
+
+        $('#modalDependency').modal('hide');
+    };
+
     $scope.selectedVNFD;
     $scope.vnfdList = [];
+
+    $scope.dependency={};
+    $scope.dependency.parameters=[];
+
+    $scope.addParam = function(par){
+        $scope.dependency.parameters.push(par);
+    };
+
+    $scope.removeParam = function(index){
+        $scope.dependency.parameters.splice(index,1);
+    };
+
+    $scope.deleteDependency = function(index){
+        $scope.nsdCreateTmp.vnf_dependency.splice(index,1);
+    };
 
     $scope.loadVNFD = function () {
         $scope.nsdCreateTmp = {};
@@ -211,6 +235,20 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     }
 
 
+    $scope.sendNSDCreate = function (nsdCreate) {
+        $('.modal').modal('hide');
+        console.log($scope.nsdCreateTmp);
+        http.post(url, $scope.nsdCreateTmp)
+            .success(function (response) {
+                showOk('Network Service Descriptor stored!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+    };
+    
     $scope.storeNSDF = function (nsdCreate) {
         $('#modalForm').modal('hide');
         console.log(nsdCreate);
