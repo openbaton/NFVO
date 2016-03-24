@@ -1,10 +1,11 @@
 var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
-    var baseURL= $cookieStore.get('URL')+"/api/v1";
+    var baseURL = $cookieStore.get('URL') + "/api/v1";
 
-    var url = baseURL+ '/ns-descriptors';
-    var urlRecord = baseURL+ '/ns-records';
-    var urlVim = baseURL+'/datacenters';
+    var url = baseURL + '/ns-descriptors';
+    var urlRecord = baseURL + '/ns-records';
+    var urlVim = baseURL + '/datacenters';
+    var urlVNFD = baseURL + '/vnf-descriptors/';
 
     loadTable();
 
@@ -21,6 +22,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         });
 
     });
+
 
     $scope.nsdToSend = {};
     $scope.textTopologyJson = '';
@@ -45,6 +47,29 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     ];
 
     $scope.selection = [];
+
+    $scope.addTONSD = function () {
+        $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
+        delete $scope.selectedVNFD;
+    };
+    $scope.selectedVNFD;
+    $scope.vnfdList = [];
+
+    $scope.loadVNFD = function () {
+        $scope.nsdCreateTmp = {};
+        $scope.nsdCreateTmp.vnfd = [];
+        $scope.nsdCreateTmp.vnf_dependency = [];
+
+        http.get(urlVNFD)
+            .success(function (response, status) {
+                $scope.vnfdList = response;
+                console.log(response);
+                $('#modalCreateNSD').modal('show');
+            })
+            .error(function (data, status) {
+                showError(status, data);
+            });
+    };
 
     $scope.toggleSelection = function toggleSelection(image) {
         var idx = $scope.selection.indexOf(image);
@@ -154,6 +179,10 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 showError(status, JSON.stringify(data));
             });
 
+    };
+
+    $scope.deleteVNFDfromNSD = function (index) {
+        $scope.nsdCreateTmp.vnfd.splice(index, 1);
     };
 
     $scope.deleteVNFD = function (vnfd) {
@@ -458,8 +487,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 console.log(response);
 
             }).error(function (data, status) {
-                showError(status, data);
-            });
+            showError(status, data);
+        });
 
     };
 

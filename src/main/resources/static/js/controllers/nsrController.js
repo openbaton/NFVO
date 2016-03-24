@@ -1,6 +1,9 @@
 var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
-    var url = $cookieStore.get('URL') + "/api/v1/ns-records/";
+    var baseUrl = $cookieStore.get('URL')+"/api/v1/";
+    var url = baseUrl + 'ns-records/';
+    var urlVNFD = baseUrl + 'vnf-descriptors/';
+
 
     loadTable();
 
@@ -271,8 +274,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 })
                 .error(function (data, status) {
                     showError(status, data);
-                    //var destinationUrl = '#';
-                    //$window.location.href = destinationUrl;
+
                 });
         else
             http.get(url + $routeParams.nsrecordId)
