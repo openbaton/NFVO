@@ -124,50 +124,50 @@ public class OpenbatonCLI implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
+        if (!Arrays.asList(args).contains("--no-console")) {
+            ConsoleReader reader = null;
+            try {
+                reader = new ConsoleReader();
+            } catch (IOException e) {
+                log.error("Oops, Error while creating ConsoleReader");
+                exit(999);
+            }
+            String line;
+            PrintWriter out = new PrintWriter(reader.getOutput());
+            List<Completer> completors = new ArrayList<>();
+            completors.add(new StringsCompleter(helpCommandList.keySet()));
+            completors.add(new FileNameCompleter());
+            reader.addCompleter(new ArgumentCompleter(completors));
+            reader.setPrompt("\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
+            while ((line = reader.readLine()) != null) {
+                out.flush();
+                line = line.trim();
+                if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
+                    exit(0);
+                } else if (line.equalsIgnoreCase("listBeans")) {
+                    for (String name: context.getBeanDefinitionNames())
+                        System.out.println(name);
+                } else if (line.equalsIgnoreCase("cls")) {
+                    reader.clearScreen();
+                } else if (line.equalsIgnoreCase("help")) {
+                    usage();
+                } else if (line.startsWith("installPlugin ")) {
+                    installPlugin(line);
+                } else if (line.startsWith("uninstallPlugin ")) {
+                    uninstallPlugin(line);
+                } else if (line.startsWith("listPlugins")) {
+                    StringTokenizer stringTokenizer = new StringTokenizer(line);
+                    stringTokenizer.nextToken();
+                    if (stringTokenizer.hasMoreTokens()) {
+                        System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
+                    } else if (port != null && !port.equals("")) {
+                        System.out.println(listPlugins(Integer.parseInt(port)));
+                    } else System.out.println(listPlugins(15672));
 
-        ConsoleReader reader = null;
-        try {
-            reader = new ConsoleReader();
-        } catch (IOException e) {
-            log.error("Oops, Error while creating ConsoleReader");
-            exit(999);
-        }
-        String line;
-        PrintWriter out = new PrintWriter(reader.getOutput());
-        List<Completer> completors = new ArrayList<>();
-        completors.add(new StringsCompleter(helpCommandList.keySet()));
-        completors.add(new FileNameCompleter());
-        reader.addCompleter(new ArgumentCompleter(completors));
-        reader.setPrompt("\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
-        while ((line = reader.readLine()) != null) {
-            out.flush();
-            line = line.trim();
-            if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
-                log.info("Shutting down...");
-                exit(0);
-            } else if (line.equalsIgnoreCase("listBeans")) {
-                for (String name: context.getBeanDefinitionNames())
-                    System.out.println(name);
-            } else if (line.equalsIgnoreCase("cls")) {
-                reader.clearScreen();
-            } else if (line.equalsIgnoreCase("help")) {
-                usage();
-            } else if (line.startsWith("installPlugin ")) {
-                installPlugin(line);
-            } else if (line.startsWith("uninstallPlugin ")) {
-                uninstallPlugin(line);
-            } else if (line.startsWith("listPlugins")) {
-                StringTokenizer stringTokenizer = new StringTokenizer(line);
-                stringTokenizer.nextToken();
-                if (stringTokenizer.hasMoreTokens()) {
-                    System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
-                } else if (port != null && !port.equals("")) {
-                    System.out.println(listPlugins(Integer.parseInt(port)));
-                } else System.out.println(listPlugins(15672));
-
-            } else if (line.equalsIgnoreCase("")) {
-                continue;
-            } else usage();
+                } else if (line.equalsIgnoreCase("")) {
+                    continue;
+                } else usage();
+            }    
         }
     }
 
