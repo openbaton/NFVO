@@ -51,8 +51,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
         this.managementPort = managementPort;
     }
 
-    @Value("${nfvo.rabbit.management.port:}")
-    private String  managementPort;
+    @Value("${nfvo.rabbit.management.port:15672}")
+    private String managementPort;
 
     public MonitoringPluginCaller(String type) throws IOException, TimeoutException, NotFoundException {
         pluginCaller = new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672, 15672);

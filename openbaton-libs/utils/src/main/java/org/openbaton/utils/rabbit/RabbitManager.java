@@ -52,7 +52,7 @@ public class RabbitManager {
         HttpGet httpGet = new HttpGet("http://" + brokerIp + ":" + managementPort + "/api/queues/");
         httpGet.setHeader("Authorization", "Basic " + encoding);
 
-        log.debug("executing request " + httpGet.getRequestLine());
+        log.trace("executing request " + httpGet.getRequestLine());
         HttpClient httpclient = HttpClients.createDefault();
         HttpResponse response = httpclient.execute(httpGet);
         HttpEntity entity = response.getEntity();
@@ -67,7 +67,7 @@ public class RabbitManager {
                 log.trace("found queue: " + name);
             }
         //TODO check for errors
-        log.debug("found queues: "+result.toString());
+        log.trace("found queues: "+result.toString());
         return result;
     }
 

@@ -36,31 +36,30 @@ import org.springframework.stereotype.Service;
 @Scope
 public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.VnfmRegister {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private VnfmEndpointRepository vnfmManagerEndpointRepository;
-
     @Autowired
     protected Gson gson;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    protected VnfmEndpointRepository vnfmEndpointRepository;
 
     @Override
     public Iterable<VnfmManagerEndpoint> listVnfm() {
-        return this.vnfmManagerEndpointRepository.findAll();
+        return this.vnfmEndpointRepository.findAll();
     }
 
 
     protected void register(String type, String endpoint, EndpointType endpointType) {
-        this.vnfmManagerEndpointRepository.save(new VnfmManagerEndpoint(type, endpoint, endpointType));
+        this.vnfmEndpointRepository.save(new VnfmManagerEndpoint(type, endpoint, endpointType));
     }
 
     protected void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
         log.debug("Perisisting: " + endpoint);
-        for (VnfmManagerEndpoint endpointExisting : vnfmManagerEndpointRepository.findAll()){
+        for (VnfmManagerEndpoint endpointExisting : vnfmEndpointRepository.findAll()) {
             if (endpointExisting.getEndpoint().equals(endpoint.getEndpoint()) && endpointExisting.getType().equals(endpoint.getType()) && endpointExisting.getEndpointType().equals(endpoint.getEndpointType()))
                 throw new AlreadyExistingException("VnfmManagerEndpoint " + endpoint + " already exists in the DB");
         }
-        this.vnfmManagerEndpointRepository.save(endpoint);
+        endpoint.setEnabled(true);
+        this.vnfmEndpointRepository.save(endpoint);
     }
 
     @Override
@@ -75,7 +74,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     @Override
     public VnfmManagerEndpoint getVnfm(String endpoint) throws NotFoundException {
         log.trace("Looking for vnfmEndpoint endpoint: " + endpoint);
-        for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmManagerEndpointRepository.findAll()) {
+        for (VnfmManagerEndpoint vnfmManagerEndpoint : this.vnfmEndpointRepository.findAll()) {
             log.trace("" + vnfmManagerEndpoint);
             if (vnfmManagerEndpoint.getType().equals(endpoint)) {
                 return vnfmManagerEndpoint;
@@ -85,12 +84,11 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     }
 
     public void unregister(VnfmManagerEndpoint endpoint) {
-        Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmManagerEndpointRepository.findAll();
+        Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmEndpointRepository.findAll();
         for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
-//            if (vnfmManagerEndpoint.getEndpoint() != null && vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint()) && vnfmManagerEndpoint.getEndpointType().equals(endpoint.getEndpointType()) && vnfmManagerEndpoint.getType() != null && vnfmManagerEndpoint.getType().equals(endpoint.getType())) {
-            if (endpoint.getType().equals(vnfmManagerEndpoint.getType())){
+            if (endpoint.getType().equals(vnfmManagerEndpoint.getType())) {
                 log.info("Unregistered vnfm: " + endpoint.getType());
-                this.vnfmManagerEndpointRepository.delete(vnfmManagerEndpoint.getId());
+                this.vnfmEndpointRepository.delete(vnfmManagerEndpoint.getId());
                 return;
             }
         }

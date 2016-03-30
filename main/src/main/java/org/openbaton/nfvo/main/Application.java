@@ -27,6 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by lto on 16/04/15.
@@ -37,6 +38,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
 @EnableJpaRepositories(value = "org.openbaton")
+@EnableScheduling
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
     private static Logger log = LoggerFactory.getLogger(Application.class);

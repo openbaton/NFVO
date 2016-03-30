@@ -34,11 +34,43 @@ public abstract class Endpoint implements Serializable {
     protected String type;
     protected EndpointType endpointType;
     protected String endpoint;
+    protected String description;
+    protected boolean enabled;
+
+    @Override
+    public String toString() {
+        return "Endpoint{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", type='" + type + '\'' +
+                ", endpointType=" + endpointType +
+                ", endpoint='" + endpoint + '\'' +
+                ", description='" + description + '\'' +
+                ", enabled=" + enabled +
+                '}';
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
+
     public String getType() {
         return type;
     }

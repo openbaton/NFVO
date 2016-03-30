@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
+import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -23,7 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
 
 /**
  * Created by lto on 27/05/15.
@@ -33,6 +41,15 @@ import org.springframework.web.bind.annotation.*;
 public class RestRegister extends VnfmRegister {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static boolean pingHost(String host, int port, int timeout) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), timeout);
+            return true;
+        } catch (IOException e) {
+            return false; // Either timeout or unreachable or failed DNS lookup.
+        }
+    }
 
     @RequestMapping(value = "/vnfm-subscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -58,5 +75,24 @@ public class RestRegister extends VnfmRegister {
     public void removeManagerEndpoint(String endpoint) {
         log.debug("Unregistering endpoint: " + endpoint);
         this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+    }
+
+    @Scheduled(initialDelay = 15000, fixedDelay = 20000)
+    public void checkHeartBeat() throws MalformedURLException {
+        for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
+            if (endpoint.getEndpointType().ordinal() == EndpointType.REST.ordinal()) {
+                URL url = new URL(endpoint.getEndpoint());
+                if (!pingHost(url.getHost(), url.getPort(), 2)) {
+                    if (endpoint.isEnabled())
+                        log.info("Set endpoint " + endpoint.getType() + " to disabled");
+                    endpoint.setEnabled(false);
+                }
+                else {
+                    if (!endpoint.isEnabled())
+                        log.info("Set endpoint " + endpoint.getType() + " to enabled");
+                    endpoint.setEnabled(true);
+                }
+            }
+        }
     }
 }
