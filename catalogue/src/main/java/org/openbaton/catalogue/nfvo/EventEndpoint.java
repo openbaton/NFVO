@@ -154,4 +154,37 @@ public class EventEndpoint implements Serializable {
         this.endpoint = endpoint;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EventEndpoint)) return false;
+
+        EventEndpoint that = (EventEndpoint) o;
+
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getNetworkServiceId() != null ? !getNetworkServiceId().equals(that.getNetworkServiceId()) : that.getNetworkServiceId() != null)
+            return false;
+        if (getVirtualNetworkFunctionId() != null ? !getVirtualNetworkFunctionId().equals(that.getVirtualNetworkFunctionId()) : that.getVirtualNetworkFunctionId() != null)
+            return false;
+        if (getType() != that.getType()) return false;
+        if (!getEndpoint().equals(that.getEndpoint())) return false;
+        if (getEvent() != that.getEvent()) return false;
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+            return false;
+        return !(getStatus() != null ? !getStatus().equals(that.getStatus()) : that.getStatus() != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName() != null ? getName().hashCode() : 0;
+        result = 31 * result + (getNetworkServiceId() != null ? getNetworkServiceId().hashCode() : 0);
+        result = 31 * result + (getVirtualNetworkFunctionId() != null ? getVirtualNetworkFunctionId().hashCode() : 0);
+        result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + getEndpoint().hashCode();
+        result = 31 * result + (getEvent() != null ? getEvent().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+        return result;
+    }
 }

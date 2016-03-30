@@ -33,15 +33,8 @@ public class VnfmManagerEndpoint extends Endpoint {
         this.endpointType = endpointType;
     }
 
-
     @Override
     public String toString() {
-        return "VnfmManagerEndpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", type='" + type + '\'' +
-                ", endpoint='" + endpoint + '\'' +
-                ", endpointType='" + endpointType + '\'' +
-                '}';
+        return "VnfmManagerEndpoint{} " + super.toString();
     }
 }

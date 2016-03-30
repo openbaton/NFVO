@@ -29,11 +29,9 @@ public class PluginEndpoint extends Endpoint{
     @Override
     public String toString() {
         return "PluginEndpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", type='" + type + '\'' +
-                ", endpointType='" + endpointType + '\'' +
-                '}';
+                "interfaceClass='" + interfaceClass + '\'' +
+                ", interfaceVersion='" + interfaceVersion + '\'' +
+                "} " + super.toString();
     }
 
     public String getInterfaceClass() {
