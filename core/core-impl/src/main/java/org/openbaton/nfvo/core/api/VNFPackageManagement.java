@@ -364,8 +364,9 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     public void delete(String id) throws WrongAction {
         log.info("Removing VNFPackage: " + id);
         //TODO remove image in the VIM
+        Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = vnfdRepository.findAll();
         if (cascadeDelete)
-            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfdRepository.findAll())
+            for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : virtualNetworkFunctionDescriptors)
                 if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
                     if (!vnfdBelongsToNSD(virtualNetworkFunctionDescriptor)) {
                         log.info("Removing VNFDescriptor: " + virtualNetworkFunctionDescriptor.getName());
@@ -374,6 +375,10 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     } else
                         throw new WrongAction("It is not possible to remove a vnfPackage --> vnfdescriptor if the NSD is still onboarded");
                 }
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : virtualNetworkFunctionDescriptors)
+            if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
+                throw new WrongAction("It is not possible to remove the vnfPackage with id " + id + ", a VNFD referencing it is still onboarded");
+            }
         vnfPackageRepository.delete(id);
     }
 

@@ -70,7 +70,7 @@ public class RestConfiguration {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<Configuration> findAll() {
-        log.debug("Find all Configurations");
+        log.trace("Find all Configurations");
         return configurationManagement.query();
     }
 
