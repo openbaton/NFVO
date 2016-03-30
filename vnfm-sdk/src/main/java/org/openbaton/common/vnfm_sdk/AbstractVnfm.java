@@ -62,9 +62,18 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     private ExecutorService executor;
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
     @PreDestroy
     private void shutdown() {
-//        this.unregister();
     }
 
     @PostConstruct
@@ -134,6 +143,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         endpoint = (String) properties.get("endpoint");
         type = (String) properties.get("type");
         endpointType = properties.getProperty("endpoint-type", "RABBIT");
+        description = properties.getProperty("description", "");
     }
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
@@ -416,6 +426,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         loadProperties();
         vnfmManagerEndpoint = new VnfmManagerEndpoint();
         vnfmManagerEndpoint.setType(this.type);
+        vnfmManagerEndpoint.setDescription(this.description);
+        vnfmManagerEndpoint.setEnabled(true);
         vnfmManagerEndpoint.setEndpoint(this.endpoint);
         log.debug("creating VnfmManagerEndpoint for vnfm endpointType: " + this.endpointType);
         vnfmManagerEndpoint.setEndpointType(EndpointType.valueOf(this.endpointType));
