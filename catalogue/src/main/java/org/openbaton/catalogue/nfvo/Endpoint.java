@@ -36,6 +36,15 @@ public abstract class Endpoint implements Serializable {
     protected String endpoint;
     protected String description;
     protected boolean enabled;
+    protected boolean active;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     @Override
     public String toString() {
@@ -47,6 +56,7 @@ public abstract class Endpoint implements Serializable {
                 ", endpoint='" + endpoint + '\'' +
                 ", description='" + description + '\'' +
                 ", enabled=" + enabled +
+                ", active=" + active +
                 '}';
     }
 
