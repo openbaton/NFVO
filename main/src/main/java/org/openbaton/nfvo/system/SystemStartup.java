@@ -51,15 +51,16 @@ class SystemStartup implements CommandLineRunner {
     @Autowired
     private ConfigurationRepository configurationRepository;
 
-    @Value("${nfvo.plugin.active.consumers:}")
+    @Value("${nfvo.plugin.active.consumers:10}")
     private String numConsumers;
-
-    @Value("${spring.rabbitmq.username:}")
+    @Value("${spring.rabbitmq.username:admin}")
     private String username;
-    @Value("${spring.rabbitmq.password:}")
+    @Value("${spring.rabbitmq.password:openbaton}")
     private String password;
-    @Value("${nfvo.rabbit.management.port:}")
+    @Value("${nfvo.rabbit.management.port:15672}")
     private String  managementPort;
+    @Value("${nfvo.plugin.wait:true}")
+    private boolean waitForPlugin;
     @Autowired
     private VnfmManager vnfmManager;
 
@@ -120,15 +121,7 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException {
-        if (numConsumers == null || numConsumers.equals(""))
-            numConsumers = "" + 5;
-        if (username == null || username.equals(""))
-            username = "admin";
-        if (password == null || password.equals(""))
-            password = "openbaton";
-        if (managementPort == null || managementPort.equals(""))
-            managementPort = "15672";
-        PluginStartup.startPluginRecursive(folderPath, false, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort);
+        PluginStartup.startPluginRecursive(folderPath, waitForPlugin, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort);
     }
 
 }
