@@ -84,13 +84,17 @@ public class RestRegister extends VnfmRegister {
                 if (endpoint.isEnabled()) {
                     URL url = new URL(endpoint.getEndpoint());
                     if (!pingHost(url.getHost(), url.getPort(), 2)) {
-                        log.info("Set endpoint " + endpoint.getType() + " to unactive");
-                        endpoint.setActive(false);
-                        vnfmEndpointRepository.save(endpoint);
+                        if (endpoint.isActive()) {
+                            log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                            endpoint.setActive(false);
+                            vnfmEndpointRepository.save(endpoint);
+                        }
                     } else {
-                        log.info("Set endpoint " + endpoint.getType() + " to active");
-                        endpoint.setActive(true);
-                        vnfmEndpointRepository.save(endpoint);
+                        if (!endpoint.isActive()) {
+                            log.info("Set endpoint " + endpoint.getType() + " to active");
+                            endpoint.setActive(true);
+                            vnfmEndpointRepository.save(endpoint);
+                        }
                     }
                 }
             }

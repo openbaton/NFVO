@@ -83,13 +83,17 @@ public class RabbitRegister extends VnfmRegister {
                 if (endpoint.isEnabled()) {
                     try {
                         if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains("nfvo." + endpoint.getType() + ".actions")) {
-                            log.info("Set endpoint " + endpoint.getType() + " to unactive");
-                            endpoint.setActive(false);
-                            vnfmEndpointRepository.save(endpoint);
+                            if (endpoint.isActive()) {
+                                log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                                endpoint.setActive(false);
+                                vnfmEndpointRepository.save(endpoint);
+                            }
                         } else {
-                            log.info("Set endpoint " + endpoint.getType() + " to active");
-                            endpoint.setActive(true);
-                            vnfmEndpointRepository.save(endpoint);
+                            if (!endpoint.isActive()) {
+                                log.info("Set endpoint " + endpoint.getType() + " to active");
+                                endpoint.setActive(true);
+                                vnfmEndpointRepository.save(endpoint);
+                            }
                         }
                     } catch (IOException e) {
                         log.warn("Not able to list queues, probably " + brokerIp + " is not reachable.");
