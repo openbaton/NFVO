@@ -80,22 +80,20 @@ public class RabbitRegister extends VnfmRegister {
     public void checkHeartBeat() {
         for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
             if (endpoint.getEndpointType().ordinal() == EndpointType.RABBIT.ordinal()) {
-                try {
-                    if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains("nfvo." + endpoint.getType() + ".actions")) {
-                        if (endpoint.isEnabled()) {
-                            log.info("Set endpoint " + endpoint.getType() + " to disabled");
-                            endpoint.setEnabled(false);
+                if (endpoint.isEnabled()) {
+                    try {
+                        if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains("nfvo." + endpoint.getType() + ".actions")) {
+                            log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                            endpoint.setActive(false);
+                            vnfmEndpointRepository.save(endpoint);
+                        } else {
+                            log.info("Set endpoint " + endpoint.getType() + " to active");
+                            endpoint.setActive(true);
                             vnfmEndpointRepository.save(endpoint);
                         }
-                    } else {
-                        if (!endpoint.isEnabled()) {
-                            log.info("Set endpoint " + endpoint.getType() + " to enabled");
-                            endpoint.setEnabled(true);
-                            vnfmEndpointRepository.save(endpoint);
-                        }
+                    } catch (IOException e) {
+                        log.warn("Not able to list queues, probably " + brokerIp + " is not reachable.");
                     }
-                } catch (IOException e) {
-                    log.warn("Not able to list queues, probably " + brokerIp + " is not reachable.");
                 }
             }
         }

@@ -58,7 +58,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
             if (endpointExisting.getEndpoint().equals(endpoint.getEndpoint()) && endpointExisting.getType().equals(endpoint.getType()) && endpointExisting.getEndpointType().equals(endpoint.getEndpointType()))
                 throw new AlreadyExistingException("VnfmManagerEndpoint " + endpoint + " already exists in the DB");
         }
-        endpoint.setEnabled(true);
+        endpoint.setActive(true);
         this.vnfmEndpointRepository.save(endpoint);
     }
 
