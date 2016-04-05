@@ -111,6 +111,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Value("${nfvo.delete.vnfr.wait:60}")
     private int timeout;
+    @Autowired
+    private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
 
     @PostConstruct
@@ -447,6 +449,22 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         log.info("VNFD are: ");
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd())
             log.debug("\t" + virtualNetworkFunctionDescriptor.getName());
+
+        log.info("Checking if all vnfm are registered and active");
+        Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
+
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
+            boolean found = false;
+            for (VnfmManagerEndpoint endpoint : endpoints) {
+                log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
+                if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint()) && endpoint.isActive() && endpoint.isEnabled()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                throw new NotFoundException("VNFManager with endpoint: " + virtualNetworkFunctionDescriptor.getEndpoint() + " is not registered or not enable or not active.");
+        }
 
         log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
         NetworkServiceRecord networkServiceRecord;

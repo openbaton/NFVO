@@ -38,10 +38,7 @@ import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -89,6 +86,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     @Mock
     private ResourceManagement resourceManagement;
     @Mock
+    private VnfmEndpointRepository vnfmManagerEndpointRepository;
+    @Mock
     private Vim vim;
     @Mock
     private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
@@ -123,6 +122,16 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             res.put(vdu.getId(), vimInstance);
         }
         when(vnfLifecycleOperationGranting.grantLifecycleOperation(any(VirtualNetworkFunctionRecord.class))).thenReturn(res);
+
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
+            add(vnfmManagerEndpoint);
+        }});
+
         log.info("Starting test");
     }
 
@@ -174,6 +183,15 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
         }});
+
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
+            add(vnfmManagerEndpoint);
+        }});
         nsrManagement.onboard(nsd_exp);
         }
 
@@ -199,10 +217,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         event.getLifecycle_events().add("command_1");
         virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
         final VimInstance vimInstance = createVimInstance();
-//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
-//            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-//                virtualDeploymentUnit.setVimInstance(vimInstance);
-//            }
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
+            add(vnfmManagerEndpoint);
+        }});
         when(nsdRepository.findFirstById(anyString())).thenReturn(networkServiceDescriptor);
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(vimInstance);
@@ -241,14 +263,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             add(vimInstance);
         }});
 
-//        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 : networkServiceDescriptor.getVnfd())
-//            for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
-//                virtualDeploymentUnit.setVimInstance(vimInstance);
-//            }
-
-        /**
-         * Real Method
-         */
+        when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>() {{
+            VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+            vnfmManagerEndpoint.setEndpoint("test");
+            vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
+            add(vnfmManagerEndpoint);
+        }});
 
         nsrManagement.onboard(networkServiceDescriptor.getId());
     }
@@ -307,6 +329,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
     private VirtualNetworkFunctionDescriptor createVirtualNetworkFunctionDescriptor() {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+        virtualNetworkFunctionDescriptor.setType("test");
+        virtualNetworkFunctionDescriptor.setEndpoint("test");
         virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 10000)));
         virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
         virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
@@ -364,6 +388,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         HashSet<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new HashSet<VirtualNetworkFunctionRecord>();
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
         virtualNetworkFunctionRecord.setName("mocked_vnfr_name");
+        virtualNetworkFunctionRecord.setType("test");
         virtualNetworkFunctionRecord
                 .setMonitoring_parameter(new HashSet<String>() {
                     {

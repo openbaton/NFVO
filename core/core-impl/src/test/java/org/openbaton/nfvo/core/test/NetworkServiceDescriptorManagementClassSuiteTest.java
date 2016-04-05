@@ -91,6 +91,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
             vnfmManagerEndpoint.setEndpoint("test");
             vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
             add(vnfmManagerEndpoint);
         }});
     }
@@ -162,6 +164,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
             vnfmManagerEndpoint.setEndpoint("test");
             vnfmManagerEndpoint.setType("test");
+            vnfmManagerEndpoint.setActive(true);
+            vnfmManagerEndpoint.setEnabled(true);
             add(vnfmManagerEndpoint);
         }});
 
