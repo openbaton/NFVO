@@ -21,6 +21,8 @@ import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.plugin.utils.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
@@ -56,19 +58,21 @@ public class OpenbatonCLI implements CommandLineRunner {
         put("uninstallPlugin", "uninstall a plugin");
         put("listPlugins", "list all registered plugin");
         put("listBeans", "list all registered Beans");
+        put("listVnfms", "list all registered Vnfms");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
+
     private String brokerIp;
-    @Value("${spring.rabbitmq.username:}")
+    @Value("${spring.rabbitmq.username:admin}")
     private String username;
-    @Value("${spring.rabbitmq.password:}")
+    @Value("${spring.rabbitmq.password:openbaton}")
     private String password;
-    @Value("${nfvo.rabbit.management.port:}")
-    private String port;
-    @Value("${nfvo.rabbit.management.port:}")
-    private String  managementPort;
+    @Value("${nfvo.rabbit.management.port:15672}")
+    private int managementPort;
     @Autowired
     private ConfigurableApplicationContext context;
+    @Autowired
+    private VnfmEndpointRepository vnfmEndpointRepository;
 
     private static void exit(int status) {
         System.exit(status);
@@ -100,12 +104,12 @@ public class OpenbatonCLI implements CommandLineRunner {
         }
     }
 
-    public String getPort() {
-        return port;
+    public int getManagementPort() {
+        return managementPort;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setManagementPort(int managementPort) {
+        this.managementPort = managementPort;
     }
 
     public String getBrokerIp() {
@@ -145,7 +149,7 @@ public class OpenbatonCLI implements CommandLineRunner {
                 if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
                     exit(0);
                 } else if (line.equalsIgnoreCase("listBeans")) {
-                    for (String name: context.getBeanDefinitionNames())
+                    for (String name : context.getBeanDefinitionNames())
                         System.out.println(name);
                 } else if (line.equalsIgnoreCase("cls")) {
                     reader.clearScreen();
@@ -155,19 +159,31 @@ public class OpenbatonCLI implements CommandLineRunner {
                     installPlugin(line);
                 } else if (line.startsWith("uninstallPlugin ")) {
                     uninstallPlugin(line);
+                } else if (line.startsWith("listVnfms")) {
+                    listVnfms();
                 } else if (line.startsWith("listPlugins")) {
                     StringTokenizer stringTokenizer = new StringTokenizer(line);
                     stringTokenizer.nextToken();
                     if (stringTokenizer.hasMoreTokens()) {
                         System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
-                    } else if (port != null && !port.equals("")) {
-                        System.out.println(listPlugins(Integer.parseInt(port)));
-                    } else System.out.println(listPlugins(15672));
+                    } else {
+                        System.out.println(listPlugins(managementPort));
+                    }
 
                 } else if (line.equalsIgnoreCase("")) {
                     continue;
                 } else usage();
-            }    
+            }
+        }
+    }
+
+    private void listVnfms() {
+
+        String line = String.format("%20s%20s%20s", "Vnfm type", "active", "enable");
+
+        System.out.println(line);
+        for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
+            System.out.println(String.format("%20s%20s%20s", endpoint.getType(), endpoint.isActive(), endpoint.isEnabled()));
         }
     }
 
@@ -233,9 +249,7 @@ public class OpenbatonCLI implements CommandLineRunner {
             if (password == null || password.equals(""))
                 password = "openbaton";
         }
-        if (managementPort == null || managementPort.equals(""))
-            managementPort = "15672";
-        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers, username, password, managementPort);
+        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers, username, password, "" + managementPort);
         return true;
     }
 }

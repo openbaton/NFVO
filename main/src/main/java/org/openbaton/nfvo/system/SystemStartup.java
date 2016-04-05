@@ -20,7 +20,6 @@ import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.plugin.utils.PluginStartup;
-import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,15 +58,18 @@ class SystemStartup implements CommandLineRunner {
     private String password;
     @Value("${nfvo.rabbit.management.port:15672}")
     private String  managementPort;
+    @Value("${nfvo.plugin.installation-dir:./plugins}")
+    private String  pluginDir;
     @Value("${nfvo.plugin.wait:true}")
     private boolean waitForPlugin;
-    @Autowired
-    private VnfmManager vnfmManager;
+    @Value("${nfvo.plugin.install:true}")
+    private boolean installPlugin;
 
     @Override
     public void run(String... args) throws Exception {
         log.info("Initializing OpenBaton");
 
+        log.info(Arrays.asList(args).toString());
         InputStream is = new FileInputStream("/etc/openbaton/openbaton.properties");
         Properties properties = new Properties();
         properties.load(is);
@@ -113,11 +115,9 @@ class SystemStartup implements CommandLineRunner {
 
         configurationRepository.save(c);
 
-        if (Boolean.parseBoolean(properties.getProperty("install-plugin","true"))) {
-            startPlugins(properties.getProperty("plugin-installation-dir", "./plugins"));
+        if (installPlugin) {
+            startPlugins(pluginDir);
         }
-
-//        vnfmManager.init();
     }
 
     private void startPlugins(String folderPath) throws IOException {
