@@ -11,18 +11,17 @@ OpenBaton is an open source project providing a reference implementation of the 
 
 ## install the latest NFVO version from the source code
 
-The NFVO uses the Java Messaging System for communicating with the VNFMs. Therefore it is a prerequisites to have ActiveMQ up and running. To facilitate the installation procedures we provide an installation script which can be used for installing the NFVO and the prerequired libraries. Considering that this script needs to install some system libraries, it is required to execute it as super user. 
+The NFVO uses the Java Messaging System for communicating with the [Generic VNFM](http://openbaton.github.io/documentation/vnfm-generic/). Therefore it is a prerequisites to have RabbitMQ up and running in case you want to use the [Generic VNFM](http://openbaton.github.io/documentation/vnfm-generic/). To facilitate the installation procedures we provide an installation script which can be used for installing the NFVO and the prerequired libraries.
 
 ```bash
-sudo su -
-curl -fsSkL https://gitlab.fokus.fraunhofer.de/openbaton/bootstrap/raw/develop/openbaton.sh |bash
+bash <(curl -fsSkL http://get.openbaton.org/bootstrap)
 ```
 
-At the end of the installation procedure, if there are no errors, the dashboard should be reachable at: http://localhost:8080. At this point the NFVO is ready to be used. Please refer to the NFVO user guide for how to start using it. 
+At the end of the installation procedure, if there are no errors, the dashboard should be reachable at: http://localhost:8080. At this point the NFVO is ready to be used. Please refer to the [NFVO user guide](http://openbaton.github.io/documentation/) for how to start using it.
 
 ## Development
 
-Want to contribute? Great! Get in contact with us. You can find us on twitter @[openbaton]
+Want to contribute? Great! [Get in contact with us](mailto:users@openbaton.org).
 
 ## News and Website
 Information about OpenBaton can be found on our @[website]. Follow us on Twitter @[openbaton].
