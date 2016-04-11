@@ -30,11 +30,11 @@ public interface VimBroker {
 
     ClientInterfaces getClient(String type);
 
-    Vim getVim(String type, String name);
+    Vim getVim(String type, String name) throws PluginException;
 
     Vim getVim(String type) throws PluginException;
 
-    Vim getVim(String type, int port);
+    Vim getVim(String type, int port) throws PluginException;
 
     Vim getVim(String type, String name, String port);
 
