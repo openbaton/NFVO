@@ -25,6 +25,7 @@ import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.openbaton.vim_impl.vim.AmazonVIM;
+import org.openbaton.vim_impl.vim.GenericVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
 import org.openbaton.vim_impl.vim.TestVIM;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "nfvo.rabbit.management")
 public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroker {
 
-    private String port;
+    private String managementPort;
     @Value("${nfvo.vim.drivers.allowInfiniteQuota:}")
     private String allowInfiniteQuota;
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -64,19 +65,19 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         this.allowInfiniteQuota = allowInfiniteQuota;
     }
 
-    public String getPort() {
-        return port;
+    public String getManagementPort() {
+        return managementPort;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setManagementPort(String managementPort) {
+        this.managementPort = managementPort;
     }
 
     @PostConstruct
     private void init() {
-        log.debug("MANAGEMENT_PORT is: " + port);
-        if (port == null) {
-            port = "15672";
+        log.debug("MANAGEMENT_PORT is: " + managementPort);
+        if (managementPort == null) {
+            managementPort = "15672";
         }
         this.clientInterfaces = new HashMap<>();
     }
@@ -94,16 +95,16 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
     @Deprecated
     @Override
-    public Vim getVim(String type, String name) {
+    public Vim getVim(String type, String name) throws PluginException {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", type, name, this.port);
+                return (Vim) context.getBean("testVIM", type, name, this.managementPort);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", type, name, this.port, context);
+                return (Vim) context.getBean("openstackVIM", type, name, this.managementPort, context);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", type, name, this.port);
+                return (Vim) context.getBean("amazonVIM", type, name, this.managementPort);
             default:
-                throw new UnsupportedOperationException();
+                return new GenericVIM(name, type, context);
         }
     }
 
@@ -112,29 +113,29 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         switch (type) {
             case "test":
 //                return (Vim) context.getBean("testVIM", this.port);
-                return new TestVIM(this.port);
+                return new TestVIM(this.managementPort);
             case "openstack":
 //                return (Vim) context.getBean("openstackVIM", this.port, context);
-                return new OpenstackVIM(this.port, context);
+                return new OpenstackVIM(this.managementPort, context);
             case "amazon":
 //                return (Vim) context.getBean("amazonVIM", this.port);
-                return new AmazonVIM(this.port);
+                return new AmazonVIM(this.managementPort);
             default:
-                throw new UnsupportedOperationException();
+                return new GenericVIM(type, context);
         }
     }
 
     @Override
-    public Vim getVim(String type, int port) {
+    public Vim getVim(String type, int port) throws PluginException {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", port, this.port);
+                return (Vim) context.getBean("testVIM", port, this.managementPort);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", port, this.port, context);
+                return (Vim) context.getBean("openstackVIM", port, this.managementPort, context);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", port, this.port);
+                return (Vim) context.getBean("amazonVIM", port, this.managementPort);
             default:
-                throw new UnsupportedOperationException();
+                return new GenericVIM(type, "", port, this.managementPort, context);
         }
     }
 
@@ -142,11 +143,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     public Vim getVim(String type, String name, String port) {
         switch (type) {
             case "test":
-                return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port), this.port);
+                return (Vim) context.getBean("testVIM", type, name, Integer.parseInt(port), this.managementPort);
             case "openstack":
-                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port), this.port, context);
+                return (Vim) context.getBean("openstackVIM", type, name, Integer.parseInt(port), this.managementPort, context);
             case "amazon":
-                return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port), this.port);
+                return (Vim) context.getBean("amazonVIM", type, name, Integer.parseInt(port), this.managementPort);
             default:
                 throw new UnsupportedOperationException();
         }

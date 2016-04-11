@@ -39,6 +39,7 @@ import org.openbaton.plugin.utils.RabbitPluginBroker;
 import org.openbaton.vim.drivers.VimDriverCaller;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
+import org.openbaton.vim_impl.vim.GenericVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
 import org.openbaton.vim_impl.vim.TestVIM;
 import org.powermock.api.mockito.PowerMockito;
@@ -123,8 +124,8 @@ public class VimTestSuiteClass {
         Vim openstackVIM = vimBroker.getVim("openstack");
         Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
         Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
-        exception.expect(UnsupportedOperationException.class);
-        vimBroker.getVim("throw_exception");
+//        exception.expect(UnsupportedOperationException.class);
+        Assert.assertEquals(vimBroker.getVim("throw_exception").getClass(), GenericVIM.class);
     }
 
     @Test

@@ -116,9 +116,6 @@ public class VimDriverCaller extends VimDriver {
         } catch (PluginException e) {
             throw new VimDriverException(e.getMessage());
         }
-        for (Object obj : (List) res){
-            log.debug(obj.toString());
-        }
         return (List<NFVImage>) res;
     }
 
