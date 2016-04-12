@@ -64,13 +64,20 @@ class SystemStartup implements CommandLineRunner {
     private boolean waitForPlugin;
     @Value("${nfvo.plugin.install:true}")
     private boolean installPlugin;
+    @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
+    private String propFileLocation;
 
     @Override
     public void run(String... args) throws Exception {
         log.info("Initializing OpenBaton");
 
-        log.info(Arrays.asList(args).toString());
-        InputStream is = new FileInputStream("/etc/openbaton/openbaton.properties");
+        log.debug(Arrays.asList(args).toString());
+
+
+        propFileLocation = propFileLocation.replace("file:","");
+        log.debug("Property file: " + propFileLocation);
+
+        InputStream is = new FileInputStream(propFileLocation);
         Properties properties = new Properties();
         properties.load(is);
 

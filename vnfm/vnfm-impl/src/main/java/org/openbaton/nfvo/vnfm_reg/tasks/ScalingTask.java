@@ -54,6 +54,12 @@ public class ScalingTask extends AbstractTask {
     @Autowired
     private VnfPlacementManagement vnfPlacementManagement;
 
+    public void setUserdata(String userdata) {
+        this.userdata = userdata;
+    }
+
+    private String userdata;
+
     public boolean isCheckQuota() {
         return checkQuota;
     }
@@ -95,7 +101,7 @@ public class ScalingTask extends AbstractTask {
             Map<String, VimInstance> vimInstanceMap = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
             if (vimInstanceMap.size() == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
                 try {
-                    log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId())));
+                    log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId()), userdata));
                 } catch (VimException e) {
                     resourceManagement.release(vdu, e.getVnfcInstance());
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
@@ -130,7 +136,7 @@ public class ScalingTask extends AbstractTask {
             }
         } else {
             try {
-                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName())));
+                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()), userdata));
             } catch (VimDriverException e) {
                 log.error(e.getLocalizedMessage());
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);

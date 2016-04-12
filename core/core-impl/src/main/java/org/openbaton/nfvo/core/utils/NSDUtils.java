@@ -120,7 +120,6 @@ public class NSDUtils {
                 boolean fetched = false;
                 for (VimInstance vimInstance : vimInstances) {
                     if ((vimInstance.getName() != null && vimInstance.getName().equals(name)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
-//                    vdu.setVimInstances(vimInstance);
                         log.info("Found vimInstance: " + vimInstance.getName());
                         fetched = true;
                         break;

@@ -40,7 +40,7 @@ public interface ResourceManagement {
      * assignment of a virtualised resource to the VNF, as
      * indicated by the consumer functional block.
      */
-    List<String> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance) throws VimException, VimDriverException, ExecutionException, InterruptedException, VimException, PluginException;
+    Future<List<String>> allocate(VirtualDeploymentUnit virtualDeploymentUnit, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance, String userdata) throws VimException, VimDriverException, ExecutionException, InterruptedException, VimException, PluginException;
 
     /**
      * This operation allows querying a virtualised resource,
@@ -117,5 +117,5 @@ public interface ResourceManagement {
      */
     void releaseReservation(VirtualDeploymentUnit vdu);
 
-    String allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance) throws InterruptedException, ExecutionException, VimException, VimDriverException, PluginException;
+    Future<String> allocate(VirtualDeploymentUnit vdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent componentToAdd, VimInstance vimInstance, String userdata) throws InterruptedException, ExecutionException, VimException, VimDriverException, PluginException;
 }

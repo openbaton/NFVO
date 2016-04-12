@@ -102,6 +102,22 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private int queueCapacity;
     @Value("${nfvo.vmanager.executor.keepalive:20}")
     private int keepAliveSeconds;
+    @Value("${nfvo.rabbit.brokerIp:127.0.0.1}")
+    private String brokerIp;
+    @Value("${nfvo.monitoring.ip:}")
+    private String monitoringIp;
+    @Value("${nfvo.timezone:CET}")
+    private String timezone;
+    @Value("${nfvo.ems.version:0.15}")
+    private String emsVersion;
+    @Value("${spring.rabbitmq.username:admin}")
+    private String username;
+    @Value("${spring.rabbitmq.password:openbaton}")
+    private String password;
+    @Value("${nfvo.ems.queue.heartbeat:60}")
+    private String emsHeartbeat;
+    @Value("${nfvo.ems.queue.autodelete:true}")
+    private String emsAutodelete;
 
     private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list =
@@ -232,10 +248,17 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
             //Creating the extension
             Map<String, String> extension = new HashMap<>();
-            extension.put("nsr-id", networkServiceRecord.getId());
-
             // Setting extension in CoreMassage
-
+            extension.put("nsr-id", networkServiceRecord.getId());
+            extension.put("brokerIp", brokerIp);
+            extension.put("monitoringIp", monitoringIp);
+            extension.put("timezone", timezone);
+            extension.put("emsVersion", emsVersion);
+            extension.put("username", username);
+            extension.put("password", password);
+            extension.put("exchangeName", "openbaton-exchange");
+            extension.put("emsHeartbeat", emsHeartbeat);
+            extension.put("emsAutodelete", emsAutodelete);
 
             NFVMessage message;
             if (vnfd.getVnfPackageLocation() != null) {
@@ -332,6 +355,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
             Map<String, VimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
             ((AllocateresourcesTask) task).setVims(vimChosen);
+            ((AllocateresourcesTask) task).setUserData(vnfmOrAllocateResourcesMessage.getUserdata());
         } else {
             VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();

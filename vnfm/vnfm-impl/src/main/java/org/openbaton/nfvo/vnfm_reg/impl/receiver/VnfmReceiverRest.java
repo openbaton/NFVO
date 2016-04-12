@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
@@ -146,7 +147,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
         try {
             for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
-                resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, message.getVimInstances().get(virtualDeploymentUnit.getId()));
+                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc())
+                    resourceManagement.allocate(virtualDeploymentUnit, virtualNetworkFunctionRecord, vnfComponent,message.getVimInstances().get(virtualDeploymentUnit.getId()), message.getUserdata());
 
             for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
                 if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
