@@ -97,23 +97,20 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     @Autowired
     private VduRepository vduRepository;
 
-    @Value("${nfvo.delete.all-status:}")
-    private String deleteInAllStatus;
-
-    @Value("${nfvo.delete.vnfr:false}")
-    private String waitForDelete;
-
     @Autowired
     private VimRepository vimInstanceRepository;
-    @Value("${nfvo.delete.vnfr:false}")
-    private boolean removeAfterTimeout;
-    private ThreadPoolTaskExecutor asyncExecutor;
 
-    @Value("${nfvo.delete.vnfr.wait:60}")
-    private int timeout;
     @Autowired
     private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
+    private ThreadPoolTaskExecutor asyncExecutor;
+
+    @Value("${nfvo.delete.vnfr.wait.timeout:60}")
+    private int timeout;
+    @Value("${nfvo.delete.vnfr.wait:false}")
+    private boolean removeAfterTimeout;
+    @Value("${nfvo.delete.all-status:true}")
+    private boolean deleteInAllStatus;
 
     @PostConstruct
     private void init() {
@@ -586,7 +583,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
 
-        if (deleteInAllStatus != null && !deleteInAllStatus.equals("") && !Boolean.parseBoolean(deleteInAllStatus)) {
+        if (deleteInAllStatus) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())

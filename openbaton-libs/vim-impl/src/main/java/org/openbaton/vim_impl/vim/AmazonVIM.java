@@ -23,9 +23,8 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Scope("prototype")
-public class AmazonVIM extends Vim {
+public class AmazonVIM extends GenericVIM {
 
     public AmazonVIM(String name, int port, String managementPort) throws PluginException {
         super("amazon",name, port, managementPort, null);
@@ -50,6 +49,10 @@ public class AmazonVIM extends Vim {
     public AmazonVIM(int port, String managementPort) throws PluginException {
         super("amazon", managementPort, null);
     }
+
+    public AmazonVIM() {
+    }
+
     @Override
     public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
         throw new UnsupportedOperationException();

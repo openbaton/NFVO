@@ -27,7 +27,6 @@ import org.openbaton.vim.drivers.VimDriverCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,6 @@ import java.util.concurrent.TimeoutException;
  */
 @Service
 @Scope("prototype")
-@ConfigurationProperties(prefix = "nfvo.rabbit")
 public abstract class Vim implements ImageManagement, ResourceManagement, NetworkManagement, DeploymentFlavorManagement {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 

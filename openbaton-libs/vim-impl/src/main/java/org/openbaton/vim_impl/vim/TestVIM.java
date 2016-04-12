@@ -54,6 +54,10 @@ public class TestVIM extends Vim {
     public TestVIM(int port, String managementPort) throws PluginException {
         super("test", managementPort, null);
     }
+
+    public TestVIM() {
+    }
+
     @Override
     public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimException {
         throw new UnsupportedOperationException();
