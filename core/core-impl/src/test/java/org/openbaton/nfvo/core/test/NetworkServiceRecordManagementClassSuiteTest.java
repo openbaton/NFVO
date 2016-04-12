@@ -110,9 +110,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         MockitoAnnotations.initMocks(this);
         VimInstance vimInstance = createVimInstance();
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord = createVirtualNetworkFunctionDescriptor();
-        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VimInstance.class))).thenReturn(new ArrayList<String>() {{
-            add("mocked_id");
-        }});
+        when(resourceManagement.allocate(any(VirtualDeploymentUnit.class), any(VirtualNetworkFunctionRecord.class), any(VimInstance.class), anyString())).thenReturn(new AsyncResult<List<String>>(new ArrayList<String>()));
         when(vimBroker.getVim(anyString())).thenReturn(vim);
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
         VNFCInstance vnfcInstance = new VNFCInstance();
