@@ -155,6 +155,10 @@ public class PluginStartup {
     }
 
     public static void uninstallPlugin(String pluginId) {
-        processes.get(pluginId).destroy();
+        Process process = processes.get(pluginId);
+        if (process != null)
+            process.destroy();
+        else
+            log.warn("Not able to find any plugin with identifier: " + pluginId + ". Try one of the following: " + processes.keySet());
     }
 }
