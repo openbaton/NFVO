@@ -18,7 +18,10 @@ package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.exceptions.StateException;
@@ -33,6 +36,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -265,6 +270,37 @@ public class RestNetworkServiceRecord {
     public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
         NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
         return nsd.getVnf_dependency();
+    }
+
+    @RequestMapping(value = "{id}/vnfdependenciesList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public Set<DependencyObject> getVNFDependenciesList(@PathVariable("id") String id) {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+        Set<DependencyObject> result = new HashSet<>();
+        for (VNFRecordDependency vnfDependency : nsr.getVnf_dependency()) {
+            for(Map.Entry<String, VNFCDependencyParameters> entry : vnfDependency.getVnfcParameters().entrySet()){
+                for(Map.Entry<String, DependencyParameters> parameters : entry.getValue().getParameters().entrySet()){
+                    DependencyObject dependencyObject = new DependencyObject();
+                    dependencyObject.setTarget(vnfDependency.getTarget());
+                    String source = getVNFCHostname(nsr,parameters.getKey());
+                    dependencyObject.setSource(source);
+                    result.add(dependencyObject);
+                }
+            }
+        }
+        return result;
+    }
+
+    private String getVNFCHostname(NetworkServiceRecord nsr, String vnfcId) {
+        for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()){
+            for(VirtualDeploymentUnit vdu : vnfr.getVdu()){
+                for(VNFCInstance vnfcInstance : vdu.getVnfc_instance()){
+                    if(vnfcInstance.getId().equals(vnfcId))
+                        return vnfcInstance.getHostname();
+                }
+            }
+        }
+        return null;
     }
 
     @RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
