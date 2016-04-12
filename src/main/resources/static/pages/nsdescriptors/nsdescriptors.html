@@ -1059,28 +1059,12 @@
                                         <thead>
                                         <tr>
 
-                                            <th ng-click="predicate = 'name'; reverse = !reverse">name <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'type'; reverse = !reverse">type <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'version'; reverse = !reverse">version
-                                                <i
-                                                        class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'vendor'; reverse = !reverse">vendor
-                                                <i
-                                                        class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'endpoint'; reverse = !reverse">endpoint <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'endpoint'; reverse = !reverse">configurations <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-
-                                            </th>
+                                            <th>name</th>
+                                            <th>type</th>
+                                            <th>version</th>
+                                            <th>vendor</th>
+                                            <th>endpoint</th>
+                                            <th>configurations</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -1115,16 +1099,9 @@
                                         <thead>
                                         <tr>
 
-                                            <th ng-click="predicate = 'version'; reverse = !reverse">version <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vim Name
-                                                <i
-                                                        class="fa fa-sort"></i>
-                                            </th>
+                                            <th>version </th>
+                                            <th>vm image </th>
+                                            <th>vim Name</th>
                                             <!--<th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
                                                     class="fa fa-sort"></i>
                                             </th>-->
@@ -1161,12 +1138,8 @@
                                         <thead>
                                         <tr>
 
-                                            <th ng-click="predicate = 'event'; reverse = !reverse">event <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
-                                                events <i class="fa fa-sort"></i>
-                                            </th>
+                                            <th ng-click="predicate = 'event'; reverse = !reverse">event</th>
+                                            <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle events</th>
 
                                         </tr>
                                         </thead>
@@ -1189,17 +1162,9 @@
                                             id="">
                                         <thead>
                                         <tr>
-                                            <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
-                                                Constraint <i
-                                                        class="fa fa-sort"></i>
-                                            </th>
-                                            </th>
+                                            <th>Version</th>
+                                            <th>flavour key</th>
+                                            <th>df Constraint </th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -1222,15 +1187,9 @@
                                             id="">
                                         <thead>
                                         <tr>
-                                            <th ng-click="predicate = 'name'; reverse = !reverse">name <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
-                                            <th ng-click="predicate = 'qos'; reverse = !reverse">qos <i
-                                                    class="fa fa-sort"></i>
-                                            </th>
+                                            <th>name</th>
+                                            <th>extId </th>
+                                            <th>qos </th>
 
                                         </tr>
                                         </thead>
@@ -1249,7 +1208,7 @@
                     </div>
                 </form>
 
-                <div class="">
+                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
                     <hr>
                     <b>VNFDs into NSD</b>
                     <table class="table table-condensed">
@@ -1276,7 +1235,7 @@
 
                 </div>
 
-                <div class="">
+                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
                     <hr>
                     <b>Dependencies</b> <a title="add a new dependency" href="" data-target="#modalDependency"
                                            data-toggle="modal"><span class="fa fa-plus-square"></span></a>

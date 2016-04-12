@@ -26,7 +26,7 @@
                     <h2>VNF Descriptor: {{vnfdinfo.name}}</h2>
                     <dl class="dl-horizontal">
                         <spam ng-repeat="(k,v) in vnfdinfo" ng-show="v != null"
-                              ng-if="k!='vdu' && k!='deployment_flavour' ">
+                              ng-if="k!='vdu' && k!='deployment_flavour' && k!='lifecycle_event' ">
 
                             <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackage'">
                                 <dt>{{k}}</dt>
@@ -75,7 +75,7 @@
                     <tabset>
                         <tab heading="Vdu">
                             <div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
-                                <h3>Vdu</h3>
+                                <h3>Virtual Deployment Unit</h3>
                                 <table
                                         class="table table-bordered table-striped table-hover tablesorter"
                                         id="vduTabletable">
@@ -113,7 +113,11 @@
                                         <td>{{vdu.vimInstanceName}}</td>
                                         <td>{{vdu.vnfc_instance}}</td>
                                         <td>
-                                            <span ng-repeat="vnfc in vdu.vnfc"> {{vnfc.connection_point}} </span>
+                                            <ul ng-repeat="vnfc in vdu.vnfc">
+                                                <li ng-repeat="cp in vnfc.connection_point">
+                                                    <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                </li>
+                                            </ul>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -151,6 +155,37 @@
                                         <td>{{df.flavour_key}}</td>
                                         <td>
                                             {{df.df_constraint}}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </tab>
+                        <tab heading="Lifecycle Event">
+                            <div class="table-responsive" ng-show="vnfdinfo.lifecycle_event.length > 0">
+                                <h3>Lifecycle Event</h3>
+                                <table
+                                        class="table table-bordered table-striped table-hover tablesorter"
+                                        id="">
+                                    <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                                class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'event'; reverse = !reverse">event <i
+                                                class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
+                                            events <i class="fa fa-sort"></i>
+                                        </th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="le in vnfdinfo.lifecycle_event | orderBy:predicate:reverse">
+                                        <td>{{le.id}}</td>
+                                        <td>{{le.event}}</td>
+                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
                                         </td>
                                     </tr>
                                     </tbody>
