@@ -28,6 +28,7 @@ import java.util.Map;
 public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     private Map<String, VimInstance> vimInstances;
+    private String userdata;
 
     public VnfmOrAllocateResourcesMessage() {
         this.action = Action.ALLOCATE_RESOURCES;
@@ -36,9 +37,10 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
     @Override
     public String toString() {
         return "VnfmOrAllocateResourcesMessage{" +
-                "vimInstances=" + vimInstances +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                '}';
+                "virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
+                ", vimInstances=" + vimInstances +
+                ", userdata='" + ( userdata == null || userdata.equals("") ? "none" : "yes" ) + '\'' +
+                "} " + super.toString();
     }
 
     public Map<String, VimInstance> getVimInstances() {
@@ -55,5 +57,13 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
 
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    }
+
+    public void setUserdata(String userdata) {
+        this.userdata = userdata;
+    }
+
+    public String getUserdata() {
+        return userdata;
     }
 }
