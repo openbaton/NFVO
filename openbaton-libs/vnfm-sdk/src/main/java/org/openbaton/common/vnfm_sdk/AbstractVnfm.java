@@ -61,6 +61,16 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected VnfmHelper vnfmHelper;
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     private ExecutorService executor;
+    protected String brokerIp;
+    protected String monitoringIp;
+    protected String timezone;
+    protected String emsVersion;
+    protected String username;
+    protected String password;
+    protected String exchangeName;
+    protected String emsHeartbeat;
+    protected String emsAutodelete;
+
 
     public boolean isEnabled() {
         return enabled;
@@ -258,7 +268,20 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case INSTANTIATE:
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
+
+                    log.debug("Extensions are: " + extension);
+
+                    brokerIp = extension.get("brokerIp");
+                    monitoringIp = extension.get("monitoringIp");
+                    timezone = extension.get("timezone");
+                    emsVersion = extension.get("emsVersion");
+                    username = extension.get("username");
+                    password = extension.get("password");
+                    exchangeName = extension.get("exchangeName");
+                    emsHeartbeat = extension.get("emsHeartbeat");
+                    emsAutodelete = extension.get("emsAutodelete");
                     nsrId = extension.get("nsr-id");
+
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
@@ -269,7 +292,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     virtualNetworkFunctionRecord = msg.getVirtualNetworkFunctionRecord();
                     Map<String, VimInstance> vimInstanceChosen = msg.getVduVim();
 
-                            log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
+                    log.trace("VERISON IS: " + virtualNetworkFunctionRecord.getHb_version());
 
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         AllocateResources allocateResources = new AllocateResources();
@@ -499,8 +522,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             NFVMessage response;
             try {
 
-
-                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(virtualNetworkFunctionRecord, vimInstances));
+                String userData = getUserData();
+                log.debug("Userdata sent to NFVO: " + userData);
+                response = vnfmHelper.sendAndReceive(VnfmUtils.getNfvInstantiateMessage(virtualNetworkFunctionRecord, vimInstances, userData));
             } catch (Exception e) {
                 log.error("" + e.getMessage());
                 throw new VnfmSdkException("Not able to allocate Resources", e, virtualNetworkFunctionRecord);
@@ -520,6 +544,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         public VirtualNetworkFunctionRecord call() throws Exception {
             return this.allocateResources();
         }
+    }
 
+    protected String getUserData(){
+        return "#!/bin/bash\n";
     }
 }
