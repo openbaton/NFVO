@@ -91,6 +91,7 @@ public class GrantoperationTask extends AbstractTask {
             saveVirtualNetworkFunctionRecord();
             Map<String, VimInstance> vimInstancesChosen = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
             log.debug("VimInstances chosen are: " + vimInstancesChosen);
+            log.debug(vimInstancesChosen.size() + " == " + virtualNetworkFunctionRecord.getVdu().size());
             if (vimInstancesChosen.size() == virtualNetworkFunctionRecord.getVdu().size()) {
                 log.info("Finished task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
                 LifecycleEvent lifecycleEvent = new LifecycleEvent();
