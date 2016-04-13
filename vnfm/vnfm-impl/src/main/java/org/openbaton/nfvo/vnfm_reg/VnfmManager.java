@@ -247,18 +247,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             }
 
             //Creating the extension
-            Map<String, String> extension = new HashMap<>();
-            // Setting extension in CoreMassage
+            Map<String, String> extension = getExtension();
+
             extension.put("nsr-id", networkServiceRecord.getId());
-            extension.put("brokerIp", brokerIp);
-            extension.put("monitoringIp", monitoringIp);
-            extension.put("timezone", timezone);
-            extension.put("emsVersion", emsVersion);
-            extension.put("username", username);
-            extension.put("password", password);
-            extension.put("exchangeName", "openbaton-exchange");
-            extension.put("emsHeartbeat", emsHeartbeat);
-            extension.put("emsAutodelete", emsAutodelete);
 
             NFVMessage message;
             if (vnfd.getVnfPackageLocation() != null) {
@@ -282,6 +273,20 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
         }
         return new AsyncResult<>(null);
+    }
+
+    private Map<String, String> getExtension() {
+        Map<String, String> extension = new HashMap<>();
+        extension.put("brokerIp", brokerIp);
+        extension.put("monitoringIp", monitoringIp);
+        extension.put("timezone", timezone);
+        extension.put("emsVersion", emsVersion);
+        extension.put("username", username);
+        extension.put("password", password);
+        extension.put("exchangeName", "openbaton-exchange");
+        extension.put("emsHeartbeat", emsHeartbeat);
+        extension.put("emsAutodelete", emsAutodelete);
+        return extension;
     }
 
     private void fillVnfrNames(NetworkServiceDescriptor networkServiceDescriptor, Map<String, Integer> vnfrNamesWeighted) {
@@ -350,6 +355,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             virtualNetworkFunctionRecord = vnfmOrHealedMessage.getVirtualNetworkFunctionRecord();
             ((HealTask) task).setVnfcInstance(vnfmOrHealedMessage.getVnfcInstance());
             ((HealTask) task).setCause(vnfmOrHealedMessage.getCause());
+        } else if (nfvMessage.getAction().ordinal() == Action.SCALING.ordinal()) {
+            VnfmOrScalingMessage vnfmOrScalingMessage = (VnfmOrScalingMessage) nfvMessage;
+            virtualNetworkFunctionRecord = vnfmOrScalingMessage.getVirtualNetworkFunctionRecord();
+            ((ScalingTask) task).setUserdata(vnfmOrScalingMessage.getUserData());
         } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
             VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage = (VnfmOrAllocateResourcesMessage) nfvMessage;
             virtualNetworkFunctionRecord = vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
@@ -488,6 +497,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         message.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         message.setVnfPackage(vnfPackageRepository.findFirstById(virtualNetworkFunctionRecord.getPackageId()));
         message.setComponent(component);
+        message.setExtension(getExtension());
         message.setDependency(dependency);
         message.setMode(mode);
         VnfmSender vnfmSender;
@@ -540,12 +550,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             findAndSetNSRStatus(virtualNetworkFunctionRecord);
         }
     }
-
-//    @Override
-//    public void run(String... args) throws Exception {
-//        log.debug("Running VnfmManager init");
-//        init();
-//    }
 
     @Override
     public Map<String, Map<String, Integer>> getVnfrNames() {

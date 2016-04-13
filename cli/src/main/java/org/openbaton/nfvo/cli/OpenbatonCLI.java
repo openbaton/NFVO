@@ -24,7 +24,6 @@ import jline.console.completer.StringsCompleter;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.plugin.utils.PluginStartup;
-import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -196,20 +194,14 @@ public class OpenbatonCLI implements CommandLineRunner {
     }
 
     private String listPlugins(int port) {
-        try {
-            List<String> plugins = new ArrayList<>();
-            List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
-            for (String queue : queues) {
-                if (queue.startsWith("vim-driver") || queue.startsWith("monitor"))
-                    plugins.add(queue);
-            }
-            return plugins.toString();
-        } catch (RemoteException e) {
-            return e.getMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String result = "\n";
+        result += "Available plugins:\n";
+        result += String.format("%20s", "plugin name") + "\n";
+        System.out.println();
+        for (Map.Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()){
+            result += String.format("%20s",entry.getKey()) + "\n";
         }
-        return "error retrieving plugin list";
+        return result;
     }
 
     private boolean installPlugin(String line) throws IOException {

@@ -314,6 +314,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
         log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
         log.debug("ID: " + virtualDeploymentUnit.getId());
-        return new AsyncResult<>(allocateVNFC(vimInstance, virtualDeploymentUnit, virtualNetworkFunctionRecord, vim, componentToAdd, userdata));
+        String vnfc = allocateVNFC(vimInstance, virtualDeploymentUnit, virtualNetworkFunctionRecord, vim, componentToAdd, userdata);
+        return new AsyncResult<>(vnfc);
     }
 }

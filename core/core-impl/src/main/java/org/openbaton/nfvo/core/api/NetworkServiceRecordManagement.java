@@ -583,7 +583,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
         }
 
-        if (deleteInAllStatus) {
+        if (!deleteInAllStatus) {
             if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal())
                 throw new WrongStatusException("The NetworkService " + networkServiceRecord.getId() + " is in the wrong state. ( Status= " + networkServiceRecord.getStatus() + " )");
             if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal() && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())

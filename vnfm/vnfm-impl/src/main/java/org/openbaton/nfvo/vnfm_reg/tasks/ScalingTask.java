@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Created by lto on 06/08/15.
@@ -101,7 +102,8 @@ public class ScalingTask extends AbstractTask {
             Map<String, VimInstance> vimInstanceMap = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
             if (vimInstanceMap.size() == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
                 try {
-                    log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId()), userdata));
+                    Future<String> future = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId()), userdata);
+                    log.debug("Added new component with id: " + future.get());
                 } catch (VimException e) {
                     resourceManagement.release(vdu, e.getVnfcInstance());
                     virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
@@ -135,8 +137,9 @@ public class ScalingTask extends AbstractTask {
                 return errorMessage;
             }
         } else {
+            log.warn("Please consider turning the check quota (nfvo.quota.check in openbaton.properties) to true.");
             try {
-                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()), userdata));
+                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()), userdata).get());
             } catch (VimDriverException e) {
                 log.error(e.getLocalizedMessage());
                 virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);

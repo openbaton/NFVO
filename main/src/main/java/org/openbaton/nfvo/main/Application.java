@@ -51,7 +51,6 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
-
         log.info("Shutting down...");
         PluginStartup.destroy();
     }

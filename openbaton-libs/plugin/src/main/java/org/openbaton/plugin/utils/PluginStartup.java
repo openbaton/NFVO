@@ -34,6 +34,10 @@ public class PluginStartup {
 
     private static Logger log = LoggerFactory.getLogger(PluginStartup.class);
 
+    public static Map<String, Process> getProcesses() {
+        return processes;
+    }
+
     private static Map<String, Process> processes = new HashMap<>();
 
     public static void installPlugin(String name, String path, String brokerIp, String port, int consumers, String username, String password, String managementPort) throws IOException {
