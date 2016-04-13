@@ -18,6 +18,7 @@ public class VnfmOrScalingMessage extends VnfmOrMessage {
     }
 
     public VnfmOrScalingMessage() {
+        this.setAction(Action.SCALING);
     }
 
     @Override
