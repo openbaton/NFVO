@@ -82,6 +82,7 @@ public class VnfmUtils {
     public static NFVMessage getNfvScalingMessage(String userData, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         VnfmOrScalingMessage vnfmOrScalingMessage = new VnfmOrScalingMessage();
         vnfmOrScalingMessage.setUserData(userData);
+        vnfmOrScalingMessage.setAction(Action.SCALING);
         vnfmOrScalingMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         return vnfmOrScalingMessage;
     }
