@@ -23,26 +23,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Properties;
 
 /**
  * Created by mpa on 26.10.15.
  */
-public abstract class Plugin extends UnicastRemoteObject {
+public abstract class Plugin {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected Properties properties;
 
-    protected Plugin() throws RemoteException {
+    protected Plugin() {
         super();
-        loadProperties();
+//        loadProperties();
     }
 
     public void loadProperties() {
         properties = new Properties();
-        log.debug("Loading properties");
+        log.trace("Loading properties");
         try {
             properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
             if (properties.getProperty("external-properties-file") != null) {

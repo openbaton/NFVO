@@ -66,6 +66,9 @@ public class OpenstackVIM extends GenericVIM {
         super("openstack", managementPort, null);
     }
 
+    public OpenstackVIM() {
+    }
+
     @Override
     public Network update(VimInstance vimInstance, Network network) throws VimException {
         Network updatedNetwork = null;

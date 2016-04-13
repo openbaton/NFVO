@@ -19,8 +19,6 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.VimDriverException;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,14 +26,14 @@ import java.util.Set;
 /**
  * Created by lto on 12/05/15.
  */
-public interface ClientInterfaces extends Remote {
+public interface ClientInterfaces {
 
     /**
      * This version must match the version of the plugin...
      */
     String interfaceVersion = "1.0";
 
-    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws RemoteException, VimDriverException;
+    Server launchInstance(VimInstance vimInstance, String name, String image, String flavor, String keypair, Set<String> network, Set<String> secGroup, String userData) throws VimDriverException;
 
     List<NFVImage> listImages(VimInstance vimInstance) throws VimDriverException;
 
