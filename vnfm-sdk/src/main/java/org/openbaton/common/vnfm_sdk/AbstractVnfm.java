@@ -202,7 +202,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
                     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
                     log.info("Adding VNFComponent: " + component);
-                    log.debug("the mode is:" + mode);
+                    log.trace("The mode is:" + mode);
 
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
                         NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord));
