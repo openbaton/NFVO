@@ -78,4 +78,11 @@ public class VnfmUtils {
             }
         return null;
     }
+
+    public static NFVMessage getNfvScalingMessage(String userData, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+        VnfmOrScalingMessage vnfmOrScalingMessage = new VnfmOrScalingMessage();
+        vnfmOrScalingMessage.setUserData(userData);
+        vnfmOrScalingMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+        return vnfmOrScalingMessage;
+    }
 }
