@@ -61,15 +61,16 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
     protected VnfmHelper vnfmHelper;
     protected VnfmManagerEndpoint vnfmManagerEndpoint;
     private ExecutorService executor;
-    protected String brokerIp;
-    protected String monitoringIp;
-    protected String timezone;
-    protected String emsVersion;
-    protected String username;
-    protected String password;
-    protected String exchangeName;
-    protected String emsHeartbeat;
-    protected String emsAutodelete;
+    protected static String brokerIp;
+    protected static String monitoringIp;
+    protected static String timezone;
+    protected static String emsVersion;
+    protected static String username;
+    protected static String password;
+    protected static String exchangeName;
+    protected static String emsHeartbeat;
+    protected static String emsAutodelete;
+    protected static String nsrId;
 
 
     public boolean isEnabled() {
@@ -169,10 +170,10 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
     protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
 
-        String nsrId = "";
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
-        try {
 
+        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
+
+        try {
             log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + message.getAction() + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             log.trace("VNFM: Received Message: " + message.getAction());
             NFVMessage nfvMessage = null;
@@ -190,6 +191,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                 case SCALE_OUT:
 
                     scalingMessage = (OrVnfmScalingMessage) message;
+                    // TODO I don't know if, using a bean of this class the instance can be destroyed and recreated and parameters could be lost
+                    getExtension(scalingMessage.getExtension());
 
                     nsrId = scalingMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
                     virtualNetworkFunctionRecord = scalingMessage.getVirtualNetworkFunctionRecord();
@@ -201,10 +204,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     log.info("Adding VNFComponent: " + component);
                     log.debug("the mode is:" + mode);
 
-
                     if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
-
-                        NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvMessage(Action.SCALING, virtualNetworkFunctionRecord));
+                        NFVMessage message2 = vnfmHelper.sendAndReceive(VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord));
                         if (message2 instanceof OrVnfmGenericMessage) {
                             OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
                             virtualNetworkFunctionRecord = message1.getVnfr();
@@ -269,18 +270,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
 
-                    log.debug("Extensions are: " + extension);
-
-                    brokerIp = extension.get("brokerIp");
-                    monitoringIp = extension.get("monitoringIp");
-                    timezone = extension.get("timezone");
-                    emsVersion = extension.get("emsVersion");
-                    username = extension.get("username");
-                    password = extension.get("password");
-                    exchangeName = extension.get("exchangeName");
-                    emsHeartbeat = extension.get("emsHeartbeat");
-                    emsAutodelete = extension.get("emsAutodelete");
-                    nsrId = extension.get("nsr-id");
+                    getExtension(extension);
 
                     virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
                     GrantOperation grantOperation = new GrantOperation();
@@ -365,6 +355,21 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
             }
             vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId));
         }
+    }
+
+    private void getExtension(Map<String, String> extension) {
+        log.debug("Extensions are: " + extension);
+
+        brokerIp = extension.get("brokerIp");
+        monitoringIp = extension.get("monitoringIp");
+        timezone = extension.get("timezone");
+        emsVersion = extension.get("emsVersion");
+        username = extension.get("username");
+        password = extension.get("password");
+        exchangeName = extension.get("exchangeName");
+        emsHeartbeat = extension.get("emsHeartbeat");
+        emsAutodelete = extension.get("emsAutodelete");
+        nsrId = extension.get("nsr-id");
     }
 
     private void checkEMS(String vduHostname) {

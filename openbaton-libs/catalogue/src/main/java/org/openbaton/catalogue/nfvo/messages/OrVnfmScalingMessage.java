@@ -8,6 +8,8 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
+import java.util.Map;
+
 /**
  * Created by lto on 13/10/15.
  */
@@ -20,8 +22,29 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     private VNFRecordDependency dependency;
     private String mode;
+    private Map<String, String> extension;
 
+    @Override
+    public String toString() {
+        return "OrVnfmScalingMessage{" +
+                "component=" + component +
+                ", vnfcInstance=" + vnfcInstance +
+                ", vimInstance=" + vimInstance +
+                ", vnfPackage=" + vnfPackage +
+                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
+                ", dependency=" + dependency +
+                ", mode='" + mode + '\'' +
+                ", extension=" + extension +
+                "} " + super.toString();
+    }
 
+    public Map<String, String> getExtension() {
+        return extension;
+    }
+
+    public void setExtension(Map<String, String> extension) {
+        this.extension = extension;
+    }
 
     public VNFPackage getVnfPackage() {
         return vnfPackage;
@@ -62,6 +85,7 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
         this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
+
     public String getMode() {
         return mode;
     }
@@ -78,18 +102,5 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
         this.dependency = dependency;
     }
 
-
-    @Override
-    public String toString() {
-        return "OrVnfmScalingMessage{" +
-                "component=" + component +
-                ", vnfcInstance=" + vnfcInstance +
-                ", vimInstance=" + vimInstance +
-                ", mode="+mode+
-                ", vnfPackage=" + (vnfPackage == null ? vnfPackage : vnfPackage.getName()) +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", dependency=" + dependency +
-                '}';
-    }
 
 }
