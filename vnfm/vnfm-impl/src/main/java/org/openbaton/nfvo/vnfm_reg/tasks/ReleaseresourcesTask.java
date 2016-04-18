@@ -37,7 +37,7 @@ public class ReleaseresourcesTask extends AbstractTask {
 
     @Override
     protected NFVMessage doWork() throws Exception {
-        log.info("Released resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+        log.info("Release resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 
         saveVirtualNetworkFunctionRecord();
 

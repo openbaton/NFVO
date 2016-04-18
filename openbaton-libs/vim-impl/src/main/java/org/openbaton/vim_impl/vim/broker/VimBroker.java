@@ -46,15 +46,20 @@ import java.util.List;
  */
 @Service
 @Scope
-@ConfigurationProperties(prefix = "nfvo.rabbit.management")
+@ConfigurationProperties
 public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroker {
 
+    @Value("${nfvo.rabbit.management.port:15672}")
     private String managementPort;
-    @Value("${nfvo.vim.drivers.allowInfiniteQuota:}")
+
+    @Value("${nfvo.vim.drivers.allowInfiniteQuota:false}")
     private String allowInfiniteQuota;
+
     private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private ConfigurableApplicationContext context;
+
     private HashMap<String, ClientInterfaces> clientInterfaces;
 
     public String getAllowInfiniteQuota() {
@@ -75,10 +80,6 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
     @PostConstruct
     private void init() {
-        log.debug("MANAGEMENT_PORT is: " + managementPort);
-        if (managementPort == null) {
-            managementPort = "15672";
-        }
         this.clientInterfaces = new HashMap<>();
     }
 

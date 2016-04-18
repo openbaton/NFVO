@@ -69,8 +69,10 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     protected VnfmRegister vnfmRegister;
     protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
     protected VNFRecordDependency dependency;
+
     @Autowired
     protected VNFRRepository vnfrRepository;
+
     @Autowired
     protected VnfmManager vnfmManager;
     @Autowired
@@ -178,6 +180,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     protected void changeStatus() {
         log.debug("Action is: " + action);
         Status status = virtualNetworkFunctionRecord.getStatus();
+        log.debug("Previous status is: " + status);
         switch (action) {
             case ALLOCATE_RESOURCES:
                 status = Status.NULL;

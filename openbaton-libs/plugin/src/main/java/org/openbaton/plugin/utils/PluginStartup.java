@@ -33,12 +33,11 @@ import java.util.Map;
 public class PluginStartup {
 
     private static Logger log = LoggerFactory.getLogger(PluginStartup.class);
+    private static Map<String, Process> processes = new HashMap<>();
 
     public static Map<String, Process> getProcesses() {
         return processes;
     }
-
-    private static Map<String, Process> processes = new HashMap<>();
 
     public static void installPlugin(String name, String path, String brokerIp, String port, int consumers, String username, String password, String managementPort) throws IOException {
         List<String> queues = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
@@ -72,7 +71,7 @@ public class PluginStartup {
             }
             queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
             waitTime--;
-            if (waitTime == 0){
+            if (waitTime == 0) {
                 log.error("After 30 seconds the plugin is not started.");
             }
         }
@@ -121,8 +120,9 @@ public class PluginStartup {
                 }
                 queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
                 waitTime--;
-                if (waitTime == 0){
+                if (waitTime == 0) {
                     log.error("After 15 seconds the plugin is not started.");
+                    break;
                 }
             }
             for (String pluginId : queuesNew) {
@@ -130,8 +130,7 @@ public class PluginStartup {
                     processes.put(pluginId, p);
                 }
             }
-        }
-        else
+        } else
             processes.put(path, p);
     }
 

@@ -56,6 +56,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	 **/
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected Set<VNFForwardingGraphDescriptor> vnffgd;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	protected Set<VirtualLinkDescriptor> vld;
 

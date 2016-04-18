@@ -48,7 +48,8 @@ public class ErrorTask extends AbstractTask {
 
         if (log.isDebugEnabled()){
             log.error("ERROR from VNFM: ", this.getException());
-        }else log.error("ERROR from VNFM: " + this.getException().getMessage());
+        }else
+            log.error("ERROR from VNFM: " + this.getException().getMessage());
 
         if (virtualNetworkFunctionRecord != null) {
             try {
@@ -68,6 +69,7 @@ public class ErrorTask extends AbstractTask {
             log.debug("Setting the NSR " + networkServiceRecord.getName() + " in state ERROR");
             networkServiceRecordRepository.save(networkServiceRecord);
         }
+
         return null;
     }
 

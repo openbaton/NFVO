@@ -630,8 +630,11 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         public void run() {
             try {
                 Thread.sleep(timeout * 1000);
-                if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId()))
+                if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
+                    virtualNetworkFunctionRecord = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+                    log.debug("Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
                     vnfmManager.terminate(virtualNetworkFunctionRecord);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

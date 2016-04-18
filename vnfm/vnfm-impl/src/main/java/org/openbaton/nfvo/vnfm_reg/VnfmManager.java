@@ -333,7 +333,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         String beanName = actionName + "Task";
         log.debug("Looking for bean called: " + beanName);
         AbstractTask task = (AbstractTask) context.getBean(beanName);
-        log.debug("message: " + nfvMessage);
+        log.trace("message: " + nfvMessage);
         task.setAction(nfvMessage.getAction());
 
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
@@ -381,12 +381,24 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
             log.info("Executing Task " + beanName + " for vnfr " + virtualNetworkFunctionRecord.getName() + ". Cyclic=" + virtualNetworkFunctionRecord.hasCyclicDependency());
         }
-        log.debug("AsyncExecutor is: " + asyncExecutor);
-        if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal() || nfvMessage.getAction().ordinal() == Action.GRANT_OPERATION.ordinal() || nfvMessage.getAction().ordinal() == Action.SCALING.ordinal() || nfvMessage.getAction().ordinal() == Action.UPDATEVNFR.ordinal())
+        log.trace("AsyncExecutor is: " + asyncExecutor);
+        if (isaReturningTask(nfvMessage.getAction()))
             return gson.toJson(asyncExecutor.submit(task).get());
         else {
             asyncExecutor.submit(task);
             return null;
+        }
+    }
+
+    private boolean isaReturningTask(Action action) {
+        switch (action) {
+            case ALLOCATE_RESOURCES:
+            case GRANT_OPERATION:
+            case SCALING:
+            case UPDATEVNFR:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -565,9 +577,10 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     @Override
     public void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        AbstractTask task = new ReleaseresourcesTask();
+        ReleaseresourcesTask task = (ReleaseresourcesTask) context.getBean("releaseresourcesTask");
         task.setAction(Action.RELEASE_RESOURCES);
         task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+
         this.asyncExecutor.submit(task);
     }
 }
