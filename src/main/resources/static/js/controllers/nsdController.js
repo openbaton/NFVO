@@ -75,14 +75,26 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.dependency.parameters.splice(index,1);
     };
 
+    $scope.addVld = function(vld){
+        $scope.nsdCreateTmp.vld.push({'name':vld});
+    };
+
+    $scope.removeVld = function(index){
+        $scope.nsdCreateTmp.vld.splice(index,1);
+    };
+
     $scope.deleteDependency = function(index){
         $scope.nsdCreateTmp.vnf_dependency.splice(index,1);
     };
 
     $scope.loadVNFD = function () {
         $scope.nsdCreateTmp = {};
+        $scope.nsdCreateTmp.name = '';
+        $scope.nsdCreateTmp.vendor = '';
+        $scope.nsdCreateTmp.version = '';
         $scope.nsdCreateTmp.vnfd = [];
         $scope.nsdCreateTmp.vnf_dependency = [];
+        $scope.nsdCreateTmp.vld =[];
 
         http.get(urlVNFD)
             .success(function (response, status) {
