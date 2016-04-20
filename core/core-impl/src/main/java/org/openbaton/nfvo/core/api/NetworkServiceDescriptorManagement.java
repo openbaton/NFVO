@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.api;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -91,6 +92,14 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
         nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+            if (vnfd.getLifecycle_event() != null)
+                for (LifecycleEvent event : vnfd.getLifecycle_event()) {
+                    if (event == null) {
+                        throw new NotFoundException("LifecycleEvent is null");
+                    } else if (event.getEvent() == null) {
+                        throw new NotFoundException("Event in one LifecycleEvent does not exist");
+                    }
+                }
             if (vnfd.getEndpoint() == null)
                 vnfd.setEndpoint(vnfd.getType());
             if (vnfd.getVnfPackageLocation() != null) {
