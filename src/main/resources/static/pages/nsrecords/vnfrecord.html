@@ -116,12 +116,12 @@
                                             <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
 
 
-                                                    <dl class="dl-horizontal dl-table" >
+                                                    <dl class="dl-horizontal dl-table">
                                                         <dt>hostname</dt>
                                                         <dd>{{vnfci.hostname}}</dd>
 
                                                         <dt>floatingIps</dt>
-                                                        <dd title="netName"  ng-repeat="fip in vnfci.floatingIps">
+                                                        <dd title="netName" ng-repeat="fip in vnfci.floatingIps">
                                                             <li>{{fip.netName}}: {{fip.ip}}</li>
                                                         </dd>
 
@@ -135,13 +135,13 @@
                                                         </dd>
 
 
-                                                <dt>ips</dt>
-                                                <dd>
+                                                        <dt>ips</dt>
+                                                        <dd>
                                                     <span ng-repeat="ips in vnfci.ips">
                                                     <li title="netName">{{ips.netName}}: {{ips.ip}}</li>
                                                 </span>
-                                                </dd>
-                                                </dl>
+                                                        </dd>
+                                                    </dl>
                                             </span>
                                     </td>
                                     <td>
@@ -163,7 +163,7 @@
                                             <button type="button" class="btn btn-default disabled">
                                                 {{vdu.vnfc_instance.length}}
                                             </button>
-                                            <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vdu)">
+                                            <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vnfr, vdu)">
                                                 +
                                             </button>
                                         </div>
@@ -280,3 +280,77 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="col-lg-offset-1">
+                    <div class="form-group ">
+                        <div class="form-group col-sm-4">
+                            <label class=" control-label">Virtual link reference</label>
+
+                            <div class="">
+                                <select name="typeSelect" class="form-control modal-select"
+                                        ng-model="connection_point.virtual_link_reference"
+
+                                        ng-options="vl.name as vl.name for vl in vnfrSelected.virtual_link | orderBy:'name':false"
+                                        ng-change="">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-1" > </div>
+                        <div class="input-group col-sm-4" >
+                        <label for="floatingIp" class="control-label">floatingIp</label>
+
+                            <input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                   ng-model="connection_point.floatingIp"/>
+
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="addCPtoVNFCI()" type="button"
+                                    title="Add this Connection Point to VNFCI" ng-style="{'margin-top':'25px'}">
+                                <span class="fa fa-plus" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                        </div>
+                    </div>
+                    </div>
+                    <table
+                            class="table table-bordered table-striped table-hover tablesorter"
+                            id="" ng-if="connection_points.length > 0">
+                        <thead>
+                        <tr>
+
+                            <th>Virtual link reference</th>
+                            <th>floatingIp</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="cp in connection_points track by $index | orderBy:predicate:reverse">
+                            <td>{{cp.virtual_link_reference}}</td>
+                            <td>{{cp.floatingIp}}</td>
+                            <td>
+                                <a href="" ng-click="removeCPtoVNFCI($index)"><span class="fa fa-trash"></span></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()">Add Instance</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

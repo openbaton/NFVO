@@ -1,6 +1,6 @@
 var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
 
-    var baseUrl = $cookieStore.get('URL')+"/api/v1/";
+    var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + 'ns-records/';
     var urlVNFD = baseUrl + 'vnf-descriptors/';
 
@@ -20,7 +20,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     ];
 
     $scope.addVNFCI = function (data) {
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances',{})
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances', {})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -43,7 +43,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.removeVNFCItoVDU = function (vdu) {
         http.delete(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances')
             .success(function (response) {
-                showOk('Removed the Virtual Network Function Component Instance to Vdu with id: '+vdu.id+'.');
+                showOk('Removed the Virtual Network Function Component Instance to Vdu with id: ' + vdu.id + '.');
                 loadTable();
             })
             .error(function (data, status) {
@@ -51,21 +51,39 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
     };
 
+    $scope.addCPtoVNFCI = function () {
+        $scope.connection_points.push(angular.copy($scope.connection_point));
+    };
+    $scope.removeCPtoVNFCI = function (index) {
+        $scope.connection_points.splice(index, 1);
+    };
 
+    $scope.connection_points = [];
+    $scope.connection_point = {
+        "floatingIp": "",
+        "virtual_link_reference": "private"
+    };
+    $scope.addVNFCItoVDU = function (vnfr, vdu) {
 
-    $scope.addVNFCItoVDU = function (vdu) {
-
-        $scope.connectionPoints = { "connection_point" : angular.copy(vdu.vnfc[0].connection_point)};
-        angular.forEach($scope.connectionPoints.connection_point, function(cp , index){
-            if(!angular.isUndefined(cp.id)){
+        $scope.vduSelected = angular.copy(vdu);
+        $scope.vnfrSelected = angular.copy(vnfr);
+        $('#addVNFCItoVDU').modal('show');
+        /*$scope.connectionPoints = {"connection_point": angular.copy(vdu.vnfc[0].connection_point)};
+        angular.forEach($scope.connectionPoints.connection_point, function (cp, index) {
+            if (!angular.isUndefined(cp.id)) {
                 delete cp.id;
                 delete cp.version;
             }
         });
-        console.log($scope.connectionPoints);
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + vdu.id + '/vnfcinstances',$scope.connectionPoints)
+        console.log($scope.connectionPoints);*/
+
+    };
+
+    $scope.addCPtoVDU = function () {
+        console.log($scope.connection_points);
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances',  {"connection_point":$scope.connection_points})
             .success(function (response) {
-                showOk('Added a Virtual Network Function Component Instance to Vdu with id: '+ vdu.id+'.');
+                showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
                 loadTable();
             })
             .error(function (data, status) {
@@ -260,8 +278,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 console.log(response);
 
             }).error(function (data, status) {
-                showError(data, status);
-            });
+            showError(data, status);
+        });
 
     };
 
