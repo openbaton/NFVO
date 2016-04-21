@@ -53,7 +53,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         delete $scope.selectedVNFD;
     };
 
-    $scope.saveDependency =function(){
+    $scope.saveDependency = function () {
         $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
         console.log($scope.nsdCreateTmp.vnf_dependency);
         console.log($scope.dependency);
@@ -64,29 +64,50 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.selectedVNFD;
     $scope.vnfdList = [];
 
-    $scope.dependency={};
-    $scope.dependency.parameters=[];
+    $scope.dependency = {};
+    $scope.dependency.parameters = [];
 
-    $scope.addParam = function(par){
+    $scope.addParam = function (par) {
         $scope.dependency.parameters.push(par);
     };
 
-    $scope.removeParam = function(index){
-        $scope.dependency.parameters.splice(index,1);
+    $scope.removeParam = function (index) {
+        $scope.dependency.parameters.splice(index, 1);
     };
 
-    $scope.addVld = function(vld){
-        $scope.nsdCreateTmp.vld.push({'name':vld});
+    $scope.addVld = function (vld) {
+        $scope.nsdCreateTmp.vld.push({'name': vld});
     };
 
-    $scope.removeVld = function(index){
-        $scope.nsdCreateTmp.vld.splice(index,1);
+    $scope.removeVld = function (index) {
+        $scope.nsdCreateTmp.vld.splice(index, 1);
     };
 
-    $scope.deleteDependency = function(index){
-        $scope.nsdCreateTmp.vnf_dependency.splice(index,1);
+    $scope.deleteDependency = function (index) {
+        $scope.nsdCreateTmp.vnf_dependency.splice(index, 1);
     };
 
+    $scope.isArray = function (obj) {
+        if (angular.isArray(obj) || angular.isObject(obj))
+            return false;
+        else
+            return true;
+    };
+    $scope.edit = function (obj) {
+        $scope.editObj = obj;
+    };
+
+    $scope.updateObj = function () {
+        http.put(url + '/' + $scope.editObj.id, $scope.editObj)
+            .success(function (response) {
+                showOk('Network Service Descriptor updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+    };
     $scope.loadVNFD = function () {
         $scope.nsdCreateTmp = {};
         $scope.nsdCreateTmp.name = '';
@@ -94,7 +115,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.nsdCreateTmp.version = '';
         $scope.nsdCreateTmp.vnfd = [];
         $scope.nsdCreateTmp.vnf_dependency = [];
-        $scope.nsdCreateTmp.vld =[];
+        $scope.nsdCreateTmp.vld = [];
 
         http.get(urlVNFD)
             .success(function (response, status) {
