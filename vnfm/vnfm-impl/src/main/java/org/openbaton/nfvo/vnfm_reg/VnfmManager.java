@@ -512,6 +512,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         message.setExtension(getExtension());
         message.setDependency(dependency);
         message.setMode(mode);
+
+        log.debug("SCALE_OUT MESSAGE IS: \n" + message);
+
         VnfmSender vnfmSender;
         try {
 

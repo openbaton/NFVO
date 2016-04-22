@@ -225,7 +225,14 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
 
         log.info("Adding VNFComponent to VirtualNetworkFunctionRecord " + virtualNetworkFunctionRecord.getName());
-        virtualDeploymentUnit.getVnfc().add(component);
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()){
+            if (vdu.getId().equals(virtualDeploymentUnit.getId())){
+                vdu.getVnfc().add(component);
+            }
+        }
+
+//        virtualDeploymentUnit.getVnfc().add(component);
         vnfcRepository.save(component);
         nsrRepository.save(networkServiceRecord);
         log.debug("new VNFComponent is " + component);
@@ -376,8 +383,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
 
+        virtualDeploymentUnit.getVnfc().remove(vnfcInstance.getVnfComponent());
         virtualDeploymentUnit.getVnfc_instance().remove(vnfcInstance);
-
 
         vduRepository.save(virtualDeploymentUnit);
 
