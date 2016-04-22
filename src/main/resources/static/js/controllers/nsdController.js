@@ -108,6 +108,30 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 showError(status, JSON.stringify(data));
             });
     };
+
+    $scope.updateVNFD = function () {
+        http.put(url + '/' + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $scope.editObj.id, $scope.editObj)
+            .success(function (response) {
+                showOk('VNF Descriptor updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+    };
+
+    $scope.addNewConfig = function () {
+        if (angular.isUndefined($scope.editObj.configurations)) {
+            $scope.editObj.configurations = {};
+            $scope.editObj.configurations.configurationParameters = [];
+        }
+        $scope.editObj.configurations.configurationParameters.push({'confKey': '', 'value': ''})
+    };
+    $scope.removeConfig = function (index) {
+        $scope.editObj.configurations.configurationParameters.splice(index, 1);
+    };
+
     $scope.loadVNFD = function () {
         $scope.nsdCreateTmp = {};
         $scope.nsdCreateTmp.name = '';
