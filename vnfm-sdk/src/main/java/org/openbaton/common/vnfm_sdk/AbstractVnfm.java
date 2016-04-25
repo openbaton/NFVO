@@ -239,7 +239,9 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
                     checkEMS(vnfcInstance_new.getHostname());
                     Object scripts;
-                    if (scalingMessage.getVnfPackage().getScriptsLink() != null)
+                    if (scalingMessage.getVnfPackage() == null)
+                        scripts = new HashSet<>();
+                    else if (scalingMessage.getVnfPackage().getScriptsLink() != null)
                         scripts = scalingMessage.getVnfPackage().getScriptsLink();
                     else
                         scripts = scalingMessage.getVnfPackage().getScripts();
