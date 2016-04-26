@@ -45,7 +45,12 @@
                         <dt>{{vnfd.configurations.name}}</dt>
                         <dd>
                             <pairlist ng-repeat="cp in vnfd.configurations.configurationParameters">
-                                <pair><key><b>{{cp.confKey}}:</b> <key><value>{{cp.value}}</value></pair><span ng-if="!$last">,</span>
+                                <pair>
+                                    <key><b>{{cp.confKey}}:</b>
+                                        <key>
+                                            <value>{{cp.value}}</value>
+                                </pair>
+                                <span ng-if="!$last">,</span>
                             </pairlist>
                         </dd>
                     </span>
@@ -97,12 +102,12 @@
                                             <i
                                                     class="fa fa-sort"></i>
                                         </th>
-                                        <!--<th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
-                                                class="fa fa-sort"></i>
-                                        </th>-->
+
                                         <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                                 class="fa fa-sort"></i>
                                         </th>
+                                        <th>
+                                            Action
                                         </th>
                                     </tr>
                                     </thead>
@@ -117,10 +122,22 @@
                                         <!--<td>{{vdu.vnfc_instance}}</td>-->
                                         <td>
                                             <ul ng-repeat="vnfc in vdu.vnfc">
-                                            <li ng-repeat="cp in vnfc.connection_point">
-                                                <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
-                                            </li>
+                                                <li ng-repeat="cp in vnfc.connection_point">
+                                                    <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                </li>
                                             </ul>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary dropdown-toggle"
+                                                        data-toggle="dropdown"> Action
+                                                    <span class="caret"></span></button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="" data-toggle="modal" data-target="#editModal"
+                                                           ng-click="edit(vdu)">Edit</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -151,7 +168,8 @@
                                     <tr ng-repeat="le in vnfd.lifecycle_event | orderBy:predicate:reverse">
                                         <td>{{le.id}}</td>
                                         <td>{{le.event}}</td>
-                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span></td>
+                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
+                                                ng-if="!$last">, </span></span></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -238,3 +256,94 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <tabset>
+                        <tab heading="Info">
+                            <div class="form-group" ng-repeat="(key,value) in editObj"
+                                 ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                                <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                           ng-model="editObj[key]"/>
+                                </div>
+                            </div>
+                        </tab>
+
+                        <tab heading="VM Images">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div ng-if="editObj.vim_image.length===0">
+                                        Add a new VM image <a href="" ng-click="addVimImage()"><span
+                                            class="fa fa-plus-square"></span></a>
+                                    </div>
+
+                                    <div class="form-group"
+                                         ng-repeat="image in editObj.vm_image track by $index">
+
+                                        <div class="col-sm-6">
+                                        <div class="form-group">
+
+                                            <label for="value" class="control-label">Vim Instance</label>
+
+                                                <select name="typeSelect" class="form-control modal-select" id="value"
+                                                        ng-model="vimInstance"
+                                                        ng-options="vimInstance as vimInstance.name for vimInstance in vimInstances | orderBy:'image.name':false"
+                                                        ng-change="">
+                                                </select>
+
+                                        </div>
+                                        </div>
+                                        <div class="col-sm-6">
+
+                                            <label for="value" class="control-label">VM Image</label>
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" ng-click="editObj.vm_image.push(image)" type="button"
+                                                        title="Add a new image">
+                                                    <span class="fa fa-plus" aria-hidden="true"></span>
+                                                    </button>
+                                                </span>
+                                                <select name="typeSelect" class="form-control modal-select"
+                                                        ng-model="editObj.vm_image[$index]"
+                                                        ng-options="image.name as image.name for image in vimInstance.images | orderBy:'image.name':false"
+                                                        ng-change="">
+                                                </select>
+                                                <!--<input type="text" class="form-control" id="value" name="value"
+                                                       ng-model="cp.value"/>-->
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" ng-click="editObj.vm_image.splice($index,1)"
+                                                        type="button"
+                                                        title="Delete this image">
+                                                    <span class="fa fa-trash" aria-hidden="true"></span>
+                                                </button>
+                                            </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </tab>
+                    </tabset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateVDU()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

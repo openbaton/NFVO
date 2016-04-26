@@ -25,6 +25,7 @@ require({
         servicesServices: "services/servicesServices",
         topologyServices: "services/topologyServices",
         packageController: "controllers/packageController",
+        eventController: "controllers/eventController",
         vimInstanceController: "controllers/vimInstanceController",
         nsdController: "controllers/nsdController",
         nsrController: "controllers/nsrController",
@@ -125,6 +126,9 @@ require({
         packageController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService','dropzone']
         },
+        eventController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService', 'angular_cookies']
         },
@@ -155,6 +159,7 @@ require({
     'vnfcomponentController',
     'vnfmanagerController',
     'packageController',
+    'eventController',
     'nsrController',
     'vimInstanceController'
 ], function (require) {

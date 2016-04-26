@@ -18,6 +18,14 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
                 templateUrl: 'pages/packages/packageinfo.html',
                 controller: 'PackageCtrl'
             }).
+            when('/events', {
+                templateUrl: 'pages/events/events.html',
+                controller: 'EventCtrl'
+            }).
+            when('/events/:eventid', {
+                templateUrl: 'pages/events/eventinfo.html',
+                controller: 'EventCtrl'
+            }).
             when('/nsdescriptors', {
                 templateUrl: 'pages/nsdescriptors/nsdescriptors.html',
                 controller: 'NsdCtrl'
