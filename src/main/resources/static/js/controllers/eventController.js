@@ -10,18 +10,16 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
     loadTable();
 
-
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Event: '+data.event+' deleted.');
+                showOk('Event: ' + data.event + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
-                showError(response,status);
+                showError(response, status);
             });
     };
-
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -29,27 +27,14 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
 
     function loadTable() {
-        if (!angular.isUndefined($routeParams.packageid))
-            http.get(url + $routeParams.packageid)
-                .success(function (response, status) {
-                    console.log(response);
-                    $scope.event = response;
-                    $scope.eventJSON = JSON.stringify(response, undefined, 4);
-
-                }).error(function (data, status) {
-                    showError(data, status);
-                });
-        else {
-            http.get(url)
-                .success(function (response) {
-                    $scope.events = response;
-                    console.log(response);
-                })
-                .error(function (data, status) {
-                    showError(data, status);
-                });
-        }
-
+        http.get(url)
+            .success(function (response) {
+                $scope.events = response;
+                console.log(response);
+            })
+            .error(function (data, status) {
+                showError(data, status);
+            });
     }
 
     function showError(data, status) {
@@ -69,10 +54,6 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
         loadTable();
         $('.modal').modal('hide');
     }
-
-
-
-
 
 });
 
