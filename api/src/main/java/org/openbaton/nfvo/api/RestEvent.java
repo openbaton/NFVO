@@ -22,14 +22,13 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
+import org.openbaton.nfvo.core.interfaces.EventManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -42,6 +41,9 @@ public class RestEvent {
 
     @Autowired
     private EventDispatcher eventDispatcher;
+
+    @Autowired
+    private EventManagement eventManagement;
 
     /**
      * Adds a new EventEndpoint to the EventEndpoint repository
@@ -59,7 +61,7 @@ public class RestEvent {
     /**
      * Removes the EventEndpoint from the EventEndpoint repository
      *
-     * @param name : The Event's id to be deleted
+     * @param id : The Event's id to be deleted
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -67,16 +69,19 @@ public class RestEvent {
         eventDispatcher.unregister(id);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<EventEndpoint> getEvents() {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Iterable<EventEndpoint> getEventEndpoints() {
+        return eventManagement.query();
+    }
 
-        List<EventEndpoint> events = new ArrayList<>();
-        for (Action action : Action.values()) {
-            EventEndpoint endpoint = new EventEndpoint();
-            endpoint.setEvent(action);
-            events.add(endpoint);
-        }
-        return events;
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public EventEndpoint getEventEndpoint(@PathVariable("id") String id) {
+        return eventManagement.query(id);
+    }
+
+    @RequestMapping(value = "/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Action[] getAvailableEvents(){
+        return Action.values();
     }
 
 }

@@ -84,4 +84,14 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
         }
         return new AsyncResult<>(null);
     }
+
+    @Override
+    public Iterable<EventEndpoint> query() {
+        return eventEndpointRepository.findAll();
+    }
+
+    @Override
+    public EventEndpoint query(String id) {
+        return eventEndpointRepository.findFirstById(id);
+    }
 }
