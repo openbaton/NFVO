@@ -132,6 +132,23 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.editObj.configurations.configurationParameters.splice(index, 1);
     };
 
+    $scope.addLifecycleEvent = function(vdu){
+        vdu.lifecycle_event.push({'event':"CONFIGURE", 'lifecycle_events':[]})
+    };
+
+    $scope.updateVDU = function (vdu) {
+        console.log($scope.nsdinfo);
+        http.put(url + '/' + $routeParams.nsdescriptorId, $scope.nsdinfo)
+            .success(function (response) {
+                showOk('VNF Descriptor updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+
+    };
     $scope.loadVNFD = function () {
         $scope.nsdCreateTmp = {};
         $scope.nsdCreateTmp.name = '';
