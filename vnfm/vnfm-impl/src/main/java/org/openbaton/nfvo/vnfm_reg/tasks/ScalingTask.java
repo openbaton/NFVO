@@ -31,12 +31,14 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
+import org.openbaton.vim.drivers.interfaces.VimDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -104,25 +106,34 @@ public class ScalingTask extends AbstractTask {
                 try {
                     Future<String> future = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId()), userdata);
                     log.debug("Added new component with id: " + future.get());
-                } catch (VimException e) {
-                    resourceManagement.release(vdu, e.getVnfcInstance());
-                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                    saveVirtualNetworkFunctionRecord();
-                    OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                    errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
-                    errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                    errorMessage.setAction(Action.ERROR);
-                    vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                    return errorMessage;
-                } catch (VimDriverException e){
-                    virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                    saveVirtualNetworkFunctionRecord();
-                    OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                    errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
-                    errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                    errorMessage.setAction(Action.ERROR);
-                    vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                    return errorMessage;
+                } catch (ExecutionException exe) {
+                    try {
+                        Throwable realException = exe.getCause();
+                        if (realException instanceof VimException)
+                            throw (VimException) realException;
+                        if (realException instanceof VimDriverException)
+                            throw (VimDriverException) realException;
+                        throw exe;
+                    } catch (VimException e) {
+                        resourceManagement.release(vdu, e.getVnfcInstance());
+                        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                        saveVirtualNetworkFunctionRecord();
+                        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+                        errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
+                        errorMessage.setVnfr(virtualNetworkFunctionRecord);
+                        errorMessage.setAction(Action.ERROR);
+                        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+                        return errorMessage;
+                    } catch (VimDriverException e){
+                        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+                        saveVirtualNetworkFunctionRecord();
+                        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+                        errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
+                        errorMessage.setVnfr(virtualNetworkFunctionRecord);
+                        errorMessage.setAction(Action.ERROR);
+                        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+                        return errorMessage;
+                    }
                 }
             } else {
                 log.error("Not enough resources for scale out.");
