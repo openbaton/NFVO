@@ -10,6 +10,16 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
     loadTable();
 
+    $scope.eventObj = {
+        'name':'event_name',
+        'networkServiceId':'',
+        'virtualNetworkFunctionId':'',
+        'type':'REST',
+        'endpoint':'localhost:8081/events',
+        'event':'INSTANTIATE_FINISH'
+    };
+
+    $scope.types = ['REST', 'RABBIT', 'JMS'];
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
@@ -26,15 +36,47 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
     };
 
 
-    function loadTable() {
-        http.get(url)
+    $scope.save = function () {
+    console.log($scope.eventObj);
+        http.post(url,$scope.eventObj )
             .success(function (response) {
-                $scope.events = response;
-                console.log(response);
+                showOk('Event: ' + $scope.eventObj.name + ' saved.');
+                loadTable();
             })
-            .error(function (data, status) {
+            .error(function (response, status) {
+                showError(response, status);
+            });
+    };
+    function loadTable() {
+        if (!angular.isUndefined($routeParams.eventId))
+            http.get(url + $routeParams.eventId)
+                .success(function (response, status) {
+                    console.log(response);
+                    $scope.event = response;
+                    $scope.eventJSON = JSON.stringify(response, undefined, 4);
+
+                }).error(function (data, status) {
                 showError(data, status);
             });
+        else {
+            http.get(url)
+                .success(function (response) {
+                    $scope.events = response;
+                    console.log(response);
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+                });
+
+            http.get(url+'/actions')
+                .success(function (response) {
+                    $scope.actions = response;
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+                });
+        }
+
     }
 
     function showError(data, status) {
