@@ -34,6 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PreDestroy;
+
 //import javax.validation.Valid;
 
 /**
@@ -65,6 +67,7 @@ public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
     }
 
     @Override
+    @PreDestroy
     protected void unregister() {
         vnfmRestHelper.unregister(vnfmManagerEndpoint);
     }
