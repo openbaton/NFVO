@@ -31,33 +31,35 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled	=	true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth)
-			throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(
-				new BCryptPasswordEncoder());
-	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth)
+            throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(
+                new BCryptPasswordEncoder());
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
-		http.antMatcher("/**").httpBasic()
-				.and()
-				.authorizeRequests()
-				.antMatchers(HttpMethod.OPTIONS, "/oauth/token").permitAll();
+//        http.authorizeRequests().antMatchers(HttpMethod.POST, "/register").permitAll();
 
-	}
+        http.antMatcher("/**").httpBasic()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/oauth/token", "/register").permitAll();
 
-	@Override
-	@Bean
-	protected AuthenticationManager
-	authenticationManager() throws Exception {
-		return super.authenticationManager();
-	}
+    }
+
+    @Override
+    @Bean
+    protected AuthenticationManager
+    authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
 }
 
