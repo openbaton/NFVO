@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Event
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li><a href="#events"><i class="fa fa-calendar"></i>
+                Events</a></li>
+            <li class="active"><i class="fa fa-calendar"></i> Event name: {{event.name}}</li>
+        </ol>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row top-buffer">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+
+        <div class="col-lg-12" ng-show="event">
+            <h3>Event name: {{event.name}}</h3>
+            <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+
+            <dl class="dl-horizontal">
+        <span class="dl-horizontal" ng-repeat="(key,value) in event" ng-if="key !== 'scripts'">
+
+                    <div ng-if="key !== 'image'">
+                        <dt>{{key}}:</dt>
+                        <dd>{{value}}</dd>
+                    </div>
+                    <div ng-if="key === 'image'">
+                        <dt>image:</dt>
+                        <dd><span ng-repeat="(k, v) in value"><b>{{k}}</b>: {{v}}
+                            <span ng-if="!$last">, </span>
+                            </span></dd>
+                    </div>
+                </span>
+
+            </dl>
+
+
+        </div>
+       
+    </div>
+</div>
+
+<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">JSON of Event: {{event.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="json">{{eventJSON}}</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
