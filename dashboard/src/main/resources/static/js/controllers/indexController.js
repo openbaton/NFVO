@@ -6,32 +6,16 @@ var app = angular.module('app');
  *
  */
 
-app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
-    //$scope.URL = 'http://192.168.161.6:8080';
     $scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
         "grant_type": "password"
     };
-    $scope.new = {
-        "username": '',
-        "password": '',
-        "password2": '',
-        "firstName": '',
-        "lastName": '',
-        "admin": true
-    };
 
-    $scope.checkIfEqual = function () {
-        if ($scope.new.password2 !== $scope.new.password)
-            $scope.notEqual = true;
-        else
-            $scope.notEqual = false;
-
-    };
     if (angular.isUndefined($cookieStore.get('logged'))) {
         $scope.logged = false;
         $rootScope.logged = false;
