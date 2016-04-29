@@ -358,6 +358,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         }
     }
 
+    protected abstract void checkEMS(String hostname);
+
     private void getExtension(Map<String, String> extension) {
         log.debug("Extensions are: " + extension);
 
@@ -373,26 +375,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
         nsrId = extension.get("nsr-id");
     }
 
-    private void checkEMS(String vduHostname) {
-        int i = 0;
-        while (true) {
-            log.debug("Waiting for ems to be started... (" + i * 5 + " secs)");
-            i++;
-            try {
-                checkEmsStarted(vduHostname);
-                break;
-            } catch (RuntimeException e) {
-                if (i == 100) {
-                    throw e;
-                }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        }
-    }
+
 
     protected abstract void checkEmsStarted(String vduHostname);
 
