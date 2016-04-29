@@ -6,7 +6,7 @@ var app = angular.module('app');
  *
  */
 
-app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
     $scope.URL = '';
@@ -15,22 +15,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         "password": '',
         "grant_type": "password"
     };
-    $scope.new = {
-        "username": '',
-        "password": '',
-        "password2": '',
-        "firstName": '',
-        "lastName": '',
-        "admin": true
-    };
 
-    $scope.checkIfEqual = function(){
-        if($scope.new.password2!==$scope.new.password)
-            $scope.notEqual = true;
-        else
-            $scope.notEqual = false;
-
-    };
     if (angular.isUndefined($cookieStore.get('logged'))) {
         $scope.logged = false;
         $rootScope.logged = false;
@@ -78,16 +63,6 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         setTimeout(showLoginError, 2000);
     };
 
-
-    $scope.register = function(newUser){
-        delete newUser.password2;
-        console.log(newUser);
-        $http.post($scope.URL + '/register', newUser)
-            .success(function(data, status){
-                $window.location.reload();
-            })
-            .error(function(status,data){});
-    };
     function showLoginError() {
         $scope.$apply(function () {
             $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
