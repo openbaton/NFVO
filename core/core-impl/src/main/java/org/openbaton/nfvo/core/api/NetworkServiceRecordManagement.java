@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.nfvo.*;
@@ -382,13 +383,15 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
         }
 
         resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
-
+        for (Ip ip : vnfcInstance.getIps()) {
+            virtualNetworkFunctionRecord.getVnf_address().remove(ip.getIp());
+        }
         virtualDeploymentUnit.getVnfc().remove(vnfcInstance.getVnfComponent());
         virtualDeploymentUnit.getVnfc_instance().remove(vnfcInstance);
 
         vduRepository.save(virtualDeploymentUnit);
 
-        ApplicationEventNFVO event = new ApplicationEventNFVO(Action.SCALE_OUT, virtualNetworkFunctionRecord);
+        ApplicationEventNFVO event = new ApplicationEventNFVO(Action.SCALE_IN, virtualNetworkFunctionRecord);
         EventNFVO eventNFVO = new EventNFVO(this);
         eventNFVO.setEventNFVO(event);
         log.debug("Publishing event: " + event);
