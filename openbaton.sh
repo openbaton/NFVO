@@ -5,40 +5,34 @@ source ./gradle.properties
 _version=${version}
 
 _openbaton_base="/opt/openbaton/"
+_openbaton_config_file="/etc/openbaton/openbaton.properties"
+_openbaton_plugins="http://get.openbaton.org/plugins/stable/"
 _message_queue_base="apache-activemq-5.11.3"
-_openbaton_config_file=/etc/openbaton/openbaton.properties
+_nfvo="${_openbaton_base}/nfvo"
+_nfvo_vim_drivers="${_nfvo}/plugins/vim-drivers"
+_tmpfolder=`mktemp -d`
 
-function start_activemq_linux {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/activemq start
-    if [ $? -ne 0 ]; then
-        echo "ERROR: activemq is not running properly (check the problem in ${_openbaton_base}/${_message_queue_base}/data/activemq.log) "
-	exit 1
-    fi
+
+function checkBinary {
+  echo -n " * Checking for '$1'..."
+  if command -v $1 >/dev/null 2>&1; then
+     echo "OK"
+     return 0
+   else
+     echo >&2 "FAILED."
+     return 1
+   fi
 }
 
-function start_activemq_osx {
-    sudo ${_openbaton_base}/${_message_queue_base}/bin/macosx/activemq start
-    if [ $? -ne 0 ]; then
-        echo "ERROR: activemq is not running properly (check the problem in ${_openbaton_base}/${_message_queue_base}/data/activemq.log) "
-	exit 1
+_ex='sh -c'
+if [ "$_user" != 'root' ]; then
+    if checkBinary sudo; then
+        _ex='sudo -E sh -c'
+    elif checkBinary su; then
+        _ex='su -c'
     fi
-}
+fi
 
-function check_activemq {
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	ps -aux | grep -v grep | grep activemq > /dev/null
-        if [ $? -ne 0 ]; then
-          	echo "activemq is not running, let's try to start it..."
-            	start_activemq_linux
-        fi
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-	ps aux | grep -v grep | grep activemq > /dev/null
-        if [ $? -ne 0 ]; then
-          	echo "activemq is not running, let's try to start it..."
-            	start_activemq_osx
-        fi
-    fi
-}
 
 function check_rabbitmq {
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
@@ -106,41 +100,60 @@ function check_mysql {
 
 
 function check_already_running {
-        result=$(screen -ls | grep openbaton | wc -l);
-        if [ "${result}" -ne "0" ]; then
-                echo "openbaton is already running.."
-		exit;
-        fi
+    pgrep -f openbaton-${_version}.jar
+    if [ "$?" -eq "0" ]; then
+        echo "openbaton is already running.."
+        exit;
+    fi
+    #result=$(screen -ls | grep openbaton | wc -l);
+    #if [ "${result}" -ne "0" ]; then
+    #        echo "openbaton is already running.."
+    #exit;
+    #fi
 }
 
 # Check if the property nfvo.timezone is set
 # The nfvo.timezone property syncronize all the VNF with the clock of the NFVO
 function check_timezone {
 	if ! grep nfvo.timezone $_openbaton_config_file > /dev/null ; then
-		TIMEZONE=$( date +%Z )
-		echo "nfvo.timezone = $TIMEZONE" >> ${_openbaton_config_file}
+		$_ex 'TIMEZONE=$( date +%Z )'
+		$_ex 'echo "nfvo.timezone = $TIMEZONE" >> '"${_openbaton_config_file}"
 	fi
 }
 
-function start {
+function install_plugins {
+    echo "Getting OpenBaton Plugins..."
+    wget -nH --cut-dirs 2 -r --no-parent  --reject "index.html*" "${_openbaton_plugins}" -P "${_tmpfolder}"
+    mkdir -p ${_nfvo_vim_drivers}
+    cp -r ${_tmpfolder}/* "${_nfvo_vim_drivers}"
+}
 
+
+function start_checks {
+    check_already_running
     if [ ! -d build/  ]
         then
             compile
     fi
-
-#    check_activemq
     check_rabbitmq
     check_timezone
-    #check_mysql
-    check_already_running
-    if [ 0 -eq $? ]
-        then
-	    #screen -X eval "chdir $PWD"
+}
+
+function start {
+    start_checks
+    screen_exists=$(screen -ls | grep openbaton | wc -l);
+    if [ 0 -eq $? ]; then
 	    screen -c screenrc -d -m -S openbaton -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
-	    #screen -c screenrc -r -p 0
+    elif [ "${screen_exists}" -ne "0" ]; then
+        screen -S openbaton -p 0 -X screen -t nfvo java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     fi
 }
+
+function start_fg {
+    start_checks
+    java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+}
+
 
 function stop {
     if screen -list | grep "openbaton"; then
@@ -155,9 +168,7 @@ function restart {
 
 
 function kill {
-    if screen -list | grep "openbaton"; then
-	    screen -ls | grep openbaton | cut -d. -f1 | awk '{print $1}' | xargs kill
-    fi
+    pkill -f openbaton-${_version}.jar
 }
 
 
@@ -169,43 +180,6 @@ function tests {
     ./gradlew test
 }
 
-function update {
-    echo "~~~~~~~~~~~~~~~~~~~~OpenBaton UPDATE~~~~~~~~~~~~~~~~~~~~"
-    echo "                                                        "
-    echo "              updating to version 0.15"
-    echo "                                                        "
-    echo "installing new requirements:"
-    echo "*) rabbitmq"
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get update
-        sudo apt-get install -y rabbitmq-server
-
-        ulimit -S -n 4096
-
-        sudo rabbitmqctl add_user admin openbaton
-        sudo rabbitmqctl set_user_tags admin administrator
-        sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-
-        sudo rabbitmq-plugins enable rabbitmq_management
-
-        sudo service rabbitmq-server restart
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        brew update
-        brew install rabbitmq
-
-        ulimit -S -n 4096
-
-        rabbitmqctl add_user admin openbaton
-        rabbitmqctl set_user_tags admin administrator
-        rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-
-        rabbitmq-plugins enable rabbitmq_management
-
-        rabbitmqctl stop
-        rabbitmq-server start -detached
-    fi
-}
-
 function clean {
     ./gradlew clean
 }
@@ -215,7 +189,7 @@ function end {
 }
 function usage {
     echo -e "Open-Baton\n"
-    echo -e "Usage:\n\t ./openbaton.sh [compile|start|stop|test|kill|clean]"
+    echo -e "Usage:\n\t ./openbaton.sh [compile|install_plugins|start|start_fg|stop|test|kill|clean]"
 }
 
 ##
@@ -234,14 +208,16 @@ do
     case ${cmds[$i]} in
         "clean" )
             clean ;;
+        "install_plugins" )
+            install_plugins ;;
         "sc" )
             clean
             compile
             start ;;
         "start" )
             start ;;
-        "update" )
-            update ;;
+        "start_fg" )
+            start_fg ;;
         "stop" )
             stop ;;
         "restart" )
