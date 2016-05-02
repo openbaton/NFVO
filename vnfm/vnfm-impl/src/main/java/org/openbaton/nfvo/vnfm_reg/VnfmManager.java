@@ -213,7 +213,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     @Async
     public Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
 
-
         log.debug("Ordered: " + ordered);
         if (ordered) {
             vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
@@ -243,7 +242,9 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
                 if (vimInstance.getValue().size() == 0)
                     for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
                         vimInstance.getValue().add(vimInstance1);
-                log.debug("\t" + vimInstance.toString());
+                for (VimInstance vi: vimInstance.getValue())
+                    log.debug("\t" + vi.getName());
+                log.debug("~~~~~~");
             }
 
             //Creating the extension
@@ -291,7 +292,7 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     private void fillVnfrNames(NetworkServiceDescriptor networkServiceDescriptor, Map<String, Integer> vnfrNamesWeighted) {
 
-        log.debug("Checking NSD \n\n\n" + networkServiceDescriptor);
+        log.trace("Checking NSD \n\n\n" + networkServiceDescriptor);
 
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
             String virtualNetworkFunctionDescriptorName = virtualNetworkFunctionDescriptor.getName();
@@ -419,6 +420,13 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
             log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
             return;
         }
+
+        if (nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() != networkServiceRecord.getVnfr().size()){
+            log.debug("Not all the VNFR have been created yet, it is useless to set the NSR status.");
+            return;
+        }
+
+
         log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
 
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
