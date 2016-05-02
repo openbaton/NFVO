@@ -51,7 +51,7 @@ public class RestRegister extends VnfmRegister {
         }
     }
 
-    @RequestMapping(value = "/vnfm-subscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
         addManagerEndpoint(gson.toJson(endpoint));
@@ -66,7 +66,7 @@ public class RestRegister extends VnfmRegister {
         }
     }
 
-    @RequestMapping(value = "/vnfm-unsubscribe", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
         removeManagerEndpoint(gson.toJson(endpoint));
@@ -82,17 +82,25 @@ public class RestRegister extends VnfmRegister {
         for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
             if (endpoint.getEndpointType().ordinal() == EndpointType.REST.ordinal()) {
                 if (endpoint.isEnabled()) {
-                    URL url = new URL(endpoint.getEndpoint());
-                    if (!pingHost(url.getHost(), url.getPort(), 2)) {
-                        if (endpoint.isActive()) {
-                            log.info("Set endpoint " + endpoint.getType() + " to unactive");
-                            endpoint.setActive(false);
-                            vnfmEndpointRepository.save(endpoint);
+                    try {
+                        URL url = new URL(endpoint.getEndpoint());
+                        if (!pingHost(url.getHost(), url.getPort(), 2)) {
+                            if (endpoint.isActive()) {
+                                log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                                endpoint.setActive(false);
+                                vnfmEndpointRepository.save(endpoint);
+                            }
+                        } else {
+                            if (!endpoint.isActive()) {
+                                log.info("Set endpoint " + endpoint.getType() + " to active");
+                                endpoint.setActive(true);
+                                vnfmEndpointRepository.save(endpoint);
+                            }
                         }
-                    } else {
-                        if (!endpoint.isActive()) {
-                            log.info("Set endpoint " + endpoint.getType() + " to active");
-                            endpoint.setActive(true);
+                    } catch (java.net.MalformedURLException e){
+                        if (endpoint.isActive()) {
+                            log.warn("Not able to check endpoint: " + endpoint.getEndpoint());
+                            endpoint.setActive(false);
                             vnfmEndpointRepository.save(endpoint);
                         }
                     }
