@@ -73,7 +73,7 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
                 }
             } else if (eventEndpoint.getType().ordinal() == EndpointType.RABBIT.ordinal()) {
                 try {
-                    if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains(eventEndpoint.getEndpoint())) {
+                    if (!RabbitManager.getQueues(brokerIp.trim(), username, password, managementPort).contains(eventEndpoint.getEndpoint())) {
                         log.warn("Event endpoint " + eventEndpoint + " is not there anymore.");
                         eventEndpointRepository.delete(eventEndpoint.getId());
                     }

@@ -278,8 +278,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
 
     private Map<String, String> getExtension() {
         Map<String, String> extension = new HashMap<>();
-        extension.put("brokerIp", brokerIp);
-        extension.put("monitoringIp", monitoringIp);
+        extension.put("brokerIp", brokerIp.trim());
+        extension.put("monitoringIp", monitoringIp.trim());
         extension.put("timezone", timezone);
         extension.put("emsVersion", emsVersion);
         extension.put("username", username);
