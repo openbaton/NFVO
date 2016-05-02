@@ -52,9 +52,10 @@ public class VirtualDeploymentUnit implements Serializable {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vm_image;
-
-
-
+    /**
+     * Reference to the VDU (vnfd:vdu:id) used to instantiate this element.
+     */
+    private String parent_vdu;
     /**
      * Describe the required computation resources characteristics (e.g. processing power, number of virtual CPUs, etc.),
      * including Key Quality Indicators (KQIs) for performance and reliability/availability.
@@ -83,9 +84,8 @@ public class VirtualDeploymentUnit implements Serializable {
      * the same VDU will co-exists with continuous data synchronization. ActivePassive: Implies that two instance of
      * the same VDU will co-exists without any data synchronization.
      */
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL )
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private HighAvailability high_availability;
-
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private Set<VRFaultManagementPolicy> fault_management_policy;
     /**
@@ -97,23 +97,27 @@ public class VirtualDeploymentUnit implements Serializable {
      */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VNFComponent> vnfc;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<VNFCInstance> vnfc_instance;
-
     /**
      * Monitoring parameter, which can be tracked for a VNFC based on this VDU. Examples include: memory-consumption,
      * CPU-utilisation, bandwidth-consumption, VNFC downtime, etc.
      */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> monitoring_parameter;
-
     private String hostname;
-
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> vimInstanceName;
 
     public VirtualDeploymentUnit() {
+    }
+
+    public String getParent_vdu() {
+        return parent_vdu;
+    }
+
+    public void setParent_vdu(String parent_vdu) {
+        this.parent_vdu = parent_vdu;
     }
 
     public Set<VNFCInstance> getVnfc_instance() {
@@ -221,6 +225,10 @@ public class VirtualDeploymentUnit implements Serializable {
         return monitoring_parameter;
     }
 
+    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
+        this.monitoring_parameter = monitoring_parameter;
+    }
+
     @Override
     public String toString() {
         return "VirtualDeploymentUnit{" +
@@ -250,10 +258,6 @@ public class VirtualDeploymentUnit implements Serializable {
 
     public void setFault_management_policy(Set<VRFaultManagementPolicy> fault_management_policy) {
         this.fault_management_policy = fault_management_policy;
-    }
-
-    public void setMonitoring_parameter(Set<String> monitoring_parameter) {
-        this.monitoring_parameter = monitoring_parameter;
     }
 
     public String getName() {

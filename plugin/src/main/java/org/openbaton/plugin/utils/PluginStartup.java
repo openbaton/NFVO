@@ -33,21 +33,20 @@ import java.util.Map;
 public class PluginStartup {
 
     private static Logger log = LoggerFactory.getLogger(PluginStartup.class);
+    private static Map<String, Process> processes = new HashMap<>();
 
     public static Map<String, Process> getProcesses() {
         return processes;
     }
 
-    private static Map<String, Process> processes = new HashMap<>();
-
-    public static void installPlugin(String name, String path, String brokerIp, String port, int consumers, String username, String password, String managementPort) throws IOException {
+    public static void installPlugin(String name, String path, String brokerIp, String port, int consumers, String username, String password, String managementPort, String pluginLogPath) throws IOException {
         List<String> queues = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
         //java -jar build/libs/openstack-plugin-0.10-SNAPSHOT.jar openstack localhost 5672 10 username password
         log.debug("Running: java -jar " + path + " " + name + " localhost " + port + " " + consumers + " " + username + " *****");
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, brokerIp, port, "" + consumers, username, password);
         Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
-        File dir = new File("./plugin-logs/");
+        File dir = new File(pluginLogPath);
         if (!dir.exists())
             dir.mkdirs();
         File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow) + ".log");
@@ -72,7 +71,7 @@ public class PluginStartup {
             }
             queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
             waitTime--;
-            if (waitTime == 0){
+            if (waitTime == 0) {
                 log.error("After 30 seconds the plugin is not started.");
             }
         }
@@ -84,7 +83,7 @@ public class PluginStartup {
         }
     }
 
-    private synchronized static void installPlugin(String path, boolean waitForPlugin, String brokerIp, String port, int consumers, String username, String password, String managementPort) throws IOException {
+    private synchronized static void installPlugin(String path, boolean waitForPlugin, String brokerIp, String port, int consumers, String username, String password, String managementPort, String pluginLogPath) throws IOException {
         List<String> queues = null;
         if (waitForPlugin) {
             queues = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
@@ -95,7 +94,7 @@ public class PluginStartup {
         ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", path, name, brokerIp, port, "" + consumers, username, password);
         Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
-        File dir = new File("./plugin-logs/");
+        File dir = new File(pluginLogPath);
         if (!dir.exists())
             dir.mkdirs();
         File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow) + ".log");
@@ -121,8 +120,9 @@ public class PluginStartup {
                 }
                 queuesNew = RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
                 waitTime--;
-                if (waitTime == 0){
+                if (waitTime == 0) {
                     log.error("After 15 seconds the plugin is not started.");
+                    break;
                 }
             }
             for (String pluginId : queuesNew) {
@@ -130,21 +130,20 @@ public class PluginStartup {
                     processes.put(pluginId, p);
                 }
             }
-        }
-        else
+        } else
             processes.put(path, p);
     }
 
-    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String port, int consumers, String username, String password, String managementPort) throws IOException {
+    public static void startPluginRecursive(String folderPath, boolean waitForPlugin, String registryip, String port, int consumers, String username, String password, String managementPort, String pluginLogPath) throws IOException {
 
         File folder = new File(folderPath);
 
         if (folder.isDirectory()) {
             for (File jar : folder.listFiles()) {
                 if (jar.getAbsolutePath().endsWith(".jar"))
-                    installPlugin(jar.getAbsolutePath(), waitForPlugin, registryip, port, consumers, username, password, managementPort);
+                    installPlugin(jar.getAbsolutePath(), waitForPlugin, registryip, port, consumers, username, password, managementPort, pluginLogPath);
                 else if (jar.isDirectory())
-                    startPluginRecursive(jar.getAbsolutePath(), waitForPlugin, registryip, port, consumers, username, password, managementPort);
+                    startPluginRecursive(jar.getAbsolutePath(), waitForPlugin, registryip, port, consumers, username, password, managementPort, pluginLogPath);
                 else
                     log.warn(jar.getAbsolutePath() + " is not a jar file");
             }

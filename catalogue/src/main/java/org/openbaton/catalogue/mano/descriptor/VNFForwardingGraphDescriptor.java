@@ -94,6 +94,7 @@ public class VNFForwardingGraphDescriptor implements Serializable{
     public void ensureId(){
         id=IdGenerator.createUUID();
     }
+
     public String getId() {
         return id;
     }

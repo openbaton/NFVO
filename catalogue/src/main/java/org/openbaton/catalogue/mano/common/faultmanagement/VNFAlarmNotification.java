@@ -16,27 +16,28 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
+import org.openbaton.catalogue.mano.common.monitoring.VNFAlarm;
 
 /**
  * Created by mob on 27.10.15.
  */
 public class VNFAlarmNotification extends AbstractVNFAlarm {
-    private Alarm alarm;
+    private VNFAlarm vnfAlarm;
 
-    public VNFAlarmNotification(String vnfrId, String faultManagementPolicyId,Alarm alarm) {
+    public VNFAlarmNotification(String vnfrId, String faultManagementPolicyId,VNFAlarm vnfAlarm) {
 
         super(vnfrId,faultManagementPolicyId);
-        this.alarm=alarm;
+        this.vnfAlarm=vnfAlarm;
     }
 
     public Alarm getAlarm() {
-        return alarm;
+        return vnfAlarm;
     }
 
     @Override
     public String toString() {
         return "VNFAlarmNotification{" +
-                "alarm=" + alarm +
+                "vnfAlarm=" + vnfAlarm +
                 "} " + super.toString();
     }
 }
