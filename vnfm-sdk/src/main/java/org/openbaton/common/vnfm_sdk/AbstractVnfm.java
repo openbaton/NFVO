@@ -275,7 +275,8 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
 
                     getExtension(extension);
 
-                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), orVnfmInstantiateMessage.getVimInstances());
+                    Map<String, Collection<VimInstance>> vimInstances = orVnfmInstantiateMessage.getVimInstances();
+                    virtualNetworkFunctionRecord = createVirtualNetworkFunctionRecord(orVnfmInstantiateMessage.getVnfd(), orVnfmInstantiateMessage.getVnfdf().getFlavour_key(), orVnfmInstantiateMessage.getVlrs(), orVnfmInstantiateMessage.getExtension(), vimInstances);
                     GrantOperation grantOperation = new GrantOperation();
                     grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
@@ -300,11 +301,11 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                             checkEMS(vnfcInstance.getHostname());
                     if (orVnfmInstantiateMessage.getVnfPackage() != null) {
                         if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
-                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), orVnfmInstantiateMessage.getVimInstances());
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(), vimInstances);
                         else
-                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), orVnfmInstantiateMessage.getVimInstances());
+                            virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, orVnfmInstantiateMessage.getVnfPackage().getScripts(), vimInstances);
                     } else {
-                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, null, orVnfmInstantiateMessage.getVimInstances());
+                        virtualNetworkFunctionRecord = instantiate(virtualNetworkFunctionRecord, null, vimInstances);
                     }
                     nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
                     break;

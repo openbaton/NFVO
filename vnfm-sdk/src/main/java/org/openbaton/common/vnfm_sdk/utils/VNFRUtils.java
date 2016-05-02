@@ -155,6 +155,8 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
         for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
             VirtualDeploymentUnit vdu_new = new VirtualDeploymentUnit();
+            vdu_new.setParent_vdu(virtualDeploymentUnit.getId());
+
             HashSet<VNFComponent> vnfComponents = new HashSet<>();
             for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
                 VNFComponent component_new = new VNFComponent();
