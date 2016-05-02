@@ -1297,15 +1297,15 @@
                     <b>Virtual Link Descriptor</b>
                     <div class="form-group">
                         <label for="vld" class="col-sm-4 control-label"></label>
-                            <div class="form-group input-group col-lg-6">
-                                <input class="form-control " type="text" ng-model="vld" id="vld">
+                        <div class="form-group input-group col-lg-6">
+                            <input class="form-control " type="text" ng-model="vld" id="vld">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="addVld(vld)" title="Add this Virtual Link Descriptor"
                                                 ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
-                            </div>
+                        </div>
                     </div>
                     <ul>
                         <li ng-repeat="vld in nsdCreateTmp.vld track by $index">{{vld.name}}
@@ -1313,8 +1313,6 @@
                         </li>
                     </ul>
                 </div>
-
-
 
 
             </div><!--modal-body-->
@@ -1423,4 +1421,33 @@
     </div>
 </div>
 
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in editObj"
+                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="editObj[key]"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
