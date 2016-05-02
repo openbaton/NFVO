@@ -66,6 +66,8 @@ class SystemStartup implements CommandLineRunner {
     private boolean installPlugin;
     @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
     private String propFileLocation;
+    @Value("${nfvo.plugin.log.path:./plugin-logs}")
+    private String pluginLogPath;
 
     @Override
     public void run(String... args) throws Exception {
@@ -128,7 +130,7 @@ class SystemStartup implements CommandLineRunner {
     }
 
     private void startPlugins(String folderPath) throws IOException {
-        PluginStartup.startPluginRecursive(folderPath, waitForPlugin, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort);
+        PluginStartup.startPluginRecursive(folderPath, waitForPlugin, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort, pluginLogPath);
     }
 
 }

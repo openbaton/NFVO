@@ -71,6 +71,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     private ConfigurableApplicationContext context;
     @Autowired
     private VnfmEndpointRepository vnfmEndpointRepository;
+    @Value("${nfvo.plugin.log.path:./plugin-logs}")
+    private String pluginLogPath;
 
     private static void exit(int status) {
         System.exit(status);
@@ -241,7 +243,10 @@ public class OpenbatonCLI implements CommandLineRunner {
             if (password == null || password.equals(""))
                 password = "openbaton";
         }
-        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers, username, password, "" + managementPort);
+
+        if (!pluginLogPath.endsWith("/"))
+            pluginLogPath += "/";
+        PluginStartup.installPlugin(name, path, "localhost", "5672", consumers, username, password, "" + managementPort, pluginLogPath);
         return true;
     }
 }
