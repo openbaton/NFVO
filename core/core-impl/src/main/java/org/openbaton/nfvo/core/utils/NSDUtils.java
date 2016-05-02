@@ -21,7 +21,6 @@ import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
@@ -273,7 +272,7 @@ public class NSDUtils {
                     names.add(deploymentFlavour.getFlavour_key());
                 }
             else
-                virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>());
+                throw new NetworkServiceIntegrityException("Flavour must be set in VNFD: " + virtualNetworkFunctionDescriptor.getName() + ". Come on... check the PoP page and pick at least one DeploymentFlavor");
 
             if (virtualNetworkFunctionDescriptor.getVirtual_link() != null)
                 for (InternalVirtualLink internalVirtualLink1 : virtualNetworkFunctionDescriptor.getVirtual_link()){
