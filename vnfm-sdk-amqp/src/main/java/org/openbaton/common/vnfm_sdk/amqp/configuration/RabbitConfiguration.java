@@ -20,12 +20,15 @@ import com.google.gson.GsonBuilder;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.amqp.AbstractVnfmSpringAmqp;
 import org.openbaton.common.vnfm_sdk.interfaces.EmsRegistrator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +36,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -43,6 +49,7 @@ import java.util.Properties;
 @Configuration
 @EnableRabbit
 @ConfigurationProperties(prefix = "vnfm.rabbitmq")
+@Order(value = Ordered.HIGHEST_PRECEDENCE)
 public class RabbitConfiguration {
     public final static String queueName_vnfmRegister = "nfvo.vnfm.register";
     public final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
@@ -50,6 +57,8 @@ public class RabbitConfiguration {
     public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
     public static String queueName_nfvoGenericActions = "nfvo.type.actions";
     public static String queueName_emsRegistrator = "ems.generic.register";
+
+    private RabbitAdmin rabbitAdmin;
 
     private boolean autodelete = true;
     private boolean durable;
@@ -59,10 +68,13 @@ public class RabbitConfiguration {
 
     @Autowired(required = false)
     private EmsRegistrator registrator;
+    @Autowired
+    private ConnectionFactory connectionFactory;
 
     @Autowired(required = false)
     @Qualifier("listenerAdapter_emsRegistrator")
     private MessageListenerAdapter listenerAdapter_emsRegistrator;
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public int getMaxConcurrency() {
         return maxConcurrency;
@@ -104,6 +116,15 @@ public class RabbitConfiguration {
         this.exclusive = exclusive;
     }
 
+    @PostConstruct
+    private void init(){
+        log.info("Initialization of RabbitConfiguration");
+        rabbitAdmin = new RabbitAdmin(connectionFactory);
+        TopicExchange topicExchange = new TopicExchange("openbaton-exchange");
+        rabbitAdmin.declareExchange(topicExchange);
+        log.info("exchange declared");
+    }
+
     @Bean
     Gson gson() {
         return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage()).create();
@@ -138,7 +159,8 @@ public class RabbitConfiguration {
 
     @Bean
     TopicExchange exchange() {
-        return new TopicExchange("openbaton-exchange");
+        TopicExchange topicExchange = new TopicExchange("openbaton-exchange");
+        return topicExchange;
     }
 
     @Bean
