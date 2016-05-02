@@ -33,6 +33,7 @@ public class FaultManagementPolicy implements Serializable{
     @Version
     protected int version = 0;
     protected String name;
+    protected boolean isVNFAlarm;
     protected int period;
     protected PerceivedSeverity severity;
 
@@ -80,12 +81,21 @@ public class FaultManagementPolicy implements Serializable{
         return id;
     }
 
+    public boolean isVNFAlarm() {
+        return isVNFAlarm;
+    }
+
+    public void setVNFAlarm(boolean VNFAlarm) {
+        isVNFAlarm = VNFAlarm;
+    }
+
     @Override
     public String toString() {
         return "FaultManagementPolicy{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
                 ", name='" + name + '\'' +
+                ", isVNFAlarm=" + isVNFAlarm +
                 ", period=" + period +
                 ", severity=" + severity +
                 ", criteria=" + criteria +
