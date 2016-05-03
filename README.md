@@ -20,7 +20,7 @@ To install the OpenBaton NFVO through its debian package you can type the follow
 bash <(curl -fsSkL http://get.openbaton.org/bootstrap)
 ```
 
-Please follow the documentation on [our website][http://openbaton.github.io/documentation/nfvo-installation/] for more information on how to configure and use it.
+Please follow the documentation on [our website][installation-guide] for more information on how to configure and use it.
 
 ## Development
 
@@ -59,4 +59,4 @@ Open Baton is a project developed by Fraunhofer FOKUS and TU Berlin. It is suppo
 [nubomedia]: https://www.nubomedia.eu/
 [mcn]: http://mobile-cloud-networking.eu/site/
 [cognet]: http://www.cognet.5g-ppp.eu/cognet-in-5gpp/
-
+[installation-guide]: http://openbaton.github.io/documentation/nfvo-installation/
