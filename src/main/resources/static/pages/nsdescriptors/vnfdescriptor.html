@@ -292,9 +292,9 @@
                                          ng-repeat="image in editObj.vm_image track by $index">
 
                                         <div class="col-sm-6">
-                                        <div class="form-group">
+                                            <div class="form-group">
 
-                                            <label for="value" class="control-label">Vim Instance</label>
+                                                <label for="value" class="control-label">Vim Instance</label>
 
                                                 <select name="typeSelect" class="form-control modal-select" id="value"
                                                         ng-model="vimInstance"
@@ -302,16 +302,17 @@
                                                         ng-change="">
                                                 </select>
 
-                                        </div>
+                                            </div>
                                         </div>
                                         <div class="col-sm-6">
 
                                             <label for="value" class="control-label">VM Image</label>
                                             <div class="input-group">
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default" ng-click="editObj.vm_image.push(image)" type="button"
-                                                        title="Add a new image">
-                                                    <span class="fa fa-plus" aria-hidden="true"></span>
+                                                    <button class="btn btn-default"
+                                                            ng-click="editObj.vm_image.push(image)" type="button"
+                                                            title="Add a new image">
+                                                        <span class="fa fa-plus" aria-hidden="true"></span>
                                                     </button>
                                                 </span>
                                                 <select name="typeSelect" class="form-control modal-select"
@@ -322,7 +323,8 @@
                                                 <!--<input type="text" class="form-control" id="value" name="value"
                                                        ng-model="cp.value"/>-->
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" ng-click="editObj.vm_image.splice($index,1)"
+                                                <button class="btn btn-default"
+                                                        ng-click="editObj.vm_image.splice($index,1)"
                                                         type="button"
                                                         title="Delete this image">
                                                     <span class="fa fa-trash" aria-hidden="true"></span>
