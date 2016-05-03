@@ -24,7 +24,7 @@ Please follow the documentation on [our website][installation-guide] for more in
 
 ## Development
 
-Want to contribute? Great! [Get in contact with us](mailto:users@openbaton.org).
+Want to contribute? Great! [Get in contact with us](mailto:info@openbaton.org).
 
 ## News and Website
 Information about OpenBaton can be found on our @[website]. Follow us on Twitter @[openbaton].
