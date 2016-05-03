@@ -11,13 +11,16 @@ OpenBaton is an open source project providing a reference implementation of the 
 
 ## install the latest NFVO version from the source code
 
-The NFVO uses the Java Messaging System for communicating with the [Generic VNFM](http://openbaton.github.io/documentation/vnfm-generic/). Therefore it is a prerequisites to have RabbitMQ up and running in case you want to use the [Generic VNFM](http://openbaton.github.io/documentation/vnfm-generic/). To facilitate the installation procedures we provide an installation script which can be used for installing the NFVO and the prerequired libraries.
+
+The NFVO uses the AMQP protocol for communicating with the VNFMs. Therefore an implementation of it is necessary, we chose RabbitMQ. To facilitate the installation procedures we provide an installation procedure which will install the NFVO and the prerequired libraries. To execute the following command you need to have curl installed (see http://curl.haxx.se/).
+
+To install the OpenBaton NFVO through its debian package you can type the following command:
 
 ```bash
 bash <(curl -fsSkL http://get.openbaton.org/bootstrap)
 ```
 
-At the end of the installation procedure, if there are no errors, the dashboard should be reachable at: http://localhost:8080. At this point the NFVO is ready to be used. Please refer to the [NFVO user guide](http://openbaton.github.io/documentation/) for how to start using it.
+Please follow the documentation on [our website][http://openbaton.github.io/documentation/nfvo-installation/] for more information on how to configure and use it.
 
 ## Development
 
@@ -25,6 +28,22 @@ Want to contribute? Great! [Get in contact with us](mailto:users@openbaton.org).
 
 ## News and Website
 Information about OpenBaton can be found on our @[website]. Follow us on Twitter @[openbaton].
+
+## License
+
+Copyright (c) 2015-2016 Fraunhofer FOKUS. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ## Supported by
 Open Baton is a project developed by Fraunhofer FOKUS and TU Berlin. It is supported by different European publicly funded projects: 
