@@ -23,7 +23,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Event: ' + data.event + ' deleted.');
+                showOk('Event: ' + data.name + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {

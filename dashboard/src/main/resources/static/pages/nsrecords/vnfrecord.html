@@ -295,7 +295,7 @@
 
                     <div class="col-lg-offset-1">
                     <div class="form-group ">
-                        <div class="form-group col-sm-4">
+                        <div class="form-group col-sm-5">
                             <label class=" control-label">Virtual link reference</label>
 
                             <div class="">
@@ -307,19 +307,23 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-1" > </div>
-                        <div class="input-group col-sm-4" >
-                        <label for="floatingIp" class="control-label">floatingIp</label>
+                        <div class="col-lg-1"></div>
 
-                            <input type="text" class="form-control" id="floatingIp" name="floatingIp"
-                                   ng-model="connection_point.floatingIp"/>
+                        <div class="col-sm-6 ">
+                            <label for="floatingIp" class="control-label">floatingIp</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                       ng-model="connection_point.floatingIp"/>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" ng-click="addCPtoVNFCI()"
+                                                            type="button"
+                                                            title="Add this Connection Point to VNFCI">
+                                                        <span class="fa fa-plus" aria-hidden="true"></span>
+                                                    </button>
+                                            </span>
+                            </div>
 
-                            <span class="input-group-btn">
-                            <button class="btn btn-default" ng-click="addCPtoVNFCI()" type="button"
-                                    title="Add this Connection Point to VNFCI" ng-style="{'margin-top':'25px'}">
-                                <span class="fa fa-plus" aria-hidden="true"></span>
-                            </button>
-                        </span>
+
                         </div>
                     </div>
                     </div>
