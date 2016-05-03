@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by lto on 23/09/15.
@@ -111,7 +112,6 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
         rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
     }
 
-
     @Override
     public void sendToNfvo(final NFVMessage nfvMessage) {
         sendMessageToQueue(RabbitConfiguration.queueName_vnfmCoreActions, nfvMessage);
@@ -136,6 +136,10 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
         log.debug("Sending to: " + queueName);
         String res = (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
         log.trace("Received from EMS: " + res);
+        if (res == null){
+            log.error("After " + timeout + " seconds the ems did not answer.");
+            throw new TimeoutException("After " + timeout + " seconds the ems did not answer. You can change this value by editing the application.properties propery \"vnfm.rabbitmq.sar.timeout\"");
+        }
         return res;
     }
 }
