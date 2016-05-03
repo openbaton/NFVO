@@ -589,6 +589,7 @@
         </div>
     </div>
 </div>
+<!--
 
 <div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -668,7 +669,7 @@
                                 <li>{{mp}} <a href="" ng-click="deleteMPfromNSD($index)"><i
                                         class="fa fa-trash-o"></i></a></li>
                             </ul>
-                            <!--{{nsdCreate.monitoring_parameter}}-->
+                            &lt;!&ndash;{{nsdCreate.monitoring_parameter}}&ndash;&gt;
                         </tab>
                         <tab heading="pnfd" ng-show="showTab(nsdCreate.pnfd.length)">
                             {{nsdCreate.pnfd}}
@@ -701,7 +702,7 @@
                                         href="" ng-click="deleteVNFDep($index)"><i
                                         class="fa fa-trash-o"></i></a></li>
                             </ul>
-                            <!--{{nsdCreate.vnf_dependency}}-->
+                            &lt;!&ndash;{{nsdCreate.vnf_dependency}}&ndash;&gt;
                         </tab>
 
                         <tab heading="vnffgd" ng-show="showTab(nsdCreate.vnffgd.length)">
@@ -755,7 +756,7 @@
                                 </li>
                                     </span>
                             </ul>
-                            <!--{{nsdCreate.vld}}-->
+                            &lt;!&ndash;{{nsdCreate.vld}}&ndash;&gt;
                         </tab>
 
                         <tab heading="VNFDescriptors">
@@ -788,7 +789,7 @@
                                         </span>
                                             </span>
                                     </div>
-                                    <!--<div class="row">
+                                    &lt;!&ndash;<div class="row">
                                         <spam ng-repeat=" vdu in vnfd.vdu" ng-if="!isEmpty(value)">
                                             <b>vdu</b>:
                                             <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value) && value!=''">
@@ -797,7 +798,7 @@
                                             </spam>
                                         </spam>
 
-                                    </div>-->
+                                    </div>&ndash;&gt;
                                     <div class="row">
                                         <div class="pull-right">
                                             <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
@@ -826,6 +827,8 @@
     </div>
 </div>
 
+-->
+<!--
 
 <div class="modal fade" id="modaladdLifecycleEvent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -837,7 +840,7 @@
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="form6">
                     <div class="row">
-                        <!--{{lifecycle_event}}-->
+                        &lt;!&ndash;{{lifecycle_event}}&ndash;&gt;
                         <div class="form-group" ng-repeat="(key,value) in lifecycle_event"
                              ng-if="key!='vimInstance' && key!='lifecycle_events'">
                             <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
@@ -889,7 +892,7 @@
                                     <li>{{lce}} <a href="" ng-click="deleteLifeCE($index)"><i class="fa fa-trash-o"></i></a>
                                     </li>
                                 </ul>
-                                <!--{{depFlavor.costituent_vdu}}-->
+                                &lt;!&ndash;{{depFlavor.costituent_vdu}}&ndash;&gt;
 
                             </tab>
                         </tabset>
@@ -953,6 +956,8 @@
         </div>
     </div>
 </div>
+-->
+<!--
 
 
 <div class="modal fade" id="madalLaunch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -995,7 +1000,7 @@
                                     <label class="control-label"
                                            ng-init=""> deployment_flavour:</label>
 
-                                    <!--{{vnf.deployment_flavour}}-->
+                                    &lt;!&ndash;{{vnf.deployment_flavour}}&ndash;&gt;
 
                                     <select name="typeSelect" class="form-control modal-select"
                                             ng-model="dfla.target.name"
@@ -1022,6 +1027,7 @@
         </div>
     </div>
 </div>
+-->
 
 
 <div class="modal" id="modalCreateNSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
