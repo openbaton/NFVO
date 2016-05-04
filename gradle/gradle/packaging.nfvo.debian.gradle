@@ -22,7 +22,7 @@ ext {
 }
 
 task openbatonNFVODeb(type: Deb, dependsOn: [jar, build]) { 
-    packageName = 'openbaton-nfvo'
+    packageName = (applicationRelease) ? "openbaton-nfvo" : "openbaton-nfvo-nightly"
     version = debianApplicationVersionFull
     release = 1 
     arch = 'amd64'
