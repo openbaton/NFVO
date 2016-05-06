@@ -70,7 +70,7 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) {
+    public void delete(@PathVariable("id") String id) throws WrongStatusException{
         networkServiceDescriptorManagement.delete(id);
     }
 

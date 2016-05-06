@@ -22,13 +22,17 @@ import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
@@ -54,6 +58,8 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
     private boolean cascadeDelete;
     @Autowired
     private NetworkServiceDescriptorRepository nsdRepository;
+    @Autowired
+    private NetworkServiceRecordRepository nsrRepository;
     @Autowired
     private VNFDRepository vnfdRepository;
     @Autowired
@@ -382,9 +388,18 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
      * @param id
      */
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws WrongStatusException{
         log.info("Removing NetworkServiceDescriptor with id " + id);
         NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
+
+        for (NetworkServiceRecord nsr: nsrRepository.findAll()) {
+            if (nsr.getDescriptor_reference().equals(id)) {
+                if (nsr.getStatus().ordinal() != Status.ACTIVE.ordinal()) {
+                    throw new WrongStatusException("The NetworkServiceRecord " + nsr.getName() + " created from the NetworkServiceDescriptor " + networkServiceDescriptor.getName() + " is not yet in ACTIVE");
+                }
+            }
+        }
+
         nsdRepository.delete(networkServiceDescriptor);
         if (cascadeDelete) {
             for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : networkServiceDescriptor.getVnfd()) {
