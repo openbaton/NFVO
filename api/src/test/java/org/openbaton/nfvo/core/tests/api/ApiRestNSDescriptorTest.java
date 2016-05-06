@@ -28,6 +28,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -112,7 +113,7 @@ public class ApiRestNSDescriptorTest {
     }
 
     @Test
-    public void NSDDelete() {
+    public void NSDDelete() throws WrongStatusException{
         nsdManagement.delete(anyString());
         restNetworkService.delete(anyString());
     }

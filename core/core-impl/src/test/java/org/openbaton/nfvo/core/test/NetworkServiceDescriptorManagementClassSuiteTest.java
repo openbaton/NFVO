@@ -26,17 +26,20 @@ import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
@@ -63,6 +66,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     private VimRepository vimRepository;
     @Mock
     private NetworkServiceDescriptorRepository nsdRepository;
+    @Mock
+    private NetworkServiceRecordRepository nsrRepository;
     @Mock
     private VnfPackageRepository vnfPackageRepository ;
     @Mock
@@ -103,7 +108,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementEnableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
+    public void nsdManagementEnableTest() throws NotFoundException, WrongStatusException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
@@ -113,16 +118,19 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
         Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
         Assert.assertTrue(nsd_exp.isEnabled());
+        when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
         nsdManagement.delete(nsd_exp.getId());
     }
 
     @Test
-    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
+    public void nsdManagementDisableTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException, WrongStatusException {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         nsd_exp.setEnabled(true);
         when(vimRepository.findAll()).thenReturn(new ArrayList<VimInstance>() {{
             add(createVimInstance());
         }});
+
+        when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
 
         nsdManagement.onboard(nsd_exp);
         when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
@@ -134,7 +142,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     ;
 
     @Test
-    public void nsdManagementQueryTest() {
+    public void nsdManagementQueryTest() throws WrongStatusException {
         when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
         Iterable<NetworkServiceDescriptor> nsds = nsdManagement.query();
         Assert.assertEquals(nsds.iterator().hasNext(), false);
@@ -143,7 +151,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             add(nsd_exp);
         }});
         nsds = nsdManagement.query();
-
+        when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
         Assert.assertEquals(nsds.iterator().hasNext(), true);
         nsdManagement.delete(nsd_exp.getId());
     }
@@ -176,7 +184,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     }
 
     @Test
-    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
+    public void nsdManagementUpdateTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException, WrongStatusException {
         when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
@@ -194,6 +202,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         new_nsd.setId(nsd_exp.getId());
 
         assertEqualsNSD(new_nsd);
+        when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
 
         nsdManagement.delete(nsd_exp.getId());
     }
