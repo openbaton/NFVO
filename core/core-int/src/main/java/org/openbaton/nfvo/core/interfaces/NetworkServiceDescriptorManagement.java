@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.common.Security;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
@@ -95,7 +96,7 @@ public interface NetworkServiceDescriptorManagement {
      *
      * @param id
      */
-    void delete(String id);
+    void delete(String id) throws WrongStatusException;
 
     /**
      * Removes the VNFDescriptor into NSD
