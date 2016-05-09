@@ -9,7 +9,7 @@ OPENBATON_EXE_FOLDER=$OPENBATON_BASE/bin
 
 OPENBATON_PLUGINS_ALL_URL="http://get.openbaton.org/plugins/stable/"
 OPENBATON_PLUGINS_TEST_URL="http://get.openbaton.org/plugins/stable/test-plugin-0.5-SNAPSHOT.jar"
-OPENBATON_PLUGINS_OPENSTACK_URL="http://get.openbaton.org/plugins/stable/openstack-plugin-1.0.2.jar"
+OPENBATON_PLUGINS_OPENSTACK_URL="http://get.openbaton.org/plugins/stable/openstack-plugin-2.0.1.jar"
 TMPFOLDER=$(mktemp -d)
 
 USER="$(id -un 2>/dev/null || true)"
