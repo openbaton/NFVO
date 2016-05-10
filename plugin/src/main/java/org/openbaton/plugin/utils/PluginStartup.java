@@ -97,7 +97,7 @@ public class PluginStartup {
         File dir = new File(pluginLogPath);
         if (!dir.exists())
             dir.mkdirs();
-        File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow) + ".log");
+        File file = new File(pluginLogPath+"/plugin-" + name + "_" + ft.format(dNow) + ".log");
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
         log.trace("ProcessBuilder is: " + processBuilder);
