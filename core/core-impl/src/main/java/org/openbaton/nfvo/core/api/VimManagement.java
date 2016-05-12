@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.api;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -100,6 +101,15 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             boolean found = false;
             for (NFVImage nfvImage_nfvo : vimInstance.getImages()) {
                 if (nfvImage_nfvo.getExtId().equals(image_new.getExtId())) {
+                    nfvImage_nfvo.setName(image_new.getName());
+                    nfvImage_nfvo.setIsPublic(image_new.isPublic());
+                    nfvImage_nfvo.setMinRam(image_new.getMinRam());
+                    nfvImage_nfvo.setMinCPU(image_new.getMinCPU());
+                    nfvImage_nfvo.setMinDiskSpace(image_new.getMinDiskSpace());
+                    nfvImage_nfvo.setDiskFormat(image_new.getDiskFormat());
+                    nfvImage_nfvo.setContainerFormat(image_new.getContainerFormat());
+                    nfvImage_nfvo.setCreated(image_new.getCreated());
+                    nfvImage_nfvo.setUpdated(image_new.getUpdated());
                     found = true;
                     break;
                 }
@@ -135,6 +145,46 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             boolean found = false;
             for (Network network_nfvo : vimInstance.getNetworks()) {
                 if (network_nfvo.getExtId().equals(network_new.getExtId())) {
+                    network_nfvo.setName(network_new.getName());
+                    network_nfvo.setExternal(network_new.getExternal());
+                    network_nfvo.setShared(network_new.getExternal());
+                    Set<Subnet> subnets_refreshed = new HashSet<Subnet>();
+                    Set<Subnet> subnets_new = new HashSet<Subnet>();
+                    Set<Subnet> subnets_old = new HashSet<Subnet>();
+                    subnets_refreshed.addAll(network_new.getSubnets());
+                    if (network_nfvo.getSubnets() == null) {
+                        network_nfvo.setSubnets(new HashSet<Subnet>());
+                    }
+                    for (Subnet subnet_new : subnets_refreshed) {
+                        boolean found_subnet = false;
+                        for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
+                            if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
+                                subnet_nfvo.setName(subnet_new.getName());
+                                subnet_nfvo.setNetworkId(subnet_new.getNetworkId());
+                                subnet_nfvo.setGatewayIp(subnet_new.getGatewayIp());
+                                subnet_nfvo.setCidr(subnet_new.getCidr());
+                                found_subnet = true;
+                                break;
+                            }
+                        }
+                        if (!found_subnet) {
+                            subnets_new.add(subnet_new);
+                        }
+                    }
+                    for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
+                        boolean found_subnet = false;
+                        for (Subnet subnet_new : subnets_refreshed) {
+                            if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
+                                found_subnet = true;
+                                break;
+                            }
+                        }
+                        if (!found_subnet) {
+                            subnets_old.add(subnet_nfvo);
+                        }
+                    }
+                    network_nfvo.getSubnets().addAll(subnets_new);
+                    network_nfvo.getSubnets().removeAll(subnets_old);
                     found = true;
                     break;
                 }
@@ -170,6 +220,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             boolean found = false;
             for (DeploymentFlavour flavor_nfvo : vimInstance.getFlavours()) {
                 if (flavor_nfvo.getExtId().equals(flavor_new.getExtId())) {
+                    flavor_nfvo.setFlavour_key(flavor_new.getFlavour_key());
+                    flavor_nfvo.setDisk(flavor_new.getDisk());
+                    flavor_nfvo.setRam(flavor_new.getRam());
+                    flavor_nfvo.setVcpus(flavor_new.getVcpus());
                     found = true;
                     break;
                 }
