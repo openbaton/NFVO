@@ -11,13 +11,73 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
     loadTable();
 
     $scope.eventObj = {
-        'name':'event_name',
-        'networkServiceId':'',
-        'virtualNetworkFunctionId':'',
-        'type':'REST',
-        'endpoint':'localhost:8081/events',
-        'event':'INSTANTIATE_FINISH'
+        'name': 'event_name',
+        'networkServiceId': '',
+        'virtualNetworkFunctionId': '',
+        'type': 'REST',
+        'endpoint': 'localhost:8081/events',
+        'event': 'INSTANTIATE_FINISH'
     };
+
+    /* -- multiple delete functions Start -- */
+
+    $scope.multipleDeleteReq = function(){
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+                if (value) {
+                    ids.push(k);
+                }
+        });
+        console.log(ids);
+        http.post(url + 'multipledelete', ids)
+            .success(function (response) {
+                showOk('Event: ' + ids.toString() + ' deleted.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+    };
+    $scope.$watch('mainCheckbox', function (newValue, oldValue) {
+        console.log(newValue);
+        console.log($scope.selection.ids);
+
+
+        angular.forEach($scope.selection.ids, function (value, k) {
+            /*     console.log(k);
+             console.log(value);*/
+
+            $scope.selection.ids[k] = newValue;
+        });
+        console.log($scope.selection.ids);
+
+    });
+    $scope.$watch('selection', function (newValue, oldValue) {
+        console.log(newValue);
+        var keepGoing = true;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (keepGoing) {
+                if ($scope.selection.ids[k]) {
+                    $scope.multipleDelete = false;
+                    keepGoing = false;
+                }
+                else {
+                    $scope.multipleDelete = true;
+                }
+            }
+
+        });
+        if (keepGoing)
+            $scope.mainCheckbox = false;
+    }, true);
+
+    $scope.multipleDelete = true;
+
+    $scope.selection = {};
+    $scope.selection.ids = {};
+    /* -- multiple delete functions END -- */
+
 
     $scope.types = ['REST', 'RABBIT', 'JMS'];
     $scope.deleteEvent = function (data) {
@@ -37,8 +97,8 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
 
     $scope.save = function () {
-    console.log($scope.eventObj);
-        http.post(url,$scope.eventObj )
+        console.log($scope.eventObj);
+        http.post(url, $scope.eventObj)
             .success(function (response) {
                 showOk('Event: ' + $scope.eventObj.name + ' saved.');
                 loadTable();
@@ -68,7 +128,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
                     showError(data, status);
                 });
 
-            http.get(url+'/actions')
+            http.get(url + '/actions')
                 .success(function (response) {
                     $scope.actions = response;
                 })
