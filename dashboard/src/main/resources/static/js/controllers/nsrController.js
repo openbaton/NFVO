@@ -122,6 +122,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     };
 
 
+
     $scope.sendFile = function () {
 
 
@@ -255,6 +256,64 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
     };
 
+    /* -- multiple delete functions Start -- */
+
+    $scope.multipleDeleteReq = function(){
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push(k);
+            }
+        });
+        console.log(ids);
+        http.post(url + 'multipledelete', ids)
+            .success(function (response) {
+                showOk('Event: ' + ids.toString() + ' deleted.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+    };
+    $scope.$watch('mainCheckbox', function (newValue, oldValue) {
+        console.log(newValue);
+        console.log($scope.selection.ids);
+
+
+        angular.forEach($scope.selection.ids, function (value, k) {
+            /*     console.log(k);
+             console.log(value);*/
+
+            $scope.selection.ids[k] = newValue;
+        });
+        console.log($scope.selection.ids);
+
+    });
+    $scope.$watch('selection', function (newValue, oldValue) {
+        console.log(newValue);
+        var keepGoing = true;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (keepGoing) {
+                if ($scope.selection.ids[k]) {
+                    $scope.multipleDelete = false;
+                    keepGoing = false;
+                }
+                else {
+                    $scope.multipleDelete = true;
+                }
+            }
+
+        });
+        if (keepGoing)
+            $scope.mainCheckbox = false;
+    }, true);
+
+    $scope.multipleDelete = true;
+
+    $scope.selection = {};
+    $scope.selection.ids = {};
+    /* -- multiple delete functions END -- */
 
     function showError(status, data) {
         $scope.alerts.push({
