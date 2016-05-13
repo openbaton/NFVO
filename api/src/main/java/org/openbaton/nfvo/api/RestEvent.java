@@ -29,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -67,6 +68,19 @@ public class RestEvent {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unregister(@PathVariable("id") String id) throws NotFoundException {
         eventDispatcher.unregister(id);
+    }
+
+    /**
+     * Removes multiple EventEndpoint from the EventEndpoint repository
+     *
+     * @param ids: The List of the EventEndpoint Id to be deleted
+     * @throws NotFoundException
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
+        for (String id : ids)
+            eventDispatcher.unregister(id);
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

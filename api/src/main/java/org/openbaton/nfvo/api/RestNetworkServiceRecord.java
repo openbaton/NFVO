@@ -35,10 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -88,6 +85,24 @@ public class RestNetworkServiceRecord {
             throw new StateException(id);
         }
     }
+
+    /**
+     * Removes multiple Network Service Descriptor from the NSDescriptors repository
+     *
+     * @param ids: the id list of Network Service Descriptors
+     * @throws NotFoundException
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws WrongStatusException
+     * @throws VimException
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
+        for (String id : ids)
+            networkServiceRecordManagement.delete(id);
+    }
+
 
     /**
      * This operation returns the list of Network Service Descriptor (NSD)

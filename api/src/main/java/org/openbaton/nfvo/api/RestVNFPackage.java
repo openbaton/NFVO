@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
@@ -68,6 +69,18 @@ public class RestVNFPackage {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) throws WrongAction {
         vnfPackageManagement.delete(id);
+    }
+    /**
+     * Removes multiple VNFPackage from the VNFPackages repository
+     *
+     * @param ids: The List of the VNFPackage Id to be deleted
+     * @throws NotFoundException, WrongAction
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException, WrongAction {
+        for (String id : ids)
+            vnfPackageManagement.delete(id);
     }
 
     /**

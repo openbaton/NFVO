@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -72,6 +73,23 @@ public class RestNetworkServiceDescriptor {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) throws WrongStatusException{
         networkServiceDescriptorManagement.delete(id);
+    }
+
+    /**
+     * Removes a list Network Service Descriptor from the NSDs Repository
+     *
+     * @param ids: the list of the ids
+     * @throws NotFoundException
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws WrongStatusException
+     * @throws VimException
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
+        for (String id : ids)
+            networkServiceRecordManagement.delete(id);
     }
 
     /**

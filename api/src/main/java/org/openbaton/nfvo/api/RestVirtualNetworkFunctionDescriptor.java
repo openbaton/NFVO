@@ -16,17 +16,15 @@
 
 package org.openbaton.nfvo.api;
 
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.nfvo.core.interfaces.VirtualNetworkFunctionManagement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vnf-descriptors")
@@ -60,6 +58,18 @@ public class RestVirtualNetworkFunctionDescriptor {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) {
         vnfdManagement.delete(id);
+    }
+
+    /**
+     * Removes multiple VirtualNetworkFunctionDescriptor from the VirtualNetworkFunctionDescriptors repository
+     *
+     * @param ids
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids)  {
+        for (String id : ids)
+            vnfdManagement.delete(id);
     }
 
     /**
