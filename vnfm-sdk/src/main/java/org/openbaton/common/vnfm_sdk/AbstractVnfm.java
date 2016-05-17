@@ -273,6 +273,7 @@ public abstract class AbstractVnfm implements VNFLifecycleManagement, VNFLifecyc
                     OrVnfmInstantiateMessage orVnfmInstantiateMessage = (OrVnfmInstantiateMessage) message;
                     Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
 
+                    log.debug("Extensions are: " + extension);
                     getExtension(extension);
 
                     Map<String, Collection<VimInstance>> vimInstances = orVnfmInstantiateMessage.getVimInstances();
