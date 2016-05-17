@@ -89,7 +89,7 @@ public class RestNetworkServiceDescriptor {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void multipleDelete(@RequestBody @Valid List<String> ids) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
         for (String id : ids)
-            networkServiceRecordManagement.delete(id);
+            networkServiceDescriptorManagement.delete(id);
     }
 
     /**
