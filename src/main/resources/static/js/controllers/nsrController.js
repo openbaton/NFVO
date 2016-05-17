@@ -268,7 +268,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
-                showOk('Event: ' + ids.toString() + ' deleted.');
+                showOk('NSR with id: ' + ids.toString() + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
@@ -276,20 +276,16 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
 
     };
-    $scope.$watch('mainCheckbox', function (newValue, oldValue) {
-        console.log(newValue);
-        console.log($scope.selection.ids);
-
-
+    $scope.main = {checkbox: false};
+    $scope.$watch('main', function (newValue, oldValue) {
+        //console.log(newValue.checkbox);
+        //console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
-            /*     console.log(k);
-             console.log(value);*/
-
-            $scope.selection.ids[k] = newValue;
+            $scope.selection.ids[k] = newValue.checkbox;
         });
         console.log($scope.selection.ids);
+    }, true);
 
-    });
     $scope.$watch('selection', function (newValue, oldValue) {
         console.log(newValue);
         var keepGoing = true;

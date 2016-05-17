@@ -43,12 +43,12 @@
                                        name="email"
                                        type="text" autofocus>
                             </div>
-                            <div class="form-group" ng-class="notEqual ? 'has-error' : 'has-success' ">
+                            <div class="form-group" ng-class="notEqual ? 'has-error' : '' ">
                                 <input ng-model="new.password" class="form-control" placeholder="Password"
                                        name="password" type="password" value="">
                             </div>
 
-                            <div class="form-group" ng-class="notEqual ? 'has-error' : 'has-success' ">
+                            <div class="form-group" ng-class="notEqual ? 'has-error' : '' ">
                                 <input ng-model="new.password2" class="form-control" placeholder="Re-insert Password"
                                        name="password" type="password" value="" ng-change="checkIfEqual()">
                             </div>
