@@ -15,11 +15,9 @@
 
 package org.openbaton.common.vnfm_sdk.amqp.configuration;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.amqp.AbstractVnfmSpringAmqp;
 import org.openbaton.common.vnfm_sdk.interfaces.EmsRegistrator;
+import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;
@@ -57,6 +55,7 @@ public class RabbitConfiguration {
     public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
     public static String queueName_nfvoGenericActions = "nfvo.type.actions";
     public static String queueName_emsRegistrator = "ems.generic.register";
+    private final static String queueName_logDispatch = "nfvo.vnfm.logs";
 
     private RabbitAdmin rabbitAdmin;
 
@@ -70,6 +69,9 @@ public class RabbitConfiguration {
     private EmsRegistrator registrator;
     @Autowired
     private ConnectionFactory connectionFactory;
+
+    @Autowired(required = false)
+    private LogDispatcher logDispatcher;
 
     @Autowired(required = false)
     @Qualifier("listenerAdapter_emsRegistrator")
@@ -126,8 +128,39 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    Gson gson() {
-        return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage()).create();
+    Queue queue_logDispatch() {
+        return new Queue(queueName_logDispatch, durable, exclusive, autodelete);
+    }
+
+    @Bean
+    Binding binding_logDispatch(TopicExchange exchange) {
+        return BindingBuilder.bind(queue_logDispatch()).to(exchange).with(queueName_logDispatch);
+    }
+
+    @Bean
+    MessageListenerAdapter listenerAdapter_logDispatch() {
+        if (logDispatcher != null)
+            return new MessageListenerAdapter(logDispatcher, "sendLogs");
+        else
+            return null;
+    }
+
+    @Bean
+    SimpleMessageListenerContainer container_logDispatcher(ConnectionFactory connectionFactory, @Qualifier("listenerAdapter_logDispatch") MessageListenerAdapter listenerAdapter) {
+        if (listenerAdapter != null) {
+            SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+            container.setConnectionFactory(connectionFactory);
+            container.setQueueNames(queueName_logDispatch);
+            if (minConcurrency <= 0 || maxConcurrency <= 0 || minConcurrency > maxConcurrency) {
+                container.setConcurrentConsumers(5);
+                container.setMaxConcurrentConsumers(15);
+            } else {
+                container.setConcurrentConsumers(minConcurrency);
+                container.setMaxConcurrentConsumers(maxConcurrency);
+            }
+            container.setMessageListener(listenerAdapter);
+            return container;
+        }else return null;
     }
 
     @Bean
