@@ -39,20 +39,17 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
             });
 
     };
-    $scope.$watch('mainCheckbox', function (newValue, oldValue) {
-        console.log(newValue);
-        console.log($scope.selection.ids);
 
-
+    $scope.main = {checkbox: false};
+    $scope.$watch('main', function (newValue, oldValue) {
+        //console.log(newValue.checkbox);
+        //console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
-            /*     console.log(k);
-             console.log(value);*/
-
-            $scope.selection.ids[k] = newValue;
+            $scope.selection.ids[k] = newValue.checkbox;
         });
         console.log($scope.selection.ids);
+    }, true);
 
-    });
     $scope.$watch('selection', function (newValue, oldValue) {
         console.log(newValue);
         var keepGoing = true;
