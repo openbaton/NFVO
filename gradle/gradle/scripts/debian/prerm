@@ -37,8 +37,11 @@ fi
 #############
 
 stopNFVO () {
-    log_daemon_msg "Stopping the OpenBaton NVFO .."
-    $_ex 'stop openbaton-nfvo'
+    instance=$(ps aux | grep -v grep | grep "openbaton-*jar" | wc -l)
+    if [ ${instance} -ne 0 ]; then
+    	log_daemon_msg "Stopping the OpenBaton NVFO .."
+    	$_ex 'stop openbaton-nfvo'
+    fi
 }
 
 
