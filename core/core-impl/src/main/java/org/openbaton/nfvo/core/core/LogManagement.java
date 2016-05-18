@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,18 +40,24 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
             if (virtualNetworkFunctionRecord.getName().equals(vnfrName)){
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
                     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
-                        if (hostname.equals(vnfcInstance.getHostname())){
+                        if (hostname.equals(vnfcInstance.getHostname())) {
 
                             log.debug("Requesting log from GenericVNFM");
                             String json = (String) rabbitTemplate.convertSendAndReceive("nfvo.vnfm.logs", "{\"vnfrName\":\"" + vnfrName + "\", \"hostname\":\"" + hostname + "\"}");
-                            log.trace("RECEIVED: " + json);
+                            log.debug("RECEIVED: " + json);
 
                             JsonReader reader = new JsonReader(new StringReader(json));
                             reader.setLenient(true);
-
-                            JsonArray answer = ((JsonObject) gson.fromJson(reader, JsonObject.class)).get("answer").getAsJsonArray();
-                            log.trace("ANSWER: " + answer);
-                            return gson.fromJson(answer, List.class);
+                            JsonArray answer = null;
+                            try {
+                                answer = ((JsonObject) gson.fromJson(reader, JsonObject.class)).get("answer").getAsJsonArray();
+                            } catch (java.lang.IllegalStateException e) {
+                                LinkedList<String> error = new LinkedList<>();
+                                error.add(((JsonObject) gson.fromJson(reader, JsonObject.class)).get("answer").getAsString());
+                                return error;
+                            }
+                            log.debug("ANSWER: " + answer);
+                            return gson.fromJson(answer, LinkedList.class);
                         }
                     }
                 }

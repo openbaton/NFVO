@@ -198,10 +198,10 @@ public class OpenbatonCLI implements CommandLineRunner {
     private String listPlugins(int port) {
         String result = "\n";
         result += "Available plugins:\n";
-        result += String.format("%20s", "plugin name") + "\n";
+        result += String.format("%40s", "plugin name") + "\n";
         System.out.println();
         for (Map.Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()){
-            result += String.format("%20s",entry.getKey()) + "\n";
+            result += String.format("%40s",entry.getKey()) + "\n";
         }
         return result;
     }
