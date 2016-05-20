@@ -3,6 +3,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + 'ns-records/';
     var urlVNFD = baseUrl + 'vnf-descriptors/';
+    var urlLog = baseUrl + 'logs/';
 
 
     loadTable();
@@ -19,13 +20,13 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         {active: false}
     ];
 
-    $scope.addVNFCIModal= function (data) {
+    $scope.addVNFCIModal = function (data) {
         $scope.vnfrSelected = angular.copy(data);
         $('#addVNFCItoVDU').modal('show');
     };
     $scope.addVNFCI = function () {
         console.log($scope.connection_points)
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point":$scope.connection_points})
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point": $scope.connection_points})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -74,19 +75,19 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         $scope.vnfrSelected = angular.copy(vnfr);
         $('#addVNFCItoVDU').modal('show');
         /*$scope.connectionPoints = {"connection_point": angular.copy(vdu.vnfc[0].connection_point)};
-        angular.forEach($scope.connectionPoints.connection_point, function (cp, index) {
-            if (!angular.isUndefined(cp.id)) {
-                delete cp.id;
-                delete cp.version;
-            }
-        });
-        console.log($scope.connectionPoints);*/
+         angular.forEach($scope.connectionPoints.connection_point, function (cp, index) {
+         if (!angular.isUndefined(cp.id)) {
+         delete cp.id;
+         delete cp.version;
+         }
+         });
+         console.log($scope.connectionPoints);*/
 
     };
 
     $scope.addCPtoVDU = function () {
         console.log($scope.connection_points);
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances',  {"connection_point":$scope.connection_points})
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances', {"connection_point": $scope.connection_points})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
                 loadTable();
@@ -120,7 +121,6 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             return /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$|^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$|^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/.test(str);
 
     };
-
 
 
     $scope.sendFile = function () {
@@ -205,8 +205,34 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         $scope.vduId = $routeParams.vduId;
         console.log($scope.vduId);
     }
+    if (!angular.isUndefined($routeParams.vnfciId)) {
+        $scope.vnfciId = $routeParams.vnfciId;
+        console.log($scope.vnfciId);
+    }
 
 
+    $scope.logReq = {};
+    $scope.loadLog = function () {
+        console.log($scope.logReq);
+        //"{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}"
+        var lines;
+        if (!angular.isUndefined($scope.logReq.lines))
+            lines = {'lines': $scope.logReq.lines};
+        else lines = {};
+        http.post(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname, lines)
+            .success(function (response, status) {
+                $('.modal').modal('hide');
+                console.log(response);
+                var html = "";
+                angular.forEach(response, function (val, i) {
+                    html = html + val + '<br/>';
+                });
+                $scope.log = html;
+
+            }).error(function (data, status) {
+            showError(data, status);
+        });
+    };
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
         return string;
@@ -258,7 +284,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     /* -- multiple delete functions Start -- */
 
-    $scope.multipleDeleteReq = function(){
+    $scope.multipleDeleteReq = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
             if (value) {
