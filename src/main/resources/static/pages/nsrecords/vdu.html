@@ -10,11 +10,11 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Descriptors</a>
+                    NS Records</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
-                    NSD: {{nsrinfo.name}}</a>
+                    NSR: {{nsrinfo.name}}</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
@@ -130,53 +130,6 @@
                                 </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </tab>
-                    <tab heading="Log">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <h3 class="col-lg-3">Console Log</h3>
-                                <div class="col-sm-9 pull-right">
-                                    <div class="col-lg-4">
-                                        <div class="input-group">
-                                            <span class="input-group-addon">Rows</span>
-                                            <input type="number" class="form-control"
-                                                   aria-label="Text input with dropdown button"
-                                                   ng-model="input.numberRows">
-                                            <div class="input-group-btn">
-                                                <button ng-disable="checkStatus()"
-                                                        class="btn btn-primary dropdown-toggle"
-                                                        type="button"
-                                                        id="get_log_app" title="Loads the log with specified rows"
-                                                        data-toggle="dropdown"
-                                                        aria-haspopup="true" aria-expanded="true">
-                                                    Show
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-right"
-                                                    aria-labelledby="get_log_app">
-                                                    <li ng-repeat="pod in application.podList"><a href=""
-                                                                                                  ng-click="loadAppLog(pod)">{{pod}}</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <button id="get_log" class="btn btn-secondary"
-                                                title="Loads the full log" ng-click="loadLog()">Full log
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <br/>
-                        <div class="row" ng-show="log">
-                            <div class="col-lg-12">
-                                <pre id="log" ng-bind-html="log"></pre>
-
-                            </div>
                         </div>
                     </tab>
                 </tabset>
