@@ -47,6 +47,18 @@ angular.module('app')
             });
 
         };
+        http.postLog = function (url) {
+            $('#modalSend').modal('show');
+
+            console.log(url);
+            return $.ajax({
+                url: url,
+                type: 'post',
+                headers: customHeaders,
+                dataType: 'json'
+            });
+
+        };
         http.postXML = function (url, data) {
             $('#modalSend').modal('show');
             return $http({
