@@ -212,26 +212,39 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
 
     $scope.logReq = {};
-    $scope.loadLog = function () {
-        console.log($scope.logReq);
-        //"{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}"
-        var lines;
-        if (!angular.isUndefined($scope.logReq.lines))
-            lines = {'lines': $scope.logReq.lines};
-        else lines = {};
-        http.post(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname, lines)
+    $scope.loadFullLog = function () {
+        http.postLog(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname)
             .success(function (response, status) {
                 $('.modal').modal('hide');
-                console.log(response);
                 var html = "";
                 angular.forEach(response, function (val, i) {
                     html = html + val + '<br/>';
                 });
                 $scope.log = html;
-
+                $scope.$apply();
             }).error(function (data, status) {
             showError(data, status);
         });
+    };
+
+    $scope.loadLog = function () {
+        console.log($scope.logReq);
+        //"{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}"
+        var lines;
+        if (!angular.isUndefined($scope.logReq.lines)) {
+            http.post(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname, {'lines': $scope.logReq.lines})
+                .success(function (response, status) {
+                    $('.modal').modal('hide');
+                    var html = "";
+                    angular.forEach(response, function (val, i) {
+                        html = html + val + '<br/>';
+                    });
+                    $scope.log = html;
+
+                }).error(function (data, status) {
+                showError(data, status);
+            });
+        }
     };
     $scope.returnUptime = function (longUptime) {
         var string = serviceAPI.returnStringUptime(longUptime);
