@@ -16,13 +16,19 @@
 
 package org.openbaton.nfvo.security;
 
+import org.openbaton.catalogue.security.User;
+import org.openbaton.nfvo.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -30,25 +36,22 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @Configuration
 @EnableResourceServer
 @ConfigurationProperties(prefix = "nfvo.security")
-public class ResourceServer extends ResourceServerConfigurerAdapter {
+public class ResourceServer extends ResourceServerConfigurerAdapter implements CommandLineRunner {
 
     private boolean enabled;
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private UserRepository userRepository;
+    @Value("${nfvo.security.admin.password:openbaton}")
+    private String adminPwd;
+    @Value("${nfvo.security.guest.password:guest}")
+    private String guestPwd;
 
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.headers()
                 .frameOptions().disable();
-//        http
-//                .requestMatchers().antMatchers("/api/v1/", "/api/v1/**")
-//                .and()
-//                .authorizeRequests().anyRequest().access("#oauth2.hasScope('write')");
-//
-//
-//        http
-//                .anonymous()
-//                .disable();
 
         // API calls
 
@@ -59,7 +62,6 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
                     .regexMatchers(HttpMethod.POST, "/api/v1/")
                     .access("#oauth2.hasScope('write')")
                     .and()
-                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                     .and()
@@ -71,12 +73,11 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
                     .antMatchers("/api/**")
                     .access("#oauth2.hasScope('write')")
                     .and()
-                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                     .and()
                     .exceptionHandling();
-        }else {
+        } else {
             log.warn("Security is not enabled!");
             http
                     .authorizeRequests().anyRequest().permitAll();
@@ -98,4 +99,41 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         this.enabled = enabled;
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+
+        log.debug("Creating initial Users...");
+
+        Iterable<User> users = userRepository.findAll();
+        boolean found = false;
+        for (User user : users)
+            if (user.getUsername().equals("admin"))
+                found = true;
+
+        if (!found) {
+            User userAdmin = new User();
+            userAdmin.setAdmin(true);
+            userAdmin.setUsername("admin");
+            userAdmin.setFirstName("Admin");
+            userAdmin.setPassword(BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)));
+            userAdmin.setLastName("OpenBaton");
+            userRepository.save(userAdmin);
+        }
+
+        found = false;
+
+        for (User user : users)
+            if (user.getUsername().equals("guest"))
+                found = true;
+
+        if (!found) {
+            User userGuest = new User();
+            userGuest.setAdmin(false);
+            userGuest.setFirstName("Guest");
+            userGuest.setUsername("guest");
+            userGuest.setPassword(BCrypt.hashpw(guestPwd, BCrypt.gensalt(12)));
+            userGuest.setLastName("Guest");
+            userRepository.save(userGuest);
+        }
+    }
 }
