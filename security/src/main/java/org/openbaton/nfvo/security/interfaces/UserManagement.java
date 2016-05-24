@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.core.interfaces;
+package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.User;
 

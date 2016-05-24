@@ -23,5 +23,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by gca on 25/09/15.
  */
 public interface UserRepository extends CrudRepository<User, String> {
-    User findFirstById(String id);
+    User findFirstByUsername(String username);
 }

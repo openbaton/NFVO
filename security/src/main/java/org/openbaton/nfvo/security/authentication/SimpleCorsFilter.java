@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.security;
+package org.openbaton.nfvo.security.authentication;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

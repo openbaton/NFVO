@@ -1,6 +1,5 @@
-package org.openbaton.nfvo.core.core;
+package org.openbaton.nfvo.security.authorization;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +9,14 @@ import org.springframework.stereotype.Service;
  * Created by lto on 25/02/16.
  */
 @Service
-public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserManagement {
+public class UserManagement implements org.openbaton.nfvo.security.interfaces.UserManagement {
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
     public User add(User user) {
-        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(12)));
+//        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(12)));
         return userRepository.save(user);
     }
 
@@ -37,7 +36,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
     }
 
     @Override
-    public User query(String id) {
-        return userRepository.findFirstById(id);
+    public User query(String username) {
+        return userRepository.findFirstByUsername(username);
     }
 }

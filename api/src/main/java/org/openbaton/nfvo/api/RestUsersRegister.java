@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.security.User;
-import org.openbaton.nfvo.core.interfaces.UserManagement;
+import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

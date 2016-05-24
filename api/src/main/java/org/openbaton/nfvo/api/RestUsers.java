@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.security.User;
-import org.openbaton.nfvo.core.interfaces.UserManagement;
+import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,15 +52,15 @@ public class RestUsers {
     /**
      * Removes the User from the Users repository
      *
-     * @param id : the id of user to be removed
+     * @param username : the username of user to be removed
      */
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{username}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) {
+    public void delete(@PathVariable("username") String username) {
         if (userManagement != null) {
-            log.debug("removing User with id " + id);
-            userManagement.delete(userManagement.query(id));
+            log.debug("removing User with username " + username);
+            userManagement.delete(userManagement.query(username));
         }
         return;
     }
@@ -78,14 +78,14 @@ public class RestUsers {
     }
 
     /**
-     * Returns the User selected by id
+     * Returns the User selected by username
      *
-     * @param id : The id of the User
+     * @param id : The username of the User
      * @return User: The User selected
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public User findById(@PathVariable("id") String id) {
-        log.debug("find User with id " + id);
+    @RequestMapping(value = "{username}", method = RequestMethod.GET)
+    public User findById(@PathVariable("username") String id) {
+        log.debug("find User with username " + id);
         User user = userManagement.query(id);
         log.trace("Found User: " + user);
         return user;
@@ -98,7 +98,7 @@ public class RestUsers {
      * @return User The User updated
      */
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{username}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public User update(@RequestBody @Valid User new_user) {
         return userManagement.update(new_user);
