@@ -26,20 +26,29 @@ public class User {
 
     @Id
     private String id;
-
+    @Column(unique = true)
     private String username;
 
     private String password;
-
+    private boolean enabled;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Role> roles;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", password='*********'" +
+                ", enabled=" + enabled +
                 ", roles=" + roles +
                 '}';
     }
