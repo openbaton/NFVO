@@ -3,10 +3,7 @@ package org.openbaton.catalogue.security;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VimInstance;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
@@ -16,6 +13,7 @@ import java.util.Set;
 public class Project {
     @Id
     private String id;
+    @Column(unique = true)
     private String name;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<VimInstance> allowedVimInstances;
