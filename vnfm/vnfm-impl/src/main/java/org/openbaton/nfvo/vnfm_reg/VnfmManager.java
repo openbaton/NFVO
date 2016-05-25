@@ -49,6 +49,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -413,32 +414,43 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
         log.debug("The nsr id is: " + virtualNetworkFunctionRecord.getParent_ns_id());
 
         Status status = Status.TERMINATED;
-        NetworkServiceRecord networkServiceRecord;
-        try {
-            networkServiceRecord = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
-        } catch (NoResultException e) {
-            log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
-            return;
-        }
+        NetworkServiceRecord networkServiceRecord = null;
 
-        if (nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() != networkServiceRecord.getVnfr().size()){
-            log.debug("Not all the VNFR have been created yet, it is useless to set the NSR status.");
-            return;
-        }
+        // this while loop is necessary because the NSR and it's components might have changed before the save call resulting in an OptimisticLockingFailureException
+        boolean foundAndSet = false;
+        while (!foundAndSet) {
+            try {
+                try {
+                    networkServiceRecord = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
+                } catch (NoResultException e) {
+                    log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
+                    return;
+                }
+
+                if (nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() != networkServiceRecord.getVnfr().size()) {
+                    log.debug("Not all the VNFR have been created yet, it is useless to set the NSR status.");
+                    return;
+                }
 
 
-        log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
+                log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
 
-        for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
-            log.debug("VNFR " + vnfr.getName() + " is in state: " + vnfr.getStatus());
-            if (status.ordinal() > vnfr.getStatus().ordinal()) {
-                status = vnfr.getStatus();
+                for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+                    log.debug("VNFR " + vnfr.getName() + " is in state: " + vnfr.getStatus());
+                    if (status.ordinal() > vnfr.getStatus().ordinal()) {
+                        status = vnfr.getStatus();
+                    }
+                }
+
+                log.debug("Setting NSR status to: " + status);
+                networkServiceRecord.setStatus(status);
+                networkServiceRecord = nsrRepository.save(networkServiceRecord);
+                foundAndSet = true;
+            } catch (OptimisticLockingFailureException e) {
+                log.info("OptimisticLockingFailureException during findAndSet. Don't worry we will try it again.");
+                status = Status.TERMINATED;
             }
         }
-
-        log.debug("Setting NSR status to: " + status);
-        networkServiceRecord.setStatus(status);
-        networkServiceRecord = nsrRepository.save(networkServiceRecord);
         log.debug("Now the status is: " + networkServiceRecord.getStatus());
         if (status.ordinal() == Status.ACTIVE.ordinal()) {
             //Check if all vnfr have been received from the vnfm
