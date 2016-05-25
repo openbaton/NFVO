@@ -3,11 +3,8 @@ package org.openbaton.catalogue.security;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import java.io.Serializable;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by lto on 24/05/16.
