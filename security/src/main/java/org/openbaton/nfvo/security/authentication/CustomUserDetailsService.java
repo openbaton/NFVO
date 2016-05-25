@@ -69,6 +69,7 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
         if (userRepository.findFirstByUsername("admin") == null) {
             User ob_admin = new User();
             ob_admin.setUsername("admin");
+            ob_admin.setEnabled(true);
             ob_admin.setPassword(BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)));
             Set<Role> roles = new HashSet<>();
             Role role = new Role();
@@ -77,19 +78,19 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
             roles.add(role);
             ob_admin.setRoles(roles);
             userRepository.save(ob_admin);
-
-            if (!inMemManager.userExists("admin")) {
-                UserDetails admin = new org.springframework.security.core.userdetails.User("admin", BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)), true, true, true, true, AuthorityUtils.createAuthorityList("OB_ADMIN:*"));
-                inMemManager.createUser(admin);
-            } else {
-                log.debug("Admin" + inMemManager.loadUserByUsername("admin"));
-            }
+        }
+        if (!inMemManager.userExists("admin")) {
+            UserDetails admin = new org.springframework.security.core.userdetails.User("admin", BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)), true, true, true, true, AuthorityUtils.createAuthorityList("OB_ADMIN:*"));
+            inMemManager.createUser(admin);
+        } else {
+            log.debug("Admin" + inMemManager.loadUserByUsername("admin"));
         }
 
         if (userRepository.findFirstByUsername("guest") == null) {
             User ob_guest = new User();
             ob_guest.setUsername("guest");
             ob_guest.setPassword(BCrypt.hashpw(guestPwd, BCrypt.gensalt(12)));
+            ob_guest.setEnabled(true);
             Set<Role> roles = new HashSet<>();
             Role role = new Role();
             role.setRole(Role.RoleEnum.GUEST);
@@ -97,10 +98,10 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
             roles.add(role);
             ob_guest.setRoles(roles);
             userRepository.save(ob_guest);
-            if (!inMemManager.userExists("guest")) {
-                UserDetails guest = new org.springframework.security.core.userdetails.User("guest", BCrypt.hashpw(guestPwd, BCrypt.gensalt(12)), true, true, true, true, AuthorityUtils.createAuthorityList("GUEST:*"));
-                inMemManager.createUser(guest);
-            }
+        }
+        if (!inMemManager.userExists("guest")) {
+            UserDetails guest = new org.springframework.security.core.userdetails.User("guest", BCrypt.hashpw(guestPwd, BCrypt.gensalt(12)), true, true, true, true, AuthorityUtils.createAuthorityList("GUEST:*"));
+            inMemManager.createUser(guest);
         }
 
         log.debug("User in the DB: ");
@@ -116,18 +117,6 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
     @Override
     public void createUser(UserDetails user) {
         this.inMemManager.createUser(user);
-        User user1 = new User();
-        user1.setUsername(user.getUsername());
-        user1.setPassword(user.getPassword());
-        user1.setRoles(new HashSet<Role>());
-        for (GrantedAuthority authority : user.getAuthorities()) {
-            Role role = new Role();
-            StringTokenizer stringTokenizer = new StringTokenizer(authority.getAuthority(),":");
-            role.setRole(Role.RoleEnum.valueOf(stringTokenizer.nextToken()));
-            role.setProject(stringTokenizer.nextToken());
-            user1.getRoles().add(role);
-        }
-        userRepository.save(user1);
     }
 
     @Override

@@ -14,44 +14,14 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.security.interfaces;
+package org.openbaton.nfvo.repositories;
 
-import org.openbaton.catalogue.security.User;
-
+import org.openbaton.catalogue.security.Project;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * Created by mpa on 30/04/15.
+ * Created by lto on 06/05/15.
  */
-
-public interface UserManagement {
-
-    /**
-     *
-     * @param user
-     */
-    User add(User user);
-
-    /**
-     *
-     * @param user
-     */
-    void delete(User user);
-
-    /**
-     *
-     * @param new_user
-     */
-    User update(User new_user);
-
-    /**
-     */
-    Iterable<User> query();
-
-    /**
-     *
-     * @param username
-     */
-    User query(String username);
-
-
+public interface ProjectRepository extends CrudRepository<Project, String> {
+    Project findFirstById(String id);
 }

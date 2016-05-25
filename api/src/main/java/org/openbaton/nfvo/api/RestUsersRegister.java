@@ -46,6 +46,7 @@ public class RestUsersRegister {
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@RequestBody @Valid User user) {
         log.info("Adding user: " + user.getUsername());
+        user.setEnabled(false);
         return userManagement.add(user);
     }
 
