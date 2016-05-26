@@ -83,7 +83,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     }
 
     @Override
-    public Iterable<Project> queryForUser(String projectId) {
+    public Iterable<Project> queryForUser() {
 
         List<Project> projects = new ArrayList<>();
         User user = getCurrentUser();

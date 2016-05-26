@@ -43,5 +43,5 @@ public interface ProjectManagement {
      */
     Project queryByName(String name);
 
-    Iterable<Project> queryForUser(String projectId);
+    Iterable<Project> queryForUser();
 }

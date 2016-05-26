@@ -71,9 +71,9 @@ public class RestProject {
      * @return List<Project>: The list of Projects available
      */
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<Project> findAll(@RequestHeader(value = "project-id") String projectId) {
+    public Iterable<Project> findAll() {
         log.debug("Find all Projects");
-        return projectManagement.queryForUser(projectId);
+        return projectManagement.queryForUser();
     }
 
     /**
