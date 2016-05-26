@@ -114,12 +114,12 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             add(createVimInstance());
         }});
 
-        nsdManagement.onboard(nsd_exp);
+        nsdManagement.onboard(nsd_exp, projectId);
         when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
         Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
         Assert.assertTrue(nsd_exp.isEnabled());
         when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
-        nsdManagement.delete(nsd_exp.getId());
+        nsdManagement.delete(id, nsd_exp.getId());
     }
 
     @Test
@@ -132,11 +132,11 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
         when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
 
-        nsdManagement.onboard(nsd_exp);
+        nsdManagement.onboard(nsd_exp, projectId);
         when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
         Assert.assertFalse(nsdManagement.disable(nsd_exp.getId()));
         Assert.assertFalse(nsd_exp.isEnabled());
-        nsdManagement.delete(nsd_exp.getId());
+        nsdManagement.delete(id, nsd_exp.getId());
     }
 
     ;
@@ -153,7 +153,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         nsds = nsdManagement.query();
         when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
         Assert.assertEquals(nsds.iterator().hasNext(), true);
-        nsdManagement.delete(nsd_exp.getId());
+        nsdManagement.delete(id, nsd_exp.getId());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
         when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
         exception.expect(NotFoundException.class);
-        nsdManagement.onboard(nsd_exp);
+        nsdManagement.onboard(nsd_exp, projectId);
     }
     @Test
     public void nsdManagementOnboardTest() throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
@@ -179,7 +179,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
         when(nsdRepository.save(nsd_exp)).thenReturn(nsd_exp);
         exception = ExpectedException.none();
-        nsdManagement.onboard(nsd_exp);
+        nsdManagement.onboard(nsd_exp, projectId);
         assertEqualsNSD(nsd_exp);
     }
 
@@ -192,19 +192,19 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             add(createVimInstance());
         }});
 
-        nsdManagement.onboard(nsd_exp);
+        nsdManagement.onboard(nsd_exp, projectId);
         when(nsdRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
 
         NetworkServiceDescriptor new_nsd = createNetworkServiceDescriptor();
         new_nsd.setName("UpdatedName");
-        nsdManagement.update(new_nsd);
+        nsdManagement.update(new_nsd, projectId);
 
         new_nsd.setId(nsd_exp.getId());
 
         assertEqualsNSD(new_nsd);
         when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
 
-        nsdManagement.delete(nsd_exp.getId());
+        nsdManagement.delete(id, nsd_exp.getId());
     }
 
     private void assertEqualsNSD(NetworkServiceDescriptor nsd_exp) throws NoResultException {

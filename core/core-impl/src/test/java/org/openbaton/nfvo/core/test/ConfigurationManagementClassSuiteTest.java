@@ -81,8 +81,8 @@ public class ConfigurationManagementClassSuiteTest {
         configurationParameter.setConfKey("new_key");
         configurationParameter.setValue("new_value");
         configuration2.getConfigurationParameters().add(configurationParameter);
-        when(configurationManagement.update(configuration2, configutation.getId())).thenReturn(configuration2);
-        configutation = configurationManagement.update(configuration2, configutation.getId());
+        when(configurationManagement.update(configuration2, configutation.getId(), projectId)).thenReturn(configuration2);
+        configutation = configurationManagement.update(configuration2, configutation.getId(), projectId);
         assertEqualsConfiguration(configutation, configuration2);
 
     }
@@ -135,7 +135,7 @@ public class ConfigurationManagementClassSuiteTest {
 
         Configuration configutation_exp = createConfigutation();
         when(configurationRepository.findOne(configutation_exp.getId())).thenReturn(configutation_exp);
-        Configuration configuration_new = configurationManagement.query(configutation_exp.getId());
+        Configuration configuration_new = configurationManagement.query(configutation_exp.getId(), projectId);
         assertEqualsConfiguration(configutation_exp, configuration_new);
     }
 
@@ -145,7 +145,7 @@ public class ConfigurationManagementClassSuiteTest {
         when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
         configurationManagement.delete(configuration_exp.getId());
         when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(null);
-        Configuration configuration_new = configurationManagement.query(configuration_exp.getId());
+        Configuration configuration_new = configurationManagement.query(configuration_exp.getId(), projectId);
         Assert.assertNull(configuration_new);
     }
 

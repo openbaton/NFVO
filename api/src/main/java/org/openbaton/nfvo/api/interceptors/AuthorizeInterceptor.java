@@ -30,41 +30,42 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String projectName = request.getHeader("project-name");
-        log.debug("ProjectName: " + projectName);
+        String projectId = request.getHeader("project-id");
+        log.debug("ProjectId: " + projectId);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.trace("Authentication " + authentication);
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = authentication.getName();
-            log.trace("Current User: " + currentUserName);
+        if (authentication != null) {
+            if (!(authentication instanceof AnonymousAuthenticationToken)) {
+                String currentUserName = authentication.getName();
+                log.trace("Current User: " + currentUserName);
 
 
-            if (currentUserName.equals("anonymousUser")) {
-                if (request.getMethod().equalsIgnoreCase("get")) {
-                    return true;
+                if (currentUserName.equals("anonymousUser")) {
+                    if (request.getMethod().equalsIgnoreCase("get")) {
+                        return true;
+                    } else {
+                        log.warn("AnonymousUser requesting a method: " + request.getMethod());
+                        return true;
+                    }
                 } else {
-                    log.warn("AnonymousUser requesting a method: " + request.getMethod());
-                    return true;
+                    return checkAuthorization(projectId, request, currentUserName);
                 }
-            } else {
-                return checkAuthorization(projectName,request,currentUserName);
+            } else /*if (request.getMethod().equalsIgnoreCase("get"))*/ {
+                log.trace("AnonymousUser requesting a method: " + request.getMethod());
+                return true;
             }
-        } else if (request.getMethod().equalsIgnoreCase("get")) {
-            log.trace("AnonymousUser requesting a method: " + request.getMethod());
-            return true;
-        } else {
+        }else {
             log.warn("AnonymousUser requesting a method: " + request.getMethod());
             return true;
         }
-
     }
 
     private boolean checkAuthorization(String project, HttpServletRequest request, String currentUserName) {
 
         log.trace("Current User: " + currentUserName);
         log.trace("UserManagement: " + userManagement);
-        User user = userManagement.query(currentUserName);
+        User user = userManagement.queryDB(currentUserName);
 
         if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
             return true;

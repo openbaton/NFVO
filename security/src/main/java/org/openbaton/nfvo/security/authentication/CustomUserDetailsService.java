@@ -16,9 +16,11 @@
 
 package org.openbaton.nfvo.security.authentication;
 
+import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.UserRepository;
+import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,10 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
     private String adminPwd;
     @Value("${nfvo.security.guest.password:guest}")
     private String guestPwd;
+    @Autowired
+    private ProjectManagement projectManagement;
+    @Value("${nfvo.security.project.name:default}")
+    private String projectDefaultName;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -112,6 +118,16 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
         log.debug("Users in UserDetailManager: ");
         log.debug("ADMIN: " + inMemManager.loadUserByUsername("admin"));
         log.debug("GUEST: " + inMemManager.loadUserByUsername("guest"));
+
+        log.debug("Creating initial Project...");
+
+        if (projectManagement.queryByName(projectDefaultName) == null){
+            Project project = new Project();
+            project.setName(projectDefaultName);
+
+            projectManagement.add(project);
+            log.debug("Created project: " + project);
+        }
     }
 
     @Override

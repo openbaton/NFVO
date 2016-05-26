@@ -31,37 +31,34 @@ public interface VimManagement {
      * into the datacenter repository.
      *
      * @param vimInstance
+     * @param projectId
      */
-    VimInstance add(VimInstance vimInstance) throws VimException, PluginException;
+    VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException;
 
     /**
      * This operation allows deleting the datacenter
      * from the datacenter repository.
      *
      * @param id
+     * @param projectId
      */
-    void delete(String id);
+    void delete(String id, String projectId);
 
     /**
      * This operation allows updating the datacenter
      * in the datacenter repository.
-     *
-     * @param new_vimInstance
+     *  @param new_vimInstance
      * @param id
+     * @param projectId
      */
-    VimInstance update(VimInstance new_vimInstance, String id) throws VimException, PluginException;
+    VimInstance update(VimInstance new_vimInstance, String id, String projectId) throws VimException, PluginException;
 
-    /**
-     * This operation allows querying the information of
-     * the datacenters in the datacenter repository.
-     */
-    Iterable<VimInstance> query();
 
     /**
      * This operation allows querying the information of
      * the datacenter in the datacenter repository.
      */
-    VimInstance query(String id);
+    VimInstance query(String id, String projectId);
 
     void refresh(VimInstance vimInstance) throws VimException, PluginException;
 
@@ -70,25 +67,28 @@ public interface VimManagement {
      *
      * @param id    of VimInstance
      * @param image the new NFVImage
+     * @param projectId
      * @return NFVImage
      */
-    NFVImage addImage(String id, NFVImage image) throws VimException, PluginException;
+    NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException;
 
     /**
      * Returns the NFVImage with idImage from VimInstance with idVim
      *
      * @param idVim
      * @param idImage
+     * @param projectId
      * @return NFVImage
      */
-    NFVImage queryImage(String idVim, String idImage);
+    NFVImage queryImage(String idVim, String idImage, String projectId);
 
     /**
      * Removes the NFVImage with idImage from VimInstance with idVim
-     *
-     * @param idVim
+     *  @param idVim
      * @param idImage
+     * @param projectId
      */
-    void deleteImage(String idVim, String idImage) throws VimException, PluginException;
+    void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException;
 
+    Iterable<VimInstance> queryByProjectId(String projectId);
 }

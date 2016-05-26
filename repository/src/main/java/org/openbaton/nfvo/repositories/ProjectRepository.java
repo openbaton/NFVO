@@ -24,4 +24,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ProjectRepository extends CrudRepository<Project, String> {
     Project findFirstById(String id);
+
+    Project findFirstByName(String name);
 }

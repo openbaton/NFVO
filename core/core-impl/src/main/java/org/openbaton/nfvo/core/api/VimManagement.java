@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -59,32 +60,36 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
 
     @Override
-    public VimInstance add(VimInstance vimInstance) throws VimException, PluginException {
+    public VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException {
+        vimInstance.setProjectId(projectId);
         this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
         return vimRepository.save(vimInstance);
     }
 
     @Override
-    public void delete(String id) {
-        vimRepository.delete(vimRepository.findOne(id));
+    public void delete(String id, String projectId) {
+
+        VimInstance vimInstance = vimRepository.findFirstById(id);
+        if (!vimInstance.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        vimRepository.delete(vimInstance);
+
     }
 
     @Override
-    public VimInstance update(VimInstance vimInstance, String id) throws VimException, PluginException {
+    public VimInstance update(VimInstance vimInstance, String id, String projectId) throws VimException, PluginException {
         vimInstance = vimRepository.save(vimInstance);
         refresh(vimInstance);
         return vimInstance;
     }
 
     @Override
-    public Iterable<VimInstance> query() {
-        return vimRepository.findAll();
-    }
-
-    @Override
-    public VimInstance query(String id) {
-        return vimRepository.findOne(id);
+    public VimInstance query(String id, String projectId) {
+        VimInstance vimInstance = vimRepository.findFirstById(id);
+        if (!vimInstance.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("Sorry VimInstance not under the project used");
+        return vimInstance;
     }
 
     @Override
@@ -254,31 +259,43 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
      *
      * @param id    of VimInstance
      * @param image the new NFVImage
+     * @param projectId
      * @return NFVImage
      */
     @Override
-    public NFVImage addImage(String id, NFVImage image) throws VimException, PluginException {
+    public NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException {
+        VimInstance vimInstance = vimRepository.findFirstById(id);
+        if (!vimInstance.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         image = vimRepository.addImage(id, image);
-        refresh(vimRepository.findFirstById(id));
+        refresh(vimInstance);
         return image;
     }
 
 
-    public NFVImage queryImage(String idVim, String idImage) {
-        vimRepository.exists(idVim);
-        return imageRepository.findOne(idImage);
+    public NFVImage queryImage(String idVim, String idImage, String projectId) {
+        if (vimRepository.findFirstById(idVim).getProjectId().equals(projectId))
+            return imageRepository.findOne(idImage);
+        throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     /**
      * Removes the NFVImage with idImage from VimInstance with idVim
-     *
-     * @param idVim
+     *  @param idVim
      * @param idImage
+     * @param projectId
      */
     @Override
-    public void deleteImage(String idVim, String idImage) throws VimException, PluginException {
+    public void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException {
+        if (!vimRepository.findFirstById(idVim).getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         vimRepository.deleteImage(idVim, idImage);
         refresh(vimRepository.findFirstById(idVim));
 
+    }
+
+    @Override
+    public Iterable<VimInstance> queryByProjectId(String projectId) {
+        return vimRepository.findByProjectId(projectId);
     }
 }

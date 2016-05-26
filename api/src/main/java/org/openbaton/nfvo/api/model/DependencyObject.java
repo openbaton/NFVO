@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.api;
+package org.openbaton.nfvo.api.model;
 
 /**
  * Created by mob on 12.04.16.

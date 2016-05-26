@@ -7,8 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +29,17 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     private UserDetailsManager userDetailsManager;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        return query(currentUserName);
+    }
+
     @Override
     public User add(User user) {
+
+        checkCurrentUserObAdmin(getCurrentUser());
+
         String[] roles = new String[user.getRoles().size()];
 
         Role[] objects = user.getRoles().toArray(new Role[0]);
@@ -40,8 +52,14 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
         return userRepository.save(user);
     }
 
+    private void checkCurrentUserObAdmin(User currentUser) {
+        if (currentUser.getRoles().iterator().next().getRole().ordinal() != Role.RoleEnum.OB_ADMIN.ordinal())
+            throw new UnauthorizedUserException("Sorry only OB_ADMIN can add/delete/update/query Users");
+    }
+
     @Override
     public void delete(User user) {
+        checkCurrentUserObAdmin(getCurrentUser());
         userDetailsManager.deleteUser(user.getUsername());
         userRepository.delete(user);
     }
@@ -49,6 +67,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     @Override
     public User update(User new_user) {
 
+        checkCurrentUserObAdmin(getCurrentUser());
         String[] roles = new String[new_user.getRoles().size()];
 
         Role[] objects = new_user.getRoles().toArray(new Role[0]);
@@ -63,12 +82,19 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
     @Override
     public Iterable<User> query() {
+        checkCurrentUserObAdmin(getCurrentUser());
         return userRepository.findAll();
     }
 
     @Override
     public User query(String username) {
+        checkCurrentUserObAdmin(getCurrentUser());
         log.trace("Looking for user: " + username);
+        return userRepository.findFirstByUsername(username);
+    }
+
+    @Override
+    public User queryDB(String username) {
         return userRepository.findFirstByUsername(username);
     }
 }

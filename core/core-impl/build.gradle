@@ -20,6 +20,7 @@ dependencies {
     compile project(':core-int')
     compile project(':repository')
     compile project(':vim-int')
+    compile project(':security')
     compile project(':vnfm-int')
 
     compile project(':vim-drivers')

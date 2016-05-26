@@ -99,17 +99,17 @@ public class NSDUtils {
         networkServiceDescriptor.getVnfd().addAll(vnfd_add);
     }
 
-    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException {
+    public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor, String projectId) throws NotFoundException {
         /**
          * Fetching VimInstances
          */
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-            fetchVimInstances(vnfd);
+            fetchVimInstances(vnfd, projectId);
         }
     }
 
-    public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException {
-        Iterable<VimInstance> vimInstances = vimRepository.findAll();
+    public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd, String projectId) throws NotFoundException {
+        Iterable<VimInstance> vimInstances = vimRepository.findByProjectId(projectId);
         if (!vimInstances.iterator().hasNext()) {
             throw new NotFoundException("No VimInstances in the Database");
         }

@@ -1,6 +1,8 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.Project;
+import org.openbaton.exceptions.NotAllowedException;
+import org.openbaton.exceptions.NotFoundException;
 
 /**
  * Created by lto on 24/05/16.
@@ -16,7 +18,7 @@ public interface ProjectManagement {
      *
      * @param project
      */
-    void delete(Project project);
+    void delete(Project project) throws NotAllowedException;
 
     /**
      *
@@ -32,5 +34,14 @@ public interface ProjectManagement {
      *
      * @param id
      */
-    Project query(String id);
+    Project query(String id) throws NotFoundException;
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    Project queryByName(String name);
+
+    Iterable<Project> queryForUser(String projectId);
 }

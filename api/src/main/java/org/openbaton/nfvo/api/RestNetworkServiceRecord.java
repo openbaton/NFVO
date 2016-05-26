@@ -25,8 +25,8 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.exceptions.StateException;
+import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
-import org.openbaton.exceptions.VimDriverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,16 +57,15 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceRecord create(
-            @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
-        return networkServiceRecordManagement.onboard(networkServiceDescriptor);
+    public NetworkServiceRecord create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor, @RequestHeader(value = "project-id") String projectId) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+        return networkServiceRecordManagement.onboard(networkServiceDescriptor, projectId);
 
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceRecord create(@PathVariable("id") String id) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
-        return networkServiceRecordManagement.onboard(id);
+    public NetworkServiceRecord create(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws InterruptedException, ExecutionException, VimException, NotFoundException, BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+        return networkServiceRecordManagement.onboard(id, projectId);
     }
 
 
@@ -77,9 +76,9 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) throws VimException, InterruptedException, ExecutionException, NotFoundException {
+    public void delete(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws VimException, InterruptedException, ExecutionException, NotFoundException {
         try {
-            networkServiceRecordManagement.delete(id);
+            networkServiceRecordManagement.delete(id, projectId);
         } catch (WrongStatusException e) {
             e.printStackTrace();
             throw new StateException(id);
@@ -98,9 +97,9 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void multipleDelete(@RequestBody @Valid List<String> ids) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
+    public void multipleDelete(@RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
         for (String id : ids)
-            networkServiceRecordManagement.delete(id);
+            networkServiceRecordManagement.delete(id, projectId);
     }
 
 
@@ -112,8 +111,8 @@ public class RestNetworkServiceRecord {
      */
 
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<NetworkServiceRecord> findAll() {
-        return networkServiceRecordManagement.query();
+    public List<NetworkServiceDescriptor> findAll(@RequestHeader(value = "project-id") String projectId) {
+        return networkServiceRecordManagement.queryByProjectId(projectId);
     }
 
     /**
@@ -125,8 +124,8 @@ public class RestNetworkServiceRecord {
      */
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public NetworkServiceRecord findById(@PathVariable("id") String id) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public NetworkServiceRecord findById(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         return nsr;
     }
 
@@ -140,10 +139,8 @@ public class RestNetworkServiceRecord {
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public NetworkServiceRecord update(
-            @RequestBody @Valid NetworkServiceRecord networkServiceRecord,
-            @PathVariable("id") String id) {
-        return networkServiceRecordManagement.update(networkServiceRecord, id);
+    public NetworkServiceRecord update(@RequestBody @Valid NetworkServiceRecord networkServiceRecord, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        return networkServiceRecordManagement.update(networkServiceRecord, id, projectId);
     }
 
     /**
@@ -155,9 +152,8 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}/vnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(
-            @PathVariable("id") String id) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         log.debug("*****" + nsr.getVnfr().toString());
         return nsr.getVnfr();
     }
@@ -172,10 +168,9 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{idNsd}/vnfrecords/{idVnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-            @PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf) throws NotFoundException {
+    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(@PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
 
-        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsd, idVnf);
+        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsd, idVnf, projectId);
     }
 
     /**
@@ -187,89 +182,82 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFRecord(
-            @PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf) throws NotFoundException {
-        networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf);
+    public void deleteVNFRecord(@PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf, projectId);
 
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException {
+    public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException {
         log.trace("Received: " + component);
-        networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component,"");
+        networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException {
+    public void postVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException {
         log.trace("Received: " + component);
-        networkServiceRecordManagement.addVNFCInstance(id, idVnf, component);
+        networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
     }
 
     /////// Fault management utilities
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/standby", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void postStandByVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException {
+    public void postStandByVNFCInstance(@RequestBody @Valid VNFComponent component, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException {
         log.debug("PostStandByVNFCInstance received the component: " + component);
-        networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component,"standby");
+        networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "standby", projectId);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFC}/switchtostandby", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void switchToRendundantVNFCInstance(@RequestBody @Valid VNFCInstance failedVnfcInstance,@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFC") String idVNFC) throws NotFoundException, BadFormatException, WrongStatusException {
+    public void switchToRendundantVNFCInstance(@RequestBody @Valid VNFCInstance failedVnfcInstance, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFC") String idVNFC, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException {
         log.debug("switch to a standby component");
-        networkServiceRecordManagement.switchToRedundantVNFCInstance(id, idVnf, idVdu, idVNFC,"standby",failedVnfcInstance);
+        networkServiceRecordManagement.switchToRedundantVNFCInstance(id, idVnf, idVdu, idVNFC, "standby", failedVnfcInstance, projectId);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI);
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf);
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, projectId);
     }
 
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu);
+    public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, projectId, projectId);
     }
 
     // Rest method for execute actions at different level
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}/actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void postAction(@RequestBody @Valid NFVMessage nfvMessage, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI) throws NotFoundException, BadFormatException, WrongStatusException {
+    public void postAction(@RequestBody @Valid NFVMessage nfvMessage, @PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @PathVariable("idVNFCI") String idVNFCI, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException {
         log.debug("Received: " + nfvMessage);
-        networkServiceRecordManagement.executeAction(nfvMessage,id,idVnf,idVdu,idVNFCI);
+        networkServiceRecordManagement.executeAction(nfvMessage, id, idVnf, idVdu, idVNFCI, projectId);
     }
-
-
 
 
     @RequestMapping(value = "{id}/vnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VirtualNetworkFunctionRecord postVNFR(
-            @RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
-            @PathVariable("id") String id) {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+    public VirtualNetworkFunctionRecord postVNFR(@RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
         nsd.getVnfr().add(vnfRecord);
-        networkServiceRecordManagement.update(nsd, id);
+        networkServiceRecordManagement.update(nsd, id, projectId);
         return vnfRecord;
     }
 
     @RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VirtualNetworkFunctionRecord updateVNF(
-            @RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
-            @PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf) {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(idNsr);
+    public VirtualNetworkFunctionRecord updateVNF(@RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord, @PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(idNsr, projectId);
         nsd.getVnfr().add(vnfRecord);
-        networkServiceRecordManagement.update(nsd, idNsr);
+        networkServiceRecordManagement.update(nsd, idNsr, projectId);
         return vnfRecord;
     }
 
@@ -282,22 +270,22 @@ public class RestNetworkServiceRecord {
 
     @RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id) {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+    public Set<VNFRecordDependency> getVNFDependencies(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
         return nsd.getVnf_dependency();
     }
 
     @RequestMapping(value = "{id}/vnfdependenciesList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<DependencyObject> getVNFDependenciesList(@PathVariable("id") String id) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public Set<DependencyObject> getVNFDependenciesList(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         Set<DependencyObject> result = new HashSet<>();
         for (VNFRecordDependency vnfDependency : nsr.getVnf_dependency()) {
-            for(Map.Entry<String, VNFCDependencyParameters> entry : vnfDependency.getVnfcParameters().entrySet()){
-                for(Map.Entry<String, DependencyParameters> parameters : entry.getValue().getParameters().entrySet()){
+            for (Map.Entry<String, VNFCDependencyParameters> entry : vnfDependency.getVnfcParameters().entrySet()) {
+                for (Map.Entry<String, DependencyParameters> parameters : entry.getValue().getParameters().entrySet()) {
                     DependencyObject dependencyObject = new DependencyObject();
                     dependencyObject.setTarget(vnfDependency.getTarget());
-                    String source = getVNFCHostname(nsr,parameters.getKey());
+                    String source = getVNFCHostname(nsr, parameters.getKey());
                     dependencyObject.setSource(source);
                     result.add(dependencyObject);
                 }
@@ -307,10 +295,10 @@ public class RestNetworkServiceRecord {
     }
 
     private String getVNFCHostname(NetworkServiceRecord nsr, String vnfcId) {
-        for(VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()){
-            for(VirtualDeploymentUnit vdu : vnfr.getVdu()){
-                for(VNFCInstance vnfcInstance : vdu.getVnfc_instance()){
-                    if(vnfcInstance.getId().equals(vnfcId))
+        for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
+            for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+                for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+                    if (vnfcInstance.getId().equals(vnfcId))
                         return vnfcInstance.getHostname();
                 }
             }
@@ -320,41 +308,34 @@ public class RestNetworkServiceRecord {
 
     @RequestMapping(value = "{id}/vnfdependencies/{id_vnfr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public VNFRecordDependency getVNFDependency(@PathVariable("id") String id,
-                                                @PathVariable("id_vnfr") String id_vnfr) throws NotFoundException {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public VNFRecordDependency getVNFDependency(@PathVariable("id") String id, @PathVariable("id_vnfr") String id_vnfr, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         return findVNFD(nsr.getVnf_dependency(), id_vnfr);
     }
 
     @RequestMapping(value = "{idNsr}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFDependency(@PathVariable("idNsr") String idNsr,
-                                    @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
-        networkServiceRecordManagement.deleteVNFDependency(idNsr, idVnfd);
+    public void deleteVNFDependency(@PathVariable("idNsr") String idNsr, @PathVariable("idVnfd") String idVnfd, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        networkServiceRecordManagement.deleteVNFDependency(idNsr, idVnfd, projectId);
 
 
     }
 
     @RequestMapping(value = "{id}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VNFRecordDependency postVNFDependency(
-            @RequestBody @Valid VNFRecordDependency vnfDependency,
-            @PathVariable("id") String id) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public VNFRecordDependency postVNFDependency(@RequestBody @Valid VNFRecordDependency vnfDependency, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         nsr.getVnf_dependency().add(vnfDependency);
-        networkServiceRecordManagement.update(nsr, id);
+        networkServiceRecordManagement.update(nsr, id, projectId);
         return vnfDependency;
     }
 
     @RequestMapping(value = "{id}/vnfdependencies/{id_vnfd}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VNFRecordDependency updateVNFD(
-            @RequestBody @Valid VNFRecordDependency vnfDependency,
-            @PathVariable("id") String id,
-            @PathVariable("id_vnfd") String id_vnfd) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public VNFRecordDependency updateVNFD(@RequestBody @Valid VNFRecordDependency vnfDependency, @PathVariable("id") String id, @PathVariable("id_vnfd") String id_vnfd, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         nsr.getVnf_dependency().add(vnfDependency);
-        networkServiceRecordManagement.update(nsr, id);
+        networkServiceRecordManagement.update(nsr, id, projectId);
         return vnfDependency;
     }
 
@@ -367,9 +348,8 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}/pnfrecords", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
-            @PathVariable("id") String id) {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
+    public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
         return nsr.getPnfr();
     }
 
@@ -384,9 +364,8 @@ public class RestNetworkServiceRecord {
 
     @RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public PhysicalNetworkFunctionRecord getPhysicalNetworkFunctionRecord(
-            @PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+    public PhysicalNetworkFunctionRecord getPhysicalNetworkFunctionRecord(@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
         return findPNFD(nsd.getPnfr(), id_pnf);
     }
 
@@ -398,11 +377,9 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePhysicalNetworkFunctionRecord(
-            @PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) throws NotFoundException {
-        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id);
-        PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(),
-                id_pnf);
+    public void deletePhysicalNetworkFunctionRecord(@PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
+        PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(), id_pnf);
         nsr.getVnfr().remove(pDescriptor);
     }
 
@@ -416,12 +393,10 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}/pnfrecords/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public PhysicalNetworkFunctionRecord postPhysicalNetworkFunctionRecord(
-            @RequestBody @Valid PhysicalNetworkFunctionRecord pDescriptor,
-            @PathVariable("id") String id) {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+    public PhysicalNetworkFunctionRecord postPhysicalNetworkFunctionRecord(@RequestBody @Valid PhysicalNetworkFunctionRecord pDescriptor, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
         nsd.getPnfr().add(pDescriptor);
-        networkServiceRecordManagement.update(nsd, id);
+        networkServiceRecordManagement.update(nsd, id, projectId);
         return pDescriptor;
     }
 
@@ -435,12 +410,10 @@ public class RestNetworkServiceRecord {
      */
     @RequestMapping(value = "{id}/pnfrecords/{id_pnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public PhysicalNetworkFunctionRecord updatePNFD(
-            @RequestBody @Valid PhysicalNetworkFunctionRecord pRecord,
-            @PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf) {
-        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id);
+    public PhysicalNetworkFunctionRecord updatePNFD(@RequestBody @Valid PhysicalNetworkFunctionRecord pRecord, @PathVariable("id") String id, @PathVariable("id_pnf") String id_pnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
         nsd.getPnfr().add(pRecord);
-        networkServiceRecordManagement.update(nsd, id);
+        networkServiceRecordManagement.update(nsd, id, projectId);
         return pRecord;
     }
 
@@ -473,6 +446,4 @@ public class RestNetworkServiceRecord {
         }
         throw new NotFoundException("VNFR with id " + id_vnf + " was not found");
     }
-
-
 }

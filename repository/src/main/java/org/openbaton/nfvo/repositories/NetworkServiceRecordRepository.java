@@ -19,10 +19,12 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Created by mob on 03.09.15.
  */
 public interface NetworkServiceRecordRepository extends CrudRepository<NetworkServiceRecord, String>, NetworkServiceRecordRepositoryCustom {
     NetworkServiceRecord findFirstById(String id);
-
+    List<NetworkServiceRecord> findByProjectId(String projectId);
 }

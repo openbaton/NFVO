@@ -54,8 +54,8 @@ public class RestEvent {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint) {
-
+    public EventEndpoint register(@RequestBody @Valid EventEndpoint endpoint, @RequestHeader(value = "project-id") String projectId) {
+        endpoint.setProjectId(projectId);
         return eventDispatcher.register(gson.toJson(endpoint));
     }
 
@@ -66,8 +66,9 @@ public class RestEvent {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unregister(@PathVariable("id") String id) throws NotFoundException {
-        eventDispatcher.unregister(id);
+    public void unregister(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        
+        eventDispatcher.unregister(id, projectId);
     }
 
     /**
@@ -78,19 +79,19 @@ public class RestEvent {
      */
     @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
+    public void multipleDelete(@RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
         for (String id : ids)
-            eventDispatcher.unregister(id);
+            eventDispatcher.unregister(id, projectId);
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<EventEndpoint> getEventEndpoints() {
-        return eventManagement.query();
+    public Iterable<EventEndpoint> getEventEndpoints(@RequestHeader(value = "project-id") String projectId) {
+        return eventManagement.queryByProjectId(projectId);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public EventEndpoint getEventEndpoint(@PathVariable("id") String id) {
-        return eventManagement.query(id);
+    public EventEndpoint getEventEndpoint(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        return eventManagement.query(id, projectId);
     }
 
     @RequestMapping(value = "/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -48,9 +48,9 @@ public class ApiRestVimInstancesTest {
 
     @Test
     public void findAllVimInstances() {
-        log.info("" + mock.query());
-        Iterable<VimInstance> list = mock.query();
-        when(mock.query()).thenReturn(list);
+        log.info("" + mock.query(projectId, projectId));
+        Iterable<VimInstance> list = mock.query(projectId, projectId);
+        when(mock.query(projectId, projectId)).thenReturn(list);
         assertEquals(list, restVimInstances.findAll());
     }
 
@@ -61,7 +61,7 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.add(datacenter)).thenReturn(datacenter);
+        when(mock.add(datacenter, projectId)).thenReturn(datacenter);
         log.info("" + restVimInstances.create(datacenter));
         VimInstance datacenter2 = restVimInstances.create(datacenter);
         assertEquals(datacenter, datacenter2);
@@ -75,7 +75,7 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.query(datacenter.getId())).thenReturn(datacenter);
+        when(mock.query(datacenter.getId(), projectId)).thenReturn(datacenter);
         assertEquals(datacenter, restVimInstances.findById(datacenter.getId()));
     }
 
@@ -86,13 +86,13 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.update(datacenter, datacenter.getId())).thenReturn(datacenter);
+        when(mock.update(datacenter, datacenter.getId(), projectId)).thenReturn(datacenter);
         assertEquals(datacenter, restVimInstances.update(datacenter, datacenter.getId()));
     }
 
     @Test
     public void deleteVimInstance() {
-        mock.delete("123");
+        mock.delete("123", projectId);
         restVimInstances.delete("123");
     }
 }

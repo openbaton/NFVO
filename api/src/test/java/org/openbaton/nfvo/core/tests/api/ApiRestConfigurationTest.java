@@ -82,7 +82,7 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.query(configuration.getId())).thenReturn(configuration);
+        when(mock.query(configuration.getId(), projectId)).thenReturn(configuration);
         assertEquals(configuration, restConfiguration.findById(configuration.getId()));
     }
 
@@ -96,7 +96,7 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.update(configuration, configuration.getId())).thenReturn(configuration);
+        when(mock.update(configuration, configuration.getId(), projectId)).thenReturn(configuration);
         assertEquals(configuration, restConfiguration.update(configuration, configuration.getId()));
     }
 

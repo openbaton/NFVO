@@ -165,7 +165,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         configurationParameter.setConfKey("delete-on-all-status");
         configurationParameter.setValue("true");
         when(configurationManagement.queryByName("system")).thenReturn(system);
-        nsrManagement.delete(nsd_exp.getId());
+        nsrManagement.delete(nsd_exp.getId(), projectId);
     }
 
     @Test
@@ -279,7 +279,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         when(nsrRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
         NetworkServiceRecord new_nsr = createNetworkServiceRecord();
         new_nsr.setName("UpdatedName");
-        nsrManagement.update(new_nsr, nsd_exp.getId());
+        nsrManagement.update(new_nsr, nsd_exp.getId(), projectId);
         new_nsr.setId(nsd_exp.getId());
         assertEqualsNSR(new_nsr);
     }

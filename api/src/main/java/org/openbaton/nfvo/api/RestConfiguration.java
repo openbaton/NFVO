@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
+import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class RestConfiguration {
 
     @Autowired
     private ConfigurationManagement configurationManagement;
+    @Autowired
+    private ProjectManagement projectManagement;
 
     /**
      * Adds a new Configuration to the Configurations repository
@@ -44,8 +47,9 @@ public class RestConfiguration {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Configuration create(@RequestBody @Valid Configuration configuration) {
+    public Configuration create(@RequestBody @Valid Configuration configuration, @RequestHeader(value = "project-id", required = false) String projectId) {
         log.trace("Adding Configuration: " + configuration);
+        configuration.setProjectId(projectId);
         log.debug("Adding Configuration");
         return configurationManagement.add(configuration);
     }
@@ -58,7 +62,7 @@ public class RestConfiguration {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) {
+    public void delete(@PathVariable("id") String id, @RequestHeader(value = "project-id", required = false) String projectId) {
         log.debug("removing Configuration with id " + id);
         configurationManagement.delete(id);
     }
@@ -69,9 +73,9 @@ public class RestConfiguration {
      * @return List<Configuration>: The list of Configurations available
      */
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<Configuration> findAll() {
+    public Iterable<Configuration> findAll(@RequestHeader(value = "project-id", required = false) String projectId) {
         log.trace("Find all Configurations");
-        return configurationManagement.query();
+        return configurationManagement.queryByProject(projectId);
     }
 
     /**
@@ -81,9 +85,9 @@ public class RestConfiguration {
      * @return Configuration: The Configuration selected
      */
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public Configuration findById(@PathVariable("id") String id) {
+    public Configuration findById(@PathVariable("id") String id, @RequestHeader(value = "project-id", required = false) String projectId) {
         log.debug("find Configuration with id " + id);
-        Configuration configuration = configurationManagement.query(id);
+        Configuration configuration = configurationManagement.query(id, projectId);
         log.trace("Found Configuration: " + configuration);
         return configuration;
     }
@@ -100,10 +104,10 @@ public class RestConfiguration {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Configuration update(
             @RequestBody @Valid Configuration new_configuration,
-            @PathVariable("id") String id) {
+            @PathVariable("id") String id, @RequestHeader(value = "project-id", required = false) String projectId) {
         log.trace("updating Configuration with id " + id + " with values: "
                 + new_configuration);
         log.debug("updating Configuration with id " + id);
-        return configurationManagement.update(new_configuration, id);
+        return configurationManagement.update(new_configuration, id, projectId);
     }
 }
