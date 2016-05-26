@@ -2,22 +2,25 @@ angular.module('app')
     .factory('http', function ($http, $q, $cookieStore) {
 
         var customHeaders = {};
-        if ($cookieStore.get('token') === '')
+        if ($cookieStore.get('token') === '' || angular.isUndefined($cookieStore.get('token')))
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             };
         else {
-
+            var project = $cookieStore.get('project');
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + $cookieStore.get('token')
+                'Authorization': 'Bearer ' + $cookieStore.get('token'),
+                'project-id': project.id
             };
         }
 
         var http = {};
         http.get = function (url) {
+            console.log(customHeaders);
+
             if (url.indexOf("/scripts/") > -1) {
                 customHeaders['Accept'] = 'text/plain';
                 customHeaders['Content-type'] = 'text/plain';

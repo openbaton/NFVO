@@ -6,7 +6,7 @@ var app = angular.module('app');
  *
  */
 
-app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
     $scope.currentUser = null;
     //$scope.URL = 'http://localhost:8080';
     $scope.URL = '';
@@ -15,7 +15,22 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         "password": '',
         "grant_type": "password"
     };
+    $scope.new = {
+        "username": '',
+        "password": '',
+        "password2": '',
+        "firstName": '',
+        "lastName": '',
+        "admin": true
+    };
 
+    $scope.checkIfEqual = function () {
+        if ($scope.new.password2 !== $scope.new.password)
+            $scope.notEqual = true;
+        else
+            $scope.notEqual = false;
+
+    };
     if (angular.isUndefined($cookieStore.get('logged'))) {
         $scope.logged = false;
         $rootScope.logged = false;
@@ -63,6 +78,17 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         setTimeout(showLoginError, 2000);
     };
 
+
+    $scope.register = function (newUser) {
+        delete newUser.password2;
+        console.log(newUser);
+        $http.post($scope.URL + '/register', newUser)
+            .success(function (data, status) {
+                $window.location.reload();
+            })
+            .error(function (status, data) {
+            });
+    };
     function showLoginError() {
         $scope.$apply(function () {
             $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
@@ -76,6 +102,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
+
 
     $scope.config = {};
 
@@ -133,6 +160,34 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         $scope.numberUnits = units;
     });
 
+    http.get(url + '/projects/')
+        .success(function (response) {
+            console.log(response);
+            $scope.projects = response;
+            $.each(response, function (i, project) {
+                if ($scope.projectSelected === project.name)
+                    $cookieStore.put('project', project);
+            });
+        })
+        .error(function (response, status) {
+            alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
+        });
+
+    $scope.changeProject = function (project) {
+        console.log(project);
+        if(arguments.length === 0){
+            var prj = $cookieStore.get('project');
+            $scope.projectSelected = prj;
+            console.log($scope.projectSelected);
+        }
+        else{
+            $scope.projectSelected = project;
+            $cookieStore.put('project', project);
+            console.log($cookieStore.get('project'));
+        }
+
+
+    };
 
     $scope.saveSetting = function (config) {
         console.log(config);
