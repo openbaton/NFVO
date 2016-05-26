@@ -87,7 +87,8 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
 
         List<Project> projects = new ArrayList<>();
         User user = getCurrentUser();
-
+        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal() || user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.GUEST.ordinal())
+            return projectRepository.findAll();
         for (Role role : user.getRoles())
             projects.add(this.queryByName(role.getProject()));
 
@@ -99,6 +100,6 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
         if (authentication == null)
             return null;
         String currentUserName = authentication.getName();
-        return userManagement.query(currentUserName);
+        return userManagement.queryDB(currentUserName);
     }
 }
