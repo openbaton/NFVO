@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
@@ -52,11 +51,11 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
 
+    private String projectId;
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
      */
     private String deployment_flavour_key;
-
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration configurations;
     /**
@@ -155,7 +154,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
-
     private String name;
     private String type;
     private String endpoint;
@@ -167,9 +165,16 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @JsonIgnore
     private boolean cyclicDependency;
     private String packageId;
-
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public Configuration getConfigurations() {
@@ -424,12 +429,12 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.task = task;
     }
 
-    public void setPackageId(String packageId) {
-        this.packageId = packageId;
-    }
-
     public String getPackageId() {
         return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
     }
 
     @Override

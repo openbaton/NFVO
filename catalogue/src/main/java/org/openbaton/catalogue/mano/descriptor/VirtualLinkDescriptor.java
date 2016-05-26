@@ -29,6 +29,15 @@ import java.util.Set;
 @Entity
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
     /**
     /**
      * Vendor generating this VLD

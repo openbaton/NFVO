@@ -26,16 +26,25 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-public class Configuration implements Serializable{
+public class Configuration implements Serializable {
     @Id
     private String id;
     @Version
     private int version;
 
+    private String projectId;
     // TODO think at cascade type
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ConfigurationParameter> configurationParameters;
     private String name;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
 
     @Override
     public String toString() {
@@ -48,9 +57,10 @@ public class Configuration implements Serializable{
     }
 
     @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
+    public void ensureId() {
+        id = IdGenerator.createUUID();
     }
+
     public String getId() {
         return id;
     }

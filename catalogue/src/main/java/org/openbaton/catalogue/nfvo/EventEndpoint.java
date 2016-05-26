@@ -43,6 +43,15 @@ public class EventEndpoint implements Serializable {
     private int version = 0;
 
     private String name;
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
 
     private String networkServiceId;
     private String virtualNetworkFunctionId;
