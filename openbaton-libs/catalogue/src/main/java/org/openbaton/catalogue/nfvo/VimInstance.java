@@ -51,28 +51,9 @@ public class VimInstance implements Serializable {
     private Set<NFVImage> images;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Network> networks;
+    private String projectId;
 
     public VimInstance() {
-    }
-
-    @Override
-    public String toString() {
-        return "VimInstance{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", authUrl='" + authUrl + '\'' +
-                ", tenant='" + tenant + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", keyPair='" + keyPair + '\'' +
-                ", location=" + location +
-                ", securityGroups=" + securityGroups +
-                ", flavours=" + flavours +
-                ", type='" + type + '\'' +
-                ", images=" + images +
-                ", networks=" + networks +
-                '}';
     }
 
     @PrePersist
@@ -190,5 +171,34 @@ public class VimInstance implements Serializable {
 
     public void setNetworks(Set<Network> networks) {
         this.networks = networks;
+    }
+
+    @Override
+    public String toString() {
+        return "VimInstance{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", authUrl='" + authUrl + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", keyPair='" + keyPair + '\'' +
+                ", location=" + location +
+                ", securityGroups=" + securityGroups +
+                ", flavours=" + flavours +
+                ", type='" + type + '\'' +
+                ", images=" + images +
+                ", networks=" + networks +
+                ", projectId='" + projectId + '\'' +
+                '}';
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectId() {
+        return projectId;
     }
 }

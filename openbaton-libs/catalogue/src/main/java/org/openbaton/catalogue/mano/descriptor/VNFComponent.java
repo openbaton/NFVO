@@ -37,6 +37,7 @@ public class VNFComponent implements Serializable {
     protected String id;
     @Version
     protected int version = 0;
+
     /**
      * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
      */
