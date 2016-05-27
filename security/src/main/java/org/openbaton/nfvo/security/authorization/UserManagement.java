@@ -29,10 +29,11 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     private UserDetailsManager userDetailsManager;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private User getCurrentUser() {
+    @Override
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        return query(currentUserName);
+        return queryDB(currentUserName);
     }
 
     @Override

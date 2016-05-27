@@ -91,6 +91,13 @@ public class RestUsers {
         return user;
     }
 
+    @RequestMapping(value = "current", method = RequestMethod.GET)
+    public User findCurrentUser() {
+        User user = userManagement.getCurrentUser();
+        log.trace("Found User: " + user);
+        return user;
+    }
+
     /**
      * Updates the User
      *

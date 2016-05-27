@@ -25,6 +25,8 @@ import org.openbaton.catalogue.security.User;
 
 public interface UserManagement {
 
+    User getCurrentUser();
+
     /**
      *
      * @param user
