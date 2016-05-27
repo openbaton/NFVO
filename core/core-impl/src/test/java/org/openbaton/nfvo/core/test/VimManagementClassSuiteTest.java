@@ -49,6 +49,8 @@ import static org.mockito.Mockito.*;
  */
 public class VimManagementClassSuiteTest {
 
+    private static final String projectId = "project-id";
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -108,7 +110,7 @@ public class VimManagementClassSuiteTest {
         vimInstance_new.setTenant("UpdatedTenant");
         vimInstance_new.setUsername("UpdatedUsername");
         when(vimRepository.save(vimInstance_new)).thenReturn(vimInstance_new);
-        vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId(), "pi");
+        vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId(), projectId);
 
         Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
         Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
@@ -130,7 +132,7 @@ public class VimManagementClassSuiteTest {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
-        VimInstance vimInstance_new = vimManagement.add(vimInstance_exp, "pi");
+        VimInstance vimInstance_new = vimManagement.add(vimInstance_exp, projectId);
 
         Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
         Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
@@ -161,7 +163,7 @@ public class VimManagementClassSuiteTest {
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
         when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), "pi");
+        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), projectId);
         Assert.assertEquals(vimInstance_exp.getId(), vimInstance_new.getId());
         Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
         Assert.assertEquals(vimInstance_exp.getFlavours().size(), vimInstance_new.getFlavours().size());
@@ -174,15 +176,16 @@ public class VimManagementClassSuiteTest {
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
         when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-        vimManagement.delete(vimInstance_exp.getId(), "pi");
+        vimManagement.delete(vimInstance_exp.getId(), projectId);
         when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(null);
         when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(null);
-        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), "pi");
+        VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), projectId);
         Assert.assertNull(vimInstance_new);
     }
 
     private VimInstance createVimInstance() {
         VimInstance vimInstance = new VimInstance();
+        vimInstance.setProjectId(projectId);
         vimInstance.setName("vim_instance");
         Location location = new Location();
         location.setName("LocationName");

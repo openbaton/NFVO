@@ -64,6 +64,8 @@ public class ConfigurationManagement implements org.openbaton.nfvo.core.interfac
     @Override
     public Configuration query(String id, String projectId) {
         Configuration configuration = configurationRepository.findFirstById(id);
+        if (configuration == null)
+            return configuration;
         if (configuration.getProjectId().equals(projectId))
             return configuration;
         throw new UnauthorizedUserException("Configuration not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

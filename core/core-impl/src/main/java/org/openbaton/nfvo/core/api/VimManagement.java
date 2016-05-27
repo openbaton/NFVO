@@ -87,6 +87,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     @Override
     public VimInstance query(String id, String projectId) {
         VimInstance vimInstance = vimRepository.findFirstById(id);
+        if (vimInstance == null)
+            return vimInstance;
         if (!vimInstance.getProjectId().equals(projectId))
             throw new UnauthorizedUserException("Sorry VimInstance not under the project used");
         return vimInstance;

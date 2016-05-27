@@ -65,6 +65,8 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 public class NetworkServiceRecordManagementClassSuiteTest {
 
+    private static final String projectId = "project-id";
+
     @Mock
     private ConfigurationManagement configurationManagement;
     @InjectMocks
@@ -165,7 +167,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         configurationParameter.setConfKey("delete-on-all-status");
         configurationParameter.setValue("true");
         when(configurationManagement.queryByName("system")).thenReturn(system);
-        nsrManagement.delete(nsd_exp.getId(), "pi");
+        nsrManagement.delete(nsd_exp.getId(), projectId);
     }
 
     @Test
@@ -195,7 +197,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             vnfmManagerEndpoint.setEnabled(true);
             add(vnfmManagerEndpoint);
         }});
-        nsrManagement.onboard(nsd_exp, "pi");
+        nsrManagement.onboard(nsd_exp, projectId);
         }
 
     @Test
@@ -237,7 +239,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
          * Real Method
          */
 
-        nsrManagement.onboard(networkServiceDescriptor.getId(), "pi");
+        nsrManagement.onboard(networkServiceDescriptor.getId(), projectId);
     }
 
     @Test
@@ -278,7 +280,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             add(vnfmManagerEndpoint);
         }});
 
-        nsrManagement.onboard(networkServiceDescriptor.getId(), "pi");
+        nsrManagement.onboard(networkServiceDescriptor.getId(), projectId);
     }
 
     @Test
@@ -288,14 +290,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
         NetworkServiceRecord new_nsr = createNetworkServiceRecord();
         new_nsr.setName("UpdatedName");
-        nsrManagement.update(new_nsr, nsd_exp.getId(), "pi");
+        nsrManagement.update(new_nsr, nsd_exp.getId(), projectId);
         new_nsr.setId(nsd_exp.getId());
         assertEqualsNSR(new_nsr);
     }
 
     private void assertEqualsNSR(NetworkServiceRecord nsr_exp) throws NoResultException {
         when(nsrRepository.findFirstById(nsr_exp.getId())).thenReturn(nsr_exp);
-        NetworkServiceRecord networkServiceRecord = nsrManagement.query(nsr_exp.getId(), "pi");
+        NetworkServiceRecord networkServiceRecord = nsrManagement.query(nsr_exp.getId(), projectId);
         Assert.assertEquals(nsr_exp.getId(), networkServiceRecord.getId());
         Assert.assertEquals(nsr_exp.getName(), networkServiceRecord.getName());
         Assert.assertEquals(nsr_exp.getVendor(), networkServiceRecord.getVendor());
@@ -310,6 +312,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         nsd.getMonitoring_parameter().add("monitor1");
         nsd.getMonitoring_parameter().add("monitor2");
         nsd.getMonitoring_parameter().add("monitor3");
+        nsd.setProjectId(projectId);
         //nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
         nsd.setPnfd(new HashSet<PhysicalNetworkFunctionDescriptor>());
         nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
@@ -337,6 +340,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     private VirtualNetworkFunctionDescriptor createVirtualNetworkFunctionDescriptor() {
         VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
         virtualNetworkFunctionDescriptor.setType("test");
+        virtualNetworkFunctionDescriptor.setProjectId(projectId);
         virtualNetworkFunctionDescriptor.setEndpoint("test");
         virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 10000)));
         virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
@@ -387,6 +391,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     private NetworkServiceRecord createNetworkServiceRecord() {
         final NetworkServiceRecord nsr = new NetworkServiceRecord();
         nsr.setVendor("FOKUS");
+        nsr.setProjectId(projectId);
         nsr.setStatus(Status.ACTIVE);
         nsr.setMonitoring_parameter(new HashSet<String>());
         nsr.getMonitoring_parameter().add("monitor1");
@@ -444,6 +449,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
     private VimInstance createVimInstance() {
         VimInstance vimInstance = new VimInstance();
+        vimInstance.setProjectId(projectId);
         vimInstance.setName("vim_instance");
         vimInstance.setType("test");
         vimInstance.setNetworks(new HashSet<Network>() {{
