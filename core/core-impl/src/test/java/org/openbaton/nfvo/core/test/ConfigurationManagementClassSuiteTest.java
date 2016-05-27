@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -81,8 +82,8 @@ public class ConfigurationManagementClassSuiteTest {
         configurationParameter.setConfKey("new_key");
         configurationParameter.setValue("new_value");
         configuration2.getConfigurationParameters().add(configurationParameter);
-        when(configurationManagement.update(configuration2, configutation.getId(), projectId)).thenReturn(configuration2);
-        configutation = configurationManagement.update(configuration2, configutation.getId(), projectId);
+        when(configurationManagement.update(configuration2, configutation.getId(), anyString())).thenReturn(configuration2);
+        configutation = configurationManagement.update(configuration2, configutation.getId(), "pi");
         assertEqualsConfiguration(configutation, configuration2);
 
     }
@@ -135,7 +136,8 @@ public class ConfigurationManagementClassSuiteTest {
 
         Configuration configutation_exp = createConfigutation();
         when(configurationRepository.findOne(configutation_exp.getId())).thenReturn(configutation_exp);
-        Configuration configuration_new = configurationManagement.query(configutation_exp.getId(), projectId);
+        when(configurationRepository.findFirstById(configutation_exp.getId())).thenReturn(configutation_exp);
+        Configuration configuration_new = configurationManagement.query(configutation_exp.getId(), "");
         assertEqualsConfiguration(configutation_exp, configuration_new);
     }
 
@@ -145,7 +147,8 @@ public class ConfigurationManagementClassSuiteTest {
         when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(configuration_exp);
         configurationManagement.delete(configuration_exp.getId());
         when(configurationRepository.findOne(configuration_exp.getId())).thenReturn(null);
-        Configuration configuration_new = configurationManagement.query(configuration_exp.getId(), projectId);
+        when(configurationRepository.findFirstById(configuration_exp.getId())).thenReturn(null);
+        Configuration configuration_new = configurationManagement.query(configuration_exp.getId(), "pi");
         Assert.assertNull(configuration_new);
     }
 
