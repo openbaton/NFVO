@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +63,7 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.add(datacenter, anyString())).thenReturn(datacenter);
+        when(mock.add(any(datacenter.getClass()), anyString())).thenReturn(datacenter);
         log.info("" + restVimInstances.create(datacenter, "pi"));
         VimInstance datacenter2 = restVimInstances.create(datacenter, "pi");
         assertEquals(datacenter, datacenter2);
@@ -76,7 +77,7 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.query(datacenter.getId(), anyString())).thenReturn(datacenter);
+        when(mock.query(anyString(), anyString())).thenReturn(datacenter);
         assertEquals(datacenter, restVimInstances.findById(datacenter.getId(), "pi"));
     }
 
@@ -87,7 +88,7 @@ public class ApiRestVimInstancesTest {
         datacenter.setName("DC-1");
         datacenter.setType("OpenStack");
         datacenter.setName("datacenter_test");
-        when(mock.update(datacenter, datacenter.getId(), anyString())).thenReturn(datacenter);
+        when(mock.update(any(datacenter.getClass()), anyString(), anyString())).thenReturn(datacenter);
         assertEquals(datacenter, restVimInstances.update(datacenter, datacenter.getId(), "pi"));
     }
 

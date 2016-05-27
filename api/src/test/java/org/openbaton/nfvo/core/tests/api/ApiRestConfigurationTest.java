@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -38,9 +39,9 @@ import static org.mockito.Mockito.when;
 public class ApiRestConfigurationTest {
 
     @InjectMocks
-    RestConfiguration restConfiguration;
+    private RestConfiguration restConfiguration;
     @Mock
-    ConfigurationManagement mock;
+    private ConfigurationManagement mock;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Before
@@ -84,7 +85,7 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.query(configuration.getId(), anyString())).thenReturn(configuration);
+        when(mock.query(anyString(), anyString())).thenReturn(configuration);
         assertEquals(configuration, restConfiguration.findById(configuration.getId(), "project-id"));
     }
 
@@ -98,7 +99,7 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.update(configuration, configuration.getId(), anyString())).thenReturn(configuration);
+        when(mock.update(any(configuration.getClass()), anyString(), anyString())).thenReturn(configuration);
         assertEquals(configuration, restConfiguration.update(configuration, configuration.getId(), "project-id"));
     }
 
