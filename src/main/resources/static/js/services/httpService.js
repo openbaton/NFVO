@@ -18,6 +18,8 @@ angular.module('app')
         }
 
         var http = {};
+
+
         http.get = function (url) {
             console.log(customHeaders);
 
@@ -31,6 +33,7 @@ angular.module('app')
 
             }
 
+            console.log(customHeaders);
             return $http({
                 url: url,
                 method: 'GET',
@@ -94,6 +97,7 @@ angular.module('app')
         };
 
         http.delete = function (url) {
+            console.log(customHeaders);
             $('#modalSend').modal('show');
             return $http({
                 url: url,
