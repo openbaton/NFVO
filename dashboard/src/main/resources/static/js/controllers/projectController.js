@@ -37,8 +37,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        ////console.log(newValue.checkbox);
-        ////console.log($scope.selection.ids);
+        //console.log(newValue.checkbox);
+        //console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
@@ -117,7 +117,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         });
         $('.modal').modal('hide');
         if (status === 401) {
-            console.error(status + ' Status unauthorized')
+            console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
