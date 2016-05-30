@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $rootScope) {
+app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window) {
 
     var url = $cookieStore.get('URL') + "/api/v1/projects/";
 
@@ -37,8 +37,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        ////console.log(newValue.checkbox);
-        ////console.log($scope.selection.ids);
+        //console.log(newValue.checkbox);
+        //console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
@@ -102,8 +102,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     function loadTable() {
             http.get(url)
                 .success(function (response) {
-                    $rootScope.projects = response;
-                    //console.log(response);
+                    $scope.projects = response;
+                    console.log(response);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -117,7 +117,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         });
         $('.modal').modal('hide');
         if (status === 401) {
-            console.error(status + ' Status unauthorized')
+            console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
