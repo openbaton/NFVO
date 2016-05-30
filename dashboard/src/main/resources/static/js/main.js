@@ -26,6 +26,8 @@ require({
         topologyServices: "services/topologyServices",
         packageController: "controllers/packageController",
         eventController: "controllers/eventController",
+        projectController: "controllers/projectController",
+        userController: "controllers/userController",
         vimInstanceController: "controllers/vimInstanceController",
         nsdController: "controllers/nsdController",
         nsrController: "controllers/nsrController",
@@ -129,6 +131,12 @@ require({
         eventController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         },
+        projectController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
+        userController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService', 'angular_cookies']
         },
@@ -160,6 +168,8 @@ require({
     'vnfmanagerController',
     'packageController',
     'eventController',
+    'projectController',
+    'userController',
     'nsrController',
     'vimInstanceController'
 ], function (require) {

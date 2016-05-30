@@ -44,6 +44,17 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             });
     }
 
+    $scope.editField = function () {
+        this.editValue = true;
+    };
+    $scope.hoverIn = function(){
+        this.hoverEdit = true;
+    };
+
+    $scope.hoverOut = function(){
+        this.hoverEdit = false;
+    };
+
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
 
