@@ -37,8 +37,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        //console.log(newValue.checkbox);
-        //console.log($scope.selection.ids);
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
@@ -103,7 +103,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             http.get(url)
                 .success(function (response) {
                     $scope.projects = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -117,7 +117,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         });
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            console.error(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
