@@ -41,18 +41,18 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         $rootScope.logged = $cookieStore.get('logged');
     }
     $location.replace();
-    console.log($scope.logged);
+    //console.log($scope.logged);
     $scope.loggedF = function () {
         return $scope.logged;
     };
 
 
     $scope.checkSecurity = function () {
-        console.log($scope.URL + "/api/v1/security");
+        //console.log($scope.URL + "/api/v1/security");
         AuthService.removeSession();
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
-                console.log(data);
+                //console.log(data);
                 if (data === "false") {
                     AuthService.loginGuest($scope.URL);
                 }
@@ -81,7 +81,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
     $scope.register = function (newUser) {
         delete newUser.password2;
-        console.log(newUser);
+        //console.log(newUser);
         $http.post($scope.URL + '/register', newUser)
             .success(function (data, status) {
                 $window.location.reload();
@@ -92,17 +92,18 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     function showLoginError() {
         $scope.$apply(function () {
             $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
-            console.log($scope.loginError);
+            //console.log($scope.loginError);
         });
     }
 
 });
 
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http) {
+app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $window) {
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
 
+    $scope.projectSelected = $cookieStore.get('project');
 
     $scope.config = {};
 
@@ -112,7 +113,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
 
         http.get(url + '/configurations/')
             .success(function (data, status) {
-                console.log(data);
+                //console.log(data);
                 $.each(data, function (i, conf) {
                     if (conf.name === "system") {
                         $scope.config = conf;
@@ -128,7 +129,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     };
 
     $scope.logged = $cookieStore.get('logged');
-    console.log($scope.logged);
+    //console.log($scope.logged);
     $location.replace();
 
 
@@ -160,37 +161,40 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         $scope.numberUnits = units;
     });
 
-    http.get(url + '/projects/')
-        .success(function (response) {
-            console.log(response);
-            $scope.projects = response;
-            $.each(response, function (i, project) {
-                if ($scope.projectSelected === project.name)
-                    $cookieStore.put('project', project);
-            });
-        })
-        .error(function (response, status) {
-            alert('ERROR: <strong>HTTP</strong> status:' + status + ' response <strong>response:</strong>' + response);
-        });
+    $scope.$watch('projectSelected', function (newValue, oldValue) {
+        if (newValue.id !== oldValue.id)
+            $cookieStore.put('project', newValue)
+    });
 
     $scope.changeProject = function (project) {
-        console.log(project);
-        if(arguments.length === 0){
-            var prj = $cookieStore.get('project');
-            $scope.projectSelected = prj;
-            console.log($scope.projectSelected);
+        if (arguments.length === 0) {
+            http.syncGet(url + '/projects/')
+                .then(function (response) {
+                    //console.log(response);
+                    $scope.projects = response;
+                    $.each(response, function (i, project) {
+                        if ($scope.projectSelected.name === project.name) {
+                            $scope.projectSelected = project;
+                        }
+                    });
+                });
         }
-        else{
+        else {
             $scope.projectSelected = project;
-            $cookieStore.put('project', project);
-            console.log($cookieStore.get('project'));
+
+            console.log(project);
+            /*  setTimeout(function () {
+             $window.location.reload()
+             }, 200);*/
+
         }
 
 
     };
 
+
     $scope.saveSetting = function (config) {
-        console.log(config);
+        //console.log(config);
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
@@ -215,11 +219,11 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     };
 
     if ($scope.logged)
-        console.log('Ok Logged');
-    $location.replace();
+    //console.log('Ok Logged');
+        $location.replace();
     $scope.username = $cookieStore.get('userName');
 
-    console.log($scope.username);
+    //console.log($scope.username);
 
 
     /**

@@ -28,7 +28,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
                     ids.push(k);
                 }
         });
-        console.log(ids);
+        //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
                 showOk('Event: ' + ids.toString() + ' deleted.');
@@ -42,16 +42,16 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        //console.log(newValue.checkbox);
-        //console.log($scope.selection.ids);
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
-        console.log(newValue);
+        //console.log(newValue);
         var keepGoing = true;
         angular.forEach($scope.selection.ids, function (value, k) {
             if (keepGoing) {
@@ -94,7 +94,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
 
 
     $scope.save = function () {
-        console.log($scope.eventObj);
+        //console.log($scope.eventObj);
         http.post(url, $scope.eventObj)
             .success(function (response) {
                 showOk('Event: ' + $scope.eventObj.name + ' saved.');
@@ -108,7 +108,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
         if (!angular.isUndefined($routeParams.eventId))
             http.get(url + $routeParams.eventId)
                 .success(function (response, status) {
-                    console.log(response);
+                    //console.log(response);
                     $scope.event = response;
                     $scope.eventJSON = JSON.stringify(response, undefined, 4);
 
@@ -119,7 +119,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
             http.get(url)
                 .success(function (response) {
                     $scope.events = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -143,7 +143,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
         });
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }

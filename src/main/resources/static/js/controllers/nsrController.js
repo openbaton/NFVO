@@ -25,7 +25,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         $('#addVNFCItoVDU').modal('show');
     };
     $scope.addVNFCI = function () {
-        console.log($scope.connection_points)
+        //console.log($scope.connection_points)
         http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point": $scope.connection_points})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
@@ -81,12 +81,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
          delete cp.version;
          }
          });
-         console.log($scope.connectionPoints);*/
+         //console.log($scope.connectionPoints);*/
 
     };
 
     $scope.addCPtoVDU = function () {
-        console.log($scope.connection_points);
+        //console.log($scope.connection_points);
         http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances', {"connection_point": $scope.connection_points})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
@@ -147,8 +147,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
         }
 
-        console.log(postNSD);
-        console.log(type);
+        //console.log(postNSD);
+        //console.log(type);
 
         if (sendOk) {
             if (type === 'topology') {
@@ -203,11 +203,11 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     if (!angular.isUndefined($routeParams.vduId)) {
         $scope.vduId = $routeParams.vduId;
-        console.log($scope.vduId);
+        //console.log($scope.vduId);
     }
     if (!angular.isUndefined($routeParams.vnfciId)) {
         $scope.vnfciId = $routeParams.vnfciId;
-        console.log($scope.vnfciId);
+        //console.log($scope.vnfciId);
     }
 
 
@@ -228,7 +228,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     };
 
     $scope.loadLog = function () {
-        console.log($scope.logReq);
+        //console.log($scope.logReq);
         //"{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}"
         var lines;
         if (!angular.isUndefined($scope.logReq.lines)) {
@@ -304,7 +304,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 ids.push(k);
             }
         });
-        console.log(ids);
+        //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
                 showOk('NSR with id: ' + ids.toString() + ' deleted.');
@@ -317,16 +317,16 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     };
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        //console.log(newValue.checkbox);
-        //console.log($scope.selection.ids);
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
-        console.log(newValue);
+        //console.log(newValue);
         var keepGoing = true;
         angular.forEach($scope.selection.ids, function (value, k) {
             if (keepGoing) {
@@ -358,7 +358,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
@@ -374,7 +374,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         http.get(url + $routeParams.nsrecordId)
             .success(function (response, status) {
                 topologiesAPI.Jsplumb(response, 'record');
-                console.log(response);
+                //console.log(response);
 
             }).error(function (data, status) {
             showError(data, status);
@@ -387,7 +387,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsrecords = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
@@ -398,7 +398,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 .success(function (response, status) {
                     $scope.nsrinfo = response;
                     $scope.nsrJSON = JSON.stringify(response, undefined, 4);
-                    console.log(response);
+                    //console.log(response);
                     //topologiesAPI.Jsplumb(response);
                 })
                 .error(function (data, status) {
