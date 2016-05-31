@@ -2,22 +2,20 @@ angular.module('app')
     .factory('http', function ($http, $q, $cookieStore) {
 
         var customHeaders = {};
+        var http = {};
+
         if ($cookieStore.get('token') === '' || angular.isUndefined($cookieStore.get('token')))
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             };
         else {
-            var project = $cookieStore.get('project');
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + $cookieStore.get('token'),
-                'project-id': project.id
+                'Authorization': 'Bearer ' + $cookieStore.get('token')
             };
         }
-
-        var http = {};
 
 
         http.get = function (url) {
@@ -33,7 +31,10 @@ angular.module('app')
 
             }
 
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             console.log(customHeaders);
+            console.log($cookieStore.get('project'));
+
             return $http({
                 url: url,
                 method: 'GET',
@@ -43,6 +44,7 @@ angular.module('app')
 
 
         http.post = function (url, data) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             console.log(data);
             $('#modalSend').modal('show');
             return $http({
@@ -54,8 +56,8 @@ angular.module('app')
 
         };
         http.postLog = function (url) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             $('#modalSend').modal('show');
-
             console.log(url);
             return $.ajax({
                 url: url,
@@ -79,6 +81,7 @@ angular.module('app')
             });
         };
         http.put = function (url, data) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             $('#modalSend').modal('show');
             if (url.indexOf("/scripts/") > -1) {
                 customHeaders['Content-type'] = 'text/plain';
@@ -97,6 +100,7 @@ angular.module('app')
         };
 
         http.delete = function (url) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             console.log(customHeaders);
             $('#modalSend').modal('show');
             return $http({

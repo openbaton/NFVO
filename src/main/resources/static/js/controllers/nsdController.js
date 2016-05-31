@@ -16,7 +16,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
         $scope.showSetting = state;
-        console.log($scope.showSetting);
+        //console.log($scope.showSetting);
         $scope.$apply(function () {
             $scope.showSetting;
         });
@@ -32,7 +32,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     http.get(urlVim)
         .success(function (response, status) {
             $scope.vimInstances = response;
-            console.log(response);
+            //console.log(response);
         })
         .error(function (data, status) {
             showError(status, data);
@@ -55,8 +55,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.saveDependency = function () {
         $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
-        console.log($scope.nsdCreateTmp.vnf_dependency);
-        console.log($scope.dependency);
+        //console.log($scope.nsdCreateTmp.vnf_dependency);
+        //console.log($scope.dependency);
 
         $('#modalDependency').modal('hide');
     };
@@ -149,7 +149,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         http.get(urlVNFD)
             .success(function (response, status) {
                 $scope.vnfdList = response;
-                console.log(response);
+                //console.log(response);
                 $('#modalCreateNSD').modal('show');
             })
             .error(function (data, status) {
@@ -165,7 +165,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         else {
             $scope.selection.push(image);
         }
-        console.log($scope.selection);
+        //console.log($scope.selection);
         $scope.vduCreate.vm_image = $scope.selection;
     };
 
@@ -211,13 +211,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vduId)) {
         $scope.vduId = $routeParams.vduId;
-        console.log($scope.vduId);
+        //console.log($scope.vduId);
     }
 
 
     $scope.sendNSDCreate = function (nsdCreate) {
         $('.modal').modal('hide');
-        console.log($scope.nsdCreateTmp);
+        //console.log($scope.nsdCreateTmp);
         http.post(url, $scope.nsdCreateTmp)
             .success(function (response) {
                 showOk('Network Service Descriptor stored!');
@@ -284,8 +284,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         }
 
-        console.log(postNSD);
-        console.log(type);
+        //console.log(postNSD);
+        //console.log(type);
 
         if (sendOk) {
             if (type === 'topology') {
@@ -346,7 +346,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.launch = function () {
-        console.log($scope.nsdToSend);
+        //console.log($scope.nsdToSend);
         http.post(urlRecord + $scope.nsdToSend.id)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
@@ -360,7 +360,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         http.get(url + $routeParams.nsdescriptorId)
             .success(function (response, status) {
                 topologiesAPI.Jsplumb(response, 'descriptor');
-                console.log(response);
+                //console.log(response);
 
             }).error(function (data, status) {
             showError(status, data);
@@ -392,7 +392,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 ids.push(k);
             }
         });
-        console.log(ids);
+        //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
                 showOk('Items with id: ' + ids.toString() + ' deleted.');
@@ -406,16 +406,16 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        //console.log(newValue.checkbox);
-        //console.log($scope.selection.ids);
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
-        console.log(newValue);
+        //console.log(newValue);
         var keepGoing = true;
         angular.forEach($scope.selection.ids, function (value, k) {
             if (keepGoing) {
@@ -454,7 +454,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
@@ -470,7 +470,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsdescriptors = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
@@ -481,7 +481,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 .success(function (response, status) {
                     $scope.nsdinfo = response;
                     $scope.nsdJSON = JSON.stringify(response, undefined, 4);
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);

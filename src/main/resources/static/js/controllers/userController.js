@@ -22,14 +22,25 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         "project": "*"
     };
 
+    $scope.loadCurrentUser = function(){
+        http.get(url +'current')
+            .success(function (response) {
+                console.log(response);
+                $scope.currentUser= response
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
+    };
+
     http.get(urlprojects)
         .success(function (response) {
-            console.log(response);
+            //console.log(response);
             $scope.projects = response;
             $scope.projects.push({name: '*'});
         })
         .error(function (response, status) {
-            showError(status, response);
+            showError(response, status);
         });
 
 
@@ -54,7 +65,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
                 ids.push(k);
             }
         });
-        console.log(ids);
+        //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
                 showOk('user: ' + ids.toString() + ' deleted.');
@@ -68,16 +79,16 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
-        //console.log(newValue.checkbox);
-        //console.log($scope.selection.ids);
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
-        console.log(newValue);
+        //console.log(newValue);
         var keepGoing = true;
         angular.forEach($scope.selection.ids, function (value, k) {
             if (keepGoing) {
@@ -119,7 +130,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
 
     $scope.save = function () {
-        console.log($scope.userObj);
+        //console.log($scope.userObj);
         http.post(url, $scope.userObj)
             .success(function (response) {
                 showOk('Project: ' + $scope.userObj.name + ' saved.');
@@ -130,11 +141,11 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             });
     };
     function loadTable() {
-        console.log($routeParams.userId);
+        //console.log($routeParams.userId);
         if (!angular.isUndefined($routeParams.userId))
             http.get(url + $routeParams.userId)
                 .success(function (response, status) {
-                    console.log(response);
+                    //console.log(response);
                     $scope.user = response;
                     $scope.userJSON = JSON.stringify(response, undefined, 4);
 
@@ -145,7 +156,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -163,7 +174,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         });
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
