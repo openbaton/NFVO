@@ -20,7 +20,7 @@
                         <li>
                             <div style="padding-left:15px;">Projects:</div>
                         </li>
-                        <li ng-repeat="project in projects">
+                        <li ng-repeat="project in projects track by $index">
                             <a href="" ng-click="changeProject(project)">{{project.name}}  <i ng-if="project.name === projectSelected.name" class="fa fa-check"></i></a>
                         </li>
                         <li class="divider"></li>

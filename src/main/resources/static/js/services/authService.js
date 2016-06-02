@@ -27,6 +27,7 @@ angular.module('app').factory('AuthService', function ($http, Session, $location
                 $window.location.reload();
                 return;
             });
+
     };
 
     authService.loginGuest = function (URL) {

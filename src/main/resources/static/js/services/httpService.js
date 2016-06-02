@@ -1,5 +1,5 @@
 angular.module('app')
-    .factory('http', function ($http, $q, $cookieStore) {
+    .factory('http', function ($http, $q, $cookieStore, $rootScope) {
 
         var customHeaders = {};
         var http = {};
@@ -115,6 +115,7 @@ angular.module('app')
             });
             return deferred.promise;
         };
+
 
         return http;
     })

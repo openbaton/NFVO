@@ -98,16 +98,15 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 });
 
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $window) {
+
+app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $rootScope) {
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
 
-    $scope.projectSelected = $cookieStore.get('project');
-
     $scope.config = {};
 
-    getConfig();
+
 
     function getConfig() {
 
@@ -137,50 +136,62 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     $scope.numberNSD = 0;
     $scope.numberVNF = 0;
     $scope.numberUnits = 0;
-    http.syncGet(url + '/ns-descriptors/').then(function (data) {
-        $scope.numberNSD = data.length;
-        var vnf = 0;
-        $.each(data, function (i, nsd) {
-            //console.log(nsd.vnfd.length);
-            if (!angular.isUndefined(nsd.vnfd.length))
-                vnf = vnf + nsd.vnfd.length;
+
+    function loadNumbers() {
+        http.syncGet(url + '/ns-descriptors/').then(function (data) {
+            $scope.numberNSD = data.length;
+            var vnf = 0;
+            $.each(data, function (i, nsd) {
+                //console.log(nsd.vnfd.length);
+                if (!angular.isUndefined(nsd.vnfd.length))
+                    vnf = vnf + nsd.vnfd.length;
+            });
+            $scope.numberVNF = vnf;
         });
-        $scope.numberVNF = vnf;
-    });
-    http.syncGet(url + '/ns-records/').then(function (data) {
-        $scope.numberNSR = data.length;
-        var units = 0;
-        $.each(data, function (i, nsr) {
-            $.each(nsr.vnfr, function (i, vnfr) {
-                $.each(vnfr.vdu, function (i, vdu) {
-                    if (!angular.isUndefined(vdu.vnfc_instance.length))
-                        units = units + vdu.vnfc_instance.length;
+        http.syncGet(url + '/ns-records/').then(function (data) {
+            $scope.numberNSR = data.length;
+            var units = 0;
+            $.each(data, function (i, nsr) {
+                $.each(nsr.vnfr, function (i, vnfr) {
+                    $.each(vnfr.vdu, function (i, vdu) {
+                        if (!angular.isUndefined(vdu.vnfc_instance.length))
+                            units = units + vdu.vnfc_instance.length;
+                    });
                 });
             });
+            $scope.numberUnits = units;
         });
-        $scope.numberUnits = units;
-    });
+    }
+
+
 
     $scope.$watch('projectSelected', function (newValue, oldValue) {
-        if (newValue.id !== oldValue.id)
-            $cookieStore.put('project', newValue)
+        console.log(newValue);
+        if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)){
+            $cookieStore.put('project', newValue);
+        }
+        if(!angular.isUndefined(newValue) && angular.isUndefined(oldValue)){
+            $cookieStore.put('project', newValue);
+            loadNumbers();
+            getConfig();
+        }
     });
+
+    console.log($rootScope.projects);
+    console.log($rootScope.projectSelected);
 
     $scope.changeProject = function (project) {
         if (arguments.length === 0) {
             http.syncGet(url + '/projects/')
                 .then(function (response) {
-                    //console.log(response);
-                    $scope.projects = response;
-                    $.each(response, function (i, project) {
-                        if ($scope.projectSelected.name === project.name) {
-                            $scope.projectSelected = project;
-                        }
-                    });
+                    console.log(response);
+                    $rootScope.projects = response;
+                    $rootScope.projectSelected = response[0];
+                    $cookieStore.put('project',  response[0])
                 });
         }
         else {
-            $scope.projectSelected = project;
+            $rootScope.projectSelected = project;
 
             console.log(project);
             /*  setTimeout(function () {
