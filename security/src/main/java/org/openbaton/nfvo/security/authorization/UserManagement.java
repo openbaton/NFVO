@@ -49,6 +49,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
         }
 
         org.springframework.security.core.userdetails.User userToAdd= new org.springframework.security.core.userdetails.User(user.getUsername(), BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)), user.isEnabled(), true, true, true, AuthorityUtils.createAuthorityList(roles));
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)));
         userDetailsManager.createUser(userToAdd);
         return userRepository.save(user);
     }
