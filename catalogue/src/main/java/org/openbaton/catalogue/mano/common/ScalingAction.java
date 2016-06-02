@@ -35,6 +35,8 @@ public class ScalingAction implements Serializable{
 
 	private String value;
 
+	private String target;
+
 	@PrePersist
 	public void ensureId() {
 		id = IdGenerator.createUUID();
@@ -64,6 +66,14 @@ public class ScalingAction implements Serializable{
 		this.value = value;
 	}
 
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
 	@Override
 	public String toString() {
 		return "ScalingAction{" +
@@ -71,6 +81,7 @@ public class ScalingAction implements Serializable{
 				", version=" + version +
 				", type=" + type +
 				", value='" + value + '\'' +
+				", target='" + target + '\'' +
 				'}';
 	}
 }
