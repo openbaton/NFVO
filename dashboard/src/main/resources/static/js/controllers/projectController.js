@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window) {
+app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $rootScope) {
 
     var url = $cookieStore.get('URL') + "/api/v1/projects/";
 
@@ -102,7 +102,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     function loadTable() {
             http.get(url)
                 .success(function (response) {
-                    $scope.projects = response;
+                    $rootScope.projects = response;
                     //console.log(response);
                 })
                 .error(function (data, status) {
