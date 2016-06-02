@@ -115,19 +115,31 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
             log.debug("" + user);
         }
 
+        for (User user : userRepository.findAll()) {
+            if (!user.getUsername().equals("admin") && !user.getUsername().equals("guest")) {
+                String[] roles = new String[user.getRoles().size()];
+                for (int i = 0; i < user.getRoles().size(); i++) {
+                    roles[i] = user.getRoles().toArray(new Role[0])[i].getRole() + ":" + user.getRoles().toArray(new Role[0])[i].getProject();
+                }
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.isEnabled(), true, true, true, AuthorityUtils.createAuthorityList(roles));
+                inMemManager.createUser(userDetails);
+            }
+        }
+
         log.debug("Users in UserDetailManager: ");
         log.debug("ADMIN: " + inMemManager.loadUserByUsername("admin"));
         log.debug("GUEST: " + inMemManager.loadUserByUsername("guest"));
 
         log.debug("Creating initial Project...");
 
-        if (projectManagement.queryByName(projectDefaultName) == null){
+        if (projectManagement.queryByName(projectDefaultName) == null) {
             Project project = new Project();
             project.setName(projectDefaultName);
 
             projectManagement.add(project);
             log.debug("Created project: " + project);
-        }
+        } else
+            log.debug("Project " + projectDefaultName + " already existing");
     }
 
     @Override
@@ -141,14 +153,14 @@ public class CustomUserDetailsService implements UserDetailsService, CommandLine
         User userToUpdate = userRepository.findFirstByUsername(user.getUsername());
         userToUpdate.setPassword(user.getPassword());
         for (GrantedAuthority authority : user.getAuthorities()) {
-            StringTokenizer stringTokenizer = new StringTokenizer(authority.getAuthority(),":");
+            StringTokenizer stringTokenizer = new StringTokenizer(authority.getAuthority(), ":");
             String rl = stringTokenizer.nextToken();
             String pj = stringTokenizer.nextToken();
             boolean found = false;
-            for (Role role : userToUpdate.getRoles()){
-                if (role.getProject().equals(pj)){
+            for (Role role : userToUpdate.getRoles()) {
+                if (role.getProject().equals(pj)) {
                     role.setRole(Role.RoleEnum.valueOf(rl));
-                    found=true;
+                    found = true;
                 }
             }
             if (!found) {
