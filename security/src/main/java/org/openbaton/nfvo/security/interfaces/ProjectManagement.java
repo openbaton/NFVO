@@ -44,4 +44,6 @@ public interface ProjectManagement {
     Project queryByName(String name);
 
     Iterable<Project> queryForUser();
+
+    boolean exist(String project);
 }

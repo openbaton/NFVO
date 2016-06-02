@@ -95,6 +95,11 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
         return projects;
     }
 
+    @Override
+    public boolean exist(String id) {
+        return projectRepository.exists(id);
+    }
+
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)

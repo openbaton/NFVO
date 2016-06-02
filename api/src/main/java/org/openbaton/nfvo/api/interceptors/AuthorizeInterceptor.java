@@ -72,19 +72,27 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         log.trace("UserManagement: " + userManagement);
         User user = userManagement.queryDB(currentUserName);
 
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
-            return true;
-
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.GUEST.ordinal())
-            if (request.getMethod().equalsIgnoreCase("get"))
-                return true;
-            else
-                return false;
-
         if (project != null) {
-            for (Role role : user.getRoles())
-                if (role.getProject().equals(projectManagement.query(project).getName()))
+            if (!projectManagement.exist(project)){
+                throw new NotFoundException("Project with id " + project + " was not found");
+            }
+            if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
+                return true;
+
+            if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.GUEST.ordinal())
+                if (request.getMethod().equalsIgnoreCase("get"))
                     return true;
+                else
+                    return false;
+
+            for (Role role : user.getRoles()) {
+                String pjName = projectManagement.query(project).getName();
+                log.debug(role.getProject() + " == " + pjName);
+                if (role.getProject().equals(pjName)) {
+                    log.trace("Return true");
+                    return true;
+                }
+            }
 
             throw new UnauthorizedUserException(currentUserName + " user is not unauthorized for executing this request!");
         }
