@@ -69,6 +69,11 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
         log.trace("Current User: " + currentUserName);
         log.trace("projectId: " + project);
+        log.trace("URI: " + request.getRequestURI());
+        if (request.getRequestURI().equals("/api/v1/projects/") && request.getMethod().equalsIgnoreCase("get")){
+            return true;
+        }
+        log.trace("URL: " + request.getRequestURL());
         log.trace("UserManagement: " + userManagement);
         User user = userManagement.queryDB(currentUserName);
 
@@ -96,6 +101,6 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
             throw new UnauthorizedUserException(currentUserName + " user is not unauthorized for executing this request!");
         }
-        return true;
+        return false;
     }
 }
