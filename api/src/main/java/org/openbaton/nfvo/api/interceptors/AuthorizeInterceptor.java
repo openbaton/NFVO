@@ -76,12 +76,13 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
             else
                 return false;
 
-        for (Role role : user.getRoles())
-            if (role.getProject().equals(project))
-                return true;
+        if (project != null) {
+            for (Role role : user.getRoles())
+                if (role.getProject().equals(project))
+                    return true;
 
-        throw new UnauthorizedUserException(currentUserName + " user is not unauthorized for executing this request!");
+            throw new UnauthorizedUserException(currentUserName + " user is not unauthorized for executing this request!");
+        }
+        return true;
     }
-
-
 }
