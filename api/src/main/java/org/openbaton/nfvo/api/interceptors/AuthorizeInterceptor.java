@@ -2,6 +2,8 @@ package org.openbaton.nfvo.api.interceptors;
 
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private UserManagement userManagement;
+    @Autowired
+    private ProjectManagement projectManagement;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -61,9 +65,10 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         }
     }
 
-    private boolean checkAuthorization(String project, HttpServletRequest request, String currentUserName) {
+    private boolean checkAuthorization(String project, HttpServletRequest request, String currentUserName) throws NotFoundException {
 
         log.trace("Current User: " + currentUserName);
+        log.trace("projectId: " + project);
         log.trace("UserManagement: " + userManagement);
         User user = userManagement.queryDB(currentUserName);
 
@@ -78,7 +83,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
         if (project != null) {
             for (Role role : user.getRoles())
-                if (role.getProject().equals(project))
+                if (role.getProject().equals(projectManagement.query(project).getName()))
                     return true;
 
             throw new UnauthorizedUserException(currentUserName + " user is not unauthorized for executing this request!");
