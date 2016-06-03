@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class RestUsersRegister {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody @Valid User user) {
+    public User create(@RequestBody @Valid User user) throws PasswordWeakException {
         log.info("Adding user: " + user.getUsername());
         user.setEnabled(false);
         return userManagement.add(user);

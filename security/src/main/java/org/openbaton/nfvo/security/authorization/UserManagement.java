@@ -2,11 +2,14 @@ package org.openbaton.nfvo.security.authorization;
 
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +22,11 @@ import org.springframework.stereotype.Service;
  * Created by lto on 25/02/16.
  */
 @Service
+@ConfigurationProperties
 public class UserManagement implements org.openbaton.nfvo.security.interfaces.UserManagement {
+
+    @Value("${nfvo.users.password.strength:true}")
+    private boolean checkStrength;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,9 +44,13 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     }
 
     @Override
-    public User add(User user) {
+    public User add(User user) throws PasswordWeakException {
 
         checkCurrentUserObAdmin(getCurrentUser());
+
+        if (checkStrength && !isPasswordStrong(user.getPassword())){
+            throw new PasswordWeakException("The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, one upper case letter and one digit");
+        }
 
         String[] roles = new String[user.getRoles().size()];
 
@@ -52,6 +63,12 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)));
         userDetailsManager.createUser(userToAdd);
         return userRepository.save(user);
+    }
+
+    private boolean isPasswordStrong(String password) {
+        if (password.matches("(?=.*[A-Z]).*") && password.matches("(?=.*[a-z]).*") && password.matches("(?=.*[0-9]).*"))
+            return true;
+        return false;
     }
 
     private void checkCurrentUserObAdmin(User currentUser) {

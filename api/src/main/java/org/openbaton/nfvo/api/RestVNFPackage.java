@@ -52,6 +52,8 @@ public class RestVNFPackage {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public String onboard(@RequestParam("file") MultipartFile file, @RequestHeader(value = "project-id") String projectId) throws IOException, VimException, NotFoundException, SQLException, PluginException {
+
+        log.debug("Onboarding");
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
             VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfPackageManagement.onboard(bytes, projectId);

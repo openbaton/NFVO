@@ -631,7 +631,10 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public NetworkServiceRecord query(String id, String projectId) {
+        log.debug("Id is: " + id);
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+        log.debug("found nsr = " + networkServiceRecord);
+        log.debug(" project id is: " + projectId);
         if (!networkServiceRecord.getProjectId().equals(projectId))
             throw new UnauthorizedUserException("NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         return networkServiceRecord;

@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.PasswordWeakException;
 
 
 /**
@@ -31,7 +32,7 @@ public interface UserManagement {
      *
      * @param user
      */
-    User add(User user);
+    User add(User user) throws PasswordWeakException;
 
     /**
      *
