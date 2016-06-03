@@ -170,6 +170,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             if ($cookieStore.get('token') !== '')
                 header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
 
+            header['project-id'] = $cookieStore.get('project').id;
             var myDropzone = new Dropzone('#my-dropzone', {
                 url: url, // Set the url
                 method: "POST",
