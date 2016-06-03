@@ -326,8 +326,8 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
-    public List<NetworkServiceDescriptor> queryByProjectId(String projectId) {
-        return nsdRepository.findByProjectId(projectId);
+    public List<NetworkServiceRecord> queryByProjectId(String projectId) {
+        return nsrRepository.findByProjectId(projectId);
     }
 
     @Override

@@ -111,7 +111,7 @@ public class RestNetworkServiceRecord {
      */
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<NetworkServiceDescriptor> findAll(@RequestHeader(value = "project-id") String projectId) {
+    public List<NetworkServiceRecord> findAll(@RequestHeader(value = "project-id") String projectId) {
         return networkServiceRecordManagement.queryByProjectId(projectId);
     }
 

@@ -148,5 +148,5 @@ public interface NetworkServiceRecordManagement {
 
     void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 
-    List<NetworkServiceDescriptor> queryByProjectId(String projectId);
+    List<NetworkServiceRecord> queryByProjectId(String projectId);
 }
