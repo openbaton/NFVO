@@ -18,11 +18,12 @@ package org.openbaton.catalogue.security;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
-public class User {
+public class User implements Serializable{
 
     @Id
     private String id;
