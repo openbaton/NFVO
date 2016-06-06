@@ -99,13 +99,12 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 });
 
 
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $rootScope) {
+app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
 
     $scope.config = {};
-
 
 
     function getConfig() {
@@ -164,13 +163,12 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     }
 
 
-
     $scope.$watch('projectSelected', function (newValue, oldValue) {
         console.log(newValue);
-        if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)){
+        if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
         }
-        if(!angular.isUndefined(newValue) && angular.isUndefined(oldValue)){
+        if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
             getConfig();
@@ -184,20 +182,20 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         if (arguments.length === 0) {
             http.syncGet(url + '/projects/')
                 .then(function (response) {
-                    console.log(response);
+                    if (angular.isUndefined($cookieStore.get('project'))) {
+                        $rootScope.projectSelected = response[0];
+                        $cookieStore.put('project', response[0])
+                    } else {
+                        $rootScope.projectSelected = $cookieStore.get('project');
+                    }
                     $rootScope.projects = response;
-                    $rootScope.projectSelected = response[0];
-                    $cookieStore.put('project',  response[0])
                 });
         }
         else {
             $rootScope.projectSelected = project;
-
             console.log(project);
-            /*  setTimeout(function () {
-             $window.location.reload()
-             }, 200);*/
-
+            $cookieStore.put('project', project);
+            $window.location.reload();
         }
 
 
