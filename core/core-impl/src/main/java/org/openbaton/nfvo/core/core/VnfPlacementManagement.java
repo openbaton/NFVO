@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by lto on 10/03/16.
@@ -29,7 +31,9 @@ public class VnfPlacementManagement implements org.openbaton.nfvo.core.interface
             log.info("Chosen VimInstance: " + vimInstance.getName());
             return vimInstance;
         } else {
-            return vimInstanceRepository.findAll().iterator().next();
+            Iterable<VimInstance> vimInstances = vimInstanceRepository.findAll();
+            List<Iterable<VimInstance>> iterableList = Arrays.asList(vimInstances);
+            return iterableList.toArray(new VimInstance[0])[((int) (Math.random() * 1000)) % iterableList.size()];
         }
     }
 }
