@@ -3,12 +3,13 @@ package org.openbaton.catalogue.security;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by lto on 24/05/16.
  */
 @Entity
-public class Role {
+public class Role implements Serializable{
     @Id
     private String id;
     @Enumerated(EnumType.STRING)
