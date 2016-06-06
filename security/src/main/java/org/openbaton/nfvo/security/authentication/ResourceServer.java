@@ -42,8 +42,8 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
                 .frameOptions().disable();
 
         // API calls
-        if (enabled) {
-            log.debug("Security is enabled");
+        log.debug("Security must be enabled");
+        if (true) {
             http
                     .authorizeRequests()
                     .regexMatchers(HttpMethod.POST, "/api/v1/")
