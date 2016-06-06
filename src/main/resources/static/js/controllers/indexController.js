@@ -182,7 +182,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         if (arguments.length === 0) {
             http.syncGet(url + '/projects/')
                 .then(function (response) {
-                    if (angular.isUndefined($cookieStore.get('project'))) {
+                    if (angular.isUndefined($cookieStore.get('project')) || $cookieStore.get('project').id == '') {
                         $rootScope.projectSelected = response[0];
                         $cookieStore.put('project', response[0])
                     } else {
