@@ -390,8 +390,9 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI) throws NotFoundException {
+
         for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
-            if (idVNFCI.equals(vnfcInstance.getId()))
+            if (idVNFCI == null || idVNFCI.equals(vnfcInstance.getId()))
                 return vnfcInstance;
 
         throw new NotFoundException("VNFCInstance with id " + idVNFCI + " was not found");

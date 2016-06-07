@@ -231,7 +231,7 @@ public class RestNetworkServiceRecord {
     @RequestMapping(value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVNFCInstance(@PathVariable("id") String id, @PathVariable("idVnf") String idVnf, @PathVariable("idVdu") String idVdu, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, projectId, projectId);
+        networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, null, projectId);
     }
 
     // Rest method for execute actions at different level
