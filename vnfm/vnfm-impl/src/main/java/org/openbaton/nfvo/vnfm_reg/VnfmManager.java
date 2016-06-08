@@ -27,7 +27,6 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
-import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -81,8 +80,6 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
     private ThreadPoolTaskExecutor asyncExecutor;
     @Autowired
     private ConfigurableApplicationContext context;
-    @Autowired
-    private ConfigurationManagement configurationManagement;
     @Autowired
     private NetworkServiceRecordRepository nsrRepository;
     @Autowired
@@ -431,11 +428,14 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
                     return;
                 }
 
-                if (nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() != networkServiceRecord.getVnfr().size()) {
-                    log.debug("Not all the VNFR have been created yet, it is useless to set the NSR status.");
-                    return;
+                try {
+                    if (nsdRepository.findFirstById(networkServiceRecord.getDescriptor_reference()).getVnfd().size() != networkServiceRecord.getVnfr().size()) {
+                        log.debug("Not all the VNFR have been created yet, it is useless to set the NSR status.");
+                        return;
+                    }
+                }catch (NullPointerException e){
+                    log.warn("Descriptor was already removed, calculating the status anyway...");
                 }
-
 
                 log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
 
