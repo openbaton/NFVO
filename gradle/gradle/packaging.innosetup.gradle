@@ -1,0 +1,39 @@
+// Windows Installer ///////////////////////////////////////////////////////////
+task exe(dependsOn: [dependsOn: [jar, build]]) << {
+	def innoSetupDir = new File("${buildDir}/innosetup")
+	
+	delete innoSetupDir	
+	innoSetupDir.mkdir();
+	copy {
+	from("${rootProject.projectDir}/gradle/innosetup/start.bat")
+	from("${rootProject.projectDir}/gradle/innosetup/openbaton.properties")
+	from("${rootProject.projectDir}/gradle/innosetup/iscc.sh")
+	
+	into(innoSetupDir)
+	}	
+	
+	copy {
+		from("${buildDir}/libs/openbaton-2.0.2-SNAPSHOT.jar")
+		into(innoSetupDir)
+	}
+
+	copy {
+		from("${rootProject.projectDir}/gradle/innosetup/innosetup.iss")
+		expand([
+			applicationVersion: "${applicationVersion}",
+			applicationVersionFull: "${applicationVersionFull}",			
+		])
+		into(innoSetupDir)
+	}
+	exec {
+	
+        workingDir innoSetupDir
+	commandLine "wget http://get.openbaton.org/plugins/stable/openstack-plugin-2.0.1.jar"
+	commandLine "./iscc.sh"
+	
+	}
+
+	
+}
+
+
