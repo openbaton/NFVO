@@ -16,6 +16,7 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.security.Project;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
@@ -60,7 +61,7 @@ public class RestProject {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException {
+    public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException, EntityInUseException {
         log.debug("removing Project with id " + id);
         projectManagement.delete(projectManagement.query(id));
     }

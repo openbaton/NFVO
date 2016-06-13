@@ -3,9 +3,10 @@ package org.openbaton.nfvo.security.authorization;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.ProjectRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,14 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
 
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private VimRepository vimRepository;
+    @Autowired
+    private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
+    @Autowired
+    private NetworkServiceRecordRepository networkServiceRecordRepository;
+    @Autowired
+    private VnfPackageRepository vnfPackageRepository;
 
     @Override
     public Project add(Project project) {
@@ -40,19 +49,40 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     }
 
     @Override
-    public void delete(Project project) throws NotAllowedException {
+    public void delete(Project project) throws NotAllowedException, EntityInUseException {
         Project projectToDelete = projectRepository.findFirstById(project.getId());
         User user = getCurrentUser();
         if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal()) {
-            projectRepository.delete(projectToDelete);
-            return;
-        }
-        for (Role role : user.getRoles())
-            if (role.getProject().equals(projectToDelete.getName())) {
+
+            if (projectIsNotUsed(projectToDelete)) {
+
                 projectRepository.delete(projectToDelete);
                 return;
             }
+            throw new EntityInUseException("Project " + projectToDelete.getName() + " has still some resources allocated");
+        }
+        for (Role role : user.getRoles())
+            if (role.getProject().equals(projectToDelete.getName())) {
+                if (projectIsNotUsed(projectToDelete)) {
+                    projectRepository.delete(projectToDelete);
+                    return;
+                }
+                throw new EntityInUseException("Project " + projectToDelete.getName() + " has still some resources allocated");
+            }
         throw new UnauthorizedUserException("Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    private boolean projectIsNotUsed(Project projectToDelete) {
+        if (vimRepository.findByProjectId(projectToDelete.getId()).size() != 0)
+            return false;
+        if (vnfPackageRepository.findByProjectId(projectToDelete.getId()).size() != 0)
+            return false;
+        if (networkServiceDescriptorRepository.findByProjectId(projectToDelete.getId()).size() != 0)
+            return false;
+        if (networkServiceRecordRepository.findByProjectId(projectToDelete.getId()).size() != 0)
+            return false;
+
+        return true;
     }
 
     @Override

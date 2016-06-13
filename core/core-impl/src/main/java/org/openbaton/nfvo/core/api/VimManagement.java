@@ -107,6 +107,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     @Override
     public void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException, IOException {
         this.checkVimInstances();
+        vimInstance.setActive(true);
         if (!vimInstance.isActive())
             throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
         //Refreshing Images

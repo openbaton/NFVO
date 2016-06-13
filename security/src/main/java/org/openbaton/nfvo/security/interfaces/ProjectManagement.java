@@ -1,6 +1,7 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.Project;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 
@@ -18,7 +19,7 @@ public interface ProjectManagement {
      *
      * @param project
      */
-    void delete(Project project) throws NotAllowedException;
+    void delete(Project project) throws NotAllowedException, EntityInUseException;
 
     /**
      *
