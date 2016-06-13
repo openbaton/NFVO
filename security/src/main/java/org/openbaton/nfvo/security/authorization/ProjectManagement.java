@@ -24,7 +24,6 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     @Autowired
     private org.openbaton.nfvo.security.interfaces.UserManagement userManagement;
 
-
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -34,7 +33,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
         if (currentUser != null) {
             if (currentUser.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
                 return projectRepository.save(project);
-        }else {
+        } else {
             return projectRepository.save(project);
         }
         throw new UnauthorizedUserException("Sorry only OB_ADMIN can add project");
@@ -44,6 +43,10 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     public void delete(Project project) throws NotAllowedException {
         Project projectToDelete = projectRepository.findFirstById(project.getId());
         User user = getCurrentUser();
+        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal()) {
+            projectRepository.delete(projectToDelete);
+            return;
+        }
         for (Role role : user.getRoles())
             if (role.getProject().equals(projectToDelete.getName())) {
                 projectRepository.delete(projectToDelete);
@@ -56,6 +59,8 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     public Project update(Project new_project) {
         Project project = projectRepository.findFirstById(new_project.getId());
         User user = getCurrentUser();
+        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
+            return projectRepository.save(new_project);
         for (Role role : user.getRoles())
             if (role.getProject().equals(project.getName()))
                 return projectRepository.save(new_project);
@@ -71,6 +76,8 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     public Project query(String id) throws NotFoundException {
         Project project = projectRepository.findFirstById(id);
         User user = getCurrentUser();
+        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
+            return project;
         for (Role role : user.getRoles())
             if (role.getProject().equals(project.getName()))
                 return project;
