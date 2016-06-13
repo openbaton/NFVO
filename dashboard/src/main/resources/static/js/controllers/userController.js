@@ -113,10 +113,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     /* -- multiple delete functions END -- */
 
 
-    $scope.deleteuser = function (data) {
+    $scope.deleteUser = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('user: ' + data.name + ' deleted.');
+                showOk('User: ' + data.name + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
