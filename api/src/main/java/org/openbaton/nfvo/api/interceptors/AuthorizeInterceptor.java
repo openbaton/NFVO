@@ -35,7 +35,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String projectId = request.getHeader("project-id");
-        log.debug("ProjectId: " + projectId);
+        log.trace("ProjectId: " + projectId);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.trace("Authentication " + authentication);
@@ -98,7 +98,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
             for (Role role : user.getRoles()) {
                 String pjName = projectManagement.query(project).getName();
-                log.debug(role.getProject() + " == " + pjName);
+                log.trace(role.getProject() + " == " + pjName);
                 if (role.getProject().equals(pjName)) {
                     log.trace("Return true");
                     return true;
