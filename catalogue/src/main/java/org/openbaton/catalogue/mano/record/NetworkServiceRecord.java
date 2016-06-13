@@ -47,10 +47,18 @@ public class NetworkServiceRecord implements Serializable{
     /**
      * References the nsd:service_deployment_flavour used to instantiate this Network Service instance.
      * */
-
     @OneToOne(cascade = CascadeType.REFRESH)
     private NetworkServiceDeploymentFlavour service_deployment_flavour;
     private String vendor;
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
     private String version;
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<VirtualLinkRecord> vlr;

@@ -38,6 +38,16 @@ public abstract class NFVEntityDescriptor implements Serializable {
 	@Column
 	protected String name;
 
+	protected String projectId;
+
+	public String getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
+
 	/**
 	 * Provider or vendor of the Network Service.
 	 * */
