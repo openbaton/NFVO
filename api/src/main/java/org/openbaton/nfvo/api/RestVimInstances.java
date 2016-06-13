@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
@@ -27,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Set;
 
 
@@ -48,7 +50,7 @@ public class RestVimInstances {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VimInstance create(@RequestBody @Valid VimInstance vimInstance, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public VimInstance create(@RequestBody @Valid VimInstance vimInstance, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         return vimManagement.add(vimInstance, projectId);
     }
 
@@ -95,7 +97,7 @@ public class RestVimInstances {
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public VimInstance update(@RequestBody @Valid VimInstance new_vimInstance, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         return vimManagement.update(new_vimInstance, id, projectId);
     }
 
@@ -119,7 +121,7 @@ public class RestVimInstances {
      * @return {@code NFVImage} selected
      */
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
-    public NFVImage getImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage, @RequestHeader(value = "project-id") String projectId) {
+    public NFVImage getImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage, @RequestHeader(value = "project-id") String projectId) throws EntityUnreachableException {
         return vimManagement.queryImage(idVim, idImage, projectId);
     }
 
@@ -132,7 +134,7 @@ public class RestVimInstances {
      * @throws VimException
      */
     @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
-    public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public NFVImage addImage(@PathVariable("id") String id, NFVImage nfvImage, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         return vimManagement.addImage(id, nfvImage, projectId);
     }
 
@@ -145,7 +147,7 @@ public class RestVimInstances {
      * @throws VimException
      */
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
-    public NFVImage updateImage(@PathVariable("idVim") String idVim, @RequestBody @Valid NFVImage image, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public NFVImage updateImage(@PathVariable("idVim") String idVim, @RequestBody @Valid NFVImage image, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         return vimManagement.addImage(idVim, image,projectId);
     }
 
@@ -158,7 +160,7 @@ public class RestVimInstances {
      */
 
     @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public void deleteImage(@PathVariable("idVim") String idVim, @PathVariable("idImage") String idImage, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         vimManagement.deleteImage(idVim, idImage, projectId);
     }
 
@@ -169,7 +171,7 @@ public class RestVimInstances {
      * @return Datacenter: The Datacenter selected
      */
     @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
-    public VimInstance refresh(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException {
+    public VimInstance refresh(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         VimInstance vimInstance = vimManagement.query(id, projectId);
         vimManagement.refresh(vimInstance);
         return vimInstance;
