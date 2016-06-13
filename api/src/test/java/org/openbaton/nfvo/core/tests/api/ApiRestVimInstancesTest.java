@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.api.RestVimInstances;
@@ -29,6 +30,7 @@ import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +59,7 @@ public class ApiRestVimInstancesTest {
     }
 
     @Test
-    public void createVimInstance() throws VimException, PluginException {
+    public void createVimInstance() throws VimException, PluginException, IOException, EntityUnreachableException {
         VimInstance datacenter = new VimInstance();
         datacenter.setId("123");
         datacenter.setName("DC-1");
@@ -82,7 +84,7 @@ public class ApiRestVimInstancesTest {
     }
 
     @Test
-    public void updateVimInstance() throws VimException, PluginException {
+    public void updateVimInstance() throws VimException, PluginException, IOException, EntityUnreachableException {
         VimInstance datacenter = new VimInstance();
         datacenter.setId("123");
         datacenter.setName("DC-1");

@@ -26,6 +26,7 @@ import org.openbaton.catalogue.nfvo.Location;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.api.VimManagement;
@@ -37,6 +38,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -89,7 +91,7 @@ public class VimManagementClassSuiteTest {
 
 
     @Test
-    public void vimManagementRefreshTest() throws VimException, PluginException {
+    public void vimManagementRefreshTest() throws VimException, PluginException, IOException, EntityUnreachableException {
         initMocks();
         VimInstance vimInstance = createVimInstance();
         vimManagement.refresh(vimInstance);
@@ -100,7 +102,7 @@ public class VimManagementClassSuiteTest {
     }
 
     @Test
-    public void vimManagementUpdateTest() throws VimException, PluginException {
+    public void vimManagementUpdateTest() throws VimException, PluginException, IOException, EntityUnreachableException {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -128,7 +130,7 @@ public class VimManagementClassSuiteTest {
     }
 
     @Test
-    public void nfvImageManagementAddTest() throws VimException, PluginException {
+    public void nfvImageManagementAddTest() throws VimException, PluginException, IOException, EntityUnreachableException {
         initMocks();
         VimInstance vimInstance_exp = createVimInstance();
         when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
@@ -185,6 +187,7 @@ public class VimManagementClassSuiteTest {
 
     private VimInstance createVimInstance() {
         VimInstance vimInstance = new VimInstance();
+        vimInstance.setActive(true);
         vimInstance.setProjectId(projectId);
         vimInstance.setName("vim_instance");
         Location location = new Location();
