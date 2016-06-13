@@ -31,6 +31,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
@@ -62,6 +63,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     private NetworkRepository networkRepository;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    @Value("${nfvo.vim.active.check:false}")
+    private boolean vimCheck;
 
 
     @Override
@@ -322,15 +325,21 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     @Scheduled(fixedRate = 60000, initialDelay = 10000)
     private void checkVimInstances() throws IOException {
-        for (VimInstance vimInstance : vimRepository.findAll()){
-            URL authUrl = new URL(vimInstance.getAuthUrl());
 
-            if (vimInstance.isActive() && !InetAddress.getByAddress(authUrl.getHost().getBytes()).isReachable(5000)){
-                vimInstance.setActive(false);
-                vimRepository.save(vimInstance);
-            } else if (!vimInstance.isActive() && InetAddress.getByAddress(authUrl.getHost().getBytes()).isReachable(5000)){
-                vimInstance.setActive(true);
-                vimRepository.save(vimInstance);
+        if (vimCheck) {
+
+            for (VimInstance vimInstance : vimRepository.findAll()) {
+                URL authUrl = new URL(vimInstance.getAuthUrl());
+                log.debug("Checking host: " + authUrl.getHost());
+                byte[] bytes = authUrl.getHost().getBytes();
+
+                if (vimInstance.isActive() && !InetAddress.getByAddress(bytes).isReachable(5000)) {
+                    vimInstance.setActive(false);
+                    vimRepository.save(vimInstance);
+                } else if (!vimInstance.isActive() && InetAddress.getByAddress(bytes).isReachable(5000)) {
+                    vimInstance.setActive(true);
+                    vimRepository.save(vimInstance);
+                }
             }
         }
     }
