@@ -117,23 +117,20 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
     /**
-     * <p/>
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
-     * <p/>
-     * <p/>
+     *
+     *
      * Implementation thoughts:
      * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
      * so for what concerns the VNFR, the state are:
-     * <p/>
-     * <p/>
+     *
      * * Null) A VNF Instance does not exist and is about to be created.
      * * Instantiated Not Configured) VNF Instance does exist but is not configured for service.
      * * Instantiated Configured - Inactive) A VNF Instance is configured for service.
      * * Instantiated Configured - Active) A VNF Instance that participates in service.
      * * Terminated) A VNF Instance has ceased to exist.
      * but the Null and the Instantiated since when the VNFR is created will be ready to serve.
-     * <p/>
      */
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -226,9 +223,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.auto_scale_policy = auto_scale_policy;
     }
 
-    /**
-     * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
-     */
     public int getHb_version() {
         return hb_version;
     }
