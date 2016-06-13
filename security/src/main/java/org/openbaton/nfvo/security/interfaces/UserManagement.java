@@ -57,5 +57,7 @@ public interface UserManagement {
     User query(String username);
 
 
+    User queryById(String id);
+
     User queryDB(String currentUserName);
 }

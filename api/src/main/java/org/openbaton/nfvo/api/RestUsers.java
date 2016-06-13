@@ -53,15 +53,15 @@ public class RestUsers {
     /**
      * Removes the User from the Users repository
      *
-     * @param username : the username of user to be removed
+     * @param id : the username of user to be removed
      */
 
-    @RequestMapping(value = "{username}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("username") String username) {
+    public void delete(@PathVariable("id") String id) {
         if (userManagement != null) {
-            log.info("removing User with username " + username);
-            userManagement.delete(userManagement.query(username));
+            log.info("removing User with id " + id);
+            userManagement.delete(userManagement.queryById(id));
         }
         return;
     }

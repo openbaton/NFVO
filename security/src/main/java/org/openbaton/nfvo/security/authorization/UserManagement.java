@@ -113,6 +113,13 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     }
 
     @Override
+    public User queryById(String id) {
+        checkCurrentUserObAdmin(getCurrentUser());
+        log.trace("Looking for user with id: " + id);
+        return userRepository.findFirstById(id);
+    }
+
+    @Override
     public User queryDB(String username) {
         return userRepository.findFirstByUsername(username);
     }
