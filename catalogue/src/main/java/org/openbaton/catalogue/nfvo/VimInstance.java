@@ -26,6 +26,9 @@ import java.util.Set;
  * Created by lto on 12/05/15.
  */
 @Entity
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
+)
 public class VimInstance implements Serializable {
 
     @Id
