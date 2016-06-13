@@ -27,7 +27,7 @@ import java.util.Set;
  */
 @Entity
 @Table(
-    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
 )
 public class VimInstance implements Serializable {
 
@@ -36,7 +36,6 @@ public class VimInstance implements Serializable {
 
     @Version
     private int version = 0;
-    @Column(unique = true)
     private String name;
     private String authUrl;
     private String tenant;
@@ -55,6 +54,7 @@ public class VimInstance implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Network> networks;
     private String projectId;
+    private boolean active;
 
     public VimInstance() {
     }
@@ -185,7 +185,7 @@ public class VimInstance implements Serializable {
                 ", authUrl='" + authUrl + '\'' +
                 ", tenant='" + tenant + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", password='************'" +
                 ", keyPair='" + keyPair + '\'' +
                 ", location=" + location +
                 ", securityGroups=" + securityGroups +
@@ -194,6 +194,7 @@ public class VimInstance implements Serializable {
                 ", images=" + images +
                 ", networks=" + networks +
                 ", projectId='" + projectId + '\'' +
+                ", active=" + active +
                 '}';
     }
 
@@ -203,5 +204,13 @@ public class VimInstance implements Serializable {
 
     public String getProjectId() {
         return projectId;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }
