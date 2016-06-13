@@ -60,7 +60,7 @@ public class RestUsers {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("username") String username) {
         if (userManagement != null) {
-            log.debug("removing User with username " + username);
+            log.info("removing User with username " + username);
             userManagement.delete(userManagement.query(username));
         }
         return;
@@ -73,7 +73,7 @@ public class RestUsers {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<User> findAll() {
-        log.debug("Find all Users");
+        log.trace("Find all Users");
         return userManagement.query();
 
     }
@@ -86,7 +86,7 @@ public class RestUsers {
      */
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public User findById(@PathVariable("username") String id) {
-        log.debug("find User with username " + id);
+        log.trace("find User with username " + id);
         User user = userManagement.query(id);
         log.trace("Found User: " + user);
         return user;

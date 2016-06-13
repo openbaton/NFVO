@@ -72,7 +72,7 @@ public class RestProject {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<Project> findAll() {
-        log.debug("Find all Projects");
+        log.trace("Find all Projects");
         return projectManagement.queryForUser();
     }
 
@@ -84,7 +84,7 @@ public class RestProject {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public Project findById(@PathVariable("id") String id) throws NotFoundException {
-        log.debug("find Project with id " + id);
+        log.trace("find Project with id " + id);
         Project project = projectManagement.query(id);
         log.trace("Found Project: " + project);
         return project;

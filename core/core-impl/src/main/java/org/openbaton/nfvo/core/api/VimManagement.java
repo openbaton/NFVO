@@ -21,6 +21,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
@@ -31,9 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,7 +65,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
 
     @Override
-    public VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException {
+    public VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException, EntityUnreachableException {
         vimInstance.setProjectId(projectId);
         this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
@@ -78,7 +83,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     @Override
-    public VimInstance update(VimInstance vimInstance, String id, String projectId) throws VimException, PluginException {
+    public VimInstance update(VimInstance vimInstance, String id, String projectId) throws VimException, PluginException, EntityUnreachableException {
+        if (!vimInstance.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         vimInstance = vimRepository.save(vimInstance);
         refresh(vimInstance);
         return vimInstance;
@@ -95,7 +102,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     @Override
-    public void refresh(VimInstance vimInstance) throws VimException, PluginException {
+    public void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException {
+        if (!vimInstance.isActive())
+            throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
         //Refreshing Images
         Set<NFVImage> images_refreshed = new HashSet<NFVImage>();
         Set<NFVImage> images_new = new HashSet<NFVImage>();
@@ -265,19 +274,26 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
      * @return NFVImage
      */
     @Override
-    public NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException {
+    public NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException, EntityUnreachableException {
         VimInstance vimInstance = vimRepository.findFirstById(id);
         if (!vimInstance.getProjectId().equals(projectId))
             throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        if (!vimInstance.isActive())
+            throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
         image = vimRepository.addImage(id, image);
         refresh(vimInstance);
         return image;
     }
 
 
-    public NFVImage queryImage(String idVim, String idImage, String projectId) {
-        if (vimRepository.findFirstById(idVim).getProjectId().equals(projectId))
+    public NFVImage queryImage(String idVim, String idImage, String projectId) throws EntityUnreachableException {
+        VimInstance vimInstance = vimRepository.findFirstById(idVim);
+        if (vimInstance.getProjectId().equals(projectId)) {
+            if (!vimInstance.isActive()) {
+                throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
+            }
             return imageRepository.findOne(idImage);
+        }
         throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
@@ -288,16 +304,30 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
      * @param projectId
      */
     @Override
-    public void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException {
-        if (!vimRepository.findFirstById(idVim).getProjectId().equals(projectId))
+    public void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException, EntityUnreachableException {
+        VimInstance vimInstance = vimRepository.findFirstById(idVim);
+        if (!vimInstance.getProjectId().equals(projectId))
             throw new UnauthorizedUserException("VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        if (!vimInstance.isActive())
+            throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
         vimRepository.deleteImage(idVim, idImage);
-        refresh(vimRepository.findFirstById(idVim));
+        refresh(vimInstance);
 
     }
 
     @Override
     public Iterable<VimInstance> queryByProjectId(String projectId) {
         return vimRepository.findByProjectId(projectId);
+    }
+
+    @Scheduled(fixedRate = 60000, initialDelay = 10000)
+    private void checkVimInstances() throws IOException {
+        for (VimInstance vimInstance : vimRepository.findAll()){
+            URL authUrl = new URL(vimInstance.getAuthUrl());
+
+            if (!InetAddress.getByAddress(authUrl.getHost().getBytes()).isReachable(5000)){
+                vimInstance.setActive(false);
+            }
+        }
     }
 }

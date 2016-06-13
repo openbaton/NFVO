@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
@@ -33,7 +34,7 @@ public interface VimManagement {
      * @param vimInstance
      * @param projectId
      */
-    VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException;
+    VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException, EntityUnreachableException;
 
     /**
      * This operation allows deleting the datacenter
@@ -51,7 +52,7 @@ public interface VimManagement {
      * @param id
      * @param projectId
      */
-    VimInstance update(VimInstance new_vimInstance, String id, String projectId) throws VimException, PluginException;
+    VimInstance update(VimInstance new_vimInstance, String id, String projectId) throws VimException, PluginException, EntityUnreachableException;
 
 
     /**
@@ -60,7 +61,7 @@ public interface VimManagement {
      */
     VimInstance query(String id, String projectId);
 
-    void refresh(VimInstance vimInstance) throws VimException, PluginException;
+    void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException;
 
     /**
      * Adds a new NFVImage to the VimInstance with id
@@ -70,7 +71,7 @@ public interface VimManagement {
      * @param projectId
      * @return NFVImage
      */
-    NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException;
+    NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException, EntityUnreachableException;
 
     /**
      * Returns the NFVImage with idImage from VimInstance with idVim
@@ -80,7 +81,7 @@ public interface VimManagement {
      * @param projectId
      * @return NFVImage
      */
-    NFVImage queryImage(String idVim, String idImage, String projectId);
+    NFVImage queryImage(String idVim, String idImage, String projectId) throws EntityUnreachableException;
 
     /**
      * Removes the NFVImage with idImage from VimInstance with idVim
@@ -88,7 +89,7 @@ public interface VimManagement {
      * @param idImage
      * @param projectId
      */
-    void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException;
+    void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException, EntityUnreachableException;
 
     Iterable<VimInstance> queryByProjectId(String projectId);
 }
