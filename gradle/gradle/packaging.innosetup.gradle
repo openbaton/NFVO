@@ -13,7 +13,7 @@ task exe(dependsOn: [dependsOn: [jar, build]]) << {
 	}	
 	
 	copy {
-		from("${buildDir}/libs/openbaton-2.0.2-SNAPSHOT.jar")
+		from("${buildDir}/libs/openbaton-${applicationVersion}.jar")
 		into(innoSetupDir)
 	}
 

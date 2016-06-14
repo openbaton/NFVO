@@ -64,6 +64,8 @@ apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
 apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
+apply from: 'gradle/gradle/packaging.innosetup.gradle'
+
 
 repositories {
     mavenCentral()
