@@ -14,8 +14,12 @@ task exe(dependsOn: [dependsOn: [jar, build]]) << {
 	
 	copy {
 		from("${buildDir}/libs/openbaton-${applicationVersion}.jar")
+		rename("openbaton-${applicationVersion}.jar","openbaton.jar")
 		into(innoSetupDir)
+		
+		
 	}
+	
 
 	copy {
 		from("${rootProject.projectDir}/gradle/innosetup/innosetup.iss")
