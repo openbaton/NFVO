@@ -12,7 +12,9 @@ public interface EventManagement {
     @Async
     Future<Void> removeUnreachableEndpoints();
 
-    Iterable<EventEndpoint> query();
+    Iterable<EventEndpoint> query(String projectId);
 
-    EventEndpoint query(String id);
+    EventEndpoint query(String id, String projectId);
+
+    Iterable<EventEndpoint> queryByProjectId(String projectId);
 }

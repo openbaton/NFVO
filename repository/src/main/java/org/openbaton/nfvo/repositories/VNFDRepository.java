@@ -19,9 +19,12 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Created by lto on 06/05/15.
  */
 public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor, String> {
     VirtualNetworkFunctionDescriptor findFirstById(String id);
+    List<VirtualNetworkFunctionDescriptor> findByProjectId(String id);
 }

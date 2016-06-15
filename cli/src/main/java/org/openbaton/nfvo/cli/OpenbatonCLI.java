@@ -22,6 +22,8 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.security.User;
+import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.plugin.utils.PluginStartup;
 import org.slf4j.Logger;
@@ -57,6 +59,7 @@ public class OpenbatonCLI implements CommandLineRunner {
         put("listPlugins", "list all registered plugin");
         put("listBeans", "list all registered Beans");
         put("listVnfms", "list all registered Vnfms");
+        put("listUsers", "list all Users");
     }};
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -73,6 +76,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     private VnfmEndpointRepository vnfmEndpointRepository;
     @Value("${nfvo.plugin.log.path:./plugin-logs}")
     private String pluginLogPath;
+    @Autowired
+    private UserRepository userRepository;
 
     private static void exit(int status) {
         System.exit(status);
@@ -161,6 +166,8 @@ public class OpenbatonCLI implements CommandLineRunner {
                     uninstallPlugin(line);
                 } else if (line.startsWith("listVnfms")) {
                     listVnfms();
+                } else if (line.startsWith("listUsers")) {
+                    listUsers();
                 } else if (line.startsWith("listPlugins")) {
                     StringTokenizer stringTokenizer = new StringTokenizer(line);
                     stringTokenizer.nextToken();
@@ -174,6 +181,15 @@ public class OpenbatonCLI implements CommandLineRunner {
                     continue;
                 } else usage();
             }
+        }
+    }
+
+    private void listUsers() {
+        String line = String.format("%20s%20s%40s", "Username", "Enabled", "Roles");
+
+        System.out.println(line);
+        for (User user : userRepository.findAll()) {
+            System.out.println(String.format("%20s%20s%40s", user.getUsername(), user.isEnabled(), user.getRoles()));
         }
     }
 

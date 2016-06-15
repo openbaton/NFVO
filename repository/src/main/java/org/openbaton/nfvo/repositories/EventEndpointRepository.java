@@ -19,9 +19,12 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Created by lto on 06/05/15.
  */
 public interface EventEndpointRepository extends CrudRepository<EventEndpoint, String> {
     EventEndpoint findFirstById(String id);
+    List<EventEndpoint> findByProjectId(String projectId);
 }

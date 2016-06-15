@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -156,12 +157,15 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     }
 
     @Override
-    public void unregister(String id) throws NotFoundException {
-        if (eventEndpointRepository.exists(id)) {
-            log.info("Removing EventEndpoint with id: " + id);
-            eventEndpointRepository.delete(id);
+    public void unregister(String id, String projectId) throws NotFoundException {
+        eventManagement.removeUnreachableEndpoints();
+        EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
+        if (endpoint != null) {
+            if (endpoint.getProjectId().equals(projectId)) {
+                log.info("Removing EventEndpoint with id: " + id);
+                eventEndpointRepository.delete(id);
+            }else throw new UnauthorizedUserException("Event not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
 
-            eventManagement.removeUnreachableEndpoints();
         }
     }
 

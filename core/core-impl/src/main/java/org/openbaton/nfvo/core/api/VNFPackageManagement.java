@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -88,7 +89,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException, PluginException {
+    public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId) throws IOException, VimException, NotFoundException, SQLException, PluginException {
         VNFPackage vnfPackage = new VNFPackage();
         vnfPackage.setScripts(new HashSet<Script>());
         Map<String, Object> metadata = null;
@@ -182,7 +183,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                         e.printStackTrace();
                     }
                     log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
-                    nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor);
+                    nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
                 } else if (entry.getName().endsWith(".img")) {
                     //this must be the image
                     //and has to be upladed to the RIGHT vim
@@ -326,8 +327,10 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         }
         vnfPackage.setImage(image);
         myTarFile.close();
+        vnfPackage.setProjectId(projectId);
         vnfPackageRepository.save(vnfPackage);
         virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
+        virtualNetworkFunctionDescriptor.setProjectId(projectId);
         vnfdRepository.save(virtualNetworkFunctionDescriptor);
         log.trace("Persisted " + virtualNetworkFunctionDescriptor);
         log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + ") successfully");
@@ -343,16 +346,21 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public VNFPackage update(String id, VNFPackage pack_new) {
-        VNFPackage old = vnfPackageRepository.findOne(id);
+    public VNFPackage update(String id, VNFPackage pack_new, String projectId) {
+        VNFPackage old = vnfPackageRepository.findFirstById(id);
+        if (!old.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         old.setName(pack_new.getName());
         old.setImage(pack_new.getImage());
         return old;
     }
 
     @Override
-    public VNFPackage query(String id) {
-        return vnfPackageRepository.findOne(id);
+    public VNFPackage query(String id, String projectId) {
+        VNFPackage vnfPackage = vnfPackageRepository.findFirstById(id);
+        if (!vnfPackage.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        return vnfPackage;
     }
 
     @Override
@@ -361,8 +369,10 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
 
     @Override
-    public void delete(String id) throws WrongAction {
+    public void delete(String id, String projectId) throws WrongAction {
         log.info("Removing VNFPackage: " + id);
+        if (!vnfPackageRepository.findFirstById(id).getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         //TODO remove image in the VIM
         Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = vnfdRepository.findAll();
         if (cascadeDelete)

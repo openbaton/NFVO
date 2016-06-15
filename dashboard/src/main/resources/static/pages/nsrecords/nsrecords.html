@@ -786,7 +786,7 @@
             </div>
             <div class="modal-body">
                 <p>You have selected:</p>
-                <ul ng-repeat="(k,v) in selection.ids">
+                <ul ng-repeat="(k,v) in selection.ids" ng-if="v">
                     <li>{{k}}</li>
                 </ul>
                 <p>Please confirm your selection.</p>

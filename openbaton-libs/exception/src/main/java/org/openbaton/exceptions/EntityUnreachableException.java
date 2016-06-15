@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
- *
+ * Copyright (c) 2016 Fraunhofer FOKUS
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *                http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +13,21 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.repositories;
+package org.openbaton.exceptions;
 
 /**
- * Created by dbo on 21/09/15.
+ * Created by lto on 13/06/16.
  */
-public interface ImageRepositoryCustom {
-    void deleteImage(String id);
+public class EntityUnreachableException extends Exception {
+    public EntityUnreachableException(String message) {
+        super(message);
+    }
+
+    public EntityUnreachableException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public EntityUnreachableException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -1,0 +1,164 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Users
+            <small> List of users</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-users"></i> Users</li>
+        </ol>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+                title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
+        </button>
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+                title="" data-toggle="modal"
+                data-target="#createUser">Add a new User
+        </button>
+
+    </div>
+</div>
+<div class="row top-buffer">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-show="users.length>0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter">
+                <thead>
+                <tr>
+                    <td><input type="checkbox" ng-model="main.checkbox"></td>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'username'; reverse = !reverse">username <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'enabled'; reverse = !reverse">enabled <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'roles'; reverse = !reverse">roles <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="data in users| filter:search|orderBy:predicate:reverse">
+                    <td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
+                    <td><a href="#users/{{data.username}}">{{data.id}} </a></td>
+                    <td>{{data.username}}</td>
+                    <td>{{data.enabled}}</td>
+                    <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="deleteUser(data)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="createUser">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create a new User</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="username" class="col-sm-4 control-label">username</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="username" name="username"
+                                   ng-model="userObj.username"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="col-sm-4 control-label">password</label>
+
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" id="pass" name="pass"
+                                   ng-model="userObj.password"/>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-repeat="(key,value) in userObj" ng-if="key!=='username' && key!=='password' && key!=='roles'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="userObj[key]"/>
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Role <a title="Add a new Role to this user" href="" ng-click="userObj.roles.push(roleAdd)"><li class="fa fa-plus-square"></li></a></h3>
+                    <div class="form-group" ng-repeat="role in userObj.roles track by $index">
+
+                            <label for="action" class="col-sm-2 control-label">project</label>
+                            <div class="col-sm-3">
+                                <select name="typeSelect" class="form-control modal-select" id="action"
+                                        ng-model="userObj.roles[$index].project"
+                                        ng-options="project.name as project.name for project in projects"
+                                        ng-change="">
+                                </select>
+                            </div>
+
+                        <label for="action" class="col-sm-1 control-label">role</label>
+                        <div class="col-sm-3">
+                            <select name="typeSelect" class="form-control modal-select" id="action"
+                                    ng-model="userObj.roles[$index].role"
+                                    ng-options="role for role in roles"
+                                    ng-change="">
+                            </select>
+                        </div>
+                        <div class="col-sm-1">
+                            <a href="" ng-click="userObj.roles.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Delete Alert</h4>
+            </div>
+            <div class="modal-body">
+                <p>You have selected:</p>
+                <ul ng-repeat="(k,v) in selection.ids" ng-if="v">
+                    <li>{{k}}</li>
+                </ul>
+                <p>Please confirm your selection.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" ng-click="multipleDeleteReq()" data-dismiss="modal">Delete</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

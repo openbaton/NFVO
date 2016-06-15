@@ -17,7 +17,8 @@
 package org.openbaton.nfvo.api;
 
 import org.openbaton.catalogue.security.User;
-import org.openbaton.nfvo.core.interfaces.UserManagement;
+import org.openbaton.exceptions.PasswordWeakException;
+import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class RestUsers {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody @Valid User user) {
+    public User create(@RequestBody @Valid User user) throws PasswordWeakException {
         log.info("Adding user: " + user.getUsername());
         return userManagement.add(user);
     }
@@ -52,15 +53,15 @@ public class RestUsers {
     /**
      * Removes the User from the Users repository
      *
-     * @param id : the id of user to be removed
+     * @param id : the username of user to be removed
      */
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") String id) {
         if (userManagement != null) {
-            log.debug("removing User with id " + id);
-            userManagement.delete(userManagement.query(id));
+            log.info("removing User with id " + id);
+            userManagement.delete(userManagement.queryById(id));
         }
         return;
     }
@@ -72,21 +73,28 @@ public class RestUsers {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<User> findAll() {
-        log.debug("Find all Users");
+        log.trace("Find all Users");
         return userManagement.query();
 
     }
 
     /**
-     * Returns the User selected by id
+     * Returns the User selected by username
      *
-     * @param id : The id of the User
+     * @param id : The username of the User
      * @return User: The User selected
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public User findById(@PathVariable("id") String id) {
-        log.debug("find User with id " + id);
+    @RequestMapping(value = "{username}", method = RequestMethod.GET)
+    public User findById(@PathVariable("username") String id) {
+        log.trace("find User with username " + id);
         User user = userManagement.query(id);
+        log.trace("Found User: " + user);
+        return user;
+    }
+
+    @RequestMapping(value = "current", method = RequestMethod.GET)
+    public User findCurrentUser() {
+        User user = userManagement.getCurrentUser();
         log.trace("Found User: " + user);
         return user;
     }
@@ -98,7 +106,7 @@ public class RestUsers {
      * @return User The User updated
      */
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{username}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public User update(@RequestBody @Valid User new_user) {
         return userManagement.update(new_user);

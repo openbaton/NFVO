@@ -34,5 +34,5 @@ public interface EventDispatcher {
 
     void dispatchEvent(EventNFVO event);
 
-    void unregister(String id) throws NotFoundException;
+    void unregister(String id, String projectId) throws NotFoundException;
 }

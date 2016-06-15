@@ -58,7 +58,7 @@
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="" ng-click="deleteEvent(data)">Delete</a></li>
+                                <li ng-if="data.name!==projectSelected.name"><a href="" ng-click="deleteEvent(data)">Delete</a></li>
                             </ul>
                         </div>
                     </td>
@@ -131,7 +131,7 @@
             </div>
             <div class="modal-body">
                 <p>You have selected:</p>
-                <ul ng-repeat="(k,v) in selection.ids">
+                <ul ng-repeat="(k,v) in selection.ids" ng-if="v">
                     <li>{{k}}</li>
                 </ul>
                 <p>Please confirm your selection.</p>

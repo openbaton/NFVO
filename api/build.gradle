@@ -19,6 +19,7 @@ dependencies {
     compile project(':catalogue')
     compile project(':core-int')
     compile project(':vim-int')
+    compile project(':security')
 
     compile("mysql:mysql-connector-java:5.1.35")
     compile("org.hsqldb:hsqldb:2.0.0")
