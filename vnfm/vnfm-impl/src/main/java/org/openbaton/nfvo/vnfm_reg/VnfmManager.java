@@ -376,6 +376,8 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
                     return null;
                 } else {
                     virtualNetworkFunctionRecord.setProjectId(nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getProjectId());
+                    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
+                        vdu.setProjectId(nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getProjectId());
                 }
             }
 

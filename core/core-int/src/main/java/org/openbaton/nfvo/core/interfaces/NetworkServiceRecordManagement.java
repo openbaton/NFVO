@@ -131,8 +131,9 @@ public interface NetworkServiceRecordManagement {
      *
      * @param id
      * @param idVnf
+     * @param projectId
      */
-    void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
+    void deleteVNFCInstance(String id, String idVnf, String projectId) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 
     /**
      * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
@@ -146,7 +147,7 @@ public interface NetworkServiceRecordManagement {
 
     void switchToRedundantVNFCInstance(String id, String idVnf, String idVdu, String idVNFC, String standby, VNFCInstance failedVnfcInstance, String projectId) throws NotFoundException, WrongStatusException;
 
-    void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
+    void deleteVNFCInstance(String id, String idVnf, String idVdu, String projectId) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException;
 
     List<NetworkServiceRecord> queryByProjectId(String projectId);
 }

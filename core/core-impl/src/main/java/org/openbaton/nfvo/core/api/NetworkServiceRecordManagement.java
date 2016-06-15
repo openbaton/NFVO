@@ -271,12 +271,24 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
-    public void deleteVNFCInstance(String id, String idVnf) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        log.info("Removing new VNFCInstance from VNFR with id: " + idVnf);
+    public void deleteVNFCInstance(String id, String idVnf, String projectId) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        log.info("Removing VNFCInstance from VNFR with id: " + idVnf);
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+        if (!networkServiceRecord.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+        if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
 
-        VirtualDeploymentUnit virtualDeploymentUnit = virtualNetworkFunctionRecord.getVdu().iterator().next();
+        VirtualDeploymentUnit virtualDeploymentUnit = null;
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+            if (vdu.getProjectId() != null && vdu.getProjectId().equals(projectId)) {
+                virtualDeploymentUnit = vdu;
+                break;
+            }
+        }
+
         if (virtualDeploymentUnit == null) {
             throw new NotFoundException("No VirtualDeploymentUnit found");
         }
@@ -287,7 +299,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
         VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
         if (vnfcInstance == null)
-            throw new NotFoundException("No VNFCInstance was not found");
+            throw new NotFoundException("No VNFCInstance was found");
 
         networkServiceRecord.setStatus(Status.SCALING);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
@@ -295,15 +307,18 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     }
 
     @Override
-    public void deleteVNFCInstance(String id, String idVnf, String idVdu) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
-        log.info("Removing new VNFCInstance from VNFR with id: " + idVnf + " in vdu: " + idVdu);
-        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+    public void deleteVNFCInstance(String id, String idVnf, String idVdu, String projectId) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        log.info("Removing VNFCInstance from VNFR with id: " + idVnf + " in vdu: " + idVdu);
+        NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);if (!networkServiceRecord.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+        if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId))
+            throw new UnauthorizedUserException("VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
 
         VirtualDeploymentUnit virtualDeploymentUnit = null;
 
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            if (vdu.getId().equals(idVdu)) {
+            if (vdu.getId().equals(idVdu) && vdu.getProjectId() != null && vdu.getProjectId().equals(projectId)) {
                 virtualDeploymentUnit = vdu;
             }
         }
@@ -332,6 +347,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
 
     @Override
     public void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId) throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException, VimException, PluginException {
+        log.info("Removing VNFCInstance with id: "+ idVNFCI +" from VNFR with id: " + idVnf + " in vdu: " + idVdu);
         NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
         if (!networkServiceRecord.getProjectId().equals(projectId))
             throw new UnauthorizedUserException("NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
