@@ -7,12 +7,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import java.io.Serializable;
 
 /**
  * Created by lto on 24/05/16.
  */
 @Entity
-public class Project implements Serializable{
+public class Project implements Serializable {
     @Id
     private String id;
     @Column(unique = true)
