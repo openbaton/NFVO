@@ -30,7 +30,7 @@ import java.io.Serializable;
 /**
  * This class represents a Event Endpoint. When an external application want to receive events regarding a particular
  * entity it is necessary to send this object to the right URL or queue.
- * <p/>
+ *
  * This object contains:
  * * name) must be unique, used for removing a event
  * * type)
@@ -43,6 +43,15 @@ public class EventEndpoint implements Serializable {
     private int version = 0;
 
     private String name;
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
 
     private String networkServiceId;
     private String virtualNetworkFunctionId;

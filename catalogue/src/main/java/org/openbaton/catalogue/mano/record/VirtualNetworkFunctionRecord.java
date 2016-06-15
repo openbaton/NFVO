@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
@@ -52,11 +51,11 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
 
+    private String projectId;
     /**
      * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
      */
     private String deployment_flavour_key;
-
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Configuration configurations;
     /**
@@ -118,23 +117,20 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> vnf_address;
     /**
-     * <p/>
      * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3= offline through
      * management action)
-     * <p/>
-     * <p/>
+     *
+     *
      * Implementation thoughts:
      * the states are defined in http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
      * so for what concerns the VNFR, the state are:
-     * <p/>
-     * <p/>
+     *
      * * Null) A VNF Instance does not exist and is about to be created.
      * * Instantiated Not Configured) VNF Instance does exist but is not configured for service.
      * * Instantiated Configured - Inactive) A VNF Instance is configured for service.
      * * Instantiated Configured - Active) A VNF Instance that participates in service.
      * * Terminated) A VNF Instance has ceased to exist.
      * but the Null and the Instantiated since when the VNFR is created will be ready to serve.
-     * <p/>
      */
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -155,7 +151,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> runtime_policy_info;
-
     private String name;
     private String type;
     private String endpoint;
@@ -167,9 +162,16 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     @JsonIgnore
     private boolean cyclicDependency;
     private String packageId;
-
     public VirtualNetworkFunctionRecord() {
         this.lifecycle_event = new HashSet<LifecycleEvent>();
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public Configuration getConfigurations() {
@@ -221,9 +223,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.auto_scale_policy = auto_scale_policy;
     }
 
-    /**
-     * Reference to records of Network Service instances (nsr:id) that this VNF instance is part of
-     */
     public int getHb_version() {
         return hb_version;
     }
@@ -424,12 +423,12 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         this.task = task;
     }
 
-    public void setPackageId(String packageId) {
-        this.packageId = packageId;
-    }
-
     public String getPackageId() {
         return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
     }
 
     @Override

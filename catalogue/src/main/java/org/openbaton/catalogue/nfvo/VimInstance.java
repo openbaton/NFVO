@@ -26,6 +26,9 @@ import java.util.Set;
  * Created by lto on 12/05/15.
  */
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
+)
 public class VimInstance implements Serializable {
 
     @Id
@@ -33,7 +36,6 @@ public class VimInstance implements Serializable {
 
     @Version
     private int version = 0;
-    @Column(unique = true)
     private String name;
     private String authUrl;
     private String tenant;
@@ -51,28 +53,10 @@ public class VimInstance implements Serializable {
     private Set<NFVImage> images;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Network> networks;
+    private String projectId;
+    private boolean active;
 
     public VimInstance() {
-    }
-
-    @Override
-    public String toString() {
-        return "VimInstance{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", authUrl='" + authUrl + '\'' +
-                ", tenant='" + tenant + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", keyPair='" + keyPair + '\'' +
-                ", location=" + location +
-                ", securityGroups=" + securityGroups +
-                ", flavours=" + flavours +
-                ", type='" + type + '\'' +
-                ", images=" + images +
-                ", networks=" + networks +
-                '}';
     }
 
     @PrePersist
@@ -190,5 +174,43 @@ public class VimInstance implements Serializable {
 
     public void setNetworks(Set<Network> networks) {
         this.networks = networks;
+    }
+
+    @Override
+    public String toString() {
+        return "VimInstance{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", authUrl='" + authUrl + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", username='" + username + '\'' +
+                ", password='************'" +
+                ", keyPair='" + keyPair + '\'' +
+                ", location=" + location +
+                ", securityGroups=" + securityGroups +
+                ", flavours=" + flavours +
+                ", type='" + type + '\'' +
+                ", images=" + images +
+                ", networks=" + networks +
+                ", projectId='" + projectId + '\'' +
+                ", active=" + active +
+                '}';
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }
