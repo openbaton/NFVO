@@ -37,10 +37,13 @@
             <span ng-if="key == 'password'">
                  <dt>{{key}}:</dt>
                 <span ng-show="!showPass">
-                <dd>********* <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye" title="show password"> </i></a></dd>
+                <dd>********* <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye" title="show password"> </i></a>
+                </dd>
                 </span>
                 <span ng-show="showPass">
-                    <dd>{{vimInstance.password}} <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye-slash" title="hide password"> </i></a></dd>
+                    <dd>{{vimInstance.password}} <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye-slash"
+                                                                                             title="hide password"> </i></a>
+                    </dd>
                 </span>
             </span>
 
@@ -72,11 +75,10 @@
                     <th ng-click="predicate = 'subnets.name'; reverse = !reverse">subnets <i
                             class="fa fa-sort"></i>
                     </th>
-
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
+                <tr ng-repeat="network in vimInstance.networks track by $index| orderBy:predicate:reverse">
                     <td>{{network.id}}</td>
                     <td>{{network.version}}</td>
                     <td>{{network.name}}</td>
@@ -93,7 +95,6 @@
                             </ul>
                         </span>
                     </td>
-
                 </tr>
                 </tbody>
             </table>
@@ -118,22 +119,20 @@
                     <th ng-click="predicate = 'minRam'; reverse = !reverse">ram <i class="fa fa-sort"></i>
                     <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">disk <i
                             class="fa fa-sort"></i>
-                    <th ng-click="predicate = 'public'; reverse = !reverse">public <i
+                    <th ng-click="predicate = 'isPublic'; reverse = !reverse">public <i
                             class="fa fa-sort"></i>
                     </th>
-
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
+                <tr ng-repeat="image in vimInstance.images track by $index| orderBy:predicate:reverse">
                     <td>{{image.id}}</td>
                     <td>{{image.version}}</td>
                     <td>{{image.extId}}</td>
                     <td>{{image.name}}</td>
                     <td>{{image.minRam}}</td>
                     <td>{{image.minDiskSpace}}</td>
-                    <td>{{image.public}}</td>
-
+                    <td>{{image.isPublic}}</td>
                 </tr>
                 </tbody>
             </table>
@@ -166,17 +165,13 @@
                     <td>{{flavour.ram}}</td>
                     <td>{{flavour.disk}}</td>
                     <td>{{flavour.vcpus}}</td>
-
                 </tr>
                 </tbody>
             </table>
         </div>
     </tab>
 </tabset>
-</dl>
 
-</div>
-</div>
 
 <!-- /.wrapper -->
 
@@ -200,3 +195,33 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in editObj"
+                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="editObj[key]"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

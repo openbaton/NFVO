@@ -38,8 +38,9 @@ public interface VNFPackageManagement {
      * validating the VNF Package.
      *
      * @param pack
+     * @param projectId
      */
-    VirtualNetworkFunctionDescriptor onboard(byte[] pack) throws IOException, VimException, NotFoundException, SQLException, PluginException;
+    VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId) throws IOException, VimException, NotFoundException, SQLException, PluginException;
 
     /**
      * This operation allows disabling the
@@ -57,13 +58,13 @@ public interface VNFPackageManagement {
     /**
      * This operation allows updating
      * the VNF Package.
-     *
-     * @param id
+     *  @param id
      * @param pack_new
+     * @param projectId
      */
-    VNFPackage update(String id, VNFPackage pack_new);
+    VNFPackage update(String id, VNFPackage pack_new, String projectId);
 
-    VNFPackage query(String id);
+    VNFPackage query(String id, String projectId);
 
     /**
      * This operation is used to query
@@ -76,8 +77,9 @@ public interface VNFPackageManagement {
      * disabled VNF Package.
      *
      * @param id
+     * @param projectId
      */
-    void delete(String id) throws WrongAction;
+    void delete(String id, String projectId) throws WrongAction;
 
     Script updateScript(Script script);
 }

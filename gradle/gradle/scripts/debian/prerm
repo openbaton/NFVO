@@ -1,0 +1,81 @@
+#!/bin/sh -e
+
+
+
+. /lib/lsb/init-functions
+
+OPENBATON_BASE=/usr
+OPENBATON_PLUGINS_FOLDER=$OPENBATON_BASE/lib/openbaton/plugins
+OPENBATON_LOGS_FOLDER=/var/log/openbaton
+
+
+USER="$(id -un 2>/dev/null || true)"
+
+checkBinary () {
+    echo -n " * Checking for '$1'..."
+    if command -v $1 >/dev/null 2>&1; then
+        echo "OK"
+        return 0
+    else
+        echo >&2 "FAILED."
+        return 1
+    fi
+}
+
+_ex='sh -c'
+if [ "${USER}" != 'root' ]; then
+    if checkBinary sudo; then
+        _ex='sudo -E sh -c'
+    elif checkBinary su; then
+        _ex='su -c'
+    fi
+fi
+
+
+#############
+# OpenBaton #
+#############
+
+stopNFVO () {
+    instance=$(ps aux | grep -v grep | grep "openbaton-*jar" | wc -l)
+    if [ ${instance} -ne 0 ]; then
+    	log_daemon_msg "Stopping the OpenBaton NVFO .."
+    	$_ex 'stop openbaton-nfvo'
+    fi
+}
+
+
+########################
+## VIM-Drivers Plugins #
+########################
+#
+#cleanPlugins () {
+#    log_daemon_msg "Cleaning the environment: deleting plugins.."
+#    $_ex 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
+#    log_daemon_msg "..done"
+#}
+#
+#########
+## Logs #
+#########
+#
+#cleanLogs () {
+#    log_daemon_msg "Cleaning the environment: deleting logs.."
+#    $_ex 'rm -r ${OPENBATON_LOGS_FOLDER}'
+#    log_daemon_msg "..done"
+#}
+
+
+###########################################
+#### Clean OpenBaton NFVO installation ####
+###########################################
+
+clean () {
+    stopNFVO
+#    cleanPlugins
+#    cleanLogs
+}
+
+clean
+
+

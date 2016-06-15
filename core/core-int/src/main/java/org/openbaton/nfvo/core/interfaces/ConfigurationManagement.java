@@ -43,11 +43,11 @@ public interface ConfigurationManagement {
     /**
      * This operation allows updating the datacenter
      * in the datacenter repository.
-     *
-     * @param new_datacenter
+     *  @param new_datacenter
      * @param id
+     * @param projectId
      */
-    Configuration update(Configuration new_datacenter, String id);
+    Configuration update(Configuration new_datacenter, String id, String projectId);
 
     /**
      * This operation allows querying the information of
@@ -55,11 +55,13 @@ public interface ConfigurationManagement {
      */
     Iterable<Configuration> query();
 
+    Iterable<Configuration> queryByProject(String projectId);
+
     /**
      * This operation allows querying the information of
      * the datacenter in the datacenter repository.
      */
-    Configuration query(String id);
+    Configuration query(String id, String projectId);
 
     Configuration queryByName(String system) throws NotFoundException;
 }

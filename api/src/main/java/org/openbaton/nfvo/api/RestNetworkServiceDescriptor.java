@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -56,10 +57,10 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
+    public NetworkServiceDescriptor create(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor, @RequestHeader(value = "project-id") String projectId) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException {
         NetworkServiceDescriptor nsd;
         log.trace("Just Received: " + networkServiceDescriptor);
-        nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor);
+        nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);
         return nsd;
     }
 
@@ -70,8 +71,25 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id) throws WrongStatusException{
-        networkServiceDescriptorManagement.delete(id);
+    public void delete(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) throws WrongStatusException {
+        networkServiceDescriptorManagement.delete(id, projectId);
+    }
+
+    /**
+     * Removes a list Network Service Descriptor from the NSDs Repository
+     *
+     * @param ids: the list of the ids
+     * @throws NotFoundException
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws WrongStatusException
+     * @throws VimException
+     */
+    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void multipleDelete(@RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId) throws InterruptedException, ExecutionException, WrongStatusException, VimException, NotFoundException {
+        for (String id : ids)
+            networkServiceDescriptorManagement.delete(id, projectId);
     }
 
     /**
@@ -82,8 +100,8 @@ public class RestNetworkServiceDescriptor {
      */
 
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<NetworkServiceDescriptor> findAll() {
-        return networkServiceDescriptorManagement.query();
+    public Iterable<NetworkServiceDescriptor> findAll(@RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.queryByProjectId(projectId);
     }
 
     /**
@@ -96,8 +114,8 @@ public class RestNetworkServiceDescriptor {
      */
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public NetworkServiceDescriptor findById(@PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+    public NetworkServiceDescriptor findById(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
         return nsd;
     }
 
@@ -111,10 +129,8 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public NetworkServiceDescriptor update(
-            @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
-            @PathVariable("id") String id) {
-        return networkServiceDescriptorManagement.update(networkServiceDescriptor);
+    public NetworkServiceDescriptor update(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.update(networkServiceDescriptor, projectId);
     }
 
     /**
@@ -127,37 +143,33 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}/vnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
-            @PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+    public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
         return nsd.getVnfd();
     }
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfnd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
-            @PathVariable("idNsd") String idNsd, @PathVariable("idVfnd") String idVfnd) throws NotFoundException {
-        return networkServiceDescriptorManagement.getVirtualNetworkFunctionDescriptor(idNsd, idVfnd);
+    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(@PathVariable("idNsd") String idNsd, @PathVariable("idVfnd") String idVfnd, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        return networkServiceDescriptorManagement.getVirtualNetworkFunctionDescriptor(idNsd, idVfnd, projectId);
     }
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVirtualNetworkFunctionDescriptor(@PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) throws NotFoundException {
-        networkServiceDescriptorManagement.deleteVnfDescriptor(idNsd, idVfn);
+    public void deleteVirtualNetworkFunctionDescriptor(@PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        networkServiceDescriptorManagement.deleteVnfDescriptor(idNsd, idVfn, projectId);
     }
 
     @RequestMapping(value = "{id}/vnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VirtualNetworkFunctionDescriptor postVNFD(
-            @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
-            @PathVariable("id") String id) {
-        return networkServiceDescriptorManagement.addVnfd(vnfDescriptor, id);
+    public VirtualNetworkFunctionDescriptor postVNFD(@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor, @PathVariable("id") String idNsd, @RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.addVnfd(vnfDescriptor, idNsd, projectId);
     }
 
     @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VirtualNetworkFunctionDescriptor updateVNF(@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor, @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn) {
-        return networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor);
+    public VirtualNetworkFunctionDescriptor updateVNF(@RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor, @PathVariable("idNsd") String idNsd, @PathVariable("idVfn") String idVfn, @RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor, projectId);
     }
 
     /**
@@ -170,40 +182,34 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{id}/vnfdependencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<VNFDependency> getVNFDependencies(@PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+    public Set<VNFDependency> getVNFDependencies(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
         return nsd.getVnf_dependency();
     }
 
     @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public VNFDependency getVNFDependency(@PathVariable("idNsd") String idNsd,
-                                          @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
-
-        return networkServiceDescriptorManagement.getVnfDependency(idNsd, idVnfd);
+    public VNFDependency getVNFDependency(@PathVariable("idNsd") String idNsd, @PathVariable("idVnfd") String idVnfd, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        return networkServiceDescriptorManagement.getVnfDependency(idNsd, idVnfd, projectId);
     }
 
     @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteVNFDependency(@PathVariable("idNsd") String idNsd,
-                                    @PathVariable("idVnfd") String idVnfd) throws NotFoundException {
-        networkServiceDescriptorManagement.deleteVNFDependency(idNsd, idVnfd);
+    public void deleteVNFDependency(@PathVariable("idNsd") String idNsd, @PathVariable("idVnfd") String idVnfd, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        networkServiceDescriptorManagement.deleteVNFDependency(idNsd, idVnfd, projectId);
     }
 
     @RequestMapping(value = "{idNsd}/vnfdependencies/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public VNFDependency postVNFDependency(@RequestBody @Valid VNFDependency vnfDependency, @PathVariable("idNsd") String idNsd) {
-        networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency);
+    public VNFDependency postVNFDependency(@RequestBody @Valid VNFDependency vnfDependency, @PathVariable("idNsd") String idNsd, @RequestHeader(value = "project-id") String projectId) {
+        networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency, projectId);
         return vnfDependency;
     }
 
     @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public VNFDependency updateVNFDependency(
-            @RequestBody @Valid VNFDependency vnfDependency,
-            @PathVariable("idNsd") String idNsd,
-            @PathVariable("idVnf") String idVnf) {
-        networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency);
+    public VNFDependency updateVNFDependency(@RequestBody @Valid VNFDependency vnfDependency, @PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) {
+        networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency, projectId);
         return vnfDependency;
     }
 
@@ -217,9 +223,8 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}/pnfdescriptors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Set<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(
-            @PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+    public Set<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
         return nsd.getPnfd();
     }
 
@@ -235,9 +240,8 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{idNds}/pnfdescriptors/{idPnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
-            @PathVariable("idNds") String idNsd, @PathVariable("idPnf") String idPnf) throws NotFoundException {
-        return networkServiceDescriptorManagement.getPhysicalNetworkFunctionDescriptor(idNsd, idPnf);
+    public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(@PathVariable("idNds") String idNsd, @PathVariable("idPnf") String idPnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        return networkServiceDescriptorManagement.getPhysicalNetworkFunctionDescriptor(idNsd, idPnf, projectId);
     }
 
     /**
@@ -248,24 +252,23 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{idNsd}/pnfdescriptors/{idPnf}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePhysicalNetworkFunctionDescriptor(
-            @PathVariable("idNsd") String idNsd, @PathVariable("idPnf") String idPnf) throws NotFoundException {
-        networkServiceDescriptorManagement.deletePhysicalNetworkFunctionDescriptor(idNsd, idPnf);
+    public void deletePhysicalNetworkFunctionDescriptor(@PathVariable("idNsd") String idNsd, @PathVariable("idPnf") String idPnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+        networkServiceDescriptorManagement.deletePhysicalNetworkFunctionDescriptor(idNsd, idPnf, projectId);
     }
 
     /**
      * Stores the PhysicalNetworkFunctionDescriptor
      *
      * @param pDescriptor : The PhysicalNetworkFunctionDescriptor to be stored
-     * @param id          : The NSD id
+     * @param idNsd       : The NSD id
      * @return PhysicalNetworkFunctionDescriptor: The
      * PhysicalNetworkFunctionDescriptor stored
      * @
      */
     @RequestMapping(value = "{id}/pnfdescriptors/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor, @PathVariable("id") String id) {
-        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor, id);
+    public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor, @PathVariable("id") String idNsd, @RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor, idNsd, projectId);
     }
 
     /**
@@ -279,7 +282,7 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}/pnfdescriptors/{idPnf}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public PhysicalNetworkFunctionDescriptor updatePNFD(@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor, @PathVariable("id") String id, @PathVariable("idPnf") String idPnf) {
+    public PhysicalNetworkFunctionDescriptor updatePNFD(@RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor, @PathVariable("id") String id, @PathVariable("idPnf") String idPnf, @RequestHeader(value = "project-id") String projectId) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -294,54 +297,22 @@ public class RestNetworkServiceDescriptor {
 
     @RequestMapping(value = "{id}/security", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Security getSecurity(@PathVariable("id") String id) {
-        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
+    public Security getSecurity(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
         return nsd.getNsd_security();
     }
-
-//	/**
-//	 * Returns the Security with the id_s
-//	 *
-//	 * @param id
-//	 *            : The NSD id
-//	 * @param id_s
-//	 *            : The Security id
-//	 * @return Security: The Security selected by id_s
-//	 * @
-//	 */
-//	@RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseStatus(HttpStatus.OK)
-//	public Security getSecurity(@PathVariable("id") String id,
-//			@PathVariable("id_s") String id_s)  {
-//		NetworkServiceDescriptor nsd = null;
-//		try {
-//			nsd = networkServiceDescriptorManagement.query(id);
-//		} catch (NoResultException e) {
-//
-//			log.error(e.getMessage(), e);
-//			throw new NSDNotFoundException(id);
-//		}
-//		if (!nsd.getNsd_security().getId().equals(id_s)) {
-//			log.error("Security with id: " + id_s + " not found.");
-//			throw new NSDNotFoundException(id_s);
-//		}
-//		return nsd.getNsd_security();
-//	}
 
     /**
      * Deletes the Security with the id_s
      *
-     * @param id  : The NSD id
-     * @param idS : The Security id
+     * @param idNSD : The NSD id
+     * @param idS   : The Security id
      * @
      */
     @RequestMapping(value = "{id}/security/{idS}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSecurity(@PathVariable("id") String id,
-                               @PathVariable("idS") String idS) {
-
-        networkServiceDescriptorManagement.deleteSecurty(id, idS);
-
+    public void deleteSecurity(@PathVariable("id") String idNSD, @PathVariable("idS") String idS, @RequestHeader(value = "project-id") String projectId) {
+        networkServiceDescriptorManagement.deleteSecurty(idNSD, idS, projectId);
     }
 
     /**
@@ -354,27 +325,19 @@ public class RestNetworkServiceDescriptor {
      */
     @RequestMapping(value = "{id}/security/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Security postSecurity(@RequestBody @Valid Security security, @PathVariable("id") String id) {
-        return networkServiceDescriptorManagement.addSecurity(id, security);
+    public Security postSecurity(@RequestBody @Valid Security security, @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+        return networkServiceDescriptorManagement.addSecurity(id, security, projectId);
     }
 
     @RequestMapping(value = "{id}/security/{id_s}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Security updateSecurity(@RequestBody @Valid Security security,
-                                   @PathVariable("id") String id, @PathVariable("id_s") String id_s) {
-//        NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id);
-//        nsd.setNsd_security(security);
-//        networkServiceDescriptorManagement.update(nsd);
-
-        return security;
+    public Security updateSecurity(@RequestBody @Valid Security security, @PathVariable("id") String id, @PathVariable("id_s") String id_s, @RequestHeader(value = "project-id") String projectId) {
+        throw new UnsupportedOperationException();
     }
 
     @RequestMapping(value = "/records", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public NetworkServiceRecord createRecord(
-            @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor) throws BadFormatException, InterruptedException, ExecutionException, VimException, NotFoundException, VimDriverException, QuotaExceededException, PluginException {
-        return networkServiceRecordManagement.onboard(networkServiceDescriptor);
+    public NetworkServiceRecord createRecord(@RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor, @RequestHeader(value = "project-id") String projectId) throws BadFormatException, InterruptedException, ExecutionException, VimException, NotFoundException, VimDriverException, QuotaExceededException, PluginException {
+        return networkServiceRecordManagement.onboard(networkServiceDescriptor, projectId);
     }
-
-
 }

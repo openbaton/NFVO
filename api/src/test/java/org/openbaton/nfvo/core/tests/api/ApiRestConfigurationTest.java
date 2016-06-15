@@ -31,15 +31,17 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 
 public class ApiRestConfigurationTest {
 
     @InjectMocks
-    RestConfiguration restConfiguration;
+    private RestConfiguration restConfiguration;
     @Mock
-    ConfigurationManagement mock;
+    private ConfigurationManagement mock;
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Before
@@ -52,8 +54,8 @@ public class ApiRestConfigurationTest {
 
         log.info("" + mock.query());
         Iterable<Configuration> list = mock.query();
-        when(mock.query()).thenReturn(list);
-        assertEquals(list, restConfiguration.findAll());
+        when(mock.queryByProject(anyString())).thenReturn(list);
+        assertEquals(list, restConfiguration.findAll("project-id"));
     }
 
     @Test
@@ -67,8 +69,9 @@ public class ApiRestConfigurationTest {
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
         when(mock.add(configuration)).thenReturn(configuration);
-        log.info("" + restConfiguration.create(configuration));
-        Configuration configuration2 = restConfiguration.create(configuration);
+
+        log.info("" + restConfiguration.create(configuration, "project-id"));
+        Configuration configuration2 = restConfiguration.create(configuration, "project-id");
         assertEquals(configuration, configuration2);
     }
 
@@ -82,8 +85,8 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.query(configuration.getId())).thenReturn(configuration);
-        assertEquals(configuration, restConfiguration.findById(configuration.getId()));
+        when(mock.query(anyString(), anyString())).thenReturn(configuration);
+        assertEquals(configuration, restConfiguration.findById(configuration.getId(), "project-id"));
     }
 
     @Test
@@ -96,13 +99,13 @@ public class ApiRestConfigurationTest {
         configuration.setConfigurationParameters(new HashSet<ConfigurationParameter>());
         configuration.getConfigurationParameters().add(parameters);
         configuration.setName("configuration_test");
-        when(mock.update(configuration, configuration.getId())).thenReturn(configuration);
-        assertEquals(configuration, restConfiguration.update(configuration, configuration.getId()));
+        when(mock.update(any(configuration.getClass()), anyString(), anyString())).thenReturn(configuration);
+        assertEquals(configuration, restConfiguration.update(configuration, configuration.getId(), "project-id"));
     }
 
     @Test
     public void configurationDelete() {
         mock.delete("123");
-        restConfiguration.delete("123");
+        restConfiguration.delete("123","project-id");
     }
 }

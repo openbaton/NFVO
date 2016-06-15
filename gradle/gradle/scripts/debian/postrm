@@ -1,0 +1,86 @@
+#!/bin/sh -e
+
+. /lib/lsb/init-functions
+
+OPENBATON_BASE=/usr
+OPENBATON_PLUGINS_FOLDER=$OPENBATON_BASE/lib/openbaton/plugins
+OPENBATON_LOGS_FOLDER=/var/log/openbaton
+
+
+USER="$(id -un 2>/dev/null || true)"
+
+checkBinary () {
+    echo -n " * Checking for '$1'..."
+    if command -v $1 >/dev/null 2>&1; then
+        echo "OK"
+        return 0
+    else
+        echo >&2 "FAILED."
+        return 1
+    fi
+}
+
+_ex='sh -c'
+if [ "${USER}" != 'root' ]; then
+    if checkBinary sudo; then
+        _ex='sudo -E sh -c'
+    elif checkBinary su; then
+        _ex='su -c'
+    fi
+fi
+
+
+#######################
+# VIM-Drivers Plugins #
+#######################
+
+cleanPlugins () {
+    log_daemon_msg "Cleaning the environment: deleting plugins.."
+    export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
+    if [ -d ${OPENBATON_PLUGINS_FOLDER} ]; then
+    	$_ex 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
+    	log_daemon_msg "..done"
+    fi
+}
+
+########
+# Logs #
+########
+
+cleanLogs () {
+    log_daemon_msg "Cleaning the environment: deleting logs.."
+    export OPENBATON_LOGS_FOLDER="${OPENBATON_LOGS_FOLDER}"
+    if [ -d ${OPENBATON_LOGS_FOLDER} ]; then
+    	$_ex 'rm -r ${OPENBATON_LOGS_FOLDER}'
+    	log_daemon_msg "..done"
+    fi
+}
+
+
+###########################################
+#### Clean OpenBaton NFVO installation ####
+###########################################
+
+clean () {
+    cleanPlugins
+    cleanLogs
+}
+
+
+case "$1" in
+  purge)
+    clean
+  ;;
+
+  remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+  ;;
+
+  *)
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 1
+  ;;
+
+esac
+
+exit 0
+

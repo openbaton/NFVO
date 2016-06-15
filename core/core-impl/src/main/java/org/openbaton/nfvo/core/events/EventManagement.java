@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -86,12 +87,20 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
     }
 
     @Override
-    public Iterable<EventEndpoint> query() {
-        return eventEndpointRepository.findAll();
+    public Iterable<EventEndpoint> query(String projectId) {
+        return eventEndpointRepository.findByProjectId(projectId);
     }
 
     @Override
-    public EventEndpoint query(String id) {
-        return eventEndpointRepository.findFirstById(id);
+    public EventEndpoint query(String id, String projectId) {
+        EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
+        if (endpoint.getProjectId().equals(projectId))
+            return endpoint;
+        throw new UnauthorizedUserException("Event not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    @Override
+    public Iterable<EventEndpoint> queryByProjectId(String projectId) {
+        return eventEndpointRepository.findByProjectId(projectId);
     }
 }

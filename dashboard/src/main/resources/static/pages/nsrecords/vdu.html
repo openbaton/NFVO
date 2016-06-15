@@ -10,11 +10,11 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Descriptors</a>
+                    NS Records</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
-                    NSD: {{nsrinfo.name}}</a>
+                    NSR: {{nsrinfo.name}}</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
@@ -55,11 +55,11 @@
                         </dd>
                     </spam>
                     <spam ng-if="vdu.monitoring_parameter.length>0">
-<dt>monitoring_parameter</dt>
+                        <dt>monitoring_parameter</dt>
                         <dd>
                             <span ng-repeat="mp in vdu.monitoring_parameter">{{mp}}<span ng-if="!$last">,</span> </span>
                         </dd>
-                        </spam>
+                    </spam>
                     <spam ng-if="vdu.vnfc.length>0">
                         <dt>vnfc</dt>
                         <spam ng-repeat="vnfc in vdu.vnfc">
@@ -110,8 +110,7 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="vnfci in vdu.vnfc_instance | orderBy:predicate:reverse">
-                                    <!--<td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a></td>-->
-                                    <td>{{vnfci.hostname}}</td>
+                                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}/vdus/{{vduId}}/vnfci/{{vnfci.id}}">{{vnfci.hostname}}</a></td>
                                     <td>{{vnfci.version}}</td>
                                     <td>{{vnfci.state}}</td>
                                     <td>

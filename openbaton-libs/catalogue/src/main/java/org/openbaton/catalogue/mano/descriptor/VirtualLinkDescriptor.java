@@ -23,12 +23,21 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- * <p/>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
     /**
     /**
      * Vendor generating this VLD

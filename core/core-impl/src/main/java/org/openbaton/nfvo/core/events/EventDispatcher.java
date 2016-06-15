@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -119,15 +120,16 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
 
         for (EventEndpoint endpoint : endpoints) {
             log.debug("Checking endpoint: " + endpoint);
+            log.debug(endpoint.getEvent() + ":" + endpoint.getEvent().ordinal() + " == " + event.getEventNFVO().getAction().ordinal() + ":" + event.getEventNFVO().getAction());
             if (endpoint.getEvent().ordinal() == event.getEventNFVO().getAction().ordinal()) {
-                if (endpoint.getVirtualNetworkFunctionId() != null) {
+                if (endpoint.getVirtualNetworkFunctionId() != null && !endpoint.getVirtualNetworkFunctionId().equals("")) {
                     if (event.getEventNFVO().getPayload() instanceof VirtualNetworkFunctionRecord) {
                         if (((VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload()).getId().equals(endpoint.getVirtualNetworkFunctionId())) {
                             log.debug("dispatching event to: " + endpoint);
                             sendEvent(endpoint, event.getEventNFVO());
                         }
                     }
-                } else if (endpoint.getNetworkServiceId() != null) {
+                } else if (endpoint.getNetworkServiceId() != null && !endpoint.getNetworkServiceId().equals("")) {
                     if (event.getEventNFVO().getPayload() instanceof NetworkServiceRecord) {
                         if (((NetworkServiceRecord) event.getEventNFVO().getPayload()).getId().equals(endpoint.getNetworkServiceId())) {
                             log.debug("dispatching event to: " + endpoint);
@@ -145,7 +147,7 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
 
     private void sendEvent(EventEndpoint endpoint, ApplicationEventNFVO event) {
         EventSender sender = (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
-        log.trace("Sender is: " + sender.getClass().getSimpleName());
+        log.debug("Sender is: " + sender.getClass().getSimpleName());
         try {
             sender.send(endpoint, event);
         } catch (IOException e) {
@@ -155,12 +157,15 @@ class EventDispatcher implements ApplicationListener<EventNFVO>, org.openbaton.n
     }
 
     @Override
-    public void unregister(String id) throws NotFoundException {
-        if (eventEndpointRepository.exists(id)) {
-            log.info("Removing EventEndpoint with id: " + id);
-            eventEndpointRepository.delete(id);
+    public void unregister(String id, String projectId) throws NotFoundException {
+        eventManagement.removeUnreachableEndpoints();
+        EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
+        if (endpoint != null) {
+            if (endpoint.getProjectId().equals(projectId)) {
+                log.info("Removing EventEndpoint with id: " + id);
+                eventEndpointRepository.delete(id);
+            }else throw new UnauthorizedUserException("Event not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
 
-            eventManagement.removeUnreachableEndpoints();
         }
     }
 

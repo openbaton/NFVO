@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- * <p/>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
@@ -38,6 +38,15 @@ public class VirtualDeploymentUnit implements Serializable {
     @Version
     private int version = 0;
 
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
     /**
      * A unique identifier of this VDU within the scope
      * of the VNFD, including version functional

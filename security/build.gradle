@@ -17,9 +17,10 @@
 dependencies {
     compile project(':repository')
     compile project(':catalogue')
-    compile("org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE")
-    compile("org.springframework.security:spring-security-core:4.0.3.RELEASE")
-    compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE")
-    compile("org.springframework.boot:spring-boot-starter-security:1.2.4.RELEASE")
-    compile("org.springframework.security.oauth:spring-security-oauth2:2.0.7.RELEASE")
+    compile project(':exception')
+    compile 'org.springframework.boot:spring-boot-starter-websocket:1.2.3.RELEASE'
+    compile "org.springframework.security:spring-security-core:4.1.0.RELEASE"
+    compile 'org.springframework.data:spring-data-commons-core:1.4.1.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-security:1.2.4.RELEASE'
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.7.RELEASE'
 }

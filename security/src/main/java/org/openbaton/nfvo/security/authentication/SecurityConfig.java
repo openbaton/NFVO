@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.security;
+package org.openbaton.nfvo.security.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +28,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
+
+import java.util.Properties;
 
 @Configuration
 @EnableWebSecurity
@@ -37,29 +41,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(
-                new BCryptPasswordEncoder());
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-//        http.authorizeRequests().antMatchers(HttpMethod.POST, "/register").permitAll();
-
         http.antMatcher("/**").httpBasic()
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/oauth/token", "/register").permitAll();
-
     }
 
     @Override
     @Bean
-    protected AuthenticationManager
-    authenticationManager() throws Exception {
+    protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
+    }
+
+    @Bean(name = "inMemManager")
+    public UserDetailsManager userDetailsManager() {
+        return new InMemoryUserDetailsManager(new Properties());
     }
 }
 

@@ -134,6 +134,11 @@ public class VNFRUtils {
                 ScalingAction newAction = new ScalingAction();
                 newAction.setValue(action.getValue());
                 newAction.setType(action.getType());
+                if (action.getTarget() == null || action.getTarget().equals("")) {
+                    newAction.setTarget(vnfd.getType());
+                } else {
+                    newAction.setTarget(action.getTarget());
+                }
                 newAutoScalePolicy.getActions().add(newAction);
             }
             newAutoScalePolicy.setAlarms(new HashSet<ScalingAlarm>());

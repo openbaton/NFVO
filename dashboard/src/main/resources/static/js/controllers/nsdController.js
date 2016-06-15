@@ -2,9 +2,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     var baseURL = $cookieStore.get('URL') + "/api/v1";
 
-    var url = baseURL + '/ns-descriptors';
-    var urlRecord = baseURL + '/ns-records';
-    var urlVim = baseURL + '/datacenters';
+    var url = baseURL + '/ns-descriptors/';
+    var urlRecord = baseURL + '/ns-records/';
+    var urlVim = baseURL + '/datacenters/';
     var urlVNFD = baseURL + '/vnf-descriptors/';
 
     loadTable();
@@ -16,7 +16,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
         $scope.showSetting = state;
-        console.log($scope.showSetting);
+        //console.log($scope.showSetting);
         $scope.$apply(function () {
             $scope.showSetting;
         });
@@ -32,7 +32,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     http.get(urlVim)
         .success(function (response, status) {
             $scope.vimInstances = response;
-            console.log(response);
+            //console.log(response);
         })
         .error(function (data, status) {
             showError(status, data);
@@ -55,8 +55,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.saveDependency = function () {
         $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
-        console.log($scope.nsdCreateTmp.vnf_dependency);
-        console.log($scope.dependency);
+        //console.log($scope.nsdCreateTmp.vnf_dependency);
+        //console.log($scope.dependency);
 
         $('#modalDependency').modal('hide');
     };
@@ -98,7 +98,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.updateObj = function () {
-        http.put(url + '/' + $scope.editObj.id, $scope.editObj)
+        http.put(url + $scope.editObj.id, $scope.editObj)
             .success(function (response) {
                 showOk('Network Service Descriptor updated!');
                 loadTable();
@@ -110,7 +110,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.updateVNFD = function () {
-        http.put(url + '/' + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $scope.editObj.id, $scope.editObj)
+        http.put(url + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $scope.editObj.id, $scope.editObj)
             .success(function (response) {
                 showOk('VNF Descriptor updated!');
                 loadTable();
@@ -132,8 +132,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.editObj.configurations.configurationParameters.splice(index, 1);
     };
 
-    $scope.addLifecycleEvent = function(vdu){
-        vdu.lifecycle_event.push({'event':"CONFIGURE", 'lifecycle_events':[]})
+    $scope.addLifecycleEvent = function (vdu) {
+        vdu.lifecycle_event.push({'event': "CONFIGURE", 'lifecycle_events': []})
     };
 
 
@@ -149,7 +149,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         http.get(urlVNFD)
             .success(function (response, status) {
                 $scope.vnfdList = response;
-                console.log(response);
+                //console.log(response);
                 $('#modalCreateNSD').modal('show');
             })
             .error(function (data, status) {
@@ -165,10 +165,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         else {
             $scope.selection.push(image);
         }
-        console.log($scope.selection);
+        //console.log($scope.selection);
         $scope.vduCreate.vm_image = $scope.selection;
     };
-
 
 
     $scope.deleteVDU = function (index) {
@@ -177,7 +176,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     $scope.deleteVNFDependency = function (vnfd) {
-        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdependencies/' + vnfd.id)
+        http.delete(url + $scope.nsdinfo.id + '/vnfdependencies/' + vnfd.id)
             .success(function (response) {
                 showOk('Deleted VNF Dependecy with id: ' + vnfd.id);
                 loadTable();
@@ -191,7 +190,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     $scope.deleteVNFD = function (vnfd) {
-        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdescriptors/' + vnfd.id)
+        http.delete(url + $scope.nsdinfo.id + '/vnfdescriptors/' + vnfd.id)
             .success(function (response) {
                 showOk('Deleted VNF Descriptors with id: ' + vnfd.id);
                 loadTable();
@@ -212,13 +211,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vduId)) {
         $scope.vduId = $routeParams.vduId;
-        console.log($scope.vduId);
+        //console.log($scope.vduId);
     }
 
 
     $scope.sendNSDCreate = function (nsdCreate) {
         $('.modal').modal('hide');
-        console.log($scope.nsdCreateTmp);
+        //console.log($scope.nsdCreateTmp);
         http.post(url, $scope.nsdCreateTmp)
             .success(function (response) {
                 showOk('Network Service Descriptor stored!');
@@ -285,8 +284,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         }
 
-        console.log(postNSD);
-        console.log(type);
+        //console.log(postNSD);
+        //console.log(type);
 
         if (sendOk) {
             if (type === 'topology') {
@@ -330,7 +329,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.deleteNSD = function (data) {
-        http.delete(url + '/' + data.id)
+        http.delete(url + data.id)
             .success(function (response) {
                 showOk('Deleted Network Service Descriptor with id: ' + data.id);
                 loadTable();
@@ -347,8 +346,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.launch = function () {
-        console.log($scope.nsdToSend);
-        http.post(urlRecord + '/' + $scope.nsdToSend.id)
+        //console.log($scope.nsdToSend);
+        http.post(urlRecord + $scope.nsdToSend.id)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -358,10 +357,10 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.Jsplumb = function () {
-        http.get(url + '/' + $routeParams.nsdescriptorId)
+        http.get(url + $routeParams.nsdescriptorId)
             .success(function (response, status) {
                 topologiesAPI.Jsplumb(response, 'descriptor');
-                console.log(response);
+                //console.log(response);
 
             }).error(function (data, status) {
             showError(status, data);
@@ -384,6 +383,61 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.alerts.splice(index, 1);
     };
 
+    /* -- multiple delete functions Start -- */
+
+    $scope.multipleDeleteReq = function () {
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push(k);
+            }
+        });
+        //console.log(ids);
+        http.post(url + 'multipledelete', ids)
+            .success(function (response) {
+                showOk('Items with id: ' + ids.toString() + ' deleted.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+    };
+
+    $scope.main = {checkbox: false};
+    $scope.$watch('main', function (newValue, oldValue) {
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
+        angular.forEach($scope.selection.ids, function (value, k) {
+            $scope.selection.ids[k] = newValue.checkbox;
+        });
+        //console.log($scope.selection.ids);
+    }, true);
+
+    $scope.$watch('selection', function (newValue, oldValue) {
+        //console.log(newValue);
+        var keepGoing = true;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (keepGoing) {
+                if ($scope.selection.ids[k]) {
+                    $scope.multipleDelete = false;
+                    keepGoing = false;
+                }
+                else {
+                    $scope.multipleDelete = true;
+                }
+            }
+
+        });
+        if (keepGoing)
+            $scope.mainCheckbox = false;
+    }, true);
+
+    $scope.multipleDelete = true;
+
+    $scope.selection = {};
+    $scope.selection.ids = {};
+    /* -- multiple delete functions END -- */
 
     function showError(status, data) {
         if (status === 400)
@@ -400,7 +454,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
@@ -416,18 +470,18 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsdescriptors = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
 
                 });
         else
-            http.get(url + '/' + $routeParams.nsdescriptorId)
+            http.get(url + $routeParams.nsdescriptorId)
                 .success(function (response, status) {
                     $scope.nsdinfo = response;
                     $scope.nsdJSON = JSON.stringify(response, undefined, 4);
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);

@@ -40,7 +40,7 @@ public interface NetworkServiceDescriptorManagement {
      * validating a Network Service	Descriptor (NSD),
      * including any related VNFFGD and VLD.
      */
-    NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException;
+    NetworkServiceDescriptor onboard(NetworkServiceDescriptor networkServiceDescriptor, String projectId) throws NotFoundException, BadFormatException, NetworkServiceIntegrityException, CyclicDependenciesException;
 
     /**
      * This operation allows disabling a
@@ -68,17 +68,19 @@ public interface NetworkServiceDescriptorManagement {
      * and/or new VLDs.
      *
      * @param new_nsd
+     * @param projectId
      */
-    NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd);
+    NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String projectId);
 
     /**
      * This operation added a new VNFD to the NSD with {@code id}
      *
      * @param vnfd VirtualNetworkFunctionDescriptor to be persisted
      * @param id   of NetworkServiceDescriptor
+     * @param projectId
      * @return the persisted VirtualNetworkFunctionDescriptor
      */
-    VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id);
+    VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id, String projectId);
 
     /**
      * This operation is used to query the
@@ -88,7 +90,7 @@ public interface NetworkServiceDescriptorManagement {
      */
     Iterable<NetworkServiceDescriptor> query();
 
-    NetworkServiceDescriptor query(String id) throws NoResultException;
+    NetworkServiceDescriptor query(String id, String projectId) throws NoResultException;
 
     /**
      * This operation is used to remove a
@@ -96,24 +98,27 @@ public interface NetworkServiceDescriptorManagement {
      *
      * @param id
      */
-    void delete(String id) throws WrongStatusException;
+    void delete(String id, String projectId) throws WrongStatusException;
 
     /**
      * Removes the VNFDescriptor into NSD
      *
+     * @param nsd
      * @param idNsd  of NSD
      * @param idVnfd of VNFD
      */
-    void deleteVnfDescriptor(String idNsd, String idVnfd);
+    void deleteVnfDescriptor(String nsd, String idNsd, String idVnfd);
 
     /**
      * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd
      *
+     *
+     * @param nsd
      * @param idNsd  of NSD
      * @param idVnfd of VirtualNetworkFunctionDescriptor
      * @return VirtualNetworkFunctionDescriptor
      */
-    VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String idNsd, String idVnfd) throws NotFoundException;
+    VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(String nsd, String idNsd, String idVnfd) throws NotFoundException;
 
     /**
      * Updates the VNFDescriptor into NSD with idNsd
@@ -121,74 +126,81 @@ public interface NetworkServiceDescriptorManagement {
      * @param idNsd
      * @param idVfn
      * @param vnfDescriptor
+     * @param projectId
      * @return
      */
-    VirtualNetworkFunctionDescriptor updateVNF(String idNsd, String idVfn, VirtualNetworkFunctionDescriptor vnfDescriptor);
+    VirtualNetworkFunctionDescriptor updateVNF(String idNsd, String idVfn, VirtualNetworkFunctionDescriptor vnfDescriptor, String projectId);
 
     /**
      * Returns the VNFDependency selected by idVnfd into NSD with idNsd
      *
      * @return VNFDependency
      */
-    VNFDependency getVnfDependency(String idNsd, String idVnfd);
+    VNFDependency getVnfDependency(String idNsd, String idVnfd, String projectId);
 
     /**
      * Removes the VNFDependency into NSD
-     *
-     * @param idNsd  of NSD
+     *  @param idNsd  of NSD
      * @param idVnfd of VNFD
+     * @param projectId
      */
-    void deleteVNFDependency(String idNsd, String idVnfd);
+    void deleteVNFDependency(String idNsd, String idVnfd, String projectId);
 
     /**
      * Save or Update the VNFDependency into NSD with idNsd
      *
      * @param idNsd
      * @param vnfDependency
+     * @param projectId
      * @return VNFDependency
      */
-    VNFDependency saveVNFDependency(String idNsd, VNFDependency vnfDependency);
+    VNFDependency saveVNFDependency(String idNsd, VNFDependency vnfDependency, String projectId);
 
     /**
      * Deletes the PhysicalNetworkFunctionDescriptor from NSD
-     *
-     * @param idNsd of NSD
+     *  @param idNsd of NSD
      * @param idPnf of PhysicalNetworkFunctionDescriptor
+     * @param projectId
      */
-    void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+    void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf, String projectId);
 
     /**
      * Returns the PhysicalNetworkFunctionDescriptor with idPnf into NSD with idNsd
      *
      * @param idNsd
      * @param idPnf
+     * @param projectId
      * @return PhysicalNetworkFunctionDescriptor selected
      */
-    PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) throws NotFoundException;
+    PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(String idNsd, String idPnf, String projectId) throws NotFoundException;
 
     /**
      * Adds or Updates the PhysicalNetworkFunctionDescriptor into NSD
      *
      * @param pDescriptor
      * @param id
+     * @param projectId
      * @return PhysicalNetworkFunctionDescriptor
      */
-    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id);
+    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pDescriptor, String id, String projectId);
 
     /**
      * Adds or Updates the Security into NSD
      *
      * @param id
      * @param security
+     * @param projectId
      * @return
      */
-    Security addSecurity(String id, Security security);
+    Security addSecurity(String id, Security security, String projectId);
 
     /**
      * Removes the Secuty with idS from NSD with id
-     *
-     * @param id
+     *  @param id
      * @param idS
+     * @param projectId
      */
-    void deleteSecurty(String id, String idS);
+    void deleteSecurty(String id, String idS, String projectId);
+
+    Iterable<NetworkServiceDescriptor> queryByProjectId(String projectId);
 }

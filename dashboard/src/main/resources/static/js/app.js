@@ -1,5 +1,5 @@
 angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
-    .config(function ($routeProvider) {
+    .config(function ($routeProvider, $locationProvider) {
 
         $routeProvider.
             when('/login', {
@@ -9,6 +9,18 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             when('/', {
                 templateUrl: 'pages/contents.html',
                 controller: 'IndexCtrl'
+            }).
+            when('/projects', {
+                templateUrl: 'pages/projects.html',
+                controller: 'ProjectCtrl'
+            }).
+            when('/users', {
+                templateUrl: 'pages/users/users.html',
+                controller: 'UserCtrl'
+            }).
+            when('/users/:userId', {
+                templateUrl: 'pages/users/userinfo.html',
+                controller: 'UserCtrl'
             }).
             when('/packages', {
                 templateUrl: 'pages/packages/packages.html',
@@ -60,6 +72,10 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             })
             .when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId/vdus/:vduId', {
                 templateUrl: 'pages/nsrecords/vdu.html',
+                controller: 'NsrCtrl'
+            })
+            .when('/nsrecords/:nsrecordId/vnfrecords/:vnfrecordId/vdus/:vduId/vnfci/:vnfciId', {
+                templateUrl: 'pages/nsrecords/vnfci.html',
                 controller: 'NsrCtrl'
             }).
             when('/nsdescriptors/:nsdescriptorId/vnfdependencies/:vnfdependencyId', {
@@ -125,7 +141,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies'])
             otherwise({
 //                        redirectTo: '/'
             });
-
+        $locationProvider.html5Mode(false);
     });
 
 /**

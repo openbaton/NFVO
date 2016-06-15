@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openbaton.nfvo.security;
+package org.openbaton.nfvo.security.authentication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,51 +32,38 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @ConfigurationProperties(prefix = "nfvo.security")
 public class ResourceServer extends ResourceServerConfigurerAdapter {
 
+
     private boolean enabled;
     private Logger log = LoggerFactory.getLogger(this.getClass());
-
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.headers()
                 .frameOptions().disable();
-//        http
-//                .requestMatchers().antMatchers("/api/v1/", "/api/v1/**")
-//                .and()
-//                .authorizeRequests().anyRequest().access("#oauth2.hasScope('write')");
-//
-//
-//        http
-//                .anonymous()
-//                .disable();
 
         // API calls
-
-        if (enabled) {
-            log.debug("Security is enabled");
+        log.debug("Security must be enabled");
+        if (true) {
             http
                     .authorizeRequests()
                     .regexMatchers(HttpMethod.POST, "/api/v1/")
                     .access("#oauth2.hasScope('write')")
                     .and()
-                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                     .and()
                     .exceptionHandling();
 
-            // API calls
             http
                     .authorizeRequests()
                     .antMatchers("/api/**")
                     .access("#oauth2.hasScope('write')")
                     .and()
-                            //.addFilterBefore(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                     .and()
                     .exceptionHandling();
-        }else {
+        } else {
             log.warn("Security is not enabled!");
             http
                     .authorizeRequests().anyRequest().permitAll();
@@ -97,5 +84,4 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-
 }

@@ -32,14 +32,35 @@
                 <tbody>
                 <tr ng-repeat="data in vimInstances| orderBy:predicate:reverse">
                     <td><a href="#vim-instances/{{data.id}}">{{data.id}}</a></td>
-                    <td>{{data.name}}</td>
-                    <td>{{data.type}}</td>
+                    <td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
+                        <span ng-show="!editValue">{{data.name}}</span>
+                        <span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
+                        <span ng-show="editValue">
+                            <div class="input-group">
+                                <span class="input-group-addon" ng-click="editValue=false"><li class="fa fa-close"></li></span>
+                                <input type="text" class="form-control" ng-model="data.name">
+                                <span class="input-group-addon"><li class="fa fa-check"></li></span>
+                            </div>
+                        </span>
+                    </td>
+                    <td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
+                        <span ng-show="!editValue">{{data.type}}</span>
+                        <span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
+                        <span ng-show="editValue">
+                            <div class="input-group">
+                                <span class="input-group-addon" ng-click="editValue=false"><li class="fa fa-close"></li></span>
+                                <input type="text" class="form-control" ng-model="data.type">
+                                <span class="input-group-addon"><li class="fa fa-check"></li></span>
+                            </div>
+                        </span>
+                    </td>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                 Action <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
+                                <li><a href="" data-toggle="modal" data-target="#editModal" ng-click="edit(data)">Edit</a></li>
           <!--                      <li><a href=""  ng-click="loadFormUpdate(data)">Update DataCenter</a></li>
                                 <li><a href=""  ng-click="loadFormImage(data)">Update Images</a></li>
                                 <li><a href=""  ng-click="loadFormSubnets(data)">Update Subnets</a></li>-->
@@ -89,3 +110,32 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in editObj"
+                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="editObj[key]"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

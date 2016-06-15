@@ -14,49 +14,35 @@
  * limitations under the License.
  */
 
-
 ext {
     debianDistribution = (applicationRelease) ? "release" : "snapshot"
-    debianVersionExtension = ("snapshot".equals(debianDistribution)) ? "~${applicationVersionDebian}" : ""
+    debianVersionExtension = ("snapshot".equals(debianDistribution)) ? "-${applicationVersionDebian}" : ""
     debianApplicationVersionFull = "${applicationVersionFull}".replaceAll("-", ".") + debianVersionExtension
     openbatonInstallDir = "/opt/openbaton"
-
 }
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.netflix.nebula:gradle-ospackage-plugin:2.2.6'
-    }
-}
-
-apply plugin: 'os-package'
-
-task openbatonDeb(type: Deb, dependsOn: [jar, installDist]) {
-    packageName = 'openbaton'
+task openbatonNFVODeb(type: Deb, dependsOn: [jar, build]) { 
+    packageName = (applicationRelease) ? "openbaton-nfvo" : "openbaton-nfvo-nightly"
     version = debianApplicationVersionFull
-    release '1'
-    os = LINUX
+    release = 1 
+    arch = 'amd64'
+    maintainer = 'OpenBaton Team <info@open-baton.org>'
+    packageDescription = 'Open Baton NFV Orchestrator'
 
     configurationFile('/etc/openbaton/openbaton.properties')
     postInstall file('gradle/gradle/scripts/debian/postinst')
+    preUninstall file('gradle/gradle/scripts/debian/prerm')
+    postUninstall file('gradle/gradle/scripts/debian/postrm')
 
-    into openbatonInstallDir
+    requires('openjdk-7-jre')
+    requires('rabbitmq-server')
+    requires('wget')
 
-    from(jar.outputs.files) { into 'lib'  }
-    from('build/install/openbaton/lib') { into 'lib' }
-    from('plugins/vim-drivers/') { into 'lib' }
-    from('plugins/monitoring/') { into 'lib' }
-
-    from('build/install/openbaton/bin/openbaton') { into 'bin' }
-    from('etc/openbaton.properties') { into '/etc/openbaton/' }
-    from('gradle/gradle/scripts/openbaton.sh')
-    from('gradle/gradle/scripts/openbaton.conf') { into '/etc/init/' }
-
-    link('/etc/init.d/openbaton', '/lib/init/upstart-job')
-    link('/usr/bin/openbaton','/opt/openbaton/bin/openbaton')
-
+    from(jar.outputs.files) 				{ into '/usr/lib/openbaton/' }
+    from('gradle/gradle/scripts/openbaton-nfvo') 	{ into '/usr/bin/'}
+    from('gradle/gradle/scripts/openbaton-nfvo') 	{ into '/etc/init.d/'} 
+    from('gradle/gradle/scripts/openbaton-nfvo.conf') 	{ into '/etc/init/'} 
+    from('etc/openbaton.properties') 			{ into '/etc/openbaton/' }
+    
+    link('/etc/init.d/openbaton-nfvo', '/lib/init/upstart-job')
 }

@@ -19,7 +19,9 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface NetworkServiceDescriptorRepository extends CrudRepository<NetworkServiceDescriptor, String>, NetworkServiceDescriptorRepositoryCustom {
     NetworkServiceDescriptor findFirstById(String id);
-
+    List<NetworkServiceDescriptor> findByProjectId(String projectId);
 }

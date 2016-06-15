@@ -35,6 +35,15 @@ public class PhysicalNetworkFunctionRecord implements Serializable{
     private String vendor;
     private String version;
     private String description;
+    private String projectId;
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConnectionPoint> connection_point;
     /**

@@ -52,7 +52,7 @@ function check_rabbitmq {
 
 
 function start_rabbitmq {
-    `rabbitmq-server -detached`
+    $_ex 'rabbitmq-server -detached'
     if [ $? -ne 0 ]; then
         echo "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log) "
         exit 1

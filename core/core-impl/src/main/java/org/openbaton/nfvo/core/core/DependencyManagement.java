@@ -93,7 +93,9 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
 
     @Override
     public synchronized void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+
         log.info("Filling dependency Parameters for VirtualNetworkFunctionRecord source: " + virtualNetworkFunctionRecord.getType() + " if existing");
+
         List<VNFRecordDependency> vnfRecordDependencies = getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
         for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {

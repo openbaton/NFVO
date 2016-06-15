@@ -21,6 +21,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,9 +45,10 @@ public class ConfigurationManagement implements org.openbaton.nfvo.core.interfac
     }
 
     @Override
-    public Configuration update(Configuration newConfiguration, String id) {
-        configurationRepository.exists(id);
-        return configurationRepository.save(newConfiguration);
+    public Configuration update(Configuration newConfiguration, String id, String projectId) {
+        if (configurationRepository.findFirstById(id) != null && configurationRepository.findFirstById(id).getProjectId().equals(projectId))
+            return configurationRepository.save(newConfiguration);
+        throw new UnauthorizedUserException("Configuration not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     @Override
@@ -55,8 +57,18 @@ public class ConfigurationManagement implements org.openbaton.nfvo.core.interfac
     }
 
     @Override
-    public Configuration query(String id) {
-        return configurationRepository.findOne(id);
+    public Iterable<Configuration> queryByProject(String projectId) {
+        return configurationRepository.findByProjectId(projectId);
+    }
+
+    @Override
+    public Configuration query(String id, String projectId) {
+        Configuration configuration = configurationRepository.findFirstById(id);
+        if (configuration == null)
+            return configuration;
+        if (configuration.getProjectId().equals(projectId))
+            return configuration;
+        throw new UnauthorizedUserException("Configuration not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     @Override
