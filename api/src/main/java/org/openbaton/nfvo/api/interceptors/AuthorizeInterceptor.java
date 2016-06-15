@@ -70,7 +70,8 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         log.trace("Current User: " + currentUserName);
         log.trace("projectId: " + project);
         log.trace(request.getMethod() + " URI: " + request.getRequestURI());
-        if (request.getRequestURI().equals("/api/v1/projects/") && request.getMethod().equalsIgnoreCase("get")){
+
+        if ((request.getRequestURI().equals("/api/v1/projects/") || (request.getRequestURI().equals("/api/v1/projects"))) && request.getMethod().equalsIgnoreCase("get")){
             return true;
         }
         log.trace(request.getMethod() + " URL: " + request.getRequestURL());
