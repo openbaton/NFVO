@@ -19,12 +19,9 @@ package org.openbaton.nfvo.core.api;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -100,6 +97,9 @@ public class NetworkServiceDescriptorManagement implements org.openbaton.nfvo.co
 
         for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
             vnfd.setProjectId(projectId);
+            for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()){
+                virtualDeploymentUnit.setProjectId(projectId);
+            }
             if (vnfd.getLifecycle_event() != null)
                 for (LifecycleEvent event : vnfd.getLifecycle_event()) {
                     if (event == null) {

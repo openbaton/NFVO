@@ -222,7 +222,13 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                     for (String vimName : vdu.getVimInstanceName()) {
-                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimName);
+                        VimInstance vimInstance = null;
+
+                        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                            if (vimName.equals(vi.getName()))
+                                vimInstance = vi;
+                        }
+
                         if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
                             Vim vim = vimBroker.getVim(vimInstance.getType());
                             log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
@@ -238,7 +244,13 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
                 for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                     for (String vimName : vdu.getVimInstanceName()) {
-                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimName);
+                        VimInstance vimInstance = null;
+
+                        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                            if (vimName.equals(vi.getName()))
+                                vimInstance = vi;
+                        }
+
                         if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
                             Vim vim = vimBroker.getVim(vimInstance.getType());
                             log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());

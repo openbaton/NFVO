@@ -284,7 +284,13 @@ public class NSDUtils {
                 for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionDescriptor.getVdu()){
                     if (inAllVims.equals("in-all-vims")) {
                         for (String vimName : virtualDeploymentUnit.getVimInstanceName()) {
-                            VimInstance vimInstance = vimRepository.findFirstByName(vimName);
+                            VimInstance vimInstance = null;
+
+                            for (VimInstance vi : vimRepository.findByProjectId(virtualDeploymentUnit.getProjectId())){
+                                if (vimName.equals(vi.getName()))
+                                    vimInstance = vi;
+                            }
+
                             if (virtualDeploymentUnit.getScale_in_out() < 1)
                                 throw new NetworkServiceIntegrityException("Regarding the VirtualNetworkFunctionDescriptor " + virtualNetworkFunctionDescriptor.getName() + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter (" + virtualDeploymentUnit.getScale_in_out() + ") must be at least 1");
                             if (virtualDeploymentUnit.getScale_in_out() < virtualDeploymentUnit.getVnfc().size()) {

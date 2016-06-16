@@ -231,10 +231,16 @@ public class VnfmManager implements org.openbaton.vnfm.interfaces.manager.VnfmMa
                 vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
                 for (String vimInstanceName : vdu.getVimInstanceName()) {
                     log.debug("Looking for " + vimInstanceName);
-                    vimInstances.get(vdu.getId()).add(vimInstanceRepository.findFirstByName(vimInstanceName));
+                    VimInstance vimInstance = null;
+
+                    for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                        if (vimInstanceName.equals(vi.getName()))
+                            vimInstance = vi;
+                    }
+
+                    vimInstances.get(vdu.getId()).add(vimInstance);
                 }
             }
-            log.debug("Found vim instances:");
             for (Map.Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()){
 
                 if (vimInstance.getValue().size() == 0)

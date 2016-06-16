@@ -537,7 +537,14 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
             for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
                 for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
                     for (String vimInstanceName : vdu.getVimInstanceName()) {
-                        VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimInstanceName);
+
+                        VimInstance vimInstance = null;
+
+                        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                            if (vimInstanceName.equals(vi.getName()))
+                                vimInstance = vi;
+                        }
+
                         for (VNFComponent vnfc : vdu.getVnfc()) {
                             for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
                                 if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {

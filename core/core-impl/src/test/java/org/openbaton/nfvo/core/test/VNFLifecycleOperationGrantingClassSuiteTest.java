@@ -72,7 +72,8 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
     public void vnfLifecycleOperationGrantingTest() throws VimException, PluginException {
         VirtualNetworkFunctionRecord vnfr = createVirtualNetworkFunctionRecord();
         Map<String, VimInstance> granted;
-        when(vimInstanceRepository.findFirstByName(anyString())).thenReturn(createVimInstance());
+
+        when(vimInstanceRepository.findByProjectId(anyString())).thenReturn(new ArrayList<VimInstance>(){{add(createVimInstance()); }});
         when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMaxQuota());
 
         granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);

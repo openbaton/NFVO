@@ -59,7 +59,15 @@ public class VNFLifecycleOperationGranting implements org.openbaton.nfvo.core.in
         log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             for (String vimName : vdu.getVimInstanceName()) {
-                VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimName);
+
+                VimInstance vimInstance = null;
+
+                for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                    if (vimName.equals(vi.getName()))
+                        vimInstance = vi;
+                }
+
+
                 if (countVDUsOnVimInstances.containsKey(vimInstance)) {
                     countVDUsOnVimInstances.put(vimInstance, countVDUsOnVimInstances.get(vimInstance) + vdu.getVnfc().size() - vdu.getVnfc_instance().size());
                 } else {
