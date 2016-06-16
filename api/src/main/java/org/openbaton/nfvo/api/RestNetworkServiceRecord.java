@@ -154,7 +154,7 @@ public class RestNetworkServiceRecord {
     @ResponseStatus(HttpStatus.OK)
     public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
         NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
-        log.debug("*****" + nsr.getVnfr().toString());
+        log.trace("*****" + nsr.getVnfr().toString());
         return nsr.getVnfr();
     }
 
