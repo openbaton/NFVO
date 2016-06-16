@@ -27,7 +27,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 ids.push({'id': k});
             }
         });
-        console.log(ids);
+        //console.log(ids);
         clipboard.copyText(JSON.stringify(ids));
     };
 
@@ -228,8 +228,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     /* -- multiple delete functions END -- */
 
     function loadTable() {
-        $scope.vnfdescriptors = [{id:'21313'},{id:'333333'}];
-       /* if (angular.isUndefined($routeParams.vnfdescriptorId))
+        if (angular.isUndefined($routeParams.vnfdescriptorId))
             http.get(url)
                 .success(function (response, status) {
                     $scope.vnfdescriptors = response;
@@ -251,7 +250,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
                 });
             $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
-        }*/
+        }
     }
 
     function showError(status, data) {
