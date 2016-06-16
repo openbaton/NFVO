@@ -13,6 +13,7 @@ require({
         jQueryRotate: "libs/jquery/jQueryRotate",
         angular_route: "libs/angular/angular-route.min",
         angular_cookies: "libs/angular/angular-cookies.min",
+        angular_clipboard: "libs/angular/angular-clipboard",
         d3: "libs/d3.min",
         ui_bootstrap: "libs/angular/ui-bootstrap-tpls-0.10.0.min",
         app: "app",
@@ -87,7 +88,7 @@ require({
             deps: ['jquery', 'raphael']
         },
         app: {
-            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap']
+            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap', 'angular_clipboard']
         },
         angular_route: {
             deps: ['angular']
