@@ -70,9 +70,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     @Override
     public VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException, EntityUnreachableException, IOException {
         vimInstance.setProjectId(projectId);
-        this.refresh(vimInstance);
         log.trace("Persisting VimInstance: " + vimInstance);
-        return vimRepository.save(vimInstance);
+        vimInstance = vimRepository.save(vimInstance);
+        this.refresh(vimInstance);
+        return vimInstance;
     }
 
     @Override
@@ -106,10 +107,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException, IOException {
-        this.checkVimInstances();
         vimInstance.setActive(true);
+        this.checkVimInstances();
         if (!vimInstance.isActive())
-            throw new EntityUnreachableException("VimInstance " + vimInstance.getName() + " is not reachable");
+            return;
         //Refreshing Images
         Set<NFVImage> images_refreshed = new HashSet<NFVImage>();
         Set<NFVImage> images_new = new HashSet<NFVImage>();
@@ -273,8 +274,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     /**
      * Adds a new NFVImage to the VimInstance with id
      *
-     * @param id    of VimInstance
-     * @param image the new NFVImage
+     * @param id        of VimInstance
+     * @param image     the new NFVImage
      * @param projectId
      * @return NFVImage
      */
@@ -304,7 +305,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     /**
      * Removes the NFVImage with idImage from VimInstance with idVim
-     *  @param idVim
+     *
+     * @param idVim
      * @param idImage
      * @param projectId
      */
@@ -330,14 +332,21 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
         if (vimCheck) {
 
             for (VimInstance vimInstance : vimRepository.findAll()) {
+                if (vimInstance.getType().equals("test"))
+                    continue;
+
                 URL authUrl = new URL(vimInstance.getAuthUrl());
-                log.debug("Checking host: " + authUrl.getHost());
+                log.debug("Checking host: " + authUrl.getHost() + " of VimInstance " + vimInstance.getName());
                 byte[] bytes = authUrl.getHost().getBytes();
 
-                if (vimInstance.isActive() && !InetAddress.getByAddress(bytes).isReachable(5000)) {
+                if (vimInstance.isActive() && !InetAddress.getByName(authUrl.getHost()).isReachable(5000)) {
+                    log.debug("Authentication url " + vimInstance.getAuthUrl() + " of VimInstance " + vimInstance.getName()
+                            + " with id " + vimInstance.getId() + " is not reachable anymore. Set the VimInstance to not active.");
                     vimInstance.setActive(false);
                     vimRepository.save(vimInstance);
-                } else if (!vimInstance.isActive() && InetAddress.getByAddress(bytes).isReachable(5000)) {
+                } else if (!vimInstance.isActive() && InetAddress.getByName(authUrl.getHost()).isReachable(5000)) {
+                    log.debug("Authentication url " + vimInstance.getAuthUrl() + " of non active VimInstance " + vimInstance.getName()
+                            + " with id " + vimInstance.getId() + " is reachable. Set the VimInstance to active.");
                     vimInstance.setActive(true);
                     vimRepository.save(vimInstance);
                 }
