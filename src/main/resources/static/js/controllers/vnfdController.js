@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService) {
+var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard) {
 
     var baseUrl = $cookieStore.get('URL')+"/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
@@ -18,6 +18,18 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             showError(status, data);
 
         });
+
+
+    $scope.copyToClipboard = function () {
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push({'id': k});
+            }
+        });
+        console.log(ids);
+        clipboard.copyText(JSON.stringify(ids));
+    };
 
 
     if (!angular.isUndefined($routeParams.vduId)) {
@@ -216,7 +228,8 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     /* -- multiple delete functions END -- */
 
     function loadTable() {
-        if (angular.isUndefined($routeParams.vnfdescriptorId))
+        $scope.vnfdescriptors = [{id:'21313'},{id:'333333'}];
+       /* if (angular.isUndefined($routeParams.vnfdescriptorId))
             http.get(url)
                 .success(function (response, status) {
                     $scope.vnfdescriptors = response;
@@ -238,7 +251,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
                 });
             $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
-        }
+        }*/
     }
 
     function showError(status, data) {
