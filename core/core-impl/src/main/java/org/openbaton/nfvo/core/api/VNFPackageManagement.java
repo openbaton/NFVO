@@ -257,7 +257,18 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             }
             for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
                 for (String vimName : vdu.getVimInstanceName()) {
-                    VimInstance vimInstance = vimInstanceRepository.findFirstByName(vimName);
+
+                    VimInstance vimInstance = null;
+
+                    for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                        if (vimName.equals(vi.getName()))
+                            vimInstance = vi;
+                    }
+
+                    if (vimInstance == null){
+                        throw new NotFoundException("Vim Instance with name " + vimName + " was not found in project: " + vdu.getProjectId());
+                    }
+
                     boolean found = false;
                     //First, check for image ids
                     if (imageDetails.containsKey("ids")) {
