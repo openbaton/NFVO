@@ -224,7 +224,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     for (String vimName : vdu.getVimInstanceName()) {
                         VimInstance vimInstance = null;
 
-                        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                        for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)){
                             if (vimName.equals(vi.getName()))
                                 vimInstance = vi;
                         }
@@ -246,7 +246,7 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                     for (String vimName : vdu.getVimInstanceName()) {
                         VimInstance vimInstance = null;
 
-                        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                        for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)){
                             if (vimName.equals(vi.getName()))
                                 vimInstance = vi;
                         }
@@ -272,13 +272,13 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
 
                     VimInstance vimInstance = null;
 
-                    for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())){
+                    for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)){
                         if (vimName.equals(vi.getName()))
                             vimInstance = vi;
                     }
 
                     if (vimInstance == null){
-                        throw new NotFoundException("Vim Instance with name " + vimName + " was not found in project: " + vdu.getProjectId());
+                        throw new NotFoundException("Vim Instance with name " + vimName + " was not found in project: " + projectId);
                     }
 
                     boolean found = false;
