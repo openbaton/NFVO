@@ -150,6 +150,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $('#addEditVDU').modal('show');
     };
 
+    $scope.showTab = function (value) {
+        return (value > 0);
+    };
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
