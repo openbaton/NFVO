@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location) {
 
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + 'ns-records/';
@@ -211,9 +211,26 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     }
 
 
-    $scope.logReq = {};
-    $scope.loadFullLog = function () {
-        http.postLog(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname)
+    $scope.$watch('logReq', function (newValue, oldValue) {
+        console.log(newValue);
+        console.log(oldValue);
+    });
+
+    $scope.vnfrName = '';
+    $scope.setVNFRName = function (vduId, hostanme) {
+        console.log(vduId);
+        console.log(hostanme);
+        $cookieStore.put('vnfrName', hostanme);
+        $scope.vnfrName = hostanme;
+        $location.path('nsrecords/' + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdus/' + vduId);
+        $location.replace();
+    };
+
+
+    $scope.loadFullLog = function (hostname) {
+        console.log($scope.logReq);
+        console.log(hostname);
+        http.postLog(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $cookieStore.get('vnfrName') + '/hostname/' + hostname)
             .success(function (response, status) {
                 $('.modal').modal('hide');
                 var html = "";
@@ -227,12 +244,14 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         });
     };
 
-    $scope.loadLog = function () {
-        //console.log($scope.logReq);
+    $scope.logReq = {};
+    $scope.loadLog = function (hostname) {
+        console.log($scope.logReq);
+        console.log(hostname);
         //"{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}"
         var lines;
         if (!angular.isUndefined($scope.logReq.lines)) {
-            http.post(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $scope.logReq.vnfrName + '/hostname/' + $scope.logReq.hostname, {'lines': $scope.logReq.lines})
+            http.post(urlLog + $routeParams.nsrecordId + '/vnfrecord/' + $cookieStore.get('vnfrName') + '/hostname/' + hostname, {'lines': $scope.logReq.lines})
                 .success(function (response, status) {
                     $('.modal').modal('hide');
                     var html = "";

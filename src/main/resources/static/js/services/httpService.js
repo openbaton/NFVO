@@ -30,8 +30,8 @@ angular.module('app')
             }
 
             customHeaders['project-id'] = $cookieStore.get('project').id;
-            console.log(customHeaders);
-            console.log($cookieStore.get('project'));
+            //console.log(customHeaders);
+            //console.log($cookieStore.get('project'));
 
             return $http({
                 url: url,
@@ -43,7 +43,7 @@ angular.module('app')
 
         http.post = function (url, data) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
-            console.log(data);
+            //console.log(data);
             $('#modalSend').modal('show');
             return $http({
                 url: url,
@@ -56,7 +56,7 @@ angular.module('app')
         http.postLog = function (url) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
             $('#modalSend').modal('show');
-            console.log(url);
+            //console.log(url);
             return $.ajax({
                 url: url,
                 type: 'post',
@@ -99,7 +99,7 @@ angular.module('app')
 
         http.delete = function (url) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
-            console.log(customHeaders);
+            //console.log(customHeaders);
             $('#modalSend').modal('show');
             return $http({
                 url: url,

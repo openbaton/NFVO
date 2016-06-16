@@ -10,6 +10,8 @@
         "ubuntu-14.04-server-cloudimg-amd64-disk1"
       ],
       "scale_in_out":2,
+      "lifecycle_event":[
+      ],
       "vnfc":[
         {
           "connection_point":[
