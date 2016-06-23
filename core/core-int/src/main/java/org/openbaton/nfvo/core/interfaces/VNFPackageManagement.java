@@ -82,4 +82,6 @@ public interface VNFPackageManagement {
     void delete(String id, String projectId) throws WrongAction;
 
     Script updateScript(Script script);
+
+    Iterable<VNFPackage> queryByProjectId(String projectId);
 }

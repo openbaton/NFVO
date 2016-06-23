@@ -429,4 +429,9 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     public Script updateScript(Script script) {
         return scriptRepository.save(script);
     }
+
+    @Override
+    public Iterable<VNFPackage> queryByProjectId(String projectId) {
+        return vnfPackageRepository.findByProjectId(projectId);
+    }
 }

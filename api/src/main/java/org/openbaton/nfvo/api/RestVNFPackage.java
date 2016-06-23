@@ -91,8 +91,8 @@ public class RestVNFPackage {
      * @return List<VNFPackage>: The list of VNFPackages available
      */
     @RequestMapping(method = RequestMethod.GET)
-    public Iterable<VNFPackage> findAll() {
-        return vnfPackageManagement.query();
+    public Iterable<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
+        return vnfPackageManagement.queryByProjectId(projectId);
     }
 
     @RequestMapping(value = "{id}/scripts/{scriptId}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
