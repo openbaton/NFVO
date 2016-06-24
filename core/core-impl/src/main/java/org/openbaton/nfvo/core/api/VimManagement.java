@@ -64,7 +64,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
     @Value("${nfvo.vim.active.check:false}")
-    private boolean vimCheck;
+    private boolean vimCheck;  // if set to true there will be a check if the stored Vims are still reachable every minute
 
 
     @Override
@@ -107,8 +107,11 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     @Override
     public void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException, IOException {
-        vimInstance.setActive(true);
-        this.checkVimInstances();
+        if (vimCheck && !vimInstance.getType().equals("test")) // just setting it to active without this check may lead to an ObjectOptimisticLockingFailureException
+            this.checkVimInstances();
+        else
+            vimInstance.setActive(true);
+
         if (!vimInstance.isActive())
             return;
         //Refreshing Images
@@ -326,11 +329,16 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
         return vimRepository.findByProjectId(projectId);
     }
 
+    /**
+     * Checks periodically every minute for the reachability of the VimInstances stored.
+     * If a VimInstance is not reachabe it will be set to inactive, otherwise to active.
+     *
+     * @throws IOException
+     */
     @Scheduled(fixedRate = 60000, initialDelay = 10000)
-    private void checkVimInstances() throws IOException {
+    private synchronized void checkVimInstances() throws IOException {
 
         if (vimCheck) {
-
             for (VimInstance vimInstance : vimRepository.findAll()) {
                 if (vimInstance.getType().equals("test"))
                     continue;
