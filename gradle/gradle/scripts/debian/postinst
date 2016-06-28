@@ -7,7 +7,6 @@ OPENBATON_BASE=/usr
 OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_EXE_FOLDER=${OPENBATON_BASE}/bin
 
-OPENBATON_PLUGINS_ALL_URL="http://get.openbaton.org/plugins/stable/"
 OPENBATON_PLUGINS_TEST_URL="http://get.openbaton.org/plugins/stable/test-plugin-0.5-SNAPSHOT.jar"
 OPENBATON_PLUGINS_OPENSTACK_URL="http://get.openbaton.org/plugins/1.0.2-liberty/openstack-plugin-1.0.2-liberty.jar"
 TMPFOLDER=$(mktemp -d)
@@ -163,8 +162,8 @@ getOpenStackVIMPlugin () {
 }
 
 getAllVIMPlugins () {
-    log_daemon_msg "Getting All VIM Plugins..."
-    wget -nH --cut-dirs 2 -r --no-parent  --reject "index.html*" "${OPENBATON_PLUGINS_ALL_URL}" -P "${TMPFOLDER}"
+    getTestVIMPlugin
+    getOpenStackVIMPlugin
 }
 
 downloadVIMDriverPlugins () {
