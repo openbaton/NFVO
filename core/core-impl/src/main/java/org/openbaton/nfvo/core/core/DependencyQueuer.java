@@ -71,6 +71,14 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
             queues.get(targetDependencyId).add(name);
     }
 
+    /**
+     * Check all dependencies that are waiting in in the map queues for the source vnfr to get instantiated.
+     * If the vnfr that got ready was the last source in a waiting dependency send a modify message to the target vnfr.
+     *
+     * @param vnfrSourceName
+     * @param nsrFather
+     * @throws NotFoundException
+     */
     @Override
     public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather) throws NotFoundException {
         List<String> dependencyIdToBeRemoved = new ArrayList<>();

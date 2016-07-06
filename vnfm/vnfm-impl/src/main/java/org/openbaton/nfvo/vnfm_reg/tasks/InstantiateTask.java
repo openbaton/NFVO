@@ -57,15 +57,16 @@ public class InstantiateTask extends AbstractTask {
 
     @Override
     protected NFVMessage doWork() throws Exception {
-        log.info("Instantiation is finished for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
+        log.info("Start INSTANTIATE task for vnfr: " + virtualNetworkFunctionRecord.getName() + " his nsr id father is:" + virtualNetworkFunctionRecord.getParent_ns_id());
         VirtualNetworkFunctionRecord existing = vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
         log.debug("VNFR arrived version= " + virtualNetworkFunctionRecord.getHb_version());
         if (existing != null)
             log.debug("VNFR existing version= " + existing.getHb_version());
-        saveVirtualNetworkFunctionRecord();
 
         dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
-
+        log.debug("Filled parameters of " + virtualNetworkFunctionRecord.getName());
+        saveVirtualNetworkFunctionRecord();
+        log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
         NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
             log.debug("Current Vnfrs in the database: " + vnfr.getName());
@@ -78,6 +79,7 @@ public class InstantiateTask extends AbstractTask {
         log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
 
         if (ordered != null && Boolean.parseBoolean(ordered)) {
+            log.debug("Ordered is enabled");
             if (dep == 0) {
                 virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
                 saveVirtualNetworkFunctionRecord();
@@ -97,6 +99,7 @@ public class InstantiateTask extends AbstractTask {
             }
         } else {
             if (dep == 0) {
+                log.debug("Send start for " + virtualNetworkFunctionRecord.getName());
                 sendStart(virtualNetworkFunctionRecord);
             }
         }

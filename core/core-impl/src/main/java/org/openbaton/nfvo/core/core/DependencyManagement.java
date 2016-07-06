@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.core;
 
+import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.*;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -61,8 +63,21 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
     @Autowired
     private VNFRDependencyRepository vnfrDependencyRepository;
 
+    /**
+     * Check whether the virtualNetworkFunctionRecord is a target in a dependency.
+     * If it is then check if there are sources that are not yet initialized for this dependency.
+     * If that is the case then add the dependency to the map of waiting dependencies in the DependencyQueuer.
+     * Otherwise send a modify message for this vnfr to the vnfm.
+     *
+     * @param virtualNetworkFunctionRecord
+     * @return
+     * @throws NoResultException
+     * @throws NotFoundException
+     * @throws InterruptedException
+     */
     @Override
     public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NoResultException, NotFoundException, InterruptedException {
+        log.debug("Provision dependencies for " + virtualNetworkFunctionRecord.getName());
         NetworkServiceRecord nsr = nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
         int dep = 0;
         if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
@@ -72,12 +87,12 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                 if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
                     dep++;
                     //waiting for them to finish
-                    log.debug("found dependency: " + vnfRecordDependency);
                     Set<String> notInitIds = getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
                     if (notInitIds.size() > 0) {
                         dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
                         log.debug("Found " + notInitIds.size() + " for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
                     } else {
+                        log.debug("All sources are initialized, send modify for " + virtualNetworkFunctionRecord.getName() + " with dependency " + vnfRecordDependency);
                         //send sendMessageToVNFR to VNFR
                         OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
                         orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
@@ -86,7 +101,8 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
                     return dep;
                 }
             }
-            log.debug("Found 0 for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
+            log.debug(virtualNetworkFunctionRecord.getName() + " is no target of a dependency");
+            log.debug("Found 0 dependencies for VNFR " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) ");
             return 0;
         } else return -1;
     }
@@ -100,78 +116,99 @@ public class DependencyManagement implements org.openbaton.nfvo.core.interfaces.
 
         for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
 
-            DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
-            if (dp != null) {
-                for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
-                    for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
-                        if (cp.getConfKey().equals(keyValueDep.getKey())) {
-                            log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
-                            keyValueDep.setValue(cp.getValue());
-                            break;
-                        }
-                    }
+            // necessary if the vnfRecordDependency changed before saving
+            boolean savedDependency = false;
+            int attempt = 0;  // to avoid infinite loops
+            while (!savedDependency && attempt < 10) {
+                attempt++;
+                log.trace("Fill parameters attempt number " + attempt);
 
-                    for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()) {
-                        if (cp.getConfKey().equals(keyValueDep.getKey())) {
-                            log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
-                            keyValueDep.setValue(cp.getValue());
-                            break;
-                        }
-                    }
-                }
+                vnfRecordDependency = vnfrDependencyRepository.findFirstById(vnfRecordDependency.getId());
 
-            }
-
-            if (!vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
-                boolean set = false;
-                VNFCDependencyParameters vnfcDependencyParameters = vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());;
-
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
-                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-
-                        log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
-                        log.debug("VNFRecordDependency is " + vnfRecordDependency);
-                        log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
-
-                        if (vnfcDependencyParameters == null) {
-                            vnfcDependencyParameters = new VNFCDependencyParameters();
-                            vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
-                        }
-                        Set<String> keys = dp.getParameters().keySet();
-
-                        log.debug("Parameters requested are: " );
-                        for (String s : keys)
-                            log.debug("\t" + s);
-
-                        if (vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()) == null) {
-                            DependencyParameters dependencyParameters = new DependencyParameters();
-                            dependencyParameters.setParameters(new HashMap<String, String>());
-                            vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
-                        }
-                        for (Ip ip : vnfcInstance.getIps()) {
-                            if (keys.contains(ip.getNetName())) {
-                                log.debug("Adding " + ip.getNetName() + "=" + ip.getIp() + ". VNFCInstance ID: " + vnfcInstance.getId());
-                                vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName(), ip.getIp());
+                DependencyParameters dp = vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
+                if (dp != null) {
+                    for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
+                        for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
+                            if (cp.getConfKey().equals(keyValueDep.getKey())) {
+                                log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
+                                keyValueDep.setValue(cp.getValue());
+                                break;
                             }
                         }
 
-                        for (Ip ip : vnfcInstance.getFloatingIps()) {
-                            if (keys.contains(ip.getNetName() + "_floatingIp")) {
-                                log.debug("Adding " + ip.getNetName() + "=" + ip.getIp() + ". VNFCInstance ID: " + vnfcInstance.getId());
-                                vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
+                        for (ConfigurationParameter cp : virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()) {
+                            if (cp.getConfKey().equals(keyValueDep.getKey())) {
+                                log.debug("Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
+                                keyValueDep.setValue(cp.getValue());
+                                break;
                             }
                         }
-                        if (keys.contains("hostname")) {
-                            vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put("hostname", vnfcInstance.getHostname());
-                        }
                     }
-                if (vnfcDependencyParameters != null) {
-                    log.debug("Adding vnfcDependencyParameters: " + vnfcDependencyParameters);
-                    vnfRecordDependency.getVnfcParameters().put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
+
+                }
+
+                if (!vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
+                    boolean set = false;
+                    VNFCDependencyParameters vnfcDependencyParameters = vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());
+                    ;
+
+                    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
+                        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+
+                            log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
+                            log.debug("VNFRecordDependency is " + vnfRecordDependency);
+                            log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
+
+                            if (vnfcDependencyParameters == null) {
+                                vnfcDependencyParameters = new VNFCDependencyParameters();
+                                vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
+                            }
+                            Set<String> keys = dp.getParameters().keySet();
+
+                            log.debug("Parameters requested are: ");
+                            for (String s : keys)
+                                log.debug("\t" + s);
+
+                            if (vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()) == null) {
+                                DependencyParameters dependencyParameters = new DependencyParameters();
+                                dependencyParameters.setParameters(new HashMap<String, String>());
+                                vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
+                            }
+                            for (Ip ip : vnfcInstance.getIps()) {
+                                if (keys.contains(ip.getNetName())) {
+                                    log.debug("Adding " + ip.getNetName() + "=" + ip.getIp() + ". VNFCInstance ID: " + vnfcInstance.getId());
+                                    vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName(), ip.getIp());
+                                }
+                            }
+
+                            for (Ip ip : vnfcInstance.getFloatingIps()) {
+                                if (keys.contains(ip.getNetName() + "_floatingIp")) {
+                                    log.debug("Adding " + ip.getNetName() + "=" + ip.getIp() + ". VNFCInstance ID: " + vnfcInstance.getId());
+                                    vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
+                                }
+                            }
+                            if (keys.contains("hostname")) {
+                                vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()).getParameters().put("hostname", vnfcInstance.getHostname());
+                            }
+                        }
+                    if (vnfcDependencyParameters != null) {
+                        log.debug("Adding vnfcDependencyParameters: " + vnfcDependencyParameters);
+                        vnfRecordDependency.getVnfcParameters().put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
+                    }
+                }
+
+                try {
+                    vnfrDependencyRepository.save(vnfRecordDependency);
+                    log.debug("Saved the VNFRDependency with id " + vnfRecordDependency.getId());
+                    savedDependency = true;
+                } catch (CannotAcquireLockException e) {
+                    log.debug("A CannotAcquireLockException occured while saving a VNFRecordDependency. Will start a new attempt to save it.");
+                } catch (StaleObjectStateException se) {
+                    log.debug("A StaleObjectStateException occured while saving a VNFRecordDependency. Will start a new attempt to save it.");
+                } catch (Exception ex) {
+                    log.debug("An Exception (" + ex.getClass().getSimpleName() + ") occured while saving a VNFRecordDependency. Will start a new attempt to save it.");
                 }
             }
-
-            vnfrDependencyRepository.save(vnfRecordDependency);
             log.info("Filled parameter for depedendency target = " + vnfRecordDependency.getTarget() + " with parameters: " + vnfRecordDependency.getParameters() + " and with vnfcParameters: " + vnfRecordDependency.getVnfcParameters());
         }
 

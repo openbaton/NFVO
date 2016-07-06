@@ -139,6 +139,8 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             EventFinishEvent eventFinishEvent = new EventFinishEvent();
             eventFinishEvent.setAction(Action.ERROR);
             virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+            saveVirtualNetworkFunctionRecord();
+            log.info("Saved the VNFR " + virtualNetworkFunctionRecord.getName() + " with status error after an exception");
             eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             EventFinishNFVO event = new EventFinishNFVO(this);
             event.setEventNFVO(eventFinishEvent);
