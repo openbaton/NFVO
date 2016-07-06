@@ -84,7 +84,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String endpoint;
     private String vnfPackageLocation;
     @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> requires;
+    private Map<String, Set<String>> requires;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> provides;
     @JsonIgnore
@@ -129,11 +129,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 '}';
     }
 
-    public Map<String, String> getRequires() {
+    public Map<String, Set<String>> getRequires() {
         return requires;
     }
 
-    public void setRequires(Map<String, String> requires) {
+    public void setRequires(Map<String, Set<String>> requires) {
         this.requires = requires;
     }
 
