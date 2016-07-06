@@ -24,6 +24,7 @@ import org.openbaton.catalogue.nfvo.Configuration;
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -83,7 +84,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     private String endpoint;
     private String vnfPackageLocation;
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> requires;
+    private Map<String, String> requires;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> provides;
     @JsonIgnore
@@ -128,11 +129,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 '}';
     }
 
-    public Set<String> getRequires() {
+    public Map<String, String> getRequires() {
         return requires;
     }
 
-    public void setRequires(Set<String> requires) {
+    public void setRequires(Map<String, String> requires) {
         this.requires = requires;
     }
 
