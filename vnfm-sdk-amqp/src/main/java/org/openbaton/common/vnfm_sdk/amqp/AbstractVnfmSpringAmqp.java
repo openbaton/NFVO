@@ -24,13 +24,16 @@ import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created by lto on 28/05/15.
@@ -38,7 +41,11 @@ import java.io.IOException;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
+@ConfigurationProperties
 public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements ApplicationListener<ContextClosedEvent> {
+
+    @Value("${spring.rabbitmq.host}")
+    private String rabbitHost;
 
     @Autowired
     private Gson gson;
@@ -67,7 +74,8 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements App
         } catch (IllegalStateException e) {
             log.warn("Got exception while unregistering trying to do it manually");
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("localhost");
+
+            factory.setHost(rabbitHost);
             Connection connection = null;
             try {
                 connection = factory.newConnection();
