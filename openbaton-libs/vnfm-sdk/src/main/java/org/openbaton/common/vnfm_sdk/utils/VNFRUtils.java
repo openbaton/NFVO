@@ -69,11 +69,13 @@ public class VNFRUtils {
         virtualNetworkFunctionRecord.setRequires(requires);
 
         if (vnfd.getRequires() != null) {
-            for (String key : vnfd.getRequires()) {
-                ConfigurationParameter configurationParameter = new ConfigurationParameter();
-                log.debug("Adding " + key + " to requires");
-                configurationParameter.setConfKey(key);
-                virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
+            for (String vnfdName : vnfd.getRequires().keySet()) {
+                for (String key : vnfd.getRequires().get(vnfdName).getParameters()) {
+                    ConfigurationParameter configurationParameter = new ConfigurationParameter();
+                    log.debug("Adding " + key + " to requires");
+                    configurationParameter.setConfKey(key);
+                    virtualNetworkFunctionRecord.getRequires().getConfigurationParameters().add(configurationParameter);
+                }
             }
         }
 
