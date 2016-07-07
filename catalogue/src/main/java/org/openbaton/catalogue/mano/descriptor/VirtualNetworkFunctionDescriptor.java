@@ -20,10 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.RequiresParameters;
 
 import javax.persistence.*;
 import javax.xml.bind.TypeConstraintException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -82,8 +84,8 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     @JsonIgnore
     private String endpoint;
     private String vnfPackageLocation;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> requires;
+    @javax.persistence.OneToMany(cascade = CascadeType.ALL)
+    private Map<String, RequiresParameters> requires;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> provides;
     @JsonIgnore
@@ -128,11 +130,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
                 '}';
     }
 
-    public Set<String> getRequires() {
+    public Map<String, RequiresParameters> getRequires() {
         return requires;
     }
 
-    public void setRequires(Set<String> requires) {
+    public void setRequires(Map<String, RequiresParameters> requires) {
         this.requires = requires;
     }
 
