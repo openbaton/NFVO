@@ -68,7 +68,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
    */
   @OneToMany(
     cascade = {
-        /*CascadeType.PERSIST, CascadeType.MERGE*/
+      /*CascadeType.PERSIST, CascadeType.MERGE*/
       CascadeType.ALL
     },
     fetch = FetchType.EAGER

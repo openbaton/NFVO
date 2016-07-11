@@ -70,7 +70,7 @@ public class NetworkServiceRecord implements Serializable {
 
   @OneToMany(
     cascade = {
-        /*CascadeType.PERSIST, CascadeType.MERGE*/
+      /*CascadeType.PERSIST, CascadeType.MERGE*/
       CascadeType.ALL
     },
     fetch = FetchType.EAGER
@@ -79,7 +79,7 @@ public class NetworkServiceRecord implements Serializable {
 
   @OneToMany(
     cascade = {
-        /*CascadeType.PERSIST, CascadeType.MERGE*/
+      /*CascadeType.PERSIST, CascadeType.MERGE*/
       CascadeType.ALL
     },
     fetch = FetchType.EAGER
