@@ -23,13 +23,13 @@ import java.io.Serializable;
  * Created by mob on 14.09.15.
  */
 public abstract class NFVMessage implements Serializable {
-    public Action getAction() {
-        return action;
-    }
+  public Action getAction() {
+    return action;
+  }
 
-    public void setAction(Action action) {
-        this.action = action;
-    }
+  public void setAction(Action action) {
+    this.action = action;
+  }
 
-    protected Action action;
+  protected Action action;
 }

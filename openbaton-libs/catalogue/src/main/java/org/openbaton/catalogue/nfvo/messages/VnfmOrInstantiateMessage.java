@@ -24,28 +24,25 @@ import org.openbaton.catalogue.nfvo.Action;
  */
 public class VnfmOrInstantiateMessage extends VnfmOrMessage {
 
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
-    public VnfmOrInstantiateMessage(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-        this.action = Action.INSTANTIATE;
-    }
+  public VnfmOrInstantiateMessage(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+    this.action = Action.INSTANTIATE;
+  }
 
-    public VnfmOrInstantiateMessage() {
-    }
+  public VnfmOrInstantiateMessage() {}
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-    }
+  public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrInstantiateMessage{" +
-                "vnfr=" + virtualNetworkFunctionRecord +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "VnfmOrInstantiateMessage{" + "vnfr=" + virtualNetworkFunctionRecord + '}';
+  }
 }

@@ -28,62 +28,64 @@ import java.io.Serializable;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class ConnectionPoint implements Serializable{
+public class ConnectionPoint implements Serializable {
 
-    /*ID of the Connection Point.*/
-    @Id
-    protected String id;
-    @Version
-    protected int version = 0;
+  /*ID of the Connection Point.*/
+  @Id protected String id;
+  @Version protected int version = 0;
 
-    /**
-     *
-     * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC address or the
-     * endpoint of an IP VPN enabling network connectivity.
-     * TODO think about what type must be
-     *
-     * */
-    protected String type;
+  /**
+   *
+   * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC
+   * address or the endpoint of an IP VPN enabling network connectivity. TODO think about what type
+   * must be
+   *
+   * */
+  protected String type;
 
-    public ConnectionPoint() {
-    }
+  public ConnectionPoint() {}
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
-    public String getType() {
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-        return type;
-    }
+  public String getType() {
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    return type;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    @Override
-    public String toString() {
-        return "ConnectionPoint{" +
-                "id='" + id + '\'' +
-                ", hb_version='" + version +
-                ", type='" + type + '\'' +
-                '}';
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
+  @Override
+  public String toString() {
+    return "ConnectionPoint{"
+        + "id='"
+        + id
+        + '\''
+        + ", hb_version='"
+        + version
+        + ", type='"
+        + type
+        + '\''
+        + '}';
+  }
 }

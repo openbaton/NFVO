@@ -28,19 +28,17 @@ import java.util.Set;
 @Entity
 public class NetworkServiceDeploymentFlavour extends DeploymentFlavour {
 
-    /*Represents the characteristics of a constituent flavour element.*/
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<CostituentVNF> constituent_vnf;
+  /*Represents the characteristics of a constituent flavour element.*/
+  @OneToMany(cascade = CascadeType.ALL)
+  private Set<CostituentVNF> constituent_vnf;
 
-    public NetworkServiceDeploymentFlavour() {
-    }
+  public NetworkServiceDeploymentFlavour() {}
 
-    public Set<CostituentVNF> getConstituent_vnf() {
-        return constituent_vnf;
-    }
+  public Set<CostituentVNF> getConstituent_vnf() {
+    return constituent_vnf;
+  }
 
-    public void setConstituent_vnf(Set<CostituentVNF> constituent_vnf) {
-        this.constituent_vnf = constituent_vnf;
-    }
-
+  public void setConstituent_vnf(Set<CostituentVNF> constituent_vnf) {
+    this.constituent_vnf = constituent_vnf;
+  }
 }

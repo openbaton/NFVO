@@ -12,61 +12,68 @@ import java.util.List;
 @Entity
 public class VNFAlarm extends Alarm {
 
-    private String vnfrId;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> vnfcIds;
-    private String vimName;
+  private String vnfrId;
 
-    public VNFAlarm(){
-        this.alarmType= AlarmType.VIRTUAL_NETWORK_FUNCTION;
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> vnfcIds;
 
-    @Override
-    public AlarmType getAlarmType() {
-        return alarmType;
-    }
+  private String vimName;
 
-    @Override
-    public void setAlarmType(AlarmType alarmType) {
-        this.alarmType=alarmType;
-    }
+  public VNFAlarm() {
+    this.alarmType = AlarmType.VIRTUAL_NETWORK_FUNCTION;
+  }
 
-    public String getVnfrId() {
-        return vnfrId;
-    }
+  @Override
+  public AlarmType getAlarmType() {
+    return alarmType;
+  }
 
-    public void setVnfrId(String vnfrId) {
-        this.vnfrId = vnfrId;
-    }
+  @Override
+  public void setAlarmType(AlarmType alarmType) {
+    this.alarmType = alarmType;
+  }
 
-    public List<String> getVnfcIds() {
-        return vnfcIds;
-    }
+  public String getVnfrId() {
+    return vnfrId;
+  }
 
-    public void addVnfcId(String vnfcId){
-        if(vnfcIds==null)
-            vnfcIds=new ArrayList<>();
-        vnfcIds.add(vnfcId);
-    }
+  public void setVnfrId(String vnfrId) {
+    this.vnfrId = vnfrId;
+  }
 
-    public void setVnfcIds(List<String> vnfcIds) {
-        this.vnfcIds = vnfcIds;
-    }
+  public List<String> getVnfcIds() {
+    return vnfcIds;
+  }
 
-    public String getVimName() {
-        return vimName;
-    }
+  public void addVnfcId(String vnfcId) {
+    if (vnfcIds == null) vnfcIds = new ArrayList<>();
+    vnfcIds.add(vnfcId);
+  }
 
-    public void setVimName(String vimName) {
-        this.vimName = vimName;
-    }
+  public void setVnfcIds(List<String> vnfcIds) {
+    this.vnfcIds = vnfcIds;
+  }
 
-    @Override
-    public String toString() {
-        return "VNFAlarm{" +
-                "vnfrId='" + vnfrId + '\'' +
-                ", vnfcIds=" + vnfcIds +
-                ", vimName='" + vimName + '\'' +
-                "} " + super.toString();
-    }
+  public String getVimName() {
+    return vimName;
+  }
+
+  public void setVimName(String vimName) {
+    this.vimName = vimName;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFAlarm{"
+        + "vnfrId='"
+        + vnfrId
+        + '\''
+        + ", vnfcIds="
+        + vnfcIds
+        + ", vimName='"
+        + vimName
+        + '\''
+        + "} "
+        + super.toString();
+  }
 }

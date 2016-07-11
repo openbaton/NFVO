@@ -20,10 +20,10 @@ import org.openbaton.plugin.interfaces.Plugin;
 /**
  * Created by lto on 15/10/15.
  */
-public abstract class MonitoringPlugin extends Plugin implements VirtualisedResourceFaultManagement,VirtualisedResourcesPerformanceManagement {
+public abstract class MonitoringPlugin extends Plugin
+    implements VirtualisedResourceFaultManagement, VirtualisedResourcesPerformanceManagement {
 
-    protected MonitoringPlugin() {
-        super();
-    }
-
+  protected MonitoringPlugin() {
+    super();
+  }
 }

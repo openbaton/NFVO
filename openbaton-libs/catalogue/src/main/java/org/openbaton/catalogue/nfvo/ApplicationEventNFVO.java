@@ -25,38 +25,39 @@ import java.io.Serializable;
  * The internal Event containing the action that triggered this and the payload of the event
  */
 public class ApplicationEventNFVO {
-    private Action action;
-    private Serializable payload;
+  private Action action;
+  private Serializable payload;
 
-    public ApplicationEventNFVO(Action action, Serializable payload) {
-        this.action = action;
-        this.payload = payload;
-    }
+  public ApplicationEventNFVO(Action action, Serializable payload) {
+    this.action = action;
+    this.payload = payload;
+  }
 
-    public ApplicationEventNFVO() {
-    }
+  public ApplicationEventNFVO() {}
 
-    public Serializable getPayload() {
-        return payload;
-    }
+  public Serializable getPayload() {
+    return payload;
+  }
 
-    public void setPayload(Serializable payload) {
-        this.payload = payload;
-    }
+  public void setPayload(Serializable payload) {
+    this.payload = payload;
+  }
 
-    public Action getAction() {
-        return action;
-    }
+  public Action getAction() {
+    return action;
+  }
 
-    public void setAction(Action action) {
-        this.action = action;
-    }
+  public void setAction(Action action) {
+    this.action = action;
+  }
 
-    @Override
-    public String toString() {
-        return "ApplicationEventNFVO{" +
-                "action=" + action +
-                ", payload=" + payload.getClass().getSimpleName() +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "ApplicationEventNFVO{"
+        + "action="
+        + action
+        + ", payload="
+        + payload.getClass().getSimpleName()
+        + '}';
+  }
 }

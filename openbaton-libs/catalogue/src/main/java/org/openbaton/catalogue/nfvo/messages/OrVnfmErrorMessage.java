@@ -24,42 +24,46 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
  */
 public class OrVnfmErrorMessage extends OrVnfmMessage {
 
-    private VirtualNetworkFunctionRecord vnfr;
-    private String message;
+  private VirtualNetworkFunctionRecord vnfr;
+  private String message;
 
-    public OrVnfmErrorMessage() {
-        this.action = Action.ERROR;
-    }
+  public OrVnfmErrorMessage() {
+    this.action = Action.ERROR;
+  }
 
-    public OrVnfmErrorMessage(VirtualNetworkFunctionRecord vnfr, String message) {
-        this.vnfr = vnfr;
-        this.message = message;
-        this.action = Action.ERROR;
-    }
+  public OrVnfmErrorMessage(VirtualNetworkFunctionRecord vnfr, String message) {
+    this.vnfr = vnfr;
+    this.message = message;
+    this.action = Action.ERROR;
+  }
 
+  public String getMessage() {
+    return message;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public VirtualNetworkFunctionRecord getVnfr() {
+    return vnfr;
+  }
 
-    public VirtualNetworkFunctionRecord getVnfr() {
-        return vnfr;
-    }
+  public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
+    this.vnfr = vnfr;
+  }
 
-    public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
-        this.vnfr = vnfr;
-    }
-
-    @Override
-    public String toString() {
-        return "OrVnfmErrorMessage{" +
-                "action='" + Action.ERROR+ '\'' +
-                "message='" + message + '\'' +
-                ", vnfr=" + vnfr +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "OrVnfmErrorMessage{"
+        + "action='"
+        + Action.ERROR
+        + '\''
+        + "message='"
+        + message
+        + '\''
+        + ", vnfr="
+        + vnfr
+        + '}';
+  }
 }

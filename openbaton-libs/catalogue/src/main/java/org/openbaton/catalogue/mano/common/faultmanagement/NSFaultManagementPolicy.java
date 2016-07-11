@@ -22,17 +22,16 @@ import javax.persistence.Entity;
  */
 @Entity
 public class NSFaultManagementPolicy extends FaultManagementPolicy {
-    private String vnfSelector;
-    //private FaultManagementVNFAction;
+  private String vnfSelector;
+  //private FaultManagementVNFAction;
 
-    public NSFaultManagementPolicy(){}
+  public NSFaultManagementPolicy() {}
 
-    public String getVnfSelector() {
-        return vnfSelector;
-    }
+  public String getVnfSelector() {
+    return vnfSelector;
+  }
 
-    public void setVnfSelector(String vnfSelector) {
-        this.vnfSelector = vnfSelector;
-    }
-
+  public void setVnfSelector(String vnfSelector) {
+    this.vnfSelector = vnfSelector;
+  }
 }

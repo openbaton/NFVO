@@ -26,99 +26,109 @@ import java.io.Serializable;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Endpoint implements Serializable {
-    @Id
-    protected String id;
-    @Version
-    protected int version = 0;
+  @Id protected String id;
+  @Version protected int version = 0;
 
-    protected String type;
-    protected EndpointType endpointType;
-    protected String endpoint;
-    protected String description;
-    protected boolean enabled;
-    protected boolean active;
+  protected String type;
+  protected EndpointType endpointType;
+  protected String endpoint;
+  protected String description;
+  protected boolean enabled;
+  protected boolean active;
 
-    public boolean isActive() {
-        return active;
-    }
+  public boolean isActive() {
+    return active;
+  }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
-    @Override
-    public String toString() {
-        return "Endpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", type='" + type + '\'' +
-                ", endpointType=" + endpointType +
-                ", endpoint='" + endpoint + '\'' +
-                ", description='" + description + '\'' +
-                ", enabled=" + enabled +
-                ", active=" + active +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Endpoint{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", type='"
+        + type
+        + '\''
+        + ", endpointType="
+        + endpointType
+        + ", endpoint='"
+        + endpoint
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", active="
+        + active
+        + '}';
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public EndpointType getEndpointType() {
-        return endpointType;
-    }
+  public EndpointType getEndpointType() {
+    return endpointType;
+  }
 
-    public void setEndpointType(EndpointType endpointType) {
-        this.endpointType = endpointType;
-    }
+  public void setEndpointType(EndpointType endpointType) {
+    this.endpointType = endpointType;
+  }
 
-    public String getId() {
+  public String getId() {
 
-        return id;
-    }
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
+  public String getEndpoint() {
+    return endpoint;
+  }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
 }

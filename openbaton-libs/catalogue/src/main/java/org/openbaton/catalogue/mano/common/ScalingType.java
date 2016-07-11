@@ -27,7 +27,7 @@ import java.io.Serializable;
  * Created by mpa on 15/12/15.
  */
 public enum ScalingType {
-	SINGLE,
-	VOTED,
-	WEIGHTED
+  SINGLE,
+  VOTED,
+  WEIGHTED
 }

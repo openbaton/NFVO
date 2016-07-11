@@ -5,5 +5,5 @@ package org.openbaton.common.vnfm_sdk.interfaces;
  */
 public interface LogDispatcher {
 
-    String sendLogs(String request);
+  String sendLogs(String request);
 }

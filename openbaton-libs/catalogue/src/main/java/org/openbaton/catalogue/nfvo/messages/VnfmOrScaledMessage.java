@@ -25,39 +25,39 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
  */
 public class VnfmOrScaledMessage extends VnfmOrMessage {
 
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    private VNFCInstance vnfcInstance;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VNFCInstance vnfcInstance;
 
-    public VnfmOrScaledMessage(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-        this.action = Action.SCALED;
-    }
+  public VnfmOrScaledMessage(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+    this.action = Action.SCALED;
+  }
 
-    public VnfmOrScaledMessage() {
-    }
+  public VnfmOrScaledMessage() {}
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-    }
+  public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrScaledMessage{" +
-                "virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", vnfcInstance=" + vnfcInstance +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "VnfmOrScaledMessage{"
+        + "virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", vnfcInstance="
+        + vnfcInstance
+        + '}';
+  }
 
-    public VNFCInstance getVnfcInstance() {
-        return vnfcInstance;
-    }
+  public VNFCInstance getVnfcInstance() {
+    return vnfcInstance;
+  }
 
-    public void setVnfcInstance(VNFCInstance vnfcInstance) {
-        this.vnfcInstance = vnfcInstance;
-    }
-
+  public void setVnfcInstance(VNFCInstance vnfcInstance) {
+    this.vnfcInstance = vnfcInstance;
+  }
 }

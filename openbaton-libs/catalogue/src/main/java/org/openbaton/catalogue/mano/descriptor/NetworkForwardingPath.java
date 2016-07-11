@@ -29,69 +29,70 @@ import java.util.Map;
 @Entity
 public class NetworkForwardingPath implements Serializable {
 
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    /**
-     * A policy or rule to apply to the NFP
-     */
-    @OneToOne(cascade = CascadeType.ALL)
-    private Policy policy;
-    /**
-     * A tuple containing a reference to a Connection Point in the NFP and the position in the path
-     */
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> connection;
+  @Id private String id;
+  @Version private int version = 0;
+  /**
+   * A policy or rule to apply to the NFP
+   */
+  @OneToOne(cascade = CascadeType.ALL)
+  private Policy policy;
+  /**
+   * A tuple containing a reference to a Connection Point in the NFP and the position in the path
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> connection;
 
-    public NetworkForwardingPath() {
-    }
+  public NetworkForwardingPath() {}
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public Policy getPolicy() {
-        return policy;
-    }
+  public Policy getPolicy() {
+    return policy;
+  }
 
-    public void setPolicy(Policy policy) {
-        this.policy = policy;
-    }
+  public void setPolicy(Policy policy) {
+    this.policy = policy;
+  }
 
-    public Map<String, String> getConnection() {
-        return connection;
-    }
+  public Map<String, String> getConnection() {
+    return connection;
+  }
 
-    public void setConnection(Map<String, String> connection) {
-        this.connection = connection;
-    }
+  public void setConnection(Map<String, String> connection) {
+    this.connection = connection;
+  }
 
-
-    @Override
-    public String toString() {
-        return "NetworkForwardingPath{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", policy=" + policy +
-                ", connection=" + connection +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "NetworkForwardingPath{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", policy="
+        + policy
+        + ", connection="
+        + connection
+        + '}';
+  }
 }

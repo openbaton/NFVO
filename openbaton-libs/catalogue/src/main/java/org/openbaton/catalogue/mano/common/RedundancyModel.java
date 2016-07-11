@@ -21,10 +21,9 @@ package org.openbaton.catalogue.mano.common;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 /**
- * Represents the redundancy of instances, for example, "active" or "standby".
- * TODO to be increased
+ * Represents the redundancy of instances, for example, "active" or "standby". TODO to be increased
  * */
 public enum RedundancyModel {
-    ACTIVE,
-    STANDBY
+  ACTIVE,
+  STANDBY
 }
