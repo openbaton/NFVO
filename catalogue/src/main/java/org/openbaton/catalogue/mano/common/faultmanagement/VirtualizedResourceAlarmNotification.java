@@ -23,28 +23,25 @@ import org.openbaton.catalogue.mano.common.monitoring.VRAlarm;
  * Created by mob on 27.10.15.
  */
 public class VirtualizedResourceAlarmNotification extends AbstractVirtualizedResourceAlarm {
-    private VRAlarm vrAlarm;
+  private VRAlarm vrAlarm;
 
-    public VirtualizedResourceAlarmNotification(){
+  public VirtualizedResourceAlarmNotification() {}
 
-    }
-    public VirtualizedResourceAlarmNotification(String triggerId, VRAlarm vrAlarm) {
-        super(triggerId);
-        this.vrAlarm=vrAlarm;
-    }
+  public VirtualizedResourceAlarmNotification(String triggerId, VRAlarm vrAlarm) {
+    super(triggerId);
+    this.vrAlarm = vrAlarm;
+  }
 
-    public Alarm getAlarm() {
-        return vrAlarm;
-    }
+  public Alarm getAlarm() {
+    return vrAlarm;
+  }
 
-    public void setAlarm(VRAlarm vrAlarm) {
-        this.vrAlarm = vrAlarm;
-    }
+  public void setAlarm(VRAlarm vrAlarm) {
+    this.vrAlarm = vrAlarm;
+  }
 
-    @Override
-    public String toString() {
-        return "VirtualizedResourceAlarmNotification{" +
-                "vrAlarm=" + vrAlarm +
-                "} " + super.toString();
-    }
+  @Override
+  public String toString() {
+    return "VirtualizedResourceAlarmNotification{" + "vrAlarm=" + vrAlarm + "} " + super.toString();
+  }
 }

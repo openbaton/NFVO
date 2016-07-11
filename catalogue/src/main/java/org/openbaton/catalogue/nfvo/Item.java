@@ -27,94 +27,104 @@ import java.io.Serializable;
  * Created by lto on 05/08/15.
  */
 @Entity
-public class Item implements Serializable{
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+public class Item implements Serializable {
+  @Id private String id;
+  @Version private int version = 0;
 
-    private String metric;
+  private String metric;
 
-    private String hostId;
+  private String hostId;
 
-    private String hostname;
-    private String lastValue;
-    private String value;
+  private String hostname;
+  private String lastValue;
+  private String value;
 
-    public Item() {
-    }
+  public Item() {}
 
-    @Override
-    public String toString() {
-        return "Item{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", metric='" + metric + '\'' +
-                ", hostId='" + hostId + '\'' +
-                ", hostname='" + hostname + '\'' +
-                ", lastValue='" + lastValue + '\'' +
-                ", value='" + value + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Item{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", metric='"
+        + metric
+        + '\''
+        + ", hostId='"
+        + hostId
+        + '\''
+        + ", hostname='"
+        + hostname
+        + '\''
+        + ", lastValue='"
+        + lastValue
+        + '\''
+        + ", value='"
+        + value
+        + '\''
+        + '}';
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getMetric() {
-        return metric;
-    }
+  public String getMetric() {
+    return metric;
+  }
 
-    public void setMetric(String metric) {
-        this.metric = metric;
-    }
+  public void setMetric(String metric) {
+    this.metric = metric;
+  }
 
-    public String getHostId() {
-        return hostId;
-    }
+  public String getHostId() {
+    return hostId;
+  }
 
-    public void setHostId(String hostId) {
-        this.hostId = hostId;
-    }
+  public void setHostId(String hostId) {
+    this.hostId = hostId;
+  }
 
-    public String getHostname() {
-        return hostname;
-    }
+  public String getHostname() {
+    return hostname;
+  }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
+  }
 
-    public String getLastValue() {
-        return lastValue;
-    }
+  public String getLastValue() {
+    return lastValue;
+  }
 
-    public void setLastValue(String lastValue) {
-        this.lastValue = lastValue;
-    }
+  public void setLastValue(String lastValue) {
+    this.lastValue = lastValue;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 }

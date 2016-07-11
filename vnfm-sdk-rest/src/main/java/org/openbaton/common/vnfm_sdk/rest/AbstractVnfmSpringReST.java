@@ -43,56 +43,59 @@ import javax.annotation.PreDestroy;
  */
 @SpringBootApplication
 @RestController
-
 public abstract class AbstractVnfmSpringReST extends AbstractVnfm {
 
-    private VnfmRestHelper vnfmRestHelper;
-    @Autowired
-    private ConfigurableApplicationContext context;
+  private VnfmRestHelper vnfmRestHelper;
+  @Autowired private ConfigurableApplicationContext context;
 
-    @Autowired
-    private Gson gson;
+  @Autowired private Gson gson;
 
-    @Bean
-    Gson gson() {
-        return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage()).create();
+  @Bean
+  Gson gson() {
+    return new GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+        .create();
+  }
+
+  @Override
+  protected void setup() {
+    this.vnfmRestHelper = (VnfmRestHelper) context.getBean("vnfmRestHelper");
+    this.vnfmHelper = vnfmRestHelper;
+    super.setup();
+  }
+
+  @Override
+  @PreDestroy
+  protected void unregister() {
+    vnfmRestHelper.unregister(vnfmManagerEndpoint);
+  }
+
+  @Override
+  protected void register() {
+    vnfmRestHelper.register(vnfmManagerEndpoint);
+  }
+
+  @RequestMapping(
+    value = "/core-rest-actions",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
+    log.debug("Received: " + jsonNfvMessage);
+
+    NFVMessage nfvMessage = gson.fromJson(jsonNfvMessage, NFVMessage.class);
+
+    try {
+      this.onAction(nfvMessage);
+    } catch (NotFoundException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (BadFormatException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
     }
-
-
-    @Override
-    protected void setup() {
-        this.vnfmRestHelper = (VnfmRestHelper) context.getBean("vnfmRestHelper");
-        this.vnfmHelper = vnfmRestHelper;
-        super.setup();
-    }
-
-    @Override
-    @PreDestroy
-    protected void unregister() {
-        vnfmRestHelper.unregister(vnfmManagerEndpoint);
-    }
-
-    @Override
-    protected void register() {
-        vnfmRestHelper.register(vnfmManagerEndpoint);
-    }
-
-    @RequestMapping(value = "/core-rest-actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receive(@RequestBody /*@Valid*/ String jsonNfvMessage) {
-        log.debug("Received: " + jsonNfvMessage);
-
-        NFVMessage nfvMessage = gson.fromJson(jsonNfvMessage, NFVMessage.class);
-
-        try {
-            this.onAction(nfvMessage);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (BadFormatException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
+  }
 }

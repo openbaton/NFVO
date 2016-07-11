@@ -30,47 +30,52 @@ import java.util.Properties;
  */
 public abstract class Plugin {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected Properties properties;
+  protected Properties properties;
 
-    protected Plugin() {
-        super();
-//        loadProperties();
-    }
+  protected Plugin() {
+    super();
+    //        loadProperties();
+  }
 
-    public void loadProperties() {
-        properties = new Properties();
-        log.trace("Loading properties");
-        try {
-            properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
-            if (properties.getProperty("external-properties-file") != null) {
-                File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
-                if (externalPropertiesFile.exists()) {
-                    log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
-                    InputStream is = new FileInputStream(externalPropertiesFile);
-                    properties.load(is);
-                } else {
-                    log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
-                }
-            }
-        } catch (IOException e) {
-//            e.printStackTrace();
-        } catch (Exception e){
-
+  public void loadProperties() {
+    properties = new Properties();
+    log.trace("Loading properties");
+    try {
+      properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
+      if (properties.getProperty("external-properties-file") != null) {
+        File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
+        if (externalPropertiesFile.exists()) {
+          log.debug(
+              "Loading properties from external-properties-file: "
+                  + properties.getProperty("external-properties-file"));
+          InputStream is = new FileInputStream(externalPropertiesFile);
+          properties.load(is);
+        } else {
+          log.debug(
+              "external-properties-file: "
+                  + properties.getProperty("external-properties-file")
+                  + " doesn't exist");
         }
-        log.debug("Loaded properties: " + properties);
-    }
+      }
+    } catch (IOException e) {
+      //            e.printStackTrace();
+    } catch (Exception e) {
 
-    public Properties getProperties() {
-        return properties;
     }
+    log.debug("Loaded properties: " + properties);
+  }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
+  public Properties getProperties() {
+    return properties;
+  }
 
-    public String getType() throws RemoteException {
-        return properties.getProperty("type", "type not defined");
-    }
+  public void setProperties(Properties properties) {
+    this.properties = properties;
+  }
+
+  public String getType() throws RemoteException {
+    return properties.getProperty("type", "type not defined");
+  }
 }

@@ -29,52 +29,53 @@ import javax.persistence.Version;
  */
 @Entity
 public class HighAvailability {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    private ResiliencyLevel resiliencyLevel;
-    private boolean geoRedundancy;
-    private String redundancyScheme;
+  @Id private String id;
+  @Version private int version = 0;
+  private ResiliencyLevel resiliencyLevel;
+  private boolean geoRedundancy;
+  private String redundancyScheme;
 
-    public HighAvailability(){
+  public HighAvailability() {}
 
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
-    public ResiliencyLevel getResiliencyLevel() {
-        return resiliencyLevel;
-    }
+  public ResiliencyLevel getResiliencyLevel() {
+    return resiliencyLevel;
+  }
 
-    public void setResiliencyLevel(ResiliencyLevel resiliencyLevel) {
-        this.resiliencyLevel = resiliencyLevel;
-    }
+  public void setResiliencyLevel(ResiliencyLevel resiliencyLevel) {
+    this.resiliencyLevel = resiliencyLevel;
+  }
 
-    public boolean isGeoRedundancy() {
-        return geoRedundancy;
-    }
+  public boolean isGeoRedundancy() {
+    return geoRedundancy;
+  }
 
-    public void setGeoRedundancy(boolean geoRedundancy) {
-        this.geoRedundancy = geoRedundancy;
-    }
+  public void setGeoRedundancy(boolean geoRedundancy) {
+    this.geoRedundancy = geoRedundancy;
+  }
 
-    public String getRedundancyScheme() {
-        return redundancyScheme;
-    }
+  public String getRedundancyScheme() {
+    return redundancyScheme;
+  }
 
-    public void setRedundancyScheme(String redundancyScheme) {
-        this.redundancyScheme = redundancyScheme;
-    }
+  public void setRedundancyScheme(String redundancyScheme) {
+    this.redundancyScheme = redundancyScheme;
+  }
 
-    @Override
-    public String toString() {
-        return "HighAvailability{" +
-                "resiliencyLevel=" + resiliencyLevel +
-                ", geoRedundancy=" + geoRedundancy +
-                ", redundancyScheme='" + redundancyScheme + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "HighAvailability{"
+        + "resiliencyLevel="
+        + resiliencyLevel
+        + ", geoRedundancy="
+        + geoRedundancy
+        + ", redundancyScheme='"
+        + redundancyScheme
+        + '\''
+        + '}';
+  }
 }

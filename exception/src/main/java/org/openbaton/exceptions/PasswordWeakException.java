@@ -19,18 +19,17 @@ package org.openbaton.exceptions;
  * Created by lto on 03/06/16.
  */
 public class PasswordWeakException extends Exception {
-    public PasswordWeakException() {
-    }
+  public PasswordWeakException() {}
 
-    public PasswordWeakException(String message) {
-        super(message);
-    }
+  public PasswordWeakException(String message) {
+    super(message);
+  }
 
-    public PasswordWeakException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public PasswordWeakException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public PasswordWeakException(Throwable cause) {
-        super(cause);
-    }
+  public PasswordWeakException(Throwable cause) {
+    super(cause);
+  }
 }

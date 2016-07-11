@@ -12,10 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GsonConfiguration {
 
-
-    @Bean
-    Gson gson() {
-        return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage()).create();
-    }
-
+  @Bean
+  Gson gson() {
+    return new GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+        .create();
+  }
 }

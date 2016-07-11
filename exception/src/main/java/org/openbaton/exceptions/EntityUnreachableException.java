@@ -19,15 +19,15 @@ package org.openbaton.exceptions;
  * Created by lto on 13/06/16.
  */
 public class EntityUnreachableException extends Exception {
-    public EntityUnreachableException(String message) {
-        super(message);
-    }
+  public EntityUnreachableException(String message) {
+    super(message);
+  }
 
-    public EntityUnreachableException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public EntityUnreachableException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public EntityUnreachableException(Throwable cause) {
-        super(cause);
-    }
+  public EntityUnreachableException(Throwable cause) {
+    super(cause);
+  }
 }

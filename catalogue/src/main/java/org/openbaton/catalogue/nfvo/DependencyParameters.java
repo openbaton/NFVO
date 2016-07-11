@@ -27,48 +27,51 @@ import java.util.Map;
 @Entity
 public class DependencyParameters implements Serializable {
 
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> parameters;
+  @Id private String id;
+  @Version private int version = 0;
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> parameters;
 
-    public String getId() {
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
 
-    @Override
-    public String toString() {
-        return "DependencyParameters{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", parameters=" + parameters +
-                '}';
-    }
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
+  }
+
+  @Override
+  public String toString() {
+    return "DependencyParameters{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", parameters="
+        + parameters
+        + '}';
+  }
 }

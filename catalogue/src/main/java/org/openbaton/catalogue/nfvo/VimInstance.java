@@ -26,191 +26,219 @@ import java.util.Set;
  * Created by lto on 12/05/15.
  */
 @Entity
-@Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
-)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
 public class VimInstance implements Serializable {
 
-    @Id
-    private String id;
+  @Id private String id;
 
-    @Version
-    private int version = 0;
-    private String name;
-    private String authUrl;
-    private String tenant;
-    private String username;
-    private String password;
-    private String keyPair;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Location location;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> securityGroups;
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
-    private Set<DeploymentFlavour> flavours;
-    private String type;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<NFVImage> images;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Network> networks;
-    private String projectId;
-    private boolean active;
+  @Version private int version = 0;
+  private String name;
+  private String authUrl;
+  private String tenant;
+  private String username;
+  private String password;
+  private String keyPair;
 
-    public VimInstance() {
-    }
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Location location;
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<String> securityGroups;
 
-    public String getId() {
-        return id;
-    }
+  @OneToMany(
+    fetch = FetchType.EAGER,
+    cascade = {CascadeType.ALL}
+  )
+  private Set<DeploymentFlavour> flavours;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  private String type;
 
-    public int getVersion() {
-        return version;
-    }
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<NFVImage> images;
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<Network> networks;
 
-    public String getName() {
-        return name;
-    }
+  private String projectId;
+  private boolean active;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public VimInstance() {}
 
-    public String getAuthUrl() {
-        return authUrl;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setAuthUrl(String authUrl) {
-        this.authUrl = authUrl;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getTenant() {
-        return tenant;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public String getAuthUrl() {
+    return authUrl;
+  }
 
-    public String getKeyPair() {
-        return keyPair;
-    }
+  public void setAuthUrl(String authUrl) {
+    this.authUrl = authUrl;
+  }
 
-    public void setKeyPair(String keyPair) {
-        this.keyPair = keyPair;
-    }
+  public String getTenant() {
+    return tenant;
+  }
 
-    public Location getLocation() {
-        return location;
-    }
+  public void setTenant(String tenant) {
+    this.tenant = tenant;
+  }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public Set<String> getSecurityGroups() {
-        return securityGroups;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public void setSecurityGroups(Set<String> securityGroups) {
-        this.securityGroups = securityGroups;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public Set<DeploymentFlavour> getFlavours() {
-        return flavours;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public void setFlavours(Set<DeploymentFlavour> flavours) {
-        this.flavours = flavours;
-    }
+  public String getKeyPair() {
+    return keyPair;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public void setKeyPair(String keyPair) {
+    this.keyPair = keyPair;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public Location getLocation() {
+    return location;
+  }
 
-    public Set<NFVImage> getImages() {
-        return images;
-    }
+  public void setLocation(Location location) {
+    this.location = location;
+  }
 
-    public void setImages(Set<NFVImage> images) {
-        this.images = images;
-    }
+  public Set<String> getSecurityGroups() {
+    return securityGroups;
+  }
 
-    public Set<Network> getNetworks() {
-        return networks;
-    }
+  public void setSecurityGroups(Set<String> securityGroups) {
+    this.securityGroups = securityGroups;
+  }
 
-    public void setNetworks(Set<Network> networks) {
-        this.networks = networks;
-    }
+  public Set<DeploymentFlavour> getFlavours() {
+    return flavours;
+  }
 
-    @Override
-    public String toString() {
-        return "VimInstance{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", authUrl='" + authUrl + '\'' +
-                ", tenant='" + tenant + '\'' +
-                ", username='" + username + '\'' +
-                ", password='************'" +
-                ", keyPair='" + keyPair + '\'' +
-                ", location=" + location +
-                ", securityGroups=" + securityGroups +
-                ", flavours=" + flavours +
-                ", type='" + type + '\'' +
-                ", images=" + images +
-                ", networks=" + networks +
-                ", projectId='" + projectId + '\'' +
-                ", active=" + active +
-                '}';
-    }
+  public void setFlavours(Set<DeploymentFlavour> flavours) {
+    this.flavours = flavours;
+  }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public String getProjectId() {
-        return projectId;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+  public Set<NFVImage> getImages() {
+    return images;
+  }
 
-    public boolean isActive() {
-        return active;
-    }
+  public void setImages(Set<NFVImage> images) {
+    this.images = images;
+  }
+
+  public Set<Network> getNetworks() {
+    return networks;
+  }
+
+  public void setNetworks(Set<Network> networks) {
+    this.networks = networks;
+  }
+
+  @Override
+  public String toString() {
+    return "VimInstance{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", authUrl='"
+        + authUrl
+        + '\''
+        + ", tenant='"
+        + tenant
+        + '\''
+        + ", username='"
+        + username
+        + '\''
+        + ", password='************'"
+        + ", keyPair='"
+        + keyPair
+        + '\''
+        + ", location="
+        + location
+        + ", securityGroups="
+        + securityGroups
+        + ", flavours="
+        + flavours
+        + ", type='"
+        + type
+        + '\''
+        + ", images="
+        + images
+        + ", networks="
+        + networks
+        + ", projectId='"
+        + projectId
+        + '\''
+        + ", active="
+        + active
+        + '}';
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
 }
