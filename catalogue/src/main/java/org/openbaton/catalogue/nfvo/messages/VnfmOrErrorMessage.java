@@ -7,47 +7,56 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
  * Created by lto on 26/01/16.
  */
 public class VnfmOrErrorMessage extends VnfmOrMessage {
-    private String nsrId;
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    private Exception exception;
-    public VnfmOrErrorMessage(Exception exception, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String nsrId) {
-        this.exception = exception;
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-        this.nsrId = nsrId;
-    }
-    public VnfmOrErrorMessage() {
-    }
+  private String nsrId;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private Exception exception;
 
-    public String getNsrId() {
-        return nsrId;
-    }
+  public VnfmOrErrorMessage(
+      Exception exception,
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      String nsrId) {
+    this.exception = exception;
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    this.nsrId = nsrId;
+  }
 
-    public void setNsrId(String nsrId) {
-        this.nsrId = nsrId;
-    }
+  public VnfmOrErrorMessage() {}
 
-    public Exception getException() {
-        return exception;
-    }
+  public String getNsrId() {
+    return nsrId;
+  }
 
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
+  public void setNsrId(String nsrId) {
+    this.nsrId = nsrId;
+  }
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public Exception getException() {
+    return exception;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
+  public void setException(Exception exception) {
+    this.exception = exception;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrErrorMessage{" +
-                "exception=" + exception +
-                ", nsrId='" + nsrId + '\'' +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                '}';
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
+
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
+
+  @Override
+  public String toString() {
+    return "VnfmOrErrorMessage{"
+        + "exception="
+        + exception
+        + ", nsrId='"
+        + nsrId
+        + '\''
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + '}';
+  }
 }

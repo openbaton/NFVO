@@ -24,42 +24,46 @@ import java.util.List;
  */
 public class QueueElement {
 
-    private String vnfrTargetId;
+  private String vnfrTargetId;
 
-    private List<VNFRecordDependency> dependencies;
+  private List<VNFRecordDependency> dependencies;
 
-    private int waitingFor;
+  private int waitingFor;
 
-    public String getVnfrTargetId() {
-        return vnfrTargetId;
-    }
+  public String getVnfrTargetId() {
+    return vnfrTargetId;
+  }
 
-    public void setVnfrTargetId(String vnfrTargetId) {
-        this.vnfrTargetId = vnfrTargetId;
-    }
+  public void setVnfrTargetId(String vnfrTargetId) {
+    this.vnfrTargetId = vnfrTargetId;
+  }
 
-    public List<VNFRecordDependency> getDependencies() {
-        return dependencies;
-    }
+  public List<VNFRecordDependency> getDependencies() {
+    return dependencies;
+  }
 
-    public void setDependencies(List<VNFRecordDependency> dependencies) {
-        this.dependencies = dependencies;
-    }
+  public void setDependencies(List<VNFRecordDependency> dependencies) {
+    this.dependencies = dependencies;
+  }
 
-    public int getWaitingFor() {
-        return waitingFor;
-    }
+  public int getWaitingFor() {
+    return waitingFor;
+  }
 
-    public void setWaitingFor(int waitingFor) {
-        this.waitingFor = waitingFor;
-    }
+  public void setWaitingFor(int waitingFor) {
+    this.waitingFor = waitingFor;
+  }
 
-    @Override
-    public String toString() {
-        return "QueueElement{" +
-                "vnfrTargetId='" + vnfrTargetId + '\'' +
-                ", dependencies=" + dependencies +
-                ", waitingFor=" + waitingFor +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "QueueElement{"
+        + "vnfrTargetId='"
+        + vnfrTargetId
+        + '\''
+        + ", dependencies="
+        + dependencies
+        + ", waitingFor="
+        + waitingFor
+        + '}';
+  }
 }

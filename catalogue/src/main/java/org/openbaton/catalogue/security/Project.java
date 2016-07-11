@@ -13,50 +13,45 @@ import java.io.Serializable;
  * Created by lto on 24/05/16.
  */
 @Entity
-public class Project implements Serializable{
-    @Id
-    private String id;
-    @Column(unique = true)
-    private String name;
-    private Quota quota;
+public class Project implements Serializable {
+  @Id private String id;
 
-    public String getId() {
-        return id;
-    }
+  @Column(unique = true)
+  private String name;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  private Quota quota;
 
-    public String getName() {
-        return name;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
+  public String getName() {
+    return name;
+  }
 
-    @Override
-    public String toString() {
-        return "Project{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", quota=" + quota +
-                '}';
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Quota getQuota() {
-        return quota;
-    }
+  @Override
+  public String toString() {
+    return "Project{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", quota=" + quota + '}';
+  }
 
-    public void setQuota(Quota quota) {
-        this.quota = quota;
-    }
+  public Quota getQuota() {
+    return quota;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  public void setQuota(Quota quota) {
+    this.quota = quota;
+  }
 
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 }

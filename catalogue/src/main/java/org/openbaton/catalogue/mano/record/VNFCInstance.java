@@ -29,91 +29,103 @@ import java.util.Set;
 @Entity
 public class VNFCInstance extends VNFComponent implements Serializable {
 
-    protected String vim_id;
-    protected String vc_id;
-    protected String hostname;
-    protected String state;
+  protected String vim_id;
+  protected String vc_id;
+  protected String hostname;
+  protected String state;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    protected VNFComponent vnfComponent;
+  @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+  protected VNFComponent vnfComponent;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Ip> floatingIps;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Ip> floatingIps;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Ip> ips;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Ip> ips;
 
-    public String getHostname() {
-        return hostname;
-    }
+  public String getHostname() {
+    return hostname;
+  }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
+  }
 
-    public String getVim_id() {
-        return vim_id;
-    }
+  public String getVim_id() {
+    return vim_id;
+  }
 
-    public void setVim_id(String vim_id) {
-        this.vim_id = vim_id;
-    }
+  public void setVim_id(String vim_id) {
+    this.vim_id = vim_id;
+  }
 
-    public String getVc_id() {
-        return vc_id;
-    }
+  public String getVc_id() {
+    return vc_id;
+  }
 
-    public void setVc_id(String vc_id) {
-        this.vc_id = vc_id;
-    }
+  public void setVc_id(String vc_id) {
+    this.vc_id = vc_id;
+  }
 
-    public String getState() {
-        return state;
-    }
+  public String getState() {
+    return state;
+  }
 
-    public void setState(String state) {
-        this.state = state;
-    }
+  public void setState(String state) {
+    this.state = state;
+  }
 
-    public VNFComponent getVnfComponent() {
-        return vnfComponent;
-    }
+  public VNFComponent getVnfComponent() {
+    return vnfComponent;
+  }
 
-    public void setVnfComponent(VNFComponent vnfComponent) {
-        this.vnfComponent = vnfComponent;
-    }
+  public void setVnfComponent(VNFComponent vnfComponent) {
+    this.vnfComponent = vnfComponent;
+  }
 
-    @Override
-    public String toString() {
-        return "VNFCInstance{" +
-                "vim_id='" + vim_id + '\'' +
-                ", vc_id='" + vc_id + '\'' +
-                ", hostname='" + hostname + '\'' +
-                ", state='" + state + '\'' +
-                ", vnfComponent=" + vnfComponent +
-                ", floatingIps=" + floatingIps +
-                ", ips=" + ips +
-                "} " + super.toString();
-    }
+  @Override
+  public String toString() {
+    return "VNFCInstance{"
+        + "vim_id='"
+        + vim_id
+        + '\''
+        + ", vc_id='"
+        + vc_id
+        + '\''
+        + ", hostname='"
+        + hostname
+        + '\''
+        + ", state='"
+        + state
+        + '\''
+        + ", vnfComponent="
+        + vnfComponent
+        + ", floatingIps="
+        + floatingIps
+        + ", ips="
+        + ips
+        + "} "
+        + super.toString();
+  }
 
-    public Set<Ip> getFloatingIps() {
-        return floatingIps;
-    }
+  public Set<Ip> getFloatingIps() {
+    return floatingIps;
+  }
 
-    public void setFloatingIps(Set<Ip> floatingIps) {
-        this.floatingIps = floatingIps;
-    }
+  public void setFloatingIps(Set<Ip> floatingIps) {
+    this.floatingIps = floatingIps;
+  }
 
-    public Set<Ip> getIps() {
-        return ips;
-    }
+  public Set<Ip> getIps() {
+    return ips;
+  }
 
-    public void setIps(Set<Ip> ips) {
-        this.ips = ips;
-    }
+  public void setIps(Set<Ip> ips) {
+    this.ips = ips;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 }

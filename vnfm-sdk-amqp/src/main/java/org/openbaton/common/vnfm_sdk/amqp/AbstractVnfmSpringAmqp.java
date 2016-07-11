@@ -38,70 +38,73 @@ import java.util.Properties;
 /**
  * Created by lto on 28/05/15.
  */
-
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
 @ConfigurationProperties
-public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements ApplicationListener<ContextClosedEvent> {
+public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
+    implements ApplicationListener<ContextClosedEvent> {
 
-    @Value("${spring.rabbitmq.host}")
-    private String rabbitHost;
+  @Value("${spring.rabbitmq.host}")
+  private String rabbitHost;
 
-    @Autowired
-    private Gson gson;
-    @Autowired
-    private ConfigurableApplicationContext context;
+  @Autowired private Gson gson;
+  @Autowired private ConfigurableApplicationContext context;
 
-    public void onAction(String message) throws NotFoundException, BadFormatException {
+  public void onAction(String message) throws NotFoundException, BadFormatException {
 
-        NFVMessage nfvMessage = gson.fromJson(message, NFVMessage.class);
+    NFVMessage nfvMessage = gson.fromJson(message, NFVMessage.class);
 
-        this.onAction(nfvMessage);
+    this.onAction(nfvMessage);
+  }
+
+  @Override
+  protected void setup() {
+    vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelperRabbit");
+    super.setup();
+  }
+
+  protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
+
+  @Override
+  protected void unregister() {
+    try {
+      ((VnfmSpringHelperRabbit) vnfmHelper)
+          .sendMessageToQueue(RabbitConfiguration.queueName_vnfmUnregister, vnfmManagerEndpoint);
+    } catch (IllegalStateException e) {
+      log.warn("Got exception while unregistering trying to do it manually");
+      ConnectionFactory factory = new ConnectionFactory();
+
+      factory.setHost(rabbitHost);
+      Connection connection = null;
+      try {
+        connection = factory.newConnection();
+
+        Channel channel = connection.createChannel();
+
+        String message = gson.toJson(vnfmManagerEndpoint);
+        channel.basicPublish(
+            "openbaton-exchange",
+            RabbitConfiguration.queueName_vnfmUnregister,
+            MessageProperties.TEXT_PLAIN,
+            message.getBytes("UTF-8"));
+        log.debug("Sent '" + message + "'");
+
+        channel.close();
+        connection.close();
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
     }
+  }
 
-    @Override
-    protected void setup() {
-        vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelperRabbit");
-        super.setup();
-    }
+  @Override
+  protected void register() {
+    ((VnfmSpringHelperRabbit) vnfmHelper)
+        .sendMessageToQueue(RabbitConfiguration.queueName_vnfmRegister, vnfmManagerEndpoint);
+  }
 
-    protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
-
-    @Override
-    protected void unregister() {
-        try {
-            ((VnfmSpringHelperRabbit) vnfmHelper).sendMessageToQueue(RabbitConfiguration.queueName_vnfmUnregister, vnfmManagerEndpoint);
-        } catch (IllegalStateException e) {
-            log.warn("Got exception while unregistering trying to do it manually");
-            ConnectionFactory factory = new ConnectionFactory();
-
-            factory.setHost(rabbitHost);
-            Connection connection = null;
-            try {
-                connection = factory.newConnection();
-
-                Channel channel = connection.createChannel();
-
-                String message = gson.toJson(vnfmManagerEndpoint);
-                channel.basicPublish("openbaton-exchange", RabbitConfiguration.queueName_vnfmUnregister, MessageProperties.TEXT_PLAIN, message.getBytes("UTF-8"));
-                log.debug("Sent '" + message + "'");
-
-                channel.close();
-                connection.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void register() {
-        ((VnfmSpringHelperRabbit) vnfmHelper).sendMessageToQueue(RabbitConfiguration.queueName_vnfmRegister, vnfmManagerEndpoint);
-    }
-
-    @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
-        unregister();
-    }
+  @Override
+  public void onApplicationEvent(ContextClosedEvent event) {
+    unregister();
+  }
 }
-

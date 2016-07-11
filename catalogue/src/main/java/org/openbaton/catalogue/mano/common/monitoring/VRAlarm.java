@@ -8,35 +8,33 @@ import javax.persistence.Entity;
 @Entity
 public class VRAlarm extends Alarm {
 
-    //Actually is the hostname
-    private String managedObject;
+  //Actually is the hostname
+  private String managedObject;
 
-    public VRAlarm(){
-        alarmType= AlarmType.VIRTUALIZED_RESOURCE;
-    }
+  public VRAlarm() {
+    alarmType = AlarmType.VIRTUALIZED_RESOURCE;
+  }
 
-    @Override
-    public AlarmType getAlarmType() {
-        return alarmType;
-    }
+  @Override
+  public AlarmType getAlarmType() {
+    return alarmType;
+  }
 
-    @Override
-    public void setAlarmType(AlarmType alarmType) {
-        this.alarmType=alarmType;
-    }
+  @Override
+  public void setAlarmType(AlarmType alarmType) {
+    this.alarmType = alarmType;
+  }
 
-    public String getManagedObject() {
-        return managedObject;
-    }
+  public String getManagedObject() {
+    return managedObject;
+  }
 
-    public void setManagedObject(String managedObject) {
-        this.managedObject = managedObject;
-    }
+  public void setManagedObject(String managedObject) {
+    this.managedObject = managedObject;
+  }
 
-    @Override
-    public String toString() {
-        return "VRAlarm{" +
-                "managedObject='" + managedObject + '\'' +
-                "} " + super.toString();
-    }
+  @Override
+  public String toString() {
+    return "VRAlarm{" + "managedObject='" + managedObject + '\'' + "} " + super.toString();
+  }
 }

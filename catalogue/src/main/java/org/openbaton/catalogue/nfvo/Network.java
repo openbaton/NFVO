@@ -26,91 +26,97 @@ import java.util.Set;
  */
 @Entity
 public class Network implements Serializable {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    private String name;
-    private String extId;
-    private Boolean external = false;
-    private Boolean shared = false;
+  @Id private String id;
+  @Version private int version = 0;
+  private String name;
+  private String extId;
+  private Boolean external = false;
+  private Boolean shared = false;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Subnet> subnets;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<Subnet> subnets;
 
-    public Network(){
-    }
+  public Network() {}
 
-    public Boolean getExternal() {
-        return external;
-    }
+  public Boolean getExternal() {
+    return external;
+  }
 
-    public void setExternal(Boolean external) {
-        this.external = external;
-    }
+  public void setExternal(Boolean external) {
+    this.external = external;
+  }
 
-    @Override
-    public String toString() {
-        return "Network{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", extId='" + extId + '\'' +
-                ", external=" + external +
-                ", shared=" + shared +
-                ", subnets=" + subnets +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Network{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", extId='"
+        + extId
+        + '\''
+        + ", external="
+        + external
+        + ", shared="
+        + shared
+        + ", subnets="
+        + subnets
+        + '}';
+  }
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public String getExtId() {
-        return extId;
-    }
+  public String getExtId() {
+    return extId;
+  }
 
-    public void setExtId(String extId) {
-        this.extId = extId;
-    }
+  public void setExtId(String extId) {
+    this.extId = extId;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Boolean getShared() {
-        return shared;
-    }
+  public Boolean getShared() {
+    return shared;
+  }
 
-    public void setShared(Boolean shared) {
-        this.shared = shared;
-    }
+  public void setShared(Boolean shared) {
+    this.shared = shared;
+  }
 
-    public Set<Subnet> getSubnets() {
-        return subnets;
-    }
+  public Set<Subnet> getSubnets() {
+    return subnets;
+  }
 
-    public void setSubnets(Set<Subnet> subnets) {
-        this.subnets = subnets;
-    }
+  public void setSubnets(Set<Subnet> subnets) {
+    this.subnets = subnets;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 }
