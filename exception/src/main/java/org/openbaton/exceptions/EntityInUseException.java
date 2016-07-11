@@ -18,16 +18,16 @@ package org.openbaton.exceptions;
 /**
  * Created by lto on 13/06/16.
  */
-public class EntityInUseException extends Exception{
-    public EntityInUseException(String message) {
-        super(message);
-    }
+public class EntityInUseException extends Exception {
+  public EntityInUseException(String message) {
+    super(message);
+  }
 
-    public EntityInUseException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public EntityInUseException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public EntityInUseException(Throwable cause) {
-        super(cause);
-    }
+  public EntityInUseException(Throwable cause) {
+    super(cause);
+  }
 }
