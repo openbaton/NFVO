@@ -278,7 +278,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     @Override
     @Async
     public Future<Void> release(VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance) throws VimException, ExecutionException, InterruptedException, PluginException {
-        VimInstance vimInstance = vnfPlacementManagement.choseRandom(virtualDeploymentUnit.getVimInstanceName());
+        VimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
         org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim = vimBroker.getVim(vimInstance.getType());
         log.debug("Removing vnfcInstance: " + vnfcInstance);
         vim.release(vnfcInstance, vimInstance).get();

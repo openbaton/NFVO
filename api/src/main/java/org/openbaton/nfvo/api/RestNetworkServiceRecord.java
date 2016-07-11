@@ -161,16 +161,16 @@ public class RestNetworkServiceRecord {
     /**
      * Returns the VirtualNetworkFunctionRecord with idVnf into NSR with idNsr
      *
-     * @param idNsd of NSR
+     * @param idNsr of NSR
      * @param idVnf of VirtualNetworkFunctionRecord
      * @return VirtualNetworkFunctionRecord selected by idVnf
      * @throws NotFoundException
      */
-    @RequestMapping(value = "{idNsd}/vnfrecords/{idVnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(@PathVariable("idNsd") String idNsd, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
+    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(@PathVariable("idNsr") String idNsr, @PathVariable("idVnf") String idVnf, @RequestHeader(value = "project-id") String projectId) throws NotFoundException {
 
-        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsd, idVnf, projectId);
+        return networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnf, projectId);
     }
 
     /**

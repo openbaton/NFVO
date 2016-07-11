@@ -165,7 +165,7 @@ public class NetworkServiceRecordManagement implements org.openbaton.nfvo.core.i
     public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(String idNsr, String idVnf, String projectId) throws NotFoundException {
         NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(idNsr);
         if (!networkServiceRecord.getProjectId().equals(projectId))
-            throw new UnauthorizedUserException("NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+            throw new UnauthorizedUserException("NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
         if (networkServiceRecord == null) {
             throw new NotFoundException("NSR with id " + idNsr + " was not found");
         }
