@@ -100,7 +100,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   @JsonIgnore private String endpoint;
   private String vnfPackageLocation;
 
-  @javax.persistence.OneToMany(cascade = CascadeType.ALL)
+  @javax.persistence.OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Map<String, RequiresParameters> requires;
 
   @ElementCollection(fetch = FetchType.EAGER)
