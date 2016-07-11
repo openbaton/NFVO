@@ -25,67 +25,72 @@ import java.util.Map;
 /**
  * Created by lorenzo on 5/30/15.
  */
-public class CoreMessage implements Serializable{
+public class CoreMessage implements Serializable {
 
-    private Action action;
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private Action action;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
+  private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
 
-    private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
+  private VNFRecordDependency dependency;
 
-    private VNFRecordDependency dependency;
+  private Map<String, String> extension;
 
+  public VNFRecordDependency getDependency() {
+    return dependency;
+  }
 
-    private Map<String,String> extension;
+  public void setDependency(VNFRecordDependency dependency) {
+    this.dependency = dependency;
+  }
 
-    public VNFRecordDependency getDependency() {
-        return dependency;
-    }
+  public Action getAction() {
+    return action;
+  }
 
-    public void setDependency(VNFRecordDependency dependency) {
-        this.dependency = dependency;
-    }
+  public void setAction(Action action) {
+    this.action = action;
+  }
 
-    public Action getAction() {
-        return action;
-    }
+  public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
+    return virtualNetworkFunctionDescriptor;
+  }
 
-    public void setAction(Action action) {
-        this.action = action;
-    }
+  public void setVirtualNetworkFunctionDescriptor(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
+    this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
+  }
 
-    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
-        return virtualNetworkFunctionDescriptor;
-    }
+  public Map<String, String> getExtention() {
+    return extension;
+  }
 
-    public void setVirtualNetworkFunctionDescriptor(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
-        this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
-    }
+  public void setExtension(Map<String, String> extention) {
+    this.extension = extention;
+  }
 
-    public Map<String, String> getExtention() {
-        return extension;
-    }
+  @Override
+  public String toString() {
+    return "CoreMessage{"
+        + "action="
+        + action
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", virtualNetworkFunctionDescriptor="
+        + virtualNetworkFunctionDescriptor
+        + ", dependency="
+        + dependency
+        + ", extension="
+        + extension
+        + '}';
+  }
 
-    public void setExtension(Map<String, String> extention) {
-        this.extension = extention;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    @Override
-    public String toString() {
-        return "CoreMessage{" +
-                "action=" + action +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", virtualNetworkFunctionDescriptor=" + virtualNetworkFunctionDescriptor +
-                ", dependency=" + dependency +
-                ", extension=" + extension +
-                '}';
-    }
-
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
-
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
 }

@@ -30,35 +30,32 @@ import java.io.Serializable;
  */
 @Entity
 public class Security implements Serializable {
-	@Id
-	private String id;
-	@Version
-	private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public void setVersion(int version) {
-		this.version = version;
-	}
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	@PrePersist
-	public void ensureId(){
-		id=IdGenerator.createUUID();
-	}
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-	@Override
-	public String toString() {
-		return "Security [id=" + id + ", version=" + version + "]";
-	}
-	
+  @Override
+  public String toString() {
+    return "Security [id=" + id + ", version=" + version + "]";
+  }
 }

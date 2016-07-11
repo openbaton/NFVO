@@ -22,30 +22,33 @@ import org.openbaton.catalogue.nfvo.Action;
  * Created by lto on 06/08/15.
  */
 public class EventFinishEvent {
-    private Action action;
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private Action action;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
-    public Action getAction() {
-        return action;
-    }
+  public Action getAction() {
+    return action;
+  }
 
-    public void setAction(Action action) {
-        this.action = action;
-    }
+  public void setAction(Action action) {
+    this.action = action;
+  }
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
 
-    @Override
-    public String toString() {
-        return "EventFinishEvent{" +
-                "action=" + action +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "EventFinishEvent{"
+        + "action="
+        + action
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + '}';
+  }
 }

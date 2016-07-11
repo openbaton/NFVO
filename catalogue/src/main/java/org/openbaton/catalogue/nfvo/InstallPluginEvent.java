@@ -15,47 +15,51 @@
 
 package org.openbaton.catalogue.nfvo;
 
-
 import java.util.List;
 
 /**
  * Created by lto on 21/07/15.
  */
 public class InstallPluginEvent {
-    private String path;
-    private String type;
-    private List<String> classes;
+  private String path;
+  private String type;
+  private List<String> classes;
 
-    public String getPath() {
-        return path;
-    }
+  public String getPath() {
+    return path;
+  }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public List<String> getClasses() {
-        return classes;
-    }
+  public List<String> getClasses() {
+    return classes;
+  }
 
-    public void setClasses(List<String> classes) {
-        this.classes = classes;
-    }
+  public void setClasses(List<String> classes) {
+    this.classes = classes;
+  }
 
-    @Override
-    public String toString() {
-        return "InstallPluginEvent{" +
-                "path='" + path + '\'' +
-                ", type='" + type + '\'' +
-                ", classes=" + classes +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "InstallPluginEvent{"
+        + "path='"
+        + path
+        + '\''
+        + ", type='"
+        + type
+        + '\''
+        + ", classes="
+        + classes
+        + '}';
+  }
 }

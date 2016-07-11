@@ -22,43 +22,42 @@ package org.openbaton.catalogue.mano.record;
  */
 public enum Status {
 
- /**
-  * Error
-  */
- ERROR(0),
- /**
-  * Null -
-  */
- NULL (1),
- /**
-  * Instantiated - Not Configured
-  */
- INITIALIZED (2),
+  /**
+   * Error
+   */
+  ERROR(0),
+  /**
+   * Null -
+   */
+  NULL(1),
+  /**
+   * Instantiated - Not Configured
+   */
+  INITIALIZED(2),
 
- /**
-  * Inactive - Configured
-  */
- INACTIVE (3),
+  /**
+   * Inactive - Configured
+   */
+  INACTIVE(3),
 
- /*
- * Scaling
- */
- SCALING(4),
+  /*
+   * Scaling
+   */
+  SCALING(4),
 
- /**
-  * Active - Configured
-  */
- ACTIVE (5),
+  /**
+   * Active - Configured
+   */
+  ACTIVE(5),
 
- /**
-  * Terminated
-  */
- TERMINATED (6);
+  /**
+   * Terminated
+   */
+  TERMINATED(6);
 
+  private int value;
 
- private int value;
-
- Status(int value) {
-  this.value = value;
- }
+  Status(int value) {
+    this.value = value;
+  }
 }

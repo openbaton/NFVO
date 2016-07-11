@@ -25,30 +25,27 @@ import java.util.Set;
  * Created by mob on 15.09.15.
  */
 public class OrVnfmAllocateResourcesMessage extends OrVnfmMessage {
-    private Set<VirtualDeploymentUnit> vduSet;
+  private Set<VirtualDeploymentUnit> vduSet;
 
-    public OrVnfmAllocateResourcesMessage() {
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
+  public OrVnfmAllocateResourcesMessage() {
+    this.action = Action.ALLOCATE_RESOURCES;
+  }
 
-    public OrVnfmAllocateResourcesMessage(Set<VirtualDeploymentUnit> vduSet) {
-        this.vduSet = vduSet;
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
+  public OrVnfmAllocateResourcesMessage(Set<VirtualDeploymentUnit> vduSet) {
+    this.vduSet = vduSet;
+    this.action = Action.ALLOCATE_RESOURCES;
+  }
 
-    public Set<VirtualDeploymentUnit> getVduSet() {
-        return vduSet;
-    }
+  public Set<VirtualDeploymentUnit> getVduSet() {
+    return vduSet;
+  }
 
-    public void setVduSet(Set<VirtualDeploymentUnit> vduSet) {
-        this.vduSet = vduSet;
-    }
+  public void setVduSet(Set<VirtualDeploymentUnit> vduSet) {
+    this.vduSet = vduSet;
+  }
 
-    @Override
-    public String toString() {
-        return "OrVnfmAllocateResourcesMessage{" +
-                "vduSet=" + vduSet +
-                '}';
-    }
-
+  @Override
+  public String toString() {
+    return "OrVnfmAllocateResourcesMessage{" + "vduSet=" + vduSet + '}';
+  }
 }

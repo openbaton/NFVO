@@ -34,24 +34,24 @@ import java.rmi.RemoteException;
 @Scope("prototype")
 public class MonitoringManager {
 
-    private VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement;
+  private VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement;
 
-    @Autowired
-    private MonitoringBroker monitoringBroker;
+  @Autowired private MonitoringBroker monitoringBroker;
 
-    @PostConstruct
-    private void init(){
-        //TODO using types
-        this.virtualisedResourcesPerformanceManagement = monitoringBroker.getAvailableMonitoringAgent();
-    }
+  @PostConstruct
+  private void init() {
+    //TODO using types
+    this.virtualisedResourcesPerformanceManagement = monitoringBroker.getAvailableMonitoringAgent();
+  }
 
-    public Item getMeasurmentResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period){
+  public Item getMeasurmentResults(
+      VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period) {
 
-//        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
-        return null;
-    }
+    //        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
+    return null;
+  }
 
-    public void notifyResults() throws RemoteException, MonitoringException {
-        //resourcePerformanceManagement.notifyResults();
-    }
+  public void notifyResults() throws RemoteException, MonitoringException {
+    //resourcePerformanceManagement.notifyResults();
+  }
 }

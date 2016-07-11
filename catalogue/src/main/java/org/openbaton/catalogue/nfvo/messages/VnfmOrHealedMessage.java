@@ -10,50 +10,52 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
  */
 public class VnfmOrHealedMessage extends VnfmOrMessage {
 
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    private VNFCInstance vnfcInstance;
-    private String cause;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VNFCInstance vnfcInstance;
+  private String cause;
 
-    public VnfmOrHealedMessage(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-        this.action = Action.HEAL;
-    }
+  public VnfmOrHealedMessage(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+    this.action = Action.HEAL;
+  }
 
-    public VnfmOrHealedMessage() {
-    }
+  public VnfmOrHealedMessage() {}
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-    }
+  public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+  }
 
-    public String getCause() {
-        return cause;
-    }
+  public String getCause() {
+    return cause;
+  }
 
-    public void setCause(String cause) {
-        this.cause = cause;
-    }
+  public void setCause(String cause) {
+    this.cause = cause;
+  }
 
-    public VNFCInstance getVnfcInstance() {
-        return vnfcInstance;
-    }
+  public VNFCInstance getVnfcInstance() {
+    return vnfcInstance;
+  }
 
-    public void setVnfcInstance(VNFCInstance vnfcInstance) {
-        this.vnfcInstance = vnfcInstance;
-    }
+  public void setVnfcInstance(VNFCInstance vnfcInstance) {
+    this.vnfcInstance = vnfcInstance;
+  }
 
-
-    @Override
-    public String toString() {
-        return "VnfmOrHealedMessage{" +
-                "virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", vnfcInstance=" + vnfcInstance +
-                ", cause='" + cause + '\'' +
-                "} " + super.toString();
-    }
-
+  @Override
+  public String toString() {
+    return "VnfmOrHealedMessage{"
+        + "virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", vnfcInstance="
+        + vnfcInstance
+        + ", cause='"
+        + cause
+        + '\''
+        + "} "
+        + super.toString();
+  }
 }

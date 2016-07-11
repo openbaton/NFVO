@@ -21,7 +21,9 @@ import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManage
  * Created by lto on 05/08/15.
  */
 public interface MonitoringBroker {
-    void addAgent(VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement, String type);
+  void addAgent(
+      VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement,
+      String type);
 
-    VirtualisedResourcesPerformanceManagement getAvailableMonitoringAgent();
+  VirtualisedResourcesPerformanceManagement getAvailableMonitoringAgent();
 }

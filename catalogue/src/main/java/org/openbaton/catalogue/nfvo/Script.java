@@ -26,64 +26,55 @@ import java.io.Serializable;
  */
 @Entity
 public class Script implements Serializable {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    private String name;
+  private String name;
 
-    @Lob
-    @JsonIgnore
-    private byte[] payload;
+  @Lob @JsonIgnore private byte[] payload;
 
-    public Script() {
-    }
+  public Script() {}
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @JsonIgnore
-    public byte[] getPayload() {
-        return payload;
-    }
+  @JsonIgnore
+  public byte[] getPayload() {
+    return payload;
+  }
 
-    public void setPayload(byte[] payload) {
-        this.payload = payload;
-    }
+  public void setPayload(byte[] payload) {
+    this.payload = payload;
+  }
 
-    @Override
-    public String toString() {
-        return "Script{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Script{" + "id='" + id + '\'' + ", version=" + version + ", name='" + name + '\'' + '}';
+  }
 }

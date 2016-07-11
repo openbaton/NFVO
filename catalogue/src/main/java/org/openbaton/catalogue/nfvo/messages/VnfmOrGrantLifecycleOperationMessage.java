@@ -26,51 +26,60 @@ import java.util.Set;
  * Created by mob on 15.09.15.
  */
 public class VnfmOrGrantLifecycleOperationMessage extends VnfmOrMessage {
-    private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
-    private Set<VirtualDeploymentUnit> vduSet;
-    private String deploymentFlavourKey;
+  private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
+  private Set<VirtualDeploymentUnit> vduSet;
+  private String deploymentFlavourKey;
 
-    public VnfmOrGrantLifecycleOperationMessage() {
-        this.action = Action.GRANT_OPERATION;
-    }
+  public VnfmOrGrantLifecycleOperationMessage() {
+    this.action = Action.GRANT_OPERATION;
+  }
 
-    public VnfmOrGrantLifecycleOperationMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet, String deploymentFlavourKey) {
-        this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
-        this.vduSet = vduSet;
-        this.deploymentFlavourKey = deploymentFlavourKey;
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
+  public VnfmOrGrantLifecycleOperationMessage(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      Set<VirtualDeploymentUnit> vduSet,
+      String deploymentFlavourKey) {
+    this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
+    this.vduSet = vduSet;
+    this.deploymentFlavourKey = deploymentFlavourKey;
+    this.action = Action.ALLOCATE_RESOURCES;
+  }
 
-    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
-        return virtualNetworkFunctionDescriptor;
-    }
+  public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
+    return virtualNetworkFunctionDescriptor;
+  }
 
-    public void setVirtualNetworkFunctionDescriptor(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
-        this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
-    }
+  public void setVirtualNetworkFunctionDescriptor(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
+    this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
+  }
 
-    public Set<VirtualDeploymentUnit> getVduSet() {
-        return vduSet;
-    }
+  public Set<VirtualDeploymentUnit> getVduSet() {
+    return vduSet;
+  }
 
-    public void setVduSet(Set<VirtualDeploymentUnit> vduSet) {
-        this.vduSet = vduSet;
-    }
+  public void setVduSet(Set<VirtualDeploymentUnit> vduSet) {
+    this.vduSet = vduSet;
+  }
 
-    public String getDeploymentFlavourKey() {
-        return deploymentFlavourKey;
-    }
+  public String getDeploymentFlavourKey() {
+    return deploymentFlavourKey;
+  }
 
-    public void setDeploymentFlavourKey(String deploymentFlavourKey) {
-        this.deploymentFlavourKey = deploymentFlavourKey;
-    }
+  public void setDeploymentFlavourKey(String deploymentFlavourKey) {
+    this.deploymentFlavourKey = deploymentFlavourKey;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrGrantLifecycleOperationMessage{" +
-                "virtualNetworkFunctionDescriptor='" + virtualNetworkFunctionDescriptor + '\'' +
-                ", vduSet=" + vduSet +
-                ", deploymentFlavourKey='" + deploymentFlavourKey + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "VnfmOrGrantLifecycleOperationMessage{"
+        + "virtualNetworkFunctionDescriptor='"
+        + virtualNetworkFunctionDescriptor
+        + '\''
+        + ", vduSet="
+        + vduSet
+        + ", deploymentFlavourKey='"
+        + deploymentFlavourKey
+        + '\''
+        + '}';
+  }
 }

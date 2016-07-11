@@ -21,30 +21,32 @@ import java.io.Serializable;
  * Created by lto on 13/08/15.
  */
 public class PluginAnswer implements Serializable {
-    private Serializable answer;
-    private Throwable exception;
+  private Serializable answer;
+  private Throwable exception;
 
-    public Throwable getException() {
-        return exception;
-    }
+  public Throwable getException() {
+    return exception;
+  }
 
-    public void setException(Throwable exception) {
-        this.exception = exception;
-    }
+  public void setException(Throwable exception) {
+    this.exception = exception;
+  }
 
-    public Serializable getAnswer() {
-        return answer;
-    }
+  public Serializable getAnswer() {
+    return answer;
+  }
 
-    public void setAnswer(Serializable answer) {
-        this.answer = answer;
-    }
+  public void setAnswer(Serializable answer) {
+    this.answer = answer;
+  }
 
-    @Override
-    public String toString() {
-        return "PluginAnswer{" +
-                "answer=" + answer +
-                ", exception=" + (exception == null ? exception : exception.getMessage()) +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "PluginAnswer{"
+        + "answer="
+        + answer
+        + ", exception="
+        + (exception == null ? exception : exception.getMessage())
+        + '}';
+  }
 }

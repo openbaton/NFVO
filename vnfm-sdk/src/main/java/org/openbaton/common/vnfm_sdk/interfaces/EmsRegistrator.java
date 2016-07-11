@@ -5,5 +5,5 @@ package org.openbaton.common.vnfm_sdk.interfaces;
  */
 public interface EmsRegistrator {
 
-    void register(String json);
+  void register(String json);
 }

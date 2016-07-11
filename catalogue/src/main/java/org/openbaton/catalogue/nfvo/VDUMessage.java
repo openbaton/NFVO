@@ -24,33 +24,35 @@ import java.io.Serializable;
  */
 public class VDUMessage implements Serializable {
 
-    private Event lifecycleEvent;
-    private Serializable payload;
+  private Event lifecycleEvent;
+  private Serializable payload;
 
-    public VDUMessage() {
-    }
+  public VDUMessage() {}
 
-    public Event getLifecycleEvent() {
-        return lifecycleEvent;
-    }
+  public Event getLifecycleEvent() {
+    return lifecycleEvent;
+  }
 
-    public void setLifecycleEvent(Event lifecycleEvent) {
-        this.lifecycleEvent = lifecycleEvent;
-    }
+  public void setLifecycleEvent(Event lifecycleEvent) {
+    this.lifecycleEvent = lifecycleEvent;
+  }
 
-    public Serializable getPayload() {
-        return payload;
-    }
+  public Serializable getPayload() {
+    return payload;
+  }
 
-    public void setPayload(Serializable payload) {
-        this.payload = payload;
-    }
+  public void setPayload(Serializable payload) {
+    this.payload = payload;
+  }
 
-    @Override
-    public String toString() {
-        return "VDUMessage{" +
-                "lifecycleEvent=" + lifecycleEvent +
-                ", payload='" + payload + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "VDUMessage{"
+        + "lifecycleEvent="
+        + lifecycleEvent
+        + ", payload='"
+        + payload
+        + '\''
+        + '}';
+  }
 }
