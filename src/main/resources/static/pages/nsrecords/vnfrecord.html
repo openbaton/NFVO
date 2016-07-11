@@ -114,7 +114,7 @@
                                 <tr ng-repeat="vdu in vnfr.vdu | orderBy:predicate:reverse">
                                     <td>
                                         <a href="" ng-click="setVNFRName(vdu.id, vnfr.name)">{{vdu.id}}</a>
-                                        <a ng-href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                        <a ng-href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}"></a>
                                     </td>
                                     <td>{{vdu.version}}</td>
 
