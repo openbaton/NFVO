@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface LogManagement {
 
-    List<String> getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException;
+  List<String> getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException;
 }

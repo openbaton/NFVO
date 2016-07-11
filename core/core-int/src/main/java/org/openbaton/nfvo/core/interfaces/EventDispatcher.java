@@ -27,12 +27,13 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 /**
  * This class is in charge of registering and deregistering endpoint for event dispatching.
  * <p/>
- * An external application can register to a specific event sending an EndpointEvent through JMS or Rest.
+ * An external application can register to a specific event sending an EndpointEvent through JMS or
+ * Rest.
  */
 public interface EventDispatcher {
-    EventEndpoint register(String endpoint_json);
+  EventEndpoint register(String endpoint_json);
 
-    void dispatchEvent(EventNFVO event);
+  void dispatchEvent(EventNFVO event);
 
-    void unregister(String id, String projectId) throws NotFoundException;
+  void unregister(String id, String projectId) throws NotFoundException;
 }

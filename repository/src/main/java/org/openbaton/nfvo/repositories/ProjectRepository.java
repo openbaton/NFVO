@@ -23,7 +23,7 @@ import org.springframework.data.repository.CrudRepository;
  * Created by lto on 06/05/15.
  */
 public interface ProjectRepository extends CrudRepository<Project, String> {
-    Project findFirstById(String id);
+  Project findFirstById(String id);
 
-    Project findFirstByName(String name);
+  Project findFirstByName(String name);
 }

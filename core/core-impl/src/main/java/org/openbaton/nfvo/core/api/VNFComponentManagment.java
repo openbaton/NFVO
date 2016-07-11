@@ -24,27 +24,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Scope
-public class VNFComponentManagment implements org.openbaton.nfvo.core.interfaces.VNFComponentManagment{
+public class VNFComponentManagment
+    implements org.openbaton.nfvo.core.interfaces.VNFComponentManagment {
 
-    @Autowired
-    private VNFCRepository vnfcRepository;
+  @Autowired private VNFCRepository vnfcRepository;
 
-    /**
-     * Return the list of VNFComponent
-     * @return Iterable<VNFComponent>
-     */
-    public Iterable<VNFComponent> query(){
-       return vnfcRepository.findAll();
-    }
+  /**
+   * Return the list of VNFComponent
+   *
+   * @return Iterable<VNFComponent>
+   */
+  public Iterable<VNFComponent> query() {
+    return vnfcRepository.findAll();
+  }
 
-    /**
-     * Returns the VNFComponent selected by id
-     *
-     * @param id of VNFComponent
-     * @return VNFComponent
-     */
-    @Override
-    public VNFComponent query(String id) {
-        return vnfcRepository.findFirstById(id);
-    }
+  /**
+   * Returns the VNFComponent selected by id
+   *
+   * @param id of VNFComponent
+   * @return VNFComponent
+   */
+  @Override
+  public VNFComponent query(String id) {
+    return vnfcRepository.findFirstById(id);
+  }
 }

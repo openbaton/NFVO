@@ -26,6 +26,7 @@ import java.util.List;
  */
 public interface VnfPackageRepository extends CrudRepository<VNFPackage, String> {
 
-    VNFPackage findFirstById(String id);
-    List<VNFPackage> findByProjectId(String id);
+  VNFPackage findFirstById(String id);
+
+  List<VNFPackage> findByProjectId(String id);
 }

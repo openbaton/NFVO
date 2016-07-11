@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.repositories;
 
-
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
@@ -24,19 +23,20 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
 public interface NetworkServiceDescriptorRepositoryCustom {
 
-    VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id);
+  VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id);
 
-    void deleteVnfd(String idNsd, String idVnfd);
+  void deleteVnfd(String idNsd, String idVnfd);
 
-    void deleteVNFDependency(String idNsd, String idVnfd);
+  void deleteVNFDependency(String idNsd, String idVnfd);
 
-    VNFDependency addVnfDependency(VNFDependency vnfd, String id);
+  VNFDependency addVnfDependency(VNFDependency vnfd, String id);
 
-    void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
+  void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf);
 
-    PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pnfDescriptor, String id);
+  PhysicalNetworkFunctionDescriptor addPnfDescriptor(
+      PhysicalNetworkFunctionDescriptor pnfDescriptor, String id);
 
-    Security addSecurity(String id, Security security);
+  Security addSecurity(String id, Security security);
 
-    void deleteSecurity(String id, String idS);
+  void deleteSecurity(String id, String idS);
 }

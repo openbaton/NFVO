@@ -32,43 +32,50 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.persistence.NoResultException;
 
-
 /**
  * Created by gca on 27/08/15.
  */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @ExceptionHandler({NotFoundException.class, NoResultException.class})
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    protected ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
-        if (log.isDebugEnabled()) {
-            log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
-        } else {
-            log.error("Exception was thrown -> Return message: " + e.getMessage());
-        }
-        ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+  @ExceptionHandler({NotFoundException.class, NoResultException.class})
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  protected ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
+    if (log.isDebugEnabled()) {
+      log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
+    } else {
+      log.error("Exception was thrown -> Return message: " + e.getMessage());
     }
+    ExceptionResource exc = new ExceptionResource("Not Found", e.getMessage());
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
 
-    @ExceptionHandler({BadFormatException.class, NetworkServiceIntegrityException.class, WrongStatusException.class, UnrecognizedPropertyException.class, VimException.class, CyclicDependenciesException.class, WrongAction.class, PasswordWeakException.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
-        if (log.isDebugEnabled()) {
-            log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
-        } else {
-            log.error("Exception was thrown -> Return message: " + e.getMessage());
-        }
-        ExceptionResource exc = new ExceptionResource("Bad Request", e.getMessage());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+  }
 
-        return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+  @ExceptionHandler({
+    BadFormatException.class,
+    NetworkServiceIntegrityException.class,
+    WrongStatusException.class,
+    UnrecognizedPropertyException.class,
+    VimException.class,
+    CyclicDependenciesException.class,
+    WrongAction.class,
+    PasswordWeakException.class
+  })
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {
+    if (log.isDebugEnabled()) {
+      log.error("Exception was thrown -> Return message: " + e.getMessage(), e);
+    } else {
+      log.error("Exception was thrown -> Return message: " + e.getMessage());
     }
+    ExceptionResource exc = new ExceptionResource("Bad Request", e.getMessage());
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
 
+    return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+  }
 }

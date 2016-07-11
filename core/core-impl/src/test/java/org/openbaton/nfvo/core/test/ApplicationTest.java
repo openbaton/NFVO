@@ -30,10 +30,8 @@ import org.springframework.jms.annotation.EnableJms;
 @EnableJms
 public class ApplicationTest {
 
-    public static void main(String[] argv) {
-        ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
-        for (String s : context.getBeanDefinitionNames())
-            System.out.println(s);
-    }
-
+  public static void main(String[] argv) {
+    ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
+    for (String s : context.getBeanDefinitionNames()) System.out.println(s);
+  }
 }

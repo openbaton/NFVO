@@ -20,5 +20,5 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.springframework.data.repository.CrudRepository;
 
 public interface VNFRecordDependencyRepository extends CrudRepository<VNFRecordDependency, String> {
-    VNFRecordDependency findFirstById(String id);
+  VNFRecordDependency findFirstById(String id);
 }

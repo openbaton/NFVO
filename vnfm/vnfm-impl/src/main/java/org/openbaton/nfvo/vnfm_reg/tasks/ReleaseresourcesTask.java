@@ -32,27 +32,26 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class ReleaseresourcesTask extends AbstractTask {
 
-    @Autowired
-    private ResourceManagement resourceManagement;
+  @Autowired private ResourceManagement resourceManagement;
 
-    @Override
-    protected NFVMessage doWork() throws Exception {
-        log.info("Release resources for VNFR: " + virtualNetworkFunctionRecord.getName());
+  @Override
+  protected NFVMessage doWork() throws Exception {
+    log.info("Release resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 
-        saveVirtualNetworkFunctionRecord();
+    saveVirtualNetworkFunctionRecord();
 
-        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
-            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                log.debug("Removing VNFCInstance: " + vnfcInstance);
-                this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
-            }
-        }
-        return null;
+    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+      log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
+      for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+        log.debug("Removing VNFCInstance: " + vnfcInstance);
+        this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
+      }
     }
+    return null;
+  }
 
-    @Override
-    public boolean isAsync() {
-        return true;
-    }
+  @Override
+  public boolean isAsync() {
+    return true;
+  }
 }

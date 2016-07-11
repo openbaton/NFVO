@@ -26,24 +26,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class VimRepositoryImpl implements VimRepositoryCustom {
 
-    @Autowired
-    private VimRepository vimRepository;
+  @Autowired private VimRepository vimRepository;
 
-    @Autowired
-    private ImageRepository imageRepository;
+  @Autowired private ImageRepository imageRepository;
 
-    @Override
-    @Transactional
-    public NFVImage addImage(String id, NFVImage image) {
-        image = imageRepository.save(image);
-        vimRepository.findFirstById(id).getImages().add(image);
-        return image;
-    }
+  @Override
+  @Transactional
+  public NFVImage addImage(String id, NFVImage image) {
+    image = imageRepository.save(image);
+    vimRepository.findFirstById(id).getImages().add(image);
+    return image;
+  }
 
-    @Override
-    @Transactional
-    public void deleteImage(String idVim, String idImage) {
-        vimRepository.findFirstById(idVim).getImages().remove(imageRepository.findOne(idImage));
-        imageRepository.delete(idImage);
-    }
+  @Override
+  @Transactional
+  public void deleteImage(String idVim, String idImage) {
+    vimRepository.findFirstById(idVim).getImages().remove(imageRepository.findOne(idImage));
+    imageRepository.delete(idImage);
+  }
 }

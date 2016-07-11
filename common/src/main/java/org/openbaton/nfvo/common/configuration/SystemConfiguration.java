@@ -22,46 +22,50 @@ import org.springframework.context.annotation.Scope;
 @ConfigurationProperties
 public class SystemConfiguration {
 
-    @Value("${server.https:false}")
-    private boolean https;
+  @Value("${server.https:false}")
+  private boolean https;
 
-    @Bean
-    @Scope("prototype")
-    Gson gson(){
-        return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage()).create();
+  @Bean
+  @Scope("prototype")
+  Gson gson() {
+    return new GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+        .create();
+  }
+
+  @Bean
+  public EmbeddedServletContainerFactory servletContainer() {
+    if (https) {
+      TomcatEmbeddedServletContainerFactory tomcat =
+          new TomcatEmbeddedServletContainerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+              SecurityConstraint securityConstraint = new SecurityConstraint();
+              securityConstraint.setUserConstraint("CONFIDENTIAL");
+              SecurityCollection collection = new SecurityCollection();
+              collection.addPattern("/*");
+              securityConstraint.addCollection(collection);
+              context.addConstraint(securityConstraint);
+            }
+          };
+
+      tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
+      return tomcat;
     }
+    return new TomcatEmbeddedServletContainerFactory();
+  }
 
-    @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        if (https) {
-            TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
-                @Override
-                protected void postProcessContext(Context context) {
-                    SecurityConstraint securityConstraint = new SecurityConstraint();
-                    securityConstraint.setUserConstraint("CONFIDENTIAL");
-                    SecurityCollection collection = new SecurityCollection();
-                    collection.addPattern("/*");
-                    securityConstraint.addCollection(collection);
-                    context.addConstraint(securityConstraint);
-                }
-            };
+  private Connector initiateHttpConnector() {
 
-            tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
-            return tomcat;
-        }
-        return new TomcatEmbeddedServletContainerFactory();
+    Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+
+    connector.setScheme("http");
+    connector.setPort(8080);
+    if (https) {
+      connector.setSecure(false);
+      connector.setRedirectPort(8443);
     }
-
-    private Connector initiateHttpConnector() {
-
-        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-
-        connector.setScheme("http");
-        connector.setPort(8080);
-        if (https) {
-            connector.setSecure(false);
-            connector.setRedirectPort(8443);
-        }
-        return connector;
-    }
+    return connector;
+  }
 }

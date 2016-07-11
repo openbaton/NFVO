@@ -35,36 +35,42 @@ import org.springframework.stereotype.Service;
 @Scope
 public class RabbitVnfmSender implements VnfmSender {
 
-    @Autowired
-    private Gson gson;
+  @Autowired private Gson gson;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+  @Autowired private RabbitTemplate rabbitTemplate;
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
-        String destinationName = "nfvo." + endpoint.getType() + ".actions";
-        log.debug("Sending NFVMessage with action: " + nfvMessage.getAction() + " to destination: " + destinationName);
-        log.trace("nfvMessage is: " + nfvMessage);
-        log.trace("gson is: " + gson);
-        log.trace("RabbitTmeplat is: " + rabbitTemplate);
-        String json = null;
-        try {
-            json = gson.toJson(nfvMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        log.trace("Json is: " + json);
-        rabbitTemplate.convertAndSend(destinationName, json);
+  @Override
+  public void sendCommand(final NFVMessage nfvMessage, final VnfmManagerEndpoint endpoint) {
+    String destinationName = "nfvo." + endpoint.getType() + ".actions";
+    log.debug(
+        "Sending NFVMessage with action: "
+            + nfvMessage.getAction()
+            + " to destination: "
+            + destinationName);
+    log.trace("nfvMessage is: " + nfvMessage);
+    log.trace("gson is: " + gson);
+    log.trace("RabbitTmeplat is: " + rabbitTemplate);
+    String json = null;
+    try {
+      json = gson.toJson(nfvMessage);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    log.trace("Json is: " + json);
+    rabbitTemplate.convertAndSend(destinationName, json);
+  }
 
-    @Override
-    public void sendCommand(final NFVMessage nfvMessage, String tempDestination) {
-        log.trace("Sending NFVMessage with action: " + nfvMessage.getAction() + " to tempQueue: " + tempDestination);
+  @Override
+  public void sendCommand(final NFVMessage nfvMessage, String tempDestination) {
+    log.trace(
+        "Sending NFVMessage with action: "
+            + nfvMessage.getAction()
+            + " to tempQueue: "
+            + tempDestination);
 
-        rabbitTemplate.setReplyQueue(new Queue(tempDestination));
-        rabbitTemplate.convertAndSend(tempDestination, gson.toJson(nfvMessage));
-    }
+    rabbitTemplate.setReplyQueue(new Queue(tempDestination));
+    rabbitTemplate.convertAndSend(tempDestination, gson.toJson(nfvMessage));
+  }
 }

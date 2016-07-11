@@ -9,12 +9,12 @@ import java.util.concurrent.Future;
  * Created by lto on 10/03/16.
  */
 public interface EventManagement {
-    @Async
-    Future<Void> removeUnreachableEndpoints();
+  @Async
+  Future<Void> removeUnreachableEndpoints();
 
-    Iterable<EventEndpoint> query(String projectId);
+  Iterable<EventEndpoint> query(String projectId);
 
-    EventEndpoint query(String id, String projectId);
+  EventEndpoint query(String id, String projectId);
 
-    Iterable<EventEndpoint> queryByProjectId(String projectId);
+  Iterable<EventEndpoint> queryByProjectId(String projectId);
 }

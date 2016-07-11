@@ -22,20 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @Scope
-public class VNFManagerManagement implements org.openbaton.nfvo.core.interfaces.VNFManagerManagement{
+public class VNFManagerManagement
+    implements org.openbaton.nfvo.core.interfaces.VNFManagerManagement {
 
-    @Autowired
-    private VnfmEndpointRepository vnfmManagerEndpointRepository;
+  @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
-    public Iterable<VnfmManagerEndpoint> query(){
-       return vnfmManagerEndpointRepository.findAll();
-    }
+  public Iterable<VnfmManagerEndpoint> query() {
+    return vnfmManagerEndpointRepository.findAll();
+  }
 
-
-    public VnfmManagerEndpoint query(String id) {
-        return vnfmManagerEndpointRepository.findFirstById(id);
-    }
+  public VnfmManagerEndpoint query(String id) {
+    return vnfmManagerEndpointRepository.findFirstById(id);
+  }
 }

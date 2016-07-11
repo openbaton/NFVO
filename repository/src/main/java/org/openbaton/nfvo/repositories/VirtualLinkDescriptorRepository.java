@@ -22,6 +22,5 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-public interface VirtualLinkDescriptorRepository extends CrudRepository<VirtualLinkDescriptor, String> {
-
-}
+public interface VirtualLinkDescriptorRepository
+    extends CrudRepository<VirtualLinkDescriptor, String> {}

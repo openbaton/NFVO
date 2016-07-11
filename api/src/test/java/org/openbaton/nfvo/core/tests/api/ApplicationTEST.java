@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.core.tests.api;
 
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,15 +30,14 @@ import static org.mockito.Mockito.mock;
  */
 @Configuration
 @ComponentScan(basePackages = "org.project.openbaton.nfvo")
-
 public class ApplicationTEST {
 
-    public static void main(String[] argv) {
-        SpringApplication.run(ApplicationTEST.class);
-    }
+  public static void main(String[] argv) {
+    SpringApplication.run(ApplicationTEST.class);
+  }
 
-    @Bean
-    Receiver receiver() {
-        return mock(Receiver.class);
-    }
+  @Bean
+  Receiver receiver() {
+    return mock(Receiver.class);
+  }
 }

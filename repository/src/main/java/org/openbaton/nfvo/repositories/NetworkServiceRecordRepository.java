@@ -24,7 +24,9 @@ import java.util.List;
 /**
  * Created by mob on 03.09.15.
  */
-public interface NetworkServiceRecordRepository extends CrudRepository<NetworkServiceRecord, String>, NetworkServiceRecordRepositoryCustom {
-    NetworkServiceRecord findFirstById(String id);
-    List<NetworkServiceRecord> findByProjectId(String projectId);
+public interface NetworkServiceRecordRepository
+    extends CrudRepository<NetworkServiceRecord, String>, NetworkServiceRecordRepositoryCustom {
+  NetworkServiceRecord findFirstById(String id);
+
+  List<NetworkServiceRecord> findByProjectId(String projectId);
 }

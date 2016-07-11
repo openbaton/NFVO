@@ -33,43 +33,42 @@ import java.util.Date;
 @Scope
 public class NFVImageManagement implements org.openbaton.nfvo.core.interfaces.NFVImageManagement {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private ImageRepository imageRepository;
+  @Autowired private ImageRepository imageRepository;
 
-    @Override
-    public NFVImage add(NFVImage NFVImage) {
-        log.trace("Adding image " + NFVImage);
-        log.debug("Adding image with name " + NFVImage.getName());
-        return imageRepository.save(NFVImage);
-    }
+  @Override
+  public NFVImage add(NFVImage NFVImage) {
+    log.trace("Adding image " + NFVImage);
+    log.debug("Adding image with name " + NFVImage.getName());
+    return imageRepository.save(NFVImage);
+  }
 
-    @Override
-    public void delete(String id) {
-        log.debug("Removing image with id " + id);
-        imageRepository.delete(id);
-    }
+  @Override
+  public void delete(String id) {
+    log.debug("Removing image with id " + id);
+    imageRepository.delete(id);
+  }
 
-    @Override
-    public NFVImage update(NFVImage nfvImage, String id) {
-        nfvImage = imageRepository.save(nfvImage);
-        nfvImage.setUpdated(new Date());
-        return nfvImage;
-    }
+  @Override
+  public NFVImage update(NFVImage nfvImage, String id) {
+    nfvImage = imageRepository.save(nfvImage);
+    nfvImage.setUpdated(new Date());
+    return nfvImage;
+  }
 
-    @Override
-    public Iterable<NFVImage> query() {
-        return imageRepository.findAll();
-    }
+  @Override
+  public Iterable<NFVImage> query() {
+    return imageRepository.findAll();
+  }
 
-    @Override
-    public NFVImage query(String id) {
-        return imageRepository.findOne(id);
-    }
+  @Override
+  public NFVImage query(String id) {
+    return imageRepository.findOne(id);
+  }
 
-    @Override
-    public void copy() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void copy() {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -48,142 +48,165 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class ScalingTask extends AbstractTask {
 
-    @Autowired
-    private ResourceManagement resourceManagement;
-    @Autowired
-    private VNFLifecycleOperationGranting lifecycleOperationGranting;
-    @Value("${nfvo.quota.check:true}")
-    private boolean checkQuota;
-    @Autowired
-    private VnfPlacementManagement vnfPlacementManagement;
+  @Autowired private ResourceManagement resourceManagement;
+  @Autowired private VNFLifecycleOperationGranting lifecycleOperationGranting;
 
-    public void setUserdata(String userdata) {
-        this.userdata = userdata;
+  @Value("${nfvo.quota.check:true}")
+  private boolean checkQuota;
+
+  @Autowired private VnfPlacementManagement vnfPlacementManagement;
+
+  public void setUserdata(String userdata) {
+    this.userdata = userdata;
+  }
+
+  private String userdata;
+
+  public boolean isCheckQuota() {
+    return checkQuota;
+  }
+
+  public void setCheckQuota(boolean checkQuota) {
+    this.checkQuota = checkQuota;
+  }
+
+  @Override
+  protected NFVMessage doWork() throws Exception {
+
+    log.debug("NFVO: SCALING");
+    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+    log.debug(
+        "The VNFR: "
+            + virtualNetworkFunctionRecord.getName()
+            + " is in status --> "
+            + virtualNetworkFunctionRecord.getStatus());
+
+    saveVirtualNetworkFunctionRecord();
+
+    VNFComponent componentToAdd = null;
+    VirtualDeploymentUnit vdu = null;
+    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+      for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
+        boolean found = false;
+        for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+          if (vnfComponent.getId().equals(vnfcInstance.getVnfComponent().getId())) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) { // new vnfComponent!
+          componentToAdd = vnfComponent;
+          vdu = virtualDeploymentUnit;
+          break;
+        }
+      }
     }
 
-    private String userdata;
-
-    public boolean isCheckQuota() {
-        return checkQuota;
-    }
-
-    public void setCheckQuota(boolean checkQuota) {
-        this.checkQuota = checkQuota;
-    }
-
-    @Override
-    protected NFVMessage doWork() throws Exception {
-
-        log.debug("NFVO: SCALING");
-        log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
-        log.debug("The VNFR: " + virtualNetworkFunctionRecord.getName() + " is in status --> " + virtualNetworkFunctionRecord.getStatus());
-
+    log.info("The component to add is: " + componentToAdd);
+    if (checkQuota) {
+      Map<String, VimInstance> vimInstanceMap =
+          lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
+      if (vimInstanceMap.size()
+          == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
+        try {
+          Future<String> future =
+              resourceManagement.allocate(
+                  vdu,
+                  virtualNetworkFunctionRecord,
+                  componentToAdd,
+                  vimInstanceMap.get(vdu.getId()),
+                  userdata);
+          log.debug("Added new component with id: " + future.get());
+        } catch (ExecutionException exe) {
+          try {
+            Throwable realException = exe.getCause();
+            if (realException instanceof VimException) throw (VimException) realException;
+            if (realException instanceof VimDriverException)
+              throw (VimDriverException) realException;
+            throw exe;
+          } catch (VimException e) {
+            resourceManagement.release(vdu, e.getVnfcInstance());
+            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+            saveVirtualNetworkFunctionRecord();
+            OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+            errorMessage.setMessage(
+                "Error creating VM while scale out. " + e.getLocalizedMessage());
+            errorMessage.setVnfr(virtualNetworkFunctionRecord);
+            errorMessage.setAction(Action.ERROR);
+            vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+            return errorMessage;
+          } catch (VimDriverException e) {
+            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+            saveVirtualNetworkFunctionRecord();
+            OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+            errorMessage.setMessage(
+                "Error creating VM while scale out. " + e.getLocalizedMessage());
+            errorMessage.setVnfr(virtualNetworkFunctionRecord);
+            errorMessage.setAction(Action.ERROR);
+            vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+            return errorMessage;
+          }
+        }
+      } else {
+        log.error("Not enough resources for scale out.");
+        log.error("VNFR " + virtualNetworkFunctionRecord.getName() + " stay in status ACTIVE.");
+        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+        errorMessage.setMessage("Not enough resources for scale out.");
+        errorMessage.setVnfr(virtualNetworkFunctionRecord);
+        errorMessage.setAction(Action.ERROR);
         saveVirtualNetworkFunctionRecord();
-
-        VNFComponent componentToAdd = null;
-        VirtualDeploymentUnit vdu = null;
-        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-            for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-                boolean found = false;
-                for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-                    if (vnfComponent.getId().equals(vnfcInstance.getVnfComponent().getId())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) { // new vnfComponent!
-                    componentToAdd = vnfComponent;
-                    vdu = virtualDeploymentUnit;
-                    break;
-                }
-            }
-        }
-
-        log.info("The component to add is: " + componentToAdd);
-        if (checkQuota) {
-            Map<String, VimInstance> vimInstanceMap = lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-            if (vimInstanceMap.size() == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
-                try {
-                    Future<String> future = resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstanceMap.get(vdu.getId()), userdata);
-                    log.debug("Added new component with id: " + future.get());
-                } catch (ExecutionException exe) {
-                    try {
-                        Throwable realException = exe.getCause();
-                        if (realException instanceof VimException)
-                            throw (VimException) realException;
-                        if (realException instanceof VimDriverException)
-                            throw (VimDriverException) realException;
-                        throw exe;
-                    } catch (VimException e) {
-                        resourceManagement.release(vdu, e.getVnfcInstance());
-                        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                        saveVirtualNetworkFunctionRecord();
-                        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                        errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
-                        errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                        errorMessage.setAction(Action.ERROR);
-                        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                        return errorMessage;
-                    } catch (VimDriverException e){
-                        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                        saveVirtualNetworkFunctionRecord();
-                        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                        errorMessage.setMessage("Error creating VM while scale out. " + e.getLocalizedMessage());
-                        errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                        errorMessage.setAction(Action.ERROR);
-                        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                        return errorMessage;
-                    }
-                }
-            } else {
-                log.error("Not enough resources for scale out.");
-                log.error("VNFR " + virtualNetworkFunctionRecord.getName() + " stay in status ACTIVE.");
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                errorMessage.setMessage("Not enough resources for scale out.");
-                errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                errorMessage.setAction(Action.ERROR);
-                saveVirtualNetworkFunctionRecord();
-                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                return errorMessage;
-            }
-        } else {
-            log.warn("Please consider turning the check quota (nfvo.quota.check in openbaton.properties) to true.");
-            try {
-                log.debug("Added new component with id: " + resourceManagement.allocate(vdu, virtualNetworkFunctionRecord, componentToAdd, vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()), userdata).get());
-            } catch (VimDriverException e) {
-                log.error(e.getLocalizedMessage());
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                errorMessage.setMessage("Error creating VM while scale out. Please consider enabling checkQuota ;)");
-                errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                errorMessage.setAction(Action.ERROR);
-                saveVirtualNetworkFunctionRecord();
-                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                return errorMessage;
-            } catch (VimException e) {
-                log.error(e.getLocalizedMessage());
-                if (e.getVnfcInstance() != null)
-                    resourceManagement.release(vdu, e.getVnfcInstance());
-                virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-                OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-                errorMessage.setMessage("Error creating VM while scale out. Please consider enabling checkQuota ;)");
-                errorMessage.setVnfr(virtualNetworkFunctionRecord);
-                errorMessage.setAction(Action.ERROR);
-                saveVirtualNetworkFunctionRecord();
-                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-                return errorMessage;
-            }
-        }
-
-        log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
-        OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
-        return nfvMessage;
+        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        return errorMessage;
+      }
+    } else {
+      log.warn(
+          "Please consider turning the check quota (nfvo.quota.check in openbaton.properties) to true.");
+      try {
+        log.debug(
+            "Added new component with id: "
+                + resourceManagement
+                    .allocate(
+                        vdu,
+                        virtualNetworkFunctionRecord,
+                        componentToAdd,
+                        vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()),
+                        userdata)
+                    .get());
+      } catch (VimDriverException e) {
+        log.error(e.getLocalizedMessage());
+        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+        errorMessage.setMessage(
+            "Error creating VM while scale out. Please consider enabling checkQuota ;)");
+        errorMessage.setVnfr(virtualNetworkFunctionRecord);
+        errorMessage.setAction(Action.ERROR);
+        saveVirtualNetworkFunctionRecord();
+        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        return errorMessage;
+      } catch (VimException e) {
+        log.error(e.getLocalizedMessage());
+        if (e.getVnfcInstance() != null) resourceManagement.release(vdu, e.getVnfcInstance());
+        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+        errorMessage.setMessage(
+            "Error creating VM while scale out. Please consider enabling checkQuota ;)");
+        errorMessage.setVnfr(virtualNetworkFunctionRecord);
+        errorMessage.setAction(Action.ERROR);
+        saveVirtualNetworkFunctionRecord();
+        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+        return errorMessage;
+      }
     }
 
+    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+    OrVnfmGenericMessage nfvMessage =
+        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
+    return nfvMessage;
+  }
 
-    @Override
-    public boolean isAsync() {
-        return true;
-    }
+  @Override
+  public boolean isAsync() {
+    return true;
+  }
 }

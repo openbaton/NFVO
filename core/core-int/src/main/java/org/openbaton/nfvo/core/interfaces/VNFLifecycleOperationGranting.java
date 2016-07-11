@@ -26,15 +26,16 @@ import java.util.Map;
 /**
  * Created by mpa on 05/05/15.
  */
-
 public interface VNFLifecycleOperationGranting {
 
-    /**
-     * This operation allows requesting the permission to
-     * perform a certain VNF lifecycle operation on a new
-     * or existing VNF. The sub-type of lifecycle operation
-     * is parameterized in the operation.
-     *  @param vimInstance
-     * @param virtualNetworkFunctionRecord*/
-    Map<String, VimInstance> grantLifecycleOperation(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException, PluginException;
+  /**
+   * This operation allows requesting the permission to perform a certain VNF lifecycle operation on
+   * a new or existing VNF. The sub-type of lifecycle operation is parameterized in the operation.
+   *
+   * @param vimInstance
+   * @param virtualNetworkFunctionRecord
+   */
+  Map<String, VimInstance> grantLifecycleOperation(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws VimException, PluginException;
 }

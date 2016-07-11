@@ -37,69 +37,73 @@ import java.io.IOException;
 @ConfigurationProperties
 public class RabbitRegister extends VnfmRegister {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${nfvo.rabbit.management.port:15672}")
-    private int managementPort;
-    @Value("${spring.rabbitmq.password:openbaton}")
-    private String password;
-    @Value("${spring.rabbitmq.username:admin}")
-    private String username;
-    @Value("${nfvo.rabbit.brokerIp:localhost}")
-    private String brokerIp;
+  @Value("${nfvo.rabbit.management.port:15672}")
+  private int managementPort;
 
-    @Override
-    public void addManagerEndpoint(String endpoint_json) {
+  @Value("${spring.rabbitmq.password:openbaton}")
+  private String password;
 
-        VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
+  @Value("${spring.rabbitmq.username:admin}")
+  private String username;
 
-        if (endpoint.getEndpointType() == null) {
-            endpoint.setEndpointType(EndpointType.RABBIT);
-        }
-        log.info("Registering endpoint of type: " + endpoint.getType());
-        try {
-            this.register(endpoint);
-        } catch (AlreadyExistingException e) {
-            log.warn(e.getLocalizedMessage());
-        }
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
+
+  @Override
+  public void addManagerEndpoint(String endpoint_json) {
+
+    VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
+
+    if (endpoint.getEndpointType() == null) {
+      endpoint.setEndpointType(EndpointType.RABBIT);
     }
+    log.info("Registering endpoint of type: " + endpoint.getType());
+    try {
+      this.register(endpoint);
+    } catch (AlreadyExistingException e) {
+      log.warn(e.getLocalizedMessage());
+    }
+  }
 
-    @Override
-    public void removeManagerEndpoint(String endpoint_json) {
+  @Override
+  public void removeManagerEndpoint(String endpoint_json) {
 
-        VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
-        log.debug("Unregistering: " + endpoint);
-        for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmEndpointRepository.findAll())
-            if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint())) {
-                this.unregister(vnfmManagerEndpoint);
-                break;
+    VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
+    log.debug("Unregistering: " + endpoint);
+    for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmEndpointRepository.findAll())
+      if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint())) {
+        this.unregister(vnfmManagerEndpoint);
+        break;
+      }
+  }
+
+  @Scheduled(initialDelay = 30000, fixedDelay = 20000)
+  public void checkHeartBeat() {
+    for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
+      if (endpoint.getEndpointType().ordinal() == EndpointType.RABBIT.ordinal()) {
+        if (endpoint.isEnabled()) {
+          try {
+            if (!RabbitManager.getQueues(brokerIp.trim(), username, password, managementPort)
+                .contains("nfvo." + endpoint.getType() + ".actions")) {
+              if (endpoint.isActive()) {
+                log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                endpoint.setActive(false);
+                vnfmEndpointRepository.save(endpoint);
+              }
+            } else {
+              if (!endpoint.isActive()) {
+                log.info("Set endpoint " + endpoint.getType() + " to active");
+                endpoint.setActive(true);
+                vnfmEndpointRepository.save(endpoint);
+              }
             }
-    }
-
-    @Scheduled(initialDelay = 30000, fixedDelay = 20000)
-    public void checkHeartBeat() {
-        for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
-            if (endpoint.getEndpointType().ordinal() == EndpointType.RABBIT.ordinal()) {
-                if (endpoint.isEnabled()) {
-                    try {
-                        if (!RabbitManager.getQueues(brokerIp.trim(), username, password, managementPort).contains("nfvo." + endpoint.getType() + ".actions")) {
-                            if (endpoint.isActive()) {
-                                log.info("Set endpoint " + endpoint.getType() + " to unactive");
-                                endpoint.setActive(false);
-                                vnfmEndpointRepository.save(endpoint);
-                            }
-                        } else {
-                            if (!endpoint.isActive()) {
-                                log.info("Set endpoint " + endpoint.getType() + " to active");
-                                endpoint.setActive(true);
-                                vnfmEndpointRepository.save(endpoint);
-                            }
-                        }
-                    } catch (IOException e) {
-                        log.warn("Not able to list queues, probably " + brokerIp.trim() + " is not reachable.");
-                    }
-                }
-            }
+          } catch (IOException e) {
+            log.warn("Not able to list queues, probably " + brokerIp.trim() + " is not reachable.");
+          }
         }
+      }
     }
+  }
 }

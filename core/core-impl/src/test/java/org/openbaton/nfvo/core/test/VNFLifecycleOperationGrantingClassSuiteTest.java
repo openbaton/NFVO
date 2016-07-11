@@ -52,101 +52,112 @@ import static org.mockito.Mockito.when;
  */
 public class VNFLifecycleOperationGrantingClassSuiteTest {
 
-    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
-    @InjectMocks
-    private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
+  @InjectMocks private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
 
-    @Mock
-    private VimRepository vimInstanceRepository;
-    @Mock
-    private VimBroker vimBroker;
+  @Mock private VimRepository vimInstanceRepository;
+  @Mock private VimBroker vimBroker;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        log.info("Starting test");
+  @Before
+  public void init() {
+    MockitoAnnotations.initMocks(this);
+    log.info("Starting test");
+  }
+
+  @Test
+  public void vnfLifecycleOperationGrantingTest() throws VimException, PluginException {
+    VirtualNetworkFunctionRecord vnfr = createVirtualNetworkFunctionRecord();
+    Map<String, VimInstance> granted;
+
+    when(vimInstanceRepository.findByProjectId(anyString()))
+        .thenReturn(
+            new ArrayList<VimInstance>() {
+              {
+                add(createVimInstance());
+              }
+            });
+    when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMaxQuota());
+
+    granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
+    log.debug(granted.size() + " == " + vnfr.getVdu().size());
+    Assert.assertTrue(granted.size() == vnfr.getVdu().size());
+
+    when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMinQuota());
+    granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
+    Assert.assertFalse(granted.size() == vnfr.getVdu().size());
+  }
+
+  private VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord() {
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
+    virtualNetworkFunctionRecord.setMonitoring_parameter(
+        new HashSet<String>() {
+          {
+            add("monitor1");
+            add("monitor2");
+            add("monitor3");
+          }
+        });
+    VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
+    vdf.setExtId("mocked_vdu_ext_id");
+    vdf.setFlavour_key("mocked_flavor_name_1");
+    virtualNetworkFunctionRecord.setName("mocked_vnfr");
+    virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf.getFlavour_key());
+    virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
+    VimInstance vimInstance = createVimInstance();
+    for (int i = 1; i <= 3; i++) {
+      virtualNetworkFunctionRecord.getVdu().add(createVDU(i, vimInstance));
     }
+    return virtualNetworkFunctionRecord;
+  }
 
-    @Test
-    public void vnfLifecycleOperationGrantingTest() throws VimException, PluginException {
-        VirtualNetworkFunctionRecord vnfr = createVirtualNetworkFunctionRecord();
-        Map<String, VimInstance> granted;
-
-        when(vimInstanceRepository.findByProjectId(anyString())).thenReturn(new ArrayList<VimInstance>(){{add(createVimInstance()); }});
-        when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMaxQuota());
-
-        granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
-        log.debug(granted.size() + " == " + vnfr.getVdu().size());
-        Assert.assertTrue(granted.size() == vnfr.getVdu().size());
-
-        when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createMinQuota());
-        granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
-        Assert.assertFalse(granted.size() == vnfr.getVdu().size());
-    }
-
-    private VirtualNetworkFunctionRecord createVirtualNetworkFunctionRecord() {
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
-        virtualNetworkFunctionRecord
-                .setMonitoring_parameter(new HashSet<String>() {
-                    {
-                        add("monitor1");
-                        add("monitor2");
-                        add("monitor3");
-                    }
-                });
-        VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
-        vdf.setExtId("mocked_vdu_ext_id");
-        vdf.setFlavour_key("mocked_flavor_name_1");
-        virtualNetworkFunctionRecord.setName("mocked_vnfr");
-        virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf.getFlavour_key());
-        virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());
-        VimInstance vimInstance = createVimInstance();
-        for (int i = 1; i <= 3; i++) {
-            virtualNetworkFunctionRecord.getVdu().add(createVDU(i, vimInstance));
-        }
-        return virtualNetworkFunctionRecord;
-    }
-
-    private VirtualDeploymentUnit createVDU(int suffix, VimInstance vimInstance) {
-        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-        vdu.setId("" + Math.random() * 100000);
-        vdu.setHostname("mocked_vdu_hostname_" + suffix);
-        HighAvailability highAvailability = new HighAvailability();
-        highAvailability.setGeoRedundancy(false);
-        highAvailability.setRedundancyScheme("1:N");
-        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
-        vdu.setHigh_availability(highAvailability);
-        vdu.setVm_image(new HashSet<String>() {{
+  private VirtualDeploymentUnit createVDU(int suffix, VimInstance vimInstance) {
+    VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+    vdu.setId("" + Math.random() * 100000);
+    vdu.setHostname("mocked_vdu_hostname_" + suffix);
+    HighAvailability highAvailability = new HighAvailability();
+    highAvailability.setGeoRedundancy(false);
+    highAvailability.setRedundancyScheme("1:N");
+    highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+    vdu.setHigh_availability(highAvailability);
+    vdu.setVm_image(
+        new HashSet<String>() {
+          {
             add("mocked_image");
-        }});
-        vdu.setComputation_requirement("high_requirements");
-        HashSet<VNFComponent> vnfComponents = new HashSet<>();
-        vnfComponents.add(new VNFComponent());
-        vnfComponents.add(new VNFComponent());
-        vdu.setVnfc(vnfComponents);
-        HashSet<VNFCInstance> vnfc_instance = new HashSet<>();
-        vnfc_instance.add(new VNFCInstance());
-        vdu.setVnfc_instance(vnfc_instance);
-        vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
-        vdu.setMonitoring_parameter(new HashSet<String>());
-        ArrayList<String> vimInstanceName = new ArrayList<>();
-        vimInstanceName.add(vimInstance.getName());
-        vdu.setVimInstanceName(vimInstanceName);
-        return vdu;
-    }
+          }
+        });
+    vdu.setComputation_requirement("high_requirements");
+    HashSet<VNFComponent> vnfComponents = new HashSet<>();
+    vnfComponents.add(new VNFComponent());
+    vnfComponents.add(new VNFComponent());
+    vdu.setVnfc(vnfComponents);
+    HashSet<VNFCInstance> vnfc_instance = new HashSet<>();
+    vnfc_instance.add(new VNFCInstance());
+    vdu.setVnfc_instance(vnfc_instance);
+    vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+    vdu.setMonitoring_parameter(new HashSet<String>());
+    ArrayList<String> vimInstanceName = new ArrayList<>();
+    vimInstanceName.add(vimInstance.getName());
+    vdu.setVimInstanceName(vimInstanceName);
+    return vdu;
+  }
 
-    private VimInstance createVimInstance() {
-        VimInstance vimInstance = new VimInstance();
-        vimInstance.setName("mocked_vim_instance");
-        vimInstance.setType("mocked_test_type");
-        vimInstance.setNetworks(new HashSet<Network>() {{
+  private VimInstance createVimInstance() {
+    VimInstance vimInstance = new VimInstance();
+    vimInstance.setName("mocked_vim_instance");
+    vimInstance.setType("mocked_test_type");
+    vimInstance.setNetworks(
+        new HashSet<Network>() {
+          {
             Network network = new Network();
             network.setExtId("mocked_network_ext_id");
             network.setName("mocked_network_name");
             add(network);
-        }});
-        vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
+          }
+        });
+    vimInstance.setFlavours(
+        new HashSet<DeploymentFlavour>() {
+          {
             DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
             deploymentFlavour.setExtId("mocked_flavor_ext_id_1");
             deploymentFlavour.setFlavour_key("mocked_flavor_name_1");
@@ -160,8 +171,11 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
             deploymentFlavour.setRam(1024);
             deploymentFlavour.setVcpus(2);
             add(deploymentFlavour);
-        }});
-        vimInstance.setImages(new HashSet<NFVImage>() {{
+          }
+        });
+    vimInstance.setImages(
+        new HashSet<NFVImage>() {
+          {
             NFVImage image = new NFVImage();
             image.setExtId("mocked_image_ext_id_1");
             image.setName("mocked_image_name_1");
@@ -171,24 +185,24 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
             image.setExtId("mocked_image_ext_id_2");
             image.setName("mocked_image_name_2");
             add(image);
-        }});
-        return vimInstance;
-    }
+          }
+        });
+    return vimInstance;
+  }
 
-    private Quota createMaxQuota() {
-        Quota quota = new Quota();
-        quota.setInstances(100);
-        quota.setRam(50000);
-        quota.setCores(400);
-        return quota;
-    }
+  private Quota createMaxQuota() {
+    Quota quota = new Quota();
+    quota.setInstances(100);
+    quota.setRam(50000);
+    quota.setCores(400);
+    return quota;
+  }
 
-    private Quota createMinQuota() {
-        Quota quota = new Quota();
-        quota.setInstances(1);
-        quota.setRam(256);
-        quota.setCores(1);
-        return quota;
-    }
-
+  private Quota createMinQuota() {
+    Quota quota = new Quota();
+    quota.setInstances(1);
+    quota.setRam(256);
+    quota.setCores(1);
+    return quota;
+  }
 }

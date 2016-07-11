@@ -32,24 +32,25 @@ import javax.validation.Valid;
 @RequestMapping("/register")
 public class RestUsersRegister {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private UserManagement userManagement;
+  @Autowired private UserManagement userManagement;
 
-    /**
-     * Adds a new User to the Users repository
-     *
-     * @param user
-     * @return user
-     */
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody @Valid User user) throws PasswordWeakException {
-        log.info("Adding user: " + user.getUsername());
-        user.setEnabled(false);
-        return userManagement.add(user);
-    }
-
-
+  /**
+   * Adds a new User to the Users repository
+   *
+   * @param user
+   * @return user
+   */
+  @RequestMapping(
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public User create(@RequestBody @Valid User user) throws PasswordWeakException {
+    log.info("Adding user: " + user.getUsername());
+    user.setEnabled(false);
+    return userManagement.add(user);
+  }
 }

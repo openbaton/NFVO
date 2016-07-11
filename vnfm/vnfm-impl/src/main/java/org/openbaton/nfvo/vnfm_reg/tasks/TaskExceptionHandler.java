@@ -11,12 +11,12 @@ import java.lang.reflect.Method;
 
 public class TaskExceptionHandler implements AsyncUncaughtExceptionHandler {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-        log.error("Method Name::"+method.getName());
-        log.error("Exception occurred::"+ ex);
-        ex.printStackTrace();
-    }
+  @Override
+  public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+    log.error("Method Name::" + method.getName());
+    log.error("Exception occurred::" + ex);
+    ex.printStackTrace();
+  }
 }

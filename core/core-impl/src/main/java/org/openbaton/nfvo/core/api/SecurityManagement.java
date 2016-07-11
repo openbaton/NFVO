@@ -24,6 +24,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope
-public class SecurityManagement implements org.openbaton.nfvo.core.interfaces.SecurityManagement {
-
-}
+public class SecurityManagement implements org.openbaton.nfvo.core.interfaces.SecurityManagement {}

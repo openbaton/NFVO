@@ -18,28 +18,33 @@ import java.util.List;
 @RequestMapping("/api/v1/logs")
 public class RestLogs {
 
-    @Autowired
-    private LogManagement logManager;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private LogManagement logManager;
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @RequestMapping(value = "{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getLog(@PathVariable("nsrId") String nsrId, @PathVariable("vnfrName") String vnfrName, @PathVariable("hostname") String hostname, @RequestBody(required = false) JsonObject request) throws NotFoundException {
+  @RequestMapping(
+    value = "{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}",
+    method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public List<String> getLog(
+      @PathVariable("nsrId") String nsrId,
+      @PathVariable("vnfrName") String vnfrName,
+      @PathVariable("hostname") String hostname,
+      @RequestBody(required = false) JsonObject request)
+      throws NotFoundException {
 
-        int lines = 0;
-        if (request != null)
-            lines = request.get("lines").getAsInt();
+    int lines = 0;
+    if (request != null) lines = request.get("lines").getAsInt();
 
-        log.debug("requesting last " + lines + " lines");
+    log.debug("requesting last " + lines + " lines");
 
-        List<String> logs = logManager.getLog(nsrId, vnfrName, hostname);
-        log.debug("There are " + logs.size() + " lines");
-        if (lines > 0) {
-            List<String> subList = logs.subList(logs.size() - lines - 1, logs.size() - 1);
-            log.debug("returning " + subList);
-            return subList;
-        }
-        else
-            return logs;
-
-    }
+    List<String> logs = logManager.getLog(nsrId, vnfrName, hostname);
+    log.debug("There are " + logs.size() + " lines");
+    if (lines > 0) {
+      List<String> subList = logs.subList(logs.size() - lines - 1, logs.size() - 1);
+      log.debug("returning " + subList);
+      return subList;
+    } else return logs;
+  }
 }

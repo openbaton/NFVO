@@ -40,70 +40,71 @@ import java.util.Set;
 @Scope
 public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.NetworkManagement {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VimBroker vimBroker;
+  @Autowired private VimBroker vimBroker;
 
-    @Autowired
-    private NetworkRepository networkRepository;
+  @Autowired private NetworkRepository networkRepository;
 
-    @Override
-    public Network add(VimInstance vimInstance, Network network) throws VimException, PluginException {
-        log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
-        org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
-        //Define Network if values are null or empty
-        if (network.getName() == null || network.getName().isEmpty())
-            network.setName(IdGenerator.createUUID());
-        if (network.getSubnets().size() == 0) {
-            //Define Subnet
-            Subnet subnet = new Subnet();
-            subnet.setName(network.getName() + "_subnet");
-            subnet.setCidr("192.168." + (int)(Math.random() * 255) + ".0/24");
-            //Define list of Subnets for Network
-            Set<Subnet> subnets = new HashSet<Subnet>();
-            subnets.add(subnet);
-            network.setSubnets(subnets);
-        }
-        //Create Network on cloud environment
-        network = vim.add(vimInstance, network);
-        //Create Network in NetworkRepository
-        networkRepository.save(network);
-        //Add network to VimInstance
-        vimInstance.getNetworks().add(network);
-        log.info("Created Network " + network.getName());
-        log.debug("Network details: " + network);
-        return network;
+  @Override
+  public Network add(VimInstance vimInstance, Network network)
+      throws VimException, PluginException {
+    log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
+    org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
+    vim = vimBroker.getVim(vimInstance.getType());
+    //Define Network if values are null or empty
+    if (network.getName() == null || network.getName().isEmpty())
+      network.setName(IdGenerator.createUUID());
+    if (network.getSubnets().size() == 0) {
+      //Define Subnet
+      Subnet subnet = new Subnet();
+      subnet.setName(network.getName() + "_subnet");
+      subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+      //Define list of Subnets for Network
+      Set<Subnet> subnets = new HashSet<Subnet>();
+      subnets.add(subnet);
+      network.setSubnets(subnets);
     }
+    //Create Network on cloud environment
+    network = vim.add(vimInstance, network);
+    //Create Network in NetworkRepository
+    networkRepository.save(network);
+    //Add network to VimInstance
+    vimInstance.getNetworks().add(network);
+    log.info("Created Network " + network.getName());
+    log.debug("Network details: " + network);
+    return network;
+  }
 
-    @Override
-    public void delete(VimInstance vimInstance, Network network) throws VimException, PluginException {
-        //Fetch Vim
-        org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
-        //Delete network from cloud environment
-        vim.delete(vimInstance, network);
-        //Delete network from NetworkRepository
-        networkRepository.delete(network);
-    }
+  @Override
+  public void delete(VimInstance vimInstance, Network network)
+      throws VimException, PluginException {
+    //Fetch Vim
+    org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
+    vim = vimBroker.getVim(vimInstance.getType());
+    //Delete network from cloud environment
+    vim.delete(vimInstance, network);
+    //Delete network from NetworkRepository
+    networkRepository.delete(network);
+  }
 
-    @Override
-    public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException, PluginException {
-        //Fetch Vim
-        org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
-        vim = vimBroker.getVim(vimInstance.getType());
-        //Update network on cloud environment
-        return vim.update(vimInstance, updatingNetwork);
-    }
+  @Override
+  public Network update(VimInstance vimInstance, Network updatingNetwork)
+      throws VimException, PluginException {
+    //Fetch Vim
+    org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
+    vim = vimBroker.getVim(vimInstance.getType());
+    //Update network on cloud environment
+    return vim.update(vimInstance, updatingNetwork);
+  }
 
-    @Override
-    public Iterable<Network> query() {
-        return networkRepository.findAll();
-    }
+  @Override
+  public Iterable<Network> query() {
+    return networkRepository.findAll();
+  }
 
-    @Override
-    public Network query(String id) {
-        return networkRepository.findOne(id);
-    }
+  @Override
+  public Network query(String id) {
+    return networkRepository.findOne(id);
+  }
 }

@@ -16,40 +16,41 @@ import java.lang.reflect.Type;
 @Service
 public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public NFVMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        String action = json.getAsJsonObject().get("action").getAsString();
-        NFVMessage result;
-        switch (action){
-            case "ALLOCATE_RESOURCES":
-                result = gson.fromJson(json, VnfmOrAllocateResourcesMessage.class);
-                break;
-            case "ERROR":
-                result = gson.fromJson(json, VnfmOrErrorMessage.class);
-                break;
-            case "INSTANTIATE":
-                log.trace("gson is: " + gson);
-                result = gson.fromJson(json, VnfmOrInstantiateMessage.class);
-                break;
-            case "SCALED":
-                result = gson.fromJson(json, VnfmOrScaledMessage.class);
-                break;
-            case "SCALING":
-                result = gson.fromJson(json, VnfmOrScalingMessage.class);
-                break;
-            case "HEAL":
-                result = gson.fromJson(json, VnfmOrHealedMessage.class);
-                break;
-            default:
-                result = gson.fromJson(json, VnfmOrGenericMessage.class);
-                break;
-        }
-        result.setAction(Action.valueOf(action));
-        log.trace("Deserialized message is " + result);
-        return result;
+  @Override
+  public NFVMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    String action = json.getAsJsonObject().get("action").getAsString();
+    NFVMessage result;
+    switch (action) {
+      case "ALLOCATE_RESOURCES":
+        result = gson.fromJson(json, VnfmOrAllocateResourcesMessage.class);
+        break;
+      case "ERROR":
+        result = gson.fromJson(json, VnfmOrErrorMessage.class);
+        break;
+      case "INSTANTIATE":
+        log.trace("gson is: " + gson);
+        result = gson.fromJson(json, VnfmOrInstantiateMessage.class);
+        break;
+      case "SCALED":
+        result = gson.fromJson(json, VnfmOrScaledMessage.class);
+        break;
+      case "SCALING":
+        result = gson.fromJson(json, VnfmOrScalingMessage.class);
+        break;
+      case "HEAL":
+        result = gson.fromJson(json, VnfmOrHealedMessage.class);
+        break;
+      default:
+        result = gson.fromJson(json, VnfmOrGenericMessage.class);
+        break;
     }
+    result.setAction(Action.valueOf(action));
+    log.trace("Deserialized message is " + result);
+    return result;
+  }
 }

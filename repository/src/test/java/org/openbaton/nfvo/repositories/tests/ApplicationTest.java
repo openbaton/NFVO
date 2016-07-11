@@ -39,20 +39,19 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(basePackages = "org.openbaton")
 public class ApplicationTest {
 
-    /**
-     * Testing if the context contains all the needed beans
-     *
-     * @param argv
-     */
-    public static void main(String[] argv) {
-        ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
-        for (String s : context.getBeanDefinitionNames())
-            System.out.println(s);
-    }
+  /**
+   * Testing if the context contains all the needed beans
+   *
+   * @param argv
+   */
+  public static void main(String[] argv) {
+    ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
+    for (String s : context.getBeanDefinitionNames()) System.out.println(s);
+  }
 
-    @Bean
-    public DataSource dataSource() {
-        // instantiate, configure and return embedded DataSource
-        return new EmbeddedDatabaseBuilder().build();
-    }
+  @Bean
+  public DataSource dataSource() {
+    // instantiate, configure and return embedded DataSource
+    return new EmbeddedDatabaseBuilder().build();
+  }
 }

@@ -19,45 +19,42 @@ package org.openbaton.nfvo.security.interfaces;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.PasswordWeakException;
 
-
 /**
  * Created by mpa on 30/04/15.
  */
-
 public interface UserManagement {
 
-    User getCurrentUser();
+  User getCurrentUser();
 
-    /**
-     *
-     * @param user
-     */
-    User add(User user) throws PasswordWeakException;
+  /**
+   *
+   * @param user
+   */
+  User add(User user) throws PasswordWeakException;
 
-    /**
-     *
-     * @param user
-     */
-    void delete(User user);
+  /**
+   *
+   * @param user
+   */
+  void delete(User user);
 
-    /**
-     *
-     * @param new_user
-     */
-    User update(User new_user);
+  /**
+   *
+   * @param new_user
+   */
+  User update(User new_user);
 
-    /**
-     */
-    Iterable<User> query();
+  /**
+   */
+  Iterable<User> query();
 
-    /**
-     *
-     * @param username
-     */
-    User query(String username);
+  /**
+   *
+   * @param username
+   */
+  User query(String username);
 
+  User queryById(String id);
 
-    User queryById(String id);
-
-    User queryDB(String currentUserName);
+  User queryDB(String currentUserName);
 }

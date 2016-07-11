@@ -9,5 +9,5 @@ import java.util.List;
  * Created by lto on 13/10/15.
  */
 public interface VduRepository extends CrudRepository<VirtualDeploymentUnit, String> {
-    List<VirtualDeploymentUnit> findByProjectId(String projectId);
+  List<VirtualDeploymentUnit> findByProjectId(String projectId);
 }

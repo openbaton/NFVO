@@ -17,22 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/security")
 @ConfigurationProperties(prefix = "nfvo.security")
 public class RestSecurity {
-    private boolean enabled;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private boolean enabled;
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    private String isSecurityEnabled(){
-        log.debug("is Security enabled? " + enabled);
-        return String.valueOf(enabled).toLowerCase();
-    }
-
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  private String isSecurityEnabled() {
+    log.debug("is Security enabled? " + enabled);
+    return String.valueOf(enabled).toLowerCase();
+  }
 }

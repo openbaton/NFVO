@@ -61,207 +61,234 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 @Scope("prototype")
 public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
-    protected static Lock lock = new ReentrantLock();
-    protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
-    protected Action action;
-    @Autowired
-    @Qualifier("vnfmRegister")
-    protected VnfmRegister vnfmRegister;
-    protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    protected VNFRecordDependency dependency;
+  protected static Lock lock = new ReentrantLock();
+  protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
+  protected Action action;
 
-    @Autowired
-    protected VNFRRepository vnfrRepository;
+  @Autowired
+  @Qualifier("vnfmRegister")
+  protected VnfmRegister vnfmRegister;
 
-    @Autowired
-    protected VnfmManager vnfmManager;
-    @Autowired
-    protected NetworkServiceRecordRepository networkServiceRecordRepository;
-    @Autowired
-    private ConfigurableApplicationContext context;
-    private ApplicationEventPublisher publisher;
+  protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  protected VNFRecordDependency dependency;
 
-    @Transactional
-    protected synchronized void saveVirtualNetworkFunctionRecord() {
-        log.trace("ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-        if (virtualNetworkFunctionRecord.getId() == null) {
-            virtualNetworkFunctionRecord = networkServiceRecordRepository.addVnfr(virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-        } else {
-            virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+  @Autowired protected VNFRRepository vnfrRepository;
+
+  @Autowired protected VnfmManager vnfmManager;
+  @Autowired protected NetworkServiceRecordRepository networkServiceRecordRepository;
+  @Autowired private ConfigurableApplicationContext context;
+  private ApplicationEventPublisher publisher;
+
+  @Transactional
+  protected synchronized void saveVirtualNetworkFunctionRecord() {
+    log.trace(
+        "ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
+    if (virtualNetworkFunctionRecord.getId() == null) {
+      virtualNetworkFunctionRecord =
+          networkServiceRecordRepository.addVnfr(
+              virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+    } else {
+      virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+    }
+  }
+
+  public Action getAction() {
+    return action;
+  }
+
+  public void setAction(Action action) {
+    this.action = action;
+  }
+
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
+
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
+
+  @Override
+  public NFVMessage call() {
+    changeStatus();
+    NFVMessage result = null;
+    try {
+      result = this.doWork();
+    } catch (Exception e) {
+      e.printStackTrace();
+      VnfmSender vnfmSender;
+      try {
+        vnfmSender =
+            this.getVnfmSender(
+                vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+      } catch (NotFoundException e1) {
+        e1.printStackTrace();
+        throw new RuntimeException(e1);
+      }
+      NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+      try {
+        vnfmSender.sendCommand(
+            message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+      } catch (NotFoundException e1) {
+        e1.printStackTrace();
+        throw new RuntimeException(e1);
+      }
+      if (log.isDebugEnabled()) {
+        log.error(
+            "There was an uncaught exception in task: "
+                + virtualNetworkFunctionRecord.getTask()
+                + ". ",
+            e);
+      } else {
+        log.error("There was an uncaught exception. Message is: " + e.getMessage());
+      }
+
+      EventFinishEvent eventFinishEvent = new EventFinishEvent();
+      eventFinishEvent.setAction(Action.ERROR);
+      virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+      saveVirtualNetworkFunctionRecord();
+      log.info(
+          "Saved the VNFR "
+              + virtualNetworkFunctionRecord.getName()
+              + " with status error after an exception");
+      eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+      EventFinishNFVO event = new EventFinishNFVO(this);
+      event.setEventNFVO(eventFinishEvent);
+      this.publisher.publishEvent(event);
+    }
+    /**
+     * Send event finish
+     */
+    if (result == null) {
+      if ((action.ordinal() != Action.ALLOCATE_RESOURCES.ordinal())
+          && (action.ordinal() != Action.GRANT_OPERATION.ordinal())) {
+        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+      }
+      ApplicationEventNFVO eventPublic =
+          new ApplicationEventNFVO(action, virtualNetworkFunctionRecord);
+      EventNFVO eventNFVO = new EventNFVO(this);
+      eventNFVO.setEventNFVO(eventPublic);
+      log.debug("Publishing event: " + eventPublic);
+      publisher.publishEvent(eventNFVO);
+      return null;
+    } else return result;
+  }
+
+  protected abstract NFVMessage doWork() throws Exception;
+
+  public boolean isAsync() {
+    return true;
+  }
+
+  @Override
+  public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    this.publisher = applicationEventPublisher;
+  }
+
+  protected VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
+    String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
+    return (VnfmSender) this.context.getBean(senderName);
+  }
+
+  protected void changeStatus() {
+    log.debug("Action is: " + action);
+    Status status = virtualNetworkFunctionRecord.getStatus();
+    log.debug("Previous status is: " + status);
+    switch (action) {
+      case ALLOCATE_RESOURCES:
+        status = Status.NULL;
+        break;
+      case SCALE_IN:
+        break;
+      case SCALING:
+        status = Status.SCALING;
+        break;
+      case ERROR:
+        status = Status.ERROR;
+        break;
+      case MODIFY:
+        status = Status.INACTIVE;
+        break;
+      case RELEASE_RESOURCES:
+        status = Status.TERMINATED;
+        break;
+      case HEAL:
+        status = Status.ACTIVE;
+        break;
+      case GRANT_OPERATION:
+        status = Status.NULL;
+        break;
+      case INSTANTIATE:
+        status = Status.INITIALIZED;
+        break;
+      case SCALED:
+        status = Status.ACTIVE;
+        break;
+      case RELEASE_RESOURCES_FINISH:
+        status = Status.TERMINATED;
+        break;
+      case INSTANTIATE_FINISH:
+        status = Status.ACTIVE;
+        break;
+      case CONFIGURE:
+        break;
+      case START:
+        status = Status.ACTIVE;
+        break;
+    }
+    virtualNetworkFunctionRecord.setStatus(status);
+    log.debug(
+        "Changing status of VNFR: "
+            + virtualNetworkFunctionRecord.getName()
+            + " ( "
+            + virtualNetworkFunctionRecord.getId()
+            + " ) to "
+            + status);
+  }
+
+  public void setDependency(VNFRecordDependency dependency) {
+    this.dependency = dependency;
+  }
+
+  protected VirtualNetworkFunctionRecord getNextToCallStart(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+
+    Map<String, Integer> vnfrNames =
+        vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id());
+
+    if (vnfrNames != null) {
+
+      log.debug("List of VNFRs to start: " + vnfrNames);
+
+      if (vnfrNames.size() > 0)
+        for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
+          vnfrNames.remove(entry.getKey());
+          for (VirtualNetworkFunctionRecord vnfr :
+              networkServiceRecordRepository
+                  .findFirstById(virtualNetworkFunctionRecord.getParent_ns_id())
+                  .getVnfr()) {
+            if (vnfr.getName().equals(entry.getKey())) {
+              return vnfr;
+            }
+          }
+
+          return null;
         }
-
     }
+    return null;
+  }
 
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
-    }
-
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
-
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
-
-    @Override
-    public NFVMessage call() {
-        changeStatus();
-        NFVMessage result = null;
-        try {
-            result = this.doWork();
-        } catch (Exception e) {
-            e.printStackTrace();
-            VnfmSender vnfmSender;
-            try {
-                vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-            } catch (NotFoundException e1) {
-                e1.printStackTrace();
-                throw new RuntimeException(e1);
-            }
-            NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-            try {
-                vnfmSender.sendCommand(message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-            } catch (NotFoundException e1) {
-                e1.printStackTrace();
-                throw new RuntimeException(e1);
-            }
-            if (log.isDebugEnabled()) {
-                log.error("There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask() + ". ", e);
-            } else {
-                log.error("There was an uncaught exception. Message is: " + e.getMessage());
-            }
-
-            EventFinishEvent eventFinishEvent = new EventFinishEvent();
-            eventFinishEvent.setAction(Action.ERROR);
-            virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-            saveVirtualNetworkFunctionRecord();
-            log.info("Saved the VNFR " + virtualNetworkFunctionRecord.getName() + " with status error after an exception");
-            eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-            EventFinishNFVO event = new EventFinishNFVO(this);
-            event.setEventNFVO(eventFinishEvent);
-            this.publisher.publishEvent(event);
-        }
-        /**
-         * Send event finish
-         */
-        if (result == null) {
-            if ((action.ordinal() != Action.ALLOCATE_RESOURCES.ordinal()) && (action.ordinal() != Action.GRANT_OPERATION.ordinal())) {
-                vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-            }
-            ApplicationEventNFVO eventPublic = new ApplicationEventNFVO(action, virtualNetworkFunctionRecord);
-            EventNFVO eventNFVO = new EventNFVO(this);
-            eventNFVO.setEventNFVO(eventPublic);
-            log.debug("Publishing event: " + eventPublic);
-            publisher.publishEvent(eventNFVO);
-            return null;
-        } else
-            return result;
-    }
-
-    protected abstract NFVMessage doWork() throws Exception;
-
-    public boolean isAsync() {
-        return true;
-    }
-
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.publisher = applicationEventPublisher;
-    }
-
-    protected VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
-        String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
-        return (VnfmSender) this.context.getBean(senderName);
-    }
-
-    protected void changeStatus() {
-        log.debug("Action is: " + action);
-        Status status = virtualNetworkFunctionRecord.getStatus();
-        log.debug("Previous status is: " + status);
-        switch (action) {
-            case ALLOCATE_RESOURCES:
-                status = Status.NULL;
-                break;
-            case SCALE_IN:
-                break;
-            case SCALING:
-                status = Status.SCALING;
-                break;
-            case ERROR:
-                status = Status.ERROR;
-                break;
-            case MODIFY:
-                status = Status.INACTIVE;
-                break;
-            case RELEASE_RESOURCES:
-                status = Status.TERMINATED;
-                break;
-            case HEAL:
-                status = Status.ACTIVE;
-                break;
-            case GRANT_OPERATION:
-                status = Status.NULL;
-                break;
-            case INSTANTIATE:
-                status = Status.INITIALIZED;
-                break;
-            case SCALED:
-                status = Status.ACTIVE;
-                break;
-            case RELEASE_RESOURCES_FINISH:
-                status = Status.TERMINATED;
-                break;
-            case INSTANTIATE_FINISH:
-                status = Status.ACTIVE;
-                break;
-            case CONFIGURE:
-                break;
-            case START:
-                status = Status.ACTIVE;
-                break;
-        }
-        virtualNetworkFunctionRecord.setStatus(status);
-        log.debug("Changing status of VNFR: " + virtualNetworkFunctionRecord.getName() + " ( " + virtualNetworkFunctionRecord.getId() + " ) to " + status);
-    }
-
-    public void setDependency(VNFRecordDependency dependency) {
-        this.dependency = dependency;
-    }
-
-    protected VirtualNetworkFunctionRecord getNextToCallStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-
-        Map<String, Integer> vnfrNames = vnfmManager.getVnfrNames().get(virtualNetworkFunctionRecord.getParent_ns_id());
-
-        if (vnfrNames != null) {
-
-            log.debug("List of VNFRs to start: " + vnfrNames);
-
-            if (vnfrNames.size() > 0)
-                for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
-                    vnfrNames.remove(entry.getKey());
-                    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getVnfr()) {
-                        if (vnfr.getName().equals(entry.getKey())) {
-                            return vnfr;
-                        }
-                    }
-
-                    return null;
-                }
-        }
-        return null;
-    }
-
-    protected boolean allVnfrInInactive(NetworkServiceRecord nsr) {
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr())
-            if (virtualNetworkFunctionRecord.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
-                log.debug("VNFR " + virtualNetworkFunctionRecord.getName() + " is in state: " + virtualNetworkFunctionRecord.getStatus());
-                return false;
-            }
-        return true;
-    }
+  protected boolean allVnfrInInactive(NetworkServiceRecord nsr) {
+    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr())
+      if (virtualNetworkFunctionRecord.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
+        log.debug(
+            "VNFR "
+                + virtualNetworkFunctionRecord.getName()
+                + " is in state: "
+                + virtualNetworkFunctionRecord.getStatus());
+        return false;
+      }
+    return true;
+  }
 }

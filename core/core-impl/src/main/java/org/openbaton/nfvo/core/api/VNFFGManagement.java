@@ -29,31 +29,32 @@ import org.springframework.stereotype.Service;
 @Scope
 public class VNFFGManagement implements org.openbaton.nfvo.core.interfaces.VNFFGManagement {
 
-    @Autowired
-    private VNFFGDescriptorRepository vnffgDescriptorRepository;
+  @Autowired private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
-    @Override
-    public VNFForwardingGraphDescriptor add(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor) {
-        return vnffgDescriptorRepository.save(vnfForwardingGraphDescriptor);
-    }
+  @Override
+  public VNFForwardingGraphDescriptor add(
+      VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor) {
+    return vnffgDescriptorRepository.save(vnfForwardingGraphDescriptor);
+  }
 
-    @Override
-    public void delete(String id) {
-        vnffgDescriptorRepository.delete(vnffgDescriptorRepository.findOne(id));
-    }
+  @Override
+  public void delete(String id) {
+    vnffgDescriptorRepository.delete(vnffgDescriptorRepository.findOne(id));
+  }
 
-    @Override
-    public Iterable<VNFForwardingGraphDescriptor> query() {
-        return vnffgDescriptorRepository.findAll();
-    }
+  @Override
+  public Iterable<VNFForwardingGraphDescriptor> query() {
+    return vnffgDescriptorRepository.findAll();
+  }
 
-    @Override
-    public VNFForwardingGraphDescriptor query(String id) {
-        return vnffgDescriptorRepository.findOne(id);
-    }
+  @Override
+  public VNFForwardingGraphDescriptor query(String id) {
+    return vnffgDescriptorRepository.findOne(id);
+  }
 
-    @Override
-    public VNFForwardingGraphDescriptor update(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor, String id) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public VNFForwardingGraphDescriptor update(
+      VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor, String id) {
+    throw new UnsupportedOperationException();
+  }
 }

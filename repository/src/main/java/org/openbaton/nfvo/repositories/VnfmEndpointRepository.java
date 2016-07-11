@@ -23,5 +23,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by lto on 06/05/15.
  */
 public interface VnfmEndpointRepository extends CrudRepository<VnfmManagerEndpoint, String> {
-    VnfmManagerEndpoint findFirstById(String id);
+  VnfmManagerEndpoint findFirstById(String id);
 }

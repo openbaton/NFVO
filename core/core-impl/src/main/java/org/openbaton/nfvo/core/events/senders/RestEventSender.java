@@ -43,29 +43,37 @@ import java.util.concurrent.Future;
 @Scope
 public class RestEventSender implements EventSender {
 
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Override
+  @Async
+  public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) throws IOException {
+    try {
+      CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+      Gson mapper = new GsonBuilder().create();
+      String json =
+          "{\"action\":\""
+              + event.getAction()
+              + "\",\"payload\":"
+              + mapper.toJson(event.getPayload())
+              + "}";
 
-    @Override
-    @Async
-    public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) throws IOException {
-        try {
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            Gson mapper = new GsonBuilder().create();
-            String json = "{\"action\":\"" + event.getAction() + "\",\"payload\":" + mapper.toJson(event.getPayload()) + "}";
+      log.trace("body is: " + json);
 
-            log.trace("body is: " + json);
-
-            log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
-            HttpPost request = new HttpPost(endpoint.getEndpoint());
-            request.addHeader("content-type", "application/json");
-            request.addHeader("accept", "application/json");
-            StringEntity params = new StringEntity(json);
-            request.setEntity(params);
-            HttpResponse response = httpClient.execute(request);
-        } catch (Exception e) {
-            log.warn("Impossible to reach the endpoint with name: "+endpoint.getName()+ " via rest POST at url:"+endpoint.getEndpoint());
-        }
-        return new AsyncResult<>(null);
+      log.trace("Invoking POST on URL: " + endpoint.getEndpoint());
+      HttpPost request = new HttpPost(endpoint.getEndpoint());
+      request.addHeader("content-type", "application/json");
+      request.addHeader("accept", "application/json");
+      StringEntity params = new StringEntity(json);
+      request.setEntity(params);
+      HttpResponse response = httpClient.execute(request);
+    } catch (Exception e) {
+      log.warn(
+          "Impossible to reach the endpoint with name: "
+              + endpoint.getName()
+              + " via rest POST at url:"
+              + endpoint.getEndpoint());
     }
+    return new AsyncResult<>(null);
+  }
 }

@@ -10,5 +10,5 @@ import java.util.Set;
  * Created by lto on 10/03/16.
  */
 public interface VnfPlacementManagement {
-    VimInstance choseRandom(Collection<String> vimInstanceName);
+  VimInstance choseRandom(Collection<String> vimInstanceName);
 }

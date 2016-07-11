@@ -26,7 +26,9 @@ import java.util.concurrent.ExecutionException;
  */
 public interface VnfmReceiver {
 
-    String actionFinished(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException;
+  String actionFinished(String nfvMessage)
+      throws NotFoundException, VimException, ExecutionException, InterruptedException;
 
-    void actionFinishedVoid(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException;
+  void actionFinishedVoid(String nfvMessage)
+      throws NotFoundException, VimException, ExecutionException, InterruptedException;
 }

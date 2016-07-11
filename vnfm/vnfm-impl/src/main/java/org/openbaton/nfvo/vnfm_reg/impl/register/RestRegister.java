@@ -40,72 +40,82 @@ import java.net.URL;
 @RequestMapping("/admin/v1")
 public class RestRegister extends VnfmRegister {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private static boolean pingHost(String host, int port, int timeout) {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host, port), timeout);
-            return true;
-        } catch (IOException e) {
-            return false; // Either timeout or unreachable or failed DNS lookup.
-        }
+  private static boolean pingHost(String host, int port, int timeout) {
+    try (Socket socket = new Socket()) {
+      socket.connect(new InetSocketAddress(host, port), timeout);
+      return true;
+    } catch (IOException e) {
+      return false; // Either timeout or unreachable or failed DNS lookup.
     }
+  }
 
-    @RequestMapping(value = "/vnfm-register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
-        addManagerEndpoint(gson.toJson(endpoint));
+  @RequestMapping(
+    value = "/vnfm-register",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
+    addManagerEndpoint(gson.toJson(endpoint));
+  }
+
+  public void addManagerEndpoint(String endpoint) {
+    log.debug("Received: " + endpoint);
+    try {
+      this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+    } catch (AlreadyExistingException e) {
+      log.warn(e.getLocalizedMessage());
     }
+  }
 
-    public void addManagerEndpoint(String endpoint) {
-        log.debug("Received: " + endpoint);
-        try {
-            this.register(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
-        } catch (AlreadyExistingException e) {
-            log.warn(e.getLocalizedMessage());
-        }
-    }
+  @RequestMapping(
+    value = "/vnfm-unregister",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.OK)
+  public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
+    removeManagerEndpoint(gson.toJson(endpoint));
+  }
 
-    @RequestMapping(value = "/vnfm-unregister", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
-        removeManagerEndpoint(gson.toJson(endpoint));
-    }
+  public void removeManagerEndpoint(String endpoint) {
+    log.debug("Unregistering endpoint: " + endpoint);
+    this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
+  }
 
-    public void removeManagerEndpoint(String endpoint) {
-        log.debug("Unregistering endpoint: " + endpoint);
-        this.unregister(gson.fromJson(endpoint, VnfmManagerEndpoint.class));
-    }
-
-    @Scheduled(initialDelay = 15000, fixedDelay = 20000)
-    public void checkHeartBeat() throws MalformedURLException {
-        for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
-            if (endpoint.getEndpointType().ordinal() == EndpointType.REST.ordinal()) {
-                if (endpoint.isEnabled()) {
-                    try {
-                        URL url = new URL(endpoint.getEndpoint());
-                        if (!pingHost(url.getHost(), url.getPort(), 2)) {
-                            if (endpoint.isActive()) {
-                                log.info("Set endpoint " + endpoint.getType() + " to unactive");
-                                endpoint.setActive(false);
-                                vnfmEndpointRepository.save(endpoint);
-                            }
-                        } else {
-                            if (!endpoint.isActive()) {
-                                log.info("Set endpoint " + endpoint.getType() + " to active");
-                                endpoint.setActive(true);
-                                vnfmEndpointRepository.save(endpoint);
-                            }
-                        }
-                    } catch (java.net.MalformedURLException e){
-                        if (endpoint.isActive()) {
-                            log.warn("Not able to check endpoint: " + endpoint.getEndpoint());
-                            endpoint.setActive(false);
-                            vnfmEndpointRepository.save(endpoint);
-                        }
-                    }
-                }
+  @Scheduled(initialDelay = 15000, fixedDelay = 20000)
+  public void checkHeartBeat() throws MalformedURLException {
+    for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
+      if (endpoint.getEndpointType().ordinal() == EndpointType.REST.ordinal()) {
+        if (endpoint.isEnabled()) {
+          try {
+            URL url = new URL(endpoint.getEndpoint());
+            if (!pingHost(url.getHost(), url.getPort(), 2)) {
+              if (endpoint.isActive()) {
+                log.info("Set endpoint " + endpoint.getType() + " to unactive");
+                endpoint.setActive(false);
+                vnfmEndpointRepository.save(endpoint);
+              }
+            } else {
+              if (!endpoint.isActive()) {
+                log.info("Set endpoint " + endpoint.getType() + " to active");
+                endpoint.setActive(true);
+                vnfmEndpointRepository.save(endpoint);
+              }
             }
+          } catch (java.net.MalformedURLException e) {
+            if (endpoint.isActive()) {
+              log.warn("Not able to check endpoint: " + endpoint.getEndpoint());
+              endpoint.setActive(false);
+              vnfmEndpointRepository.save(endpoint);
+            }
+          }
         }
+      }
     }
+  }
 }
