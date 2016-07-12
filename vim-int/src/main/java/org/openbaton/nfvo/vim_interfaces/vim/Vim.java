@@ -82,7 +82,7 @@ public abstract class Vim
   public Vim(String type, String managementPort, ApplicationContext context)
       throws PluginException {
     try {
-      if (managementPort == null) {
+      if (managementPort == null || managementPort.isEmpty()) {
         managementPort = "15672";
       }
       if (context == null) {
