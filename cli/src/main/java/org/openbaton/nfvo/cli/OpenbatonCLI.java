@@ -16,11 +16,13 @@
 
 package org.openbaton.nfvo.cli;
 
+import ch.qos.logback.classic.Level;
 import jline.console.ConsoleReader;
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
+
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.UserRepository;
@@ -39,8 +41,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing spring boot
@@ -62,6 +69,7 @@ public class OpenbatonCLI implements CommandLineRunner {
           put("listBeans", "list all registered Beans");
           put("listVnfms", "list all registered Vnfms");
           put("listUsers", "list all Users");
+          put("changeLog", "Change log level");
         }
       };
   private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -161,7 +169,9 @@ public class OpenbatonCLI implements CommandLineRunner {
         if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
           exit(0);
         } else if (line.equalsIgnoreCase("listBeans")) {
-          for (String name : context.getBeanDefinitionNames()) System.out.println(name);
+          for (String name : context.getBeanDefinitionNames()) {
+            System.out.println(name);
+          }
         } else if (line.equalsIgnoreCase("cls")) {
           reader.clearScreen();
         } else if (line.equalsIgnoreCase("help")) {
@@ -174,6 +184,8 @@ public class OpenbatonCLI implements CommandLineRunner {
           listVnfms();
         } else if (line.startsWith("listUsers")) {
           listUsers();
+        } else if (line.startsWith("changeLog")) {
+          changeLog(line);
         } else if (line.startsWith("listPlugins")) {
           StringTokenizer stringTokenizer = new StringTokenizer(line);
           stringTokenizer.nextToken();
@@ -182,16 +194,36 @@ public class OpenbatonCLI implements CommandLineRunner {
           } else {
             System.out.println(listPlugins());
           }
-
         } else if (line.equalsIgnoreCase("")) {
-        } else usage();
+        } else {
+          usage();
+        }
       }
+    }
+  }
+
+  private void changeLog(String line) {
+    StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
+    if (stringTokenizer.countTokens() == 3) {
+      stringTokenizer.nextToken();
+      ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(stringTokenizer.nextToken()))
+          .setLevel(Level.toLevel(stringTokenizer.nextToken()));
+    } else if (stringTokenizer.countTokens() == 2) {
+      stringTokenizer.nextToken();
+      ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.openbaton"))
+          .setLevel(Level.toLevel(stringTokenizer.nextToken()));
+    } else {
+      System.out.println("usage: changeLog [<package>] <level>");
+      System.out.println("where <package> default is: org.openbaton");
+      System.out.println("where <level> is:");
+      System.out.println("\t * INFO");
+      System.out.println("\t * DEBUG");
+      System.out.println("\t * TRACE");
     }
   }
 
   private void listUsers() {
     String line = String.format("%20s%20s%40s", "Username", "Enabled", "Roles");
-
     System.out.println(line);
     for (User user : userRepository.findAll()) {
       System.out.println(
@@ -262,11 +294,17 @@ public class OpenbatonCLI implements CommandLineRunner {
       }
       password = stringTokenizer.nextToken();
     } else {
-      if (username == null || username.equals("")) username = "admin";
-      if (password == null || password.equals("")) password = "openbaton";
+      if (username == null || username.equals("")) {
+        username = "admin";
+      }
+      if (password == null || password.equals("")) {
+        password = "openbaton";
+      }
     }
 
-    if (!pluginLogPath.endsWith("/")) pluginLogPath += "/";
+    if (!pluginLogPath.endsWith("/")) {
+      pluginLogPath += "/";
+    }
     PluginStartup.installPlugin(
         name,
         path,
