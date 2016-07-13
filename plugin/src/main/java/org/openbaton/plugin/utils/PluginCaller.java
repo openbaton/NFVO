@@ -17,10 +17,13 @@ package org.openbaton.plugin.utils;
 
 import com.google.gson.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.QueueingConsumer.Delivery;
+
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
@@ -35,6 +38,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -43,7 +47,6 @@ import java.util.concurrent.TimeoutException;
 public class PluginCaller {
 
   private final String pluginId;
-  private final String exchange = "plugin-exchange";
   private final String brokerIp;
   private final String username;
   private final String password;
@@ -98,7 +101,7 @@ public class PluginCaller {
     //        channel.basicConsume(replyQueueName, true, consumer);
   }
 
-  public void close() throws IOException, TimeoutException {
+  public void close() throws IOException {
     connection.close();
   }
 
@@ -118,6 +121,7 @@ public class PluginCaller {
 
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
+    String exchange = "plugin-exchange";
     channel.queueBind(replyQueueName, exchange, replyQueueName);
     QueueingConsumer consumer = new QueueingConsumer(channel);
     String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
@@ -127,21 +131,20 @@ public class PluginCaller {
       throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
 
     String response;
-    String corrId = java.util.UUID.randomUUID().toString();
+    String corrId = UUID.randomUUID().toString();
     PluginMessage pluginMessage = new PluginMessage();
     pluginMessage.setMethodName(methodName);
     pluginMessage.setParameters(args);
     String message = gson.toJson(pluginMessage);
 
-    BasicProperties props =
-        new BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
+    BasicProperties props = new Builder().correlationId(corrId).replyTo(replyQueueName).build();
 
     channel.basicPublish(exchange, pluginId, props, message.getBytes());
 
     if (returnType != null) {
 
       while (true) {
-        QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+        Delivery delivery = consumer.nextDelivery();
         if (delivery.getProperties().getCorrelationId().equals(corrId)) {
           response = new String(delivery.getBody());
           log.trace("received: " + response);
@@ -184,7 +187,7 @@ public class PluginCaller {
           log.debug(
               "Got Vim Driver Exception with server: "
                   + ((VimDriverException) pluginException.getCause()).getServer());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
           pluginException =
               new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
         }

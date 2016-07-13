@@ -163,13 +163,7 @@ public class VimTestSuiteClass {
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
-    } catch (VimException e) {
-      e.printStackTrace();
-      Assert.fail();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      Assert.fail();
-    } catch (ExecutionException e) {
+    } catch (VimException | ExecutionException | InterruptedException e) {
       e.printStackTrace();
       Assert.fail();
     }

@@ -148,11 +148,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res = null;
     try {
       res = pluginCaller.executeRPC("launchInstance", params, Server.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (Server) res;
@@ -166,11 +162,7 @@ public class VimDriverCaller extends VimDriver {
     Type listType = new TypeToken<ArrayList<NFVImage>>() {}.getType();
     try {
       res = pluginCaller.executeRPC("listImages", params, listType);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (List<NFVImage>) res;
@@ -184,11 +176,7 @@ public class VimDriverCaller extends VimDriver {
     try {
       Type listType = new TypeToken<ArrayList<Server>>() {}.getType();
       res = pluginCaller.executeRPC("listServer", params, listType);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (List<Server>) res;
@@ -202,11 +190,7 @@ public class VimDriverCaller extends VimDriver {
     try {
       Type listType = new TypeToken<ArrayList<Network>>() {}.getType();
       res = pluginCaller.executeRPC("listNetworks", params, listType);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (List<Network>) res;
@@ -220,11 +204,7 @@ public class VimDriverCaller extends VimDriver {
     try {
       Type listType = new TypeToken<ArrayList<DeploymentFlavour>>() {}.getType();
       res = pluginCaller.executeRPC("listFlavors", params, listType);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (List<DeploymentFlavour>) res;
@@ -255,9 +235,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("launchInstanceAndWait", params, Server.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     } catch (PluginException e) {
       throw new VimDriverException(e.getMessage(), e.getCause());
@@ -288,9 +266,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("launchInstanceAndWait", params, Server.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     } catch (PluginException e) {
       throw new VimDriverException(e.getMessage(), e.getCause());
@@ -306,11 +282,7 @@ public class VimDriverCaller extends VimDriver {
     params.add(id);
     try {
       pluginCaller.executeRPC("deleteServerByIdAndWait", params, null);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
   }
@@ -323,11 +295,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("createNetwork", params, Network.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 
@@ -343,11 +311,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("addFlavor", params, DeploymentFlavour.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (DeploymentFlavour) res;
@@ -363,11 +327,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("addImage", params, NFVImage.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (NFVImage) res;
@@ -383,11 +343,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("addImage", params, NFVImage.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (NFVImage) res;
@@ -401,11 +357,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("updateImage", params, NFVImage.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (NFVImage) res;
@@ -421,11 +373,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("copyImage", params, NFVImage.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (NFVImage) res;
@@ -439,11 +387,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("deleteImage", params, Boolean.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (boolean) res;
@@ -458,11 +402,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("updateFlavor", params, DeploymentFlavour.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (DeploymentFlavour) res;
@@ -476,11 +416,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("deleteFlavor", params, Boolean.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (boolean) res;
@@ -494,11 +430,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("updateNetwork", params, Network.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 
@@ -515,11 +447,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("createSubnet", params, Subnet.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (Subnet) res;
@@ -535,11 +463,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("updateSubnet", params, Subnet.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (Subnet) res;
@@ -555,11 +479,7 @@ public class VimDriverCaller extends VimDriver {
     try {
       Type listType = new TypeToken<ArrayList<String>>() {}.getType();
       res = pluginCaller.executeRPC("getSubnetsExtIds", params, listType);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (List<String>) res;
@@ -574,11 +494,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("deleteSubnet", params, Boolean.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (boolean) res;
@@ -592,11 +508,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("deleteNetwork", params, Boolean.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (boolean) res;
@@ -610,11 +522,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("getNetworkById", params, Network.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 
@@ -628,11 +536,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("getQuota", params, Quota.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
     return (Quota) res;
@@ -645,11 +549,7 @@ public class VimDriverCaller extends VimDriver {
     Serializable res;
     try {
       res = pluginCaller.executeRPC("getType", params, String.class);
-    } catch (IOException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    } catch (PluginException e) {
+    } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 

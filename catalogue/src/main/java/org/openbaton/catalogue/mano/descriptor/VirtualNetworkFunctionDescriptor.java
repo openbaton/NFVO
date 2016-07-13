@@ -18,7 +18,6 @@ package org.openbaton.catalogue.mano.descriptor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openbaton.catalogue.mano.common.*;
-import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.RequiresParameters;
 
@@ -100,7 +99,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   @JsonIgnore private String endpoint;
   private String vnfPackageLocation;
 
-  @javax.persistence.OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Map<String, RequiresParameters> requires;
 
   @ElementCollection(fetch = FetchType.EAGER)
@@ -211,7 +210,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
   @JsonIgnore
   public Set<VNFDConnectionPoint> getVNFDConnection_point() {
-    Set<VNFDConnectionPoint> res = new HashSet<VNFDConnectionPoint>();
+    Set<VNFDConnectionPoint> res = new HashSet<>();
     for (ConnectionPoint cp : connection_point) res.add((VNFDConnectionPoint) cp);
     return res;
   }

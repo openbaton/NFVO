@@ -63,16 +63,12 @@ public abstract class Vim
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller(
                           brokerIp, "admin", "openbaton", port, type, managementPort);
-        } catch (BeansException e) {
+        } catch (BeansException ignored) {
           client = new VimDriverCaller(brokerIp, "admin", "openbaton", port, type, managementPort);
         }
       }
 
-    } catch (TimeoutException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (NotFoundException e) {
+    } catch (TimeoutException | NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }
@@ -94,15 +90,11 @@ public abstract class Vim
               (VimDriverCaller)
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller("", type, managementPort);
-        } catch (BeansException e) {
+        } catch (BeansException ignored) {
           client = new VimDriverCaller("", type, managementPort);
         }
       }
-    } catch (TimeoutException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (NotFoundException e) {
+    } catch (TimeoutException | NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }
@@ -122,15 +114,11 @@ public abstract class Vim
               (VimDriverCaller)
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller(name, type, managementPort);
-        } catch (BeansException e) {
+        } catch (BeansException ignored) {
           client = new VimDriverCaller(name, type, managementPort);
         }
       }
-    } catch (TimeoutException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (NotFoundException e) {
+    } catch (TimeoutException | NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }
@@ -146,15 +134,11 @@ public abstract class Vim
               (VimDriverCaller)
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller("", type, "15672");
-        } catch (BeansException e) {
+        } catch (BeansException ignored) {
           client = new VimDriverCaller("", type, "15672");
         }
       }
-    } catch (TimeoutException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (NotFoundException e) {
+    } catch (TimeoutException | NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }
@@ -181,15 +165,11 @@ public abstract class Vim
               (VimDriverCaller)
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller(brokerIp, username, password, type, managementPort);
-        } catch (BeansException e) {
+        } catch (BeansException ignored) {
           client = new VimDriverCaller(brokerIp, username, password, type, managementPort);
         }
       }
-    } catch (TimeoutException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-    } catch (NotFoundException e) {
+    } catch (TimeoutException | NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }

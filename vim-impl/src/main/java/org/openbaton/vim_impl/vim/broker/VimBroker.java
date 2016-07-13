@@ -191,7 +191,6 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
             "Infinite quota are not allowed. Please set nfvo.vim.drivers.allowInfiniteQuota to true or change the quota in your VIM installation");
       }
     }
-    Quota leftQuota = maximalQuota;
 
     List<Server> servers = vim.queryResources(vimInstance);
     //Calculate used resource by servers (cpus, ram)
@@ -199,14 +198,14 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
       //Subtract floatingIps
 
       //Subtract instances
-      leftQuota.setInstances(leftQuota.getInstances() - 1);
+      maximalQuota.setInstances(maximalQuota.getInstances() - 1);
       //Subtract used ram and cpus
       // TODO check whenever the library/rest command work.
       DeploymentFlavour flavor = server.getFlavor();
-      leftQuota.setRam(leftQuota.getRam() - flavor.getRam());
-      leftQuota.setCores(leftQuota.getCores() - flavor.getVcpus());
+      maximalQuota.setRam(maximalQuota.getRam() - flavor.getRam());
+      maximalQuota.setCores(maximalQuota.getCores() - flavor.getVcpus());
       // TODO add floating ips when quota command will work...
     }
-    return leftQuota;
+    return maximalQuota;
   }
 }

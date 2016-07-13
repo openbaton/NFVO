@@ -35,7 +35,6 @@ public class ApplicationTest {
 
   @Bean
   VimDriverCaller vimDriverCaller() {
-    VimDriverCaller vimDriverCaller = PowerMockito.mock(VimDriverCaller.class);
-    return vimDriverCaller;
+    return PowerMockito.mock(VimDriverCaller.class);
   }
 }

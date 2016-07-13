@@ -73,6 +73,6 @@ public class RabbitManager {
   }
 
   public static void main(String[] args) throws IOException {
-    System.out.println(RabbitManager.getQueues("localhost", "admin", "openbaton", 5672));
+    System.out.println(getQueues("localhost", "admin", "openbaton", 5672));
   }
 }

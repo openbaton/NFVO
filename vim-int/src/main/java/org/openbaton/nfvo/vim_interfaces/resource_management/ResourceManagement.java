@@ -45,7 +45,7 @@ public interface ResourceManagement {
       VNFComponent vnfComponent,
       String userdata,
       Map<String, String> floatingIps)
-      throws VimException, VimDriverException;
+      throws VimException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
@@ -61,7 +61,7 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void update(VirtualDeploymentUnit vdu) throws VimException;
+  void update(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows scaling a virtualised resource by adding or removing capacity, e.g.
@@ -69,7 +69,7 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void scale(VirtualDeploymentUnit vdu) throws VimException;
+  void scale(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows moving virtualised resources between locations. For instance, the
@@ -78,7 +78,7 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void migrate(VirtualDeploymentUnit vdu) throws VimException;
+  void migrate(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows executing specific commands on certain allocated virtualised resources.
@@ -88,7 +88,7 @@ public interface ResourceManagement {
    * @param vdu
    * @param operation
    */
-  void operate(VirtualDeploymentUnit vdu, String operation) throws VimException;
+  void operate(VirtualDeploymentUnit vdu, String operation);
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
@@ -105,14 +105,14 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void createReservation(VirtualDeploymentUnit vdu) throws VimException;
+  void createReservation(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows querying an issued resources reservation, e.g. to discover the
    * virtualised resources included in a specific reserved resources pool, or the amount of free
    * resources in such a pool.
    */
-  void queryReservation() throws VimException;
+  void queryReservation();
 
   /**
    * This operation allows updating an issued resources reservation to increase or decrease the
@@ -120,7 +120,7 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void updateReservation(VirtualDeploymentUnit vdu) throws VimException;
+  void updateReservation(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows releasing an issued resources reservation, hence freeing the reserved
@@ -128,7 +128,7 @@ public interface ResourceManagement {
    *
    * @param vdu
    */
-  void releaseReservation(VirtualDeploymentUnit vdu) throws VimException;
+  void releaseReservation(VirtualDeploymentUnit vdu);
 
   /**
    * This operations return the maximal Quotas allowed to allocate.

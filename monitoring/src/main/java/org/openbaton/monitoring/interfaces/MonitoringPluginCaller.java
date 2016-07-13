@@ -175,9 +175,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     Serializable res = null;
     try {
       res = pluginCaller.executeRPC("subscribeForFault", params, String.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -193,9 +191,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     Serializable res = null;
     try {
       res = pluginCaller.executeRPC("unsubscribeForFault", params, String.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -204,8 +200,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public void notifyFault(AlarmEndpoint endpoint, AbstractVirtualizedResourceAlarm event)
-      throws MonitoringException {
+  public void notifyFault(AlarmEndpoint endpoint, AbstractVirtualizedResourceAlarm event) {
     //It must not be called from a consumer
   }
 
@@ -220,9 +215,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     try {
       Type listType = new TypeToken<ArrayList<Alarm>>() {}.getType();
       res = pluginCaller.executeRPC("getAlarmList", params, listType);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -248,9 +241,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     Serializable res = null;
     try {
       res = pluginCaller.executeRPC("createPMJob", params, String.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -267,9 +258,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     Type listType = new TypeToken<ArrayList<String>>() {}.getType();
     try {
       res = pluginCaller.executeRPC("deletePMJob", params, listType);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -289,9 +278,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
       Type listType = new TypeToken<ArrayList<Item>>() {}.getType();
       res = pluginCaller.executeRPC("queryPMJob", params, listType);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -325,9 +312,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     Serializable res = null;
     try {
       res = pluginCaller.executeRPC("createThreshold", params, String.class);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());
@@ -344,9 +329,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
     try {
       Type listType = new TypeToken<ArrayList<String>>() {}.getType();
       res = pluginCaller.executeRPC("deleteThreshold", params, listType);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     } catch (PluginException e) {
       throw new MonitoringException(e.getMessage());

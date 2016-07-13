@@ -15,8 +15,6 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.mano.common.monitoring.Alarm;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;

@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.Future;
 
 /**
@@ -741,8 +742,8 @@ public class GenericVIM extends Vim {
             + vimInstance.getName()
             + " -> "
             + updatingNetwork.getSubnets());
-    Set<Subnet> updatedSubnets = new HashSet<Subnet>();
-    List<String> updatedSubnetExtIds = new ArrayList<String>();
+    Set<Subnet> updatedSubnets = new HashSet<>();
+    List<String> updatedSubnetExtIds = new ArrayList<>();
     for (Subnet subnet : updatingNetwork.getSubnets()) {
       if (subnet.getExtId() != null) {
         try {
@@ -1045,7 +1046,7 @@ public class GenericVIM extends Vim {
       VNFComponent vnfComponent,
       String userdata,
       Map<String, String> floatingIps)
-      throws VimException, VimDriverException {
+      throws VimException {
     log.info("Launching new VM on VimInstance: " + vimInstance.getName());
     log.trace("VDU is : " + vdu.toString());
     log.trace("VNFR is : " + vnfr.toString());
@@ -1056,7 +1057,7 @@ public class GenericVIM extends Vim {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.info("Finding Networks...");
-    Set<String> networks = new HashSet<String>();
+    Set<String> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
       for (Network net : vimInstance.getNetworks())
         if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
@@ -1205,7 +1206,7 @@ public class GenericVIM extends Vim {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vm_images);
     log.debug("Available: " + vimInstance.getImages());
-    if (vm_images != null && vm_images.size() > 0) {
+    if (vm_images != null && !vm_images.isEmpty()) {
       for (String image : vm_images) {
         for (NFVImage nfvImage : vimInstance.getImages()) {
           if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId())) {
@@ -1259,22 +1260,22 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void update(VirtualDeploymentUnit vdu) throws VimException {
+  public void update(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void scale(VirtualDeploymentUnit vdu) throws VimException {
+  public void scale(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void migrate(VirtualDeploymentUnit vdu) throws VimException {
+  public void migrate(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) throws VimException {
+  public void operate(VirtualDeploymentUnit vdu, String operation) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
@@ -1326,22 +1327,22 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void createReservation(VirtualDeploymentUnit vdu) throws VimException {
+  public void createReservation(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void queryReservation() throws VimException {
+  public void queryReservation() {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void updateReservation(VirtualDeploymentUnit vdu) throws VimException {
+  public void updateReservation(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
-  public void releaseReservation(VirtualDeploymentUnit vdu) throws VimException {
+  public void releaseReservation(VirtualDeploymentUnit vdu) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
@@ -1369,7 +1370,7 @@ public class GenericVIM extends Vim {
       VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
       connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
       connectionPoint_vnfci.setType(connectionPoint.getType());
-      for (Map.Entry<String, String> entry : server.getFloatingIps().entrySet())
+      for (Entry<String, String> entry : server.getFloatingIps().entrySet())
         if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
           connectionPoint_vnfci.setFloatingIp(entry.getValue());
       vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
@@ -1382,8 +1383,8 @@ public class GenericVIM extends Vim {
     vnfcInstance.setIps(new HashSet<Ip>());
     vnfcInstance.setFloatingIps(new HashSet<Ip>());
 
-    if (floatingIps.size() != 0) {
-      for (Map.Entry<String, String> fip : server.getFloatingIps().entrySet()) {
+    if (!floatingIps.isEmpty()) {
+      for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {
         Ip ip = new Ip();
         ip.setNetName(fip.getKey());
         ip.setIp(fip.getValue());
@@ -1391,7 +1392,7 @@ public class GenericVIM extends Vim {
       }
     }
 
-    for (Map.Entry<String, List<String>> network : server.getIps().entrySet()) {
+    for (Entry<String, List<String>> network : server.getIps().entrySet()) {
       Ip ip = new Ip();
       ip.setNetName(network.getKey());
       ip.setIp(network.getValue().iterator().next());

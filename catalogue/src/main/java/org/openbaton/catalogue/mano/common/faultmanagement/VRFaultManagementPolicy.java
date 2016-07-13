@@ -16,7 +16,6 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import javax.persistence.Entity;
-import java.util.Iterator;
 
 /**
  * Created by mob on 29.10.15.
@@ -53,8 +52,9 @@ public class VRFaultManagementPolicy extends FaultManagementPolicy {
             + severity
             + ", criteria=";
     if (criteria != null) {
-      Iterator<Criteria> criteriaIterator = criteria.iterator();
-      while (criteriaIterator.hasNext()) result += criteriaIterator.next().toString();
+      for (Criteria aCriteria : criteria) {
+        result += aCriteria.toString();
+      }
     } else result += "null";
     result += ", action=" + action;
     return result;

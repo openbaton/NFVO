@@ -18,7 +18,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+
 import java.util.Map;
 
 /**

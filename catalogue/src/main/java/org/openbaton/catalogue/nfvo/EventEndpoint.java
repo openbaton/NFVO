@@ -17,11 +17,12 @@ package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import java.io.Serializable;
 
 /**
  * Created by lto on 01/07/15.
@@ -178,28 +179,43 @@ public class EventEndpoint implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof EventEndpoint)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof EventEndpoint)) {
+      return false;
+    }
 
     EventEndpoint that = (EventEndpoint) o;
 
-    if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null)
+    if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
       return false;
+    }
     if (getNetworkServiceId() != null
         ? !getNetworkServiceId().equals(that.getNetworkServiceId())
-        : that.getNetworkServiceId() != null) return false;
+        : that.getNetworkServiceId() != null) {
+      return false;
+    }
     if (getVirtualNetworkFunctionId() != null
         ? !getVirtualNetworkFunctionId().equals(that.getVirtualNetworkFunctionId())
-        : that.getVirtualNetworkFunctionId() != null) return false;
-    if (getType() != that.getType()) return false;
-    if (!getEndpoint().equals(that.getEndpoint())) return false;
-    if (getEvent() != that.getEvent()) return false;
-    if (getDescription() != null
-        ? !getDescription().equals(that.getDescription())
-        : that.getDescription() != null) return false;
-    return !(getStatus() != null
-        ? !getStatus().equals(that.getStatus())
-        : that.getStatus() != null);
+        : that.getVirtualNetworkFunctionId() != null) {
+      return false;
+    }
+    if (getType() != that.getType()) {
+      return false;
+    }
+    if (!getEndpoint().equals(that.getEndpoint())) {
+      return false;
+    }
+    if (getEvent() != that.getEvent()) {
+      return false;
+    }
+    return getDescription() != null
+        ? getDescription().equals(that.getDescription())
+        : that.getDescription() == null
+            && !(getStatus() != null
+                ? !getStatus().equals(that.getStatus())
+                : that.getStatus() != null);
   }
 
   @Override
