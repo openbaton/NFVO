@@ -17,9 +17,17 @@ package org.openbaton.catalogue.mano.common;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 
 /**
  * Created by lto on 05/02/15.
@@ -95,7 +103,7 @@ public abstract class AbstractVirtualLink implements Serializable {
     return hb_version;
   }
 
-  public void setHb_version(int vb_version) {
+  public void setHb_version(int hb_version) {
     this.hb_version = hb_version;
   }
 

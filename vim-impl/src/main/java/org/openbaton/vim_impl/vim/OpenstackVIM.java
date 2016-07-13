@@ -119,8 +119,8 @@ public class OpenstackVIM extends GenericVIM {
             + vimInstance.getName()
             + " -> "
             + network.getSubnets());
-    Set<Subnet> updatedSubnets = new HashSet<Subnet>();
-    List<String> updatedSubnetExtIds = new ArrayList<String>();
+    Set<Subnet> updatedSubnets = new HashSet<>();
+    List<String> updatedSubnetExtIds = new ArrayList<>();
     for (Subnet subnet : network.getSubnets()) {
       if (subnet.getExtId() != null) {
         try {
@@ -358,7 +358,7 @@ public class OpenstackVIM extends GenericVIM {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
-    Set<String> networks = new HashSet<String>();
+    Set<String> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
       for (Network net : vimInstance.getNetworks())
         if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))

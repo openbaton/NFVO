@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.util.Properties;
 
 /**
@@ -59,9 +58,7 @@ public abstract class Plugin {
                   + " doesn't exist");
         }
       }
-    } catch (IOException e) {
-      //            e.printStackTrace();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
 
     }
     log.debug("Loaded properties: " + properties);
@@ -75,7 +72,7 @@ public abstract class Plugin {
     this.properties = properties;
   }
 
-  public String getType() throws RemoteException {
+  public String getType() {
     return properties.getProperty("type", "type not defined");
   }
 }

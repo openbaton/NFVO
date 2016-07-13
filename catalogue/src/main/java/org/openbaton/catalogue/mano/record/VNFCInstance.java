@@ -19,15 +19,20 @@ import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 
 /**
  * Created by lto on 08/09/15.
  */
 @Entity
-public class VNFCInstance extends VNFComponent implements Serializable {
+public class VNFCInstance extends VNFComponent {
 
   protected String vim_id;
   protected String vc_id;

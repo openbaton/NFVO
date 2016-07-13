@@ -21,9 +21,12 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -90,7 +93,7 @@ public class AmazonVIM extends GenericVIM {
       VNFComponent vnfComponent,
       String userdata,
       Map<String, String> floatingIps)
-      throws VimException, VimDriverException {
+      throws VimException {
     throw new UnsupportedOperationException();
   }
 

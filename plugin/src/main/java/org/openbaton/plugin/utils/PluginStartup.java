@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public class PluginStartup {
     if (!dir.exists()) dir.mkdirs();
     File file = new File("plugin-logs/plugin-" + name + "_" + ft.format(dNow) + ".log");
     processBuilder.redirectErrorStream(true);
-    processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(file));
+    processBuilder.redirectOutput(Redirect.appendTo(file));
     log.trace("ProcessBuilder is: " + processBuilder);
     Process p = processBuilder.start();
     try {
@@ -147,7 +148,7 @@ public class PluginStartup {
     if (!dir.exists()) dir.mkdirs();
     File file = new File(pluginLogPath + "/plugin-" + name + "_" + ft.format(dNow) + ".log");
     processBuilder.redirectErrorStream(true);
-    processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
+    processBuilder.redirectOutput(Redirect.to(file));
     log.trace("ProcessBuilder is: " + processBuilder);
     Process p = processBuilder.start();
     try {
