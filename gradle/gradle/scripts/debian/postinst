@@ -2,7 +2,6 @@
 
 . /lib/lsb/init-functions
 
-
 OPENBATON_BASE=/usr
 OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_EXE_FOLDER=${OPENBATON_BASE}/bin
@@ -14,12 +13,11 @@ TMPFOLDER=$(mktemp -d)
 USER="$(id -un 2>/dev/null || true)"
 
 checkBinary () {
-    echo -n " * Checking for '$1'..."
-    if command -v $1 >/dev/null 2>&1; then
-        echo "OK"
+    if command -v $1 >/dev/null 2>&1 ; then
+        log_success_msg "Checking for '$1'"
         return 0
     else
-        echo >&2 "FAILED."
+        log_failure_msg "Checking for '$1'"
         return 1
     fi
 }
@@ -35,11 +33,11 @@ fi
 
 ulimit -S -n 4096
 
+
 # Set the installation mode (interactive or not interactive)
 INTERACTIVE=true
-result_1=$(env | grep DEBIAN_FRONTEND=noninteractive | wc -l)
-result_2=$($_ex debconf-get-selections | grep 'debconf/frontend' | grep 'Noninteractive' | wc -l)
-if [ ${result_1} -ne 0 ] || [ ${result_2} -ne 0 ]; then
+RESULT=$(env | grep DEBIAN_FRONTEND=noninteractive | wc -l)
+if [ ${RESULT} -ne 0 ]; then
     INTERACTIVE=false
 fi
 
@@ -72,7 +70,7 @@ configureRabbitMQ () {
         ##########################################################
         $_ex 'service rabbitmq-server restart'
         if [ "$?" != "0" ]; then
-            log_daemon_msg "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
+            log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
             exit 1
         fi
     fi    
@@ -84,15 +82,15 @@ configureRabbitMQ () {
     	read -p "Enter the rabbitmq broker ip [localhost]: " brokerIp
     	export brokerIp=${brokerIp}
     	if [ "${brokerIp}" != "" ]; then
-            log_daemon_msg "Setting new broker ip: ${brokerIp}"
-	    $_ex 'sed -i "s/nfvo.rabbit.brokerIp = localhost/nfvo.rabbit.brokerIp = $brokerIp/g" /etc/openbaton/openbaton.properties'
+            log_success_msg "Setting new broker ip: ${brokerIp}"
+	        $_ex 'sed -i "s/nfvo.rabbit.brokerIp = localhost/nfvo.rabbit.brokerIp = $brokerIp/g" /etc/openbaton/openbaton.properties'
         fi
 
     	read -p "Enter the rabbitmq management port [15672]: " managementPort
     	export managementPort=${managementPort}
     	if [ "${managementPort}" != "" ]; then
-            log_daemon_msg "Setting new management port: ${managementPort}"
-	    $_ex 'sed -i "s/nfvo.rabbit.management.port = 15672/nfvo.rabbit.management.port = $managementPort/g" /etc/openbaton/openbaton.properties'
+            log_success_msg "Setting new management port: ${managementPort}"
+	        $_ex 'sed -i "s/nfvo.rabbit.management.port = 15672/nfvo.rabbit.management.port = $managementPort/g" /etc/openbaton/openbaton.properties'
     	fi
     fi
 }
@@ -107,20 +105,11 @@ configureSecurity () {
     # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
     # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
     if [ "${INTERACTIVE}" = "true" ]; then
-    	read -p "Do you want to enable security [N/y]: " security
-    	export security=${security}
-    	if [ "${security}" != "" ]; then
-	    if [ "${security}" = "y" -o "${security}" = "Y" -o "${security}" = "yes" ]; then
-            	log_daemon_msg "Enabling security"
-            	$_ex 'sed -i "s/# nfvo.security.enabled = true/nfvo.security.enabled = true/g" /etc/openbaton/openbaton.properties'
-     	    fi
-    	fi
-
     	read -p "Do you want to enable HTTPS (##NOTE##: No sdk will work, currently under development :( )[N/y]: " https
     	export https=${https}
     	if [ "${https}" != "" ]; then
 	    if [ "${https}" = "y" -o "${https}" = "Y" -o "${https}" = "yes" ]; then
-            	log_daemon_msg "Enabling HTTPS"
+            	log_success_msg "Enabling HTTPS"
        	    	# server.https = false
        	    	$_ex 'sed -i "s/# server.https = false/server.https = true/g" /etc/openbaton/openbaton.properties'
             	# server.port = 8443       
@@ -144,20 +133,19 @@ configureSecurity () {
 #######################
 
 pluginsPrereq () {
-    log_daemon_msg "Preparing the environment.."
+    log_success_msg "Configuring the Plugins environment .."
     mkdir -p ${OPENBATON_PLUGINS_FOLDER}
     export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
-    ${_ex} 'sed -i "s~nfvo.plugin.installation-dir = ./plugins~nfvo.plugin.installation-dir = "${OPENBATON_PLUGINS_FOLDER}"~" /etc/openbaton/openbaton.properties'
-    log_daemon_msg ".. done"
+    $_ex 'sed -i "s~nfvo.plugin.installation-dir = ./plugins~nfvo.plugin.installation-dir = "${OPENBATON_PLUGINS_FOLDER}"~" /etc/openbaton/openbaton.properties'
 }
 
 getTestVIMPlugin () {
-    log_daemon_msg "Getting Test VIM Plugin..."
+    log_success_msg "Getting Test VIM Plugin .."
     wget -nH --cut-dirs 2 -r --no-parent  --reject "index.html*" "${OPENBATON_PLUGINS_TEST_URL}" -P "${TMPFOLDER}"
 }
 
 getOpenStackVIMPlugin () {
-    log_daemon_msg "Getting OpenStack VIM Plugin..."
+    log_success_msg "Getting OpenStack VIM Plugin .."
     wget -nH --cut-dirs 2 -r --no-parent  --reject "index.html*" "${OPENBATON_PLUGINS_OPENSTACK_URL}" -P "${TMPFOLDER}"
 }
 
@@ -172,7 +160,7 @@ downloadVIMDriverPlugins () {
     # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
     # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
     if [ "${INTERACTIVE}" = "true" ]; then
-    	read -p "Do you want to download the VIM-Driver Plugins? ([y]/n): " yn
+    	read -p "Do you want to download the VIM-Driver Plugins? (Y/n): " yn
     	if [ "${yn}" != "n" -a "${yn}" != "N" ]; then
             echo "Options available are: "
 	        echo "Options available are: "
@@ -184,7 +172,7 @@ downloadVIMDriverPlugins () {
             	getAllVIMPlugins
             else
             	set -- ${plugins} # Create the array for the cycle for
-                for plug in $@
+                for plug in ${@}
                 do
                     case ${plug} in
                     	1 ) getTestVIMPlugin ;;
@@ -207,27 +195,30 @@ downloadVIMDriverPlugins () {
 
 
 
-
-###############################################
-#### Configure OpenBaton NFVO installation ####
-###############################################
+################################################
+#### Configure Open Baton NFVO installation ####
+################################################
 
 configure () {
-    echo "Starting configure.."
+    log_success_msg "Configuring Open Baton NFVO installation .."
     configureRabbitMQ
     configureSecurity
     downloadVIMDriverPlugins
 
-    log_daemon_msg "Giving openbaton-nfvo execution permissions ..."
-    ${_ex} "chmod a+x ${OPENBATON_EXE_FOLDER}/openbaton-nfvo"
-    log_daemon_msg "...done."
+    log_success_msg "Giving openbaton-nfvo execution permissions .."
+    $_ex "chmod a+x ${OPENBATON_EXE_FOLDER}/openbaton-nfvo"
 
-    log_daemon_msg "OpenBaton NFVO installation completed"
+    log_success_msg "Open Baton NFVO installation completed"
 
     # Allow the use of the .deb package to install Open Baton with Docker (the Docker file developer need to manage the starting of the NFVO in the Docker file) 
     if [ "${OPENBATON_DOCKERIZED}" != "true" ]; then
-        log_daemon_msg "Starting OpenBaton NFVO.."
-	    $_ex 'start openbaton-nfvo'
+        if $_ex 'systemctl start openbaton-nfvo.service' >/dev/null 2>&1 ; then
+            log_success_msg "Starting the Open Baton NFVO .."
+        elif $_ex 'start openbaton-nfvo' >/dev/null 2>&1 ; then
+            log_success_msg "Starting the Open Baton NFVO .."
+        else 
+            log_failure_msg "Starting the Open Baton NFVO"
+        fi
     fi
 }
 

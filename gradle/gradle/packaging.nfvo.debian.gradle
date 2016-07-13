@@ -21,15 +21,19 @@ ext {
     openbatonInstallDir = "/opt/openbaton"
 }
 
-task openbatonNFVODeb(type: Deb, dependsOn: [jar, build]) { 
+task makedeb(type: Deb, dependsOn: [jar, build]) { 
     packageName = (applicationRelease) ? "openbaton-nfvo" : "openbaton-nfvo-nightly"
     version = debianApplicationVersionFull
     release = 1 
+    priority = 'optional'
     arch = 'amd64'
-    maintainer = 'OpenBaton Team <info@open-baton.org>'
-    packageDescription = 'Open Baton NFV Orchestrator'
+    maintainer = 'Open Baton Team <info@open-baton.org>'
+    vendor = 'Open Source (Implemented by Fraunhofer FOKUS and TUB)'
+    license = 'Apache 2.0 License'
+    url = 'http://openbaton.github.io/index.html'
+    summary = 'Open Baton NFV Orchestrator (NFVO)'
+    packageDescription = 'The Network Function Virtualization Orchestrator (NFVO) is a component of the Open Baton project which is an ETSI compliant implementation of a NFV Management and Orchestration (MANO) System'
 
-    configurationFile('/etc/openbaton/openbaton.properties')
     postInstall file('gradle/gradle/scripts/debian/postinst')
     preUninstall file('gradle/gradle/scripts/debian/prerm')
     postUninstall file('gradle/gradle/scripts/debian/postrm')
@@ -38,11 +42,13 @@ task openbatonNFVODeb(type: Deb, dependsOn: [jar, build]) {
     requires('rabbitmq-server')
     requires('wget')
 
-    from(jar.outputs.files) 				{ into '/usr/lib/openbaton/' }
-    from('gradle/gradle/scripts/openbaton-nfvo') 	{ into '/usr/bin/'}
-    from('gradle/gradle/scripts/openbaton-nfvo') 	{ into '/etc/init.d/'} 
-    from('gradle/gradle/scripts/openbaton-nfvo.conf') 	{ into '/etc/init/'} 
-    from('etc/openbaton.properties') 			{ into '/etc/openbaton/' }
-    
-    link('/etc/init.d/openbaton-nfvo', '/lib/init/upstart-job')
+    // Copy files from "from path" to "into path"
+    from('etc/openbaton.properties') 			                    { into '/etc/openbaton/' }                 // properties file
+    from(jar.outputs.files) 				                        { into '/usr/lib/openbaton/' }             // jar file
+    from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/usr/bin/'}                        // executable to run the NFVO 
+    from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/etc/init.d/'}                     // executable to run the NFVO as a service (SysV)
+    from('gradle/gradle/scripts/openbaton-nfvo.conf') 	            { into '/etc/init/'}                       // conf file to run the NFVO as a service (Upstart)
+    from('gradle/gradle/scripts/systemd/openbaton-nfvo.service') 	{ into '/usr/lib/systemd/system/'}         // executable to run the NFVO as a service (Systemd)
+    from('gradle/gradle/scripts/systemd/nfvo.env') 	                { into '/usr/lib/openbaton/systemd/'}      // environment file to run the NFVO as a service (Systemd)
+    from('gradle/gradle/scripts/systemd/nfvo.preexecstart') 	    { into '/usr/lib/openbaton/systemd/'}      // preexecstart file to run the NFVO as a service (Systemd)
 }

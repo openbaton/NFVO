@@ -1,0 +1,14 @@
+# Open Baton NFVO init script for the 'Systemd' System and Service Manager
+
+[Unit]
+Description=Open Baton NFVO Systemd Unit
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/usr/lib/openbaton/systemd/nfvo.env
+ExecStartPre=/usr/lib/openbaton/systemd/nfvo.preexecstart
+ExecStart=/usr/bin/java -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE} --no-console
+Restart=on-failure
+RestartSec=60s
+

@@ -1,0 +1,59 @@
+#!/bin/sh -e
+
+. /lib/lsb/init-functions
+
+OPENBATON_SYSTEMD_NFVO_ENV=/usr/lib/openbaton/systemd/nfvo.env
+
+preExecStart () {
+    OSTYPE=$(uname)
+
+    ####################
+    #### Open Baton ####
+    ####################
+
+    # Check if the Open Baton NFVO is already running
+    instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
+    if [ ${instance} -ne 0 ]; then
+        log_warning_msg "The Open Baton NFVO is already running"
+        exit 1
+    fi
+    # Select which Open Baton NFVO version to start
+    # TODO: so far the most recent openbaton-nfvo jar is chosen to be executed
+    #       -> add version selection (with prompt question and/or with command line -v parameter)
+    OPENBATON_NFVO_JAR=$(ls -ct ${INSTALL_DIR} | grep "openbaton" | grep jar | head -n 1)
+    if [ "${OPENBATON_NFVO_JAR}" = "" ]; then
+        log_failure_msg "The Open Baton NFVO is not installed (jar-file not found)"
+        exit 1
+    fi
+    sed -i "s/OPENBATON_NFVO_JAR=.*/OPENBATON_NFVO_JAR=${OPENBATON_NFVO_JAR}/g" ${OPENBATON_SYSTEMD_NFVO_ENV}
+
+
+    ###################
+    #### Rabbitmq #####
+    ###################
+
+    # Check and eventually starts rabbitmq-server
+    if [ ${OSTYPE} = "Linux" ]; then
+        instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l)
+        if [ ${instance} -eq 0 ]; then
+            log_warning_msg "rabbit is not running, let's try to start it"
+            $(rabbitmq-server -detached)
+            if (( $? != 0 )); then
+                log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log)"
+                exit 1
+            fi
+        fi
+    elif [ "$OSTYPE" == "darwin"* ]; then
+        instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l)
+        if [ ${instance} -eq 0 ]; then
+            log_warning_msg "rabbitmq is not running, let's try to start it"
+            $(rabbitmq-server -detached)
+            if [ $? -ne 0 ]; then
+                log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log)"
+                exit 1
+            fi
+        fi
+    fi
+}
+
+preExecStart
