@@ -36,47 +36,65 @@ fi
 
 ulimit -S -n 4096
 
+# Set the installation mode (interactive or not interactive)
+INTERACTIVE=true
+result_1=$(env | grep DEBIAN_FRONTEND=noninteractive | wc -l)
+result_2=$($_ex debconf-get-selections | grep 'debconf/frontend' | grep 'Noninteractive' | wc -l)
+if [ ${result_1} -ne 0 ] || [ ${result_2} -ne 0 ]; then
+    INTERACTIVE=false
+fi
+
 
 ##################
 #### RabbitMQ ####
 ##################
 
 configureRabbitMQ () {
-    result=$(${_ex} 'rabbitmqctl list_users' | grep '^admin' | wc -l)
-    if [ ${result} -eq 0 ]; then
-        ${_ex} 'rabbitmqctl add_user admin openbaton'
-        ${_ex} 'rabbitmqctl set_user_tags admin administrator'
-        ${_ex} 'rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"'
-    fi
-    #### Workaround to enable rabbitmq management plugin ####
-    #$_ex 'rabbitmq-plugins enable rabbitmq_management'
-    if [ -f /etc/rabbitmq/enabled_plugins ]; then
-        result=$(grep /etc/rabbitmq/enabled_plugins -e "[rabbitmq_management].")
-    	if [ "${result}" != "[rabbitmq_management]." ]; then
-            ${_ex} 'echo "[rabbitmq_management]." >> /etc/rabbitmq/enabled_plugins'
+    # Allow the use of the .deb package to install Open Baton with Docker (because of issues when installing and configuring RabbitMQ during a docker image build) 
+    # See documentation for more info
+    if [ "${RABBITMQ_ALREADYCONFIGURED}" != "true" ]; then
+        # TODO: check rabbitmq-server is started
+        result=$($_ex 'rabbitmqctl list_users' | grep '^admin' | wc -l)
+    	if [ ${result} -eq 0 ]; then
+            $_ex 'rabbitmqctl add_user admin openbaton'
+            $_ex 'rabbitmqctl set_user_tags admin administrator'
+            $_ex 'rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"'
+        fi
+        #### Workaround to enable rabbitmq management plugin ####
+        #$_ex 'rabbitmq-plugins enable rabbitmq_management'
+	    if [ -f /etc/rabbitmq/enabled_plugins ]; then
+            result=$(grep /etc/rabbitmq/enabled_plugins -e "[rabbitmq_management].")
+    	    if [ "${result}" != "[rabbitmq_management]." ]; then
+                $_ex 'echo "[rabbitmq_management]." >> /etc/rabbitmq/enabled_plugins'
+    	    fi
+        else
+	        $_ex 'echo "[rabbitmq_management]." > /etc/rabbitmq/enabled_plugins'
+        fi
+        ##########################################################
+        $_ex 'service rabbitmq-server restart'
+        if [ "$?" != "0" ]; then
+            log_daemon_msg "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
+            exit 1
+        fi
+    fi    
+
+    # Allow the use of the .deb package to install Open Baton with Docker (letting skip the interactive installation during the docker image build) 
+    # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
+    # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
+    if [ "${INTERACTIVE}" = "true" ]; then
+    	read -p "Enter the rabbitmq broker ip [localhost]: " brokerIp
+    	export brokerIp=${brokerIp}
+    	if [ "${brokerIp}" != "" ]; then
+            log_daemon_msg "Setting new broker ip: ${brokerIp}"
+	    $_ex 'sed -i "s/nfvo.rabbit.brokerIp = localhost/nfvo.rabbit.brokerIp = $brokerIp/g" /etc/openbaton/openbaton.properties'
+        fi
+
+    	read -p "Enter the rabbitmq management port [15672]: " managementPort
+    	export managementPort=${managementPort}
+    	if [ "${managementPort}" != "" ]; then
+            log_daemon_msg "Setting new management port: ${managementPort}"
+	    $_ex 'sed -i "s/nfvo.rabbit.management.port = 15672/nfvo.rabbit.management.port = $managementPort/g" /etc/openbaton/openbaton.properties'
     	fi
-    else
-	${_ex} 'echo "[rabbitmq_management]." > /etc/rabbitmq/enabled_plugins'
-    fi
-    ##########################################################
-    ${_ex} 'service rabbitmq-server restart'
-    if [ "$?" != "0" ]; then
-        log_daemon_msg "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
-        exit 1
-    fi
-
-    read -p "Enter the rabbitmq broker ip [localhost]: " brokerIp
-    export brokerIp=${brokerIp}
-    if [ "${brokerIp}" != "" ]; then
-        log_daemon_msg "Setting new broker ip: ${brokerIp}"
-	${_ex} 'sed -i "s/nfvo.rabbit.brokerIp = localhost/nfvo.rabbit.brokerIp = $brokerIp/g" /etc/openbaton/openbaton.properties'
-    fi
-
-    read -p "Enter the rabbitmq management port [15672]: " managementPort
-    export managementPort=${managementPort}
-    if [ "${managementPort}" != "" ]; then
-        log_daemon_msg "Setting new management port: ${managementPort}"
-	${_ex} 'sed -i "s/nfvo.rabbit.management.port = 15672/nfvo.rabbit.management.port = $managementPort/g" /etc/openbaton/openbaton.properties'
     fi
 }
 
@@ -86,33 +104,38 @@ configureRabbitMQ () {
 ##################
 
 configureSecurity () {
-    read -p "Do you want to enable security [N/y]: " security
-    export security=${security}
-    if [ "${security}" != "" ]; then
-	if [ "${security}" = "y" -o "${security}" = "Y" -o "${security}" = "yes" ]; then
-            log_daemon_msg "Enabling security"
-            ${_ex} 'sed -i "s/# nfvo.security.enabled = true/nfvo.security.enabled = true/g" /etc/openbaton/openbaton.properties'
-     	fi
-    fi
+    # Allow the use of the .deb package to install Open Baton with Docker (letting skip the interactive installation during the docker image build) 
+    # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
+    # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
+    if [ "${INTERACTIVE}" = "true" ]; then
+    	read -p "Do you want to enable security [N/y]: " security
+    	export security=${security}
+    	if [ "${security}" != "" ]; then
+	    if [ "${security}" = "y" -o "${security}" = "Y" -o "${security}" = "yes" ]; then
+            	log_daemon_msg "Enabling security"
+            	$_ex 'sed -i "s/# nfvo.security.enabled = true/nfvo.security.enabled = true/g" /etc/openbaton/openbaton.properties'
+     	    fi
+    	fi
 
-    read -p "Do you want to enable HTTPS (##NOTE##: No sdk will work, currently under development :( )[N/y]: " https
-    export https=${https}
-    if [ "${https}" != "" ]; then
-	if [ "${https}" = "y" -o "${https}" = "Y" -o "${https}" = "yes" ]; then
-            log_daemon_msg "Enabling HTTPS"
-       	    # server.https = false
-       	    ${_ex} 'sed -i "s/# server.https = false/server.https = true/g" /etc/openbaton/openbaton.properties'
-            # server.port = 8443       
-       	    ${_ex} 'sed -i "s/# server.port = 8443/server.port = 8443/g" /etc/openbaton/openbaton.properties'
-            # server.ssl.key-store = /etc/openbaton/keystore.p12
-       	    ${_ex} 'sed -i -e "s@# server.ssl.key-store = \/etc\/openbaton\/keystore.p12@server.ssl.key-store = \/etc\/openbaton\/keystore.p12@g" /etc/openbaton/openbaton.properties'
-       	    # server.ssl.key-store-password = password
-	    ${_ex} 'sed -i "s/# server.ssl.key-store-password = password/server.ssl.key-store-password = password/g" /etc/openbaton/openbaton.properties'
-       	    # server.ssl.keyStoreType = PKCS12
-       	    ${_ex} 'sed -i "s/# server.ssl.keyStoreType = PKCS12/server.ssl.keyStoreType = PKCS12/g" /etc/openbaton/openbaton.properties'
-       	    # server.ssl.keyAlias = tomcat
-       	    ${_ex} 'sed -i "s/# server.ssl.keyAlias = tomcat/server.ssl.keyAlias = tomcat/g" /etc/openbaton/openbaton.properties'
-     	fi
+    	read -p "Do you want to enable HTTPS (##NOTE##: No sdk will work, currently under development :( )[N/y]: " https
+    	export https=${https}
+    	if [ "${https}" != "" ]; then
+	    if [ "${https}" = "y" -o "${https}" = "Y" -o "${https}" = "yes" ]; then
+            	log_daemon_msg "Enabling HTTPS"
+       	    	# server.https = false
+       	    	$_ex 'sed -i "s/# server.https = false/server.https = true/g" /etc/openbaton/openbaton.properties'
+            	# server.port = 8443       
+       	    	$_ex 'sed -i "s/# server.port = 8443/server.port = 8443/g" /etc/openbaton/openbaton.properties'
+            	# server.ssl.key-store = /etc/openbaton/keystore.p12
+       	    	$_ex 'sed -i -e "s@# server.ssl.key-store = \/etc\/openbaton\/keystore.p12@server.ssl.key-store = \/etc\/openbaton\/keystore.p12@g" /etc/openbaton/openbaton.properties'
+       	    	# server.ssl.key-store-password = password
+	    	$_ex 'sed -i "s/# server.ssl.key-store-password = password/server.ssl.key-store-password = password/g" /etc/openbaton/openbaton.properties'
+       	    	# server.ssl.keyStoreType = PKCS12
+       	    	$_ex 'sed -i "s/# server.ssl.keyStoreType = PKCS12/server.ssl.keyStoreType = PKCS12/g" /etc/openbaton/openbaton.properties'
+       	    	# server.ssl.keyAlias = tomcat
+       	    	$_ex 'sed -i "s/# server.ssl.keyAlias = tomcat/server.ssl.keyAlias = tomcat/g" /etc/openbaton/openbaton.properties'
+     	    fi
+    	fi
     fi
 }
 
@@ -145,39 +168,53 @@ getAllVIMPlugins () {
 }
 
 downloadVIMDriverPlugins () {
-    read -p "Do you want to download the VIM-Driver Plugins? ([y]/n): " yn
-    if [ "${yn}" != "n" -a "${yn}" != "N" ]; then
-        pluginsPrereq
-        echo "Options available are: "
-	echo "Options available are: "
-        echo "    0. Download ALL VIM-Driver Plugins listed below"
-        echo "    1. Download 'Test' VIM-Driver Plugin"
-        echo "    2. Download 'OpenStack' VIM-Driver Plugin"
-        read -p "Insert the number(s) of the plugin(s) you want to download (in case of multiple plugins insert the numbers separated by a space - i.e. 1 2) ([0]): " plugins
-	if [ "${plugins}" = "" ]; then
-            getAllVIMPlugins
-        else
-            set -- ${plugins}
-            for plug in $@
-            do
-                case ${plug} in
-                    1 ) getTestVIMPlugin ;;
-                    2 ) getOpenStackVIMPlugin ;;
-                    * ) getAllVIMPlugins ;;
-                esac
-            done
+    pluginsPrereq
+    # Allow the use of the .deb package to install Open Baton with Docker (letting skip the interactive installation during the docker image build) 
+    # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
+    # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
+    if [ "${INTERACTIVE}" = "true" ]; then
+    	read -p "Do you want to download the VIM-Driver Plugins? ([y]/n): " yn
+    	if [ "${yn}" != "n" -a "${yn}" != "N" ]; then
+            echo "Options available are: "
+	        echo "Options available are: "
+            echo "    0. Download ALL VIM-Driver Plugins listed below"
+            echo "    1. Download 'Test' VIM-Driver Plugin"
+            echo "    2. Download 'OpenStack' VIM-Driver Plugin"
+            read -p "Insert the number(s) of the plugin(s) you want to download (in case of multiple plugins insert the numbers separated by a space - i.e. 1 2) ([0]): " plugins
+	        if [ "${plugins}" = "" ]; then
+            	getAllVIMPlugins
+            else
+            	set -- ${plugins} # Create the array for the cycle for
+                for plug in $@
+                do
+                    case ${plug} in
+                    	1 ) getTestVIMPlugin ;;
+                    	2 ) getOpenStackVIMPlugin ;;
+                    	* ) getAllVIMPlugins ;;
+                    esac
+            	done
+            fi
+	        export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
+            export TMPFOLDER="${TMPFOLDER}"
+            $_ex 'cp ${TMPFOLDER}/* "${OPENBATON_PLUGINS_FOLDER}"'
         fi
-	export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
+    else
+	    getAllVIMPlugins
+        export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
         export TMPFOLDER="${TMPFOLDER}"
         ${_ex} 'cp ${TMPFOLDER}/* "${OPENBATON_PLUGINS_FOLDER}"'
     fi
 }
+
+
+
 
 ###############################################
 #### Configure OpenBaton NFVO installation ####
 ###############################################
 
 configure () {
+    echo "Starting configure.."
     configureRabbitMQ
     configureSecurity
     downloadVIMDriverPlugins
@@ -188,8 +225,12 @@ configure () {
 
     log_daemon_msg "OpenBaton NFVO installation completed"
 
-    log_daemon_msg "Starting OpenBaton NFVO.."
-    ${_ex} 'start openbaton-nfvo'
+    # Allow the use of the .deb package to install Open Baton with Docker (the Docker file developer need to manage the starting of the NFVO in the Docker file) 
+    if [ "${OPENBATON_DOCKERIZED}" != "true" ]; then
+        log_daemon_msg "Starting OpenBaton NFVO.."
+	    $_ex 'start openbaton-nfvo'
+    fi
 }
+
 
 configure
