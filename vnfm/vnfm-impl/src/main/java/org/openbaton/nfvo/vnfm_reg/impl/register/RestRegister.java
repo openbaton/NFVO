@@ -46,7 +46,7 @@ public class RestRegister extends VnfmRegister {
     try (Socket socket = new Socket()) {
       socket.connect(new InetSocketAddress(host, port), timeout);
       return true;
-    } catch (IOException e) {
+    } catch (IOException ignored) {
       return false; // Either timeout or unreachable or failed DNS lookup.
     }
   }
@@ -107,7 +107,7 @@ public class RestRegister extends VnfmRegister {
                 vnfmEndpointRepository.save(endpoint);
               }
             }
-          } catch (java.net.MalformedURLException e) {
+          } catch (MalformedURLException ignored) {
             if (endpoint.isActive()) {
               log.warn("Not able to check endpoint: " + endpoint.getEndpoint());
               endpoint.setActive(false);

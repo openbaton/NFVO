@@ -50,11 +50,6 @@ public class VNFFGManagementClassSuiteTest {
 
   @Mock private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
-  @AfterClass
-  public static void shutdown() {
-    // TODO Teardown to avoid exceptions during test shutdown
-  }
-
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
@@ -191,8 +186,7 @@ public class VNFFGManagementClassSuiteTest {
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(

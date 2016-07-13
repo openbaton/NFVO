@@ -136,10 +136,8 @@ public class UpdatevnfrTask extends AbstractTask {
     log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
     virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
     log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo.getName());
-    OrVnfmGenericMessage nfvMessage =
-        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.UPDATEVNFR);
     //        vnfmSender.sendCommand(nfvMessage, getTempDestination());
-    return nfvMessage;
+    return new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.UPDATEVNFR);
   }
 
   private Set<VNFComponent> updateVNFComponents(

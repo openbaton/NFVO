@@ -90,8 +90,7 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VimInstance findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    VimInstance vimInstance = vimManagement.query(id, projectId);
-    return vimInstance;
+    return vimManagement.query(id, projectId);
   }
 
   /**

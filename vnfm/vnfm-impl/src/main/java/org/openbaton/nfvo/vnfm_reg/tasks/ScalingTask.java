@@ -31,7 +31,6 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.vim.drivers.interfaces.VimDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -200,9 +199,7 @@ public class ScalingTask extends AbstractTask {
     }
 
     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
-    OrVnfmGenericMessage nfvMessage =
-        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
-    return nfvMessage;
+    return new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
   }
 
   @Override

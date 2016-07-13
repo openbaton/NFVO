@@ -3,7 +3,7 @@
 . /lib/lsb/init-functions
 
 OPENBATON_BASE=/usr
-OPENBATON_PLUGINS_FOLDER=$OPENBATON_BASE/lib/openbaton/plugins
+OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_LOGS_FOLDER=/var/log/openbaton
 
 
@@ -38,7 +38,7 @@ cleanPlugins () {
     log_daemon_msg "Cleaning the environment: deleting plugins.."
     export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
     if [ -d ${OPENBATON_PLUGINS_FOLDER} ]; then
-    	$_ex 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
+    	${_ex} 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
     	log_daemon_msg "..done"
     fi
 }
@@ -51,7 +51,7 @@ cleanLogs () {
     log_daemon_msg "Cleaning the environment: deleting logs.."
     export OPENBATON_LOGS_FOLDER="${OPENBATON_LOGS_FOLDER}"
     if [ -d ${OPENBATON_LOGS_FOLDER} ]; then
-    	$_ex 'rm -r ${OPENBATON_LOGS_FOLDER}'
+    	${_ex} 'rm -r ${OPENBATON_LOGS_FOLDER}'
     	log_daemon_msg "..done"
     fi
 }

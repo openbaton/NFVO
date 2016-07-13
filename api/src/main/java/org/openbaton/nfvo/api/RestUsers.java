@@ -65,7 +65,6 @@ public class RestUsers {
       log.info("removing User with id " + id);
       userManagement.delete(userManagement.queryById(id));
     }
-    return;
   }
 
   /**

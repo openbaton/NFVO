@@ -56,11 +56,6 @@ public class ConfigurationManagementClassSuiteTest {
 
   @Mock private ConfigurationRepository configurationRepository;
 
-  @AfterClass
-  public static void shutdown() {
-    // TODO Teardown to avoid exceptions during test shutdown
-  }
-
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
@@ -176,8 +171,7 @@ public class ConfigurationManagementClassSuiteTest {
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(

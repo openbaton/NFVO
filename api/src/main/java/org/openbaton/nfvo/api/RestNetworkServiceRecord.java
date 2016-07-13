@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -141,8 +142,7 @@ public class RestNetworkServiceRecord {
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceRecord findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
-    return nsr;
+    return networkServiceRecordManagement.query(id, projectId);
   }
 
   /**
@@ -428,9 +428,9 @@ public class RestNetworkServiceRecord {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     Set<DependencyObject> result = new HashSet<>();
     for (VNFRecordDependency vnfDependency : nsr.getVnf_dependency()) {
-      for (Map.Entry<String, VNFCDependencyParameters> entry :
+      for (Entry<String, VNFCDependencyParameters> entry :
           vnfDependency.getVnfcParameters().entrySet()) {
-        for (Map.Entry<String, DependencyParameters> parameters :
+        for (Entry<String, DependencyParameters> parameters :
             entry.getValue().getParameters().entrySet()) {
           DependencyObject dependencyObject = new DependencyObject();
           dependencyObject.setTarget(vnfDependency.getTarget());

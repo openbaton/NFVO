@@ -89,7 +89,6 @@ public class NetworkServiceDescriptorRepositoryImpl
         .getVnfd()
         .remove(pnfDescriptorRepository.findOne(idPnf));
     pnfDescriptorRepository.delete(idPnf);
-    return;
   }
 
   @Override

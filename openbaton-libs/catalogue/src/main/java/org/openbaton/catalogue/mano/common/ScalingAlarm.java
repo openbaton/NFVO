@@ -22,7 +22,6 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * Created by mpa on 15/12/15.

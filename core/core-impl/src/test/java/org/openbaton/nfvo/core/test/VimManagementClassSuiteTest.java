@@ -42,8 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -66,11 +64,6 @@ public class VimManagementClassSuiteTest {
   private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VimManagement vimManagement;
-
-  @AfterClass
-  public static void shutdown() {
-    // TODO Teardown to avoid exceptions during test shutdown
-  }
 
   @Before
   public void init() {

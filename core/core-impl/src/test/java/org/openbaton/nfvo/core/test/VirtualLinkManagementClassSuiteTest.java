@@ -16,13 +16,21 @@
 
 package org.openbaton.nfvo.core.test;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.nfvo.core.api.VirtualLinkManagement;
-import org.openbaton.catalogue.mano.common.*;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
+import org.openbaton.catalogue.mano.common.Security;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
@@ -33,15 +41,17 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.nfvo.core.api.VirtualLinkManagement;
 import org.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
 import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.NoResultException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -60,11 +70,6 @@ public class VirtualLinkManagementClassSuiteTest {
   @Mock private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
   @Mock private VirtualLinkRecordRepository virtualLinkRecordRepository;
-
-  @AfterClass
-  public static void shutdown() {
-    // TODO Teardown to avoid exceptions during test shutdown
-  }
 
   @Before
   public void init() {
@@ -332,8 +337,7 @@ public class VirtualLinkManagementClassSuiteTest {
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(

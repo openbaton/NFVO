@@ -84,9 +84,8 @@ public class RestVNFFG {
    */
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFForwardingGraphDescriptor findById(@PathVariable("id") String id) {
-    VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor = vnffgManagement.query(id);
 
-    return vnfForwardingGraphDescriptor;
+    return vnffgManagement.query(id);
   }
 
   /**

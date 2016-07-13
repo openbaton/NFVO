@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class VnfPlacementManagement
 
   @Override
   public VimInstance choseRandom(Collection<String> vimInstanceName) {
-    if (vimInstanceName.size() != 0) {
+    if (!vimInstanceName.isEmpty()) {
       String name =
           vimInstanceName.toArray(new String[0])[
               ((int) (Math.random() * 1000)) % vimInstanceName.size()];
@@ -34,7 +34,7 @@ public class VnfPlacementManagement
       return vimInstance;
     } else {
       Iterable<VimInstance> vimInstances = vimInstanceRepository.findAll();
-      List<Iterable<VimInstance>> iterableList = Arrays.asList(vimInstances);
+      List<Iterable<VimInstance>> iterableList = Collections.singletonList(vimInstances);
       return iterableList.toArray(new VimInstance[0])[
           ((int) (Math.random() * 1000)) % iterableList.size()];
     }

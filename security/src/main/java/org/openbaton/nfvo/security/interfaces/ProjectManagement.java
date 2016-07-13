@@ -19,7 +19,7 @@ public interface ProjectManagement {
    *
    * @param project
    */
-  void delete(Project project) throws NotAllowedException, EntityInUseException;
+  void delete(Project project) throws EntityInUseException;
 
   /**
    *
@@ -35,7 +35,7 @@ public interface ProjectManagement {
    *
    * @param id
    */
-  Project query(String id) throws NotFoundException;
+  Project query(String id);
 
   /**
    *

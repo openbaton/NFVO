@@ -57,7 +57,7 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
                     ((JsonObject) gson.fromJson(reader, JsonObject.class))
                         .get("answer")
                         .getAsJsonArray();
-              } catch (java.lang.IllegalStateException e) {
+              } catch (IllegalStateException ignored) {
                 LinkedList<String> error = new LinkedList<>();
                 error.add(
                     ((JsonObject) gson.fromJson(reader, JsonObject.class))

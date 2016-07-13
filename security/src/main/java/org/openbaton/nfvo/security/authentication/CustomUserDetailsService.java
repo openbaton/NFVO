@@ -18,6 +18,7 @@ package org.openbaton.nfvo.security.authentication;
 
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
@@ -33,7 +34,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -44,8 +44,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 @Component
-public class CustomUserDetailsService
-    implements UserDetailsService, CommandLineRunner, UserDetailsManager {
+public class CustomUserDetailsService implements CommandLineRunner, UserDetailsManager {
 
   @Autowired private UserRepository userRepository;
 
@@ -84,7 +83,7 @@ public class CustomUserDetailsService
       ob_admin.setPassword(BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)));
       Set<Role> roles = new HashSet<>();
       Role role = new Role();
-      role.setRole(Role.RoleEnum.OB_ADMIN);
+      role.setRole(RoleEnum.OB_ADMIN);
       role.setProject("*");
       roles.add(role);
       ob_admin.setRoles(roles);
@@ -163,13 +162,13 @@ public class CustomUserDetailsService
       boolean found = false;
       for (Role role : userToUpdate.getRoles()) {
         if (role.getProject().equals(pj)) {
-          role.setRole(Role.RoleEnum.valueOf(rl));
+          role.setRole(RoleEnum.valueOf(rl));
           found = true;
         }
       }
       if (!found) {
         Role role = new Role();
-        role.setRole(Role.RoleEnum.valueOf(rl));
+        role.setRole(RoleEnum.valueOf(rl));
         role.setProject(pj);
         userToUpdate.getRoles().add(role);
       }
@@ -192,7 +191,6 @@ public class CustomUserDetailsService
       User user = userRepository.findFirstByUsername(currentUserName);
       user.setPassword(newPassword);
       userRepository.save(user);
-      return;
     }
   }
 

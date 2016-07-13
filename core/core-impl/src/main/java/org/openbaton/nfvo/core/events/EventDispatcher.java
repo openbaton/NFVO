@@ -21,11 +21,11 @@ package org.openbaton.nfvo.core.events;
  */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.EventSender;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
@@ -38,8 +38,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 /**
  * This class implements the interface {@Link EventDispatcher} so is in charge of handling
@@ -91,7 +89,7 @@ class EventDispatcher
     return null;
   }
 
-  public EventEndpoint saveEventEndpoint(EventEndpoint endpoint) {
+  private EventEndpoint saveEventEndpoint(EventEndpoint endpoint) {
 
     EventEndpoint save = eventEndpointRepository.save(endpoint);
     log.info("Registered event endpoint" + save);
@@ -157,16 +155,11 @@ class EventDispatcher
     EventSender sender =
         (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
     log.debug("Sender is: " + sender.getClass().getSimpleName());
-    try {
-      sender.send(endpoint, event);
-    } catch (IOException e) {
-      e.printStackTrace();
-      log.error("Error while dispatching event " + event);
-    }
+    sender.send(endpoint, event);
   }
 
   @Override
-  public void unregister(String id, String projectId) throws NotFoundException {
+  public void unregister(String id, String projectId) {
     eventManagement.removeUnreachableEndpoints();
     EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
     if (endpoint != null) {

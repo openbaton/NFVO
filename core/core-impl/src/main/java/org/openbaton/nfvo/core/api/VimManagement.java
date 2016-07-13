@@ -105,8 +105,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public void refresh(VimInstance vimInstance)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+  public void refresh(VimInstance vimInstance) throws VimException, PluginException, IOException {
     if (vimCheck
         && !vimInstance
             .getType()
@@ -117,9 +116,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     if (!vimInstance.isActive()) return;
     //Refreshing Images
-    Set<NFVImage> images_refreshed = new HashSet<NFVImage>();
-    Set<NFVImage> images_new = new HashSet<NFVImage>();
-    Set<NFVImage> images_old = new HashSet<NFVImage>();
+    Set<NFVImage> images_refreshed = new HashSet<>();
+    Set<NFVImage> images_new = new HashSet<>();
+    Set<NFVImage> images_old = new HashSet<>();
     images_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
     if (vimInstance.getImages() == null) {
       vimInstance.setImages(new HashSet<NFVImage>());
@@ -161,9 +160,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     vimInstance.getImages().removeAll(images_old);
     imageRepository.delete(images_old);
     //Refreshing Networks
-    Set<Network> networks_refreshed = new HashSet<Network>();
-    Set<Network> networks_new = new HashSet<Network>();
-    Set<Network> networks_old = new HashSet<Network>();
+    Set<Network> networks_refreshed = new HashSet<>();
+    Set<Network> networks_new = new HashSet<>();
+    Set<Network> networks_old = new HashSet<>();
     networks_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
     if (vimInstance.getNetworks() == null) {
       vimInstance.setNetworks(new HashSet<Network>());
@@ -175,9 +174,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           network_nfvo.setName(network_new.getName());
           network_nfvo.setExternal(network_new.getExternal());
           network_nfvo.setShared(network_new.getExternal());
-          Set<Subnet> subnets_refreshed = new HashSet<Subnet>();
-          Set<Subnet> subnets_new = new HashSet<Subnet>();
-          Set<Subnet> subnets_old = new HashSet<Subnet>();
+          Set<Subnet> subnets_refreshed = new HashSet<>();
+          Set<Subnet> subnets_new = new HashSet<>();
+          Set<Subnet> subnets_old = new HashSet<>();
           subnets_refreshed.addAll(network_new.getSubnets());
           if (network_nfvo.getSubnets() == null) {
             network_nfvo.setSubnets(new HashSet<Subnet>());
@@ -236,9 +235,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     vimInstance.getNetworks().removeAll(networks_old);
     networkRepository.delete(networks_old);
     //Refreshing Flavors
-    Set<DeploymentFlavour> flavors_refreshed = new HashSet<DeploymentFlavour>();
-    Set<DeploymentFlavour> flavors_new = new HashSet<DeploymentFlavour>();
-    Set<DeploymentFlavour> flavors_old = new HashSet<DeploymentFlavour>();
+    Set<DeploymentFlavour> flavors_refreshed = new HashSet<>();
+    Set<DeploymentFlavour> flavors_new = new HashSet<>();
+    Set<DeploymentFlavour> flavors_old = new HashSet<>();
     flavors_refreshed.addAll(
         vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
     if (vimInstance.getFlavours() == null) {

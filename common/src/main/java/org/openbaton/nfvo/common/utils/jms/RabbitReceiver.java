@@ -36,7 +36,6 @@ public class RabbitReceiver implements Receiver {
 
   @Override
   public Object receive(String queue) {
-    Object message = rabbitTemplate.receiveAndConvert(queue);
-    return message;
+    return rabbitTemplate.receiveAndConvert(queue);
   }
 }

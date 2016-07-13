@@ -23,7 +23,6 @@ import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
@@ -122,24 +121,8 @@ public class NetworkServiceDescriptorManagement
 
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-        networkServiceDescriptor.getVnfd()) {
-      boolean found = false;
-      for (VnfmManagerEndpoint endpoint : endpoints) {
-        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
-        if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
-            && endpoint.isActive()
-            && endpoint.isEnabled()) {
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-        throw new NotFoundException(
-            "VNFManager with endpoint: "
-                + virtualNetworkFunctionDescriptor.getEndpoint()
-                + " is not registered or not enable or not active.");
-    }
+    nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
+
     log.trace("Creating " + networkServiceDescriptor);
     log.trace("Fetching Data");
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);

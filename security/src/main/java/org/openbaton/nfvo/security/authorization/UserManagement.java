@@ -1,6 +1,7 @@
 package org.openbaton.nfvo.security.authorization;
 
 import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
@@ -50,7 +51,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
     if (checkStrength && !isPasswordStrong(user.getPassword())) {
       throw new PasswordWeakException(
-          "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, one upper case letter and one digit");
+          "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, one "
+              + "upper case letter and one digit");
     }
 
     String[] roles = new String[user.getRoles().size()];
@@ -75,16 +77,16 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   private boolean isPasswordStrong(String password) {
-    if (password.matches("(?=.*[A-Z]).*")
+    return password.matches("(?=.*[A-Z]).*")
         && password.matches("(?=.*[a-z]).*")
-        && password.matches("(?=.*[0-9]).*")) return true;
-    return false;
+        && password.matches("(?=.*[0-9]).*");
   }
 
   private void checkCurrentUserObAdmin(User currentUser) {
     if (currentUser.getRoles().iterator().next().getRole().ordinal()
-        != Role.RoleEnum.OB_ADMIN.ordinal())
+        != RoleEnum.OB_ADMIN.ordinal()) {
       throw new UnauthorizedUserException("Sorry only OB_ADMIN can add/delete/update/query Users");
+    }
   }
 
   @Override

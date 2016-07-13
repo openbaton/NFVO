@@ -1,6 +1,7 @@
 package org.openbaton.nfvo.api.interceptors;
 
 import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
@@ -83,13 +84,12 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (!projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
       }
-      if (user.getRoles().iterator().next().getRole().ordinal()
-          == Role.RoleEnum.OB_ADMIN.ordinal()) {
+      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
         log.trace("Return true for admin");
         return true;
       }
 
-      if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.GUEST.ordinal())
+      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.GUEST.ordinal())
         if (request.getMethod().equalsIgnoreCase("get")) {
           log.trace("Return true for guest");
           return true;

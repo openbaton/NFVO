@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by lto on 19/08/15.
@@ -60,8 +61,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
   }
 
   @Override
-  public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds)
-      throws InterruptedException, NotFoundException {
+  public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds) {
     if (queues.get(targetDependencyId) == null) {
       queues.put(targetDependencyId, new HashSet<String>());
     }
@@ -83,7 +83,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
       throws NotFoundException {
     List<String> dependencyIdToBeRemoved = new ArrayList<>();
     log.debug("Doing release for VNFR id: " + vnfrSourceName);
-    for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
+    for (Entry<String, Set<String>> entry : queues.entrySet()) {
       String dependencyId = entry.getKey();
       Set<String> sourceList = entry.getValue();
       log.debug(
@@ -95,7 +95,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
               + sourceList);
       if (sourceList.contains(vnfrSourceName + nsrFather.getId())) {
         sourceList.remove(vnfrSourceName + nsrFather.getId());
-        if (sourceList.size() == 0) {
+        if (sourceList.isEmpty()) {
 
           VNFRecordDependency vnfRecordDependency =
               vnfrDependencyRepository.findFirstById(dependencyId);

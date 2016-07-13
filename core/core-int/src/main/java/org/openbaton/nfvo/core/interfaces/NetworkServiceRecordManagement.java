@@ -23,7 +23,6 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
-import org.openbaton.exceptions.VimDriverException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -47,8 +46,7 @@ public interface NetworkServiceRecordManagement {
    */
   NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          NotFoundException, BadFormatException, VimDriverException, QuotaExceededException,
-          PluginException;
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
@@ -84,9 +82,7 @@ public interface NetworkServiceRecordManagement {
    * @param id
    * @param projectId
    */
-  void delete(String id, String projectId)
-      throws VimException, NotFoundException, ExecutionException, InterruptedException,
-          WrongStatusException;
+  void delete(String id, String projectId) throws NotFoundException, WrongStatusException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId);
 

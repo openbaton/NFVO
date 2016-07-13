@@ -55,13 +55,13 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     //Define Network if values are null or empty
     if (network.getName() == null || network.getName().isEmpty())
       network.setName(IdGenerator.createUUID());
-    if (network.getSubnets().size() == 0) {
+    if (network.getSubnets().isEmpty()) {
       //Define Subnet
       Subnet subnet = new Subnet();
       subnet.setName(network.getName() + "_subnet");
       subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
       //Define list of Subnets for Network
-      Set<Subnet> subnets = new HashSet<Subnet>();
+      Set<Subnet> subnets = new HashSet<>();
       subnets.add(subnet);
       network.setSubnets(subnets);
     }

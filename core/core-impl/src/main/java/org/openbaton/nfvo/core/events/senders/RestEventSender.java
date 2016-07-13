@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.events.senders;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -33,7 +34,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.concurrent.Future;
 
 /**
@@ -47,7 +47,7 @@ public class RestEventSender implements EventSender {
 
   @Override
   @Async
-  public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) throws IOException {
+  public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) {
     try {
       CloseableHttpClient httpClient = HttpClientBuilder.create().build();
       Gson mapper = new GsonBuilder().create();
@@ -67,7 +67,7 @@ public class RestEventSender implements EventSender {
       StringEntity params = new StringEntity(json);
       request.setEntity(params);
       HttpResponse response = httpClient.execute(request);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       log.warn(
           "Impossible to reach the endpoint with name: "
               + endpoint.getName()

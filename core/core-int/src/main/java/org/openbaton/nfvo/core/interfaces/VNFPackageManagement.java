@@ -39,7 +39,7 @@ public interface VNFPackageManagement {
    * @param projectId
    */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException;
+      throws IOException, VimException, NotFoundException, PluginException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any

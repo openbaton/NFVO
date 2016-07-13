@@ -63,7 +63,7 @@ public class VirtualLinkManagement
     VirtualLinkRecord vlr = null;
     try {
       vld = virtualLinkDescriptorRepository.findOne(id);
-    } catch (NoResultException e) {
+    } catch (NoResultException ignored) {
       vlr = virtualLinkRecordRepository.findOne(id);
     }
 

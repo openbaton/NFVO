@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -68,6 +69,30 @@ public class NSDUtils {
   @Autowired private VNFDRepository vnfdRepository;
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
+
+  public void checkEndpoint(
+      NetworkServiceDescriptor networkServiceDescriptor, Iterable<VnfmManagerEndpoint> endpoints)
+      throws NotFoundException {
+    boolean found = false;
+    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+        networkServiceDescriptor.getVnfd()) {
+      for (VnfmManagerEndpoint endpoint : endpoints) {
+        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
+        if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
+            && endpoint.isActive()
+            && endpoint.isEnabled()) {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        throw new NotFoundException(
+            "VNFManager with endpoint: "
+                + virtualNetworkFunctionDescriptor.getEndpoint()
+                + " is not registered or not enable or not active.");
+    }
+    if (!found) throw new NotFoundException("No VNFManagers were found");
+  }
 
   /**
    * Fetching vnfd already existing in thr DB based on the id
@@ -234,7 +259,7 @@ public class NSDUtils {
         dependency.setTarget(vnfd);
 
         if (vnfd.getRequires().get(vnfdName).getParameters() == null
-            || vnfd.getRequires().get(vnfdName).getParameters().size() == 0) continue;
+            || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) continue;
 
         dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
         networkServiceDescriptor.getVnf_dependency().add(dependency);

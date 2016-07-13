@@ -61,8 +61,7 @@ public interface VimManagement {
    */
   VimInstance query(String id, String projectId);
 
-  void refresh(VimInstance vimInstance)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+  void refresh(VimInstance vimInstance) throws VimException, PluginException, IOException;
 
   /**
    * Adds a new NFVImage to the VimInstance with id

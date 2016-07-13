@@ -57,9 +57,6 @@ public class NFVImageManagementClassSuiteTest {
 
   @Mock private ImageRepository imageRepository;
 
-  @AfterClass
-  public static void shutdown() {}
-
   @Test
   public void nfvImageManagementNotNull() {
     Assert.assertNotNull(nfvImageManagement);
@@ -135,8 +132,7 @@ public class NFVImageManagementClassSuiteTest {
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(

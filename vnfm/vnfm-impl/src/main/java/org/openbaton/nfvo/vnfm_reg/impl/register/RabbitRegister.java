@@ -99,7 +99,7 @@ public class RabbitRegister extends VnfmRegister {
                 vnfmEndpointRepository.save(endpoint);
               }
             }
-          } catch (IOException e) {
+          } catch (IOException ignored) {
             log.warn("Not able to list queues, probably " + brokerIp.trim() + " is not reachable.");
           }
         }

@@ -54,15 +54,14 @@ public class ApiRestNSDescriptorTest {
 
   private NetworkServiceDescriptor networkServiceDescriptor;
 
-  private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
-
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
 
     networkServiceDescriptor = new NetworkServiceDescriptor();
     networkServiceDescriptor.setVendor("Fokus");
-    virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setVendor("Fokus");
     networkServiceDescriptor.getVnfd().add(virtualNetworkFunctionDescriptor);
     VNFDependency vnfdependency = new VNFDependency();

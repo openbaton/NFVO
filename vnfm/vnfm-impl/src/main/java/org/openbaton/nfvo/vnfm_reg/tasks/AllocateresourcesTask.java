@@ -84,9 +84,7 @@ public class AllocateresourcesTask extends AbstractTask {
           }
           virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
           saveVirtualNetworkFunctionRecord();
-          OrVnfmErrorMessage nfvMessage =
-              new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-          return nfvMessage;
+          return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
         }
       }
     } catch (VimDriverException e) {
@@ -97,9 +95,7 @@ public class AllocateresourcesTask extends AbstractTask {
       virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
       virtualNetworkFunctionRecord.setStatus(Status.ERROR);
       saveVirtualNetworkFunctionRecord();
-      OrVnfmErrorMessage nfvMessage =
-          new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-      return nfvMessage;
+      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
     }
 
     for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {

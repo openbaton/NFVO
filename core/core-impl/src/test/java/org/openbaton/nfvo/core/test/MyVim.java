@@ -23,10 +23,9 @@ import static org.mockito.Mockito.mock;
  * Created by lto on 26/11/15.
  */
 @Service
-public class MyVim extends Vim
-    implements org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement {
+public class MyVim extends Vim {
 
-  public MyVim() throws PluginException {
+  public MyVim() {
     super();
     this.setClient(mock(VimDriverCaller.class));
   }
@@ -112,7 +111,7 @@ public class MyVim extends Vim
       VNFComponent vnfComponent,
       String userdata,
       Map<String, String> floatingIps)
-      throws VimException, VimDriverException {
+      throws VimException {
     return null;
   }
 
@@ -122,16 +121,16 @@ public class MyVim extends Vim
   }
 
   @Override
-  public void update(VirtualDeploymentUnit vdu) throws VimException {}
+  public void update(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void scale(VirtualDeploymentUnit vdu) throws VimException {}
+  public void scale(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void migrate(VirtualDeploymentUnit vdu) throws VimException {}
+  public void migrate(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) throws VimException {}
+  public void operate(VirtualDeploymentUnit vdu, String operation) {}
 
   @Override
   public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance)
@@ -140,16 +139,16 @@ public class MyVim extends Vim
   }
 
   @Override
-  public void createReservation(VirtualDeploymentUnit vdu) throws VimException {}
+  public void createReservation(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void queryReservation() throws VimException {}
+  public void queryReservation() {}
 
   @Override
-  public void updateReservation(VirtualDeploymentUnit vdu) throws VimException {}
+  public void updateReservation(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void releaseReservation(VirtualDeploymentUnit vdu) throws VimException {}
+  public void releaseReservation(VirtualDeploymentUnit vdu) {}
 
   @Override
   public Quota getQuota(VimInstance vimInstance) {

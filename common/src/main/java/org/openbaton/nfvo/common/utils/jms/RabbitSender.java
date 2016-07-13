@@ -45,12 +45,12 @@ public class RabbitSender implements Sender {
   }
 
   @Override
-  public Serializable receiveObject(String destination) throws JMSException {
+  public Serializable receiveObject(String destination) {
     return (Serializable) amqpTemplate.receiveAndConvert(destination);
   }
 
   @Override
-  public String receiveText(String destination) throws JMSException {
+  public String receiveText(String destination) {
     return (String) amqpTemplate.receiveAndConvert(destination);
   }
 }

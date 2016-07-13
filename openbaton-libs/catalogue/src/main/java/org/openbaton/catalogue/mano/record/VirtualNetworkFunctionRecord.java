@@ -16,6 +16,7 @@
 package org.openbaton.catalogue.mano.record;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -24,10 +25,21 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 
 /**
  * Created by lto on 06/02/15. Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
@@ -167,7 +179,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
   private String packageId;
 
   public VirtualNetworkFunctionRecord() {
-    this.lifecycle_event = new HashSet<LifecycleEvent>();
+    this.lifecycle_event = new HashSet<>();
   }
 
   public String getProjectId() {

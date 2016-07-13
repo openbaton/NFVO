@@ -17,11 +17,13 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
+
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,10 +38,10 @@ import javax.annotation.PostConstruct;
 @Scope
 public class RestVnfmSender implements VnfmSender {
 
-  protected RestTemplate rest;
-  protected HttpHeaders headers;
-  protected HttpStatus status;
-  protected Gson mapper;
+  private RestTemplate rest;
+  private HttpHeaders headers;
+  private HttpStatus status;
+  @Autowired private Gson mapper;
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String get(String path, String url) {
@@ -82,7 +84,6 @@ public class RestVnfmSender implements VnfmSender {
 
   @PostConstruct
   private void init() {
-    this.mapper = new Gson();
     this.rest = new RestTemplate();
     this.headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
@@ -97,17 +98,25 @@ public class RestVnfmSender implements VnfmSender {
   @Override
   public void sendCommand(NFVMessage nfvMessage, String tempDestination) {
     String json = mapper.toJson(nfvMessage);
-    if (log.isTraceEnabled()) log.trace("Sending message: " + json + " to url " + tempDestination);
-    else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
+    if (log.isTraceEnabled()) {
+      log.trace("Sending message: " + json + " to url " + tempDestination);
+    } else {
+      log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
+    }
     throw new UnsupportedOperationException("not implemented");
   }
 
   public void sendToVnfm(NFVMessage nfvMessage, String url) {
     String json = mapper.toJson(nfvMessage);
-    if (!url.endsWith("/")) url += "/";
+    if (!url.endsWith("/")) {
+      url += "/";
+    }
     url += "core-rest-actions";
-    if (log.isTraceEnabled()) log.trace("Sending message: " + json + " to url " + url);
-    else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
+    if (log.isTraceEnabled()) {
+      log.trace("Sending message: " + json + " to url " + url);
+    } else {
+      log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
+    }
     this.post(json, url);
   }
 }

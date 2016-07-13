@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing spring boot
@@ -63,7 +64,7 @@ public class OpenbatonCLI implements CommandLineRunner {
           put("listUsers", "list all Users");
         }
       };
-  protected Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String brokerIp;
 
@@ -88,12 +89,12 @@ public class OpenbatonCLI implements CommandLineRunner {
     System.exit(status);
   }
 
-  public static void usage() {
+  private static void usage() {
     System.out.println("/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/");
     System.out.println("Usage: java -jar build/libs/openbaton-<$version>.jar");
     System.out.println("Available commands are");
 
-    for (Map.Entry<String, String> entry : helpCommandList.entrySet()) {
+    for (Entry<String, String> entry : helpCommandList.entrySet()) {
       String format = "%-80s%s%n";
       System.out.printf(format, entry.getKey() + ":", entry.getValue());
     }
@@ -142,7 +143,7 @@ public class OpenbatonCLI implements CommandLineRunner {
       ConsoleReader reader = null;
       try {
         reader = new ConsoleReader();
-      } catch (IOException e) {
+      } catch (IOException ignored) {
         log.error("Oops, Error while creating ConsoleReader");
         exit(999);
       }
@@ -177,13 +178,12 @@ public class OpenbatonCLI implements CommandLineRunner {
           StringTokenizer stringTokenizer = new StringTokenizer(line);
           stringTokenizer.nextToken();
           if (stringTokenizer.hasMoreTokens()) {
-            System.out.println(listPlugins(Integer.parseInt(stringTokenizer.nextToken())));
+            System.out.println(listPlugins());
           } else {
-            System.out.println(listPlugins(managementPort));
+            System.out.println(listPlugins());
           }
 
         } else if (line.equalsIgnoreCase("")) {
-          continue;
         } else usage();
       }
     }
@@ -219,12 +219,12 @@ public class OpenbatonCLI implements CommandLineRunner {
     PluginStartup.uninstallPlugin(pluginId);
   }
 
-  private String listPlugins(int port) {
+  private String listPlugins() {
     String result = "\n";
     result += "Available plugins:\n";
     result += String.format("%40s", "plugin name") + "\n";
     System.out.println();
-    for (Map.Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
+    for (Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
       result += String.format("%40s", entry.getKey()) + "\n";
     }
     return result;

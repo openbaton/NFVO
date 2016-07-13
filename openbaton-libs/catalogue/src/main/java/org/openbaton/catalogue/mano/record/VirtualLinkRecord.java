@@ -18,9 +18,15 @@ package org.openbaton.catalogue.mano.record;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 /**
  * Created by lto on 06/02/15.
@@ -28,7 +34,7 @@ import java.util.Set;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VirtualLinkRecord extends AbstractVirtualLink implements Serializable {
+public class VirtualLinkRecord extends AbstractVirtualLink {
   //    @Id
   //    private String id;
   //    @Version

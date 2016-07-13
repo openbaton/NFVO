@@ -19,7 +19,11 @@ package org.openbaton.nfvo.core.core;
 import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
@@ -37,8 +41,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import javax.persistence.NoResultException;
-import java.util.*;
 
 /**
  * Created by lto on 30/06/15.
@@ -89,7 +99,7 @@ public class DependencyManagement
           //waiting for them to finish
           Set<String> notInitIds =
               getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
-          if (notInitIds.size() > 0) {
+          if (!notInitIds.isEmpty()) {
             dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
             log.debug(
                 "Found "
@@ -151,7 +161,7 @@ public class DependencyManagement
         DependencyParameters dp =
             vnfRecordDependency.getParameters().get(virtualNetworkFunctionRecord.getType());
         if (dp != null) {
-          for (Map.Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
+          for (Entry<String, String> keyValueDep : dp.getParameters().entrySet()) {
             for (ConfigurationParameter cp :
                 virtualNetworkFunctionRecord.getProvides().getConfigurationParameters()) {
               if (cp.getConfKey().equals(keyValueDep.getKey())) {
@@ -178,7 +188,6 @@ public class DependencyManagement
           boolean set = false;
           VNFCDependencyParameters vnfcDependencyParameters =
               vnfRecordDependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType());
-          ;
 
           for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
             for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
@@ -256,10 +265,10 @@ public class DependencyManagement
           vnfrDependencyRepository.save(vnfRecordDependency);
           log.debug("Saved the VNFRDependency with id " + vnfRecordDependency.getId());
           savedDependency = true;
-        } catch (CannotAcquireLockException e) {
+        } catch (CannotAcquireLockException ignored) {
           log.debug(
               "A CannotAcquireLockException occured while saving a VNFRecordDependency. Will start a new attempt to save it.");
-        } catch (StaleObjectStateException se) {
+        } catch (StaleObjectStateException ignored) {
           log.debug(
               "A StaleObjectStateException occured while saving a VNFRecordDependency. Will start a new attempt to save it.");
         } catch (Exception ex) {

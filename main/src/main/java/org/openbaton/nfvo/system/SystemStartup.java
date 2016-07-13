@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by lto on 12/05/15.
@@ -99,7 +100,7 @@ class SystemStartup implements CommandLineRunner {
     /**
      * Adding properties from file
      */
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+    for (Entry<Object, Object> entry : properties.entrySet()) {
       ConfigurationParameter cp = new ConfigurationParameter();
       cp.setConfKey((String) entry.getKey());
       cp.setValue((String) entry.getValue());

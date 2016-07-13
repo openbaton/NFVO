@@ -107,10 +107,8 @@ public class RestVirtualNetworkFunctionDescriptor {
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VirtualNetworkFunctionDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfdManagement.query(id, projectId);
 
-    return virtualNetworkFunctionDescriptor;
+    return vnfdManagement.query(id, projectId);
   }
 
   /**

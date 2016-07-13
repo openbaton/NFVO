@@ -43,8 +43,8 @@ public interface ResourceManagement {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VimInstance vimInstance,
       String userdata)
-      throws VimException, VimDriverException, ExecutionException, InterruptedException,
-          VimException, PluginException;
+      throws VimDriverException, ExecutionException, InterruptedException, VimException,
+          PluginException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an

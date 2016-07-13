@@ -126,8 +126,7 @@ public class RestNetworkServiceDescriptor {
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    NetworkServiceDescriptor nsd = networkServiceDescriptorManagement.query(id, projectId);
-    return nsd;
+    return networkServiceDescriptorManagement.query(id, projectId);
   }
 
   /**

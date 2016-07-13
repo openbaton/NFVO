@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -34,7 +35,11 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.ScriptRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -50,8 +55,11 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lto on 22/07/15.
@@ -85,7 +93,7 @@ public class VNFPackageManagement
 
   @Override
   public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException {
+      throws IOException, VimException, NotFoundException, PluginException {
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
     Map<String, Object> metadata = null;
@@ -223,7 +231,7 @@ public class VNFPackageManagement
       throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
     }
     if (vnfPackage.getScriptsLink() != null) {
-      if (vnfPackage.getScripts().size() > 0) {
+      if (!vnfPackage.getScripts().isEmpty()) {
         log.debug(
             "VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
         vnfPackage.setScripts(new HashSet<Script>());
@@ -313,7 +321,7 @@ public class VNFPackageManagement
           if (imageDetails.containsKey("ids")) {
             for (NFVImage nfvImage : vimInstance.getImages()) {
               if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
-                if (found == false) {
+                if (!found) {
                   vdu.getVm_image().add(nfvImage.getExtId());
                   found = true;
                 } else {
@@ -325,11 +333,11 @@ public class VNFPackageManagement
           }
 
           //If no one was found, check for the names
-          if (found == false) {
+          if (!found) {
             if (imageDetails.containsKey("names")) {
               for (NFVImage nfvImage : vimInstance.getImages()) {
                 if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
-                  if (found == false) {
+                  if (!found) {
                     vdu.getVm_image().add(nfvImage.getExtId());
                     found = true;
                   } else {
@@ -341,7 +349,7 @@ public class VNFPackageManagement
             }
           }
           //if no image was found with the defined ids or names, the image doesn't exist
-          if (found == false) {
+          if (!found) {
             if (imageDetails.get("upload").equals("check")) {
               if (vnfPackage.getImageLink() == null && imageFile == null) {
                 throw new NotFoundException(

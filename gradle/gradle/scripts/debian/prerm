@@ -5,7 +5,7 @@
 . /lib/lsb/init-functions
 
 OPENBATON_BASE=/usr
-OPENBATON_PLUGINS_FOLDER=$OPENBATON_BASE/lib/openbaton/plugins
+OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_LOGS_FOLDER=/var/log/openbaton
 
 
@@ -40,7 +40,7 @@ stopNFVO () {
     instance=$(ps aux | grep -v grep | grep "openbaton-*jar" | wc -l)
     if [ ${instance} -ne 0 ]; then
     	log_daemon_msg "Stopping the OpenBaton NVFO .."
-    	$_ex 'stop openbaton-nfvo'
+    	${_ex} 'stop openbaton-nfvo'
     fi
 }
 

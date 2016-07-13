@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
  * Created by lto on 20/04/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@org.springframework.context.annotation.Configuration
+@Configuration
 @ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 public class NetworkManagementClassSuiteTest {
 
@@ -186,8 +187,7 @@ public class NetworkManagementClassSuiteTest {
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(

@@ -83,7 +83,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     throw new NotFoundException("VnfManager of endpoint " + endpoint + " is not registered");
   }
 
-  public void unregister(VnfmManagerEndpoint endpoint) {
+  protected void unregister(VnfmManagerEndpoint endpoint) {
     Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmEndpointRepository.findAll();
     for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
       if (endpoint.getType().equals(vnfmManagerEndpoint.getType())) {

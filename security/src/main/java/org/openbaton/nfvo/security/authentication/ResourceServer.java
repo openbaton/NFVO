@@ -41,28 +41,23 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
 
     // API calls
     log.debug("Security must be enabled");
-    if (true) {
-      http.authorizeRequests()
-          .regexMatchers(HttpMethod.POST, "/api/v1/")
-          .access("#oauth2.hasScope('write')")
-          .and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-          .and()
-          .exceptionHandling();
+    http.authorizeRequests()
+        .regexMatchers(HttpMethod.POST, "/api/v1/")
+        .access("#oauth2.hasScope('write')")
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        .and()
+        .exceptionHandling();
 
-      http.authorizeRequests()
-          .antMatchers("/api/**")
-          .access("#oauth2.hasScope('write')")
-          .and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-          .and()
-          .exceptionHandling();
-    } else {
-      log.warn("Security is not enabled!");
-      http.authorizeRequests().anyRequest().permitAll();
-    }
+    http.authorizeRequests()
+        .antMatchers("/api/**")
+        .access("#oauth2.hasScope('write')")
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        .and()
+        .exceptionHandling();
   }
 
   @Override

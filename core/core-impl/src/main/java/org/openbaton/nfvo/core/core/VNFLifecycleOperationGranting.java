@@ -111,7 +111,7 @@ public class VNFLifecycleOperationGranting
       HashMap<VimInstance, Integer> countVDUsOnVimInstances,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException {
-    if (countVDUsOnVimInstances.size() == 0) {
+    if (countVDUsOnVimInstances.isEmpty()) {
       for (VimInstance vimInstance : vimInstanceRepository.findAll()) {
         Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
         log.debug(

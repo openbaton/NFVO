@@ -75,7 +75,7 @@ function start {
 }
 
 function stop {
-    start-stop-daemon --stop --pidfile $PID_FILE
+    start-stop-daemon --stop --pidfile ${PID_FILE}
 }
 
 function restart {

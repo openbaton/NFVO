@@ -16,7 +16,10 @@
 
 package org.openbaton.nfvo.core.test;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,21 +27,52 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.openbaton.catalogue.mano.common.*;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.exceptions.*;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.QuotaExceededException;
+import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.ConfigurationRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -48,13 +82,21 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -86,11 +128,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Mock private ConfigurationRepository configurationRepository;
   @Mock private VnfmManager vnfmManager;
   @Mock private EventDispatcher publisher;
-
-  @AfterClass
-  public static void shutdown() {
-    // TODO Teardown to avoid exceptions during test shutdown
-  }
 
   @Before
   public void init()
@@ -382,8 +419,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.setVld(new HashSet<VirtualLinkDescriptor>());
     nsd.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
     nsd.setVnf_dependency(new HashSet<VNFDependency>());
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
-        new HashSet<VirtualNetworkFunctionDescriptor>();
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 =
         createVirtualNetworkFunctionDescriptor();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor2 =
@@ -471,8 +507,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsr.getMonitoring_parameter().add("monitor1");
     nsr.getMonitoring_parameter().add("monitor2");
     nsr.getMonitoring_parameter().add("monitor3");
-    HashSet<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords =
-        new HashSet<VirtualNetworkFunctionRecord>();
+    HashSet<VirtualNetworkFunctionRecord> virtualNetworkFunctionRecords = new HashSet<>();
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
     virtualNetworkFunctionRecord.setName("mocked_vnfr_name");
     virtualNetworkFunctionRecord.setType("test");

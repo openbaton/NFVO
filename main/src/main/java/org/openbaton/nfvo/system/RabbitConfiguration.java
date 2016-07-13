@@ -177,23 +177,27 @@ public class RabbitConfiguration {
   @Bean
   MessageListenerAdapter listenerAdapter_vnfmCoreActions(
       @Qualifier("rabbitVnfmReceiver") VnfmReceiver vnfmReceiver) {
-    MessageListenerAdapter actionFinished =
-        new MessageListenerAdapter(vnfmReceiver, "actionFinishedVoid");
-    return actionFinished;
+    return new MessageListenerAdapter(vnfmReceiver, "actionFinishedVoid");
   }
 
   @Bean
   MessageListenerAdapter listenerAdapter_vnfmCoreActionsReply(
       @Qualifier("rabbitVnfmReceiver") VnfmReceiver vnfmReceiver) {
-    MessageListenerAdapter actionFinished =
-        new MessageListenerAdapter(vnfmReceiver, "actionFinished");
-    return actionFinished;
+    return new MessageListenerAdapter(vnfmReceiver, "actionFinished");
   }
 
   @Bean
   SimpleMessageListenerContainer container_eventRegister(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_eventRegister") MessageListenerAdapter listenerAdapter) {
+    return getSimpleMessageListenerContainer(
+        connectionFactory, listenerAdapter, queueName_eventRegister);
+  }
+
+  private SimpleMessageListenerContainer getSimpleMessageListenerContainer(
+      ConnectionFactory connectionFactory,
+      @Qualifier("listenerAdapter_eventRegister") MessageListenerAdapter listenerAdapter,
+      String queueName_eventRegister) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.setQueueNames(queueName_eventRegister);
@@ -205,10 +209,9 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_eventUnregister(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_eventUnregister") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(connectionFactory);
-    container.setQueueNames(queueName_eventUnregister);
-    container.setMessageListener(listenerAdapter);
+    SimpleMessageListenerContainer container =
+        getSimpleMessageListenerContainer(
+            connectionFactory, listenerAdapter, queueName_eventUnregister);
     return container;
   }
 
@@ -216,10 +219,9 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_vnfmRegister(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_vnfmRegister") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(connectionFactory);
-    container.setQueueNames(queueName_vnfmRegister);
-    container.setMessageListener(listenerAdapter);
+    SimpleMessageListenerContainer container =
+        getSimpleMessageListenerContainer(
+            connectionFactory, listenerAdapter, queueName_vnfmRegister);
     return container;
   }
 
@@ -227,10 +229,9 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_vnfmUnregister(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_vnfmUnregister") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(connectionFactory);
-    container.setQueueNames(queueName_vnfmUnregister);
-    container.setMessageListener(listenerAdapter);
+    SimpleMessageListenerContainer container =
+        getSimpleMessageListenerContainer(
+            connectionFactory, listenerAdapter, queueName_vnfmUnregister);
     return container;
   }
 
@@ -238,6 +239,20 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_vnfmCoreActions(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_vnfmCoreActions") MessageListenerAdapter listenerAdapter) {
+    return getSimpleMessageListenerContainer(
+        connectionFactory,
+        listenerAdapter,
+        queueName_vnfmCoreActions,
+        minConcurrency,
+        maxConcurrency);
+  }
+
+  private SimpleMessageListenerContainer getSimpleMessageListenerContainer(
+      ConnectionFactory connectionFactory,
+      @Qualifier("listenerAdapter_vnfmCoreActions") MessageListenerAdapter listenerAdapter,
+      String queueName_vnfmCoreActions,
+      int minConcurrency,
+      int maxConcurrency) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.setQueueNames(queueName_vnfmCoreActions);
@@ -256,17 +271,13 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_vnfmCoreActionsReply(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_vnfmCoreActionsReply") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(connectionFactory);
-    container.setQueueNames(queueName_vnfmCoreActionsReply);
-    if (minConcurrency <= 0 || maxConcurrency <= 0 || minConcurrency > maxConcurrency) {
-      container.setConcurrentConsumers(5);
-      container.setMaxConcurrentConsumers(15);
-    } else {
-      container.setConcurrentConsumers(minConcurrency);
-      container.setMaxConcurrentConsumers(maxConcurrency);
-    }
-    container.setMessageListener(listenerAdapter);
+    SimpleMessageListenerContainer container =
+        getSimpleMessageListenerContainer(
+            connectionFactory,
+            listenerAdapter,
+            queueName_vnfmCoreActionsReply,
+            minConcurrency,
+            maxConcurrency);
     return container;
   }
 }

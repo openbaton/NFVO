@@ -12,7 +12,6 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by mob on 03.12.15.
@@ -88,7 +88,7 @@ public class HealTask extends AbstractTask {
       VNFRecordDependency dependency_new = new VNFRecordDependency();
       //This remains the same because the target still depends on the same VNFs
       dependency_new.setIdType(new HashMap<String, String>());
-      for (Map.Entry<String, String> entry : dependency.getIdType().entrySet()) {
+      for (Entry<String, String> entry : dependency.getIdType().entrySet()) {
         dependency_new.getIdType().put(entry.getKey(), entry.getValue());
       }
       //----
@@ -98,7 +98,7 @@ public class HealTask extends AbstractTask {
       DependencyParameters dependencyParameters = new DependencyParameters();
       dependencyParameters.setParameters(new HashMap<String, String>());
       HashMap<String, String> parametersNew = new HashMap<>();
-      for (Map.Entry<String, String> entry :
+      for (Entry<String, String> entry :
           dependency
               .getParameters()
               .get(virtualNetworkFunctionRecord.getType())

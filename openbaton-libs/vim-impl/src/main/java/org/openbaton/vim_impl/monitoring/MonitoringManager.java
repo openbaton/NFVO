@@ -17,7 +17,6 @@ package org.openbaton.vim_impl.monitoring;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Item;
-import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManagement;
 import org.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.rmi.RemoteException;
 
 /**
  * Created by lto on 05/08/15.
@@ -51,7 +49,7 @@ public class MonitoringManager {
     return null;
   }
 
-  public void notifyResults() throws RemoteException, MonitoringException {
+  public void notifyResults() {
     //resourcePerformanceManagement.notifyResults();
   }
 }

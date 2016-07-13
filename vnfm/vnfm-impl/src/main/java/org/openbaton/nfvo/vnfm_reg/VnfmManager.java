@@ -17,12 +17,35 @@
 package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
+
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.*;
-import org.openbaton.catalogue.mano.record.*;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.*;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -31,7 +54,12 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.*;
+import org.openbaton.nfvo.vnfm_reg.tasks.AllocateresourcesTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.ScalingTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -54,12 +82,22 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.NoResultException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.NoResultException;
 
 /**
  * Created by lto on 08/07/15.
@@ -73,7 +111,7 @@ public class VnfmManager
         ApplicationListener<EventFinishNFVO> {
 
   private static Map<String, Map<String, Integer>> vnfrNames;
-  protected Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   @Qualifier("vnfmRegister")
@@ -128,18 +166,18 @@ public class VnfmManager
   private String emsAutodelete;
 
   private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-    List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+    List<Entry<K, V>> list = new LinkedList<>(map.entrySet());
     Collections.sort(
         list,
-        new Comparator<Map.Entry<K, V>>() {
+        new Comparator<Entry<K, V>>() {
           @Override
-          public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+          public int compare(Entry<K, V> o1, Entry<K, V> o2) {
             return (o1.getValue()).compareTo(o2.getValue());
           }
         });
 
     Map<K, V> result = new LinkedHashMap<>();
-    for (Map.Entry<K, V> entry : list) {
+    for (Entry<K, V> entry : list) {
       result.put(entry.getKey(), entry.getValue());
     }
     return result;
@@ -252,9 +290,9 @@ public class VnfmManager
           vimInstances.get(vdu.getId()).add(vimInstance);
         }
       }
-      for (Map.Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
+      for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
 
-        if (vimInstance.getValue().size() == 0)
+        if (vimInstance.getValue().isEmpty())
           for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
             vimInstance.getValue().add(vimInstance1);
         for (VimInstance vi : vimInstance.getValue()) log.debug("\t" + vi.getName());
@@ -370,7 +408,7 @@ public class VnfmManager
 
   @Override
   public String executeAction(NFVMessage nfvMessage)
-      throws VimException, NotFoundException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
 
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
     String beanName = actionName + "Task";
@@ -413,7 +451,6 @@ public class VnfmManager
     } else {
       VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
-      task.setDependency(vnfmOrGeneric.getVnfRecordDependency());
     }
 
     if (virtualNetworkFunctionRecord != null) {
@@ -485,7 +522,7 @@ public class VnfmManager
         try {
           networkServiceRecord =
               nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
-        } catch (NoResultException e) {
+        } catch (NoResultException ignored) {
           log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
           return;
         }
@@ -500,7 +537,7 @@ public class VnfmManager
                 "Not all the VNFR have been created yet, it is useless to set the NSR status.");
             return;
           }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
           log.warn("Descriptor was already removed, calculating the status anyway...");
         }
 
@@ -517,7 +554,7 @@ public class VnfmManager
         networkServiceRecord.setStatus(status);
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         foundAndSet = true;
-      } catch (OptimisticLockingFailureException e) {
+      } catch (OptimisticLockingFailureException ignored) {
         log.info(
             "OptimisticLockingFailureException during findAndSet. Don't worry we will try it again.");
         status = Status.TERMINATED;
@@ -579,7 +616,7 @@ public class VnfmManager
             + " to "
             + virtualNetworkFunctionRecordDest.getName());
     vnfmSender.sendCommand(nfvMessage, endpoint);
-    return new AsyncResult<Void>(null);
+    return new AsyncResult<>(null);
   }
 
   @Override
@@ -709,7 +746,7 @@ public class VnfmManager
   @Override
   public void removeVnfrName(String nsdId, String vnfrName) {
     vnfrNames.get(nsdId).remove(vnfrName);
-    if (vnfrNames.get(nsdId).size() == 0) vnfrNames.remove(nsdId);
+    if (vnfrNames.get(nsdId).isEmpty()) vnfrNames.remove(nsdId);
   }
 
   @Override

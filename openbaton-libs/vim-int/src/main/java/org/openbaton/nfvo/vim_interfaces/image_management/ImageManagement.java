@@ -20,7 +20,6 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 /**

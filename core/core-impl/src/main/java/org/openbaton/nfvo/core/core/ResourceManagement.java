@@ -170,8 +170,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     virtualDeploymentUnit.setHostname(hostname);
     for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
       //            String userData = getUserData(virtualNetworkFunctionRecord.getEndpoint());
-      String userData = userdata;
-      log.trace("UserData is: " + userData);
+      log.trace("UserData is: " + userdata);
       Map<String, String> floatingIps = new HashMap<>();
       for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
         if (connectionPoint.getFloatingIp() != null)
@@ -185,7 +184,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
               virtualDeploymentUnit,
               virtualNetworkFunctionRecord,
               component,
-              userData,
+              userdata,
               floatingIps);
       instances.add(added);
     }
@@ -235,7 +234,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 floatinIps)
             .get();
     virtualDeploymentUnit.getVnfc_instance().add(added);
-    if (floatinIps.size() > 0 && added.getFloatingIps().size() == 0)
+    if (!floatinIps.isEmpty() && added.getFloatingIps().isEmpty())
       log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
     return added.getVim_id();
   }

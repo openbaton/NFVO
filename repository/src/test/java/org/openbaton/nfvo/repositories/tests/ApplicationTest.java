@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.repositories.tests;
 
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;

@@ -77,7 +77,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
@@ -542,14 +542,14 @@ public class NetworkServiceRecordManagement
     List<VNFRecordDependency> dependencySource =
         dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
-    if (dependencySource.size() != 0) {
+    if (!dependencySource.isEmpty()) {
       for (VNFRecordDependency dependency : dependencySource) {
         List<String> paramsToRemove = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 :
             networkServiceRecord.getVnfr())
           if (virtualNetworkFunctionRecord1.getName().equals(dependency.getTarget())) {
             vnfmManager.removeVnfcDependency(virtualNetworkFunctionRecord1, vnfcInstance);
-            for (Map.Entry<String, VNFCDependencyParameters> parametersEntry :
+            for (Entry<String, VNFCDependencyParameters> parametersEntry :
                 dependency.getVnfcParameters().entrySet()) {
               log.debug("Parameter: " + parametersEntry);
               if (parametersEntry.getValue() != null)
@@ -641,8 +641,7 @@ public class NetworkServiceRecordManagement
 
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID)
-      throws NotFoundException, BadFormatException, VimException, InterruptedException,
-          ExecutionException, VimDriverException, QuotaExceededException, PluginException {
+      throws NotFoundException, BadFormatException, VimException, PluginException {
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -652,24 +651,7 @@ public class NetworkServiceRecordManagement
     log.info("Checking if all vnfm are registered and active");
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-        networkServiceDescriptor.getVnfd()) {
-      boolean found = false;
-      for (VnfmManagerEndpoint endpoint : endpoints) {
-        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
-        if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
-            && endpoint.isActive()
-            && endpoint.isEnabled()) {
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-        throw new NotFoundException(
-            "VNFManager with endpoint: "
-                + virtualNetworkFunctionDescriptor.getEndpoint()
-                + " is not registered or not enable or not active.");
-    }
+    nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
     NetworkServiceRecord networkServiceRecord;
@@ -702,7 +684,7 @@ public class NetworkServiceRecordManagement
                       break;
                     }
                   }
-                  if (networkExists == false) {
+                  if (!networkExists) {
                     Network network = new Network();
                     network.setName(vlr.getName());
                     network.setSubnets(new HashSet<Subnet>());
@@ -743,7 +725,7 @@ public class NetworkServiceRecordManagement
           if (configurationParameter
               .getConfKey()
               .startsWith("nfvo:")) { //the parameters known from the nfvo
-            String[] params = configurationParameter.getConfKey().split("\\:");
+            String[] params = configurationParameter.getConfKey().split(":");
             for (ConfigurationParameter configurationParameterSystem :
                 configurationManagement.queryByName("system").getConfigurationParameters()) {
               if (configurationParameterSystem.getConfKey().equals(params[1])) {
@@ -832,9 +814,7 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void delete(String id, String projectId)
-      throws VimException, NotFoundException, InterruptedException, ExecutionException,
-          WrongStatusException {
+  public void delete(String id, String projectId) throws NotFoundException, WrongStatusException {
     log.info("Removing NSR with id: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (!networkServiceRecord.getProjectId().equals(projectId))
@@ -862,7 +842,7 @@ public class NetworkServiceRecordManagement
                 + " )");
     }
 
-    if (networkServiceRecord.getVnfr().size() > 0) {
+    if (!networkServiceRecord.getVnfr().isEmpty()) {
       networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
       for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
           networkServiceRecord.getVnfr()) {

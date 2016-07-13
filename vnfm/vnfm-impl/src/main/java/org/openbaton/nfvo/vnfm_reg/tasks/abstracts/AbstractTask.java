@@ -18,7 +18,6 @@ package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
@@ -47,9 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by lto on 06/08/15.
@@ -61,16 +59,14 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 @Scope("prototype")
 public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
-  protected static Lock lock = new ReentrantLock();
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
-  protected Action action;
+  private Action action;
 
   @Autowired
   @Qualifier("vnfmRegister")
   protected VnfmRegister vnfmRegister;
 
   protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-  protected VNFRecordDependency dependency;
 
   @Autowired protected VNFRRepository vnfrRepository;
 
@@ -191,7 +187,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     return (VnfmSender) this.context.getBean(senderName);
   }
 
-  protected void changeStatus() {
+  private void changeStatus() {
     log.debug("Action is: " + action);
     Status status = virtualNetworkFunctionRecord.getStatus();
     log.debug("Previous status is: " + status);
@@ -247,10 +243,6 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             + status);
   }
 
-  public void setDependency(VNFRecordDependency dependency) {
-    this.dependency = dependency;
-  }
-
   protected VirtualNetworkFunctionRecord getNextToCallStart(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
@@ -261,8 +253,8 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
       log.debug("List of VNFRs to start: " + vnfrNames);
 
-      if (vnfrNames.size() > 0)
-        for (Map.Entry<String, Integer> entry : vnfrNames.entrySet()) {
+      if (!vnfrNames.isEmpty()) {
+        for (Entry<String, Integer> entry : vnfrNames.entrySet()) {
           vnfrNames.remove(entry.getKey());
           for (VirtualNetworkFunctionRecord vnfr :
               networkServiceRecordRepository
@@ -275,6 +267,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
           return null;
         }
+      }
     }
     return null;
   }

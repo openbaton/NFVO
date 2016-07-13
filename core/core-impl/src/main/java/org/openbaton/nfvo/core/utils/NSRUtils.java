@@ -18,12 +18,21 @@ package org.openbaton.nfvo.core.utils;
 
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.*;
-import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.LinkStatus;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFForwardingGraphRecord;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +48,7 @@ public class NSRUtils {
   private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
 
   public static NetworkServiceRecord createNetworkServiceRecord(
-      NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, BadFormatException {
+      NetworkServiceDescriptor networkServiceDescriptor) {
     NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
     networkServiceRecord.setDescriptor_reference(networkServiceDescriptor.getId());
     networkServiceRecord.setName(networkServiceDescriptor.getName());
@@ -57,11 +65,11 @@ public class NSRUtils {
     networkServiceRecord.setVnf_dependency(new HashSet<VNFRecordDependency>());
 
     networkServiceRecord.setLifecycle_event(new HashSet<LifecycleEvent>());
-    Set<PhysicalNetworkFunctionRecord> pnfrs = new HashSet<PhysicalNetworkFunctionRecord>();
+    Set<PhysicalNetworkFunctionRecord> pnfrs = new HashSet<>();
     if (networkServiceDescriptor.getPnfd() != null)
       for (PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor :
           networkServiceDescriptor.getPnfd()) {
-        pnfrs.add(NSRUtils.createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
+        pnfrs.add(createPhysicalNetworkFunctionRecord(physicalNetworkFunctionDescriptor));
       }
     networkServiceRecord.setPnfr(pnfrs);
     networkServiceRecord.setStatus(Status.NULL);
@@ -70,7 +78,7 @@ public class NSRUtils {
     networkServiceRecord.setVlr(new HashSet<VirtualLinkRecord>());
     if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor virtualLinkDescriptor : networkServiceDescriptor.getVld()) {
-        VirtualLinkRecord vlr = NSRUtils.createVirtualLinkRecord(virtualLinkDescriptor);
+        VirtualLinkRecord vlr = createVirtualLinkRecord(virtualLinkDescriptor);
         vlr.setParent_ns(networkServiceDescriptor.getId());
         networkServiceRecord.getVlr().add(vlr);
       }
@@ -79,8 +87,8 @@ public class NSRUtils {
   }
 
   public static void setDependencies(
-      NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord)
-      throws BadFormatException {
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord) {
 
     for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
       boolean found = false;
@@ -177,7 +185,7 @@ public class NSRUtils {
     }
   }
 
-  public static VirtualLinkRecord createVirtualLinkRecord(
+  private static VirtualLinkRecord createVirtualLinkRecord(
       VirtualLinkDescriptor virtualLinkDescriptor) {
     VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
     virtualLinkRecord.setName(virtualLinkDescriptor.getName());
@@ -211,11 +219,9 @@ public class NSRUtils {
     return virtualLinkRecord;
   }
 
-  public static PhysicalNetworkFunctionRecord createPhysicalNetworkFunctionRecord(
+  private static PhysicalNetworkFunctionRecord createPhysicalNetworkFunctionRecord(
       PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor) {
-    PhysicalNetworkFunctionRecord physicalNetworkFunctionRecord =
-        new PhysicalNetworkFunctionRecord();
     // TODO implement it
-    return physicalNetworkFunctionRecord;
+    return new PhysicalNetworkFunctionRecord();
   }
 }

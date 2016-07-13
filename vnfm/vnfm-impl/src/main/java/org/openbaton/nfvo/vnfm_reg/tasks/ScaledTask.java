@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by lto on 06/08/15.
@@ -105,7 +106,7 @@ public class ScaledTask extends AbstractTask {
           //new Dependency containing only the new VNFC
           VNFRecordDependency dependency_new = new VNFRecordDependency();
           dependency_new.setIdType(new HashMap<String, String>());
-          for (Map.Entry<String, String> entry : dependency.getIdType().entrySet()) {
+          for (Entry<String, String> entry : dependency.getIdType().entrySet()) {
             dependency_new.getIdType().put(entry.getKey(), entry.getValue());
           }
           dependency_new.setParameters(new HashMap<String, DependencyParameters>());
@@ -115,7 +116,7 @@ public class ScaledTask extends AbstractTask {
 
           //set values of VNFCI new
           HashMap<String, String> parametersNew = new HashMap<>();
-          for (Map.Entry<String, String> entry :
+          for (Entry<String, String> entry :
               dependency
                   .getParameters()
                   .get(virtualNetworkFunctionRecord.getType())

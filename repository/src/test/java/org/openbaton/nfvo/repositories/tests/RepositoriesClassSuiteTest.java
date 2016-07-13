@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,16 +64,11 @@ import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 public class RepositoriesClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
-  JdbcTemplate jdbcTemplate;
+  private JdbcTemplate jdbcTemplate;
   private Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private ConfigurableApplicationContext ctx;
 
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
-
-  @Autowired private VNFDRepository vnfdRepository;
-
-  @BeforeClass
-  public static void init() {}
 
   @Autowired
   public void setDataSource(DataSource dataSource) {
@@ -303,7 +299,7 @@ public class RepositoriesClassSuiteTest {
     final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
     vdu.setVnfc(new HashSet<VNFComponent>());
     vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-    vdu.setVimInstanceName(Arrays.asList("test"));
+    vdu.setVimInstanceName(Collections.singletonList("test"));
     HighAvailability highAvailability = new HighAvailability();
     highAvailability.setGeoRedundancy(false);
     highAvailability.setRedundancyScheme("1:N");
