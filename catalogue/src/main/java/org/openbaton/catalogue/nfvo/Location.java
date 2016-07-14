@@ -24,68 +24,75 @@ import java.io.Serializable;
  * Created by lto on 18/05/15.
  */
 @Entity
-public class Location implements Serializable{
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    private String name;
-    private String latitude;
-    private String longitude;
+public class Location implements Serializable {
+  @Id private String id;
+  @Version private int version = 0;
+  private String name;
+  private String latitude;
+  private String longitude;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getLatitude() {
-        return latitude;
-    }
+  public String getLatitude() {
+    return latitude;
+  }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
+  public void setLatitude(String latitude) {
+    this.latitude = latitude;
+  }
 
-    public String getLongitude() {
-        return longitude;
-    }
+  public String getLongitude() {
+    return longitude;
+  }
 
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
+  public void setLongitude(String longitude) {
+    this.longitude = longitude;
+  }
 
-    @Override
-    public String toString() {
-        return "Location{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", longitude='" + longitude + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Location{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", latitude='"
+        + latitude
+        + '\''
+        + ", longitude='"
+        + longitude
+        + '\''
+        + '}';
+  }
 }

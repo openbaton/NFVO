@@ -26,57 +26,109 @@ import java.io.Serializable;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Endpoint implements Serializable {
-    @Id
-    protected String id;
-    @Version
-    protected int version = 0;
+  @Id protected String id;
+  @Version protected int version = 0;
 
-    protected String type;
-    protected EndpointType endpointType;
-    protected String endpoint;
+  protected String type;
+  protected EndpointType endpointType;
+  protected String endpoint;
+  protected String description;
+  protected boolean enabled;
+  protected boolean active;
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
-    public String getType() {
-        return type;
-    }
+  public boolean isActive() {
+    return active;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  @Override
+  public String toString() {
+    return "Endpoint{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", type='"
+        + type
+        + '\''
+        + ", endpointType="
+        + endpointType
+        + ", endpoint='"
+        + endpoint
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", active="
+        + active
+        + '}';
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public EndpointType getEndpointType() {
-        return endpointType;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setEndpointType(EndpointType endpointType) {
-        this.endpointType = endpointType;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public String getId() {
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+  public int getVersion() {
+    return version;
+  }
+
+  public void setVersion(int version) {
+    this.version = version;
+  }
+
+  public EndpointType getEndpointType() {
+    return endpointType;
+  }
+
+  public void setEndpointType(EndpointType endpointType) {
+    this.endpointType = endpointType;
+  }
+
+  public String getId() {
+
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getEndpoint() {
+    return endpoint;
+  }
+
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
 }

@@ -15,51 +15,61 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by mob on 15.09.15.
  */
 public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
-    private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
-    private Set<VirtualDeploymentUnit> vduSet;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private Map<String, VimInstance> vimInstances;
+  private String userdata;
 
-    public VnfmOrAllocateResourcesMessage() {
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
+  public VnfmOrAllocateResourcesMessage() {
+    this.action = Action.ALLOCATE_RESOURCES;
+  }
 
-    public VnfmOrAllocateResourcesMessage(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, Set<VirtualDeploymentUnit> vduSet) {
-        this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
-        this.vduSet = vduSet;
-        this.action = Action.ALLOCATE_RESOURCES;
-    }
+  @Override
+  public String toString() {
+    return "VnfmOrAllocateResourcesMessage{"
+        + "virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", vimInstances="
+        + vimInstances
+        + ", userdata='"
+        + (userdata == null || userdata.equals("") ? "none" : "yes")
+        + '\''
+        + "} "
+        + super.toString();
+  }
 
-    public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor() {
-        return virtualNetworkFunctionDescriptor;
-    }
+  public Map<String, VimInstance> getVimInstances() {
+    return vimInstances;
+  }
 
-    public void setVirtualNetworkFunctionDescriptor(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
-        this.virtualNetworkFunctionDescriptor = virtualNetworkFunctionDescriptor;
-    }
+  public void setVimInstances(Map<String, VimInstance> vimInstances) {
+    this.vimInstances = vimInstances;
+  }
 
-    public Set<VirtualDeploymentUnit> getVduSet() {
-        return vduSet;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVduSet(Set<VirtualDeploymentUnit> vduSet) {
-        this.vduSet = vduSet;
-    }
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrAllocateResourcesMessage{" +
-                "virtualNetworkFunctionDescriptor=" + virtualNetworkFunctionDescriptor +
-                ", vduSet=" + vduSet +
-                '}';
-    }
+  public void setUserdata(String userdata) {
+    this.userdata = userdata;
+  }
+
+  public String getUserdata() {
+    return userdata;
+  }
 }

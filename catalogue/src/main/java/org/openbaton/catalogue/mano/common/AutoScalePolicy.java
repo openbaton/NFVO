@@ -17,99 +17,154 @@ package org.openbaton.catalogue.mano.common;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * Created by lto on 06/02/15.
- *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * Created by mpa on 15/12/15.
  */
 @Entity
-public class AutoScalePolicy implements Serializable{
-	@Id
-	private String id;
-	@Version
-	private int version = 0;
+public class AutoScalePolicy implements Serializable {
+  @Id private String id;
+  @Version private int version = 0;
 
-	private String action;
-	private String metric;
-	private String statistic;
-	private String comparisonOperator;
-	private int period;
-	private int threshold;
-	private int cooldown;
+  private String name;
 
-	@PrePersist
-	public void ensureId(){
-		id=IdGenerator.createUUID();
-	}
+  private double threshold;
 
-	public String getMetric() {
-		return metric;
-	}
+  private String comparisonOperator;
 
-	public void setMetric(String metric) {
-		this.metric = metric;
-	}
+  private int period;
 
-	public int getPeriod() {
-		return period;
-	}
+  private int cooldown;
 
-	public void setPeriod(int period) {
-		this.period = period;
-	}
+  @Enumerated(EnumType.STRING)
+  private ScalingMode mode;
 
-	public int getThreshold() {
-		return threshold;
-	}
+  @Enumerated(EnumType.STRING)
+  private ScalingType type;
 
-	public void setThreshold(int threshold) {
-		this.threshold = threshold;
-	}
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<ScalingAlarm> alarms;
 
-	public int getCooldown() {
-		return cooldown;
-	}
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<ScalingAction> actions;
 
-	public void setCooldown(int cooldown) {
-		this.cooldown = cooldown;
-	}
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-	public String getStatistic() {
-		return statistic;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setStatistic(String statistic) {
-		this.statistic = statistic;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public String getComparisonOperator() {
-		return comparisonOperator;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setComparisonOperator(String comparisonOperator) {
-		this.comparisonOperator = comparisonOperator;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public double getThreshold() {
+    return threshold;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setThreshold(double threshold) {
+    this.threshold = threshold;
+  }
 
-	public String getAction() {
+  public String getComparisonOperator() {
+    return comparisonOperator;
+  }
 
-		return action;
-	}
+  public void setComparisonOperator(String comparisonOperator) {
+    this.comparisonOperator = comparisonOperator;
+  }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+  public int getPeriod() {
+    return period;
+  }
+
+  public void setPeriod(int period) {
+    this.period = period;
+  }
+
+  public int getCooldown() {
+    return cooldown;
+  }
+
+  public void setCooldown(int cooldown) {
+    this.cooldown = cooldown;
+  }
+
+  public ScalingMode getMode() {
+    return mode;
+  }
+
+  public void setMode(ScalingMode mode) {
+    this.mode = mode;
+  }
+
+  public ScalingType getType() {
+    return type;
+  }
+
+  public void setType(ScalingType type) {
+    this.type = type;
+  }
+
+  public Set<ScalingAlarm> getAlarms() {
+    return alarms;
+  }
+
+  public void setAlarms(Set<ScalingAlarm> alarms) {
+    this.alarms = alarms;
+  }
+
+  public Set<ScalingAction> getActions() {
+    return actions;
+  }
+
+  public void setActions(Set<ScalingAction> actions) {
+    this.actions = actions;
+  }
+
+  @Override
+  public String toString() {
+    return "AutoScalePolicy{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", threshold='"
+        + threshold
+        + '\''
+        + ", comparisonOperator='"
+        + comparisonOperator
+        + '\''
+        + ", period="
+        + period
+        + ", cooldown="
+        + cooldown
+        + ", mode="
+        + mode
+        + ", type="
+        + type
+        + ", alarms="
+        + alarms
+        + ", actions="
+        + actions
+        + '}';
+  }
 }

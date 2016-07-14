@@ -21,53 +21,55 @@ import java.util.Collection;
 /**
  * Created by tce on 13.08.15.
  */
-public class PluginMessage implements Serializable{
+public class PluginMessage implements Serializable {
 
-    private String methodName;
+  private String methodName;
+  private Class interfaceClass;
+  private Collection<Serializable> parameters;
+  private String selector;
 
-    private Class interfaceClass;
+  public String getMethodName() {
+    return methodName;
+  }
 
-    private Collection<Serializable> parameters;
-    private String selector;
+  public void setMethodName(String methodName) {
+    this.methodName = methodName;
+  }
 
-    public String getMethodName() {
-        return methodName;
-    }
+  public Collection<Serializable> getParameters() {
+    return parameters;
+  }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
+  public void setParameters(Collection<Serializable> parameters) {
+    this.parameters = parameters;
+  }
 
-    public Collection<Serializable> getParameters() {
-        return parameters;
-    }
+  @Override
+  public String toString() {
+    return "PluginMessage{"
+        + "methodName='"
+        + methodName
+        + '\''
+        + ", interfaceClass="
+        + interfaceClass.getSimpleName()
+        + ", parameters="
+        + parameters
+        + '}';
+  }
 
-    public void setParameters(Collection<Serializable> parameters) {
-        this.parameters = parameters;
-    }
+  public Class getInterfaceClass() {
+    return interfaceClass;
+  }
 
-    @Override
-    public String toString() {
-        return "PluginMessage{" +
-                "methodName='" + methodName + '\'' +
-                ", interfaceClass=" + interfaceClass.getSimpleName() +
-                ", parameters=" + parameters +
-                '}';
-    }
+  public void setInterfaceClass(Class interfaceClass) {
+    this.interfaceClass = interfaceClass;
+  }
 
-    public Class getInterfaceClass() {
-        return interfaceClass;
-    }
+  public String getSelector() {
+    return selector;
+  }
 
-    public void setInterfaceClass(Class interfaceClass) {
-        this.interfaceClass = interfaceClass;
-    }
-
-    public String getSelector() {
-        return selector;
-    }
-
-    public void setSelector(String selector) {
-        this.selector = selector;
-    }
+  public void setSelector(String selector) {
+    this.selector = selector;
+  }
 }

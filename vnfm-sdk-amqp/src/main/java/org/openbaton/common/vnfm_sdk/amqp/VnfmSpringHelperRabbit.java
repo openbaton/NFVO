@@ -33,128 +33,126 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by lto on 23/09/15.
  */
 @Service
 @Scope
-@ConfigurationProperties(prefix = "vnfm.rabbitmq.sar")
+@ConfigurationProperties
 public class VnfmSpringHelperRabbit extends VnfmHelper {
 
-    @Autowired
-    private Gson gson;
+  @Autowired private Gson gson;
 
-    @Value("${vnfm.rabbitmq.autodelete}")
-    private boolean autodelete = true;
-    @Value("${vnfm.rabbitmq.durable}")
-    private boolean durable;
-    @Value("${vnfm.rabbitmq.exclusive}")
-    private boolean exclusive;
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+  @Value("${vnfm.rabbitmq.autodelete}")
+  private boolean autodelete = true;
 
-    private RabbitAdmin rabbitAdmin;
+  @Value("${vnfm.rabbitmq.durable}")
+  private boolean durable;
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
+  @Value("${vnfm.rabbitmq.exclusive}")
+  private boolean exclusive;
 
-    private int timeout;
+  @Autowired private RabbitTemplate rabbitTemplate;
 
-    public boolean isExclusive() {
-        return exclusive;
+  private RabbitAdmin rabbitAdmin;
+
+  @Autowired private ConnectionFactory connectionFactory;
+
+  @Value("${vnfm.rabbitmq.sar.timeout:1000}")
+  private int timeout;
+
+  public boolean isExclusive() {
+    return exclusive;
+  }
+
+  public void setExclusive(boolean exclusive) {
+    this.exclusive = exclusive;
+  }
+
+  public boolean isDurable() {
+    return durable;
+  }
+
+  public void setDurable(boolean durable) {
+    this.durable = durable;
+  }
+
+  public boolean isAutodelete() {
+    return autodelete;
+  }
+
+  public void setAutodelete(boolean autodelete) {
+    this.autodelete = autodelete;
+  }
+
+  public int getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
+  }
+
+  @PostConstruct
+  private void init() throws IOException {
+    log.info("Initialization of VnfmSpringHelperRabbit");
+    rabbitAdmin = new RabbitAdmin(connectionFactory);
+  }
+
+  public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
+    log.debug("Sending message to Queue:  " + sendToQueueName);
+
+    if (sendToQueueName.equals(RabbitConfiguration.queueName_vnfmRegister)) {
+      rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
+      rabbitAdmin.declareBinding(
+          new Binding(
+              sendToQueueName,
+              Binding.DestinationType.QUEUE,
+              "openbaton-exchange",
+              sendToQueueName,
+              null));
     }
 
-    public void setExclusive(boolean exclusive) {
-        this.exclusive = exclusive;
+    rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
+  }
+
+  @Override
+  public void sendToNfvo(final NFVMessage nfvMessage) {
+    sendMessageToQueue(RabbitConfiguration.queueName_vnfmCoreActions, nfvMessage);
+  }
+
+  @Override
+  public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
+
+    rabbitTemplate.setReplyTimeout(timeout * 1000);
+    rabbitTemplate.afterPropertiesSet();
+    String response =
+        (String)
+            this.rabbitTemplate.convertSendAndReceive(
+                RabbitConfiguration.queueName_vnfmCoreActionsReply, gson.toJson(message));
+
+    return gson.fromJson(response, NFVMessage.class);
+  }
+
+  @Override
+  public String sendAndReceive(String message, String queueName) throws Exception {
+
+    rabbitTemplate.setReplyTimeout(timeout * 1000);
+    rabbitTemplate.afterPropertiesSet();
+
+    log.debug("Sending to: " + queueName);
+    String res =
+        (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
+    log.trace("Received from EMS: " + res);
+    if (res == null) {
+      log.error("After " + timeout + " seconds the ems did not answer.");
+      throw new TimeoutException(
+          "After "
+              + timeout
+              + " seconds the ems did not answer. You can change this value by editing the application.properties propery \"vnfm.rabbitmq.sar.timeout\"");
     }
-
-    public boolean isDurable() {
-        return durable;
-    }
-
-    public void setDurable(boolean durable) {
-        this.durable = durable;
-    }
-
-    public boolean isAutodelete() {
-        return autodelete;
-    }
-
-    public void setAutodelete(boolean autodelete) {
-        this.autodelete = autodelete;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    @PostConstruct
-    private void init() throws IOException {
-        log.info("Initialization of VnfmSpringHelperRabbit");
-        rabbitAdmin = new RabbitAdmin(connectionFactory);
-    }
-
-    public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
-        log.debug("Sending message to Queue:  " + sendToQueueName);
-
-        if (sendToQueueName.equals(RabbitConfiguration.queueName_vnfmRegister)) {
-            rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
-            rabbitAdmin.declareBinding(new Binding(sendToQueueName, Binding.DestinationType.QUEUE, "openbaton-exchange", sendToQueueName, null));
-        }
-
-        rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
-    }
-
-
-    /**
-     * This method should be used for receiving text message from EMS
-     * <p>
-     * resp = {
-     * 'output': out,          // the output of the command
-     * 'err': err,             // the error outputs of the commands
-     * 'status': status        // the exit status of the command
-     * }
-     *
-     * @param queueName
-     * @return
-     */
-    public String receiveTextFromQueue(String queueName) {
-        String res = null;
-
-        return res;
-    }
-
-    @Override
-    public void sendToNfvo(final NFVMessage nfvMessage) {
-        sendMessageToQueue(RabbitConfiguration.queueName_vnfmCoreActions, nfvMessage);
-    }
-
-    @Override
-    public NFVMessage sendAndReceive(NFVMessage message) throws Exception {
-        if (timeout == 0)
-            timeout = 1000;
-        rabbitTemplate.setReplyTimeout(timeout * 1000);
-        rabbitTemplate.afterPropertiesSet();
-        String response = (String) this.rabbitTemplate.convertSendAndReceive(RabbitConfiguration.queueName_vnfmCoreActionsReply, gson.toJson(message));
-
-        return gson.fromJson(response, NFVMessage.class);
-    }
-
-    @Override
-    public String sendAndReceive(String message, String queueName) throws Exception {
-        if (timeout == 0)
-            timeout = 1000;
-        rabbitTemplate.setReplyTimeout(timeout * 1000);
-        rabbitTemplate.afterPropertiesSet();
-
-        log.debug("Sending to: " + queueName);
-        String res = (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
-        log.trace("Received from EMS: " + res);
-        return res;
-    }
+    return res;
+  }
 }

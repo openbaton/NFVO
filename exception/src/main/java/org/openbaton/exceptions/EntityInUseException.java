@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Fraunhofer FOKUS
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *                http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,16 +13,21 @@
  * limitations under the License.
  */
 
-package org.openbaton.catalogue.mano.common.faultmanagement;
+package org.openbaton.exceptions;
 
 /**
- * Created by mob on 29.10.15.
+ * Created by lto on 13/06/16.
  */
-public enum FaultManagementVNFCAction {
-    RESTART,
-    REINSTANTIATE_SERVICE,
-    HEAL,
-    REINSTANTIATE,
-    SWITCH_TO_STANDBY,
-    SWITCH_TO_ACTIVE
+public class EntityInUseException extends Exception {
+  public EntityInUseException(String message) {
+    super(message);
+  }
+
+  public EntityInUseException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public EntityInUseException(Throwable cause) {
+    super(cause);
+  }
 }

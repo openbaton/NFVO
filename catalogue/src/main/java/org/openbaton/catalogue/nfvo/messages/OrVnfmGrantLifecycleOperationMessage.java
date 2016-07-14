@@ -15,47 +15,60 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+
+import java.util.Map;
 
 /**
  * Created by mob on 15.09.15.
  */
-public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage{
-    private String vimId;
-    private boolean grantAllowed;
+public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage {
+  private boolean grantAllowed;
+  private Map<String, VimInstance> vduVim;
 
-    public OrVnfmGrantLifecycleOperationMessage() {
-        this.action = Action.GRANT_OPERATION;
-    }
+  @Override
+  public String toString() {
+    return "OrVnfmGrantLifecycleOperationMessage{"
+        + "grantAllowed="
+        + grantAllowed
+        + ", vduVim="
+        + vduVim
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + '}';
+  }
 
-    public OrVnfmGrantLifecycleOperationMessage(String vimId, boolean grantAllowed) {
-        this.action = Action.GRANT_OPERATION;
-        this.vimId = vimId;
-        this.grantAllowed = grantAllowed;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public String getVimId() {
-        return vimId;
-    }
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
 
-    public void setVimId(String vimId) {
-        this.vimId = vimId;
-    }
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
-    public boolean isGrantAllowed() {
-        return grantAllowed;
-    }
+  public OrVnfmGrantLifecycleOperationMessage() {
+    this.action = Action.GRANT_OPERATION;
+  }
 
-    public void setGrantAllowed(boolean grantAllowed) {
-        this.grantAllowed = grantAllowed;
-    }
+  public boolean isGrantAllowed() {
+    return grantAllowed;
+  }
 
-    @Override
-    public String toString() {
-        return "OrVnfmGrantLifecycleOperationMessage{" +
-                "vimId='" + vimId + '\'' +
-                ", grantAllowed=" + grantAllowed +
-                '}';
-    }
+  public void setGrantAllowed(boolean grantAllowed) {
+    this.grantAllowed = grantAllowed;
+  }
+
+  public Map<String, VimInstance> getVduVim() {
+    return vduVim;
+  }
+
+  public void setVduVim(Map<String, VimInstance> vduVim) {
+    this.vduVim = vduVim;
+  }
 }

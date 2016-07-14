@@ -17,7 +17,6 @@ package org.openbaton.vim_impl.monitoring;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Item;
-import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManagement;
 import org.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.rmi.RemoteException;
 
 /**
  * Created by lto on 05/08/15.
@@ -34,24 +32,24 @@ import java.rmi.RemoteException;
 @Scope("prototype")
 public class MonitoringManager {
 
-    private VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement;
+  private VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement;
 
-    @Autowired
-    private MonitoringBroker monitoringBroker;
+  @Autowired private MonitoringBroker monitoringBroker;
 
-    @PostConstruct
-    private void init(){
-        //TODO using types
-        this.virtualisedResourcesPerformanceManagement = monitoringBroker.getAvailableMonitoringAgent();
-    }
+  @PostConstruct
+  private void init() {
+    //TODO using types
+    this.virtualisedResourcesPerformanceManagement = monitoringBroker.getAvailableMonitoringAgent();
+  }
 
-    public Item getMeasurmentResults(VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period){
+  public Item getMeasurmentResults(
+      VirtualDeploymentUnit virtualDeploymentUnit, String metric, String period) {
 
-//        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
-        return null;
-    }
+    //        return resourcePerformanceManagement.getMeasurementResults(virtualDeploymentUnit,metric,period);
+    return null;
+  }
 
-    public void notifyResults() throws RemoteException, MonitoringException {
-        //resourcePerformanceManagement.notifyResults();
-    }
+  public void notifyResults() {
+    //resourcePerformanceManagement.notifyResults();
+  }
 }

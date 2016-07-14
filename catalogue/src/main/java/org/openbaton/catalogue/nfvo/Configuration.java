@@ -18,7 +18,6 @@ package org.openbaton.catalogue.nfvo;
 /**
  * Created by lto on 18/05/15.
  */
-
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -26,60 +25,75 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-public class Configuration implements Serializable{
-    @Id
-    private String id;
-    @Version
-    private int version;
+public class Configuration implements Serializable {
+  @Id private String id;
+  @Version private int version;
 
-    // TODO think at cascade type
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ConfigurationParameter> configurationParameters;
-    private String name;
+  private String projectId;
+  // TODO think at cascade type
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<ConfigurationParameter> configurationParameters;
 
-    @Override
-    public String toString() {
-        return "Configuration{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", configurationParameters=" + configurationParameters +
-                ", name='" + name + '\'' +
-                '}';
-    }
+  private String name;
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
-    public String getId() {
-        return id;
-    }
+  public String getProjectId() {
+    return projectId;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  @Override
+  public String toString() {
+    return "Configuration{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", configurationParameters="
+        + configurationParameters
+        + ", name='"
+        + name
+        + '\''
+        + '}';
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public Set<ConfigurationParameter> getConfigurationParameters() {
-        return configurationParameters;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setConfigurationParameters(Set<ConfigurationParameter> configurationParameters) {
-        this.configurationParameters = configurationParameters;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
+
+  public Set<ConfigurationParameter> getConfigurationParameters() {
+    return configurationParameters;
+  }
+
+  public void setConfigurationParameters(Set<ConfigurationParameter> configurationParameters) {
+    this.configurationParameters = configurationParameters;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

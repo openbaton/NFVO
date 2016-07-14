@@ -24,39 +24,41 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
  * Created by mob on 14.09.15.
  */
 public class VnfmOrGenericMessage extends VnfmOrMessage {
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    private VNFRecordDependency vnfRecordDependency;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VNFRecordDependency vnfRecordDependency;
 
-    public VnfmOrGenericMessage() {
-    }
+  public VnfmOrGenericMessage() {}
 
-    public VnfmOrGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
-        this.virtualNetworkFunctionRecord = vnfr;
-        this.action=action;
+  public VnfmOrGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
+    this.virtualNetworkFunctionRecord = vnfr;
+    this.action = action;
+  }
 
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
+    this.virtualNetworkFunctionRecord = vnfr;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord vnfr) {
-        this.virtualNetworkFunctionRecord = vnfr;
-    }
-    public VNFRecordDependency getVnfRecordDependency() {
-        return vnfRecordDependency;
-    }
+  public VNFRecordDependency getVnfRecordDependency() {
+    return vnfRecordDependency;
+  }
 
-    public void setVnfRecordDependency(VNFRecordDependency vnfRecordDependency) {
-        this.vnfRecordDependency = vnfRecordDependency;
-    }
+  public void setVnfRecordDependency(VNFRecordDependency vnfRecordDependency) {
+    this.vnfRecordDependency = vnfRecordDependency;
+  }
 
-    @Override
-    public String toString() {
-        return "VnfmOrGenericMessage{" +
-                "action=" + action +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                ", vnfRecordDependency=" + vnfRecordDependency +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "VnfmOrGenericMessage{"
+        + "action="
+        + action
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", vnfRecordDependency="
+        + vnfRecordDependency
+        + '}';
+  }
 }

@@ -21,34 +21,37 @@ import javax.persistence.Entity;
  * Created by lto on 13/08/15.
  */
 @Entity
-public class PluginEndpoint extends Endpoint{
+public class PluginEndpoint extends Endpoint {
 
-    private String interfaceClass;
-    private String interfaceVersion;
+  private String interfaceClass;
+  private String interfaceVersion;
 
-    @Override
-    public String toString() {
-        return "PluginEndpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", type='" + type + '\'' +
-                ", endpointType='" + endpointType + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "PluginEndpoint{"
+        + "interfaceClass='"
+        + interfaceClass
+        + '\''
+        + ", interfaceVersion='"
+        + interfaceVersion
+        + '\''
+        + "} "
+        + super.toString();
+  }
 
-    public String getInterfaceClass() {
-        return interfaceClass;
-    }
+  public String getInterfaceClass() {
+    return interfaceClass;
+  }
 
-    public void setInterfaceClass(String interfaceClass) {
-        this.interfaceClass = interfaceClass;
-    }
+  public void setInterfaceClass(String interfaceClass) {
+    this.interfaceClass = interfaceClass;
+  }
 
-    public String getInterfaceVersion() {
-        return interfaceVersion;
-    }
+  public String getInterfaceVersion() {
+    return interfaceVersion;
+  }
 
-    public void setInterfaceVersion(String interfaceVersion) {
-        this.interfaceVersion = interfaceVersion;
-    }
+  public void setInterfaceVersion(String interfaceVersion) {
+    this.interfaceVersion = interfaceVersion;
+  }
 }

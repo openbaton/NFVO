@@ -18,144 +18,167 @@ package org.openbaton.catalogue.mano.common.monitoring;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by mob on 26.10.15.
  */
 @Entity
-public class Alarm {
-    @Id
-    private String alarmId;
-    private String triggerId;
-    private String resourceId;
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Alarm implements Serializable {
+  @Id private String alarmId;
+  private String thresholdId;
 
-    private String alarmRaisedTime;
-    private AlarmState alarmState;
-    private PerceivedSeverity perceivedSeverity;
-    private String eventTime;
-    private FaultType faultType;
-    private String probableCause;
-    private boolean isRootCause;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> correlatedAlarmId;
-    private String faultDetails;
+  protected AlarmType alarmType;
 
-    public Alarm() {
-    }
+  private String alarmRaisedTime;
+  private AlarmState alarmState;
+  private PerceivedSeverity perceivedSeverity;
+  private String eventTime;
+  private FaultType faultType;
+  private String probableCause;
+  private boolean isRootCause;
 
-    public String getTriggerId() {
-        return triggerId;
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> correlatedAlarmId;
 
-    public void setTriggerId(String triggerId) {
-        this.triggerId = triggerId;
-    }
+  private String faultDetails;
 
-    @PrePersist
-    public void ensureId(){
-        alarmId= IdGenerator.createUUID();
-    }
+  public Alarm() {}
 
-    public String getAlarmId() {
-        return alarmId;
-    }
+  public String getThresholdId() {
+    return thresholdId;
+  }
 
-    public String getResourceId() {
-        return resourceId;
-    }
+  public void setThresholdId(String thresholdId) {
+    this.thresholdId = thresholdId;
+  }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
-    }
+  @PrePersist
+  public void ensureId() {
+    alarmId = IdGenerator.createUUID();
+  }
 
-    public String getAlarmRaisedTime() {
-        return alarmRaisedTime;
-    }
+  public String getAlarmId() {
+    return alarmId;
+  }
 
-    public void setAlarmRaisedTime(String alarmRaisedTime) {
-        this.alarmRaisedTime = alarmRaisedTime;
-    }
+  public String getAlarmRaisedTime() {
+    return alarmRaisedTime;
+  }
 
-    public AlarmState getAlarmState() {
-        return alarmState;
-    }
+  public void setAlarmRaisedTime(String alarmRaisedTime) {
+    this.alarmRaisedTime = alarmRaisedTime;
+  }
 
-    public void setAlarmState(AlarmState alarmState) {
-        this.alarmState = alarmState;
-    }
+  public AlarmState getAlarmState() {
+    return alarmState;
+  }
 
-    public PerceivedSeverity getPerceivedSeverity() {
-        return perceivedSeverity;
-    }
+  public void setAlarmState(AlarmState alarmState) {
+    this.alarmState = alarmState;
+  }
 
-    public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
-        this.perceivedSeverity = perceivedSeverity;
-    }
+  public PerceivedSeverity getPerceivedSeverity() {
+    return perceivedSeverity;
+  }
 
-    public String getEventTime() {
-        return eventTime;
-    }
+  public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
+    this.perceivedSeverity = perceivedSeverity;
+  }
 
-    public void setEventTime(String eventTime) {
-        this.eventTime = eventTime;
-    }
+  @Override
+  public String toString() {
+    return "Alarm{"
+        + "alarmId='"
+        + alarmId
+        + '\''
+        + ", thresholdId='"
+        + thresholdId
+        + '\''
+        + ", alarmType="
+        + alarmType
+        + ", alarmRaisedTime='"
+        + alarmRaisedTime
+        + '\''
+        + ", alarmState="
+        + alarmState
+        + ", perceivedSeverity="
+        + perceivedSeverity
+        + ", eventTime='"
+        + eventTime
+        + '\''
+        + ", faultType="
+        + faultType
+        + ", probableCause='"
+        + probableCause
+        + '\''
+        + ", isRootCause="
+        + isRootCause
+        + ", correlatedAlarmId="
+        + correlatedAlarmId
+        + ", faultDetails='"
+        + faultDetails
+        + '\''
+        + '}';
+  }
 
-    public FaultType getFaultType() {
-        return faultType;
-    }
+  public abstract AlarmType getAlarmType();
 
-    public void setFaultType(FaultType faultType) {
-        this.faultType = faultType;
-    }
+  public abstract void setAlarmType(AlarmType alarmType);
 
-    public String getProbableCause() {
-        return probableCause;
-    }
+  public String getEventTime() {
+    return eventTime;
+  }
 
-    public void setProbableCause(String probableCause) {
-        this.probableCause = probableCause;
-    }
+  public void setEventTime(String eventTime) {
+    this.eventTime = eventTime;
+  }
 
-    public boolean isRootCause() {
-        return isRootCause;
-    }
+  public FaultType getFaultType() {
+    return faultType;
+  }
 
-    public void setIsRootCause(boolean isRootCause) {
-        this.isRootCause = isRootCause;
-    }
+  public void setFaultType(FaultType faultType) {
+    this.faultType = faultType;
+  }
 
-    public List<String> getCorrelatedAlarmId() {
-        return correlatedAlarmId;
-    }
+  public String getProbableCause() {
+    return probableCause;
+  }
 
-    public void setCorrelatedAlarmId(List<String> correlatedAlarmId) {
-        this.correlatedAlarmId = correlatedAlarmId;
-    }
+  public void setProbableCause(String probableCause) {
+    this.probableCause = probableCause;
+  }
 
-    public String getFaultDetails() {
-        return faultDetails;
-    }
+  public boolean isRootCause() {
+    return isRootCause;
+  }
 
-    public void setFaultDetails(String faultDetails) {
-        this.faultDetails = faultDetails;
-    }
+  public void setIsRootCause(boolean isRootCause) {
+    this.isRootCause = isRootCause;
+  }
 
-    @Override
-    public String toString() {
-        return "Alarm{" +
-                "alarmId='" + alarmId + '\'' +
-                ", triggerId='" + triggerId + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", alarmRaisedTime='" + alarmRaisedTime + '\'' +
-                ", alarmState=" + alarmState +
-                ", perceivedSeverity=" + perceivedSeverity +
-                ", eventTime='" + eventTime + '\'' +
-                ", faultType=" + faultType +
-                ", probableCause='" + probableCause + '\'' +
-                ", isRootCause=" + isRootCause +
-                ", correlatedAlarmId=" + correlatedAlarmId +
-                ", faultDetails='" + faultDetails + '\'' +
-                '}';
-    }
+  public void addCorrelatedAlarmId(String thresholdId) {
+    if (correlatedAlarmId == null) correlatedAlarmId = new ArrayList<>();
+    correlatedAlarmId.add(thresholdId);
+  }
+
+  public List<String> getCorrelatedAlarmId() {
+    return correlatedAlarmId;
+  }
+
+  public void setCorrelatedAlarmId(List<String> correlatedAlarmId) {
+    this.correlatedAlarmId = correlatedAlarmId;
+  }
+
+  public String getFaultDetails() {
+    return faultDetails;
+  }
+
+  public void setFaultDetails(String faultDetails) {
+    this.faultDetails = faultDetails;
+  }
 }

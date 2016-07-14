@@ -28,90 +28,100 @@ import java.io.Serializable;
  */
 @Entity
 public class Subnet implements Serializable {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    private String name;
-    private String extId;
-    private String networkId;
-    private String cidr;
-    private String gatewayIp;
+  @Id private String id;
+  @Version private int version = 0;
+  private String name;
+  private String extId;
+  private String networkId;
+  private String cidr;
+  private String gatewayIp;
 
-    public Subnet() {
-    }
+  public Subnet() {}
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getExtId() {
-        return extId;
-    }
+  public String getExtId() {
+    return extId;
+  }
 
-    public void setExtId(String extId) {
-        this.extId = extId;
-    }
+  public void setExtId(String extId) {
+    this.extId = extId;
+  }
 
-    public String getCidr() {
-        return cidr;
-    }
+  public String getCidr() {
+    return cidr;
+  }
 
-    public void setCidr(String cidr) {
-        this.cidr = cidr;
-    }
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
+  }
 
-    public String getNetworkId() {
-        return networkId;
-    }
+  public String getNetworkId() {
+    return networkId;
+  }
 
-    public void setNetworkId(String networkId) {
-        this.networkId = networkId;
-    }
+  public void setNetworkId(String networkId) {
+    this.networkId = networkId;
+  }
 
-    public String getGatewayIp() {
-        return gatewayIp;
-    }
+  public String getGatewayIp() {
+    return gatewayIp;
+  }
 
-    public void setGatewayIp(String gatewayIp) {
-        this.gatewayIp = gatewayIp;
-    }
+  public void setGatewayIp(String gatewayIp) {
+    this.gatewayIp = gatewayIp;
+  }
 
-    @Override
-    public String toString() {
-        return "Subnet{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", extId='" + extId + '\'' +
-                ", networkId='" + networkId + '\'' +
-                ", cidr='" + cidr + '\'' +
-                ", gatewayIp='" + gatewayIp + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Subnet{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", extId='"
+        + extId
+        + '\''
+        + ", networkId='"
+        + networkId
+        + '\''
+        + ", cidr='"
+        + cidr
+        + '\''
+        + ", gatewayIp='"
+        + gatewayIp
+        + '\''
+        + '}';
+  }
 }

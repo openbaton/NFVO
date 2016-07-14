@@ -24,39 +24,41 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
  * Created by mob on 14.09.15.
  */
 public class OrVnfmGenericMessage extends OrVnfmMessage {
-    private VirtualNetworkFunctionRecord vnfr;
-    private VNFRecordDependency vnfrd;
+  private VirtualNetworkFunctionRecord vnfr;
+  private VNFRecordDependency vnfrd;
 
-    public OrVnfmGenericMessage() {
-    }
+  public OrVnfmGenericMessage() {}
 
-    public OrVnfmGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
-        this.vnfr = vnfr;
-        this.action = action;
-    }
+  public OrVnfmGenericMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
+    this.vnfr = vnfr;
+    this.action = action;
+  }
 
-    public VNFRecordDependency getVnfrd() {
-        return vnfrd;
-    }
+  public VNFRecordDependency getVnfrd() {
+    return vnfrd;
+  }
 
-    public void setVnfrd(VNFRecordDependency vnfrd) {
-        this.vnfrd = vnfrd;
-    }
+  public void setVnfrd(VNFRecordDependency vnfrd) {
+    this.vnfrd = vnfrd;
+  }
 
-    public VirtualNetworkFunctionRecord getVnfr() {
-        return vnfr;
-    }
+  public VirtualNetworkFunctionRecord getVnfr() {
+    return vnfr;
+  }
 
-    public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
-        this.vnfr = vnfr;
-    }
+  public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
+    this.vnfr = vnfr;
+  }
 
-    @Override
-    public String toString() {
-        return "OrVnfmGenericMessage{" +
-                "action=" + action +
-                ", vnfr=" + vnfr +
-                ", vnfrd=" + vnfrd +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "OrVnfmGenericMessage{"
+        + "action="
+        + action
+        + ", vnfr="
+        + vnfr
+        + ", vnfrd="
+        + vnfrd
+        + '}';
+  }
 }

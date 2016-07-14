@@ -27,102 +27,124 @@ import java.util.*;
 @Entity
 public class VNFPackage implements Serializable {
 
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    //Name of the Package
-    private String name;
+  //Name of the Package
+  private String name;
 
-    //URL to the image's location
-    private String imageLink;
+  //URL to the image's location
+  private String imageLink;
 
-    //URL to the scripts' location
-    private String scriptsLink;
+  //URL to the scripts' location
+  private String scriptsLink;
 
-    //NFVImage used by this VNFPackage
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = true)
-    private NFVImage image;
+  //NFVImage used by this VNFPackage
+  @OneToOne(
+    fetch = FetchType.EAGER,
+    cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
+    orphanRemoval = true
+  )
+  private NFVImage image;
 
-    //Set of scripts to execute
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Script> scripts;
+  //Set of scripts to execute
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Set<Script> scripts;
 
-    public VNFPackage() {
-    }
+  public VNFPackage() {}
 
-    @Override
-    public String toString() {
-        return "VNFPackage{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", imageLink='" + imageLink + '\'' +
-                ", scriptsLink='" + scriptsLink + '\'' +
-                ", image=" + image +
-                ", scripts=" + scripts +
-                '}';
-    }
+  private String projectId;
 
-    public String getImageLink() {
-        return imageLink;
-    }
+  public String getProjectId() {
+    return projectId;
+  }
 
-    public void setImageLink(String imageLink) {
-        this.imageLink = imageLink;
-    }
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @Override
+  public String toString() {
+    return "VNFPackage{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", imageLink='"
+        + imageLink
+        + '\''
+        + ", scriptsLink='"
+        + scriptsLink
+        + '\''
+        + ", image="
+        + image
+        + ", scripts="
+        + scripts
+        + '}';
+  }
 
-    public String getScriptsLink() {
-        return scriptsLink;
-    }
+  public String getImageLink() {
+    return imageLink;
+  }
 
-    public void setScriptsLink(String scriptsLink) {
-        this.scriptsLink = scriptsLink;
-    }
+  public void setImageLink(String imageLink) {
+    this.imageLink = imageLink;
+  }
 
-    public String getId() {
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getScriptsLink() {
+    return scriptsLink;
+  }
 
-    public Set<Script> getScripts() {
-        return scripts;
-    }
+  public void setScriptsLink(String scriptsLink) {
+    this.scriptsLink = scriptsLink;
+  }
 
-    public void setScripts(Set<Script> scripts) {
-        this.scripts = scripts;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public Set<Script> getScripts() {
+    return scripts;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setScripts(Set<Script> scripts) {
+    this.scripts = scripts;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public NFVImage getImage() {
-        return image;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public void setImage(NFVImage image) {
-        this.image = image;
-    }
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public NFVImage getImage() {
+    return image;
+  }
+
+  public void setImage(NFVImage image) {
+    this.image = image;
+  }
 }

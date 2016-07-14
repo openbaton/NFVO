@@ -36,79 +36,77 @@ import javax.jms.*;
 /**
  * Created by lto on 28/05/15.
  */
-
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
-public abstract class AbstractVnfmSpringJMS extends AbstractVnfm implements MessageListener, JmsListenerConfigurer {
+public abstract class AbstractVnfmSpringJMS extends AbstractVnfm
+    implements MessageListener, JmsListenerConfigurer {
 
-    @Autowired
-    private ConfigurableApplicationContext context;
+  @Autowired private ConfigurableApplicationContext context;
 
-    @Autowired
-    private JmsListenerContainerFactory containerFactory;
+  @Autowired private JmsListenerContainerFactory containerFactory;
 
-    @Bean
-    public JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
-        SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        loadProperties();
-        log.debug("JMSCONTAINER Properties are: " + properties);
-        factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
-//        factory.setSessionTransacted(true);
-        return factory;
+  @Bean
+  public JmsListenerContainerFactory<?> jmsListenerContainerFactory(
+      ConnectionFactory connectionFactory) {
+    SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    loadProperties();
+    log.debug("JMSCONTAINER Properties are: " + properties);
+    factory.setSessionTransacted(Boolean.valueOf(properties.getProperty("transacted", "false")));
+    //        factory.setSessionTransacted(true);
+    return factory;
+  }
+
+  @Override
+  public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+    registrar.setContainerFactory(containerFactory);
+    SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+    endpoint.setDestination("core-" + this.type + "-actions");
+    endpoint.setMessageListener(this);
+    loadProperties();
+    log.debug("CONFIGURE Properties are: " + properties);
+    endpoint.setConcurrency("5-" + properties.getProperty("concurrency", "15"));
+    endpoint.setId(String.valueOf(Thread.currentThread().getId()));
+    registrar.registerEndpoint(endpoint);
+  }
+
+  //    @JmsListener(destination = "core-generic-actions", concurrency = "5-15")
+  @Override
+  public void onMessage(Message message) {
+    NFVMessage msg = null;
+    try {
+      msg = (NFVMessage) ((ObjectMessage) message).getObject();
+    } catch (JMSException e) {
+      e.printStackTrace();
+      System.exit(1);
     }
-
-    @Override
-    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
-        registrar.setContainerFactory(containerFactory);
-        SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-        endpoint.setDestination("core-" + this.type + "-actions");
-        endpoint.setMessageListener(this);
-        loadProperties();
-        log.debug("CONFIGURE Properties are: " + properties);
-        endpoint.setConcurrency("5-" + properties.getProperty("concurrency","15"));
-        endpoint.setId(String.valueOf(Thread.currentThread().getId()));
-        registrar.registerEndpoint(endpoint);
+    log.trace("VNFM: received " + msg);
+    try {
+      this.onAction(msg);
+    } catch (NotFoundException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (BadFormatException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
     }
+  }
 
-//    @JmsListener(destination = "core-generic-actions", concurrency = "5-15")
-    @Override
-    public void onMessage(Message message) {
-        NFVMessage msg = null;
-        try {
-            msg = (NFVMessage) ((ObjectMessage) message).getObject();
-        } catch (JMSException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        log.trace("VNFM: received " + msg);
-        try {
-            this.onAction(msg);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (BadFormatException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
+  @Override
+  protected void setup() {
+    vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelper");
+    super.setup();
+  }
 
-    @Override
-    protected void setup() {
-        vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelper");
-        super.setup();
-    }
+  protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
 
-    protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
+  @Override
+  protected void unregister() {
+    ((VnfmSpringHelper) vnfmHelper).sendMessageToQueue("vnfm-unsubscribe", vnfmManagerEndpoint);
+  }
 
-    @Override
-    protected void unregister() {
-        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-unsubscribe", vnfmManagerEndpoint);
-    }
-
-    @Override
-    protected void register() {
-        ((VnfmSpringHelper)vnfmHelper).sendMessageToQueue("vnfm-subscribe", vnfmManagerEndpoint);
-    }
+  @Override
+  protected void register() {
+    ((VnfmSpringHelper) vnfmHelper).sendMessageToQueue("vnfm-subscribe", vnfmManagerEndpoint);
+  }
 }
-

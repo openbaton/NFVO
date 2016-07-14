@@ -24,64 +24,68 @@ import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
- * <p>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class VNFComponent implements Serializable {
-    /**
-     * Unique VNFC identification within the namespace of a specific VNF.
-     */
-    @Id
-    protected String id;
-    @Version
-    protected int version = 0;
-    /**
-     * Describes network connectivity between a VNFC instance (based on this VDU) and an internal Virtual Link.
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    protected Set<VNFDConnectionPoint> connection_point;
+  /**
+   * Unique VNFC identification within the namespace of a specific VNF.
+   */
+  @Id protected String id;
+  @Version protected int version = 0;
 
-    public VNFComponent() {
-        this.connection_point = new HashSet<>();
-    }
+  /**
+   * Describes network connectivity between a VNFC instance (based on this VDU) and an internal
+   * Virtual Link.
+   */
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  protected Set<VNFDConnectionPoint> connection_point;
 
-    public int getVersion() {
-        return version;
-    }
+  public VNFComponent() {
+    this.connection_point = new HashSet<>();
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getId() {
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public Set<VNFDConnectionPoint> getConnection_point() {
-        return connection_point;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
-        this.connection_point = connection_point;
-    }
+  public Set<VNFDConnectionPoint> getConnection_point() {
+    return connection_point;
+  }
 
-    @Override
-    public String toString() {
-        return "VNFComponent{" +
-                "connection_point=" + connection_point +
-                ", id='" + id + '\'' +
-                ", version=" + version +
-                '}';
-    }
+  public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
+    this.connection_point = connection_point;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFComponent{"
+        + "connection_point="
+        + connection_point
+        + ", id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + '}';
+  }
 }

@@ -18,7 +18,6 @@ package org.openbaton.catalogue.mano.common.monitoring;
 /**
  * Created by mob on 27.10.15.
  */
-
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -30,96 +29,115 @@ import java.io.Serializable;
 
 @Entity
 public class AlarmEndpoint implements Serializable {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    private String name;
+  private String name;
 
-    private String resourceId;
+  private String resourceId;
 
-    private EndpointType type;
-    private String endpoint;
+  private EndpointType type;
+  private String endpoint;
 
-    private PerceivedSeverity perceivedSeverity;
+  private PerceivedSeverity perceivedSeverity;
 
+  public AlarmEndpoint() {}
 
-    public AlarmEndpoint(String name, String resourceId, EndpointType type, String endpoint, PerceivedSeverity perceivedSeverity) {
-        this.name = name;
-        this.resourceId = resourceId;
-        this.type = type;
-        this.endpoint = endpoint;
-        this.perceivedSeverity = perceivedSeverity;
-    }
+  public AlarmEndpoint(
+      String name,
+      String resourceId,
+      EndpointType type,
+      String endpoint,
+      PerceivedSeverity perceivedSeverity) {
+    this.name = name;
+    this.resourceId = resourceId;
+    this.type = type;
+    this.endpoint = endpoint;
+    this.perceivedSeverity = perceivedSeverity;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
-    public PerceivedSeverity getPerceivedSeverity() {
-        return perceivedSeverity;
-    }
-    public String getResourceId() {
-        return resourceId;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
-    }
-    public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
-        this.perceivedSeverity = perceivedSeverity;
-    }
-    public String getId() {
-        return id;
-    }
+  public PerceivedSeverity getPerceivedSeverity() {
+    return perceivedSeverity;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setPerceivedSeverity(PerceivedSeverity perceivedSeverity) {
+    this.perceivedSeverity = perceivedSeverity;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public String getResourceId() {
+    return resourceId;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setResourceId(String resourceId) {
+    this.resourceId = resourceId;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public EndpointType getType() {
-        return type;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setType(EndpointType type) {
-        this.type = type;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String toString() {
-        return "AlarmEndpoint{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", resourceId='" + resourceId + '\'' +
-                ", type=" + type +
-                ", endpoint='" + endpoint + '\'' +
-                ", perceivedSeverity=" + perceivedSeverity +
-                '}';
-    }
+  public EndpointType getType() {
+    return type;
+  }
+
+  public void setType(EndpointType type) {
+    this.type = type;
+  }
+
+  public String getEndpoint() {
+    return endpoint;
+  }
+
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  @Override
+  public String toString() {
+    return "AlarmEndpoint{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", resourceId='"
+        + resourceId
+        + '\''
+        + ", type="
+        + type
+        + ", endpoint='"
+        + endpoint
+        + '\''
+        + ", perceivedSeverity="
+        + perceivedSeverity
+        + '}';
+  }
 }

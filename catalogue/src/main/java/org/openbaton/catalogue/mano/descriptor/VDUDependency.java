@@ -22,59 +22,56 @@ import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
- * <p>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VDUDependency implements Serializable {
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private VirtualDeploymentUnit source;
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private VirtualDeploymentUnit target;
+  @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+  private VirtualDeploymentUnit source;
 
-    public VDUDependency() {
+  @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+  private VirtualDeploymentUnit target;
 
-    }
+  public VDUDependency() {}
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public VirtualDeploymentUnit getTarget() {
-        return target;
-    }
+  public VirtualDeploymentUnit getTarget() {
+    return target;
+  }
 
-    public void setTarget(VirtualDeploymentUnit target) {
-        this.target = target;
-    }
+  public void setTarget(VirtualDeploymentUnit target) {
+    this.target = target;
+  }
 
-    public VirtualDeploymentUnit getSource() {
-        return source;
-    }
+  public VirtualDeploymentUnit getSource() {
+    return source;
+  }
 
-    public void setSource(VirtualDeploymentUnit source) {
-        this.source = source;
-    }
+  public void setSource(VirtualDeploymentUnit source) {
+    this.source = source;
+  }
 }

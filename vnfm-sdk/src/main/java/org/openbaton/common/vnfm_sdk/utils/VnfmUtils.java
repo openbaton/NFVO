@@ -20,40 +20,77 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
+import org.openbaton.catalogue.nfvo.messages.*;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by lto on 23/09/15.
  */
 public class VnfmUtils {
 
-    public static NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
-        NFVMessage nfvMessage;
-        if (Action.INSTANTIATE.ordinal() == action.ordinal())
-            nfvMessage = new VnfmOrInstantiateMessage(payload);
-        else
-            nfvMessage = new VnfmOrGenericMessage(payload, action);
-        return nfvMessage;
-    }
+  public static NFVMessage getNfvInstantiateMessage(
+      VirtualNetworkFunctionRecord payload,
+      Map<String, VimInstance> vimInstances,
+      String userData) {
+    VnfmOrAllocateResourcesMessage nfvMessage = new VnfmOrAllocateResourcesMessage();
+    nfvMessage.setVirtualNetworkFunctionRecord(payload);
+    nfvMessage.setVimInstances(vimInstances);
+    nfvMessage.setUserdata(userData);
+    return nfvMessage;
+  }
 
-    public static NFVMessage getNfvMessageScaled(Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
-        VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
-        vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
-        vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
-        vnfmOrScaledMessage.setAction(action);
-        return vnfmOrScaledMessage;
-    }
+  public static NFVMessage getNfvErrorMessage(
+      VirtualNetworkFunctionRecord payload, Exception exception, String nsrId) {
+    NFVMessage nfvMessage;
+    nfvMessage = new VnfmOrErrorMessage(exception, payload, nsrId);
+    nfvMessage.setAction(Action.ERROR);
+    return nfvMessage;
+  }
 
-    public static LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
-        for (LifecycleEvent lce : events)
-            if (lce.getEvent().ordinal() == event.ordinal()) {
-                return lce;
-            }
-        return null;
-    }
+  public static NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
+    NFVMessage nfvMessage;
+    if (Action.INSTANTIATE.ordinal() == action.ordinal())
+      nfvMessage = new VnfmOrInstantiateMessage(payload);
+    else nfvMessage = new VnfmOrGenericMessage(payload, action);
+    return nfvMessage;
+  }
+
+  public static NFVMessage getNfvMessageScaled(
+      Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+    VnfmOrScaledMessage vnfmOrScaledMessage = new VnfmOrScaledMessage();
+    vnfmOrScaledMessage.setVirtualNetworkFunctionRecord(payload);
+    vnfmOrScaledMessage.setVnfcInstance(vnfcInstance);
+    vnfmOrScaledMessage.setAction(action);
+    return vnfmOrScaledMessage;
+  }
+
+  public static NFVMessage getNfvMessageHealed(
+      Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+    VnfmOrHealedMessage vnfmOrHealedMessage = new VnfmOrHealedMessage();
+    vnfmOrHealedMessage.setVirtualNetworkFunctionRecord(payload);
+    vnfmOrHealedMessage.setVnfcInstance(vnfcInstance);
+    vnfmOrHealedMessage.setAction(action);
+    return vnfmOrHealedMessage;
+  }
+
+  public static LifecycleEvent getLifecycleEvent(Collection<LifecycleEvent> events, Event event) {
+    for (LifecycleEvent lce : events)
+      if (lce.getEvent().ordinal() == event.ordinal()) {
+        return lce;
+      }
+    return null;
+  }
+
+  public static NFVMessage getNfvScalingMessage(
+      String userData, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    VnfmOrScalingMessage vnfmOrScalingMessage = new VnfmOrScalingMessage();
+    vnfmOrScalingMessage.setUserData(userData);
+    vnfmOrScalingMessage.setAction(Action.SCALING);
+    vnfmOrScalingMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    return vnfmOrScalingMessage;
+  }
 }

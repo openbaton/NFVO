@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Fraunhofer FOKUS
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *                http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,23 @@
  * limitations under the License.
  */
 
-package org.openbaton.vim.drivers.exceptions;
+package org.openbaton.exceptions;
 
 /**
- * Created by lto on 13/07/15.
+ * Created by lto on 03/06/16.
  */
-public class VimDriverException extends Exception {
+public class PasswordWeakException extends Exception {
+  public PasswordWeakException() {}
 
-    public VimDriverException() {
-    }
+  public PasswordWeakException(String message) {
+    super(message);
+  }
 
-    public VimDriverException(String message) {
-        super(message);
-    }
+  public PasswordWeakException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public VimDriverException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public PasswordWeakException(Throwable cause) {
+    super(cause);
+  }
 }

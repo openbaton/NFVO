@@ -25,33 +25,29 @@ import java.io.Serializable;
 
 /**
  * Created by lto on 06/02/15.
- * <p>
+ *
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- * <p>
+ *
  * A policy or rule to apply to the NFP
  */
 @Entity
 public class Policy implements Serializable {
 
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    public Policy() {
-    }
+  public Policy() {}
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
-
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 }

@@ -26,58 +26,63 @@ import java.util.Map;
  */
 @Entity
 public class VNFCDependencyParameters implements Serializable {
-    private String vnfcId;
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Map<String, DependencyParameters> parameters;
+  private String vnfcId;
+  @Id private String id;
+  @Version private int version = 0;
 
-    public String getVnfcId() {
-        return vnfcId;
-    }
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Map<String, DependencyParameters> parameters;
 
-    public void setVnfcId(String vnfcId) {
-        this.vnfcId = vnfcId;
-    }
+  public String getVnfcId() {
+    return vnfcId;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  public void setVnfcId(String vnfcId) {
+    this.vnfcId = vnfcId;
+  }
 
-    public String getId() {
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public Map<String, DependencyParameters> getParameters() {
-        return parameters;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public void setParameters(Map<String, DependencyParameters> parameters) {
-        this.parameters = parameters;
-    }
+  public Map<String, DependencyParameters> getParameters() {
+    return parameters;
+  }
 
-    @Override
-    public String toString() {
-        return "VNFCDependencyParameters{" +
-                "id='" + id + '\'' +
-                ", vnfcId='" + vnfcId + '\'' +
-                ", version=" + version +
-                ", parameters=" + parameters +
-                '}';
-    }
+  public void setParameters(Map<String, DependencyParameters> parameters) {
+    this.parameters = parameters;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFCDependencyParameters{"
+        + "id='"
+        + id
+        + '\''
+        + ", vnfcId='"
+        + vnfcId
+        + '\''
+        + ", version="
+        + version
+        + ", parameters="
+        + parameters
+        + '}';
+  }
 }

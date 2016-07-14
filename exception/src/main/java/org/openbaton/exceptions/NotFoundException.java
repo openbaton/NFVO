@@ -20,11 +20,11 @@ package org.openbaton.exceptions;
  * Created by lto on 26/05/15.
  */
 public class NotFoundException extends Exception {
-    public NotFoundException(String msg){
-        super(msg);
-    }
+  public NotFoundException(String msg) {
+    super(msg);
+  }
 
-    public NotFoundException(Throwable e) {
-        super(e);
-    }
+  public NotFoundException(Throwable e) {
+    super(e);
+  }
 }
