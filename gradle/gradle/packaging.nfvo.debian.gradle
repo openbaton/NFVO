@@ -16,8 +16,7 @@
 
 ext {
     debianDistribution = (applicationRelease) ? "release" : "snapshot"
-    debianVersionExtension = ("snapshot".equals(debianDistribution)) ? "-${applicationVersionDebian}" : ""
-    debianApplicationVersionFull = "${applicationVersionFull}".replaceAll("-", ".") + debianVersionExtension
+    debianApplicationVersionFull = "${applicationVersionFull}".replaceAll("-", ".")
     openbatonInstallDir = "/opt/openbaton"
 }
 

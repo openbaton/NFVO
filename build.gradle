@@ -42,13 +42,12 @@ project.ext {
      * Application Related Version
      */
     applicationVersion = version
-    applicationVersionDebian = "1";
 
     applicationRelease = isApplicationRelease()
     applicationDate = new Date()
     applicationRevision = getRevision()
 
-    applicationVersionSnapshot = (!applicationRelease) ? "+SNAPSHOT.${asUTC(applicationDate, 'yyyyMMdd')}.git${applicationRevision}" : ""
+    applicationVersionSnapshot = (!applicationRelease) ? ".${asUTC(applicationDate, 'yyyyMMdd')}.git${applicationRevision}" : ""
     applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
     //------------------------------------------------//
     //------------------------------------------------//
