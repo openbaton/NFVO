@@ -16,11 +16,13 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
+
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -30,10 +32,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Created by lto on 23/09/15.
@@ -99,22 +102,20 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
   private void init() throws IOException {
     log.info("Initialization of VnfmSpringHelperRabbit");
     rabbitAdmin = new RabbitAdmin(connectionFactory);
+    rabbitAdmin.declareExchange(new TopicExchange("openbaton-exchange"));
+    rabbitAdmin.declareQueue(
+        new Queue(RabbitConfiguration.queueName_vnfmRegister, true, exclusive, autodelete));
+    rabbitAdmin.declareBinding(
+        new Binding(
+            RabbitConfiguration.queueName_vnfmRegister,
+            Binding.DestinationType.QUEUE,
+            "openbaton-exchange",
+            RabbitConfiguration.queueName_vnfmRegister,
+            null));
   }
 
   public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
     log.debug("Sending message to Queue:  " + sendToQueueName);
-
-    if (sendToQueueName.equals(RabbitConfiguration.queueName_vnfmRegister)) {
-      rabbitAdmin.declareQueue(new Queue(sendToQueueName, true, exclusive, autodelete));
-      rabbitAdmin.declareBinding(
-          new Binding(
-              sendToQueueName,
-              Binding.DestinationType.QUEUE,
-              "openbaton-exchange",
-              sendToQueueName,
-              null));
-    }
-
     rabbitTemplate.convertAndSend(sendToQueueName, gson.toJson(message));
   }
 
