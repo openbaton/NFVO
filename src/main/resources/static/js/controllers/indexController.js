@@ -247,5 +247,3 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
 
 
 });
-
-
