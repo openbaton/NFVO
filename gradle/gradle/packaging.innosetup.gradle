@@ -33,7 +33,6 @@ task exe(dependsOn: [dependsOn: [jar, build]]) << {
 	exec {
 	
         workingDir innoSetupDir
-	commandLine "wget http://get.openbaton.org/plugins/stable/openstack-plugin-2.0.1.jar"
 	commandLine "./iscc.sh"
 	
 	}
