@@ -37,29 +37,41 @@ import java.util.concurrent.Future;
  * Created by lto on 26/05/15.
  */
 public interface VnfmManager {
-    Map<String, Map<String, Integer>> getVnfrNames();
+  Map<String, Map<String, Integer>> getVnfrNames();
 
-    void init();
+  void init();
 
-    Future<Void> deploy(NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord) throws NotFoundException;
+  Future<Void> deploy(
+      NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord)
+      throws NotFoundException;
 
-    VnfmSender getVnfmSender(EndpointType endpointType);
+  VnfmSender getVnfmSender(EndpointType endpointType);
 
-    String executeAction(NFVMessage message) throws VimException, NotFoundException, ExecutionException, InterruptedException;
+  String executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
 
-    @Async
-    Future<Void> sendMessageToVNFR(VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage) throws NotFoundException;
+  @Async
+  Future<Void> sendMessageToVNFR(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
+      throws NotFoundException;
 
-    Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException;
+  Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException;
 
-    @Async
-    Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent component, VNFRecordDependency dependency,String mode) throws NotFoundException;
+  @Async
+  Future<Void> addVnfc(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFComponent component,
+      VNFRecordDependency dependency,
+      String mode)
+      throws NotFoundException;
 
-    Future<Void> removeVnfcDependency(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) throws NotFoundException;
+  Future<Void> removeVnfcDependency(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
+      throws NotFoundException;
 
-    void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    void removeVnfrName(String nsdId, String vnfrName);
+  void removeVnfrName(String nsdId, String vnfrName);
 
-    void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

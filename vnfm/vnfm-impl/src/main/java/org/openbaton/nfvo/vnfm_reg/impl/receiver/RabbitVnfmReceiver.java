@@ -35,32 +35,32 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class RabbitVnfmReceiver implements VnfmReceiver {
 
-    @Autowired
-    private Gson gson;
+  @Autowired private Gson gson;
 
-    @Autowired
-    private VnfmManager vnfmManager;
+  @Autowired private VnfmManager vnfmManager;
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public String actionFinished(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException {
-        NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-        log.debug("CORE: Received: " + message.getAction());
+  @Override
+  public String actionFinished(String nfvMessage)
+      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+    NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
+    log.debug("CORE: Received: " + message.getAction());
 
-        log.debug("----------Executing ACTION: " + message.getAction());
-        String res = vnfmManager.executeAction(message);
-        log.debug("-----------Finished ACTION: " + message.getAction());
-        return res;
-    }
+    log.debug("----------Executing ACTION: " + message.getAction());
+    String res = vnfmManager.executeAction(message);
+    log.debug("-----------Finished ACTION: " + message.getAction());
+    return res;
+  }
 
-    @Override
-    public void actionFinishedVoid(String nfvMessage) throws NotFoundException, VimException, ExecutionException, InterruptedException {
-        NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-        log.debug("CORE: Received: " + message.getAction());
+  @Override
+  public void actionFinishedVoid(String nfvMessage)
+      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+    NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
+    log.debug("CORE: Received: " + message.getAction());
 
-        log.debug("----------Executing ACTION: " + message.getAction());
-        vnfmManager.executeAction(message);
-        log.debug("-----------Finished ACTION: " + message.getAction());
-    }
+    log.debug("----------Executing ACTION: " + message.getAction());
+    vnfmManager.executeAction(message);
+    log.debug("-----------Finished ACTION: " + message.getAction());
+  }
 }

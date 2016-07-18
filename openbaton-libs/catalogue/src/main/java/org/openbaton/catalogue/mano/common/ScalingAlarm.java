@@ -22,87 +22,95 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * Created by mpa on 15/12/15.
  */
 @Entity
-public class ScalingAlarm implements Serializable{
-	@Id
-	private String id;
-	@Version
-	private int version = 0;
+public class ScalingAlarm implements Serializable {
+  @Id private String id;
+  @Version private int version = 0;
 
-	private String metric;
-	private String statistic;
-	private String comparisonOperator;
-	private double threshold;
+  private String metric;
+  private String statistic;
+  private String comparisonOperator;
+  private double threshold;
 
-	private double weight;
+  private double weight;
 
-	@PrePersist
-	public void ensureId() {
-		id = IdGenerator.createUUID();
-	}
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public String getMetric() {
-		return metric;
-	}
+  public String getMetric() {
+    return metric;
+  }
 
-	public void setMetric(String metric) {
-		this.metric = metric;
-	}
+  public void setMetric(String metric) {
+    this.metric = metric;
+  }
 
-	public String getStatistic() {
-		return statistic;
-	}
+  public String getStatistic() {
+    return statistic;
+  }
 
-	public void setStatistic(String statistic) {
-		this.statistic = statistic;
-	}
+  public void setStatistic(String statistic) {
+    this.statistic = statistic;
+  }
 
-	public String getComparisonOperator() {
-		return comparisonOperator;
-	}
+  public String getComparisonOperator() {
+    return comparisonOperator;
+  }
 
-	public void setComparisonOperator(String comparisonOperator) {
-		this.comparisonOperator = comparisonOperator;
-	}
+  public void setComparisonOperator(String comparisonOperator) {
+    this.comparisonOperator = comparisonOperator;
+  }
 
-	public double getThreshold() {
-		return threshold;
-	}
+  public double getThreshold() {
+    return threshold;
+  }
 
-	public void setThreshold(double threshold) {
-		this.threshold = threshold;
-	}
+  public void setThreshold(double threshold) {
+    this.threshold = threshold;
+  }
 
-	public double getWeight() {
-		return weight;
-	}
+  public double getWeight() {
+    return weight;
+  }
 
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
+  public void setWeight(double weight) {
+    this.weight = weight;
+  }
 
-	@Override
-	public String toString() {
-		return "ScalingAlarm{" +
-				"id='" + id + '\'' +
-				", version=" + version +
-				", metric='" + metric + '\'' +
-				", statistic='" + statistic + '\'' +
-				", comparisonOperator='" + comparisonOperator + '\'' +
-				", weight='" + weight + '\'' +
-				'}';
-	}
+  @Override
+  public String toString() {
+    return "ScalingAlarm{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", metric='"
+        + metric
+        + '\''
+        + ", statistic='"
+        + statistic
+        + '\''
+        + ", comparisonOperator='"
+        + comparisonOperator
+        + '\''
+        + ", weight='"
+        + weight
+        + '\''
+        + '}';
+  }
 }

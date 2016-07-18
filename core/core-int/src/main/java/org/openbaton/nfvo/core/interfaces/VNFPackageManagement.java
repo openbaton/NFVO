@@ -30,56 +30,53 @@ import java.sql.SQLException;
 /**
  * Created by mpa on 05/05/15.
  */
-
 public interface VNFPackageManagement {
 
-    /**
-     * This operation allows submitting and
-     * validating the VNF Package.
-     *
-     * @param pack
-     * @param projectId
-     */
-    VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId) throws IOException, VimException, NotFoundException, SQLException, PluginException;
+  /**
+   * This operation allows submitting and validating the VNF Package.
+   *
+   * @param pack
+   * @param projectId
+   */
+  VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
+      throws IOException, VimException, NotFoundException, PluginException;
 
-    /**
-     * This operation allows disabling the
-     * VNF Package, so that it is not
-     * possible to instantiate any further.
-     */
-    void disable();
+  /**
+   * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
+   * further.
+   */
+  void disable();
 
-    /**
-     * This operation allows enabling
-     * the VNF Package.
-     */
-    void enable();
+  /**
+   * This operation allows enabling the VNF Package.
+   */
+  void enable();
 
-    /**
-     * This operation allows updating
-     * the VNF Package.
-     *  @param id
-     * @param pack_new
-     * @param projectId
-     */
-    VNFPackage update(String id, VNFPackage pack_new, String projectId);
+  /**
+   * This operation allows updating the VNF Package.
+   *
+   * @param id
+   * @param pack_new
+   * @param projectId
+   */
+  VNFPackage update(String id, VNFPackage pack_new, String projectId);
 
-    VNFPackage query(String id, String projectId);
+  VNFPackage query(String id, String projectId);
 
-    /**
-     * This operation is used to query
-     * information on VNF Packages.
-     */
-    Iterable<VNFPackage> query();
+  /**
+   * This operation is used to query information on VNF Packages.
+   */
+  Iterable<VNFPackage> query();
 
-    /**
-     * This operation is used to remove a
-     * disabled VNF Package.
-     *
-     * @param id
-     * @param projectId
-     */
-    void delete(String id, String projectId) throws WrongAction;
+  /**
+   * This operation is used to remove a disabled VNF Package.
+   *
+   * @param id
+   * @param projectId
+   */
+  void delete(String id, String projectId) throws WrongAction;
 
-    Script updateScript(Script script);
+  Script updateScript(Script script);
+
+  Iterable<VNFPackage> queryByProjectId(String projectId);
 }

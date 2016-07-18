@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.api;
 
-
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.nfvo.core.interfaces.VNFManagerManagement;
 import org.slf4j.Logger;
@@ -29,21 +28,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/vnfmanagers")
 public class RestVNFManager {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VNFManagerManagement vnfManagerManagement;
+  @Autowired private VNFManagerManagement vnfManagerManagement;
 
+  @RequestMapping(method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  public Iterable<VnfmManagerEndpoint> findAll() {
+    return vnfManagerManagement.query();
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public Iterable<VnfmManagerEndpoint> findAll() {
-        return vnfManagerManagement.query();
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public VnfmManagerEndpoint findById(@PathVariable("id") String id) {
-        return vnfManagerManagement.query(id);
-    }
+  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  public VnfmManagerEndpoint findById(@PathVariable("id") String id) {
+    return vnfManagerManagement.query(id);
+  }
 }

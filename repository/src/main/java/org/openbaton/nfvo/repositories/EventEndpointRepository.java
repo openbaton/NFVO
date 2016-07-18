@@ -25,6 +25,7 @@ import java.util.List;
  * Created by lto on 06/05/15.
  */
 public interface EventEndpointRepository extends CrudRepository<EventEndpoint, String> {
-    EventEndpoint findFirstById(String id);
-    List<EventEndpoint> findByProjectId(String projectId);
+  EventEndpoint findFirstById(String id);
+
+  List<EventEndpoint> findByProjectId(String projectId);
 }

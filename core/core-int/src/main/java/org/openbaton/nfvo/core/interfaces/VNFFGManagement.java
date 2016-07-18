@@ -22,13 +22,14 @@ import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
  * Created by lto on 16/06/15.
  */
 public interface VNFFGManagement {
-    VNFForwardingGraphDescriptor add(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor);
+  VNFForwardingGraphDescriptor add(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor);
 
-    void delete(String id);
+  void delete(String id);
 
-    Iterable<VNFForwardingGraphDescriptor> query();
+  Iterable<VNFForwardingGraphDescriptor> query();
 
-    VNFForwardingGraphDescriptor query(String id);
+  VNFForwardingGraphDescriptor query(String id);
 
-    VNFForwardingGraphDescriptor update(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor, String id);
+  VNFForwardingGraphDescriptor update(
+      VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor, String id);
 }

@@ -24,25 +24,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/v1/vnfcomponents")
 public class RestVNFComponent {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VNFComponentManagment vnfComponentManagment;
+  @Autowired private VNFComponentManagment vnfComponentManagment;
 
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public Iterable<VNFComponent> findAll() {
-        return vnfComponentManagment.query();
-    }
+  @RequestMapping(method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  public Iterable<VNFComponent> findAll() {
+    return vnfComponentManagment.query();
+  }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public VNFComponent findById(@PathVariable("id") String id) {
-        return vnfComponentManagment.query(id);
-    }
+  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  public VNFComponent findById(@PathVariable("id") String id) {
+    return vnfComponentManagment.query(id);
+  }
 }

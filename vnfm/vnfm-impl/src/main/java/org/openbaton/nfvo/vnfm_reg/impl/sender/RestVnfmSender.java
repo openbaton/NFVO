@@ -17,11 +17,13 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
+
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,77 +38,85 @@ import javax.annotation.PostConstruct;
 @Scope
 public class RestVnfmSender implements VnfmSender {
 
-    protected RestTemplate rest;
-    protected HttpHeaders headers;
-    protected HttpStatus status;
-    protected Gson mapper;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private RestTemplate rest;
+  private HttpHeaders headers;
+  private HttpStatus status;
+  @Autowired private Gson mapper;
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private String get(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
-        return responseEntity.getBody();
-    }
+  private String get(String path, String url) {
+    HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
+    ResponseEntity<String> responseEntity =
+        rest.exchange(url + path, HttpMethod.GET, requestEntity, String.class);
+    this.setStatus(responseEntity.getStatusCode());
+    return responseEntity.getBody();
+  }
 
-    private String post(String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
-        return responseEntity.getBody();
-    }
+  private String post(String json, String url) {
+    HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+    ResponseEntity<String> responseEntity =
+        rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
+    this.setStatus(responseEntity.getStatusCode());
+    return responseEntity.getBody();
+  }
 
-    private void put(String path, String json, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
-    }
+  private void put(String path, String json, String url) {
+    HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+    ResponseEntity<String> responseEntity =
+        rest.exchange(url + path, HttpMethod.PUT, requestEntity, String.class);
+    this.setStatus(responseEntity.getStatusCode());
+  }
 
-    private void delete(String path, String url) {
-        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        ResponseEntity<String> responseEntity = rest.exchange(url + path, HttpMethod.DELETE, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
-    }
+  private void delete(String path, String url) {
+    HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
+    ResponseEntity<String> responseEntity =
+        rest.exchange(url + path, HttpMethod.DELETE, requestEntity, String.class);
+    this.setStatus(responseEntity.getStatusCode());
+  }
 
-    protected HttpStatus getStatus() {
-        return status;
-    }
+  protected HttpStatus getStatus() {
+    return status;
+  }
 
-    protected void setStatus(HttpStatus status) {
-        this.status = status;
-    }
+  protected void setStatus(HttpStatus status) {
+    this.status = status;
+  }
 
-    @PostConstruct
-    private void init() {
-        this.mapper = new Gson();
-        this.rest = new RestTemplate();
-        this.headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("Accept", "*/*");
-    }
+  @PostConstruct
+  private void init() {
+    this.rest = new RestTemplate();
+    this.headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json");
+    headers.add("Accept", "*/*");
+  }
 
-    @Override
-    public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
-        this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
-    }
+  @Override
+  public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
+    this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
+  }
 
-    @Override
-    public void sendCommand(NFVMessage nfvMessage, String tempDestination) {
-        String json = mapper.toJson(nfvMessage);
-        if (log.isTraceEnabled())
-            log.trace("Sending message: " + json + " to url " + tempDestination);
-        else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
-        throw new UnsupportedOperationException("not implemented");
+  @Override
+  public void sendCommand(NFVMessage nfvMessage, String tempDestination) {
+    String json = mapper.toJson(nfvMessage);
+    if (log.isTraceEnabled()) {
+      log.trace("Sending message: " + json + " to url " + tempDestination);
+    } else {
+      log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
     }
+    throw new UnsupportedOperationException("not implemented");
+  }
 
-    public void sendToVnfm(NFVMessage nfvMessage, String url) {
-        String json = mapper.toJson(nfvMessage);
-        if (!url.endsWith("/"))
-            url += "/";
-        url += "core-rest-actions";
-        if (log.isTraceEnabled())
-            log.trace("Sending message: " + json + " to url " + url);
-        else log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
-        this.post(json, url);
+  public void sendToVnfm(NFVMessage nfvMessage, String url) {
+    String json = mapper.toJson(nfvMessage);
+    if (!url.endsWith("/")) {
+      url += "/";
     }
+    url += "core-rest-actions";
+    if (log.isTraceEnabled()) {
+      log.trace("Sending message: " + json + " to url " + url);
+    } else {
+      log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
+    }
+    this.post(json, url);
+  }
 }

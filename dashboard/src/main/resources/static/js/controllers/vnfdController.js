@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService) {
+var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard) {
 
     var baseUrl = $cookieStore.get('URL')+"/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
@@ -18,6 +18,18 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             showError(status, data);
 
         });
+
+
+    $scope.copyToClipboard = function () {
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push({'id': k});
+            }
+        });
+        //console.log(ids);
+        clipboard.copyText(JSON.stringify(ids));
+    };
 
 
     if (!angular.isUndefined($routeParams.vduId)) {
@@ -136,6 +148,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 $scope.vduCreate = angular.copy(res.data);
             });
         $('#addEditVDU').modal('show');
+    };
+
+    $scope.showTab = function (value) {
+        return (value > 0);
     };
 
     $scope.addVNFD = function () {

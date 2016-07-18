@@ -22,55 +22,57 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Properties;
-
 
 /**
  * Created by lto on 15/10/15.
  */
 public abstract class VimDriver implements ClientInterfaces {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected Properties properties;
+  protected Properties properties;
 
-    protected VimDriver() {
-        loadProperties();
-    }
+  protected VimDriver() {
+    loadProperties();
+  }
 
-    public void loadProperties() {
-        properties = new Properties();
+  public void loadProperties() {
+    properties = new Properties();
 
-        log.debug("Loading properties");
-        try {
-            InputStream resourceAsStream = this.getClass().getResourceAsStream("/plugin.conf.properties");
-            if (resourceAsStream != null) {
-                properties.load(resourceAsStream);
-                if (properties.getProperty("external-properties-file") != null) {
-                    File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
-                    if (externalPropertiesFile.exists()) {
-                        log.debug("Loading properties from external-properties-file: " + properties.getProperty("external-properties-file"));
-                        InputStream is = new FileInputStream(externalPropertiesFile);
-                        properties.load(is);
-                    } else {
-                        log.debug("external-properties-file: " + properties.getProperty("external-properties-file") + " doesn't exist");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    log.debug("Loading properties");
+    try {
+      InputStream resourceAsStream = this.getClass().getResourceAsStream("/plugin.conf.properties");
+      if (resourceAsStream != null) {
+        properties.load(resourceAsStream);
+        if (properties.getProperty("external-properties-file") != null) {
+          File externalPropertiesFile =
+              new File(properties.getProperty("external-properties-file"));
+          if (externalPropertiesFile.exists()) {
+            log.debug(
+                "Loading properties from external-properties-file: "
+                    + properties.getProperty("external-properties-file"));
+            InputStream is = new FileInputStream(externalPropertiesFile);
+            properties.load(is);
+          } else {
+            log.debug(
+                "external-properties-file: "
+                    + properties.getProperty("external-properties-file")
+                    + " doesn't exist");
+          }
         }
-        log.debug("Loaded properties: " + properties);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+    log.debug("Loaded properties: " + properties);
+  }
 
-    public Properties getProperties() {
-        return properties;
-    }
+  public Properties getProperties() {
+    return properties;
+  }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
+  public void setProperties(Properties properties) {
+    this.properties = properties;
+  }
 }

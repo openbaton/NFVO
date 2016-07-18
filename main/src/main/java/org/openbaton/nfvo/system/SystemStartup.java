@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by lto on 12/05/15.
@@ -45,92 +46,104 @@ import java.util.*;
 @ConfigurationProperties
 class SystemStartup implements CommandLineRunner {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private ConfigurationRepository configurationRepository;
+  @Autowired private ConfigurationRepository configurationRepository;
 
-    @Value("${nfvo.plugin.active.consumers:10}")
-    private String numConsumers;
-    @Value("${spring.rabbitmq.username:admin}")
-    private String username;
-    @Value("${spring.rabbitmq.password:openbaton}")
-    private String password;
-    @Value("${nfvo.rabbit.management.port:15672}")
-    private String  managementPort;
-    @Value("${nfvo.plugin.installation-dir:./plugins}")
-    private String  pluginDir;
-    @Value("${nfvo.plugin.wait:true}")
-    private boolean waitForPlugin;
-    @Value("${nfvo.plugin.install:true}")
-    private boolean installPlugin;
-    @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
-    private String propFileLocation;
-    @Value("${nfvo.plugin.log.path:./plugin-logs}")
-    private String pluginLogPath;
+  @Value("${nfvo.plugin.active.consumers:10}")
+  private String numConsumers;
 
-    @Override
-    public void run(String... args) throws Exception {
-        log.info("Initializing OpenBaton");
+  @Value("${spring.rabbitmq.username:admin}")
+  private String username;
 
-        log.debug(Arrays.asList(args).toString());
+  @Value("${spring.rabbitmq.password:openbaton}")
+  private String password;
 
+  @Value("${nfvo.rabbit.management.port:15672}")
+  private String managementPort;
 
-        propFileLocation = propFileLocation.replace("file:","");
-        log.debug("Property file: " + propFileLocation);
+  @Value("${nfvo.plugin.installation-dir:./plugins}")
+  private String pluginDir;
 
-        InputStream is = new FileInputStream(propFileLocation);
-        Properties properties = new Properties();
-        properties.load(is);
+  @Value("${nfvo.plugin.wait:true}")
+  private boolean waitForPlugin;
 
-        log.debug("Config Values are: " + properties.values());
+  @Value("${nfvo.plugin.install:true}")
+  private boolean installPlugin;
 
-        Configuration c = new Configuration();
+  @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
+  private String propFileLocation;
 
-        c.setName("system");
-        c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+  @Value("${nfvo.plugin.log.path:./plugin-logs}")
+  private String pluginLogPath;
 
-        /**
-         * Adding properties from file
-         */
-        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            ConfigurationParameter cp = new ConfigurationParameter();
-            cp.setConfKey((String) entry.getKey());
-            cp.setValue((String) entry.getValue());
-            c.getConfigurationParameters().add(cp);
-        }
+  @Override
+  public void run(String... args) throws Exception {
+    log.info("Initializing OpenBaton");
 
-        /**
-         * Adding system properties
-         */
+    log.debug(Arrays.asList(args).toString());
 
-        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)) {
-            ConfigurationParameter cp = new ConfigurationParameter();
-            log.trace("Display name: " + netint.getDisplayName());
-            log.trace("Name: " + netint.getName());
-            cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
-            Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-            for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-                if (inetAddress.getHostAddress().contains(".")) {
-                    log.trace("InetAddress: " + inetAddress.getHostAddress());
-                    cp.setValue(inetAddress.getHostAddress());
-                }
-            }
-            log.trace("");
-            c.getConfigurationParameters().add(cp);
-        }
+    propFileLocation = propFileLocation.replace("file:", "");
+    log.debug("Property file: " + propFileLocation);
 
+    InputStream is = new FileInputStream(propFileLocation);
+    Properties properties = new Properties();
+    properties.load(is);
 
-        configurationRepository.save(c);
+    log.debug("Config Values are: " + properties.values());
 
-        if (installPlugin) {
-            startPlugins(pluginDir);
-        }
+    Configuration c = new Configuration();
+
+    c.setName("system");
+    c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+
+    /**
+     * Adding properties from file
+     */
+    for (Entry<Object, Object> entry : properties.entrySet()) {
+      ConfigurationParameter cp = new ConfigurationParameter();
+      cp.setConfKey((String) entry.getKey());
+      cp.setValue((String) entry.getValue());
+      c.getConfigurationParameters().add(cp);
     }
 
-    private void startPlugins(String folderPath) throws IOException {
-        PluginStartup.startPluginRecursive(folderPath, waitForPlugin, "localhost", "5672", Integer.parseInt(numConsumers), username, password, managementPort, pluginLogPath);
+    /**
+     * Adding system properties
+     */
+    Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+    for (NetworkInterface netint : Collections.list(nets)) {
+      ConfigurationParameter cp = new ConfigurationParameter();
+      log.trace("Display name: " + netint.getDisplayName());
+      log.trace("Name: " + netint.getName());
+      cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
+      Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+      for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+        if (inetAddress.getHostAddress().contains(".")) {
+          log.trace("InetAddress: " + inetAddress.getHostAddress());
+          cp.setValue(inetAddress.getHostAddress());
+        }
+      }
+      log.trace("");
+      c.getConfigurationParameters().add(cp);
     }
 
+    configurationRepository.save(c);
+
+    if (installPlugin) {
+      startPlugins(pluginDir);
+    }
+  }
+
+  private void startPlugins(String folderPath) throws IOException {
+    PluginStartup.startPluginRecursive(
+        folderPath,
+        waitForPlugin,
+        "localhost",
+        "5672",
+        Integer.parseInt(numConsumers),
+        username,
+        password,
+        managementPort,
+        pluginLogPath);
+  }
 }

@@ -24,14 +24,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope
-public class NetworkServiceFaultManagement implements org.openbaton.nfvo.core.interfaces.NetworkServiceFaultManagement {
-    @Override
-    public void notifyFault() {
-        throw new UnsupportedOperationException();
-    }
+public class NetworkServiceFaultManagement
+    implements org.openbaton.nfvo.core.interfaces.NetworkServiceFaultManagement {
+  @Override
+  public void notifyFault() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void getFaultInformation() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void getFaultInformation() {
+    throw new UnsupportedOperationException();
+  }
 }

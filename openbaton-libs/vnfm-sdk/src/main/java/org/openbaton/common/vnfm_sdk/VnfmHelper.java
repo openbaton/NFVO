@@ -24,10 +24,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class VnfmHelper {
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
+  protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public abstract void sendToNfvo(NFVMessage nfvMessage);
+  public abstract void sendToNfvo(NFVMessage nfvMessage);
 
-    public abstract NFVMessage sendAndReceive(NFVMessage nfvMessage) throws Exception;
-    public abstract String sendAndReceive(String message, String queueName) throws Exception;
+  public abstract NFVMessage sendAndReceive(NFVMessage nfvMessage) throws Exception;
+
+  public abstract String sendAndReceive(String message, String queueName) throws Exception;
 }

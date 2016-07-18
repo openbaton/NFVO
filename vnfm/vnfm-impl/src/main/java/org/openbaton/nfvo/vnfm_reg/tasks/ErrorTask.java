@@ -30,54 +30,58 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class ErrorTask extends AbstractTask {
 
-    private Exception exception;
+  private Exception exception;
 
-    public void setNsrId(String nsrId) {
-        this.nsrId = nsrId;
+  public void setNsrId(String nsrId) {
+    this.nsrId = nsrId;
+  }
+
+  private String nsrId;
+
+  @Override
+  public boolean isAsync() {
+    return true;
+  }
+
+  @Override
+  public NFVMessage doWork() throws Exception {
+
+    if (log.isDebugEnabled()) {
+      log.error("ERROR from VNFM: ", this.getException());
+    } else log.error("ERROR from VNFM: " + this.getException().getMessage());
+
+    if (virtualNetworkFunctionRecord != null) {
+      try {
+        log.debug(
+            "Existing HBVerison: "
+                + vnfrRepository
+                    .findFirstById(virtualNetworkFunctionRecord.getId())
+                    .getHb_version());
+      } catch (Exception e) {
+        if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      }
+      log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
+      log.error("ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
+      virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+      saveVirtualNetworkFunctionRecord();
+    } else {
+      log.error(
+          "Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the VNFM Logs");
+      NetworkServiceRecord networkServiceRecord =
+          networkServiceRecordRepository.findFirstById(nsrId);
+      networkServiceRecord.setStatus(Status.ERROR);
+      log.debug("Setting the NSR " + networkServiceRecord.getName() + " in state ERROR");
+      networkServiceRecordRepository.save(networkServiceRecord);
     }
 
-    private String nsrId;
+    return null;
+  }
 
-    @Override
-    public boolean isAsync() {
-        return true;
-    }
+  public void setException(Exception exception) {
+    this.exception = exception;
+  }
 
-    @Override
-    public NFVMessage doWork() throws Exception {
-
-        if (log.isDebugEnabled()){
-            log.error("ERROR from VNFM: ", this.getException());
-        }else
-            log.error("ERROR from VNFM: " + this.getException().getMessage());
-
-        if (virtualNetworkFunctionRecord != null) {
-            try {
-                log.debug("Existing HBVerison: " + vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId()).getHb_version());
-            } catch (Exception e) {
-                if (log.isDebugEnabled())
-                    log.error(e.getMessage(), e);
-            }
-            log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
-            log.error("ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
-            virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-            saveVirtualNetworkFunctionRecord();
-        }else {
-            log.error("Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the VNFM Logs");
-            NetworkServiceRecord networkServiceRecord = networkServiceRecordRepository.findFirstById(nsrId);
-            networkServiceRecord.setStatus(Status.ERROR);
-            log.debug("Setting the NSR " + networkServiceRecord.getName() + " in state ERROR");
-            networkServiceRecordRepository.save(networkServiceRecord);
-        }
-
-        return null;
-    }
-
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
-
-    public Exception getException() {
-        return exception;
-    }
+  public Exception getException() {
+    return exception;
+  }
 }

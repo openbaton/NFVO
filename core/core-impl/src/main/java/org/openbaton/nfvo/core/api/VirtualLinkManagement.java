@@ -33,76 +33,73 @@ import javax.persistence.NoResultException;
  */
 @Service
 @Scope
-public class VirtualLinkManagement implements org.openbaton.nfvo.core.interfaces.VirtualLinkManagement {
+public class VirtualLinkManagement
+    implements org.openbaton.nfvo.core.interfaces.VirtualLinkManagement {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
+  @Autowired private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 
-    @Autowired
-    private VirtualLinkRecordRepository virtualLinkRecordRepository;
+  @Autowired private VirtualLinkRecordRepository virtualLinkRecordRepository;
 
-    @Override
-    public VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor) {
-        log.trace("Adding VirtualLinkDescriptor " + virtualLinkDescriptor);
-        log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkDescriptor.getId());
-        return virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
+  @Override
+  public VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor) {
+    log.trace("Adding VirtualLinkDescriptor " + virtualLinkDescriptor);
+    log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkDescriptor.getId());
+    return virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
+  }
+
+  @Override
+  public VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord) {
+    log.trace("Adding VirtualLinkDescriptor " + virtualLinkRecord);
+    log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkRecord.getId());
+    return virtualLinkRecordRepository.save(virtualLinkRecord);
+  }
+
+  @Override
+  public void delete(String id) {
+    log.debug("Removing image with id " + id);
+    VirtualLinkDescriptor vld = null;
+    VirtualLinkRecord vlr = null;
+    try {
+      vld = virtualLinkDescriptorRepository.findOne(id);
+    } catch (NoResultException ignored) {
+      vlr = virtualLinkRecordRepository.findOne(id);
     }
 
-    @Override
-    public VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord) {
-        log.trace("Adding VirtualLinkDescriptor " + virtualLinkRecord);
-        log.debug("Adding VirtualLinkDescriptor with Id " + virtualLinkRecord.getId());
-        return virtualLinkRecordRepository.save(virtualLinkRecord);
-    }
+    if (vld == null) virtualLinkRecordRepository.delete(vlr);
+    else virtualLinkDescriptorRepository.delete(vld);
+  }
 
-    @Override
-    public void delete(String id) {
-        log.debug("Removing image with id " + id);
-        VirtualLinkDescriptor vld = null;
-        VirtualLinkRecord vlr = null;
-        try {
-            vld = virtualLinkDescriptorRepository.findOne(id);
-        } catch (NoResultException e) {
-            vlr = virtualLinkRecordRepository.findOne(id);
-        }
+  @Override
+  public VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor, String id) {
+    virtualLinkDescriptor = virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
+    return virtualLinkDescriptor;
+  }
 
-        if (vld == null)
-            virtualLinkRecordRepository.delete(vlr);
-        else
-            virtualLinkDescriptorRepository.delete(vld);
-    }
+  @Override
+  public VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord, String id) {
+    virtualLinkRecord = virtualLinkRecordRepository.save(virtualLinkRecord);
+    return virtualLinkRecord;
+  }
 
-    @Override
-    public VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor, String id) {
-        virtualLinkDescriptor = virtualLinkDescriptorRepository.save(virtualLinkDescriptor);
-        return virtualLinkDescriptor;
-    }
+  @Override
+  public Iterable<VirtualLinkDescriptor> queryDescriptors() {
+    return virtualLinkDescriptorRepository.findAll();
+  }
 
-    @Override
-    public VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord, String id) {
-        virtualLinkRecord = virtualLinkRecordRepository.save(virtualLinkRecord);
-        return virtualLinkRecord;
-    }
+  @Override
+  public Iterable<VirtualLinkRecord> queryRecords() {
+    return virtualLinkRecordRepository.findAll();
+  }
 
-    @Override
-    public Iterable<VirtualLinkDescriptor> queryDescriptors() {
-        return virtualLinkDescriptorRepository.findAll();
-    }
+  @Override
+  public VirtualLinkRecord queryRecord(String id) {
+    return virtualLinkRecordRepository.findOne(id);
+  }
 
-    @Override
-    public Iterable<VirtualLinkRecord> queryRecords() {
-        return virtualLinkRecordRepository.findAll();
-    }
-
-    @Override
-    public VirtualLinkRecord queryRecord(String id) {
-        return virtualLinkRecordRepository.findOne(id);
-    }
-
-    @Override
-    public VirtualLinkDescriptor queryDescriptor(String id) {
-        return virtualLinkDescriptorRepository.findOne(id);
-    }
+  @Override
+  public VirtualLinkDescriptor queryDescriptor(String id) {
+    return virtualLinkDescriptorRepository.findOne(id);
+  }
 }

@@ -25,45 +25,54 @@ import java.util.List;
 @Service
 public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogManagement {
 
-    @Autowired
-    private NetworkServiceRecordRepository networkServiceRecordRepository;
+  @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-    @Autowired
-    private Gson gson;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private RabbitTemplate rabbitTemplate;
+  @Autowired private Gson gson;
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public List<String> getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException {
-        for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : networkServiceRecordRepository.findFirstById(nsrId).getVnfr()){
-            if (virtualNetworkFunctionRecord.getName().equals(vnfrName)){
-                for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
-                    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()){
-                        if (hostname.equals(vnfcInstance.getHostname())) {
+  @Override
+  public List<String> getLog(String nsrId, String vnfrName, String hostname)
+      throws NotFoundException {
+    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
+        networkServiceRecordRepository.findFirstById(nsrId).getVnfr()) {
+      if (virtualNetworkFunctionRecord.getName().equals(vnfrName)) {
+        for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+          for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+            if (hostname.equals(vnfcInstance.getHostname())) {
 
-                            log.debug("Requesting log from GenericVNFM");
-                            String json = (String) rabbitTemplate.convertSendAndReceive("nfvo.vnfm.logs", "{\"vnfrName\":\"" + vnfrName + "\", \"hostname\":\"" + hostname + "\"}");
-                            log.debug("RECEIVED: " + json);
+              log.debug("Requesting log from GenericVNFM");
+              String json =
+                  (String)
+                      rabbitTemplate.convertSendAndReceive(
+                          "nfvo.vnfm.logs",
+                          "{\"vnfrName\":\"" + vnfrName + "\", \"hostname\":\"" + hostname + "\"}");
+              log.debug("RECEIVED: " + json);
 
-                            JsonReader reader = new JsonReader(new StringReader(json));
-                            reader.setLenient(true);
-                            JsonArray answer = null;
-                            try {
-                                answer = ((JsonObject) gson.fromJson(reader, JsonObject.class)).get("answer").getAsJsonArray();
-                            } catch (java.lang.IllegalStateException e) {
-                                LinkedList<String> error = new LinkedList<>();
-                                error.add(((JsonObject) gson.fromJson(reader, JsonObject.class)).get("answer").getAsString());
-                                return error;
-                            }
-                            log.debug("ANSWER: " + answer);
-                            return gson.fromJson(answer, LinkedList.class);
-                        }
-                    }
-                }
+              JsonReader reader = new JsonReader(new StringReader(json));
+              reader.setLenient(true);
+              JsonArray answer = null;
+              try {
+                answer =
+                    ((JsonObject) gson.fromJson(reader, JsonObject.class))
+                        .get("answer")
+                        .getAsJsonArray();
+              } catch (IllegalStateException ignored) {
+                LinkedList<String> error = new LinkedList<>();
+                error.add(
+                    ((JsonObject) gson.fromJson(reader, JsonObject.class))
+                        .get("answer")
+                        .getAsString());
+                return error;
+              }
+              log.debug("ANSWER: " + answer);
+              return gson.fromJson(answer, LinkedList.class);
             }
+          }
         }
-
-        throw new NotFoundException("Error something was not found");
+      }
     }
+
+    throw new NotFoundException("Error something was not found");
+  }
 }

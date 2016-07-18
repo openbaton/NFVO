@@ -29,85 +29,92 @@ import java.util.Map;
 @Entity
 public class VNFRecordDependency implements Serializable {
 
-    @Id
-    private String id = IdGenerator.createUUID();
-    @Version
-    private int version = 0;
+  @Id private String id = IdGenerator.createUUID();
+  @Version private int version = 0;
 
-    private String target;
+  private String target;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Map<String, DependencyParameters> parameters;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Map<String, VNFCDependencyParameters> vnfcParameters;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> idType;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Map<String, DependencyParameters> parameters;
 
-    public VNFRecordDependency() {
-    }
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Map<String, VNFCDependencyParameters> vnfcParameters;
 
-    public Map<String, VNFCDependencyParameters> getVnfcParameters() {
-        return vnfcParameters;
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> idType;
 
-    public void setVnfcParameters(Map<String, VNFCDependencyParameters> vnfcParameters) {
-        this.vnfcParameters = vnfcParameters;
-    }
+  public VNFRecordDependency() {}
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  public Map<String, VNFCDependencyParameters> getVnfcParameters() {
+    return vnfcParameters;
+  }
 
-    public Map<String, String> getIdType() {
-        return idType;
-    }
+  public void setVnfcParameters(Map<String, VNFCDependencyParameters> vnfcParameters) {
+    this.vnfcParameters = vnfcParameters;
+  }
 
-    public void setIdType(Map<String, String> idType) {
-        this.idType = idType;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public Map<String, DependencyParameters> getParameters() {
-        return parameters;
-    }
+  public Map<String, String> getIdType() {
+    return idType;
+  }
 
-    public void setParameters(Map<String, DependencyParameters> parameters) {
-        this.parameters = parameters;
-    }
+  public void setIdType(Map<String, String> idType) {
+    this.idType = idType;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public Map<String, DependencyParameters> getParameters() {
+    return parameters;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setParameters(Map<String, DependencyParameters> parameters) {
+    this.parameters = parameters;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getTarget() {
-        return target;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setTarget(String target) {
-        this.target = target;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    @Override
-    public String toString() {
-        return "VNFRecordDependency{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", target='" + target + '\'' +
-                ", parameters=" + parameters +
-                ", vnfcParameters=" + vnfcParameters +
-                ", idType=" + idType +
-                '}';
-    }
+  public String getTarget() {
+    return target;
+  }
+
+  public void setTarget(String target) {
+    this.target = target;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFRecordDependency{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", target='"
+        + target
+        + '\''
+        + ", parameters="
+        + parameters
+        + ", vnfcParameters="
+        + vnfcParameters
+        + ", idType="
+        + idType
+        + '}';
+  }
 }

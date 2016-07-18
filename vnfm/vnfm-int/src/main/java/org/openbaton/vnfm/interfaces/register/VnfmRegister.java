@@ -24,9 +24,9 @@ import org.openbaton.exceptions.NotFoundException;
  */
 public interface VnfmRegister {
 
-    Iterable<VnfmManagerEndpoint> listVnfm();
+  Iterable<VnfmManagerEndpoint> listVnfm();
 
-    void addManagerEndpoint(String endpoint);
+  void addManagerEndpoint(String endpoint);
 
-    VnfmManagerEndpoint getVnfm(String type) throws NotFoundException;
+  VnfmManagerEndpoint getVnfm(String type) throws NotFoundException;
 }

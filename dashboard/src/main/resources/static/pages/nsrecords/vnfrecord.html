@@ -10,7 +10,7 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Descriptors</a>
+                    NS Records</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
@@ -31,9 +31,10 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
-        <div class="col-lg-12">
+        <div class="col-lg-12" >
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
-                <dl class="dl-horizontal">
+
+                <dl class="dl-horizontal" >
                     <dt>name</dt>
                     <dd>{{vnfr.name}}</dd>
                     <dt>type</dt>
@@ -112,7 +113,8 @@
                                 <tbody>
                                 <tr ng-repeat="vdu in vnfr.vdu | orderBy:predicate:reverse">
                                     <td>
-                                        <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                        <a href="" ng-click="setVNFRName(vdu.id, vnfr.name)">{{vdu.id}}</a>
+                                        <a ng-href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}"></a>
                                     </td>
                                     <td>{{vdu.version}}</td>
 

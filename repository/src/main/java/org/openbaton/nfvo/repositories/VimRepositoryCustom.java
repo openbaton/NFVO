@@ -22,7 +22,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
  * Created by dbo on 21/09/15.
  */
 public interface VimRepositoryCustom {
-    NFVImage addImage(String id, NFVImage image);
+  NFVImage addImage(String id, NFVImage image);
 
-    void deleteImage(String idVim, String idImage);
+  void deleteImage(String idVim, String idImage);
 }

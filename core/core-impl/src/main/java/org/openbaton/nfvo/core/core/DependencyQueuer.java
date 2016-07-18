@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by lto on 19/08/15.
@@ -42,81 +43,96 @@ import java.util.*;
 @Scope
 public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.DependencyQueuer {
 
-    @Autowired
-    @Qualifier("vnfmManager")
-    private VnfmManager vnfmManager;
+  @Autowired
+  @Qualifier("vnfmManager")
+  private VnfmManager vnfmManager;
 
-    @Autowired
-    private VNFRRepository vnfrRepository;
+  @Autowired private VNFRRepository vnfrRepository;
 
-    @Autowired
-    private VNFRDependencyRepository vnfrDependencyRepository;
+  @Autowired private VNFRDependencyRepository vnfrDependencyRepository;
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, Set<String>> queues;
+  private Map<String, Set<String>> queues;
 
-    @PostConstruct
-    private void init() {
-        this.queues = new HashMap<>();
+  @PostConstruct
+  private void init() {
+    this.queues = new HashMap<>();
+  }
+
+  @Override
+  public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds) {
+    if (queues.get(targetDependencyId) == null) {
+      queues.put(targetDependencyId, new HashSet<String>());
+    }
+    log.debug("Adding to the queue: " + sourceIds + ", dependency: " + targetDependencyId);
+    for (String name : sourceIds) queues.get(targetDependencyId).add(name);
+  }
+
+  /**
+   * Check all dependencies that are waiting in in the map queues for the source vnfr to get
+   * instantiated. If the vnfr that got ready was the last source in a waiting dependency send a
+   * modify message to the target vnfr.
+   *
+   * @param vnfrSourceName
+   * @param nsrFather
+   * @throws NotFoundException
+   */
+  @Override
+  public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather)
+      throws NotFoundException {
+    List<String> dependencyIdToBeRemoved = new ArrayList<>();
+    log.debug("Doing release for VNFR id: " + vnfrSourceName);
+    for (Entry<String, Set<String>> entry : queues.entrySet()) {
+      String dependencyId = entry.getKey();
+      Set<String> sourceList = entry.getValue();
+      log.debug(
+          "Dependency "
+              + dependencyId
+              + " contains "
+              + sourceList.size()
+              + " dependencies: "
+              + sourceList);
+      if (sourceList.contains(vnfrSourceName + nsrFather.getId())) {
+        sourceList.remove(vnfrSourceName + nsrFather.getId());
+        if (sourceList.isEmpty()) {
+
+          VNFRecordDependency vnfRecordDependency =
+              vnfrDependencyRepository.findFirstById(dependencyId);
+
+          log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
+
+          //get the vnfr target by its name
+          VirtualNetworkFunctionRecord target = null;
+          for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
+            if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
+              target = vnfrRepository.findFirstById(vnfr.getId());
+          log.info("Found target of relation: " + target.getName());
+
+          //                    for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
+          //                        if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
+          //                            LinkedHashSet<String> strings = new LinkedHashSet<>();
+          //                            strings.addAll(lifecycleEvent.getLifecycle_events());
+          //                            lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
+          //                        }
+          //                    }
+          log.debug("Sending MODIFY to " + target.getName());
+          OrVnfmGenericMessage orVnfmGenericMessage =
+              new OrVnfmGenericMessage(target, Action.MODIFY);
+          orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+          vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);
+          dependencyIdToBeRemoved.add(dependencyId);
+        }
+      }
     }
 
-    @Override
-    public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds) throws InterruptedException, NotFoundException {
-        if (queues.get(targetDependencyId) == null) {
-            queues.put(targetDependencyId, new HashSet<String>());
+    for (String depIdToRem : dependencyIdToBeRemoved) {
+      for (String depId : queues.keySet()) {
+        if (depIdToRem.equals(depId)) {
+          queues.remove(depId);
+          break;
         }
-        log.debug("Adding to the queue: " + sourceIds + ", dependency: " + targetDependencyId);
-        for (String name : sourceIds)
-            queues.get(targetDependencyId).add(name);
+      }
     }
-
-    @Override
-    public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather) throws NotFoundException {
-        List<String> dependencyIdToBeRemoved = new ArrayList<>();
-        log.debug("Doing release for VNFR id: " + vnfrSourceName);
-        for (Map.Entry<String, Set<String>> entry : queues.entrySet()) {
-            String dependencyId = entry.getKey();
-            Set<String> sourceList = entry.getValue();
-            log.debug("Dependency " + dependencyId + " contains " + sourceList.size() + " dependencies: " + sourceList);
-            if (sourceList.contains(vnfrSourceName + nsrFather.getId())) {
-                sourceList.remove(vnfrSourceName + nsrFather.getId());
-                if (sourceList.size() == 0) {
-
-                    VNFRecordDependency vnfRecordDependency = vnfrDependencyRepository.findFirstById(dependencyId);
-
-                    log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
-
-                    //get the vnfr target by its name
-                    VirtualNetworkFunctionRecord target = null;
-                    for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
-                        if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
-                            target = vnfrRepository.findFirstById(vnfr.getId());
-                    log.info("Found target of relation: " + target.getName());
-
-//                    for (LifecycleEvent lifecycleEvent : target.getLifecycle_event()) {
-//                        if (lifecycleEvent.getEvent().ordinal() == Event.CONFIGURE.ordinal()) {
-//                            LinkedHashSet<String> strings = new LinkedHashSet<>();
-//                            strings.addAll(lifecycleEvent.getLifecycle_events());
-//                            lifecycleEvent.setLifecycle_events(Arrays.asList(strings.toArray(new String[1])));
-//                        }
-//                    }
-                    log.debug("Sending MODIFY to " + target.getName());
-                    OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage(target, Action.MODIFY);
-                    orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-                    vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);
-                    dependencyIdToBeRemoved.add(dependencyId);
-                }
-            }
-        }
-
-        for (String depIdToRem : dependencyIdToBeRemoved) {
-            for (String depId : queues.keySet()) {
-                if (depIdToRem.equals(depId)) {
-                    queues.remove(depId);
-                    break;
-                }
-            }
-        }
-    }
+  }
 }

@@ -32,46 +32,49 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.provisioning.UserDetailsManager;
 
-
 @Configuration
 @EnableAuthorizationServer
 @EnableResourceServer
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-    public static final String RESOURCE_ID = "oauth2-server";
+  public static final String RESOURCE_ID = "oauth2-server";
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+  @Autowired private AuthenticationManager authenticationManager;
+  @Autowired private TokenStore tokenStore;
 
-    @Autowired
-    @Qualifier("customUserDetailsService")
-    private UserDetailsManager userDetailsManager;
+  @Autowired
+  @Qualifier("customUserDetailsService")
+  private UserDetailsManager userDetailsManager;
 
-    private TokenStore tokenStore = new InMemoryTokenStore();
+  @Bean
+  public TokenStore tokenStore() {
+    return new InMemoryTokenStore();
+  }
 
-    @Override
-    public void
-    configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(this.tokenStore).authenticationManager(this.authenticationManager).userDetailsService(userDetailsManager);
-    }
+  @Override
+  public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    endpoints
+        .tokenStore(this.tokenStore)
+        .authenticationManager(this.authenticationManager)
+        .userDetailsService(userDetailsManager);
+  }
 
-    @Override
-    public void configure(ClientDetailsServiceConfigurer client) throws Exception {
-        client.inMemory().withClient("openbatonOSClient")
-                .secret("secret")
-                .authorizedGrantTypes("authorization_code", "refresh_token", "password")
-                .scopes("read", "write")
-                .resourceIds(RESOURCE_ID);
-    }
+  @Override
+  public void configure(ClientDetailsServiceConfigurer client) throws Exception {
+    client
+        .inMemory()
+        .withClient("openbatonOSClient")
+        .secret("secret")
+        .authorizedGrantTypes("authorization_code", "refresh_token", "password")
+        .scopes("read", "write")
+        .resourceIds(RESOURCE_ID);
+  }
 
-    @Bean
-    @Primary
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setSupportRefreshToken(true);
-        tokenServices.setTokenStore(this.tokenStore);
-        return tokenServices;
-    }
+  @Bean
+  @Primary
+  public DefaultTokenServices tokenServices() {
+    DefaultTokenServices tokenServices = new DefaultTokenServices();
+    tokenServices.setSupportRefreshToken(true);
+    tokenServices.setTokenStore(this.tokenStore);
+    return tokenServices;
+  }
 }
-
-
-

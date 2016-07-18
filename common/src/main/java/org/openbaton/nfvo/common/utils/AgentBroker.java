@@ -34,28 +34,27 @@ import org.springframework.stereotype.Service;
 @Scope
 public class AgentBroker {
 
-    @Autowired
-    private ConfigurableApplicationContext context;
+  @Autowired private ConfigurableApplicationContext context;
 
-    public Sender getSender(EndpointType endpointType) throws NotFoundException {
-        switch (endpointType) {
-            case JMS:
-                return (RabbitSender) context.getBean("rabbitSender");
-            case REST:
-                //TODO RestSender
-            default:
-                throw new NotFoundException("no type sender found");
-        }
+  public Sender getSender(EndpointType endpointType) throws NotFoundException {
+    switch (endpointType) {
+      case JMS:
+        return (RabbitSender) context.getBean("rabbitSender");
+      case REST:
+        //TODO RestSender
+      default:
+        throw new NotFoundException("no type sender found");
     }
+  }
 
-    public Receiver getReceiver(EndpointType endpointType) throws NotFoundException {
-        switch (endpointType) {
-            case JMS:
-                return (RabbitReceiver) context.getBean("rabbitReceiver");
-            case REST:
-                //TODO RestReceiver
-            default:
-                throw new NotFoundException("no type Receiver found");
-        }
+  public Receiver getReceiver(EndpointType endpointType) throws NotFoundException {
+    switch (endpointType) {
+      case JMS:
+        return (RabbitReceiver) context.getBean("rabbitReceiver");
+      case REST:
+        //TODO RestReceiver
+      default:
+        throw new NotFoundException("no type Receiver found");
     }
+  }
 }

@@ -77,6 +77,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .success(function (response) {
                 showOk('Event: ' + data.name + ' deleted.');
                 loadTable();
+                location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
@@ -94,6 +95,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .success(function (response) {
                 showOk('Project: ' + $scope.projectObj.name + ' saved.');
                 loadTable();
+                location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
@@ -129,6 +131,3 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }
 
 });
-
-
-

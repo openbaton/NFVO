@@ -30,39 +30,40 @@ import java.lang.reflect.Type;
 @Service
 public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public NFVMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        String action = json.getAsJsonObject().get("action").getAsString();
-        NFVMessage result;
-        switch (action){
-            case "INSTANTIATE":
-                result = gson.fromJson(json, OrVnfmInstantiateMessage.class);
-                break;
-            case "SCALING":
-                result = gson.fromJson(json, OrVnfmScalingMessage.class);
-                break;
-            case "SCALE_OUT":
-                result = gson.fromJson(json, OrVnfmScalingMessage.class);
-                break;
-            case "SCALE_IN":
-                result = gson.fromJson(json, OrVnfmScalingMessage.class);
-                break;
-            case "HEAL":
-                result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
-                break;
-            case "ERROR":
-                result = gson.fromJson(json, OrVnfmErrorMessage.class);
-                break;
-            default:
-                result = gson.fromJson(json, OrVnfmGenericMessage.class);
-                break;
-        }
-        result.setAction(Action.valueOf(action));
-        log.trace("Deserialized message is " + result);
-        return result;
+  @Override
+  public NFVMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    String action = json.getAsJsonObject().get("action").getAsString();
+    NFVMessage result;
+    switch (action) {
+      case "INSTANTIATE":
+        result = gson.fromJson(json, OrVnfmInstantiateMessage.class);
+        break;
+      case "SCALING":
+        result = gson.fromJson(json, OrVnfmScalingMessage.class);
+        break;
+      case "SCALE_OUT":
+        result = gson.fromJson(json, OrVnfmScalingMessage.class);
+        break;
+      case "SCALE_IN":
+        result = gson.fromJson(json, OrVnfmScalingMessage.class);
+        break;
+      case "HEAL":
+        result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
+        break;
+      case "ERROR":
+        result = gson.fromJson(json, OrVnfmErrorMessage.class);
+        break;
+      default:
+        result = gson.fromJson(json, OrVnfmGenericMessage.class);
+        break;
     }
+    result.setAction(Action.valueOf(action));
+    log.trace("Deserialized message is " + result);
+    return result;
+  }
 }

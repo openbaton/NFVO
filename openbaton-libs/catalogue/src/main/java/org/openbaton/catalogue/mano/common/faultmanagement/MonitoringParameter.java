@@ -18,7 +18,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -27,45 +27,49 @@ import java.util.Map;
 @Entity
 public class MonitoringParameter {
 
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-    private Metric metric;
+  private Metric metric;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String,String> params;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> params;
 
-    public MonitoringParameter(){}
-    
-    @PrePersist
-    public void ensureId(){
-        id= IdGenerator.createUUID();
-    }
-    public Metric getMetric() {
-        return metric;
-    }
+  public MonitoringParameter() {}
 
-    public void setMetric(Metric metric) {
-        this.metric = metric;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public Map<String, String> getParams() {
-        return params;
-    }
+  public Metric getMetric() {
+    return metric;
+  }
 
-    public void setParams(Map<String, String> params) {
-        this.params = params;
-    }
+  public void setMetric(Metric metric) {
+    this.metric = metric;
+  }
 
-    @Override
-    public String toString() {
-        return "MonitoringParameter{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", metric=" + metric +
-                ", params=" + params +
-                '}';
-    }
+  public Map<String, String> getParams() {
+    return params;
+  }
+
+  public void setParams(Map<String, String> params) {
+    this.params = params;
+  }
+
+  @Override
+  public String toString() {
+    return "MonitoringParameter{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", metric="
+        + metric
+        + ", params="
+        + params
+        + '}';
+  }
 }

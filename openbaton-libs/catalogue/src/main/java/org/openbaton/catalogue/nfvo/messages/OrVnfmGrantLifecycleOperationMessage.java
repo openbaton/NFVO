@@ -25,46 +25,50 @@ import java.util.Map;
 /**
  * Created by mob on 15.09.15.
  */
-public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage{
-    private boolean grantAllowed;
-    private Map<String, VimInstance> vduVim;
+public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage {
+  private boolean grantAllowed;
+  private Map<String, VimInstance> vduVim;
 
-    @Override
-    public String toString() {
-        return "OrVnfmGrantLifecycleOperationMessage{" +
-                "grantAllowed=" + grantAllowed +
-                ", vduVim=" + vduVim +
-                ", virtualNetworkFunctionRecord=" + virtualNetworkFunctionRecord +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "OrVnfmGrantLifecycleOperationMessage{"
+        + "grantAllowed="
+        + grantAllowed
+        + ", vduVim="
+        + vduVim
+        + ", virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + '}';
+  }
 
-    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-        return virtualNetworkFunctionRecord;
-    }
+  public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
+    return virtualNetworkFunctionRecord;
+  }
 
-    public void setVirtualNetworkFunctionRecord(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
-        this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
-    }
+  public void setVirtualNetworkFunctionRecord(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+  }
 
-    private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
-    public OrVnfmGrantLifecycleOperationMessage() {
-        this.action = Action.GRANT_OPERATION;
-    }
+  public OrVnfmGrantLifecycleOperationMessage() {
+    this.action = Action.GRANT_OPERATION;
+  }
 
-    public boolean isGrantAllowed() {
-        return grantAllowed;
-    }
+  public boolean isGrantAllowed() {
+    return grantAllowed;
+  }
 
-    public void setGrantAllowed(boolean grantAllowed) {
-        this.grantAllowed = grantAllowed;
-    }
+  public void setGrantAllowed(boolean grantAllowed) {
+    this.grantAllowed = grantAllowed;
+  }
 
-    public Map<String, VimInstance> getVduVim() {
-        return vduVim;
-    }
+  public Map<String, VimInstance> getVduVim() {
+    return vduVim;
+  }
 
-    public void setVduVim(Map<String, VimInstance> vduVim) {
-        this.vduVim = vduVim;
-    }
+  public void setVduVim(Map<String, VimInstance> vduVim) {
+    this.vduVim = vduVim;
+  }
 }

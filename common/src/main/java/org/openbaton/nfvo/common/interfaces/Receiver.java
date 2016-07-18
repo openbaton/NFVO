@@ -17,11 +17,10 @@
 package org.openbaton.nfvo.common.interfaces;
 
 import javax.jms.JMSException;
-import java.io.Serializable;
 
 /**
  * Created by tce on 14.08.15.
  */
 public interface Receiver {
-    Object receive(String destination) throws JMSException;
+  Object receive(String destination);
 }

@@ -23,21 +23,21 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
  * Created by lto on 11/06/15.
  */
 public interface VirtualLinkManagement {
-    VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor);
+  VirtualLinkDescriptor add(VirtualLinkDescriptor virtualLinkDescriptor);
 
-    VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord);
+  VirtualLinkRecord add(VirtualLinkRecord virtualLinkRecord);
 
-    void delete(String id);
+  void delete(String id);
 
-    VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor_new, String id);
+  VirtualLinkDescriptor update(VirtualLinkDescriptor virtualLinkDescriptor_new, String id);
 
-    VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord_new, String id);
+  VirtualLinkRecord update(VirtualLinkRecord virtualLinkRecord_new, String id);
 
-    Iterable<VirtualLinkDescriptor> queryDescriptors();
+  Iterable<VirtualLinkDescriptor> queryDescriptors();
 
-    Iterable<VirtualLinkRecord> queryRecords();
+  Iterable<VirtualLinkRecord> queryRecords();
 
-    VirtualLinkRecord queryRecord(String id);
+  VirtualLinkRecord queryRecord(String id);
 
-    VirtualLinkDescriptor queryDescriptor(String id);
+  VirtualLinkDescriptor queryDescriptor(String id);
 }

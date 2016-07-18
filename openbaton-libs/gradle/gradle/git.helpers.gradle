@@ -12,7 +12,6 @@ rootProject.ext.getRevision = {
 }
 
 rootProject.ext.isApplicationRelease = {
-//	String currentBranches = execAndGetOutput("git log -n 1 --pretty=%d HEAD")
-//	return currentBranches.contains("master")
-	return false
+	String currentBranches = execAndGetOutput("git log -n 1 --pretty=%d HEAD")
+	return currentBranches.contains("tag")
 }

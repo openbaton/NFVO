@@ -22,16 +22,18 @@ import org.openbaton.exceptions.NotFoundException;
 
 import java.util.List;
 
-
 /**
  * Created by lto on 30/06/15.
  */
 public interface DependencyManagement {
-    int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException, InterruptedException;
+  int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException, InterruptedException;
 
-    void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    VNFRecordDependency getDependencyForAVNFRecordTarget(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  VNFRecordDependency getDependencyForAVNFRecordTarget(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-    List<VNFRecordDependency> getDependencyForAVNFRecordSource(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  List<VNFRecordDependency> getDependencyForAVNFRecordSource(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 }

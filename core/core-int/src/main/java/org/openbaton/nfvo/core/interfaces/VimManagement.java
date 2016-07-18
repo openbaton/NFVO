@@ -29,69 +29,71 @@ import java.io.IOException;
  */
 public interface VimManagement {
 
-    /**
-     * This operation allows adding a datacenter
-     * into the datacenter repository.
-     *
-     * @param vimInstance
-     * @param projectId
-     */
-    VimInstance add(VimInstance vimInstance, String projectId) throws VimException, PluginException, EntityUnreachableException, IOException;
+  /**
+   * This operation allows adding a datacenter into the datacenter repository.
+   *
+   * @param vimInstance
+   * @param projectId
+   */
+  VimInstance add(VimInstance vimInstance, String projectId)
+      throws VimException, PluginException, EntityUnreachableException, IOException;
 
-    /**
-     * This operation allows deleting the datacenter
-     * from the datacenter repository.
-     *
-     * @param id
-     * @param projectId
-     */
-    void delete(String id, String projectId);
+  /**
+   * This operation allows deleting the datacenter from the datacenter repository.
+   *
+   * @param id
+   * @param projectId
+   */
+  void delete(String id, String projectId);
 
-    /**
-     * This operation allows updating the datacenter
-     * in the datacenter repository.
-     *  @param new_vimInstance
-     * @param id
-     * @param projectId
-     */
-    VimInstance update(VimInstance new_vimInstance, String id, String projectId) throws VimException, PluginException, EntityUnreachableException, IOException;
+  /**
+   * This operation allows updating the datacenter in the datacenter repository.
+   *
+   * @param new_vimInstance
+   * @param id
+   * @param projectId
+   */
+  VimInstance update(VimInstance new_vimInstance, String id, String projectId)
+      throws VimException, PluginException, EntityUnreachableException, IOException;
 
+  /**
+   * This operation allows querying the information of the datacenter in the datacenter repository.
+   */
+  VimInstance query(String id, String projectId);
 
-    /**
-     * This operation allows querying the information of
-     * the datacenter in the datacenter repository.
-     */
-    VimInstance query(String id, String projectId);
+  void refresh(VimInstance vimInstance) throws VimException, PluginException, IOException;
 
-    void refresh(VimInstance vimInstance) throws VimException, PluginException, EntityUnreachableException, IOException;
+  /**
+   * Adds a new NFVImage to the VimInstance with id
+   *
+   * @param id of VimInstance
+   * @param image the new NFVImage
+   * @param projectId
+   * @return NFVImage
+   */
+  NFVImage addImage(String id, NFVImage image, String projectId)
+      throws VimException, PluginException, EntityUnreachableException, IOException;
 
-    /**
-     * Adds a new NFVImage to the VimInstance with id
-     *
-     * @param id    of VimInstance
-     * @param image the new NFVImage
-     * @param projectId
-     * @return NFVImage
-     */
-    NFVImage addImage(String id, NFVImage image, String projectId) throws VimException, PluginException, EntityUnreachableException, IOException;
+  /**
+   * Returns the NFVImage with idImage from VimInstance with idVim
+   *
+   * @param idVim
+   * @param idImage
+   * @param projectId
+   * @return NFVImage
+   */
+  NFVImage queryImage(String idVim, String idImage, String projectId)
+      throws EntityUnreachableException;
 
-    /**
-     * Returns the NFVImage with idImage from VimInstance with idVim
-     *
-     * @param idVim
-     * @param idImage
-     * @param projectId
-     * @return NFVImage
-     */
-    NFVImage queryImage(String idVim, String idImage, String projectId) throws EntityUnreachableException;
+  /**
+   * Removes the NFVImage with idImage from VimInstance with idVim
+   *
+   * @param idVim
+   * @param idImage
+   * @param projectId
+   */
+  void deleteImage(String idVim, String idImage, String projectId)
+      throws VimException, PluginException, EntityUnreachableException, IOException;
 
-    /**
-     * Removes the NFVImage with idImage from VimInstance with idVim
-     *  @param idVim
-     * @param idImage
-     * @param projectId
-     */
-    void deleteImage(String idVim, String idImage, String projectId) throws VimException, PluginException, EntityUnreachableException, IOException;
-
-    Iterable<VimInstance> queryByProjectId(String projectId);
+  Iterable<VimInstance> queryByProjectId(String projectId);
 }

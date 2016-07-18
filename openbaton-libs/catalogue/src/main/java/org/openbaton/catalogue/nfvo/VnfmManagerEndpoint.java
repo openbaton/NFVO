@@ -23,18 +23,16 @@ import javax.persistence.Entity;
 @Entity
 public class VnfmManagerEndpoint extends Endpoint {
 
+  public VnfmManagerEndpoint() {}
 
-    public VnfmManagerEndpoint() {
-    }
+  public VnfmManagerEndpoint(String type, String endpoint, EndpointType endpointType) {
+    this.type = type;
+    this.endpoint = endpoint;
+    this.endpointType = endpointType;
+  }
 
-    public VnfmManagerEndpoint(String type, String endpoint, EndpointType endpointType) {
-        this.type = type;
-        this.endpoint = endpoint;
-        this.endpointType = endpointType;
-    }
-
-    @Override
-    public String toString() {
-        return "VnfmManagerEndpoint{} " + super.toString();
-    }
+  @Override
+  public String toString() {
+    return "VnfmManagerEndpoint{} " + super.toString();
+  }
 }

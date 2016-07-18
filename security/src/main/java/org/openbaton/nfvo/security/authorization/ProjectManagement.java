@@ -2,6 +2,7 @@ package org.openbaton.nfvo.security.authorization;
 
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
@@ -22,126 +23,117 @@ import java.util.List;
 @Service
 public class ProjectManagement implements org.openbaton.nfvo.security.interfaces.ProjectManagement {
 
-    @Autowired
-    private org.openbaton.nfvo.security.interfaces.UserManagement userManagement;
+  @Autowired private org.openbaton.nfvo.security.interfaces.UserManagement userManagement;
 
-    @Autowired
-    private ProjectRepository projectRepository;
-    @Autowired
-    private VimRepository vimRepository;
-    @Autowired
-    private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
-    @Autowired
-    private NetworkServiceRecordRepository networkServiceRecordRepository;
-    @Autowired
-    private VnfPackageRepository vnfPackageRepository;
+  @Autowired private ProjectRepository projectRepository;
+  @Autowired private VimRepository vimRepository;
+  @Autowired private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
+  @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
+  @Autowired private VnfPackageRepository vnfPackageRepository;
 
-    @Override
-    public Project add(Project project) {
-        User currentUser = getCurrentUser();
-        if (currentUser != null) {
-            if (currentUser.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
-                return projectRepository.save(project);
-        } else {
-            return projectRepository.save(project);
+  @Override
+  public Project add(Project project) {
+    User currentUser = getCurrentUser();
+    if (currentUser != null) {
+      if (currentUser.getRoles().iterator().next().getRole().ordinal()
+          == RoleEnum.OB_ADMIN.ordinal()) return projectRepository.save(project);
+    } else {
+      return projectRepository.save(project);
+    }
+    throw new UnauthorizedUserException("Sorry only OB_ADMIN can add project");
+  }
+
+  @Override
+  public void delete(Project project) throws EntityInUseException {
+    Project projectToDelete = projectRepository.findFirstById(project.getId());
+    User user = getCurrentUser();
+    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
+
+      if (projectIsNotUsed(projectToDelete)) {
+
+        projectRepository.delete(projectToDelete);
+        return;
+      }
+      throw new EntityInUseException(
+          "Project " + projectToDelete.getName() + " has still some resources allocated");
+    }
+    for (Role role : user.getRoles())
+      if (role.getProject().equals(projectToDelete.getName())) {
+        if (projectIsNotUsed(projectToDelete)) {
+          projectRepository.delete(projectToDelete);
+          return;
         }
-        throw new UnauthorizedUserException("Sorry only OB_ADMIN can add project");
-    }
+        throw new EntityInUseException(
+            "Project " + projectToDelete.getName() + " has still some resources allocated");
+      }
+    throw new UnauthorizedUserException(
+        "Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  }
 
-    @Override
-    public void delete(Project project) throws NotAllowedException, EntityInUseException {
-        Project projectToDelete = projectRepository.findFirstById(project.getId());
-        User user = getCurrentUser();
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal()) {
+  private boolean projectIsNotUsed(Project projectToDelete) {
+    if (!vimRepository.findByProjectId(projectToDelete.getId()).isEmpty()) return false;
+    if (!vnfPackageRepository.findByProjectId(projectToDelete.getId()).isEmpty()) return false;
+    if (!networkServiceDescriptorRepository.findByProjectId(projectToDelete.getId()).isEmpty())
+      return false;
+    return networkServiceRecordRepository.findByProjectId(projectToDelete.getId()).isEmpty();
+  }
 
-            if (projectIsNotUsed(projectToDelete)) {
+  @Override
+  public Project update(Project new_project) {
+    Project project = projectRepository.findFirstById(new_project.getId());
+    User user = getCurrentUser();
+    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal())
+      return projectRepository.save(new_project);
+    for (Role role : user.getRoles())
+      if (role.getProject().equals(project.getName())) return projectRepository.save(new_project);
+    throw new UnauthorizedUserException(
+        "Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  }
 
-                projectRepository.delete(projectToDelete);
-                return;
-            }
-            throw new EntityInUseException("Project " + projectToDelete.getName() + " has still some resources allocated");
-        }
-        for (Role role : user.getRoles())
-            if (role.getProject().equals(projectToDelete.getName())) {
-                if (projectIsNotUsed(projectToDelete)) {
-                    projectRepository.delete(projectToDelete);
-                    return;
-                }
-                throw new EntityInUseException("Project " + projectToDelete.getName() + " has still some resources allocated");
-            }
-        throw new UnauthorizedUserException("Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
+  @Override
+  public Iterable<Project> query() {
+    return projectRepository.findAll();
+  }
 
-    private boolean projectIsNotUsed(Project projectToDelete) {
-        if (vimRepository.findByProjectId(projectToDelete.getId()).size() != 0)
-            return false;
-        if (vnfPackageRepository.findByProjectId(projectToDelete.getId()).size() != 0)
-            return false;
-        if (networkServiceDescriptorRepository.findByProjectId(projectToDelete.getId()).size() != 0)
-            return false;
-        if (networkServiceRecordRepository.findByProjectId(projectToDelete.getId()).size() != 0)
-            return false;
+  @Override
+  public Project query(String id) {
+    Project project = projectRepository.findFirstById(id);
+    User user = getCurrentUser();
+    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal())
+      return project;
+    for (Role role : user.getRoles())
+      if (role.getProject().equals(project.getName())) return project;
+    throw new UnauthorizedUserException(
+        "Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  }
 
-        return true;
-    }
+  @Override
+  public Project queryByName(String name) {
+    return projectRepository.findFirstByName(name);
+  }
 
-    @Override
-    public Project update(Project new_project) {
-        Project project = projectRepository.findFirstById(new_project.getId());
-        User user = getCurrentUser();
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
-            return projectRepository.save(new_project);
-        for (Role role : user.getRoles())
-            if (role.getProject().equals(project.getName()))
-                return projectRepository.save(new_project);
-        throw new UnauthorizedUserException("Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
+  @Override
+  public Iterable<Project> queryForUser() {
 
-    @Override
-    public Iterable<Project> query() {
-        return projectRepository.findAll();
-    }
+    List<Project> projects = new ArrayList<>();
+    User user = getCurrentUser();
+    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()
+        || user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.GUEST.ordinal())
+      return projectRepository.findAll();
+    for (Role role : user.getRoles()) projects.add(this.queryByName(role.getProject()));
 
-    @Override
-    public Project query(String id) throws NotFoundException {
-        Project project = projectRepository.findFirstById(id);
-        User user = getCurrentUser();
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal())
-            return project;
-        for (Role role : user.getRoles())
-            if (role.getProject().equals(project.getName()))
-                return project;
-        throw new UnauthorizedUserException("Project not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
+    return projects;
+  }
 
-    @Override
-    public Project queryByName(String name) {
-        return projectRepository.findFirstByName(name);
-    }
+  @Override
+  public boolean exist(String id) {
+    return projectRepository.exists(id);
+  }
 
-    @Override
-    public Iterable<Project> queryForUser() {
-
-        List<Project> projects = new ArrayList<>();
-        User user = getCurrentUser();
-        if (user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.OB_ADMIN.ordinal() || user.getRoles().iterator().next().getRole().ordinal() == Role.RoleEnum.GUEST.ordinal())
-            return projectRepository.findAll();
-        for (Role role : user.getRoles())
-            projects.add(this.queryByName(role.getProject()));
-
-        return projects;
-    }
-
-    @Override
-    public boolean exist(String id) {
-        return projectRepository.exists(id);
-    }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null)
-            return null;
-        String currentUserName = authentication.getName();
-        return userManagement.queryDB(currentUserName);
-    }
+  private User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) return null;
+    String currentUserName = authentication.getName();
+    return userManagement.queryDB(currentUserName);
+  }
 }

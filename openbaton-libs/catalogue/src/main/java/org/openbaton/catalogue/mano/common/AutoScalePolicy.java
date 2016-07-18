@@ -15,8 +15,6 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.mano.common.monitoring.Alarm;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import javax.persistence.*;
@@ -28,132 +26,145 @@ import java.util.Set;
  */
 @Entity
 public class AutoScalePolicy implements Serializable {
-	@Id
-	private String id;
-	@Version
-	private int version = 0;
+  @Id private String id;
+  @Version private int version = 0;
 
-	private String name;
+  private String name;
 
-	private double threshold;
+  private double threshold;
 
-	private String comparisonOperator;
+  private String comparisonOperator;
 
-	private int period;
+  private int period;
 
-	private int cooldown;
+  private int cooldown;
 
-	@Enumerated(EnumType.STRING)
-	private ScalingMode mode;
+  @Enumerated(EnumType.STRING)
+  private ScalingMode mode;
 
-	@Enumerated(EnumType.STRING)
-	private ScalingType type;
+  @Enumerated(EnumType.STRING)
+  private ScalingType type;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<ScalingAlarm> alarms;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<ScalingAlarm> alarms;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<ScalingAction> actions;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<ScalingAction> actions;
 
-	@PrePersist
-	public void ensureId() {
-		id = IdGenerator.createUUID();
-	}
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public double getThreshold() {
-		return threshold;
-	}
+  public double getThreshold() {
+    return threshold;
+  }
 
-	public void setThreshold(double threshold) {
-		this.threshold = threshold;
-	}
+  public void setThreshold(double threshold) {
+    this.threshold = threshold;
+  }
 
-	public String getComparisonOperator() {
-		return comparisonOperator;
-	}
+  public String getComparisonOperator() {
+    return comparisonOperator;
+  }
 
-	public void setComparisonOperator(String comparisonOperator) {
-		this.comparisonOperator = comparisonOperator;
-	}
+  public void setComparisonOperator(String comparisonOperator) {
+    this.comparisonOperator = comparisonOperator;
+  }
 
-	public int getPeriod() {
-		return period;
-	}
+  public int getPeriod() {
+    return period;
+  }
 
-	public void setPeriod(int period) {
-		this.period = period;
-	}
+  public void setPeriod(int period) {
+    this.period = period;
+  }
 
-	public int getCooldown() {
-		return cooldown;
-	}
+  public int getCooldown() {
+    return cooldown;
+  }
 
-	public void setCooldown(int cooldown) {
-		this.cooldown = cooldown;
-	}
+  public void setCooldown(int cooldown) {
+    this.cooldown = cooldown;
+  }
 
-	public ScalingMode getMode() {
-		return mode;
-	}
+  public ScalingMode getMode() {
+    return mode;
+  }
 
-	public void setMode(ScalingMode mode) {
-		this.mode = mode;
-	}
+  public void setMode(ScalingMode mode) {
+    this.mode = mode;
+  }
 
-	public ScalingType getType() {
-		return type;
-	}
+  public ScalingType getType() {
+    return type;
+  }
 
-	public void setType(ScalingType type) {
-		this.type = type;
-	}
+  public void setType(ScalingType type) {
+    this.type = type;
+  }
 
-	public Set<ScalingAlarm> getAlarms() {
-		return alarms;
-	}
+  public Set<ScalingAlarm> getAlarms() {
+    return alarms;
+  }
 
-	public void setAlarms(Set<ScalingAlarm> alarms) {
-		this.alarms = alarms;
-	}
+  public void setAlarms(Set<ScalingAlarm> alarms) {
+    this.alarms = alarms;
+  }
 
-	public Set<ScalingAction> getActions() {
-		return actions;
-	}
+  public Set<ScalingAction> getActions() {
+    return actions;
+  }
 
-	public void setActions(Set<ScalingAction> actions) {
-		this.actions = actions;
-	}
+  public void setActions(Set<ScalingAction> actions) {
+    this.actions = actions;
+  }
 
-	@Override
-	public String toString() {
-		return "AutoScalePolicy{" +
-				"id='" + id + '\'' +
-				", version=" + version +
-				", name='" + name + '\'' +
-				", threshold='" + threshold + '\'' +
-				", comparisonOperator='" + comparisonOperator + '\'' +
-				", period=" + period +
-				", cooldown=" + cooldown +
-				", mode=" + mode +
-				", type=" + type +
-				", alarms=" + alarms +
-				", actions=" + actions +
-				'}';
-	}
+  @Override
+  public String toString() {
+    return "AutoScalePolicy{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", threshold='"
+        + threshold
+        + '\''
+        + ", comparisonOperator='"
+        + comparisonOperator
+        + '\''
+        + ", period="
+        + period
+        + ", cooldown="
+        + cooldown
+        + ", mode="
+        + mode
+        + ", type="
+        + type
+        + ", alarms="
+        + alarms
+        + ", actions="
+        + actions
+        + '}';
+  }
 }

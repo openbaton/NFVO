@@ -8,6 +8,7 @@ task exe(dependsOn: [dependsOn: [jar, build]]) << {
 	from("${rootProject.projectDir}/gradle/innosetup/start.bat")
 	from("${rootProject.projectDir}/gradle/innosetup/openbaton.properties")
 	from("${rootProject.projectDir}/gradle/innosetup/iscc.sh")
+        from("${rootProject.projectDir}/gradle/innosetup/start_plugin.bat")
 	
 	into(innoSetupDir)
 	}	
@@ -32,7 +33,6 @@ task exe(dependsOn: [dependsOn: [jar, build]]) << {
 	exec {
 	
         workingDir innoSetupDir
-	commandLine "wget http://get.openbaton.org/plugins/stable/openstack-plugin-2.0.1.jar"
 	commandLine "./iscc.sh"
 	
 	}

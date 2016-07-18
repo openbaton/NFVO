@@ -30,83 +30,106 @@ import java.util.List;
 @RequestMapping("/api/v1/vnf-descriptors")
 public class RestVirtualNetworkFunctionDescriptor {
 
-    //	TODO add log prints
-//	private Logger log = LoggerFactory.getLogger(this.getClass());
+  //	TODO add log prints
+  //	private Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @Autowired private VirtualNetworkFunctionManagement vnfdManagement;
 
-    @Autowired
-    private VirtualNetworkFunctionManagement vnfdManagement;
+  /**
+   * Adds a new VNF software Image to the image repository
+   *
+   * @param virtualNetworkFunctionDescriptor : VirtualNetworkFunctionDescriptor to add
+   * @return VirtualNetworkFunctionDescriptor: The VirtualNetworkFunctionDescriptor filled with
+   * values from the core
+   */
+  @RequestMapping(
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public VirtualNetworkFunctionDescriptor create(
+      @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      @RequestHeader(value = "project-id") String projectId) {
+    return vnfdManagement.add(virtualNetworkFunctionDescriptor, projectId);
+  }
 
-    /**
-     * Adds a new VNF software Image to the image repository
-     *
-     * @param virtualNetworkFunctionDescriptor : VirtualNetworkFunctionDescriptor to add
-     * @return VirtualNetworkFunctionDescriptor: The VirtualNetworkFunctionDescriptor filled with values from the core
-     */
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public VirtualNetworkFunctionDescriptor create(@RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, @RequestHeader(value = "project-id") String projectId) {
-        return vnfdManagement.add(virtualNetworkFunctionDescriptor, projectId);
-    }
+  /**
+   * Removes the VNF software virtualNetworkFunctionDescriptor from the
+   * virtualNetworkFunctionDescriptor repository
+   *
+   * @param id : The virtualNetworkFunctionDescriptor's id to be deleted
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
 
-    /**
-     * Removes the VNF software virtualNetworkFunctionDescriptor from the virtualNetworkFunctionDescriptor repository
-     *
-     * @param id : The virtualNetworkFunctionDescriptor's id to be deleted
-     */
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+    vnfdManagement.delete(id, projectId);
+  }
 
-        vnfdManagement.delete(id, projectId);
-    }
+  /**
+   * Removes multiple VirtualNetworkFunctionDescriptor from the VirtualNetworkFunctionDescriptors
+   * repository
+   *
+   * @param ids
+   */
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(
+      @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId) {
+    for (String id : ids) vnfdManagement.delete(id, projectId);
+  }
 
-    /**
-     * Removes multiple VirtualNetworkFunctionDescriptor from the VirtualNetworkFunctionDescriptors repository
-     *
-     * @param ids
-     */
-    @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void multipleDelete(@RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)  {
-        for (String id : ids)
-            vnfdManagement.delete(id, projectId);
-    }
+  /**
+   * Returns the list of the VNF software virtualNetworkFunctionDescriptors available
+   *
+   * @return List<virtualNetworkFunctionDescriptor>: The list of VNF software
+   * virtualNetworkFunctionDescriptors available
+   */
+  @RequestMapping(method = RequestMethod.GET)
+  public Iterable<VirtualNetworkFunctionDescriptor> findAll(
+      @RequestHeader(value = "project-id") String projectId) {
+    return vnfdManagement.queryByProjectId(projectId);
+  }
 
-    /**
-     * Returns the list of the VNF software virtualNetworkFunctionDescriptors available
-     *
-     * @return List<virtualNetworkFunctionDescriptor>: The list of VNF software virtualNetworkFunctionDescriptors available
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public Iterable<VirtualNetworkFunctionDescriptor> findAll(@RequestHeader(value = "project-id") String projectId) {
-        return vnfdManagement.queryByProjectId(projectId);
-    }
+  /**
+   * Returns the VNF software virtualNetworkFunctionDescriptor selected by id
+   *
+   * @param id : The id of the VNF software virtualNetworkFunctionDescriptor
+   * @return virtualNetworkFunctionDescriptor: The VNF software virtualNetworkFunctionDescriptor
+   * selected
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  public VirtualNetworkFunctionDescriptor findById(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
 
-    /**
-     * Returns the VNF software virtualNetworkFunctionDescriptor selected by id
-     *
-     * @param id : The id of the VNF software virtualNetworkFunctionDescriptor
-     * @return virtualNetworkFunctionDescriptor: The VNF software virtualNetworkFunctionDescriptor selected
-     */
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public VirtualNetworkFunctionDescriptor findById(@PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = vnfdManagement.query(id, projectId);
+    return vnfdManagement.query(id, projectId);
+  }
 
-        return virtualNetworkFunctionDescriptor;
-    }
-
-    /**
-     * Updates the VNF software virtualNetworkFunctionDescriptor
-     *
-     * @param virtualNetworkFunctionDescriptor : the VNF software virtualNetworkFunctionDescriptor to be updated
-     * @param id    : the id of VNF software virtualNetworkFunctionDescriptor
-     * @return networkServiceDescriptor: the VNF software virtualNetworkFunctionDescriptor updated
-     */
-
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public VirtualNetworkFunctionDescriptor update(@RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,                           @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-        return vnfdManagement.update(virtualNetworkFunctionDescriptor, id, projectId);
-    }
+  /**
+   * Updates the VNF software virtualNetworkFunctionDescriptor
+   *
+   * @param virtualNetworkFunctionDescriptor : the VNF software virtualNetworkFunctionDescriptor to
+   * be updated
+   * @param id : the id of VNF software virtualNetworkFunctionDescriptor
+   * @return networkServiceDescriptor: the VNF software virtualNetworkFunctionDescriptor updated
+   */
+  @RequestMapping(
+    value = "{id}",
+    method = RequestMethod.PUT,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public VirtualNetworkFunctionDescriptor update(
+      @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      @PathVariable("id") String id,
+      @RequestHeader(value = "project-id") String projectId) {
+    return vnfdManagement.update(virtualNetworkFunctionDescriptor, id, projectId);
+  }
 }

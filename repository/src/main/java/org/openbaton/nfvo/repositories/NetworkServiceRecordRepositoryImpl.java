@@ -27,44 +27,46 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordRepositoryCustom {
 
-    @Autowired
-    private NetworkServiceRecordRepository networkServiceRecordRepository;
+  @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
 
-    @Autowired
-    private VNFRRepository vnfrRepository;
+  @Autowired private VNFRRepository vnfrRepository;
 
-    @Autowired
-    private VNFRecordDependencyRepository vnfRecordDependencyRepository;
+  @Autowired private VNFRecordDependencyRepository vnfRecordDependencyRepository;
 
-    @Override
-    @Transactional
-    public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
-        vnfr = vnfrRepository.save(vnfr);
-        networkServiceRecordRepository.findFirstById(id).getVnfr().add(vnfr);
-        return vnfr;
-    }
+  @Override
+  @Transactional
+  public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
+    vnfr = vnfrRepository.save(vnfr);
+    networkServiceRecordRepository.findFirstById(id).getVnfr().add(vnfr);
+    return vnfr;
+  }
 
-    @Override
-    @Transactional
-    public void deleteVNFRecord(String idNsr, String idVnfd) {
-        networkServiceRecordRepository.findFirstById(idNsr).getVnfr().remove(vnfrRepository.findOne(idVnfd));
-        vnfrRepository.delete(idVnfd);
-    }
+  @Override
+  @Transactional
+  public void deleteVNFRecord(String idNsr, String idVnfd) {
+    networkServiceRecordRepository
+        .findFirstById(idNsr)
+        .getVnfr()
+        .remove(vnfrRepository.findOne(idVnfd));
+    vnfrRepository.delete(idVnfd);
+  }
 
-    @Override
-    @Transactional
-    public void deleteVNFDependency(String idNsr, String idVnfd) {
-        networkServiceRecordRepository.findFirstById(idNsr).getVnf_dependency().remove(vnfRecordDependencyRepository.findFirstById(idVnfd));
-        vnfRecordDependencyRepository.delete(idVnfd);
-    }
+  @Override
+  @Transactional
+  public void deleteVNFDependency(String idNsr, String idVnfd) {
+    networkServiceRecordRepository
+        .findFirstById(idNsr)
+        .getVnf_dependency()
+        .remove(vnfRecordDependencyRepository.findFirstById(idVnfd));
+    vnfRecordDependencyRepository.delete(idVnfd);
+  }
 
-    @Override
-    @Transactional
-    public VNFRecordDependency addVnfRecordDependency(VNFRecordDependency vnfRecordDependencyd, String id) {
-        vnfRecordDependencyd = vnfRecordDependencyRepository.save(vnfRecordDependencyd);
-        networkServiceRecordRepository.findFirstById(id).getVnf_dependency().add(vnfRecordDependencyd);
-        return vnfRecordDependencyd;
-    }
-
-
+  @Override
+  @Transactional
+  public VNFRecordDependency addVnfRecordDependency(
+      VNFRecordDependency vnfRecordDependencyd, String id) {
+    vnfRecordDependencyd = vnfRecordDependencyRepository.save(vnfRecordDependencyd);
+    networkServiceRecordRepository.findFirstById(id).getVnf_dependency().add(vnfRecordDependencyd);
+    return vnfRecordDependencyd;
+  }
 }

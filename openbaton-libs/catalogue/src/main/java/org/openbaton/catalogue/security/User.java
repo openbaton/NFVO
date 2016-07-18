@@ -23,73 +23,78 @@ import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
-public class User implements Serializable{
+public class User implements Serializable {
 
-    @Id
-    private String id;
-    @Column(unique = true)
-    private String username;
+  @Id private String id;
 
-    private String password;
-    private boolean enabled;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Role> roles;
+  @Column(unique = true)
+  private String username;
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  private String password;
+  private boolean enabled;
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Set<Role> roles;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", password='*********'" +
-                ", enabled=" + enabled +
-                ", roles=" + roles +
-                '}';
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+  @Override
+  public String toString() {
+    return "User{"
+        + "id='"
+        + id
+        + '\''
+        + ", username='"
+        + username
+        + '\''
+        + ", password='*********'"
+        + ", enabled="
+        + enabled
+        + ", roles="
+        + roles
+        + '}';
+  }
 
-    public String getId() {
-        return id;
-    }
+  public Set<Role> getRoles() {
+    return roles;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
+  }
 
-    @PrePersist
-    public void ensureId() {
-        id = IdGenerator.createUUID();
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
 }
-

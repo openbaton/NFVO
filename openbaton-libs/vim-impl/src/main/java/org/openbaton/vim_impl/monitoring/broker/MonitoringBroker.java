@@ -29,25 +29,30 @@ import java.util.HashMap;
  */
 @Service
 @Scope
-public class MonitoringBroker implements org.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker {
+public class MonitoringBroker
+    implements org.openbaton.nfvo.vim_interfaces.monitoring.MonitoringBroker {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private HashMap<String, VirtualisedResourcesPerformanceManagement> VirtualisedResourcesPerformanceManagements;
+  private HashMap<String, VirtualisedResourcesPerformanceManagement>
+      VirtualisedResourcesPerformanceManagements;
 
-    @PostConstruct
-    private void init(){
-        this.VirtualisedResourcesPerformanceManagements = new HashMap<>();
-    }
+  @PostConstruct
+  private void init() {
+    this.VirtualisedResourcesPerformanceManagements = new HashMap<>();
+  }
 
-    @Override
-    public void addAgent(VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement, String type){
-        log.info("Registered monitoring pluging of type: " + type);
-        this.VirtualisedResourcesPerformanceManagements.put(type, virtualisedResourcesPerformanceManagement);
-    }
+  @Override
+  public void addAgent(
+      VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement,
+      String type) {
+    log.info("Registered monitoring pluging of type: " + type);
+    this.VirtualisedResourcesPerformanceManagements.put(
+        type, virtualisedResourcesPerformanceManagement);
+  }
 
-    @Override
-    public VirtualisedResourcesPerformanceManagement getAvailableMonitoringAgent() {
-        return VirtualisedResourcesPerformanceManagements.values().iterator().next();
-    }
+  @Override
+  public VirtualisedResourcesPerformanceManagement getAvailableMonitoringAgent() {
+    return VirtualisedResourcesPerformanceManagements.values().iterator().next();
+  }
 }

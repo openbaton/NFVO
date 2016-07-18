@@ -27,58 +27,64 @@ import java.io.Serializable;
  * Created by lto on 18/05/15.
  */
 @Entity
-public class ConfigurationParameter implements Serializable{
-    @Id
-    private String id;
-    @Version
-    private int version;
+public class ConfigurationParameter implements Serializable {
+  @Id private String id;
+  @Version private int version;
 
-    private String confKey;
-    private String value;
+  private String confKey;
+  private String value;
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
-    public String getId() {
-        return id;
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public String getConfKey() {
-        return confKey;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public void setConfKey(String confKey) {
-        this.confKey = confKey;
-    }
+  public String getConfKey() {
+    return confKey;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public void setConfKey(String confKey) {
+    this.confKey = confKey;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    @Override
-    public String toString() {
-        return "ConfigurationParameter{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", confKey='" + confKey + '\'' +
-                ", value='" + value + '\'' +
-                '}';
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return "ConfigurationParameter{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", confKey='"
+        + confKey
+        + '\''
+        + ", value='"
+        + value
+        + '\''
+        + '}';
+  }
 }

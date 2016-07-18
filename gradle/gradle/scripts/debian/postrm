@@ -3,19 +3,18 @@
 . /lib/lsb/init-functions
 
 OPENBATON_BASE=/usr
-OPENBATON_PLUGINS_FOLDER=$OPENBATON_BASE/lib/openbaton/plugins
+OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_LOGS_FOLDER=/var/log/openbaton
 
 
 USER="$(id -un 2>/dev/null || true)"
 
 checkBinary () {
-    echo -n " * Checking for '$1'..."
-    if command -v $1 >/dev/null 2>&1; then
-        echo "OK"
+    if command -v $1 >/dev/null 2>&1 ; then
+        log_success_msg "Checking for '$1'"
         return 0
     else
-        echo >&2 "FAILED."
+        log_failure_msg "Checking for '$1'"
         return 1
     fi
 }
@@ -30,36 +29,34 @@ if [ "${USER}" != 'root' ]; then
 fi
 
 
-#######################
-# VIM-Drivers Plugins #
-#######################
+#############################
+#### VIM-Drivers Plugins ####
+#############################
 
 cleanPlugins () {
-    log_daemon_msg "Cleaning the environment: deleting plugins.."
     export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
     if [ -d ${OPENBATON_PLUGINS_FOLDER} ]; then
     	$_ex 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
-    	log_daemon_msg "..done"
+        log_success_msg "Cleaning the environment: deleted plugins"
     fi
 }
 
-########
-# Logs #
-########
+##############
+#### Logs ####
+##############
 
 cleanLogs () {
-    log_daemon_msg "Cleaning the environment: deleting logs.."
     export OPENBATON_LOGS_FOLDER="${OPENBATON_LOGS_FOLDER}"
     if [ -d ${OPENBATON_LOGS_FOLDER} ]; then
     	$_ex 'rm -r ${OPENBATON_LOGS_FOLDER}'
-    	log_daemon_msg "..done"
+        log_success_msg "Cleaning the environment: deleted logs"
     fi
 }
 
 
-###########################################
-#### Clean OpenBaton NFVO installation ####
-###########################################
+############################################
+#### Clean Open Baton NFVO installation ####
+############################################
 
 clean () {
     cleanPlugins
@@ -67,7 +64,7 @@ clean () {
 }
 
 
-case "$1" in
+case "${1}" in
   purge)
     clean
   ;;
@@ -76,7 +73,7 @@ case "$1" in
   ;;
 
   *)
-    echo "postrm called with unknown argument \`$1'" >&2
+    log_failure_msg "postrm called with unknown argument ${1}"
     exit 1
   ;;
 

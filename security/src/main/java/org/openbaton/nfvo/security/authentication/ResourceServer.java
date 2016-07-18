@@ -32,56 +32,44 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @ConfigurationProperties(prefix = "nfvo.security")
 public class ResourceServer extends ResourceServerConfigurerAdapter {
 
+  private boolean enabled;
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private boolean enabled;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Override
+  public void configure(HttpSecurity http) throws Exception {
+    http.headers().frameOptions().disable();
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.headers()
-                .frameOptions().disable();
+    // API calls
+    log.debug("Security must be enabled");
+    http.authorizeRequests()
+        .regexMatchers(HttpMethod.POST, "/api/v1/")
+        .access("#oauth2.hasScope('write')")
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        .and()
+        .exceptionHandling();
 
-        // API calls
-        log.debug("Security must be enabled");
-        if (true) {
-            http
-                    .authorizeRequests()
-                    .regexMatchers(HttpMethod.POST, "/api/v1/")
-                    .access("#oauth2.hasScope('write')")
-                    .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                    .and()
-                    .exceptionHandling();
+    http.authorizeRequests()
+        .antMatchers("/api/**")
+        .access("#oauth2.hasScope('write')")
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        .and()
+        .exceptionHandling();
+  }
 
-            http
-                    .authorizeRequests()
-                    .antMatchers("/api/**")
-                    .access("#oauth2.hasScope('write')")
-                    .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                    .and()
-                    .exceptionHandling();
-        } else {
-            log.warn("Security is not enabled!");
-            http
-                    .authorizeRequests().anyRequest().permitAll();
-        }
-    }
+  @Override
+  public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+    resources.resourceId(OAuth2AuthorizationServerConfig.RESOURCE_ID);
+  }
 
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-    @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-        resources.resourceId(OAuth2AuthorizationServerConfig.RESOURCE_ID);
-    }
-
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
 }

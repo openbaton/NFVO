@@ -22,5 +22,4 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-public interface VirtualLinkRecordRepository extends CrudRepository<VirtualLinkRecord, String> {
-}
+public interface VirtualLinkRecordRepository extends CrudRepository<VirtualLinkRecord, String> {}

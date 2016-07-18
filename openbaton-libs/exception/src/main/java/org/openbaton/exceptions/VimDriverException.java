@@ -22,24 +22,23 @@ import org.openbaton.catalogue.nfvo.Server;
  */
 public class VimDriverException extends Exception {
 
-    public Server getServer() {
-        return server;
-    }
+  public Server getServer() {
+    return server;
+  }
 
-    public void setServer(Server server) {
-        this.server = server;
-    }
+  public void setServer(Server server) {
+    this.server = server;
+  }
 
-    private Server server;
+  private Server server;
 
-    public VimDriverException() {
-    }
+  public VimDriverException() {}
 
-    public VimDriverException(String message) {
-        super(message);
-    }
+  public VimDriverException(String message) {
+    super(message);
+  }
 
-    public VimDriverException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public VimDriverException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

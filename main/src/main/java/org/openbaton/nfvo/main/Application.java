@@ -32,8 +32,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Created by lto on 16/04/15.
  */
-
-
 @SpringBootApplication
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
@@ -41,17 +39,17 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
-    private static Logger log = LoggerFactory.getLogger(Application.class);
+  private static Logger log = LoggerFactory.getLogger(Application.class);
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-        context.registerShutdownHook();
-    }
+    ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+    context.registerShutdownHook();
+  }
 
-    @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
-        log.info("Shutting down...");
-        PluginStartup.destroy();
-    }
+  @Override
+  public void onApplicationEvent(ContextClosedEvent event) {
+    log.info("Shutting down...");
+    PluginStartup.destroy();
+  }
 }

@@ -18,20 +18,19 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 
-
 public interface VNFManagerManagement {
-    /**
-     * Returns the list of VNFManagers registered
-     * @return Iterable<VnfmManagerEndpoint>
-     */
-    Iterable<VnfmManagerEndpoint> query();
+  /**
+   * Returns the list of VNFManagers registered
+   *
+   * @return Iterable<VnfmManagerEndpoint>
+   */
+  Iterable<VnfmManagerEndpoint> query();
 
-    /**
-     * Returns the VnfmManagerEndpoint selected by id
-     *
-     * @param id of VnfmManagerEndpoint
-     * @return VnfmManagerEndpoint
-     */
-    VnfmManagerEndpoint query(String id);
-
+  /**
+   * Returns the VnfmManagerEndpoint selected by id
+   *
+   * @param id of VnfmManagerEndpoint
+   * @return VnfmManagerEndpoint
+   */
+  VnfmManagerEndpoint query(String id);
 }

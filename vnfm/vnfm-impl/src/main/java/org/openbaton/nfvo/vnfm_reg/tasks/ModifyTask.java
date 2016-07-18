@@ -38,54 +38,70 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties(prefix = "nfvo.start")
 public class ModifyTask extends AbstractTask {
 
-    @Autowired
-    private VnfmRegister vnfmRegister;
+  @Autowired private VnfmRegister vnfmRegister;
 
-    private String ordered;
+  private String ordered;
 
-    @Override
-    protected NFVMessage doWork() throws Exception {
-        virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-        log.info("MODIFY finished for VNFR: " + virtualNetworkFunctionRecord.getName());
-        log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        saveVirtualNetworkFunctionRecord();
-        log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-        log.debug("VNFR " + virtualNetworkFunctionRecord.getName() + " Status is: " + virtualNetworkFunctionRecord.getStatus());
-        boolean allVnfrInInactive = allVnfrInInactive(networkServiceRecordRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()));
-        log.trace("Ordered string is: \"" + ordered + "\"");
-        log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
-        log.debug("Are all VNFR in inactive? " + allVnfrInInactive);
+  @Override
+  protected NFVMessage doWork() throws Exception {
+    virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
+    log.info("MODIFY finished for VNFR: " + virtualNetworkFunctionRecord.getName());
+    log.trace("VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+    saveVirtualNetworkFunctionRecord();
+    log.trace("Now VNFR Verison is: " + virtualNetworkFunctionRecord.getHb_version());
+    log.debug(
+        "VNFR "
+            + virtualNetworkFunctionRecord.getName()
+            + " Status is: "
+            + virtualNetworkFunctionRecord.getStatus());
+    boolean allVnfrInInactive =
+        allVnfrInInactive(
+            networkServiceRecordRepository.findFirstById(
+                virtualNetworkFunctionRecord.getParent_ns_id()));
+    log.trace("Ordered string is: \"" + ordered + "\"");
+    log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
+    log.debug("Are all VNFR in inactive? " + allVnfrInInactive);
 
-        if (ordered != null && Boolean.parseBoolean(ordered)) {
-            if (allVnfrInInactive) {
-                VirtualNetworkFunctionRecord nextToCallStart = getNextToCallStart(virtualNetworkFunctionRecord);
-                if (nextToCallStart != null) {
-                    vnfmManager.removeVnfrName(virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
-                    sendStart(nextToCallStart);
-                }
-                log.info("Not found next VNFR to call start");
-            } else {
-                log.debug("After MODIFY of " + virtualNetworkFunctionRecord.getName() + ", not calling start to next VNFR because not all VNFRs are in state INACTIVE");
-            }
-        } else {
-            sendStart(virtualNetworkFunctionRecord);
+    if (ordered != null && Boolean.parseBoolean(ordered)) {
+      if (allVnfrInInactive) {
+        VirtualNetworkFunctionRecord nextToCallStart =
+            getNextToCallStart(virtualNetworkFunctionRecord);
+        if (nextToCallStart != null) {
+          vnfmManager.removeVnfrName(
+              virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
+          sendStart(nextToCallStart);
         }
-        return null;
+        log.info("Not found next VNFR to call start");
+      } else {
+        log.debug(
+            "After MODIFY of "
+                + virtualNetworkFunctionRecord.getName()
+                + ", not calling start to next VNFR because not all VNFRs are in state INACTIVE");
+      }
+    } else {
+      sendStart(virtualNetworkFunctionRecord);
     }
+    return null;
+  }
 
-    private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws NotFoundException {
-        VnfmSender vnfmSender;
-        log.info("Calling START to: " + virtualNetworkFunctionRecord.getName() + " after MODIFY");
-        vnfmSender = this.getVnfmSender(vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-        vnfmSender.sendCommand(new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START), vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-    }
+  private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException {
+    VnfmSender vnfmSender;
+    log.info("Calling START to: " + virtualNetworkFunctionRecord.getName() + " after MODIFY");
+    vnfmSender =
+        this.getVnfmSender(
+            vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+    vnfmSender.sendCommand(
+        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+        vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+  }
 
-    @Override
-    public boolean isAsync() {
-        return true;
-    }
+  @Override
+  public boolean isAsync() {
+    return true;
+  }
 
-    public void setOrdered(String ordered) {
-        this.ordered = ordered;
-    }
+  public void setOrdered(String ordered) {
+    this.ordered = ordered;
+  }
 }

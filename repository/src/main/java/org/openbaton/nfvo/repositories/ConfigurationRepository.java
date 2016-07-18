@@ -25,6 +25,7 @@ import java.util.List;
  * Created by mob on 05.09.15.
  */
 public interface ConfigurationRepository extends CrudRepository<Configuration, String> {
-    Configuration findFirstById(String id);
-    List<Configuration> findByProjectId(String projectId);
+  Configuration findFirstById(String id);
+
+  List<Configuration> findByProjectId(String projectId);
 }

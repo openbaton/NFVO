@@ -34,24 +34,23 @@ import java.io.Serializable;
 @Scope
 public class RabbitSender implements Sender {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private AmqpTemplate amqpTemplate;
+  @Autowired private AmqpTemplate amqpTemplate;
 
-    @Override
-    public void send(String destination, final Serializable message) {
-        log.trace("Sending message: " + message + " to Queue: " + destination);
-        amqpTemplate.convertAndSend(destination, message);
-    }
+  @Override
+  public void send(String destination, final Serializable message) {
+    log.trace("Sending message: " + message + " to Queue: " + destination);
+    amqpTemplate.convertAndSend(destination, message);
+  }
 
-    @Override
-    public Serializable receiveObject(String destination) throws JMSException {
-        return (Serializable) amqpTemplate.receiveAndConvert(destination);
-    }
+  @Override
+  public Serializable receiveObject(String destination) {
+    return (Serializable) amqpTemplate.receiveAndConvert(destination);
+  }
 
-    @Override
-    public String receiveText(String destination) throws JMSException {
-        return (String) amqpTemplate.receiveAndConvert(destination);
-    }
+  @Override
+  public String receiveText(String destination) {
+    return (String) amqpTemplate.receiveAndConvert(destination);
+  }
 }

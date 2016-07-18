@@ -27,14 +27,14 @@ import org.springframework.context.annotation.Configuration;
  * Created by lto on 30/04/15.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.openbaton.vim_impl"}, basePackageClasses = VimBroker.class)
+@ComponentScan(
+  basePackages = {"org.openbaton.vim_impl"},
+  basePackageClasses = VimBroker.class
+)
 public class ApplicationTest {
 
-    @Bean
-    VimDriverCaller vimDriverCaller() {
-        VimDriverCaller vimDriverCaller = PowerMockito.mock(VimDriverCaller.class);
-        return vimDriverCaller;
-    }
-
-
+  @Bean
+  VimDriverCaller vimDriverCaller() {
+    return PowerMockito.mock(VimDriverCaller.class);
+  }
 }

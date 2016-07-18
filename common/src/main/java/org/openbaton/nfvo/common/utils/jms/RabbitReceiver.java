@@ -30,14 +30,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope
 public class RabbitReceiver implements Receiver {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+  @Autowired private RabbitTemplate rabbitTemplate;
 
-    @Override
-    public Object receive(String queue) {
-        Object message = rabbitTemplate.receiveAndConvert(queue);
-        return message;
-    }
+  @Override
+  public Object receive(String queue) {
+    return rabbitTemplate.receiveAndConvert(queue);
+  }
 }

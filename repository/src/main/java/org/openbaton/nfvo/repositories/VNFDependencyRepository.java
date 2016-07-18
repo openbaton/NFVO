@@ -22,6 +22,4 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 06/05/15.
  */
-public interface VNFDependencyRepository extends CrudRepository<VNFDependency, String> {
-
-}
+public interface VNFDependencyRepository extends CrudRepository<VNFDependency, String> {}

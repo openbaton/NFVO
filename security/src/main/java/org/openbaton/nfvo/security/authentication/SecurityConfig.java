@@ -37,31 +37,31 @@ import java.util.Properties;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private UserDetailsService userDetailsService;
+  @Autowired private UserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
-    }
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**").httpBasic()
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/oauth/token", "/register").permitAll();
-    }
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.antMatcher("/**")
+        .httpBasic()
+        .and()
+        .authorizeRequests()
+        .antMatchers(HttpMethod.OPTIONS, "/oauth/token", "/register")
+        .permitAll();
+  }
 
-    @Override
-    @Bean
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
-    }
+  @Override
+  @Bean
+  protected AuthenticationManager authenticationManager() throws Exception {
+    return super.authenticationManager();
+  }
 
-    @Bean(name = "inMemManager")
-    public UserDetailsManager userDetailsManager() {
-        return new InMemoryUserDetailsManager(new Properties());
-    }
+  @Bean(name = "inMemManager")
+  public UserDetailsManager userDetailsManager() {
+    return new InMemoryUserDetailsManager(new Properties());
+  }
 }
-

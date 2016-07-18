@@ -25,6 +25,7 @@ import java.util.List;
  * Created by lto on 06/05/15.
  */
 public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor, String> {
-    VirtualNetworkFunctionDescriptor findFirstById(String id);
-    List<VirtualNetworkFunctionDescriptor> findByProjectId(String id);
+  VirtualNetworkFunctionDescriptor findFirstById(String id);
+
+  List<VirtualNetworkFunctionDescriptor> findByProjectId(String id);
 }

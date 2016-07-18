@@ -27,97 +27,113 @@ import java.io.Serializable;
  * Created by lto on 20/05/15.
  */
 @Entity
-public class Quota implements Serializable{
-    @Id
-    private String id;
-    @Version
-    private int version = 0;
+public class Quota implements Serializable {
+  @Id private String id;
+  @Version private int version = 0;
 
-    private String tenant;
+  private String tenant;
 
-    private int cores;
-    private int floatingIps;
-    private int instances;
-    private int keyPairs;
-    private int ram;
+  private int cores;
+  private int floatingIps;
+  private int instances;
+  private int keyPairs;
+  private int ram;
 
-    public String getTenant() {
-        return tenant;
-    }
+  public String getTenant() {
+    return tenant;
+  }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
+  public void setTenant(String tenant) {
+    this.tenant = tenant;
+  }
 
-    @PrePersist
-    public void ensureId(){
-        id=IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public int getVersion() {
-        return version;
-    }
+  public int getVersion() {
+    return version;
+  }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-    public int getRam() {
-        return ram;
-    }
+  public int getRam() {
+    return ram;
+  }
 
-    public void setRam(int ram) {
-        this.ram = ram;
-    }
+  public void setRam(int ram) {
+    this.ram = ram;
+  }
 
-    public int getKeyPairs() {
-        return keyPairs;
-    }
+  public int getKeyPairs() {
+    return keyPairs;
+  }
 
-    public void setKeyPairs(int keyPairs) {
-        this.keyPairs = keyPairs;
-    }
+  public void setKeyPairs(int keyPairs) {
+    this.keyPairs = keyPairs;
+  }
 
-    public int getInstances() { return instances; }
+  public int getInstances() {
+    return instances;
+  }
 
-    public void setInstances(int instances) { this.instances = instances; }
+  public void setInstances(int instances) {
+    this.instances = instances;
+  }
 
-    public int getFloatingIps() {
-        return floatingIps;
-    }
+  public int getFloatingIps() {
+    return floatingIps;
+  }
 
-    public void setFloatingIps(int floatingIps) {
-        this.floatingIps = floatingIps;
-    }
+  public void setFloatingIps(int floatingIps) {
+    this.floatingIps = floatingIps;
+  }
 
-    public int getCores() {
-        return cores;
-    }
+  public int getCores() {
+    return cores;
+  }
 
-    public void setCores(int cores) {
-        this.cores = cores;
-    }
+  public void setCores(int cores) {
+    this.cores = cores;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @Override
-    public String toString() {
-        return "Quota{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", tenant='" + tenant + '\'' +
-                ", cores='" + cores + '\'' +
-                ", floatingIps='" + floatingIps + '\'' +
-                ", instances='" + instances + '\'' +
-                ", keypairs='" + keyPairs + '\'' +
-                ", ram='" + ram + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Quota{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", tenant='"
+        + tenant
+        + '\''
+        + ", cores='"
+        + cores
+        + '\''
+        + ", floatingIps='"
+        + floatingIps
+        + '\''
+        + ", instances='"
+        + instances
+        + '\''
+        + ", keypairs='"
+        + keyPairs
+        + '\''
+        + ", ram='"
+        + ram
+        + '\''
+        + '}';
+  }
 }
-

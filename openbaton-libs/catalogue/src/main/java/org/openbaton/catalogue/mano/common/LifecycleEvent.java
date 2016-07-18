@@ -27,75 +27,69 @@ import java.util.List;
  * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class LifecycleEvent implements Serializable{
+public class LifecycleEvent implements Serializable {
 
-	@Id
-	private String id;
-	
-	@Version
-	private int version = 0;
+  @Id private String id;
 
-	@Enumerated(EnumType.STRING)
-	private Event event;
+  @Version private int version = 0;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-    private List<String> lifecycle_events;
+  @Enumerated(EnumType.STRING)
+  private Event event;
 
-    public LifecycleEvent() {
-    }
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> lifecycle_events;
 
+  public LifecycleEvent() {}
 
-	@PrePersist
-	public void ensureId(){
-		id=IdGenerator.createUUID();
-	}
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
+  public void setId(String id) {
+    this.id = id;
+  }
 
+  public int getVersion() {
+    return version;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
+  @Override
+  public String toString() {
+    return "LifecycleEvent{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", event="
+        + event
+        +
+        //				", lifecycle_events=" + lifecycle_events +
+        '}';
+  }
 
+  public Event getEvent() {
+    return event;
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public void setEvent(Event event) {
+    this.event = event;
+  }
 
+  public List<String> getLifecycle_events() {
+    return lifecycle_events;
+  }
 
-
-	public void setVersion(int version) {
-		this.version = version;
-	}
-
-
-	@Override
-	public String toString() {
-		return "LifecycleEvent{" +
-				"id='" + id + '\'' +
-				", version=" + version +
-				", event=" + event +
-//				", lifecycle_events=" + lifecycle_events +
-				'}';
-	}
-
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
-	}
-
-	public List<String> getLifecycle_events() {
-		return lifecycle_events;
-	}
-
-	public void setLifecycle_events(List<String> lifecycle_events) {
-		this.lifecycle_events = lifecycle_events;
-	}
+  public void setLifecycle_events(List<String> lifecycle_events) {
+    this.lifecycle_events = lifecycle_events;
+  }
 }

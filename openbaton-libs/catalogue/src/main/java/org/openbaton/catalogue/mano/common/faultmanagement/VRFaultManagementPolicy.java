@@ -16,43 +16,47 @@
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import javax.persistence.Entity;
-import java.util.Iterator;
 
 /**
  * Created by mob on 29.10.15.
  */
 @Entity
 public class VRFaultManagementPolicy extends FaultManagementPolicy {
-    private FaultManagementAction action;
+  private FaultManagementAction action;
 
-    public VRFaultManagementPolicy(){
+  public VRFaultManagementPolicy() {}
 
-    }
+  public FaultManagementAction getAction() {
+    return action;
+  }
 
-    public FaultManagementAction getAction() {
-        return action;
-    }
+  public void setAction(FaultManagementAction action) {
+    this.action = action;
+  }
 
-    public void setAction(FaultManagementAction action) {
-        this.action = action;
-    }
-
-    @Override
-    public String toString() {
-        String result= "VRFaultManagementPolicy{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", period=" + period +
-                ", severity=" + severity +
-                ", criteria=";
-        if(criteria !=null){
-            Iterator<Criteria>criteriaIterator= criteria.iterator();
-            while(criteriaIterator.hasNext())
-                result+= criteriaIterator.next().toString();
-        }
-        else result+="null";
-        result+=", action=" + action;
-        return result;
-    }
+  @Override
+  public String toString() {
+    String result =
+        "VRFaultManagementPolicy{"
+            + "id='"
+            + id
+            + '\''
+            + ", version="
+            + version
+            + ", name='"
+            + name
+            + '\''
+            + ", period="
+            + period
+            + ", severity="
+            + severity
+            + ", criteria=";
+    if (criteria != null) {
+      for (Criteria aCriteria : criteria) {
+        result += aCriteria.toString();
+      }
+    } else result += "null";
+    result += ", action=" + action;
+    return result;
+  }
 }

@@ -24,84 +24,90 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-public class NetworkServiceDescriptorRepositoryImpl implements NetworkServiceDescriptorRepositoryCustom {
+public class NetworkServiceDescriptorRepositoryImpl
+    implements NetworkServiceDescriptorRepositoryCustom {
 
-    @Autowired
-    private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
+  @Autowired private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
 
-    @Autowired
-    private VNFDRepository vnfdRepository;
+  @Autowired private VNFDRepository vnfdRepository;
 
-    @Autowired
-    private SecurityRepository securityRepository;
+  @Autowired private SecurityRepository securityRepository;
 
-    @Autowired
-    private VNFDependencyRepository vnfDependencyRepository;
+  @Autowired private VNFDependencyRepository vnfDependencyRepository;
 
-    @Autowired
-    private PhysicalNetworkFunctionDescriptorRepository pnfDescriptorRepository;
+  @Autowired private PhysicalNetworkFunctionDescriptorRepository pnfDescriptorRepository;
 
-    @Override
-    @Transactional
-    public VirtualNetworkFunctionDescriptor addVnfd(VirtualNetworkFunctionDescriptor vnfd, String id) {
-        vnfd = vnfdRepository.save(vnfd);
-        networkServiceDescriptorRepository.findFirstById(id).getVnfd().add(vnfd);
-        return vnfd;
+  @Override
+  @Transactional
+  public VirtualNetworkFunctionDescriptor addVnfd(
+      VirtualNetworkFunctionDescriptor vnfd, String id) {
+    vnfd = vnfdRepository.save(vnfd);
+    networkServiceDescriptorRepository.findFirstById(id).getVnfd().add(vnfd);
+    return vnfd;
+  }
+
+  @Override
+  @Transactional
+  public VNFDependency addVnfDependency(VNFDependency vnfd, String id) {
+    vnfd = vnfDependencyRepository.save(vnfd);
+    networkServiceDescriptorRepository.findFirstById(id).getVnf_dependency().add(vnfd);
+    return vnfd;
+  }
+
+  @Override
+  @Transactional
+  public PhysicalNetworkFunctionDescriptor addPnfDescriptor(
+      PhysicalNetworkFunctionDescriptor pnfDescriptor, String id) {
+    pnfDescriptor = pnfDescriptorRepository.save(pnfDescriptor);
+    networkServiceDescriptorRepository.findFirstById(id).getPnfd().add(pnfDescriptor);
+    return pnfDescriptor;
+  }
+
+  @Override
+  @Transactional
+  public Security addSecurity(String id, Security security) {
+    security = securityRepository.save(security);
+    networkServiceDescriptorRepository.findFirstById(id).setNsd_security(security);
+    return security;
+  }
+
+  @Override
+  @Transactional
+  public void deleteSecurity(String id, String idS) {
+    Security s = networkServiceDescriptorRepository.findFirstById(id).getNsd_security();
+    if (s.getId().equals(securityRepository.findOne(idS).getId())) {
+      networkServiceDescriptorRepository.findFirstById(id).setNsd_security(null);
+      securityRepository.delete(idS);
     }
+  }
 
-    @Override
-    @Transactional
-    public VNFDependency addVnfDependency(VNFDependency vnfd, String id) {
-        vnfd = vnfDependencyRepository.save(vnfd);
-        networkServiceDescriptorRepository.findFirstById(id).getVnf_dependency().add(vnfd);
-        return vnfd;
-    }
+  @Override
+  @Transactional
+  public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
+    networkServiceDescriptorRepository
+        .findFirstById(idNsd)
+        .getVnfd()
+        .remove(pnfDescriptorRepository.findOne(idPnf));
+    pnfDescriptorRepository.delete(idPnf);
+  }
 
-    @Override
-    @Transactional
-    public PhysicalNetworkFunctionDescriptor addPnfDescriptor(PhysicalNetworkFunctionDescriptor pnfDescriptor, String id) {
-        pnfDescriptor = pnfDescriptorRepository.save(pnfDescriptor);
-        networkServiceDescriptorRepository.findFirstById(id).getPnfd().add(pnfDescriptor);
-        return pnfDescriptor;
-    }
+  @Override
+  @Transactional
+  public void deleteVnfd(String idNsd, String idVnfd) {
+    networkServiceDescriptorRepository
+        .findFirstById(idNsd)
+        .getVnfd()
+        .remove(vnfdRepository.findOne(idVnfd));
+    vnfdRepository.delete(idVnfd);
+  }
 
-    @Override
-    @Transactional
-    public Security addSecurity(String id, Security security) {
-        security = securityRepository.save(security);
-        networkServiceDescriptorRepository.findFirstById(id).setNsd_security(security);
-        return security;
-    }
-
-    @Override
-    @Transactional
-    public void deleteSecurity(String id, String idS) {
-        Security s = networkServiceDescriptorRepository.findFirstById(id).getNsd_security();
-        if (s.getId().equals(securityRepository.findOne(idS).getId())) {
-            networkServiceDescriptorRepository.findFirstById(id).setNsd_security(null);
-            securityRepository.delete(idS);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
-        networkServiceDescriptorRepository.findFirstById(idNsd).getVnfd().remove(pnfDescriptorRepository.findOne(idPnf));
-        pnfDescriptorRepository.delete(idPnf);
-        return;
-    }
-
-    @Override
-    @Transactional
-    public void deleteVnfd(String idNsd, String idVnfd) {
-        networkServiceDescriptorRepository.findFirstById(idNsd).getVnfd().remove(vnfdRepository.findOne(idVnfd));
-        vnfdRepository.delete(idVnfd);
-    }
-
-    @Override
-    @Transactional
-    public void deleteVNFDependency(String idNsd, String idVnfd) {
-        networkServiceDescriptorRepository.findFirstById(idNsd).getVnf_dependency().remove(vnfDependencyRepository.findOne(idVnfd));
-        vnfDependencyRepository.delete(idVnfd);
-    }
+  @Override
+  @Transactional
+  public void deleteVNFDependency(String idNsd, String idVnfd) {
+    networkServiceDescriptorRepository
+        .findFirstById(idNsd)
+        .getVnf_dependency()
+        .remove(vnfDependencyRepository.findOne(idVnfd));
+    vnfDependencyRepository.delete(idVnfd);
+  }
 }

@@ -6,5 +6,4 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by lto on 21/01/16.
  */
-public interface ScriptRepository extends CrudRepository<Script, String> {
-}
+public interface ScriptRepository extends CrudRepository<Script, String> {}

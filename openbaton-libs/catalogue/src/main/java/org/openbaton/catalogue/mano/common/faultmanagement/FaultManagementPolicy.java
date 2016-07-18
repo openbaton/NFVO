@@ -18,87 +18,103 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 
 /**
  * Created by mob on 29.10.15.
  */
 @Entity
-public class FaultManagementPolicy implements Serializable{
-    @Id
-    protected String id;
-    @Version
-    protected int version = 0;
-    protected String name;
-    protected boolean isVNFAlarm;
-    protected int period;
-    protected PerceivedSeverity severity;
+public class FaultManagementPolicy implements Serializable {
+  @Id protected String id;
+  @Version protected int version = 0;
+  protected String name;
+  protected boolean isVNFAlarm;
+  protected int period;
+  protected PerceivedSeverity severity;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    protected Set<Criteria> criteria;
+  @OneToMany(
+    cascade = {CascadeType.ALL},
+    fetch = FetchType.EAGER
+  )
+  protected Set<Criteria> criteria;
 
-    @PrePersist
-    public void ensureId(){
-        id= IdGenerator.createUUID();
-    }
+  @PrePersist
+  public void ensureId() {
+    id = IdGenerator.createUUID();
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public int getPeriod() {
-        return period;
-    }
+  public int getPeriod() {
+    return period;
+  }
 
-    public void setPeriod(int period) {
-        this.period = period;
-    }
+  public void setPeriod(int period) {
+    this.period = period;
+  }
 
-    public PerceivedSeverity getSeverity() {
-        return severity;
-    }
+  public PerceivedSeverity getSeverity() {
+    return severity;
+  }
 
-    public void setSeverity(PerceivedSeverity severity) {
-        this.severity = severity;
-    }
+  public void setSeverity(PerceivedSeverity severity) {
+    this.severity = severity;
+  }
 
-    public Set<Criteria> getCriteria() {
-        return criteria;
-    }
+  public Set<Criteria> getCriteria() {
+    return criteria;
+  }
 
-    public void setCriteria(Set<Criteria> criteria) {
-        this.criteria = criteria;
-    }
+  public void setCriteria(Set<Criteria> criteria) {
+    this.criteria = criteria;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public boolean isVNFAlarm() {
-        return isVNFAlarm;
-    }
+  public boolean isVNFAlarm() {
+    return isVNFAlarm;
+  }
 
-    public void setVNFAlarm(boolean VNFAlarm) {
-        isVNFAlarm = VNFAlarm;
-    }
+  public void setVNFAlarm(boolean VNFAlarm) {
+    isVNFAlarm = VNFAlarm;
+  }
 
-    @Override
-    public String toString() {
-        return "FaultManagementPolicy{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", isVNFAlarm=" + isVNFAlarm +
-                ", period=" + period +
-                ", severity=" + severity +
-                ", criteria=" + criteria +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "FaultManagementPolicy{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", isVNFAlarm="
+        + isVNFAlarm
+        + ", period="
+        + period
+        + ", severity="
+        + severity
+        + ", criteria="
+        + criteria
+        + '}';
+  }
 }

@@ -21,9 +21,9 @@ import java.io.Serializable;
 
 public interface Sender {
 
-    void send(String destination, Serializable message);
+  void send(String destination, Serializable message);
 
-    Object receiveObject(String destination) throws JMSException;
+  Object receiveObject(String destination);
 
-    String receiveText(String destination) throws JMSException;
+  String receiveText(String destination);
 }

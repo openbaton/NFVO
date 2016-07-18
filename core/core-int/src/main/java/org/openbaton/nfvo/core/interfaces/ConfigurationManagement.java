@@ -24,44 +24,40 @@ import org.openbaton.exceptions.NotFoundException;
  */
 public interface ConfigurationManagement {
 
-    /**
-     * This operation allows adding a datacenter
-     * into the datacenter repository.
-     *
-     * @param datacenter
-     */
-    Configuration add(Configuration datacenter);
+  /**
+   * This operation allows adding a datacenter into the datacenter repository.
+   *
+   * @param datacenter
+   */
+  Configuration add(Configuration datacenter);
 
-    /**
-     * This operation allows deleting the datacenter
-     * from the datacenter repository.
-     *
-     * @param id
-     */
-    void delete(String id);
+  /**
+   * This operation allows deleting the datacenter from the datacenter repository.
+   *
+   * @param id
+   */
+  void delete(String id);
 
-    /**
-     * This operation allows updating the datacenter
-     * in the datacenter repository.
-     *  @param new_datacenter
-     * @param id
-     * @param projectId
-     */
-    Configuration update(Configuration new_datacenter, String id, String projectId);
+  /**
+   * This operation allows updating the datacenter in the datacenter repository.
+   *
+   * @param new_datacenter
+   * @param id
+   * @param projectId
+   */
+  Configuration update(Configuration new_datacenter, String id, String projectId);
 
-    /**
-     * This operation allows querying the information of
-     * the datacenters in the datacenter repository.
-     */
-    Iterable<Configuration> query();
+  /**
+   * This operation allows querying the information of the datacenters in the datacenter repository.
+   */
+  Iterable<Configuration> query();
 
-    Iterable<Configuration> queryByProject(String projectId);
+  Iterable<Configuration> queryByProject(String projectId);
 
-    /**
-     * This operation allows querying the information of
-     * the datacenter in the datacenter repository.
-     */
-    Configuration query(String id, String projectId);
+  /**
+   * This operation allows querying the information of the datacenter in the datacenter repository.
+   */
+  Configuration query(String id, String projectId);
 
-    Configuration queryByName(String system) throws NotFoundException;
+  Configuration queryByName(String system) throws NotFoundException;
 }

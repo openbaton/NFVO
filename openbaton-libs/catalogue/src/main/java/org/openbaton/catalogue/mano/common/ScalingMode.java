@@ -15,19 +15,11 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import java.io.Serializable;
-
 /**
  * Created by mpa on 15/12/15.
  */
 public enum ScalingMode {
-	REACTIVE,
-	PROACTIVE,
-	PREDICTIVE
+  REACTIVE,
+  PROACTIVE,
+  PREDICTIVE
 }

@@ -43,186 +43,206 @@ import static org.mockito.Mockito.when;
  */
 public class VNFFGManagementClassSuiteTest {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-    private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  @Rule public ExpectedException exception = ExpectedException.none();
+  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
-    @InjectMocks
-    private VNFFGManagement vnffgManagement;
+  @InjectMocks private VNFFGManagement vnffgManagement;
 
-    @Mock
-    private VNFFGDescriptorRepository vnffgDescriptorRepository;
+  @Mock private VNFFGDescriptorRepository vnffgDescriptorRepository;
 
-    @AfterClass
-    public static void shutdown() {
-        // TODO Teardown to avoid exceptions during test shutdown
-    }
+  @Before
+  public void init() {
+    MockitoAnnotations.initMocks(this);
+    log.info("Starting test");
+  }
 
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        log.info("Starting test");
-    }
+  @Test
+  public void vnffgManagementNotNull() {
+    Assert.assertNotNull(vnffgManagement);
+  }
 
-    @Test
-    public void vnffgManagementNotNull() {
-        Assert.assertNotNull(vnffgManagement);
-    }
+  @Test
+  public void vnffgManagementUpdateTest() {
+    exception.expect(UnsupportedOperationException.class);
+    VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
+    when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId()))
+        .thenReturn(vnffgDescriptor_exp);
 
-    @Test
-    public void vnffgManagementUpdateTest() {
-        exception.expect(UnsupportedOperationException.class);
-        VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-        when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
+    VNFForwardingGraphDescriptor vnffgDescriptor_new = createVNFFGDescriptor();
+    vnffgDescriptor_new.setVendor("UpdatedVendor");
+    vnffgDescriptor_exp = vnffgManagement.update(vnffgDescriptor_new, vnffgDescriptor_exp.getId());
 
-        VNFForwardingGraphDescriptor vnffgDescriptor_new = createVNFFGDescriptor();
-        vnffgDescriptor_new.setVendor("UpdatedVendor");
-        vnffgDescriptor_exp = vnffgManagement.update(vnffgDescriptor_new, vnffgDescriptor_exp.getId());
+    assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
+  }
 
-        assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
-    }
+  private void assertEqualsVNFFG(
+      VNFForwardingGraphDescriptor vnffgDescriptor_exp,
+      VNFForwardingGraphDescriptor vnffgDescriptor_new) {
+    Assert.assertEquals(vnffgDescriptor_exp.getVendor(), vnffgDescriptor_new.getVendor());
+    Assert.assertEquals(vnffgDescriptor_exp.getId(), vnffgDescriptor_new.getId());
+    Assert.assertEquals(
+        vnffgDescriptor_exp.getDescriptor_version(), vnffgDescriptor_new.getDescriptor_version());
+  }
 
-    private void assertEqualsVNFFG(VNFForwardingGraphDescriptor vnffgDescriptor_exp, VNFForwardingGraphDescriptor vnffgDescriptor_new) {
-        Assert.assertEquals(vnffgDescriptor_exp.getVendor(), vnffgDescriptor_new.getVendor());
-        Assert.assertEquals(vnffgDescriptor_exp.getId(), vnffgDescriptor_new.getId());
-        Assert.assertEquals(vnffgDescriptor_exp.getDescriptor_version(), vnffgDescriptor_new.getDescriptor_version());
-    }
-
-    private VNFForwardingGraphDescriptor createVNFFGDescriptor() {
-        VNFForwardingGraphDescriptor vnffgDescriptor = new VNFForwardingGraphDescriptor();
-        vnffgDescriptor.setVendor("vendor");
-        vnffgDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
-        ConnectionPoint connectionPoint = new ConnectionPoint();
-        connectionPoint.setType("type");
-        vnffgDescriptor.getConnection_point().add(connectionPoint);
-        HashSet<CostituentVNF> constituent_vnfs = new HashSet<>();
-        CostituentVNF costituentVNF = new CostituentVNF();
-        costituentVNF.setAffinity("affinity");
-        costituentVNF.setCapability("capability");
-        costituentVNF.setNumber_of_instances(3);
-        costituentVNF.setRedundancy_model(RedundancyModel.ACTIVE);
-        costituentVNF.setVnf_flavour_id_reference("flavor_id");
-        costituentVNF.setVnf_reference("vnf_id");
-        constituent_vnfs.add(costituentVNF);
-        vnffgDescriptor.setConstituent_vnfs(constituent_vnfs);
-        vnffgDescriptor.setNumber_of_endpoints(2);
-        vnffgDescriptor.setVersion("version");
-        vnffgDescriptor.setNumber_of_virtual_links(2);
-        HashSet<VirtualLinkDescriptor> dependent_virtual_link = new HashSet<>();
-        VirtualLinkDescriptor virtualLinkDescriptor = new VirtualLinkDescriptor();
-        virtualLinkDescriptor.setVld_security(new Security());
-        virtualLinkDescriptor.setVendor("vendor");
-        virtualLinkDescriptor.setTest_access(new HashSet<String>() {{
+  private VNFForwardingGraphDescriptor createVNFFGDescriptor() {
+    VNFForwardingGraphDescriptor vnffgDescriptor = new VNFForwardingGraphDescriptor();
+    vnffgDescriptor.setVendor("vendor");
+    vnffgDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
+    ConnectionPoint connectionPoint = new ConnectionPoint();
+    connectionPoint.setType("type");
+    vnffgDescriptor.getConnection_point().add(connectionPoint);
+    HashSet<CostituentVNF> constituent_vnfs = new HashSet<>();
+    CostituentVNF costituentVNF = new CostituentVNF();
+    costituentVNF.setAffinity("affinity");
+    costituentVNF.setCapability("capability");
+    costituentVNF.setNumber_of_instances(3);
+    costituentVNF.setRedundancy_model(RedundancyModel.ACTIVE);
+    costituentVNF.setVnf_flavour_id_reference("flavor_id");
+    costituentVNF.setVnf_reference("vnf_id");
+    constituent_vnfs.add(costituentVNF);
+    vnffgDescriptor.setConstituent_vnfs(constituent_vnfs);
+    vnffgDescriptor.setNumber_of_endpoints(2);
+    vnffgDescriptor.setVersion("version");
+    vnffgDescriptor.setNumber_of_virtual_links(2);
+    HashSet<VirtualLinkDescriptor> dependent_virtual_link = new HashSet<>();
+    VirtualLinkDescriptor virtualLinkDescriptor = new VirtualLinkDescriptor();
+    virtualLinkDescriptor.setVld_security(new Security());
+    virtualLinkDescriptor.setVendor("vendor");
+    virtualLinkDescriptor.setTest_access(
+        new HashSet<String>() {
+          {
             add("test_access");
-        }});
-        virtualLinkDescriptor.setLeaf_requirement("leaf_requirement");
-        virtualLinkDescriptor.setNumber_of_endpoints(1);
-        virtualLinkDescriptor.setDescriptor_version("version");
-        virtualLinkDescriptor.setConnectivity_type("tyxpe");
-        virtualLinkDescriptor.setQos(new HashSet<String>() {{
+          }
+        });
+    virtualLinkDescriptor.setLeaf_requirement("leaf_requirement");
+    virtualLinkDescriptor.setNumber_of_endpoints(1);
+    virtualLinkDescriptor.setDescriptor_version("version");
+    virtualLinkDescriptor.setConnectivity_type("tyxpe");
+    virtualLinkDescriptor.setQos(
+        new HashSet<String>() {
+          {
             add("qos");
-        }});
-        virtualLinkDescriptor.setConnection(new HashSet<String>() {{
+          }
+        });
+    virtualLinkDescriptor.setConnection(
+        new HashSet<String>() {
+          {
             add("connection");
-        }});
-        virtualLinkDescriptor.setRoot_requirement("root_requirement");
-        dependent_virtual_link.add(virtualLinkDescriptor);
-        vnffgDescriptor.setDependent_virtual_link(dependent_virtual_link);
-        vnffgDescriptor.setVnffgd_security(new Security());
-        return vnffgDescriptor;
-    }
+          }
+        });
+    virtualLinkDescriptor.setRoot_requirement("root_requirement");
+    dependent_virtual_link.add(virtualLinkDescriptor);
+    vnffgDescriptor.setDependent_virtual_link(dependent_virtual_link);
+    vnffgDescriptor.setVnffgd_security(new Security());
+    return vnffgDescriptor;
+  }
 
-    @Test
-    public void vnffgManagementAddTest() {
-        VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-        when(vnffgDescriptorRepository.save(any(VNFForwardingGraphDescriptor.class))).thenReturn(vnffgDescriptor_exp);
-        VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.add(vnffgDescriptor_exp);
+  @Test
+  public void vnffgManagementAddTest() {
+    VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
+    when(vnffgDescriptorRepository.save(any(VNFForwardingGraphDescriptor.class)))
+        .thenReturn(vnffgDescriptor_exp);
+    VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.add(vnffgDescriptor_exp);
 
-        assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
-    }
+    assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
+  }
 
-    @Test
-    public void vnffgManagementQueryTest() {
-        when(vnffgDescriptorRepository.findAll()).thenReturn(new ArrayList<VNFForwardingGraphDescriptor>());
+  @Test
+  public void vnffgManagementQueryTest() {
+    when(vnffgDescriptorRepository.findAll())
+        .thenReturn(new ArrayList<VNFForwardingGraphDescriptor>());
 
-        Assert.assertEquals(false, vnffgManagement.query().iterator().hasNext());
+    Assert.assertEquals(false, vnffgManagement.query().iterator().hasNext());
 
-        VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-        when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
-        VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.query(vnffgDescriptor_exp.getId());
-        assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
-    }
+    VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
+    when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId()))
+        .thenReturn(vnffgDescriptor_exp);
+    VNFForwardingGraphDescriptor vnffgDescriptor_new =
+        vnffgManagement.query(vnffgDescriptor_exp.getId());
+    assertEqualsVNFFG(vnffgDescriptor_exp, vnffgDescriptor_new);
+  }
 
-    @Test
-    public void vnffgManagementDeleteTest() {
-        VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
-        when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(vnffgDescriptor_exp);
-        vnffgManagement.delete(vnffgDescriptor_exp.getId());
-        when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(null);
-        VNFForwardingGraphDescriptor vnffgDescriptor_new = vnffgManagement.query(vnffgDescriptor_exp.getId());
-        Assert.assertNull(vnffgDescriptor_new);
-    }
+  @Test
+  public void vnffgManagementDeleteTest() {
+    VNFForwardingGraphDescriptor vnffgDescriptor_exp = createVNFFGDescriptor();
+    when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId()))
+        .thenReturn(vnffgDescriptor_exp);
+    vnffgManagement.delete(vnffgDescriptor_exp.getId());
+    when(vnffgDescriptorRepository.findOne(vnffgDescriptor_exp.getId())).thenReturn(null);
+    VNFForwardingGraphDescriptor vnffgDescriptor_new =
+        vnffgManagement.query(vnffgDescriptor_exp.getId());
+    Assert.assertNull(vnffgDescriptor_new);
+  }
 
-    private NFVImage createNfvImage() {
-        NFVImage nfvImage = new NFVImage();
-        nfvImage.setName("image_name");
-        nfvImage.setExtId("ext_id");
-        nfvImage.setMinCPU("1");
-        nfvImage.setMinRam(1024);
-        return nfvImage;
-    }
+  private NFVImage createNfvImage() {
+    NFVImage nfvImage = new NFVImage();
+    nfvImage.setName("image_name");
+    nfvImage.setExtId("ext_id");
+    nfvImage.setMinCPU("1");
+    nfvImage.setMinRam(1024);
+    return nfvImage;
+  }
 
-    private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-        final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-        nsd.setVendor("FOKUS");
-        Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<VirtualNetworkFunctionDescriptor>();
-        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = new VirtualNetworkFunctionDescriptor();
-        virtualNetworkFunctionDescriptor
-                .setMonitoring_parameter(new HashSet<String>() {
-                    {
-                        add("monitor1");
-                        add("monitor2");
-                        add("monitor3");
-                    }
-                });
-        virtualNetworkFunctionDescriptor.setDeployment_flavour(new HashSet<VNFDeploymentFlavour>() {{
+  private NetworkServiceDescriptor createNetworkServiceDescriptor() {
+    final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+    nsd.setVendor("FOKUS");
+    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        new VirtualNetworkFunctionDescriptor();
+    virtualNetworkFunctionDescriptor.setMonitoring_parameter(
+        new HashSet<String>() {
+          {
+            add("monitor1");
+            add("monitor2");
+            add("monitor3");
+          }
+        });
+    virtualNetworkFunctionDescriptor.setDeployment_flavour(
+        new HashSet<VNFDeploymentFlavour>() {
+          {
             VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
             vdf.setExtId("ext_id");
             vdf.setFlavour_key("flavor_name");
             add(vdf);
-        }});
-        virtualNetworkFunctionDescriptor
-                .setVdu(new HashSet<VirtualDeploymentUnit>() {
-                    {
-                        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-                        HighAvailability highAvailability = new HighAvailability();
-                        highAvailability.setGeoRedundancy(false);
-                        highAvailability.setRedundancyScheme("1:N");
-                        highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
-                        vdu.setHigh_availability(highAvailability);
-                        vdu.setComputation_requirement("high_requirements");
-                        VimInstance vimInstance = new VimInstance();
-                        vimInstance.setName("vim_instance");
-                        vimInstance.setType("test");
-                        add(vdu);
-                    }
-                });
-        virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-        nsd.setVnfd(virtualNetworkFunctionDescriptors);
-        return nsd;
-    }
+          }
+        });
+    virtualNetworkFunctionDescriptor.setVdu(
+        new HashSet<VirtualDeploymentUnit>() {
+          {
+            VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+            HighAvailability highAvailability = new HighAvailability();
+            highAvailability.setGeoRedundancy(false);
+            highAvailability.setRedundancyScheme("1:N");
+            highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
+            vdu.setHigh_availability(highAvailability);
+            vdu.setComputation_requirement("high_requirements");
+            VimInstance vimInstance = new VimInstance();
+            vimInstance.setName("vim_instance");
+            vimInstance.setType("test");
+            add(vdu);
+          }
+        });
+    virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
+    nsd.setVnfd(virtualNetworkFunctionDescriptors);
+    return nsd;
+  }
 
-    private VimInstance createVimInstance() {
-        VimInstance vimInstance = new VimInstance();
-        vimInstance.setName("vim_instance");
-        vimInstance.setType("test");
-        vimInstance.setNetworks(new HashSet<Network>() {{
+  private VimInstance createVimInstance() {
+    VimInstance vimInstance = new VimInstance();
+    vimInstance.setName("vim_instance");
+    vimInstance.setType("test");
+    vimInstance.setNetworks(
+        new HashSet<Network>() {
+          {
             Network network = new Network();
             network.setExtId("ext_id");
             network.setName("network_name");
             add(network);
-        }});
-        vimInstance.setFlavours(new HashSet<DeploymentFlavour>() {{
+          }
+        });
+    vimInstance.setFlavours(
+        new HashSet<DeploymentFlavour>() {
+          {
             DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
             deploymentFlavour.setExtId("ext_id_1");
             deploymentFlavour.setFlavour_key("flavor_name");
@@ -232,8 +252,11 @@ public class VNFFGManagementClassSuiteTest {
             deploymentFlavour.setExtId("ext_id_2");
             deploymentFlavour.setFlavour_key("m1.tiny");
             add(deploymentFlavour);
-        }});
-        vimInstance.setImages(new HashSet<NFVImage>() {{
+          }
+        });
+    vimInstance.setImages(
+        new HashSet<NFVImage>() {
+          {
             NFVImage image = new NFVImage();
             image.setExtId("ext_id_1");
             image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
@@ -243,8 +266,8 @@ public class VNFFGManagementClassSuiteTest {
             image.setExtId("ext_id_2");
             image.setName("image_name_1");
             add(image);
-        }});
-        return vimInstance;
-    }
-
+          }
+        });
+    return vimInstance;
+  }
 }
