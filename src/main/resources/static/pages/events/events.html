@@ -1,0 +1,145 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Events
+            <small> List of events</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-calendar"></i> Events</li>
+        </ol>
+    </div>
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+                title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
+        </button>
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+                title="" data-toggle="modal"
+                data-target="#createEvent">Add a new Event
+        </button>
+
+    </div>
+</div>
+<div class="row top-buffer">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive" ng-show="events.length>0">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter">
+                <thead>
+                <tr>
+                    <td><input type="checkbox" ng-model="main.checkbox"></td>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'endpoint'; reverse = !reverse">endpoint <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'event'; reverse = !reverse">event <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="data in events| filter:search|orderBy:predicate:reverse">
+                    <td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
+                    <td><a href="#events/{{data.id}}">{{data.id}} </a></td>
+                    <td>{{data.name}}</td>
+                    <td>{{data.endpoint}}</td>
+                    <td>{{data.event}}</td>
+                    <td>{{data.version}}</td>
+
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li ng-if="data.name!==projectSelected.name"><a href="" ng-click="deleteEvent(data)">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="createEvent">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create a new EventEndpoint</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group" ng-repeat="(key,value) in eventObj"
+                         ng-if="key!=='event' && key!=='type' && key!=='description'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="eventObj[key]"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="col-sm-4 control-label">event</label>
+                        <div class="col-sm-6">
+                            <select name="typeSelect" class="form-control modal-select" id="action"
+                                    ng-model="eventObj.event"
+                                    ng-options="action for action in actions | orderBy:'action':false"
+                                    ng-change="">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="col-sm-4 control-label">type</label>
+                        <div class="col-sm-6">
+                            <select name="typeSelect" class="form-control modal-select" id="type"
+                                    ng-model="eventObj.type"
+                                    ng-options="type for type in types | orderBy:'type':false"
+                                    ng-change="">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Delete Alert</h4>
+            </div>
+            <div class="modal-body">
+                <p>You have selected:</p>
+                <ul ng-repeat="(k,v) in selection.ids" ng-if="v">
+                    <li>{{k}}</li>
+                </ul>
+                <p>Please confirm your selection.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" ng-click="multipleDeleteReq()" data-dismiss="modal">Delete</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

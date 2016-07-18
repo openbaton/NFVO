@@ -1,4 +1,4 @@
-package org.project.openbaton.nfvo.gui;
+package org.openbaton.nfvo.gui;
 
 import org.springframework.stereotype.Controller;
 

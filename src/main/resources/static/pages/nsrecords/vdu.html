@@ -10,11 +10,11 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Descriptors</a>
+                    NS Records</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
-                    NSD: {{nsrinfo.name}}</a>
+                    NSR: {{nsrinfo.name}}</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
@@ -25,7 +25,7 @@
                     VNF Record</a>
             </li>
             <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VDU
+                Virtual Deployment Unit
             </li>
         </ol>
     </div>
@@ -36,9 +36,29 @@
             <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId">
                 <h2>Virtual Deployment Unit</h2>
                 <dl class="dl-horizontal">
-                    <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance' && k!='vnfc' && k!='vnfc_instance'">
+                    <spam ng-repeat="(k,v) in vdu"
+                          ng-if="k!='vimInstance' && k!='vnfc' && k!='fault_management_policy'&& k!='monitoring_parameter' && k!='vnfc_instance'">
                         <dt>{{k}}</dt>
                         <dd>{{v}}</dd>
+                    </spam>
+                    <spam ng-if="vdu.fault_management_policy.length>0">
+                        <dt>fault_management_policy</dt>
+                        <dd ng-repeat="fmp in vdu.fault_management_policy">
+                            <b>name:</b> {{fmp.name}}, <b>period:</b> {{fmp.period}}, <b>severety:</b> {{fmp.severety}}
+                            <span ng-if="fmp.criteria.length>0">
+                                <b>critertia:</b>
+                                 <span ng-repeat="c in fmp.criteria">
+                            {{c.parameter_ref}} {{c.comparison_operator}} {{c.threshold}}, function: {{c.function}}, vnfc_selector: {{c.vnfc_selector}}
+
+                            </span>
+                            </span>
+                        </dd>
+                    </spam>
+                    <spam ng-if="vdu.monitoring_parameter.length>0">
+                        <dt>monitoring_parameter</dt>
+                        <dd>
+                            <span ng-repeat="mp in vdu.monitoring_parameter">{{mp}}<span ng-if="!$last">,</span> </span>
+                        </dd>
                     </spam>
                     <spam ng-if="vdu.vnfc.length>0">
                         <dt>vnfc</dt>
@@ -66,7 +86,7 @@
                          </span>
                 </dl>
                 <tabset ng-if="vdu.vnfc_instance.length > 0">
-                    <tab heading="VNFC Instance" >
+                    <tab heading="VNFC Instance">
                         <div class="table-responsive">
                             <h3>VNFC Instances</h3>
                             <table
@@ -78,6 +98,8 @@
                                             class="fa fa-sort"></i></th>
                                     <th ng-click="predicate = 'version'; reverse = !reverse">version <i
                                             class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'state'; reverse = !reverse">state <i
+                                            class="fa fa-sort"></i></th>
                                     <th ng-click="predicate = 'connection_point'; reverse = !reverse">connection point
                                         <i class="fa fa-sort"></i></th>
                                     <th ng-click="predicate = 'ips'; reverse = !reverse">ips <i class="fa fa-sort"></i>
@@ -88,9 +110,9 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="vnfci in vdu.vnfc_instance | orderBy:predicate:reverse">
-                                    <!--<td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a></td>-->
-                                    <td>{{vnfci.hostname}}</td>
+                                    <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}/vdus/{{vduId}}/vnfci/{{vnfci.id}}">{{vnfci.hostname}}</a></td>
                                     <td>{{vnfci.version}}</td>
+                                    <td>{{vnfci.state}}</td>
                                     <td>
                                         <p ng-repeat="cp in vnfci.connection_point"
                                            title="virtual link reference">

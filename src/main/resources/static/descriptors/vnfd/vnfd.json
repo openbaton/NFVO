@@ -3,32 +3,27 @@
   "version":"0.1",
   "name":"dummy1",
   "type":"server",
-  "endpoint":"dummy",
+  "endpoint":"generic",
   "vdu":[
     {
       "vm_image":[
         "ubuntu-14.04-server-cloudimg-amd64-disk1"
       ],
-      "computation_requirement":"",
-      "virtual_memory_resource_element":"1024",
-      "virtual_network_bandwidth_resource":"1000000",
+      "scale_in_out":2,
       "lifecycle_event":[
       ],
-      "vimInstanceName":"vim-instance",
-      "vdu_constraint":"",
-      "high_availability":"ACTIVE_PASSIVE",
-      "scale_in_out":3,
       "vnfc":[
         {
           "connection_point":[
             {
+              "floatingIp":"random",
               "virtual_link_reference":"private"
             }
           ]
         }
       ],
-      "monitoring_parameter":[
-        "cpu_utilization"
+      "vimInstanceName":[
+        "vim-instance"
       ]
     }
   ],
@@ -49,32 +44,9 @@
   ],
   "deployment_flavour":[
     {
-      "df_constraint":[
-        "constraint1",
-        "constraint2"
-      ],
-      "costituent_vdu":[],
       "flavour_key":"m1.small"
-    },{
-      "df_constraint":[
-        "constraint3",
-        "constraint4"
-      ],
-      "costituent_vdu":[],
-      "flavour_key":"m1.nano"
-
     }
   ],
   "auto_scale_policy":[
-  ],
-  "manifest_file":"",
-  "requires":[
-    "nfvo:ip-en5",
-    "database:ipB",
-    "database:ipC",
-    "database:ipD"
-  ],
-  "provides":[
-    "ip"
   ]
 }

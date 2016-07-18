@@ -1,14 +1,15 @@
 angular.module('app')
-    .factory('http', function ($http, $q, $cookieStore) {
+    .factory('http', function ($http, $q, $cookieStore, $rootScope) {
 
         var customHeaders = {};
-        if ($cookieStore.get('token') === '')
+        var http = {};
+
+        if ($cookieStore.get('token') === '' || angular.isUndefined($cookieStore.get('token')))
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             };
         else {
-
             customHeaders = {
                 'Accept': 'application/json',
                 'Content-type': 'application/json',
@@ -16,8 +17,24 @@ angular.module('app')
             };
         }
 
-        var http = {};
+
         http.get = function (url) {
+            console.log(customHeaders);
+
+            if (url.indexOf("/scripts/") > -1) {
+                customHeaders['Accept'] = 'text/plain';
+                customHeaders['Content-type'] = 'text/plain';
+
+            } else {
+                customHeaders['Accept'] = 'application/json';
+                customHeaders['Content-type'] = 'application/json';
+
+            }
+
+            customHeaders['project-id'] = $cookieStore.get('project').id;
+            //console.log(customHeaders);
+            //console.log($cookieStore.get('project'));
+
             return $http({
                 url: url,
                 method: 'GET',
@@ -27,13 +44,26 @@ angular.module('app')
 
 
         http.post = function (url, data) {
-            console.log(data);
+            customHeaders['project-id'] = $cookieStore.get('project').id;
+            //console.log(data);
             $('#modalSend').modal('show');
             return $http({
                 url: url,
                 method: 'POST',
                 data: data,
                 headers: customHeaders
+            });
+
+        };
+        http.postLog = function (url) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
+            $('#modalSend').modal('show');
+            //console.log(url);
+            return $.ajax({
+                url: url,
+                type: 'post',
+                headers: customHeaders,
+                dataType: 'json'
             });
 
         };
@@ -51,7 +81,16 @@ angular.module('app')
             });
         };
         http.put = function (url, data) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
             $('#modalSend').modal('show');
+            if (url.indexOf("/scripts/") > -1) {
+                customHeaders['Content-type'] = 'text/plain';
+                customHeaders['Accept'] = 'text/plain';
+            } else {
+                customHeaders['Accept'] = 'application/json';
+                customHeaders['Content-type'] = 'application/json';
+            }
+
             return $http({
                 url: url,
                 method: 'PUT',
@@ -61,6 +100,8 @@ angular.module('app')
         };
 
         http.delete = function (url) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
+            //console.log(customHeaders);
             $('#modalSend').modal('show');
             return $http({
                 url: url,
@@ -76,6 +117,7 @@ angular.module('app')
             });
             return deferred.promise;
         };
+
 
         return http;
     })

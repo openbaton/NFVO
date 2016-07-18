@@ -13,6 +13,7 @@ require({
         jQueryRotate: "libs/jquery/jQueryRotate",
         angular_route: "libs/angular/angular-route.min",
         angular_cookies: "libs/angular/angular-cookies.min",
+        angular_clipboard: "libs/angular/angular-clipboard",
         d3: "libs/d3.min",
         ui_bootstrap: "libs/angular/ui-bootstrap-tpls-0.10.0.min",
         app: "app",
@@ -25,6 +26,9 @@ require({
         servicesServices: "services/servicesServices",
         topologyServices: "services/topologyServices",
         packageController: "controllers/packageController",
+        eventController: "controllers/eventController",
+        projectController: "controllers/projectController",
+        userController: "controllers/userController",
         vimInstanceController: "controllers/vimInstanceController",
         nsdController: "controllers/nsdController",
         nsrController: "controllers/nsrController",
@@ -84,7 +88,7 @@ require({
             deps: ['jquery', 'raphael']
         },
         app: {
-            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap']
+            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap', 'angular_clipboard']
         },
         angular_route: {
             deps: ['angular']
@@ -125,6 +129,15 @@ require({
         packageController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService','dropzone']
         },
+        eventController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
+        projectController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
+        userController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
         indexController: {
             deps: ['app', 'httpService', 'servicesServices', 'morris', 'authService', 'angular_cookies']
         },
@@ -155,6 +168,9 @@ require({
     'vnfcomponentController',
     'vnfmanagerController',
     'packageController',
+    'eventController',
+    'projectController',
+    'userController',
     'nsrController',
     'vimInstanceController'
 ], function (require) {

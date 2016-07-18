@@ -1,0 +1,143 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VNFCI
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil"></i>
+                    NS Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSR: {{nsrinfo.name}}</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/"><i class="fa fa-pencil-square-o"></i>
+                    VNF Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}"><i class="fa fa-pencil-square-o"></i>
+                    VNF Record</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfrecordId}}/vdus/{{vduId}}"><i
+                        class="fa fa-pencil-square-o"></i>
+                    VDUs</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VNFCI
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12" ng-show="vduId">
+        <div ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
+            <div ng-repeat="vdu in vnfr.vdu" ng-show="vdu.id==vduId" >
+                <div ng-repeat="vnfci in vdu.vnfc_instance" ng-show="vnfci.id==vnfciId" >
+                    <h2>Virtual Network Component Instance</h2>
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vnfci"
+                              ng-if="k!='connection_point' && k!='ips' && k!='floatingIps' && k!='vnfComponent' && k!='vim_id'">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                        </spam>
+                        <spam>
+                            <dt>connection point</dt>
+                            <dd ng-repeat="cp in vnfci.connection_point">
+                                virtual_link_reference: {{cp.virtual_link_reference}}
+                                floatingIp: {{cp.floatingIp}}
+                            </dd>
+                        </spam>
+
+                        <spam ng-if="vnfci.ips.length>0">
+                            <dt>ips</dt>
+                            <dd>
+                                <span ng-repeat="ip in vnfci.ips"><b>{{ip.netName}}</b>: {{ip.ip}}<span
+                                        ng-if="!$last">,</span> </span>
+                            </dd>
+                        </spam>
+                        <spam ng-if="vnfci.floatingIps.length>0">
+                            <dt>floatingIps</dt>
+                            <dd>
+                                <span ng-repeat="ip in vnfci.floatingIps"><b>{{ip.netName}}</b>: {{ip.ip}}<span
+                                        ng-if="!$last">,</span> </span>
+                            </dd>
+                        </spam>
+
+                        <spam ng-if="vnfci.floatingIps.length>0">
+                            <dt>vnfComponent</dt>
+                            <dd ng-repeat="cp in vnfci.vnfComponent.connection_point"
+                                title="virtual link reference">
+                                <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
+                            </dd>
+                        </spam>
+
+                        <spam>
+                            <dt>vim_id</dt>
+                            <dd>
+                                <a href="#vim-instances/{{vnfci.vim_id}}">{{vnfci.vim_id}}</a>
+                            </dd>
+                        </spam>
+                    </dl>
+                    <tabset>
+                        <tab heading="Log">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 class="col-lg-3">Console Log</h3>
+                                    <form class="">
+                                        <div class="row">
+                                            <div class="col-sm-12 ">
+                                                <div class="col-lg-4 pull-right">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Rows</span>
+                                                        <input type="number" class="form-control"
+                                                               aria-label="Text input with dropdown button"
+                                                               ng-model="logReq.lines">
+                                                        <div class="input-group-btn">
+                                                            <button ng-click="loadLog(vnfci.hostname)"
+                                                                    class="btn btn-primary"
+                                                                    type="button"
+                                                                    id="get_log_app"
+                                                                    title="Loads the log with specified rows"
+                                                                    data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="true">
+                                                                Show
+
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <button id="get_log" class="btn btn-secondary"
+                                                            title="Loads the full log" ng-click="loadFullLog(vnfci.hostname)">Full log
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                            <br/>
+                            <div class="row" ng-show="log">
+                                <div class="col-lg-12">
+                                    <pre id="log" ng-bind-html="log"></pre>
+                                </div>
+                            </div>
+                        </tab>
+                    </tabset>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

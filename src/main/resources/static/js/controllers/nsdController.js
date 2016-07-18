@@ -1,10 +1,11 @@
 var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService) {
 
-    var baseURL= $cookieStore.get('URL')+"/api/v1";
+    var baseURL = $cookieStore.get('URL') + "/api/v1";
 
-    var url = baseURL+ '/ns-descriptors';
-    var urlRecord = baseURL+ '/ns-records';
-    var urlVim = baseURL+'/datacenters';
+    var url = baseURL + '/ns-descriptors/';
+    var urlRecord = baseURL + '/ns-records/';
+    var urlVim = baseURL + '/datacenters/';
+    var urlVNFD = baseURL + '/vnf-descriptors/';
 
     loadTable();
 
@@ -15,12 +16,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $('#set-flavor').on('switchChange.bootstrapSwitch', function (event, state) {
         $scope.showSetting = state;
-        console.log($scope.showSetting);
+        //console.log($scope.showSetting);
         $scope.$apply(function () {
             $scope.showSetting;
         });
 
     });
+
 
     $scope.nsdToSend = {};
     $scope.textTopologyJson = '';
@@ -30,7 +32,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     http.get(urlVim)
         .success(function (response, status) {
             $scope.vimInstances = response;
-            console.log(response);
+            //console.log(response);
         })
         .error(function (data, status) {
             showError(status, data);
@@ -46,6 +48,115 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.selection = [];
 
+    $scope.addTONSD = function () {
+        $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
+        delete $scope.selectedVNFD;
+    };
+
+    $scope.saveDependency = function () {
+        $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
+        //console.log($scope.nsdCreateTmp.vnf_dependency);
+        //console.log($scope.dependency);
+
+        $('#modalDependency').modal('hide');
+    };
+
+    $scope.selectedVNFD;
+    $scope.vnfdList = [];
+
+    $scope.dependency = {};
+    $scope.dependency.parameters = [];
+
+    $scope.addParam = function (par) {
+        $scope.dependency.parameters.push(par);
+    };
+
+    $scope.removeParam = function (index) {
+        $scope.dependency.parameters.splice(index, 1);
+    };
+
+    $scope.addVld = function (vld) {
+        $scope.nsdCreateTmp.vld.push({'name': vld});
+    };
+
+    $scope.removeVld = function (index) {
+        $scope.nsdCreateTmp.vld.splice(index, 1);
+    };
+
+    $scope.deleteDependency = function (index) {
+        $scope.nsdCreateTmp.vnf_dependency.splice(index, 1);
+    };
+
+    $scope.isArray = function (obj) {
+        if (angular.isArray(obj) || angular.isObject(obj))
+            return false;
+        else
+            return true;
+    };
+    $scope.edit = function (obj) {
+        $scope.editObj = obj;
+    };
+
+    $scope.updateObj = function () {
+        http.put(url + $scope.editObj.id, $scope.editObj)
+            .success(function (response) {
+                showOk('Network Service Descriptor updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+    };
+
+    $scope.updateVNFD = function () {
+        http.put(url + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $scope.editObj.id, $scope.editObj)
+            .success(function (response) {
+                showOk('VNF Descriptor updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(status, JSON.stringify(data));
+            });
+    };
+
+    $scope.addNewConfig = function () {
+        if (angular.isUndefined($scope.editObj.configurations)) {
+            $scope.editObj.configurations = {};
+            $scope.editObj.configurations.configurationParameters = [];
+        }
+        $scope.editObj.configurations.configurationParameters.push({'confKey': '', 'value': ''})
+    };
+    $scope.removeConfig = function (index) {
+        $scope.editObj.configurations.configurationParameters.splice(index, 1);
+    };
+
+    $scope.addLifecycleEvent = function (vdu) {
+        vdu.lifecycle_event.push({'event': "CONFIGURE", 'lifecycle_events': []})
+    };
+
+
+    $scope.loadVNFD = function () {
+        $scope.nsdCreateTmp = {};
+        $scope.nsdCreateTmp.name = '';
+        $scope.nsdCreateTmp.vendor = '';
+        $scope.nsdCreateTmp.version = '';
+        $scope.nsdCreateTmp.vnfd = [];
+        $scope.nsdCreateTmp.vnf_dependency = [];
+        $scope.nsdCreateTmp.vld = [];
+
+        http.get(urlVNFD)
+            .success(function (response, status) {
+                $scope.vnfdList = response;
+                //console.log(response);
+                $('#modalCreateNSD').modal('show');
+            })
+            .error(function (data, status) {
+                showError(status, data);
+            });
+    };
+
     $scope.toggleSelection = function toggleSelection(image) {
         var idx = $scope.selection.indexOf(image);
         if (idx > -1) {
@@ -54,97 +165,18 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         else {
             $scope.selection.push(image);
         }
-        console.log($scope.selection);
+        //console.log($scope.selection);
         $scope.vduCreate.vm_image = $scope.selection;
     };
-    $scope.addVDU = function () {
-        $http.get('descriptors/vnfd/vdu.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.vduCreate = angular.copy(res.data);
-            });
-        $('#addEditVDU').modal('show');
-    };
 
-    $scope.editVDU = function (vnfd, index) {
-        $scope.vduCreate = vnfd;
-        $scope.vduEditIndex = index;
-        $('#addEditVDU').modal('show');
-    };
-
-    $scope.addVDUtoVND = function () {
-        $('#addEditVDU').modal('hide');
-        if (!angular.isUndefined($scope.vduEditIndex)) {
-            $scope.vnfdCreate.vdu.splice($scope.vduEditIndex, 1);
-            delete $scope.vduEditIndex;
-        }
-        $scope.vnfdCreate.vdu.push(angular.copy($scope.vduCreate));
-    };
 
     $scope.deleteVDU = function (index) {
         $scope.vnfdCreate.vdu.splice(index, 1);
     };
 
-    $scope.addVNFD = function () {
-        $http.get('descriptors/vnfd/vnfd.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.vnfdCreate = angular.copy(res.data);
-            });
-        $('#addEditVNDF').modal('show');
-    };
-
-    $scope.editVNFD = function (vnfd, index) {
-        $scope.vnfdCreate = vnfd;
-        $scope.vnfdEditIndex = index;
-        $('#addEditVNDF').modal('show');
-    };
-
-    $scope.editDF = function (df, index) {
-        $scope.depFlavor = df;
-        $scope.dfEditIndex = index;
-        $('#modaladdDepFlavour').modal('show');
-    };
-
-    $scope.editLEfromVNFD = function (le, index) {
-        $scope.lifecycle_event = le;
-        $scope.leEditIndex = index;
-        $('#modaladdLifecycleEvent').modal('show');
-    };
-
-
-    function paintBackdropModal() {
-        var height = parseInt($(window).height()) + 150 * $scope.nsdCreate.vnfd.length;
-        console.log('heigh: ' + height + 'px');
-        $(".modal-backdrop").height(height)
-    }
-
-    $scope.saveVirtualLink = function (vl) {
-//console.log(vl);
-        var obj = {};
-        obj[vl.key] = vl.value;
-        $scope.nsdCreate.vld.push(obj);
-    };
-
-    $scope.deleteVirtualLink = function (index) {
-        $scope.nsdCreate.vld.splice(index, 1);
-    };
-    $scope.addVNDtoNSD = function () {
-        $('#addEditVNDF').modal('hide');
-        if (!angular.isUndefined($scope.vnfdEditIndex)) {
-            $scope.nsdCreate.vnfd.splice($scope.vnfdEditIndex, 1);
-            delete $scope.vnfdEditIndex;
-        }
-        $scope.nsdCreate.vnfd.push(angular.copy($scope.vnfdCreate));
-        paintBackdropModal();
-    };
-
-    $scope.deleteVNFDForm = function (index) {
-        $scope.nsdCreate.vnfd.splice(index, 1);
-    };
 
     $scope.deleteVNFDependency = function (vnfd) {
-        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdependencies/' + vnfd.id)
+        http.delete(url + $scope.nsdinfo.id + '/vnfdependencies/' + vnfd.id)
             .success(function (response) {
                 showOk('Deleted VNF Dependecy with id: ' + vnfd.id);
                 loadTable();
@@ -156,8 +188,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     };
 
+
     $scope.deleteVNFD = function (vnfd) {
-        http.delete(url + '/' + $scope.nsdinfo.id + '/vnfdescriptors/' + vnfd.id)
+        http.delete(url + $scope.nsdinfo.id + '/vnfdescriptors/' + vnfd.id)
             .success(function (response) {
                 showOk('Deleted VNF Descriptors with id: ' + vnfd.id);
                 loadTable();
@@ -178,14 +211,14 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     if (!angular.isUndefined($routeParams.vduId)) {
         $scope.vduId = $routeParams.vduId;
-        console.log($scope.vduId);
+        //console.log($scope.vduId);
     }
 
 
-    $scope.storeNSDF = function (nsdCreate) {
-        $('#modalForm').modal('hide');
-        console.log(nsdCreate);
-        http.post(url, nsdCreate)
+    $scope.sendNSDCreate = function (nsdCreate) {
+        $('.modal').modal('hide');
+        //console.log($scope.nsdCreateTmp);
+        http.post(url, $scope.nsdCreateTmp)
             .success(function (response) {
                 showOk('Network Service Descriptor stored!');
                 loadTable();
@@ -196,134 +229,6 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             });
     };
 
-    $scope.saveValueVMI = function (newValue) {
-        console.log(newValue);
-        $scope.vduCreate.vm_image.push(newValue);
-    };
-
-    $scope.deleteVMI = function (index) {
-        $scope.vduCreate.vm_image.splice(index, 1);
-    };
-
-    $scope.saveValueMP = function (newValue) {
-        console.log(newValue);
-        $scope.vduCreate.monitoring_parameter.push(newValue);
-    };
-
-    $scope.deleteMP = function (index) {
-        $scope.vduCreate.monitoring_parameter.splice(index, 1);
-    };
-    $scope.saveValueMPfromVNFD = function (newValue) {
-        console.log(newValue);
-        $scope.vnfdCreate.monitoring_parameter.push(newValue);
-    };
-
-    $scope.deleteMPfromVNFD = function (index) {
-        $scope.vnfdCreate.monitoring_parameter.splice(index, 1);
-    };
-
-    $scope.saveValueMPfromNSD = function (newValue) {
-        console.log(newValue);
-        $scope.nsdCreate.monitoring_parameter.push(newValue);
-    };
-
-    $scope.deleteMPfromNSD = function (index) {
-        $scope.nsdCreate.monitoring_parameter.splice(index, 1);
-    };
-
-    $scope.saveValueCVDU = function (newValue) {
-        console.log(newValue);
-        $scope.depFlavor.costituent_vdu.push(newValue);
-    };
-
-    $scope.deleteCVDU = function (index) {
-        $scope.depFlavor.costituent_vdu.splice(index, 1);
-    };
-
-    $scope.saveValueDFC = function (newValue) {
-        console.log(newValue);
-        $scope.depFlavor.df_constraint.push(newValue);
-    };
-
-
-    $scope.deleteDFC = function (index) {
-        $scope.depFlavor.df_constraint.splice(index, 1);
-    };
-
-    $scope.saveValueLifeCE = function (newValue) {
-        console.log(newValue);
-        $scope.lifecycle_event.lifecycle_events.push(newValue);
-    };
-
-    $scope.deleteLEfromVNFD = function (index) {
-        $scope.vnfdCreate.lifecycle_event.splice(index, 1);
-    };
-
-    $scope.addLifecycle = function () {
-        $scope.vnfdCreate.lifecycle_event.push(angular.copy($scope.lifecycle_event));
-    };
-
-    $scope.deleteLifeCE = function (index) {
-        $scope.lifecycle_event.lifecycle_events.splice(index, 1);
-    };
-
-    $scope.deleteVNFDep = function (index) {
-        $scope.nsdCreate.vnf_dependency.splice(index, 1);
-    };
-
-    $scope.deleteDF = function (index) {
-        $scope.vnfdCreate.deployment_flavour.splice(index, 1);
-    };
-
-    $scope.addDepFlavour = function () {
-        $http.get('descriptors/vnfd/deployment_flavour.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.depFlavor = angular.copy(res.data);
-            });
-        $('#modaladdDepFlavour').modal('show');
-    };
-
-    $scope.addLifecycleEvent = function () {
-        $http.get('descriptors/vnfd/lifecycle_event.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.lifecycle_event = angular.copy(res.data);
-            });
-        $('#modaladdLifecycleEvent').modal('show');
-    };
-    $scope.addVNFDependencies = function () {
-        $('#modalVNFDependencies').modal('show');
-    };
-
-    $scope.source_target = {'source': {'name': ''}, 'target': {'name': ''}};
-    $scope.addVNFDep = function () {
-        $scope.nsdCreate.vnf_dependency.push(angular.copy($scope.source_target));
-        $('#modalVNFDependencies').modal('hide');
-    };
-    $scope.addLifecycle = function () {
-        if (!angular.isUndefined($scope.leEditIndex)) {
-            $scope.vnfdCreate.lifecycle_event.splice($scope.leEditIndex, 1);
-            delete $scope.leEditIndex;
-        }
-        $scope.vnfdCreate.lifecycle_event.push(angular.copy($scope.lifecycle_event));
-        $('#modaladdLifecycleEvent').modal('hide');
-    };
-
-    $scope.storeDepFlavour = function () {
-        $('#modaladdDepFlavour').modal('hide');
-        if (!angular.isUndefined($scope.dfEditIndex)) {
-            $scope.vnfdCreate.deployment_flavour.splice($scope.dfEditIndex, 1);
-            delete $scope.dfEditIndex;
-        }
-        $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
-    };
-
-    $http.get('descriptors/network_service_descriptors/NetworkServiceDescriptor.json')
-        .then(function (res) {
-            //console.log(res.data);
-            $scope.nsdCreate = angular.copy(res.data);
-        });
 
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
@@ -379,8 +284,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         }
 
-        console.log(postNSD);
-        console.log(type);
+        //console.log(postNSD);
+        //console.log(type);
 
         if (sendOk) {
             if (type === 'topology') {
@@ -424,7 +329,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.deleteNSD = function (data) {
-        http.delete(url + '/' + data.id)
+        http.delete(url + data.id)
             .success(function (response) {
                 showOk('Deleted Network Service Descriptor with id: ' + data.id);
                 loadTable();
@@ -436,12 +341,13 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
-        $('#madalLaunch').modal('show');
+        //$('#madalLaunch').modal('show');
+        $scope.launch();
     };
 
     $scope.launch = function () {
-        console.log($scope.nsdToSend);
-        http.post(urlRecord + '/' + $scope.nsdToSend.id)
+        //console.log($scope.nsdToSend);
+        http.post(urlRecord + $scope.nsdToSend.id)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -451,14 +357,14 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
 
     $scope.Jsplumb = function () {
-        http.get(url + '/' + $routeParams.nsdescriptorId)
+        http.get(url + $routeParams.nsdescriptorId)
             .success(function (response, status) {
                 topologiesAPI.Jsplumb(response, 'descriptor');
-                console.log(response);
+                //console.log(response);
 
             }).error(function (data, status) {
-                showError(status, data);
-            });
+            showError(status, data);
+        });
 
     };
 
@@ -477,6 +383,61 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         $scope.alerts.splice(index, 1);
     };
 
+    /* -- multiple delete functions Start -- */
+
+    $scope.multipleDeleteReq = function () {
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push(k);
+            }
+        });
+        //console.log(ids);
+        http.post(url + 'multipledelete', ids)
+            .success(function (response) {
+                showOk('Items with id: ' + ids.toString() + ' deleted.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+    };
+
+    $scope.main = {checkbox: false};
+    $scope.$watch('main', function (newValue, oldValue) {
+        ////console.log(newValue.checkbox);
+        ////console.log($scope.selection.ids);
+        angular.forEach($scope.selection.ids, function (value, k) {
+            $scope.selection.ids[k] = newValue.checkbox;
+        });
+        //console.log($scope.selection.ids);
+    }, true);
+
+    $scope.$watch('selection', function (newValue, oldValue) {
+        //console.log(newValue);
+        var keepGoing = true;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (keepGoing) {
+                if ($scope.selection.ids[k]) {
+                    $scope.multipleDelete = false;
+                    keepGoing = false;
+                }
+                else {
+                    $scope.multipleDelete = true;
+                }
+            }
+
+        });
+        if (keepGoing)
+            $scope.mainCheckbox = false;
+    }, true);
+
+    $scope.multipleDelete = true;
+
+    $scope.selection = {};
+    $scope.selection.ids = {};
+    /* -- multiple delete functions END -- */
 
     function showError(status, data) {
         if (status === 400)
@@ -493,7 +454,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
         $('.modal').modal('hide');
         if (status === 401) {
-            console.log(status + ' Status unauthorized')
+            //console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
@@ -509,18 +470,18 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsdescriptors = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
 
                 });
         else
-            http.get(url + '/' + $routeParams.nsdescriptorId)
+            http.get(url + $routeParams.nsdescriptorId)
                 .success(function (response, status) {
                     $scope.nsdinfo = response;
                     $scope.nsdJSON = JSON.stringify(response, undefined, 4);
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);

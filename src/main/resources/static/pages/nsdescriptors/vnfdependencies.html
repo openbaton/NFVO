@@ -55,7 +55,7 @@
                 <tbody>
                 <tr ng-repeat="vnfd in nsdinfo.vnf_dependency| orderBy:predicate:reverse">
                     <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdependencies/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a></td>
-                    <td>{{vnfd.parameters}}</td>
+                    <td><span ng-repeat="pr in vnfd.parameters">{{pr}}<span ng-if="!$last">, </span></span></td>
                     <td>{{vnfd.source.name}}</td>
                     <td>{{vnfd.target.name}}</td>
                     <td>

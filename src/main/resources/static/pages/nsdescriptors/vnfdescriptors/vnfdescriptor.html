@@ -23,145 +23,212 @@
     <div class="col-lg-12 top-buffer" ng-show="vnfdinfo">
         <div class="col-lg-12">
             <div>
-                    <h2>VNF Descriptor: {{vnfdinfo.name}}</h2>
-                    <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vnfdinfo" ng-show="v != null"
-                              ng-if="k!='vdu' && k!='deployment_flavour' ">
+                <h2>VNF Descriptor: {{vnfdinfo.name}}</h2>
+                <dl class="dl-horizontal">
+                    <dt>name</dt>
+                    <dd>{{vnfdinfo.name}}</dd>
+                    <dt>type</dt>
+                    <dd>{{vnfdinfo.type}}</dd>
+                    <dt>version</dt>
+                    <dd>{{vnfdinfo.version}}</dd>
+                    <dt>vendor</dt>
+                    <dd>{{vnfdinfo.vendor}}</dd>
+                    <span ng-if="vnfdinfo.configurations">
+                        <dt>{{vnfdinfo.configurations.name}}</dt>
+                        <dd>
+                            <pairlist ng-repeat="cp in vnfdinfo.configurations.configurationParameters">
+                                <pair>
+                                    <key><b>{{cp.confKey}}:</b>
+                                        <key>
+                                            <value>{{cp.value}}</value>
+                                </pair>
+                                <span ng-if="!$last">,</span>
+                            </pairlist>
+                        </dd>
+                    </span>
+                    <spam ng-repeat="(k,v) in vnfdinfo" ng-show="v != null"
+                          ng-if="k!='vdu' && k!='deployment_flavour' ">
 
-                            <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'  && k!='virtual_link' && k!='vnfPackage'">
-                                <dt>{{k}}</dt>
-                                <dd>{{v}}</dd>
-                            </spam>
-                            <spam ng-if="k=='lifecycle_event'">
-                                <dt>{{k}}</dt>
-                                <dd>
-                                    <span ng-repeat="lf in v">
-                                       <span ng-repeat="(k,v) in lf">
-                                            <b>{{k}}</b>: {{v}}
-                                           <span ng-if="!$last">,</span>
-                                        </span>
-                                    </span>
-                                </dd>
-                            </spam>
-                            <spam ng-if="k=='virtual_link'">
-                                <dt>{{k}}</dt>
-                                <dd>
-                                    <span ng-repeat="vl in v">
-                                       <span ng-repeat="(k,v) in vl">
-                                            <b>{{k}}</b>: {{v}}
-                                           <span ng-if="!$last">,</span>
-                                        </span>
-                                    </span>
-                                </dd>
-                            </spam>
-                            <spam ng-if="k=='vnfPackage'">
-                                <dt>{{k}}</dt>
-                                <dd>
+                        <spam ng-if="k!='requires' && k!='provides' && k!='lifecycle_event'&& k!='name'&& k!='type'&& k!='version'&& k!='vendor' && k!='configurations'  && k!='virtual_link' && k!='vnfPackage'">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                        </spam>
+
+                        <spam ng-if="k=='vnfPackage'">
+                            <dt>{{k}}</dt>
+                            <dd>
                                        <span ng-repeat="(k,v1) in v">
                                             <b>{{k}}</b>: {{v1}}
                                            <span ng-if="!$last">,</span>
                                         </span>
-                                </dd>
-                            </spam>
-                            <spam ng-if="k=='requires' || k=='provides'">
-                                <hr class="hr_title">
-                                <dt>{{k}}</dt>
-                                <dd>{{v}}</dd>
-                                <hr class="hr_title">
-                            </spam>
-
+                            </dd>
                         </spam>
-                    </dl>
-                    <tabset>
-                        <tab heading="Vdu">
-                            <div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
-                                <h3>Vdu</h3>
-                                <table
-                                        class="table table-bordered table-striped table-hover tablesorter"
-                                        id="vduTabletable">
-                                    <thead>
-                                    <tr>
-                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vimInstanceName
-                                            <i
-                                                    class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
-                                        <td>
-                                            <a href="#vnfdescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
-                                        </td>
-                                        <td>{{vdu.version}}</td>
-                                        <td>{{vdu.vm_image}}</td>
-                                        <td>{{vdu.vimInstanceName}}</td>
-                                        <td>{{vdu.vnfc_instance}}</td>
-                                        <td>
-                                            <span ng-repeat="vnfc in vdu.vnfc"> {{vnfc.connection_point}} </span>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </tab>
-                        <tab heading="Deployment Flavour">
-                            <div class="table-responsive" ng-show="vnfdinfo.deployment_flavour.length > 0">
-                                <h3>Deployment Flavour</h3>
-                                <table
-                                        class="table table-bordered table-striped table-hover tablesorter"
-                                        id="">
-                                    <thead>
-                                    <tr>
-                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
-                                                class="fa fa-sort"></i>
-                                        </th>
-                                        <th ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
-                                            Constraint <i
-                                                    class="fa fa-sort"></i>
-                                        </th>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
-                                        <td>{{df.id}}</td>
-                                        <td>{{df.version}}</td>
-                                        <td>{{df.flavour_key}}</td>
-                                        <td>
-                                            {{df.df_constraint}}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </tab>
+                        <spam ng-if="k=='requires' || k=='provides'">
+                            <hr class="hr_title">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+                            <hr class="hr_title">
+                        </spam>
 
-                    </tabset>
-                    <br/>
-                    <br/>
-                    <br/>
+                    </spam>
+                </dl>
+                <tabset>
+                    <tab heading="Vdu">
+                        <div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
+                            <h3>Virtual Deployment Unit</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="vduTabletable">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vim Name
+                                        <i
+                                                class="fa fa-sort"></i>
+                                    </th>
+
+                                    <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
+                                    <td>
+                                        <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                    </td>
+                                    <td>{{vdu.version}}</td>
+                                    <td>{{vdu.vm_image}}</td>
+                                    <td>{{vdu.vimInstanceName}}</td>
+                                    <!--<td>{{vdu.vnfc_instance}}</td>-->
+                                    <td>
+                                        <ul ng-repeat="vnfc in vdu.vnfc">
+                                            <li ng-repeat="cp in vnfc.connection_point">
+                                                <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Lifecycle Event">
+                        <div class="table-responsive" ng-show="vnfdinfo.lifecycle_event.length > 0">
+                            <h3>Lifecycle Event</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'event'; reverse = !reverse">event <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
+                                        events <i class="fa fa-sort"></i>
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="le in vnfdinfo.lifecycle_event | orderBy:predicate:reverse">
+                                    <td>{{le.id}}</td>
+                                    <td>{{le.event}}</td>
+                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
+                                            ng-if="!$last">, </span></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Deployment Flavour">
+                        <div class="table-responsive" ng-show="vnfdinfo.deployment_flavour.length > 0">
+                            <h3>Deployment Flavour</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
+                                        Constraint <i
+                                                class="fa fa-sort"></i>
+                                    </th>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
+                                    <td>{{df.id}}</td>
+                                    <td>{{df.version}}</td>
+                                    <td>{{df.flavour_key}}</td>
+                                    <td>
+                                        {{df.df_constraint}}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Virtual Link">
+                        <div class="table-responsive" ng-show="vnfdinfo.virtual_link.length > 0">
+                            <h3>Virtual Link</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'qos'; reverse = !reverse">qos <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="vl in vnfdinfo.virtual_link | orderBy:predicate:reverse">
+                                    <td>{{vl.id}}</td>
+                                    <td>{{vl.name}}</td>
+                                    <td>{{vl.extId}}</td>
+                                    <td>{{vl.qos}}</td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                </tabset>
+                <br/>
+                <br/>
+                <br/>
 
             </div>
         </div>

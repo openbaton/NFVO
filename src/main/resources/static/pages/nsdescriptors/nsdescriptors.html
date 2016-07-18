@@ -15,15 +15,23 @@
 </div>
 <div class="row">
     <div class="col-lg-12">
+        <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+                title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
+        </button>
+
         <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
                 title="Create a new Network Service Descriptor" data-toggle="modal"
                 data-target="#modalFile">Upload NSD
         </button>
-       <!-- <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
-                title="Create a new Network Service Descriptor" data-toggle="modal"
-                ng-style="{'margin-right':'20px'}"
-                data-target="#modalForm">Create NSD
-        </button>-->
+        <button ng-click="loadVNFD()" class="btn btn-primary pull-right"
+                title="Create a new Network Service Descriptor"
+                ng-style="{'margin-right':'20px'}">Create NSD
+        </button>
+        <!-- <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
+                 title="Create a new Network Service Descriptor" data-toggle="modal"
+                 ng-style="{'margin-right':'20px'}"
+                 data-target="#modalForm">Create NSD
+         </button>-->
 
     </div>
 </div>
@@ -39,6 +47,7 @@
                     id="nsdTabletable">
                 <thead>
                 <tr>
+                    <td><input type="checkbox" ng-model="main.checkbox" ></td>
                     <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">NSD Name <i class="fa fa-sort"></i></th>
@@ -49,6 +58,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="nsd in nsdescriptors| orderBy:predicate:reverse">
+                    <td><input type="checkbox" ng-init="selection.ids[nsd.id] = false" ng-model="selection.ids[nsd.id]" name="group" id="{{nsd.id}}" /></td>
                     <td><a href="#nsdescriptors/{{nsd.id}}">{{nsd.id}}</a></td>
                     <td>{{nsd.name}}</td>
                     <td>{{nsd.vendor}}</td>
@@ -60,7 +70,10 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="" data-toggle="modal"
                                        ng-click="launchOption(nsd)"
-                                        >Launch</a>
+                                >Launch</a>
+                                <li><a href="" data-toggle="modal" data-target="#editModal"
+                                       ng-click="edit(nsd)"
+                                >Edit</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li><a href="" ng-click="deleteNSD(nsd)">Delete</a></li>
@@ -181,7 +194,7 @@
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="saveValueMP(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
+                                                ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
                                             </div>
@@ -205,7 +218,7 @@
                                         <div class="col-lg-12">Virtual Machine Images
                                             <a class="pull-right" title="Add a New VMI" href=""
                                                ng-click="toggle = !toggle">
-                                                </a></div>
+                                            </a></div>
                                     </h4>
                                     <div class="col-lg-offset-2" ng-repeat="vim in vimInstances">
 
@@ -217,7 +230,7 @@
                                                     value="{{image.name}}"
                                                     ng-checked="selection.indexOf(image.name) > -1"
                                                     ng-click="toggleSelection(image.name)"
-                                                    > {{image.name}}
+                                            > {{image.name}}
                                         </div>
                                     </div>
                                 </div>
@@ -225,7 +238,6 @@
                                     <br/>
                                     <br/>
                                     <br/>
-
 
 
                                 </div>
@@ -302,7 +314,7 @@
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="saveValueDFC(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
+                                                ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
                                             </div>
@@ -345,7 +357,7 @@
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="saveValueCVDU(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
+                                                ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
                                             </div>
@@ -435,7 +447,7 @@
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="button"
                                                         ng-click="saveValueMPfromVNFD(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
+                                                ><i class="fa fa-floppy-o"></i>
                                                 </button>
                                             </span>
                                             </div>
@@ -583,420 +595,388 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+
+<div class="modal" id="modalCreateNSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Create a Network Service Descriptor</h4>
-
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Create a Network Service Descriptor</h4>
             </div>
             <div class="modal-body">
+                <button ng-if="data.serviceContainers.length == 0" class="btn btn-default" data-toggle="modal"
+                        data-target="#addContainerModal">Add Container
+                </button>
+                <form class="form-horizontal" role="form" id="formAddService">
 
-                <form role="form" class="form-horizontal" id="formForm">
-                    <br/>
 
-                    <div class="form-group" ng-repeat="(key,value) in nsdCreate"
-                         ng-if="key!='vnfd' && key!='vnfd' && key!='auto_scale_policy' && key!='connection_point' && key!='lifecycle_event'
-                          && key!='monitoring_parameter' && key!='pnfd' && key!='service_deployment_flavour' && key!='vnf_dependency'
-                         && key!='vnffgd' && key!='vld' && key!='nsd_security'">
-                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-4 control-label">name</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
-                                   ng-model="nsdCreate[key]"/>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   ng-model="nsdCreateTmp.name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendor" class="col-sm-4 control-label">vendor</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="vendor" name="vendor"
+                                   ng-model="nsdCreateTmp.vendor"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="version" class="col-sm-4 control-label">version</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="version" name="version"
+                                   ng-model="nsdCreateTmp.version"/>
                         </div>
                     </div>
 
-
-                    <tabset>
-
-                        <tab heading="auto_scale_policy" ng-show="showTab(nsdCreate.auto_scale_policy.length)">
-                            {{nsdCreate.auto_scale_policy}}
-                        </tab>
-                        <tab heading="connection_point" ng-show="showTab(nsdCreate.connection_point.length)">
-                            {{nsdCreate.connection_point}}
-                        </tab>
-                        <tab heading="lifecycle_event" ng-show="showTab(nsdCreate.lifecycle_event.length)">
-                            {{nsdCreate.lifecycle_event}}
-                        </tab>
-                        <tab heading="monitoring_parameter">
-                            <div class="">
-                                <div class="">
-                                    <h4 class="">
-                                        <div class="col-lg-12">Monitoring Parameters
-                                            <a class="pull-right" title="Add a New Monitoring Prameter" href=""
-                                               ng-click="toggle = !toggle">
-                                                <i class="fa fa-plus-square"> Add </i></a></div>
-                                    </h4>
-                                </div>
-                                <div ng-init="toggle = false" ng-if="toggle" id="">
-                                    <br/>
-                                    <br/>
-                                    <br/>
-
-                                    <div class="form-group">
-                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
-                                        <div class="col-sm-6">
-                                            <div class="form-group input-group">
-                                                <input class="form-control" type="text" ng-model="newValue">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMPfromNSD(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-                            <br/>
-
-                            <ul class="col-lg-offset-3"
-                                ng-repeat="mp in nsdCreate.monitoring_parameter track by $index">
-                                <li>{{mp}} <a href="" ng-click="deleteMPfromNSD($index)"><i
-                                        class="fa fa-trash-o"></i></a></li>
-                            </ul>
-                            <!--{{nsdCreate.monitoring_parameter}}-->
-                        </tab>
-                        <tab heading="pnfd" ng-show="showTab(nsdCreate.pnfd.length)">
-                            {{nsdCreate.pnfd}}
-                        </tab>
-                        <tab heading="service_deployment_flavour"
-                             ng-show="showTab(nsdCreate.service_deployment_flavour.length)">
-
-                            {{nsdCreate.service_deployment_flavour}}
-                        </tab>
-                        <tab heading="vnf_dependency">
-                            <div class="">
-                                <div class="">
-                                    <h4 class="">
-                                        <div class="col-lg-12">Virtual Network Function Dependencies
-                                            <a class="pull-right " title="Add a New VNFDependencies"
-                                               href=""
-                                               ng-click="addVNFDependencies()">
-
-                                                <i class="fa fa-plus-square"> Add </i></a>
-                                        </div>
-                                    </h4>
-                                </div>
-                            </div>
-                            <br/>
-                            <br/>
-                            <br/>
-                            <ul class="col-lg-offset-3"
-                                ng-repeat="vnfdep in nsdCreate.vnf_dependency track by $index">
-                                <li><b>source</b>: {{vnfdep.source.name}}, <b>target</b>: {{vnfdep.target.name}} <a
-                                        href="" ng-click="deleteVNFDep($index)"><i
-                                        class="fa fa-trash-o"></i></a></li>
-                            </ul>
-                            <!--{{nsdCreate.vnf_dependency}}-->
-                        </tab>
-
-                        <tab heading="vnffgd" ng-show="showTab(nsdCreate.vnffgd.length)">
-                            {{nsdCreate.vnffgd}}
-                        </tab>
-                        <tab heading="vld" ng-show="showTab(nsdCreate.vld.length)">
-                            <div class="">
-                                <div class="">
-                                    <h4 class="">
-                                        <div class="col-lg-12">Virtual link
-                                            <a class="pull-right" title="Add a New Virtual link" href=""
-                                               ng-click="toggle = !toggle">
-                                                <i class="fa fa-plus-square"> Add </i></a></div>
-                                    </h4>
-                                </div>
-                                <div ng-init="toggle = false" ng-if="toggle">
-                                    <br/>
-                                    <br/>
-                                    <br/>
-
-                                    <div class="form-group">
-                                        <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
-                                        <div class="col-sm-6">
-                                            <div class="form-group input-group">
-                                                <div class="col-sm-6"><input class="form-control" type="text" ng-model="vl.key" placeholder="key"></div>
-                                            <div class="col-sm-6 "><input class="form-control" type="text" ng-model="vl.value" placeholder="value"></div>
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveVirtualLink(vl)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-                            <br/>
-                            <ul class="col-lg-offset-3"
-                                ng-repeat="vld in nsdCreate.vld track by $index">
-                                <span ng-repeat="(k,v) in vld">
-                                <li>
-                                    <b>{{k}}</b>: {{v}}
-                                    <a href="" ng-click="deleteVirtualLink($index)"><i class="fa fa-trash-o"></i></a>
-                                </li>
-                                    </span>
-                            </ul>
-                            <!--{{nsdCreate.vld}}-->
-                        </tab>
-
-                        <tab heading="VNFDescriptors">
-                            <div class="">
-                                <div class="">
-                                    <h4 class="">
-                                        <div class="col-lg-12">Virtual Network Function Descriptors
-                                            <a class="pull-right" title="Add a New VNFD" href="" ng-click="addVNFD()">
-                                                <i class="fa fa-plus-square"> Add </i></a></div>
-                                    </h4>
-                                </div>
-                            </div>
-                            <br/>
-                            <br/>
-
-                            <div class="row">
-                                <div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}"
-                                     ng-repeat="vnfd in nsdCreate.vnfd track by $index">
-
-                                    <div class="row">
-                                        <spam ng-repeat="(key,value) in vnfd "
-                                              ng-if="!isEmpty(value) && key !='vdu' && key!='manifest_file' && key!='lifecycle_event'  && key!='deployment_flavour' && key!='vnfPackage'">
-                                            <b>{{key}}</b>: {{value}}
-                                            <spam ng-if="!$last"><br/></spam>
-                                        </spam>
-                                        <span ng-if="vnfd.vnfPackage"><b>vnfPackage:</b>
-                                        <span ng-repeat="(key,value) in vnfd.vnfPackage">
-                                            <b>{{key}}</b>: {{value}}
-                                            <spam ng-if="!$last">,</spam>
-                                        </span>
-                                            </span>
-                                    </div>
-                                    <!--<div class="row">
-                                        <spam ng-repeat=" vdu in vnfd.vdu" ng-if="!isEmpty(value)">
-                                            <b>vdu</b>:
-                                            <spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value) && value!=''">
-                                                {{key}}: {{value}}
-                                                <spam ng-if="!$last">,</spam>
-                                            </spam>
-                                        </spam>
-
-                                    </div>-->
-                                    <div class="row">
-                                        <div class="pull-right">
-                                            <a href="" title="Edit VNFD" ng-click="editVNFD(vnfd,$index)">
-                                                <i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
-                                            <a href="" title="Delete VNFD" ng-click="deleteVNFDForm($index)">
-                                                <i class="fa fa-trash-o"> </i></a>
-                                        </div>
-                                    </div>
-                                    <hr class="hr_title"/>
-                                </div>
-                            </div>
-                        </tab>
-                    </tabset>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">Close
-                </button>
-                <button type="button" id="storeNSDF"
-                        ng-click="storeNSDF(nsdCreate)" class="btn btn-primary">Store NSD
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="modaladdLifecycleEvent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add/Edit a Lifecycle Event</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form" class="form-horizontal" id="form6">
-                    <div class="row">
-                        <!--{{lifecycle_event}}-->
-                        <div class="form-group" ng-repeat="(key,value) in lifecycle_event"
-                             ng-if="key!='vimInstance' && key!='lifecycle_events'">
-                            <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
-
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="{{key}}" name="{{key}}"
-                                       ng-model="lifecycle_event[key]"/>
-                            </div>
-                        </div>
+                    <div class="input-group">
+                        <label class=" ">VNFD in the Catalogue</label>
+                        <select name="typeSelect" class="form-control modal-open" ng-model="selectedVNFD"
+                                ng-options="vnfd.type for vnfd in vnfdList| orderBy:'itemKey':false">
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="addTONSD()" type="button"
+                                    title="Add this VNFD to NSD" ng-style="{'margin-top':'25px'}">
+                                <span class="fa fa-plus" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                    <hr>
+                    <div ng-if="selectedVNFD">
                         <tabset>
-                            <tab heading="lifecycle_events">
-                                <div class="">
-                                    <div class="">
-                                        <h4 class="">
-                                            <div class="col-lg-12">Lifecycle Events
-                                                <a class="pull-right" title="Add a New lifecycle_event" href=""
-                                                   ng-click="toggle = !toggle">
-                                                    <i class="fa fa-plus-square"> Add </i></a></div>
-                                        </h4>
-                                    </div>
-                                    <div ng-init="toggle = false" ng-if="toggle">
-                                        <br/>
-                                        <br/>
-                                        <br/>
+                            <tab heading="Info">
+                                <div class="table-responsive">
+                                    <h4>Information</h4>
+                                    <table
+                                            class="table table-bordered table-striped table-hover tablesorter"
+                                            id="">
+                                        <thead>
+                                        <tr>
 
-                                        <div class="form-group">
-                                            <label for="newValue" class="col-sm-4 control-label">new Value</label>
-
-                                            <div class="col-sm-6">
-                                                <div class="form-group input-group">
-                                                    <input class="form-control" type="text" ng-model="newValue">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueLifeCE(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
+                                            <th>name</th>
+                                            <th>type</th>
+                                            <th>version</th>
+                                            <th>vendor</th>
+                                            <th>endpoint</th>
+                                            <th>configurations</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="vdu in selectedVNFD.vdu | orderBy:predicate:reverse">
+                                            <td>{{selectedVNFD.name}}</td>
+                                            <td>{{selectedVNFD.type}}</td>
+                                            <td>{{selectedVNFD.version}}</td>
+                                            <td>{{selectedVNFD.vendor}}</td>
+                                            <td>{{selectedVNFD.endpoint}}</td>
+                                            <td>{{selectedVNFD.configurations.name}}:
+                                                <pairlist
+                                                        ng-repeat="cp in selectedVNFD.configurations.configurationParameters">
+                                                    <pair>
+                                                        <key><b>{{cp.confKey}}:</b>
+                                                            <key>
+                                                                <value>{{cp.value}}</value>
+                                                    </pair>
+                                                    <span ng-if="!$last">,</span>
+                                                </pairlist>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <br/>
+                            </tab>
+                            <tab heading="Vdu">
+                                <div class="table-responsive" ng-show="selectedVNFD.vdu.length > 0">
+                                    <h4>Virtual Deployment Unit</h4>
+                                    <table
+                                            class="table table-bordered table-striped table-hover tablesorter"
+                                            id="vduTabletable">
+                                        <thead>
+                                        <tr>
 
-                                <ul class="col-lg-offset-3"
-                                    ng-repeat="lce in lifecycle_event.lifecycle_events track by $index">
-                                    <li>{{lce}} <a href="" ng-click="deleteLifeCE($index)"><i class="fa fa-trash-o"></i></a>
-                                    </li>
-                                </ul>
-                                <!--{{depFlavor.costituent_vdu}}-->
+                                            <th>version</th>
+                                            <th>vm image</th>
+                                            <th>vim Name</th>
+                                            <!--<th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
+                                                    class="fa fa-sort"></i>
+                                            </th>-->
+                                            <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                                    class="fa fa-sort"></i>
+                                            </th>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="vdu in selectedVNFD.vdu | orderBy:predicate:reverse">
+                                            <td>{{vdu.version}}</td>
+                                            <td>{{vdu.vm_image}}</td>
+                                            <td>{{vdu.vimInstanceName}}</td>
+                                            <!--<td>{{vdu.vnfc_instance}}</td>-->
+                                            <td>
+                                                <ul ng-repeat="vnfc in vdu.vnfc">
+                                                    <li ng-repeat="cp in vnfc.connection_point">
+                                                        <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </tab>
+                            <tab heading="Lifecycle Event">
+                                <div class="table-responsive" ng-show="selectedVNFD.lifecycle_event.length > 0">
+                                    <h4>Lifecycle Event</h4>
+                                    <table
+                                            class="table table-bordered table-striped table-hover tablesorter"
+                                            id="">
+                                        <thead>
+                                        <tr>
 
+                                            <th ng-click="predicate = 'event'; reverse = !reverse">event</th>
+                                            <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
+                                                events
+                                            </th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="le in selectedVNFD.lifecycle_event | orderBy:predicate:reverse">
+
+                                            <td>{{le.event}}</td>
+                                            <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
+                                                    ng-if="!$last">, </span></span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </tab>
+                            <tab heading="Deployment Flavour">
+                                <div class="table-responsive" ng-show="selectedVNFD.deployment_flavour.length > 0">
+                                    <h4>Deployment Flavour</h4>
+                                    <table
+                                            class="table table-bordered table-striped table-hover tablesorter"
+                                            id="">
+                                        <thead>
+                                        <tr>
+                                            <th>Version</th>
+                                            <th>flavour key</th>
+                                            <th>df Constraint</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="df in selectedVNFD.deployment_flavour | orderBy:predicate:reverse">
+                                            <td>{{df.version}}</td>
+                                            <td>{{df.flavour_key}}</td>
+                                            <td>
+                                                {{df.df_constraint}}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </tab>
+                            <tab heading="Virtual Link" ng-show="selectedVNFD.virtual_link.length > 0">
+                                <div class="table-responsive">
+                                    <h4>Virtual Link</h4>
+                                    <table
+                                            class="table table-bordered table-striped table-hover tablesorter"
+                                            id="">
+                                        <thead>
+                                        <tr>
+                                            <th>name</th>
+                                            <th>extId</th>
+                                            <th>qos</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="vl in vnfd.virtual_link | orderBy:predicate:reverse">
+                                            <td>{{vl.name}}</td>
+                                            <td>{{vl.extId}}</td>
+                                            <td>{{vl.qos}}</td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </tab>
                         </tabset>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">Close
-                </button>
-                <button type="button" id=""
-                        ng-click="addLifecycle()" class="btn btn-primary">Save LifeCycle Event
-                </button>
-            </div>
 
-        </div>
-    </div>
-</div>
+                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                    <hr>
+                    <b>VNFDs into NSD</b>
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Endpoint</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="vnfd in nsdCreateTmp.vnfd track by $index">
+                            <td>{{vnfd.type}}</td>
+                            <td>{{vnfd.name}}</td>
+                            <td>{{vnfd.endpoint}}</td>
+                            <td><a href="" ng-click="deleteVNFDfromNSD($index)"><span class="fa fa-trash"></span></a>
+                            </td>
 
-<div class="modal fade" id="modalVNFDependencies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add a Virtual Network Function Dependencie</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form" class="form-horizontal" id="form5">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <label class="control-label"
-                                   ng-init="">Source</label>
-                            <select name="typeSelect" class="form-control modal-select"
-                                    ng-model="source_target.source.name"
+                        <tr>
+                        </tbody>
+                    </table>
 
-                                    ng-options="vnfd.name as vnfd.name for vnfd in nsdCreate.vnfd | orderBy:'name':false"
-                                    ng-change="">
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="control-label"
-                                   ng-init="">Target</label>
-                            <select name="typeSelect" class="form-control modal-select"
-                                    ng-model="source_target.target.name"
-                                    ng-options="vnfd.name as vnfd.name for vnfd in nsdCreate.vnfd | orderBy:'name':false"
-                                    ng-change="">
-                            </select>
+
+                </div>
+
+                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                    <hr>
+                    <b>Dependencies</b> <a title="add a new dependency" href="" data-target="#modalDependency"
+                                           data-toggle="modal"><span class="fa fa-plus-square"></span></a>
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Target</th>
+                            <th>Parameters</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dependency in nsdCreateTmp.vnf_dependency track by $index">
+                            <td>{{dependency.source.name}}</td>
+                            <td>{{dependency.target.name}}</td>
+                            <td>{{dependency.parameters}}</td>
+                            <td><a href="" ng-click="deleteDependency($index)"><span class="fa fa-trash"></span></a>
+                            </td>
+
+                        <tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                    <hr>
+                    <b>Virtual Link Descriptor</b>
+                    <div class="form-group">
+                        <label for="vld" class="col-sm-4 control-label"></label>
+                        <div class="form-group input-group col-lg-6">
+                            <input class="form-control " type="text" ng-model="vld" id="vld">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="addVld(vld)" title="Add this Virtual Link Descriptor"
+                                                ><i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
                         </div>
                     </div>
-                </form>
-            </div>
+                    <ul>
+                        <li ng-repeat="vld in nsdCreateTmp.vld track by $index">{{vld.name}}
+                            <a href="" ng-click="removeVld($index)"><span class="fa fa-trash"></span></a>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div><!--modal-body-->
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-default"
+                <button type="button" id="closeModal" class="btn btn-default"
                         data-dismiss="modal">Close
                 </button>
-                <button type="button" id=""
-                        ng-click="addVNFDep()" class="btn btn-primary">Add VNFD
+                <button type="button" id="addService"
+                        class="btn btn-primary" ng-click="sendNSDCreate()">Add
+                    Save NSD
                 </button>
-            </div>
+            </div><!--footer-->
+        </div> <!--modal-content-->
+    </div><!--modal-dialog-->
+</div><!-- /.modal -->
 
-        </div>
-    </div>
-</div>
 
-
-<div class="modal fade" id="madalLaunch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="modalDependency" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Launch the Descriptor</h4>
+                <h4 class="modal-title">Add a new Dependency</h4>
             </div>
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="form7">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            Do you want to set the Deployment Flavor?
-                            <input type="checkbox" id="set-flavor" name="set-flavor" data-on-text="YES"
-                                   data-off-text="NO">
-                        </div>
-                    </div>
-                    <div ng-if="showSetting">
-                        <div class="row" ng-repeat="vnf in nsdCreate.vnfd">
+
+                    <div>
+                        <div class="row">
                             <div class="col-lg-12">
-                                <h4>For {{vnf.name}}</h4>
 
-                                <div ng-repeat="vdu in vnf.vdu">
-                                    <div class="col-sm-6">
-                                        <label class="control-label"
-                                               ng-init=""> VimInstanceName: {{vdu.vimInstanceName}}</label>
-
-
-                                        <select name="typeSelect" class="form-control modal-select"
-                                                ng-model="dfla.target.image"
-                                                ng-options="image as image for image in vdu.vm_image | orderBy:'vm_image':false"
-                                                ng-change="">
-                                        </select>
-
-                                    </div>
-                                </div>
 
                                 <div class="col-sm-6">
                                     <label class="control-label"
-                                           ng-init=""> deployment_flavour:</label>
+                                           ng-init=""> Source</label>
+
+
+                                    <select name="typeSelect" class="form-control modal-select"
+                                            ng-model="dependency.source"
+                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-change="">
+                                    </select>
+
+                                </div>
+
+
+                                <div class="col-sm-6">
+                                    <label class="control-label"
+                                           ng-init=""> Target:</label>
 
                                     <!--{{vnf.deployment_flavour}}-->
 
                                     <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="dfla.target.name"
-                                            ng-options="df.flavour_key as df.flavour_key for df in vnf.deployment_flavour | orderBy:'flavour_key':false"
+                                            ng-model="dependency.target"
+                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
                                             ng-change="">
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <div class="form-group">
+                                    <label for="newValue" class="col-sm-4 control-label">Parameters</label>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group input-group">
+                                            <input class="form-control" type="text" ng-model="newValue">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="addParam(newValue)"
+                                                ><i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
 
                             </div>
-
                         </div>
+
+                        <ul>
+                            <li ng-repeat="par in dependency.parameters track by $index">{{par}}
+                                <a href="" ng-click="removeParam($index)"><span class="fa fa-trash"></span></a>
+                            </li>
+                        </ul>
+
                     </div>
                 </form>
             </div>
@@ -1005,10 +985,64 @@
                         data-dismiss="modal">Close
                 </button>
                 <button type="button" id=""
-                        ng-click="launch()" class="btn btn-primary">Launch the NSD
+                        ng-click="saveDependency()" class="btn btn-primary">Save Dependency
                 </button>
             </div>
 
         </div>
     </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in editObj"
+                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="editObj[key]"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Delete Alert</h4>
+            </div>
+            <div class="modal-body">
+                <p>You have selected:</p>
+                <ul ng-repeat="(k,v) in selection.ids" ng-if="v">
+                    <li>{{k}}</li>
+                </ul>
+                <p>Please confirm your selection.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" ng-click="multipleDeleteReq()" data-dismiss="modal">Delete</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div>

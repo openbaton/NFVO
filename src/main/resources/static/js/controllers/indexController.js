@@ -6,16 +6,32 @@ var app = angular.module('app');
  *
  */
 
-app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
+app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://localhost:8080';
+    //$scope.URL = 'http://lore:8080';
+    //$scope.URL = 'http://192.168.161.6:8080';
     $scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
         "grant_type": "password"
     };
+    $scope.new = {
+        "username": '',
+        "password": '',
+        "password2": '',
+        "firstName": '',
+        "lastName": '',
+        "admin": true
+    };
 
+    $scope.checkIfEqual = function () {
+        if ($scope.new.password2 !== $scope.new.password)
+            $scope.notEqual = true;
+        else
+            $scope.notEqual = false;
+
+    };
     if (angular.isUndefined($cookieStore.get('logged'))) {
         $scope.logged = false;
         $rootScope.logged = false;
@@ -26,18 +42,18 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         $rootScope.logged = $cookieStore.get('logged');
     }
     $location.replace();
-    console.log($scope.logged);
+    //console.log($scope.logged);
     $scope.loggedF = function () {
         return $scope.logged;
     };
 
 
     $scope.checkSecurity = function () {
-        console.log($scope.URL + "/api/v1/security");
+        //console.log($scope.URL + "/api/v1/security");
         AuthService.removeSession();
         $http.get($scope.URL + "/api/v1/security")
             .success(function (data) {
-                console.log(data);
+                //console.log(data);
                 if (data === "false") {
                     AuthService.loginGuest($scope.URL);
                 }
@@ -63,29 +79,40 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
         setTimeout(showLoginError, 2000);
     };
 
+
+    $scope.register = function (newUser) {
+        delete newUser.password2;
+        //console.log(newUser);
+        $http.post($scope.URL + '/register', newUser)
+            .success(function (data, status) {
+                $window.location.reload();
+            })
+            .error(function (status, data) {
+            });
+    };
     function showLoginError() {
         $scope.$apply(function () {
             $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
-            console.log($scope.loginError);
+            //console.log($scope.loginError);
         });
     }
 
 });
 
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http) {
+
+app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
 
     $scope.config = {};
 
-    getConfig();
 
     function getConfig() {
 
         http.get(url + '/configurations/')
             .success(function (data, status) {
-                console.log(data);
+                //console.log(data);
                 $.each(data, function (i, conf) {
                     if (conf.name === "system") {
                         $scope.config = conf;
@@ -101,7 +128,7 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     };
 
     $scope.logged = $cookieStore.get('logged');
-    console.log($scope.logged);
+    //console.log($scope.logged);
     $location.replace();
 
 
@@ -109,33 +136,76 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     $scope.numberNSD = 0;
     $scope.numberVNF = 0;
     $scope.numberUnits = 0;
-    http.syncGet(url + '/ns-descriptors/').then(function (data) {
-        $scope.numberNSD = data.length;
-        var vnf = 0;
-        $.each(data, function (i, nsd) {
-            //console.log(nsd.vnfd.length);
-            if (!angular.isUndefined(nsd.vnfd.length))
-                vnf = vnf + nsd.vnfd.length;
+
+    function loadNumbers() {
+        http.syncGet(url + '/ns-descriptors/').then(function (data) {
+            $scope.numberNSD = data.length;
+            var vnf = 0;
+            $.each(data, function (i, nsd) {
+                //console.log(nsd.vnfd.length);
+                if (!angular.isUndefined(nsd.vnfd.length))
+                    vnf = vnf + nsd.vnfd.length;
+            });
+            $scope.numberVNF = vnf;
         });
-        $scope.numberVNF = vnf;
-    });
-    http.syncGet(url + '/ns-records/').then(function (data) {
-        $scope.numberNSR = data.length;
-        var units = 0;
-        $.each(data, function (i, nsr) {
-            $.each(nsr.vnfr, function (i, vnfr) {
-                $.each(vnfr.vdu, function (i, vdu) {
-                    if (!angular.isUndefined(vdu.vnfc_instance.length))
-                        units = units + vdu.vnfc_instance.length;
+        http.syncGet(url + '/ns-records/').then(function (data) {
+            $scope.numberNSR = data.length;
+            var units = 0;
+            $.each(data, function (i, nsr) {
+                $.each(nsr.vnfr, function (i, vnfr) {
+                    $.each(vnfr.vdu, function (i, vdu) {
+                        if (!angular.isUndefined(vdu.vnfc_instance.length))
+                            units = units + vdu.vnfc_instance.length;
+                    });
                 });
             });
+            $scope.numberUnits = units;
         });
-        $scope.numberUnits = units;
+    }
+
+
+    $scope.$watch('projectSelected', function (newValue, oldValue) {
+        console.log(newValue);
+        if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
+            $cookieStore.put('project', newValue);
+        }
+        if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
+            $cookieStore.put('project', newValue);
+            loadNumbers();
+            getConfig();
+        }
     });
+
+
+    console.log($rootScope.projects);
+    console.log($rootScope.projectSelected);
+
+    $scope.changeProject = function (project) {
+        if (arguments.length === 0) {
+            http.syncGet(url + '/projects/')
+                .then(function (response) {
+                    if (angular.isUndefined($cookieStore.get('project')) || $cookieStore.get('project').id == '') {
+                        $rootScope.projectSelected = response[0];
+                        $cookieStore.put('project', response[0])
+                    } else {
+                        $rootScope.projectSelected = $cookieStore.get('project');
+                    }
+                    $rootScope.projects = response;
+                });
+        }
+        else {
+            $rootScope.projectSelected = project;
+            console.log(project);
+            $cookieStore.put('project', project);
+            $window.location.reload();
+        }
+
+
+    };
 
 
     $scope.saveSetting = function (config) {
-        console.log(config);
+        //console.log(config);
         $('.modal').modal('hide');
         $('#modalSend').modal('show');
 
@@ -160,11 +230,11 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
     };
 
     if ($scope.logged)
-        console.log('Ok Logged');
-    $location.replace();
+    //console.log('Ok Logged');
+        $location.replace();
     $scope.username = $cookieStore.get('userName');
 
-    console.log($scope.username);
+    //console.log($scope.username);
 
 
     /**
@@ -175,7 +245,33 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         AuthService.logout();
     };
 
+    $scope.changePassword = function () {
+        $scope.oldPassword = '';
+        $scope.newPassword = '';
+        $scope.newPassword1 = '';
+
+        $('#modalChangePassword').modal('show');
+    };
+
+    $scope.postNew = function() {
+      if ($scope.newPassword.localeCompare($scope.newPassword1) == 0) {
+        $scope.passwordData = {};
+        $scope.passwordData.old_pwd = $scope.oldPassword;
+        $scope.passwordData.new_pwd = $scope.newPassword;
+        http.put(url + '/users/changepwd', JSON.stringify($scope.passwordData))
+        .success(function (response) {
+          alert("The password has been successfully changed")
+          AuthService.logout()})
+        .error(function (data, status) {
+            console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+            alert('STATUS: ' + status + ' DATA: ' + JSON.stringify(data))
+            ? "" : location.reload();
+        });
+    } else {
+      alert("The new passwords are not the same");
+    }
+
+    };
+
 
 });
-
-

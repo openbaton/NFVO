@@ -24,6 +24,9 @@
 </div>
 <div class="row">
     <div class="col-lg-12">
+        <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+                title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
+        </button>
         <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
                 title="Add a new Virtuan Networck Function Descriptor" data-toggle="modal"
                 data-target="#modalFile">Add a new VNFD
@@ -42,6 +45,7 @@
                     id="nsdTabletable">
                 <thead>
                 <tr>
+                    <td><input type="checkbox"  ng-model="main.checkbox"></td>
                     <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
                     </th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">VNFD name <i class="fa fa-sort"></i></th>
@@ -53,6 +57,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="vnfd in nsdinfo.vnfd| orderBy:predicate:reverse">
+                    <td><input type="checkbox" ng-init="selection.ids[vnfd.id] = false" ng-model="selection.ids[vnfd.id]" name="group" id="{{vnfd.id}}" /></td>
                     <td><a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
                     </td>
                     <td>{{vnfd.name}}</td>
@@ -65,7 +70,7 @@
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="" data-toggle="modal" data-target="#modalAdd"
-                                       ng-click="launch(nsd)">Launch</a>
+                                       ng-click="edit(vnfd)">Edit</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li><a href="" ng-click="deleteVNFD(vnfd)">Delete</a></li>
@@ -78,3 +83,34 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <div class="form-group" ng-repeat="(key,value) in editObj"
+                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="editObj[key]"/>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

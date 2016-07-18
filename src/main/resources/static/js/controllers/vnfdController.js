@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService) {
+var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard) {
 
     var baseUrl = $cookieStore.get('URL')+"/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
@@ -18,6 +18,18 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             showError(status, data);
 
         });
+
+
+    $scope.copyToClipboard = function () {
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push({'id': k});
+            }
+        });
+        //console.log(ids);
+        clipboard.copyText(JSON.stringify(ids));
+    };
 
 
     if (!angular.isUndefined($routeParams.vduId)) {
@@ -138,6 +150,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $('#addEditVDU').modal('show');
     };
 
+    $scope.showTab = function (value) {
+        return (value > 0);
+    };
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
@@ -158,6 +174,62 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
             });
     };
+
+    /* -- multiple delete functions Start -- */
+
+    $scope.multipleDeleteReq = function(){
+        var ids = [];
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (value) {
+                ids.push(k);
+            }
+        });
+        console.log(ids);
+        http.post(url + 'multipledelete', ids)
+            .success(function (response) {
+                showOk('Virtual Network Function Descriptor with id: ' + ids.toString() + ' deleted.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+    };
+
+    $scope.main = {checkbox: false};
+    $scope.$watch('main', function (newValue, oldValue) {
+        //console.log(newValue.checkbox);
+        //console.log($scope.selection.ids);
+        angular.forEach($scope.selection.ids, function (value, k) {
+            $scope.selection.ids[k] = newValue.checkbox;
+        });
+        console.log($scope.selection.ids);
+    }, true);
+
+    $scope.$watch('selection', function (newValue, oldValue) {
+        console.log(newValue);
+        var keepGoing = true;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            if (keepGoing) {
+                if ($scope.selection.ids[k]) {
+                    $scope.multipleDelete = false;
+                    keepGoing = false;
+                }
+                else {
+                    $scope.multipleDelete = true;
+                }
+            }
+
+        });
+        if (keepGoing)
+            $scope.mainCheckbox = false;
+    }, true);
+
+    $scope.multipleDelete = true;
+
+    $scope.selection = {};
+    $scope.selection.ids = {};
+    /* -- multiple delete functions END -- */
 
     function loadTable() {
         if (angular.isUndefined($routeParams.vnfdescriptorId))

@@ -25,7 +25,7 @@
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
 
             <dl class="dl-horizontal">
-        <span class="dl-horizontal" ng-repeat="(key,value) in vnfpackage">
+        <span class="dl-horizontal" ng-repeat="(key,value) in vnfpackage" ng-if="key !== 'scripts'">
 
                     <div ng-if="key !== 'image'">
                         <dt>{{key}}:</dt>
@@ -43,9 +43,84 @@
 
 
         </div>
+        <tabset>
+            <tab heading="Scripts">
+                <div ng-if="vnfpackage.scripts.length>0">
+                    <h4>Scripts</h4>
+                    <table
+                            class="table table-bordered table-striped table-hover tablesorter"
+                            id="scriptTable">
+                        <thead>
+                        <tr>
+                            <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                    class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i></th>
+                            <th ng-click="predicate = 'version'; reverse = !reverse">version <i class="fa fa-sort"></i></th>
+                            <th>Actions <i class=""></i></th>
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="script in vnfpackage.scripts| orderBy:predicate:reverse">
+                            <td>{{script.id}}</td>
+                            <td>{{script.name}}</td>
+                            <td>{{script.version}}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary dropdown-toggle"
+                                            data-toggle="dropdown"> Action
+                                        <span class="caret"></span></button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="" data-toggle="modal"
+                                               ng-click="editScript(script)">Edit</a>
+                                        </li>
+                                        <!--<li class="divider"></li>-->
+                                        <!--<li><a href="" ng-click="deleteScript(script)">Delete</a></li>-->
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </tab>
+        </tabset>
     </div>
 </div>
+<div class="modal" id="modalEditScript" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Script: {{editingScript.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="formJson">
+                    <div class="form-group">
+                        <br> <label for="jsonInputArea">Edit Your Script</label>
+                                <textarea name="textTopologyJson" ng-model="scriptToEdit"
+                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+                                          class="form-control" rows="25"
+                                          placeholder="{ }"></textarea>
+                    </div>
 
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="editeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="closeModal" class="btn btn-primary" ng-click="sendScript(scriptToEdit)"
+                        data-dismiss="modal">Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
     <div class="modal-dialog">

@@ -10,7 +10,7 @@
             </li>
             <li>
                 <a href="#nsrecords"><i class="fa fa-pencil"></i>
-                    NS Descriptors</a>
+                    NS Records</a>
             </li>
             <li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
@@ -28,20 +28,45 @@
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
-        <div class="col-lg-12">
-
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="col-lg-12" >
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
-                <dl class="dl-horizontal">
+
+                <dl class="dl-horizontal" >
+                    <dt>name</dt>
+                    <dd>{{vnfr.name}}</dd>
+                    <dt>type</dt>
+                    <dd>{{vnfr.type}}</dd>
+                    <dt>version</dt>
+                    <dd>{{vnfr.version}}</dd>
+                    <dt>vendor</dt>
+                    <dd>{{vnfr.vendor}}</dd>
+                    <span ng-if="vnfr.configurations">
+                        <dt>{{vnfr.configurations.name}}</dt>
+                        <dd>
+                            <pairlist ng-repeat="cp in vnfr.configurations.configurationParameters">
+                                <pair>
+                                    <key><b>{{cp.confKey}}:</b>
+                                        <key>
+                                            <value>{{cp.value}}</value>
+                                </pair>
+                                <span ng-if="!$last">,</span>
+                            </pairlist>
+                        </dd>
+                    </span>
                     <span ng-repeat="(k,v) in vnfr" ng-show="v != null"
-                          ng-if="k!='vdu' && k!='lifecycle_event' && k!='virtual_link'">
+                          ng-if="k!='vdu' && k!='lifecycle_event'&& k!='lifecycle_event_history' && k!='virtual_link' && k!='configurations'  && k!='name' && k!='type' && k!='vendor' && k!='version'">
                         <span ng-if="k!='requires' && k!='provides'">
                                 <dt>{{k}}</dt>
                                 <dd>{{v}}</dd>
                         </span>
+
                         <span ng-if="k=='requires' || k=='provides'">
                              <hr class="hr_title">
                                 <dt>{{k}}</dt>
-                                <dd>{{v}}</dd>
+                                <dd>{{v.configurationParameters}}</dd>
                               <hr class="hr_title">
                         </span>
                     </span>
@@ -51,7 +76,12 @@
                 <tabset>
                     <tab heading="Vdu">
                         <div class="table-responsive" ng-show="vnfr.vdu.length > 0">
-                            <h3>Vdu</h3>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 class="col-lg-3">Virtual Deployment Unit</h3>
+
+                                </div>
+                            </div>
                             <table class="table table-bordered table-striped table-hover tablesorter">
                                 <thead>
                                 <tr>
@@ -67,54 +97,66 @@
                                         <i
                                                 class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance
+                                    <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc instance
                                         <i
                                                 class="fa fa-sort"></i>
                                     </th>
                                     <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i class="fa fa-sort"></i></th>
-                                    <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i
+                                            class="fa fa-sort"></i></th>
+                                    <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i
+                                            class="fa fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="vdu in vnfr.vdu | orderBy:predicate:reverse">
                                     <td>
-                                        <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                        <a href="" ng-click="setVNFRName(vdu.id, vnfr.name)">{{vdu.id}}</a>
+                                        <a ng-href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}"></a>
                                     </td>
                                     <td>{{vdu.version}}</td>
 
                                     <td>{{vdu.vimInstanceName}}</td>
-                                    <td>
-                                            <span ng-repeat="vnfci in vdu.vnfc_instance">
-                                                <span>
-                                                    <b>hostname</b>: {{vnfci.hostname}},
-                                                    <b>floatingIps</b>:
-                                                        <span title="netName" ng-repeat="fip in vnfci.floatingIps">{{fip.netName}}: {{fip.ip}}</span>
-                                                    <br/>
-                                                    <span title="vnfComponent"
-                                                          ng-repeat="cp in vnfci.vnfComponent.connection_point">
-                                                        <b>floatingIp</b>: {{cp.floatingIp}}
-                                                        <b>virtual_link_reference</b>: {{cp.virtual_link_reference}}
-                                                    </span>
+                                    <td class=" col-lg-3">
+                                            <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
+
+
+                                                    <dl class="dl-horizontal dl-table">
+                                                        <dt>hostname</dt>
+                                                        <dd>{{vnfci.hostname}}</dd>
+
+                                                        <dt>floatingIps</dt>
+                                                        <dd title="netName" ng-repeat="fip in vnfci.floatingIps">
+                                                            <li>{{fip.netName}}: {{fip.ip}}</li>
+                                                        </dd>
+
+                                                        <dt>vnfComponent</dt>
+                                                        <dd title="vnfComponent"
+                                                            ng-repeat="cp in vnfci.vnfComponent.connection_point">
+                                                            <li>
+                                                                <span title="virtual_link_reference">{{cp.virtual_link_reference}}</span>:
+                                                                <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                            </li>
+                                                        </dd>
+
+
+                                                        <dt>ips</dt>
+                                                        <dd>
+                                                    <span ng-repeat="ips in vnfci.ips">
+                                                    <li title="netName">{{ips.netName}}: {{ips.ip}}</li>
                                                 </span>
-                                                <span ng-repeat="ips in vnfci.ips">
-                                                <ul>
-                                                    <li>
-                                                        <b>netName</b>: {{ips.netName}},
-                                                        <b>ip</b>: {{ips.ip}}
-                                                    </li>
-                                                </ul>
-                                                </span>
+                                                        </dd>
+                                                    </dl>
                                             </span>
                                     </td>
                                     <td>
-                                        <span ng-repeat="vnfc in vdu.vnfc">
+                                        <span class="dl-horizontal dl-table" ng-repeat="vnfc in vdu.vnfc">
                                             <span ng-repeat="cp in vnfc.connection_point">
-                                                <span ng-repeat="(k,v) in cp">
-                                                    <b>{{k}}</b>: {{v}}
-                                                </span>
+                                                    <b title="virtual_link_reference">{{cp.virtual_link_reference}}:</b>
+                                                    <span title="floatingIp">{{cp.floatingIp}}</span>
+                                                        <span ng-if="!$last"><br/></span>
                                             </span>
                                         </span>
                                     </td>
@@ -122,9 +164,16 @@
                                     <td class="col-lg-2">
 
                                         <div class="btn-group" role="group" aria-label="...">
-                                            <button type="button" class="btn btn-default" ng-click="removeVNFCItoVDU(vdu)">-</button>
-                                            <button type="button" class="btn btn-default disabled">{{vdu.vnfc_instance.length}}</button>
-                                            <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vdu)">+</button>
+                                            <button type="button" class="btn btn-default"
+                                                    ng-click="removeVNFCItoVDU(vdu)">-
+                                            </button>
+                                            <button type="button" class="btn btn-default disabled">
+                                                {{vdu.vnfc_instance.length}}
+                                            </button>
+                                            <button type="button" class="btn btn-default"
+                                                    ng-click="addVNFCItoVDU(vnfr, vdu)">
+                                                +
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -147,8 +196,7 @@
                                             class="fa fa-sort"></i>
                                     </th>
                                     <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
-                                        events <i
-                                                class="fa fa-sort"></i>
+                                        events <i class="fa fa-sort"></i>
                                     </th>
 
                                 </tr>
@@ -157,8 +205,39 @@
                                 <tr ng-repeat="le in vnfr.lifecycle_event | orderBy:predicate:reverse">
                                     <td>{{le.id}}</td>
                                     <td>{{le.event}}</td>
-                                    <td>{{le.lifecycle_events}}</td>
+                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Lifecycle Event History">
+                        <div class="table-responsive" ng-show="vnfr.lifecycle_event_history.length > 0">
+                            <h3>Lifecycle Event</h3>
+                            <table
+                                    class="table table-bordered table-striped table-hover tablesorter"
+                                    id="">
+                                <thead>
+                                <tr>
+                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'event'; reverse = !reverse">event <i
+                                            class="fa fa-sort"></i>
+                                    </th>
+                                    <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
+                                        events <i class="fa fa-sort"></i>
+                                    </th>
 
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:predicate:reverse">
+                                    <td>{{le.id}}</td>
+                                    <td>{{le.event}}</td>
+                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -209,3 +288,81 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="col-lg-offset-1">
+                        <div class="form-group ">
+                            <div class="form-group col-sm-5">
+                                <label class=" control-label">Virtual link reference</label>
+
+                                <div class="">
+                                    <select name="typeSelect" class="form-control modal-select"
+                                            ng-model="connection_point.virtual_link_reference"
+
+                                            ng-options="vl.name as vl.name for vl in vnfrSelected.virtual_link | orderBy:'name':false"
+                                            ng-change="">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-1"></div>
+
+                            <div class="col-sm-6 ">
+                                <label for="floatingIp" class="control-label">floatingIp</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                           ng-model="connection_point.floatingIp"/>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" ng-click="addCPtoVNFCI()"
+                                                            type="button"
+                                                            title="Add this Connection Point to VNFCI">
+                                                        <span class="fa fa-plus" aria-hidden="true"></span>
+                                                    </button>
+                                            </span>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <table
+                            class="table table-bordered table-striped table-hover tablesorter"
+                            id="" ng-if="connection_points.length > 0">
+                        <thead>
+                        <tr>
+
+                            <th>Virtual link reference</th>
+                            <th>floatingIp</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="cp in connection_points track by $index | orderBy:predicate:reverse">
+                            <td>{{cp.virtual_link_reference}}</td>
+                            <td>{{cp.floatingIp}}</td>
+                            <td>
+                                <a href="" ng-click="removeCPtoVNFCI($index)"><span class="fa fa-trash"></span></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()">Add Instance</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
