@@ -260,12 +260,12 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
         $scope.passwordData.new_pwd = $scope.newPassword;
         http.put(url + '/users/changepwd', JSON.stringify($scope.passwordData))
         .success(function (response) {
-          alert("The password has been successfully changed")})
-          AuthService.logout()
+          alert("The password has been successfully changed")
+          AuthService.logout()})
         .error(function (data, status) {
             console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
             alert('STATUS: ' + status + ' DATA: ' + JSON.stringify(data))
-            location.reload();
+            ? "" : location.reload();
         });
     } else {
       alert("The new passwords are not the same");
