@@ -35,9 +35,10 @@
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
+                          <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
+                        <li>
                           <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
                         </li>
-
                         <li>
                             <a ng-click="logout()" href=""><i class="fa fa-fw fa-power-off"></i> Log Out</a>
                         </li>
@@ -196,4 +197,49 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+    <div class="modal" id="modalChangePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                      aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
+            </div>
+            <form class="form-horizontal" role="form" id="formChangePassword">
+              <div class="form-group">
+                <label for="name" class="col-sm-4 control-label">Old Password</label>
+
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="oldPassword" name="oldPassword"
+                          ng-model="oldPassword"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="name" class="col-sm-4 control-label">New Password</label>
+
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="newPassword" name="newPassword"
+                          ng-model="newPassword"/>
+                </div>
+              </div>  
+                <div class="form-group">
+                  <label for="name" class="col-sm-4 control-label">New Password</label>
+
+                  <div class="col-sm-6">
+                      <input type="password" class="form-control" id="newPassword1" name="newPassword1"
+                            ng-model="newPassword1"/>
+                  </div>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <button type="button" id="closeModal" class="btn btn-default"
+                      data-dismiss="modal">Close
+              </button>
+              <button type="button" id="changePassword"
+                     class="btn btn-primary" ng-click="postNew()">Change Password
+             </button>
+            </div><!--footer-->
+         </div>
+      </div>
+   </div>
 </div>
