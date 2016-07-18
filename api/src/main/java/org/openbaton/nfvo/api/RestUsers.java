@@ -16,6 +16,9 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
@@ -24,7 +27,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -35,6 +43,7 @@ public class RestUsers {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private UserManagement userManagement;
+  @Autowired private Gson gson;
 
   /**
    * Adds a new User to the Users repository
@@ -81,13 +90,13 @@ public class RestUsers {
   /**
    * Returns the User selected by username
    *
-   * @param id : The username of the User
+   * @param username : The username of the User
    * @return User: The User selected
    */
   @RequestMapping(value = "{username}", method = RequestMethod.GET)
-  public User findById(@PathVariable("username") String id) {
-    log.trace("find User with username " + id);
-    User user = userManagement.query(id);
+  public User findById(@PathVariable("username") String username) {
+    log.trace("find User with username " + username);
+    User user = userManagement.query(username);
     log.trace("Found User: " + user);
     return user;
   }
@@ -114,5 +123,18 @@ public class RestUsers {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public User update(@RequestBody @Valid User new_user) {
     return userManagement.update(new_user);
+  }
+
+  @RequestMapping(
+    value = "changepwd",
+    method = RequestMethod.PUT,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void changePassword(@RequestBody @Valid String newPwd) {
+    log.debug("Changing password");
+    userManagement.changePassword(
+        gson.fromJson(newPwd, JsonObject.class).get("old_pwd").getAsString(),
+        gson.fromJson(newPwd, JsonObject.class).get("new_pwd").getAsString());
   }
 }

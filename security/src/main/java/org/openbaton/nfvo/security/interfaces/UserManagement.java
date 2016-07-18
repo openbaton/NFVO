@@ -57,4 +57,6 @@ public interface UserManagement {
   User queryById(String id);
 
   User queryDB(String currentUserName);
+
+  void changePassword(String oldPwd, String newPwd);
 }
