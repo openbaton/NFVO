@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -131,7 +132,8 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void changePassword(@RequestBody /*@Valid*/ JsonObject newPwd) {
+  public void changePassword(@RequestBody /*@Valid*/ JsonObject newPwd)
+      throws UnauthorizedUserException {
     log.debug("Changing password");
     JsonObject jsonObject = gson.fromJson(newPwd, JsonObject.class);
     userManagement.changePassword(

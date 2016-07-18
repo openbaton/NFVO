@@ -146,7 +146,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public void changePassword(String oldPwd, String newPwd) {
+  public void changePassword(String oldPwd, String newPwd) throws UnauthorizedUserException {
     log.debug("Got old password: " + oldPwd);
     userDetailsManager.changePassword(oldPwd, newPwd);
   }
