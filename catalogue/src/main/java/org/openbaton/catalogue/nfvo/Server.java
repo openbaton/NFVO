@@ -54,6 +54,10 @@ public class Server implements Serializable {
   //    @Temporal(TemporalType.DATE)
   private Date updated;
 
+  private String hostName;
+  private String hypervisorHostName;
+  private String instanceName;
+
   public String getId() {
     return id;
   }
@@ -151,12 +155,34 @@ public class Server implements Serializable {
     this.floatingIps = floatingIps;
   }
 
+  public String getHostName() {
+    return hostName;
+  }
+
+  public void setHostName(String hostName) {
+    this.hostName = hostName;
+  }
+
+  public String getHypervisorHostName() {
+    return hypervisorHostName;
+  }
+
+  public void setHypervisorHostName(String hypervisorHostName) {
+    this.hypervisorHostName = hypervisorHostName;
+  }
+
+  public String getInstanceName() {
+    return instanceName;
+  }
+
+  public void setInstanceName(String instanceName) {
+    this.instanceName = instanceName;
+  }
+
   @Override
   public String toString() {
     return "Server{"
-        + "created="
-        + created
-        + ", id='"
+        + "id='"
         + id
         + '\''
         + ", version="
@@ -181,8 +207,19 @@ public class Server implements Serializable {
         + ips
         + ", floatingIps="
         + floatingIps
+        + ", created="
+        + created
         + ", updated="
         + updated
+        + ", hostName='"
+        + hostName
+        + '\''
+        + ", hypervisorHostName='"
+        + hypervisorHostName
+        + '\''
+        + ", instanceName='"
+        + instanceName
+        + '\''
         + '}';
   }
 }
