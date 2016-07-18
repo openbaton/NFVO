@@ -84,7 +84,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 });
 
 
-app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthService, http, $rootScope, $window) {
+app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
 
     var url = $cookieStore.get('URL') + "/api/v1";
@@ -229,7 +229,33 @@ app.controller('IndexCtrl', function ($scope, $cookieStore, $location, AuthServi
         AuthService.logout();
     };
 
+    $scope.changePassword = function () {
+        $scope.oldPassword = '';
+        $scope.newPassword = '';
+        $scope.newPassword1 = '';
+
+        $('#modalChangePassword').modal('show');
+    };
+
+    $scope.postNew = function() {
+      if ($scope.newPassword.localeCompare($scope.newPassword1) == 0) {
+        $scope.passwordData = {};
+        $scope.passwordData.old_pwd = $scope.oldPassword;
+        $scope.passwordData.new_pwd = $scope.newPassword;
+        http.put(url + '/users/changepwd', JSON.stringify($scope.passwordData))
+        .success(function (response) {
+          alert("The password has been successfully changed")})
+          AuthService.logout()
+        .error(function (data, status) {
+            console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+            alert('STATUS: ' + status + ' DATA: ' + JSON.stringify(data))
+            location.reload();
+        });
+    } else {
+      alert("The new passwords are not the same");
+    }
+
+    };
+
 
 });
-
-
