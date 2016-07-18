@@ -36,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
@@ -184,13 +185,16 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
 
   @Override
   public void changePassword(String oldPassword, String newPassword) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentUserName = authentication.getName();
+    log.debug("Changing password of user: " + currentUserName);
+    User user = userRepository.findFirstByUsername(currentUserName);
+    if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
+      throw new UnauthorizedUserException("Old password is wrong");
+    }
     log.debug("changing pwd");
     inMemManager.changePassword(oldPassword, BCrypt.hashpw(newPassword, BCrypt.gensalt(12)));
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (!(authentication instanceof AnonymousAuthenticationToken)) {
-      String currentUserName = authentication.getName();
-      log.debug("Changing password of user: " + currentUserName);
-      User user = userRepository.findFirstByUsername(currentUserName);
       user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt(12)));
       userRepository.save(user);
     }

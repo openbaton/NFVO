@@ -39,12 +39,16 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   public static final String RESOURCE_ID = "oauth2-server";
 
   @Autowired private AuthenticationManager authenticationManager;
+  @Autowired private TokenStore tokenStore;
 
   @Autowired
   @Qualifier("customUserDetailsService")
   private UserDetailsManager userDetailsManager;
 
-  private TokenStore tokenStore = new InMemoryTokenStore();
+  @Bean
+  public TokenStore tokenStore() {
+    return new InMemoryTokenStore();
+  }
 
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
