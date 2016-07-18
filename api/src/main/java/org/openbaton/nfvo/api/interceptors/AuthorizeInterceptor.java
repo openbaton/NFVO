@@ -72,8 +72,15 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     log.trace(request.getMethod() + " URI: " + request.getRequestURI());
 
     if ((request.getRequestURI().equals("/api/v1/projects/")
-            || (request.getRequestURI().equals("/api/v1/projects")))
+            || (request.getRequestURI().equals("/api/v1/projects"))
+            || (request.getRequestURI().contains("/api/v1/users/")
+                || (request.getRequestURI().contains("/api/v1/users"))))
         && request.getMethod().equalsIgnoreCase("get")) {
+      return true;
+    }
+    if ((request.getRequestURI().contains("/api/v1/users/")
+            || (request.getRequestURI().contains("/api/v1/users")))
+        && request.getMethod().equalsIgnoreCase("put")) {
       return true;
     }
     log.trace(request.getMethod() + " URL: " + request.getRequestURL());
@@ -89,7 +96,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         return true;
       }
 
-      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.GUEST.ordinal())
+      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.GUEST.ordinal()) {
         if (request.getMethod().equalsIgnoreCase("get")) {
           log.trace("Return true for guest");
           return true;
@@ -97,6 +104,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
           log.trace("Return false for guest");
           return false;
         }
+      }
 
       for (Role role : user.getRoles()) {
         String pjName = projectManagement.query(project).getName();

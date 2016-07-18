@@ -131,10 +131,10 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void changePassword(@RequestBody @Valid String newPwd) {
+  public void changePassword(@RequestBody /*@Valid*/ JsonObject newPwd) {
     log.debug("Changing password");
+    JsonObject jsonObject = gson.fromJson(newPwd, JsonObject.class);
     userManagement.changePassword(
-        gson.fromJson(newPwd, JsonObject.class).get("old_pwd").getAsString(),
-        gson.fromJson(newPwd, JsonObject.class).get("new_pwd").getAsString());
+        jsonObject.get("old_pwd").getAsString(), jsonObject.get("new_pwd").getAsString());
   }
 }

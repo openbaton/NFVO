@@ -185,7 +185,7 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
   @Override
   public void changePassword(String oldPassword, String newPassword) {
     log.debug("changing pwd");
-    inMemManager.changePassword(oldPassword, newPassword);
+    inMemManager.changePassword(oldPassword, BCrypt.hashpw(newPassword, BCrypt.gensalt(12)));
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (!(authentication instanceof AnonymousAuthenticationToken)) {
       String currentUserName = authentication.getName();
