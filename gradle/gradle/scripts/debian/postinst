@@ -105,10 +105,10 @@ configureSecurity () {
     # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
     # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
     if [ "${INTERACTIVE}" = "true" ]; then
-    	read -p "Do you want to enable HTTPS (##NOTE##: No sdk will work, currently under development :( )[N/y]: " https
+        read -p "Do you want to enable HTTPS? [N/y]: " https
     	export https=${https}
     	if [ "${https}" != "" ]; then
-	    if [ "${https}" = "y" -o "${https}" = "Y" -o "${https}" = "yes" ]; then
+	        if [ "${https}" = "y" -o "${https}" = "Y" -o "${https}" = "yes" ]; then
             	log_success_msg "Enabling HTTPS"
        	    	# server.https = false
        	    	$_ex 'sed -i "s/# server.https = false/server.https = true/g" /etc/openbaton/openbaton.properties'
@@ -128,9 +128,61 @@ configureSecurity () {
 }
 
 
-#######################
-# VIM-Drivers Plugins #
-#######################
+###############
+#### MySQL ####
+###############
+
+configureMySQL () {
+    #if [ "${INTERACTIVE}" = "true" ]; then
+    if [ "${OPENBATON_ENABLED_PERSISTENCE}" = "true" ]; then
+        log_success_msg "Configuring MySQL for Open Baton .."
+            $_ex 'sed -i "s/spring.datasource.url=jdbc:hsqldb:file:\/tmp\/openbaton\/openbaton.hsdb/# spring.datasource.url=jdbc:hsqldb:file:\/tmp\/openbaton\/openbaton.hsdb/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/spring.datasource.driver-class-name=org.hsqldb.jdbc.JDBCDriver/# spring.datasource.driver-class-name=org.hsqldb.jdbc.JDBCDriver/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/spring.jpa.database-platform=org.hibernate.dialect.HSQLDialect/# spring.jpa.database-platform=org.hibernate.dialect.HSQLDialect/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/spring.jpa.hibernate.ddl-auto=create-drop/# spring.jpa.hibernate.ddl-auto=create-drop/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/# spring.jpa.hibernate.ddl-auto=update/spring.jpa.hibernate.ddl-auto=update/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/# spring.datasource.validationQuery=SELECT 1/spring.datasource.validationQuery=SELECT 1/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/# spring.datasource.testOnBorrow=true/spring.datasource.testOnBorrow=true/g" /etc/openbaton/openbaton.properties'
+            # Enable MySQL
+            $_ex 'sed -i "s/# spring.datasource.url=jdbc:mysql:\/\/localhost:3306\/openbaton/spring.datasource.url=jdbc:mysql:\/\/localhost:3306\/openbaton/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/# spring.datasource.driver-class-name=com.mysql.jdbc.Driver/spring.datasource.driver-class-name=com.mysql.jdbc.Driver/g" /etc/openbaton/openbaton.properties'
+            $_ex 'sed -i "s/# spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect/spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect/g" /etc/openbaton/openbaton.properties'
+            read -p "Please, type the name of the mysql user you would like Openbaton to use [admin]: " sqluser
+            export dbuser=admin
+            export dbpassword=changeme
+            if [ "${sqluser}" != "" ]; then
+                dbuser=${sqluser}
+                $_ex 'sed -i "s/spring.datasource.username=admin/spring.datasource.username=${dbuser}/g" /etc/openbaton/openbaton.properties'
+            fi
+            # Turning echo on and off between password reading
+            stty -echo
+            read -p "Please, provide the password for this user [changeme]: " sqlpassword ; echo
+            stty echo
+            if [ "${sqlpassword}" != "" ]; then
+                dbpassword=${sqlpassword}
+                $_ex 'sed -i "s/spring.datasource.password=changeme/spring.datasource.password=${dbpassword}/g" /etc/openbaton/openbaton.properties'
+            fi
+            # Turning echo on and off between password reading
+            stty -echo
+            read -p "Please, provide the password of the root user of mysql: " rootpasswd ; echo
+            stty echo
+            if [ "${rootpasswd}" = "" ]; then
+                rootpasswd=changeme
+            fi
+            # Create the Database
+            mysql -uroot -p${rootpasswd} -e "CREATE DATABASE openbaton /*\!40100 DEFAULT CHARACTER SET utf8 */;"
+            mysql -uroot -p${rootpasswd} -e "CREATE USER ${dbuser}@localhost IDENTIFIED BY '${dbpassword}';"
+            mysql -uroot -p${rootpasswd} -e "GRANT ALL ON openbaton.* TO '${dbuser}'@'localhost';"
+            mysql -uroot -p${rootpasswd} -e "FLUSH PRIVILEGES;"
+            mysql -uroot -p${rootpasswd} -e "USE openbaton;" 
+    fi
+    #fi
+}
+
+
+#############################
+#### VIM-Drivers Plugins ####
+#############################
 
 pluginsPrereq () {
     log_success_msg "Configuring the Plugins environment .."
@@ -160,14 +212,14 @@ downloadVIMDriverPlugins () {
     # Generally setting the environment variable "DEBIAN_FRONTEND=noninteractive" enables the user to install Open Baton in a 'non interactive' mode 
     # (all the default value will be used and both the 'test' and 'openstack' VIM Driver Plugins will be downloaded)
     if [ "${INTERACTIVE}" = "true" ]; then
-    	read -p "Do you want to download the VIM-Driver Plugins? (Y/n): " yn
+    	read -p "Do you want to download the VIM-Driver Plugins? [Y/n]: " yn
     	if [ "${yn}" != "n" -a "${yn}" != "N" ]; then
             echo "Options available are: "
 	        echo "Options available are: "
             echo "    0. Download ALL VIM-Driver Plugins listed below"
             echo "    1. Download 'Test' VIM-Driver Plugin"
             echo "    2. Download 'OpenStack' VIM-Driver Plugin"
-            read -p "Insert the number(s) of the plugin(s) you want to download (in case of multiple plugins insert the numbers separated by a space - i.e. 1 2) ([0]): " plugins
+            read -p "Insert the number(s) of the plugin(s) you want to download (in case of multiple plugins insert the numbers separated by a space - i.e. 1 2) [0]: " plugins
 	        if [ "${plugins}" = "" ]; then
             	getAllVIMPlugins
             else
@@ -194,20 +246,44 @@ downloadVIMDriverPlugins () {
 }
 
 
-
 ################################################
 #### Configure Open Baton NFVO installation ####
 ################################################
+
+setPassword () {
+    #if [ "${INTERACTIVE}" = "true" ]; then
+    # Turning echo on and off between password reading
+    stty -echo
+    read -p "Provide the new password for admin user of Open Baton: " openbatonpswd ; echo
+    stty echo
+    if [ "${openbatonpswd}" != "" ]; then
+        export openbatonpswd=${openbatonpswd}
+        stty -echo
+        read -p "Repeat the password: " openbatonpswd2 ; echo
+        stty echo
+        export openbatonpswd2=${openbatonpswd2}
+        if [ "${openbatonpswd}" = "${openbatonpswd2}" ]; then
+            $_ex 'sed -i "s/# nfvo.security.admin.password\ =\ openbaton/nfvo.security.admin.password\ =\ $openbatonpswd/g" /etc/openbaton/openbaton.properties'
+            return
+        fi
+    else
+        setPassword
+    fi
+    #fi
+}
 
 configure () {
     log_success_msg "Configuring Open Baton NFVO installation .."
     configureRabbitMQ
     configureSecurity
+    configureMySQL
     downloadVIMDriverPlugins
 
     log_success_msg "Giving openbaton-nfvo execution permissions .."
     $_ex "chmod a+x ${OPENBATON_EXE_FOLDER}/openbaton-nfvo"
 
+    setPassword
+    
     log_success_msg "Open Baton NFVO installation completed"
 
     # Allow the use of the .deb package to install Open Baton with Docker (the Docker file developer need to manage the starting of the NFVO in the Docker file) 
