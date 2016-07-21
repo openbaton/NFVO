@@ -43,6 +43,7 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
 
     // Copy files from "from path" to "into path"
     from('etc/openbaton.properties') 			                    { into '/etc/openbaton/' }                 // properties file
+    from('etc/keystore.p12') 			                            { into '/etc/openbaton/' }                 // keystore file
     from(jar.outputs.files) 				                        { into '/usr/lib/openbaton/' }             // jar file
     from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/usr/bin/'}                        // executable to run the NFVO 
     from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/etc/init.d/'}                     // executable to run the NFVO as a service (SysV)
