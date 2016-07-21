@@ -1,13 +1,31 @@
-#!/bin/sh -e
+#!/bin/sh
 
+##########################
+#### General Settings ####
+##########################
+
+set -e
+set -u
+set -x # only for DEBUG
+
+# Make available the functions defined in /lib/lsb/init-functions
 . /lib/lsb/init-functions
+
+
+##########################
+#### Global Variables ####
+##########################
+
+USER="$(id -un 2>/dev/null || true)"
 
 OPENBATON_BASE=/usr
 OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
 OPENBATON_LOGS_FOLDER=/var/log/openbaton
 
 
-USER="$(id -un 2>/dev/null || true)"
+##############################
+#### Execution privileges ####
+##############################
 
 checkBinary () {
     if command -v $1 >/dev/null 2>&1 ; then
@@ -40,6 +58,7 @@ cleanPlugins () {
         log_success_msg "Cleaning the environment: deleted plugins"
     fi
 }
+
 
 ##############
 #### Logs ####

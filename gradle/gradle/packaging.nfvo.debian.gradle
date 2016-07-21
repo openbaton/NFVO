@@ -23,7 +23,7 @@ ext {
 task makedeb(type: Deb, dependsOn: [jar, build]) { 
     packageName = (applicationRelease) ? "openbaton-nfvo" : "openbaton-nfvo-nightly"
     version = debianApplicationVersionFull
-    release = 1 
+    //release = 1 
     priority = 'optional'
     arch = 'amd64'
     maintainer = 'Open Baton Team <info@open-baton.org>'
