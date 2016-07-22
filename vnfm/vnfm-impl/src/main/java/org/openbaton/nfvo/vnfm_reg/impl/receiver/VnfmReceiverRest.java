@@ -31,6 +31,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.common.configuration.GsonDeserializerNFVMessage;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -57,7 +58,11 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
 
-  private Gson mapper = new GsonBuilder().setPrettyPrinting().create();
+  private Gson mapper =
+      new GsonBuilder()
+          .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+          .setPrettyPrinting()
+          .create();
 
   @Autowired private VNFRRepository vnfrRepository;
 
@@ -134,25 +139,11 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message)
-      throws VimException, PluginException {
+      throws VimException, PluginException, ExecutionException, InterruptedException {
 
     log.debug("CORE: Received: " + message);
 
-    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        message.getVirtualNetworkFunctionRecord();
-    Map<String, VimInstance> vimInstances =
-        vnfLifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-    if (vimInstances != null) {
-      OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
-      nfvMessage.setGrantAllowed(true);
-      nfvMessage.setVduVim(vimInstances);
-      nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-      //                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.GRANT_OPERATION);
-      return nfvMessage;
-    } else {
-      return new OrVnfmErrorMessage(
-          saveVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord), "Not enough resources");
-    }
+    return mapper.fromJson(vnfmManager.executeAction(message), NFVMessage.class);
   }
 
   @RequestMapping(
