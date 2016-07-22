@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by lto on 25/05/16.
@@ -67,6 +68,20 @@ public class RestProject {
       throws NotAllowedException, NotFoundException, EntityInUseException {
     log.debug("removing Project with id " + id);
     projectManagement.delete(projectManagement.query(id));
+  }
+
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(@RequestBody @Valid List<String> ids)
+      throws NotAllowedException, NotFoundException, EntityInUseException {
+    for (String id : ids) {
+      log.debug("removing Project with id " + id);
+      projectManagement.delete(projectManagement.query(id));
+    }
   }
 
   /**
