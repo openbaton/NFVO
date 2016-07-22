@@ -49,11 +49,11 @@
                     <td>{{data.name}}</td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu" role="menu">
+                            <button type="button" class="btn btn-danger pull right" ng-disabled="data.name!==projectSelected.name" ng-click="deleteEvent(data)"> Delete
+                              </button>
+                            <!--ul class="dropdown-menu" role="menu">
                                 <li ng-if="data.name!==projectSelected.name"><a href="" ng-click="deleteEvent(data)">Delete</a></li>
-                            </ul>
+                            </ul-->
                         </div>
                     </td>
                 </tr>
