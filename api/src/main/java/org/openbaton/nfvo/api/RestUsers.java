@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class RestUsers {
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable("id") String id) {
+  public void delete(@PathVariable("id") String id) throws NotAllowedException {
     if (userManagement != null) {
       log.info("removing User with id " + id);
       userManagement.delete(userManagement.queryById(id));
@@ -84,7 +85,7 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(@RequestBody @Valid List<String> ids) {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotAllowedException {
     if (userManagement != null) {
       for (String id : ids) {
         log.info("removing User with id " + id);
