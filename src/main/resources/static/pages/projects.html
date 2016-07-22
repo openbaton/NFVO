@@ -35,7 +35,7 @@
                     class="table table-bordered table-striped table-hover tablesorter">
                 <thead>
                 <tr>
-                    <td><input type="checkbox" ng-model="main.checkbox"></td>
+                    <!--<td><input type="checkbox" ng-model="main.checkbox"></td>-->
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
@@ -43,7 +43,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="data in projects| filter:search|orderBy:predicate:reverse">
-                    <td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
+                    <!--<td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>-->
                     <!--<td><a href="#projects/{{data.id}}">{{data.id}} </a></td>-->
                     <td>{{data.id}}</td>
                     <td>{{data.name}}</td>
