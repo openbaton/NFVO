@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -74,6 +75,21 @@ public class RestUsers {
     if (userManagement != null) {
       log.info("removing User with id " + id);
       userManagement.delete(userManagement.queryById(id));
+    }
+  }
+
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(@RequestBody @Valid List<String> ids) {
+    if (userManagement != null) {
+      for (String id : ids) {
+        log.info("removing User with id " + id);
+        userManagement.delete(userManagement.queryById(id));
+      }
     }
   }
 
