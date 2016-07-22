@@ -3,6 +3,7 @@ package org.openbaton.nfvo.security.authorization;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -90,8 +91,13 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public void delete(User user) {
+  public void delete(User user) throws NotAllowedException {
     checkCurrentUserObAdmin(getCurrentUser());
+    for (Role role : user.getRoles()) {
+      if (role.getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
+        throw new NotAllowedException("Failed to delete the OB_ADMIN");
+      }
+    }
     userDetailsManager.deleteUser(user.getUsername());
     userRepository.delete(user);
   }

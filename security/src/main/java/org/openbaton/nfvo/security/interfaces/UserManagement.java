@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.PasswordWeakException;
 
 /**
@@ -36,7 +37,7 @@ public interface UserManagement {
    *
    * @param user
    */
-  void delete(User user);
+  void delete(User user) throws NotAllowedException;
 
   /**
    *
