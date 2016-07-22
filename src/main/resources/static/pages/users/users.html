@@ -52,11 +52,11 @@
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu" role="menu">
+                            <button type="button" class="btn btn-danger pull-right" ng-disabled="data.username==='admin'" ng-click="deleteUser(data)"> Delete
+                                <!--span class="caret"></span--></button>
+                            <!--ul class="dropdown-menu" role="menu">
                                 <li><a href="" ng-click="deleteUser(data)">Delete</a></li>
-                            </ul>
+                            </ul-->
                         </div>
                     </td>
                 </tr>
