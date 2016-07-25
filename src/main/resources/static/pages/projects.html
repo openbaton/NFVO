@@ -14,11 +14,11 @@
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-12">
-        <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+        <button id="deleteMultiple" href="#"  ng-show="admin()" ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
                 title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
         </button>
         <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
-                title="" data-toggle="modal"
+                title="" data-toggle="modal" ng-show="admin()"
                 data-target="#createProject">Add a new Project
         </button>
 

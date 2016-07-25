@@ -130,4 +130,13 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         $('.modal').modal('hide');
     }
 
+    $scope.admin = function() {
+      //console.log($cookieStore.get('userName'));
+      if($cookieStore.get('userName') === 'admin') {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
 });

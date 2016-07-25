@@ -35,7 +35,7 @@
                     class="table table-bordered table-striped table-hover tablesorter">
                 <thead>
                 <tr>
-                    <td><input type="checkbox" ng-model="main.checkbox"></td>
+                    <td><input type="checkbox" ng-disabled="data.username==='admin'" ng-model="main.checkbox"></td>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'username'; reverse = !reverse">username <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'enabled'; reverse = !reverse">enabled <i class="fa fa-sort"></i></th>

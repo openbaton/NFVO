@@ -272,6 +272,14 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     }
 
     };
+    $scope.admin = function() {
+      //console.log($cookieStore.get('userName'));
+      if($cookieStore.get('userName') === 'admin') {
+        return true;
+      } else {
+        return false;
+      }
+    };
 
 
 });
