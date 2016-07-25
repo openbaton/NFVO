@@ -8,7 +8,7 @@ var app = angular.module('app');
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://lore:8080';
+    //$scope.URL = 'http://localhost:8080';
     //$scope.URL = 'http://192.168.161.6:8080';
     $scope.URL = '';
     $scope.credential = {
@@ -271,6 +271,14 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
       alert("The new passwords are not the same");
     }
 
+    };
+    $scope.admin = function() {
+      //console.log($cookieStore.get('userName'));
+      if($cookieStore.get('userName') === 'admin') {
+        return true;
+      } else {
+        return false;
+      }
     };
 
 

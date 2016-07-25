@@ -3,9 +3,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     var url = $cookieStore.get('URL') + "/api/v1/users/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
-    //$scope.URL = 'http://lore:8080';
-    //var url = "http://lore:8080/api/v1/users/";
-    //var urlprojects = "http://lore:8080/api/v1/projects/";
+
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -59,8 +57,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         "enabled": true,
         "roles": [
             {
-                "role": "GUEST",
-                "project": "*"
+
             }
         ]
     };
