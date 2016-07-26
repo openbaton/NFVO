@@ -110,9 +110,9 @@ public class VnfmRestHelper extends VnfmHelper {
       this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
     } else {
       log.warn(
-              "Could not send message of type "
-                      + nfvMessage.getClass().getSimpleName()
-                      + " to the NFVO");
+          "Could not send message of type "
+              + nfvMessage.getClass().getSimpleName()
+              + " to the NFVO");
     }
   }
 
@@ -129,7 +129,7 @@ public class VnfmRestHelper extends VnfmHelper {
       throw new VnfmSdkException(
           "Don't know where to send message with action " + message.getAction());
 
-      return mapper.fromJson(this.post(path, mapper.toJson(message)), NFVMessage.class);
+    return mapper.fromJson(this.post(path, mapper.toJson(message)), NFVMessage.class);
   }
 
   @Override
