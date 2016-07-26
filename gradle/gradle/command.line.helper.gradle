@@ -6,6 +6,7 @@ rootProject.ext.execAndGetOutput = { String command ->
         exec {
             workingDir rootProject.projectDir
             commandLine command.split()
+	    errorOutput = new ByteArrayOutputStream()
             standardOutput = stdout
         }
 
