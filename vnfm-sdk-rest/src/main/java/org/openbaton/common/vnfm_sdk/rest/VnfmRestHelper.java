@@ -23,10 +23,11 @@ import org.apache.http.ssl.SSLContexts;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
+import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.openbaton.common.vnfm_sdk.rest.configuration.GsonDeserializerNFVMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +105,14 @@ public class VnfmRestHelper extends VnfmHelper {
     } else if (nfvMessage instanceof VnfmOrInstantiateMessage) {
       VnfmOrInstantiateMessage message = (VnfmOrInstantiateMessage) nfvMessage;
       this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
+    } else if (nfvMessage instanceof VnfmOrScaledMessage) {
+      VnfmOrScaledMessage message = (VnfmOrScaledMessage) nfvMessage;
+      this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
+    } else {
+      log.warn(
+              "Could not send message of type "
+                      + nfvMessage.getClass().getSimpleName()
+                      + " to the NFVO");
     }
   }
 
@@ -112,17 +121,15 @@ public class VnfmRestHelper extends VnfmHelper {
     String path;
     if (message.getAction().ordinal() == Action.GRANT_OPERATION.ordinal())
       path = "admin/v1/vnfm-core-grant";
-    else path = "admin/v1/vnfm-core-allocate";
+    else if (message.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal())
+      path = "admin/v1/vnfm-core-allocate";
+    else if (message.getAction().ordinal() == Action.SCALING.ordinal())
+      path = "admin/v1/vnfm-core-scale";
+    else
+      throw new VnfmSdkException(
+          "Don't know where to send message with action " + message.getAction());
 
-    try {
-      NFVMessage result =
-          mapper.fromJson(this.post(path, mapper.toJson(message)), NFVMessage.class);
-      return result;
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getClass().getSimpleName());
-    }
-    return null;
+      return mapper.fromJson(this.post(path, mapper.toJson(message)), NFVMessage.class);
   }
 
   @Override
