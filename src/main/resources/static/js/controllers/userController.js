@@ -57,7 +57,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         "enabled": true,
         "roles": [
             {
-
+              "role": "GUEST",
+              "project": "*"
             }
         ]
     };
