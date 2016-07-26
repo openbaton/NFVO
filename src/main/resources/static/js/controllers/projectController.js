@@ -40,6 +40,9 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
+          if (k === $scope.defaultID) {
+            return;
+          }
             $scope.selection.ids[k] = newValue.checkbox;
         });
         //console.log($scope.selection.ids);
@@ -101,11 +104,18 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 showError(response, status);
             });
     };
+    $scope.defaultID = "";
     function loadTable() {
             http.get(url)
                 .success(function (response) {
                     $scope.projects = response;
                     //console.log(response);
+                    for (i = 0; i < $scope.projects.length; i++) {
+                      if ($scope.projects[i].name === 'default') {
+                        $scope.defaultID = $scope.projects[i].id;
+                      }
+                    }
+                    //console.log($scope.defaultID);
                 })
                 .error(function (data, status) {
                     showError(data, status);

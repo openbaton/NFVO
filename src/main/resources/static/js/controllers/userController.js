@@ -88,9 +88,11 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
+            if (k === $scope.adminID) {
+              return;
+            }
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
@@ -162,7 +164,14 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
-                    //console.log(response);
+                    //console.log($scope.users.length);
+                    for (i = 0; i < $scope.users.length; i++) {
+                      if ($scope.users[i].username === 'admin') {
+                        $scope.adminID = $scope.users[i].id;
+                      }
+                    }
+                    //console.log($scope.adminID);
+
                 })
                 .error(function (data, status) {
                     showError(data, status);
