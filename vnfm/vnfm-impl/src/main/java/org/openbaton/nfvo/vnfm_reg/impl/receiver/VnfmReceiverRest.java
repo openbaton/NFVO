@@ -19,15 +19,9 @@ package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -36,7 +30,6 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
@@ -46,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -76,18 +68,13 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @Override
   public String actionFinished(@RequestBody String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
+
     //TODO rewrite this or better remove it
     log.debug("CORE: Received: " + nfvMessage);
     String action =
         mapper.fromJson(mapper.toJson(nfvMessage), JsonObject.class).get("action").getAsString();
-    NFVMessage message;
-    if (action.equals("INSTANTIATE")) {
-      message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrInstantiateMessage.class);
-      log.trace("DESERIALIZED: " + message);
-    } else {
-      message = mapper.fromJson(mapper.toJson(nfvMessage), VnfmOrGenericMessage.class);
-      log.trace("DESERIALIZED: " + message);
-    }
+    NFVMessage message = mapper.fromJson(mapper.toJson(nfvMessage), NFVMessage.class);
+
     return vnfmManager.executeAction(message);
   }
 
@@ -100,6 +87,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedRest(@RequestBody JsonObject nfvMessage)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
+
     this.actionFinished(mapper.toJson(nfvMessage));
   }
 
@@ -124,6 +112,9 @@ public class VnfmReceiverRest implements VnfmReceiver {
     if (action.equals("INSTANTIATE")) {
       message = mapper.fromJson(nfvMessage, VnfmOrInstantiateMessage.class);
       log.trace("DESERIALIZED: " + message);
+    } else if (action.equals("SCALED")) {
+      message = mapper.fromJson(nfvMessage, VnfmOrScaledMessage.class);
+      log.trace("DESERIALIZED: " + message);
     } else {
       message = mapper.fromJson(nfvMessage, VnfmOrGenericMessage.class);
       log.trace("DESERIALIZED: " + message);
@@ -143,7 +134,9 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
     log.debug("CORE: Received: " + message);
 
-    return mapper.fromJson(vnfmManager.executeAction(message), NFVMessage.class);
+    Gson gson = new GsonBuilder().create();
+    String executeReturned = vnfmManager.executeAction(message);
+    return mapper.fromJson(executeReturned, OrVnfmGrantLifecycleOperationMessage.class);
   }
 
   @RequestMapping(
@@ -156,37 +149,26 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message)
       throws VimException {
 
-    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        message.getVirtualNetworkFunctionRecord();
-
     try {
-      for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
-        for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc())
-          resourceManagement.allocate(
-              virtualDeploymentUnit,
-              virtualNetworkFunctionRecord,
-              vnfComponent,
-              message.getVimInstances().get(virtualDeploymentUnit.getId()),
-              message.getUserdata());
-
-      for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
-        if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
-          virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
-          break;
-        }
-      }
-      return new OrVnfmGenericMessage(
-          saveVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord),
-          Action.ALLOCATE_RESOURCES);
-    } catch (InterruptedException e) {
-      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-    } catch (ExecutionException e) {
-      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-    } catch (VimDriverException e) {
-      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-    } catch (PluginException e) {
-      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+      return mapper.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
+    } catch (ExecutionException e1) {
+      e1.printStackTrace();
+    } catch (InterruptedException e1) {
+      e1.printStackTrace();
     }
+    return null;
+  }
+
+  @RequestMapping(
+    value = "vnfm-core-scale",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
+      throws InterruptedException, ExecutionException, VimException, NotFoundException {
+    return mapper.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
   }
 
   private VirtualNetworkFunctionRecord saveVirtualNetworkFunctionRecord(
