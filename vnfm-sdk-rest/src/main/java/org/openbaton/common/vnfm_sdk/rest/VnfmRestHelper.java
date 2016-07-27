@@ -17,6 +17,9 @@ package org.openbaton.common.vnfm_sdk.rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.ssl.SSLContexts;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -31,12 +34,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
 
 /**
  * Created by lto on 28/09/15.
@@ -46,35 +54,39 @@ import java.io.Serializable;
 @ConfigurationProperties(prefix = "vnfm.rest")
 public class VnfmRestHelper extends VnfmHelper {
 
-  private String host;
-  private String port;
+  private String nfvoHost;
+  private String nfvoPort;
   private String url;
+  private String nfvoSsl;
   private RestTemplate rest;
   private HttpHeaders headers;
   private HttpStatus status;
   private Logger log = LoggerFactory.getLogger(this.getClass());
   private Gson mapper;
 
-  public Gson getMapper() {
-    return mapper;
-  }
-
   @PostConstruct
   private void init() {
-    if (host == null) {
-      log.debug("NFVO Ip is not defined. Set to localhost");
-      host = "localhost";
+    if (nfvoHost == null) {
+      log.info("NFVO Ip is not defined. Set to localhost");
+      nfvoHost = "localhost";
     }
-    if (port == null) {
-      log.debug("NFVO port is not defined. Set to 8080");
-      port = "8080";
+    if (nfvoPort == null) {
+      log.info("NFVO port is not defined. Set to 8080");
+      nfvoPort = "8080";
     }
-    url = "http://" + host + ":" + port + "/";
+
+    if (Boolean.parseBoolean(nfvoSsl)) url = "https://" + nfvoHost + ":" + nfvoPort + "/";
+    else url = "http://" + nfvoHost + ":" + nfvoPort + "/";
+
     this.mapper =
         new GsonBuilder()
             .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
             .create();
-    this.rest = new RestTemplate();
+
+    if (Boolean.parseBoolean(nfvoSsl))
+      this.rest = new RestTemplate(new SslClientHttpRequestFactory());
+    else this.rest = new RestTemplate();
+
     this.rest.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     this.headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
@@ -173,20 +185,28 @@ public class VnfmRestHelper extends VnfmHelper {
     this.status = status;
   }
 
-  public String getHost() {
-    return host;
+  public String getNfvoHost() {
+    return nfvoHost;
   }
 
-  public void setHost(String host) {
-    this.host = host;
+  public void setNfvoHost(String nfvoHost) {
+    this.nfvoHost = nfvoHost;
   }
 
-  public String getPort() {
-    return port;
+  public String getNfvoPort() {
+    return nfvoPort;
   }
 
-  public void setPort(String port) {
-    this.port = port;
+  public void setNfvoPort(String nfvoPort) {
+    this.nfvoPort = nfvoPort;
+  }
+
+  public String getNfvoSsl() {
+    return nfvoSsl;
+  }
+
+  public void setNfvoSsl(String nfvoSsl) {
+    this.nfvoSsl = nfvoSsl;
   }
 
   public RestTemplate getRest() {
@@ -203,5 +223,44 @@ public class VnfmRestHelper extends VnfmHelper {
 
   public void setHeaders(HttpHeaders headers) {
     this.headers = headers;
+  }
+
+  public Gson getMapper() {
+    return mapper;
+  }
+
+  public void setMapper(Gson mapper) {
+    this.mapper = mapper;
+  }
+
+  /**
+   * Necessary in case the NFVO uses SSL.
+   */
+  class SslClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
+
+    @Override
+    protected void prepareConnection(HttpURLConnection connection, String httpMethod)
+        throws IOException {
+
+      SSLContext sslContext = getSslContext();
+
+      if (connection instanceof HttpsURLConnection) {
+        ((HttpsURLConnection) connection).setHostnameVerifier(new NoopHostnameVerifier());
+        ((HttpsURLConnection) connection).setSSLSocketFactory(sslContext.getSocketFactory());
+      }
+      super.prepareConnection(connection, httpMethod);
+    }
+
+    private SSLContext getSslContext() {
+      try {
+        SSLContext sslContext =
+            SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+        return sslContext;
+      } catch (Exception e) {
+        log.error("An exception was thrown while retrieving the SSLContext.");
+        e.printStackTrace();
+        return null;
+      }
+    }
   }
 }
