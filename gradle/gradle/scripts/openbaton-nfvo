@@ -43,10 +43,18 @@ start_rabbitmq () {
 ####################
 
 check_already_running () {
-	instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
-    if [ ${instance} -ne 0 ] ; then
-        log_warning_msg "The OpenBaton NFVO is already running"
-        exit 1
+    if [ "$OSTYPE" = "Linux" ]; then
+        instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
+        if [ ${instance} -ne 0 ] ; then
+            log_warning_msg "OpenBaton NFVO is already running"
+            exit 1
+        fi
+    elif [ ${OSTYPE} -eq "Darwin" ]; then
+        PROCESS_PID=$(launchctl list | grep "org.openbaton.nfvo.app" | awk {'print $1}')
+        if [ "$PROCESS_PID" != "-" ]; then
+            echo "OpenBaton NFVO is already running"
+            exit 1
+        fi
     fi
 }
 
@@ -69,8 +77,12 @@ configure () {
 start () {
     configure
     log_success_msg "Starting the Open Baton NFVO .."
+    if [ "$OSTYPE" = "Linux" ]; then
+        start-stop-daemon --start --background --pidfile ${PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE}
 
-    start-stop-daemon --start --background --pidfile ${PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE}
+    elif [ ${OSTYPE} -eq "Darwin" ]; then
+        launchctl start org.openbaton.nfvo.app
+    fi
 }
 
 stop () {
