@@ -4,8 +4,17 @@
   <dict>
     <key>Label</key>
     <string>org.openbaton.nfvo.app</string>
-    <key>Program</key>
-    <string></string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/java</string>
+        <string>-jar</string>
+        <string>/path/to/openbaton/nfvo/jar</string>
+        <string>--spring.config.location=file:</string>
+    </array>
+
     <key>RunAtLoad</key> <true/>
+    <key>AfterInitialDemand</key>
+
   </dict>
 </plist>
