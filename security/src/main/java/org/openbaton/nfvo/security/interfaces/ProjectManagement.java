@@ -19,7 +19,7 @@ public interface ProjectManagement {
    *
    * @param project
    */
-  void delete(Project project) throws EntityInUseException;
+  void delete(Project project) throws EntityInUseException, NotAllowedException;
 
   /**
    *

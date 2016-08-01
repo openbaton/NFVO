@@ -137,13 +137,13 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
 
     log.debug("Creating initial Project...");
 
-    if (projectManagement.queryByName(projectDefaultName) == null) {
+    if (!projectManagement.query().iterator().hasNext()) {
       Project project = new Project();
       project.setName(projectDefaultName);
 
       projectManagement.add(project);
       log.debug("Created project: " + project);
-    } else log.debug("Project " + projectDefaultName + " already existing");
+    } else log.debug("One project is already existing");
   }
 
   @Override
