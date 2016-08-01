@@ -216,7 +216,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         $('.modal').modal('hide');
     }
     $scope.updateSave = function () {
-        console.log($scope.userUpdate);
+        //console.log($scope.userUpdate);
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
         updateObj.password = $scope.userUpdate.password;
@@ -229,8 +229,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
           };
           updateObj.roles.push(newRole);
         }
-          console.log("Copied");
-        console.log(updateObj);
+          //console.log("Copied");
+        //console.log(updateObj);
         http.put(url + updateObj.username, updateObj)
             .success(function (response) {
                 showOk('Project: ' + $scope.userObj.name + ' saved.');

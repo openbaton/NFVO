@@ -52,7 +52,7 @@
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn-primary dropdown-toggle" ng-show="data.username!=='admin'" data-toggle="dropdown"> Action
+                            <button type="button" class="btn btn-primary dropdown-toggle" ng-show="data.username!=='admin'" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="" data-toggle="modal" ng-click="update(data)" data-target="#updateUser">Update</a></li>
