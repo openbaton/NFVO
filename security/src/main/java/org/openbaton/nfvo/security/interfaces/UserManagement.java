@@ -31,7 +31,7 @@ public interface UserManagement {
    *
    * @param user
    */
-  User add(User user) throws PasswordWeakException;
+  User add(User user) throws PasswordWeakException, NotAllowedException;
 
   /**
    *

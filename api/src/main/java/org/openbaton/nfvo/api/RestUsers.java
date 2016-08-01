@@ -36,8 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -60,7 +61,8 @@ public class RestUsers {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public User create(@RequestBody @Valid User user) throws PasswordWeakException {
+  public User create(@RequestBody @Valid User user)
+      throws PasswordWeakException, NotAllowedException {
     log.info("Adding user: " + user.getUsername());
     return userManagement.add(user);
   }
