@@ -215,6 +215,35 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         loadTable();
         $('.modal').modal('hide');
     }
+    $scope.updateSave = function () {
+        console.log($scope.userUpdate);
+        updateObj = {};
+        updateObj.username = $scope.userUpdate.username;
+        updateObj.password = $scope.userUpdate.password;
+        updateObj.enabled = $scope.userUpdate.enabled;
+        updateObj.roles = [];
+        for (i = 0; i < $scope.userUpdate.roles.length; i++) {
+          var newRole = {
+              "role": $scope.userUpdate.roles[i].role,
+              "project": $scope.userUpdate.roles[i].project
+          };
+          updateObj.roles.push(newRole);
+        }
+          console.log("Copied");
+        console.log(updateObj);
+        http.put(url + updateObj.username, updateObj)
+            .success(function (response) {
+                showOk('Project: ' + $scope.userObj.name + ' saved.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+    };
 
+    $scope.update = function(data) {
+      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+      console.log(data);
+    };
 
 });
