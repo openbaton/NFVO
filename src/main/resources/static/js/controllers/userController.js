@@ -16,7 +16,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     ];
 
     loadTable();
-
+    $scope.newpassword = "";
     $scope.roleAdd = {
         "role": "GUEST",
         "project": "*"
@@ -217,6 +217,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }
     $scope.updateSave = function () {
         //console.log($scope.userUpdate);
+        if ($scope.userUpdate.password !== $scope.newpassword) {
+          alert("New passwords are not the same");
+          return;
+        }
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
         updateObj.password = $scope.userUpdate.password;
@@ -239,6 +243,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             .error(function (response, status) {
                 showError(response, status);
             });
+          delete updateObj;
+          delete $scope.userUpdate;
     };
 
     $scope.update = function(data) {
