@@ -35,9 +35,9 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
       };
       $scope.userUpdate.roles.push(newRole);
     };
+    $scope.currentUser = {};
 
-
-    $scope.loadCurrentUser = function(){
+    loadCurrentUser = function(){
         http.get(url +'current')
             .success(function (response) {
                 console.log(response);
@@ -186,8 +186,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
                         $scope.adminID = $scope.users[i].id;
                       }
                     }
-                    //console.log($scope.adminID);
-
+                    loadCurrentUser();
+                    console.log($scope.currentUser);
                 })
                 .error(function (data, status) {
                     showError(data, status);
