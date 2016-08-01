@@ -28,6 +28,14 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
       };
       $scope.userObj.roles.push(newRole);
     };
+    $scope.addRoleUpdate = function() {
+      var newRole = {
+          "role": "GUEST",
+          "project": "*"
+      };
+      $scope.userUpdate.roles.push(newRole);
+    };
+
 
     $scope.loadCurrentUser = function(){
         http.get(url +'current')
@@ -116,6 +124,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }, true);
 
     $scope.multipleDelete = true;
+    $scope.userUpdate = "";
 
     $scope.selection = {};
     $scope.selection.ids = {};
@@ -149,6 +158,12 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
                 showError(response, status);
             });
     };
+
+    $scope.update = function(data) {
+      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+      console.log(data);
+    };
+
     function loadTable() {
         //console.log($routeParams.userId);
         if (!angular.isUndefined($routeParams.userId))
@@ -200,5 +215,6 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         loadTable();
         $('.modal').modal('hide');
     }
+
 
 });
