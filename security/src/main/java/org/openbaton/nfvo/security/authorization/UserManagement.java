@@ -46,9 +46,12 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public User add(User user) throws PasswordWeakException {
+  public User add(User user) throws PasswordWeakException, NotAllowedException {
 
     checkCurrentUserObAdmin(getCurrentUser());
+
+    if (user.getRoles().isEmpty())
+      throw new NotAllowedException("Cannot add user without at least one project assigned");
 
     if (checkStrength && !isPasswordStrong(user.getPassword())) {
       throw new PasswordWeakException(
