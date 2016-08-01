@@ -52,11 +52,12 @@
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger pull-right" ng-disabled="data.username==='admin'" ng-click="deleteUser(data)"> Delete
-                                <!--span class="caret"></span--></button>
-                            <!--ul class="dropdown-menu" role="menu">
+                            <button type="button" class="btn-primary dropdown-toggle" ng-show="data.username!=='admin'" data-toggle="dropdown"> Action
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" data-toggle="modal" ng-click="update(data)" data-target="#updateUser">Update</a></li>
                                 <li><a href="" ng-click="deleteUser(data)">Delete</a></li>
-                            </ul-->
+                            </ul>
                         </div>
                     </td>
                 </tr>
@@ -135,6 +136,78 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="updateUser">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Update user</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="username" class="col-sm-4 control-label">username</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" ng-disabled="true" class="form-control" id="username" name="username"
+                                   ng-model="userUpdate.username"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="col-sm-4 control-label">password</label>
+
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" id="pass" name="pass"
+                                   ng-model="userUpdate.password"/>
+                        </div>
+                    </div>
+                    <!--div class="form-group" ng-repeat="(key,value) in userUpdate" ng-if="key!=='username' && key!=='password' && key!=='roles'">
+                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
+                                   ng-model="userUpdate[key]"/>
+                        </div>
+                    </div-->
+                    <hr>
+                    <h3>Role <a title="Add a new Role to this user" href="" ng-click="addRoleUpdate()"><li class="fa fa-plus-square"></li></a></h3>
+                    <div class="form-group" ng-repeat="role in userUpdate.roles track by $index">
+
+                            <label for="action" class="col-sm-2 control-label">project</label>
+                            <div class="col-sm-3">
+                                <select name="typeSelect" class="form-control modal-select" id="action"
+                                        ng-model="userUpdate.roles[$index].project"
+                                        ng-options="project.name as project.name for project in projects"
+                                        ng-change="">
+                                </select>
+                            </div>
+
+                        <label for="action" class="col-sm-1 control-label">role</label>
+                        <div class="col-sm-3">
+                            <select name="typeSelect" class="form-control modal-select" id="action"
+                                    ng-model="userUpdate.roles[$index].role"
+                                    ng-options="role for role in roles"
+                                    ng-change="">
+                            </select>
+                        </div>
+                        <div class="col-sm-1">
+                            <a href="" ng-click="userUpdate.roles.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="update()">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
