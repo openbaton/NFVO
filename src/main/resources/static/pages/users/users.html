@@ -153,7 +153,7 @@
                 <form role="form" class="form-horizontal">
 
                     <div class="form-group">
-                        <label for="username" class="col-sm-4 control-label">username</label>
+                        <label for="username" class="col-sm-4 control-label">Username</label>
 
                         <div class="col-sm-6">
                             <input type="text" ng-disabled="true" class="form-control" id="username" name="username"
@@ -161,11 +161,19 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pass" class="col-sm-4 control-label">password</label>
+                        <label for="pass" class="col-sm-4 control-label">New Password</label>
 
                         <div class="col-sm-6">
                             <input type="password" class="form-control" id="pass" name="pass"
                                    ng-model="userUpdate.password"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="col-sm-4 control-label">New password</label>
+
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" id="pass" name="pass"
+                                   ng-model="newpassword"/>
                         </div>
                     </div>
                     <!--div class="form-group" ng-repeat="(key,value) in userUpdate" ng-if="key!=='username' && key!=='password' && key!=='roles'">
