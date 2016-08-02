@@ -45,7 +45,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="data in users| filter:search|orderBy:predicate:reverse">
-                    <td><input type="checkbox" ng-show="data.username!=='admin'"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
+                    <td><input type="checkbox" ng-show="data.username!==currentUser.username"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
                     <td><a href="#users/{{data.username}}">{{data.id}} </a></td>
                     <td>{{data.username}}</td>
                     <td>{{data.enabled}}</td>

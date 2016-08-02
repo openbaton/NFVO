@@ -11,16 +11,11 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.roles = [
         'GUEST',
-        'ADMIN',
-        'OB_ADMIN'
+        'ADMIN'
     ];
 
     loadTable();
     $scope.newpassword = "";
-    $scope.roleAdd = {
-        "role": "GUEST",
-        "project": "*"
-    };
     $scope.addRole = function() {
       var newRole = {
           "role": "GUEST",
@@ -70,7 +65,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             }
         ]
     };
-
+    $scope.adminRole = {
+      "role":"OB_ADMIN",
+      "project":"*"
+    };
     /* -- multiple delete functions Start -- */
 
     $scope.multipleDeleteReq = function () {
@@ -97,7 +95,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
-            if (k === $scope.adminID) {
+            if (k === $scope.currentUser.id) {
               return;
             }
             $scope.selection.ids[k] = newValue.checkbox;
