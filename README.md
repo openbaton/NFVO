@@ -16,7 +16,7 @@ The project iself does not require any installation. However, if you want to cha
 
 # How to use Dashboard
 
-In order to learn about GUI, please, refer to the [documentation][openbaton-doc-GUI]: 
+In order to learn about GUI, please, refer to the [documentation][openbaton-doc-GUI]
 
 
 # How to extend Dashboard
