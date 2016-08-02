@@ -12,7 +12,7 @@ Dashboard is a component of the Openbaton NFVO, which adds the Web GUI to it. It
 
 # How to install Dashboard
 
-The project iself does not require any installation. However, if you want to change the component inside your NFVO, you will need to copy in the dashboard subfolder inside the NFVO. After this, recompile NFVO in order for it to be build with the updated version.
+The project iself does not require any installation. However, if you want to change the component inside your NFVO, you will need to copy the contents into the dashboard subfolder inside the NFVO folder or edit the one that you have already. After this, recompile NFVO in order for it to be built with the updated version.
 
 # How to use Dashboard
 
