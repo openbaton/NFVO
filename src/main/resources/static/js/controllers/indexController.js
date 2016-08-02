@@ -102,7 +102,8 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
-
+    $scope.adminRole = "OB_ADMIN";
+    $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
 
     $scope.config = {};
@@ -288,7 +289,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.admin = function() {
       console.log($scope.userLogged);
 
-      if($scope.userLogged.roles[0].project === '*' && $scope.userLogged.roles[0].role === "OB_ADMIN") {
+      if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
         return true;
       } else {
         return false;
