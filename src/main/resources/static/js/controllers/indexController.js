@@ -106,8 +106,18 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     var url = $cookieStore.get('URL') + "/api/v1";
 
     $scope.config = {};
-
-
+    $scope.userLogged = {};
+    function loadCurrentUser() {
+        http.get(url +'/users/current')
+            .success(function (response) {
+                console.log(response);
+                $scope.userLogged = response
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
+    };
+    loadCurrentUser();
     function getConfig() {
 
         http.get(url + '/configurations/')
@@ -161,6 +171,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
             });
             $scope.numberUnits = units;
         });
+
     }
 
 
@@ -173,6 +184,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
             $cookieStore.put('project', newValue);
             loadNumbers();
             getConfig();
+            loadCurrentUser();
         }
     });
 
@@ -272,14 +284,17 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     }
 
     };
+
     $scope.admin = function() {
-      //console.log($cookieStore.get('userName'));
-      if($cookieStore.get('userName') === 'admin') {
+      console.log($scope.userLogged);
+
+      if($scope.userLogged.roles[0].project === '*' && $scope.userLogged.roles[0].role === "OB_ADMIN") {
         return true;
       } else {
         return false;
       }
     };
+
 
 
 });
