@@ -98,7 +98,10 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .success(function (response) {
                 showOk('Project: ' + $scope.projectObj.name + ' saved.');
                 loadTable();
-                location.reload();
+                $scope.projectObj = {
+                    'name': 'projectName'
+                };
+                //location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
