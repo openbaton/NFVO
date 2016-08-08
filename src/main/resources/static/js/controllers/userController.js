@@ -165,6 +165,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.saveAsUser = function () {
         //console.log($scope.userObj);
+        if ($scope.userObj.password !== $scope.newpassword) {
+          alert("New passwords are not the same");
+          return;
+        }
         http.post(url, $scope.userObj)
             .success(function (response) {
                 showOk('User: ' + $scope.userObj.username + ' saved.');
@@ -184,6 +188,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     $scope.adminObj = {};
     $scope.saveAsAdmin = function() {
       //console.log("Adding admin user");
+      if ($scope.userObj.password !== $scope.newpassword) {
+        alert("New passwords are not the same");
+        return;
+      }
       $scope.adminObj.username = $scope.userObj.username;
       $scope.adminObj.password = $scope.userObj.password;
       $scope.adminObj.enabled = $scope.userObj.enabled;
@@ -265,6 +273,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj.roles = [];
         for (i = 0; i < $scope.userUpdate.roles.length; i++) {
           var newRole = {
+              "id": $scope.userUpdate.roles[i].id,
               "role": $scope.userUpdate.roles[i].role,
               "project": $scope.userUpdate.roles[i].project
           };
