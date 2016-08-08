@@ -36,7 +36,6 @@
                 <thead>
                 <tr>
                     <td></td>
-                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'username'; reverse = !reverse">username <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'email'; reverse = !reverse">email <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'enabled'; reverse = !reverse">enabled <i class="fa fa-sort"></i></th>
@@ -47,8 +46,7 @@
                 <tbody>
                 <tr ng-repeat="data in users| filter:search|orderBy:predicate:reverse">
                     <td><input type="checkbox" ng-disabled="data.username===currentUser.username"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
-                    <td><a href="#users/{{data.username}}">{{data.id}} </a></td>
-                    <td>{{data.username}}</td>
+                    <td><a href="#users/{{data.username}}">{{data.username}} </a></td>
                     <td>{{data.email}}</td>
                     <td>{{data.enabled}}</td>
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
