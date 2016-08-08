@@ -391,7 +391,7 @@ public abstract class AbstractVnfm
       log.debug(
           "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       if (nfvMessage != null) {
-        log.debug("send to NFVO");
+        log.debug("send " + nfvMessage.getClass().getSimpleName() + " to NFVO");
         vnfmHelper.sendToNfvo(nfvMessage);
       }
     } catch (Exception e) {
