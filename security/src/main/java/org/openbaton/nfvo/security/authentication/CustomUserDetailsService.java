@@ -140,6 +140,7 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
     if (!projectManagement.query().iterator().hasNext()) {
       Project project = new Project();
       project.setName(projectDefaultName);
+      project.setDescription("default project");
 
       projectManagement.add(project);
       log.debug("Created project: " + project);
