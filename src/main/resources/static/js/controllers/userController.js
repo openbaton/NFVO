@@ -11,21 +11,21 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.roles = [
         'GUEST',
-        'ADMIN'
+        'USER'
     ];
 
     loadTable();
     $scope.newpassword = "";
     $scope.addRole = function() {
       var newRole = {
-          "role": "GUEST",
+          "role": "USER",
           "project": ""
       };
       $scope.userObj.roles.push(newRole);
     };
     $scope.addRoleUpdate = function() {
       var newRole = {
-          "role": "GUEST",
+          "role": "USER",
           "project": ""
       };
       $scope.userUpdate.roles.push(newRole);
@@ -55,15 +55,16 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
 
     $scope.userObj = {
-        "username": "guest",
+        "username": "",
         "password": "",
+        "email": "",
         "enabled": true,
         "roles": [
 
         ]
     };
     $scope.adminRole = {
-      "role":"OB_ADMIN",
+      "role":"ADMIN",
       "project":"*"
     };
     /* -- multiple delete functions Start -- */
@@ -184,7 +185,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
       //console.log(data);
     };
 
-    //Save as admin functrion
+    //Save as admin function
     $scope.adminObj = {};
     $scope.saveAsAdmin = function() {
       //console.log("Adding admin user");
@@ -194,6 +195,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
       }
       $scope.adminObj.username = $scope.userObj.username;
       $scope.adminObj.password = $scope.userObj.password;
+      $scope.adminObj.email = $scope.userObj.email;
       $scope.adminObj.enabled = $scope.userObj.enabled;
       $scope.adminObj.roles = [];
       $scope.adminObj.roles.push($scope.adminRole);
@@ -269,6 +271,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
         //updateObj.password = $scope.userUpdate.password;
+        updateObj.email = $scope.userUpdate.email;
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.id = $scope.userUpdate.id;
         updateObj.roles = [];
@@ -303,6 +306,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj.username = $scope.userUpdate.username;
         updateObj.id = $scope.userUpdate.id;
         //updateObj.password = $scope.userUpdate.password;
+        updateObj.email = $scope.userUpdate.email;
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.roles = [];
         updateObj.roles.push($scope.adminRole);
