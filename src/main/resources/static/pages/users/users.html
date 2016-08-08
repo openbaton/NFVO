@@ -82,7 +82,7 @@
 
                     <div class="form-group">
                           <td><input type="checkbox" ng-model="makeAdmin"/>Make Admin</td>
-                        <label for="username" class="col-sm-4 control-label">username</label>
+                        <label for="username" class="col-sm-4 control-label">Username</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="username" name="username"
@@ -90,11 +90,19 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pass" class="col-sm-4 control-label">password</label>
+                        <label for="pass" class="col-sm-4 control-label">Password</label>
 
                         <div class="col-sm-6">
                             <input type="password" class="form-control" id="pass" name="pass"
                                    ng-model="userObj.password"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="col-sm-4 control-label">Password</label>
+
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" id="pass" name="pass"
+                                   ng-model="newpassword"/>
                         </div>
                     </div>
                     <div class="form-group" ng-repeat="(key,value) in userObj" ng-if="key!=='username' && key!=='password' && key!=='roles'">
