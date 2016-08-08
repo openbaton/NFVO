@@ -11,7 +11,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     loadTable();
 
     $scope.projectObj = {
-        'name': ''
+        'name': '',
+        'description': ''
     };
 
     /* -- multiple delete functions Start -- */
@@ -99,7 +100,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 showOk('Project: ' + $scope.projectObj.name + ' saved.');
                 loadTable();
                 $scope.projectObj = {
-                    'name': ''
+                    'name': '',
+                    'description': ''
                 };
                 //location.reload();
             })
