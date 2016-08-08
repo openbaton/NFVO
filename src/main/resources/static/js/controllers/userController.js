@@ -19,14 +19,14 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     $scope.addRole = function() {
       var newRole = {
           "role": "GUEST",
-          "project": "*"
+          "project": ""
       };
       $scope.userObj.roles.push(newRole);
     };
     $scope.addRoleUpdate = function() {
       var newRole = {
           "role": "GUEST",
-          "project": "*"
+          "project": ""
       };
       $scope.userUpdate.roles.push(newRole);
     };
@@ -47,7 +47,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         .success(function (response) {
             //console.log(response);
             $scope.projects = response;
-            $scope.projects.push({name: '*'});
+            //$scope.projects.push({name: '*'});
         })
         .error(function (response, status) {
             showError(response, status);
@@ -59,10 +59,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         "password": "",
         "enabled": true,
         "roles": [
-            {
-              "role": "GUEST",
-              "project": "*"
-            }
+
         ]
     };
     $scope.adminRole = {
@@ -81,7 +78,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
-                showOk('user: ' + ids.toString() + ' deleted.');
+                showOk('User: ' + ids.toString() + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
@@ -257,13 +254,13 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }
     function updateAsUser() {
         //console.log($scope.userUpdate);
-        if ($scope.userUpdate.password !== $scope.newpassword) {
+        /*if ($scope.userUpdate.password !== $scope.newpassword) {
           alert("New passwords are not the same");
           return;
-        }
+        }*/
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
-        updateObj.password = $scope.userUpdate.password;
+        //updateObj.password = $scope.userUpdate.password;
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.roles = [];
         for (i = 0; i < $scope.userUpdate.roles.length; i++) {
@@ -288,13 +285,13 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     };
     function updateAsAdmin() {
         //console.log($scope.userUpdate);
-        if ($scope.userUpdate.password !== $scope.newpassword) {
+        /*if ($scope.userUpdate.password !== $scope.newpassword) {
           alert("New passwords are not the same");
           return;
-        }
+        }*/
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
-        updateObj.password = $scope.userUpdate.password;
+        //updateObj.password = $scope.userUpdate.password;
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.roles = [];
         updateObj.roles.push($scope.adminRole);
