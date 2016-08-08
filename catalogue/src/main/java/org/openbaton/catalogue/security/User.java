@@ -33,6 +33,8 @@ public class User implements Serializable {
   private String password;
   private boolean enabled;
 
+  private String email;
+
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private Set<Role> roles;
 
@@ -53,9 +55,14 @@ public class User implements Serializable {
         + ", username='"
         + username
         + '\''
-        + ", password='*********'"
+        + ", password='"
+        + password
+        + '\''
         + ", enabled="
         + enabled
+        + ", email='"
+        + email
+        + '\''
         + ", roles="
         + roles
         + '}';
@@ -96,5 +103,13 @@ public class User implements Serializable {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 }
