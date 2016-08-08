@@ -43,7 +43,7 @@ public interface UserManagement {
    *
    * @param new_user
    */
-  User update(User new_user);
+  User update(User new_user) throws NotAllowedException;
 
   /**
    */

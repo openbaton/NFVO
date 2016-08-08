@@ -106,9 +106,15 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public User update(User new_user) {
+  public User update(User new_user) throws NotAllowedException {
 
     checkCurrentUserObAdmin(getCurrentUser());
+
+    User user = queryById(new_user.getId());
+    if (!user.getUsername().equals(new_user.getUsername()))
+      throw new NotAllowedException("Forbidden to change the username");
+    new_user.setPassword(user.getPassword());
+
     String[] roles = new String[new_user.getRoles().size()];
 
     Role[] objects = new_user.getRoles().toArray(new Role[0]);
@@ -119,7 +125,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     org.springframework.security.core.userdetails.User userToUpdate =
         new org.springframework.security.core.userdetails.User(
             new_user.getUsername(),
-            BCrypt.hashpw(new_user.getPassword(), BCrypt.gensalt(12)),
+            new_user.getPassword(),
             new_user.isEnabled(),
             true,
             true,
