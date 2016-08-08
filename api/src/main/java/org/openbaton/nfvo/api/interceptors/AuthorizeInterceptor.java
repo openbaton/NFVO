@@ -83,7 +83,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     log.trace("UserManagement: " + userManagement);
     User user = userManagement.queryDB(currentUserName);
 
-    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
+    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
       if ((request.getRequestURI().contains("/api/v1/users/")
               || (request.getRequestURI().contains("/api/v1/users")))
           && request.getMethod().equalsIgnoreCase("put")) {
@@ -106,7 +106,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (!projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
       }
-      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
+      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
         log.trace("Return true for admin");
         return true;
       }

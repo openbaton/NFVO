@@ -84,7 +84,7 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
       ob_admin.setPassword(BCrypt.hashpw(adminPwd, BCrypt.gensalt(12)));
       Set<Role> roles = new HashSet<>();
       Role role = new Role();
-      role.setRole(RoleEnum.OB_ADMIN);
+      role.setRole(RoleEnum.ADMIN);
       role.setProject("*");
       roles.add(role);
       ob_admin.setRoles(roles);
@@ -99,7 +99,7 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
               true,
               true,
               true,
-              AuthorityUtils.createAuthorityList("OB_ADMIN:*"));
+              AuthorityUtils.createAuthorityList("ADMIN:*"));
       inMemManager.createUser(adminInMem);
     } else {
       log.debug("Admin" + inMemManager.loadUserByUsername("admin"));

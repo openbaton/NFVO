@@ -87,9 +87,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   private void checkCurrentUserObAdmin(User currentUser) {
-    if (currentUser.getRoles().iterator().next().getRole().ordinal()
-        != RoleEnum.OB_ADMIN.ordinal()) {
-      throw new UnauthorizedUserException("Sorry only OB_ADMIN can add/delete/update/query Users");
+    if (currentUser.getRoles().iterator().next().getRole().ordinal() != RoleEnum.ADMIN.ordinal()) {
+      throw new UnauthorizedUserException("Sorry only ADMIN can add/delete/update/query Users");
     }
   }
 
@@ -97,8 +96,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public void delete(User user) throws NotAllowedException {
     checkCurrentUserObAdmin(getCurrentUser());
     for (Role role : user.getRoles()) {
-      if (role.getRole().ordinal() == RoleEnum.OB_ADMIN.ordinal()) {
-        throw new NotAllowedException("Failed to delete the OB_ADMIN");
+      if (role.getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
+        throw new NotAllowedException("Failed to delete the ADMIN");
       }
     }
     userDetailsManager.deleteUser(user.getUsername());
