@@ -270,6 +270,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj.username = $scope.userUpdate.username;
         //updateObj.password = $scope.userUpdate.password;
         updateObj.enabled = $scope.userUpdate.enabled;
+        updateObj.id = $scope.userUpdate.id;
         updateObj.roles = [];
         for (i = 0; i < $scope.userUpdate.roles.length; i++) {
           var newRole = {
@@ -300,6 +301,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         }*/
         updateObj = {};
         updateObj.username = $scope.userUpdate.username;
+        updateObj.id = $scope.userUpdate.id;
         //updateObj.password = $scope.userUpdate.password;
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.roles = [];
