@@ -58,6 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({
+    BadRequestException.class,
     BadFormatException.class,
     NetworkServiceIntegrityException.class,
     WrongStatusException.class,

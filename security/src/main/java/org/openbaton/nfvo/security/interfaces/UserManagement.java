@@ -17,7 +17,9 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotAllowedException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 
 /**
@@ -31,7 +33,8 @@ public interface UserManagement {
    *
    * @param user
    */
-  User add(User user) throws PasswordWeakException, NotAllowedException;
+  User add(User user)
+      throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException;
 
   /**
    *
@@ -43,7 +46,7 @@ public interface UserManagement {
    *
    * @param new_user
    */
-  User update(User new_user) throws NotAllowedException;
+  User update(User new_user) throws NotAllowedException, BadRequestException, NotFoundException;
 
   /**
    */
@@ -59,5 +62,5 @@ public interface UserManagement {
 
   User queryDB(String currentUserName);
 
-  void changePassword(String oldPwd, String newPwd);
+  void changePassword(String oldPwd, String newPwd) throws PasswordWeakException;
 }

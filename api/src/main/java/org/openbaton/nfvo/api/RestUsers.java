@@ -20,7 +20,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotAllowedException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class RestUsers {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public User create(@RequestBody @Valid User user)
-      throws PasswordWeakException, NotAllowedException {
+      throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
     log.info("Adding user: " + user.getUsername());
     return userManagement.add(user);
   }
@@ -141,7 +143,8 @@ public class RestUsers {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public User update(@RequestBody @Valid User new_user) throws NotAllowedException {
+  public User update(@RequestBody @Valid User new_user)
+      throws NotAllowedException, BadRequestException, NotFoundException {
     return userManagement.update(new_user);
   }
 
@@ -152,7 +155,7 @@ public class RestUsers {
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void changePassword(@RequestBody /*@Valid*/ JsonObject newPwd)
-      throws UnauthorizedUserException {
+      throws UnauthorizedUserException, PasswordWeakException {
     log.debug("Changing password");
     JsonObject jsonObject = gson.fromJson(newPwd, JsonObject.class);
     userManagement.changePassword(
