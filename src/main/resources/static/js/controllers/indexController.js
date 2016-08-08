@@ -102,7 +102,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
-    $scope.adminRole = "OB_ADMIN";
+    $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
 

@@ -38,6 +38,7 @@
                     <td></td>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'username'; reverse = !reverse">username <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'email'; reverse = !reverse">email <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'enabled'; reverse = !reverse">enabled <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'roles'; reverse = !reverse">roles <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
@@ -48,6 +49,7 @@
                     <td><input type="checkbox" ng-disabled="data.username===currentUser.username"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
                     <td><a href="#users/{{data.username}}">{{data.id}} </a></td>
                     <td>{{data.username}}</td>
+                    <td>{{data.email}}</td>
                     <td>{{data.enabled}}</td>
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>
                     <td>
@@ -168,6 +170,13 @@
                         <div class="col-sm-6">
                             <input type="text" ng-disabled="true" class="form-control" id="username" name="username"
                                    ng-model="userUpdate.username"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-4 control-label">email</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="email" name="email"
+                                   ng-model="userUpdate.email"/>
                         </div>
                     </div>
                     <!--div class="form-group">

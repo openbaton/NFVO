@@ -11,7 +11,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     loadTable();
 
     $scope.projectObj = {
-        'name': 'projectName'
+        'name': ''
     };
 
     /* -- multiple delete functions Start -- */
@@ -74,7 +74,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     /* -- multiple delete functions END -- */
 
 
-    $scope.types = ['REST', 'RABBIT', 'JMS'];
+    $scope.types = ['REST', 'RABBIT'];
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
@@ -99,7 +99,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 showOk('Project: ' + $scope.projectObj.name + ' saved.');
                 loadTable();
                 $scope.projectObj = {
-                    'name': 'projectName'
+                    'name': ''
                 };
                 //location.reload();
             })
