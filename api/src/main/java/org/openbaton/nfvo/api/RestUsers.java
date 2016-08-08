@@ -141,7 +141,7 @@ public class RestUsers {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public User update(@RequestBody @Valid User new_user) {
+  public User update(@RequestBody @Valid User new_user) throws NotAllowedException {
     return userManagement.update(new_user);
   }
 
