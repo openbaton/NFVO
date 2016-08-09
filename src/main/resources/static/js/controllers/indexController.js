@@ -111,7 +111,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
-                console.log(response);
+                //console.log(response);
                 $scope.userLogged = response
             })
             .error(function (response, status) {
@@ -287,7 +287,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     };
 
     $scope.admin = function() {
-      console.log($scope.userLogged);
+      //console.log($scope.userLogged);
 
       if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
         return true;

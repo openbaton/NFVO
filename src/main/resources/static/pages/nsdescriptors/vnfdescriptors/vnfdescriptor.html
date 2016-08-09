@@ -19,12 +19,95 @@
         </ol>
     </div>
 </div>
+
 <div class="row">
-    <div class="col-lg-12 top-buffer" ng-show="vnfdinfo">
+    <div class="col-lg-12" ng-show="vnfdinfo">
+      <div class="col-lg-6">
+        <div class = "table-responsive">
+           <table
+                  class="table table-bordered table-hover tablesorter"
+                  id="nsdTabletable">
+                  <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Name</td>
+                      <td>{{vnfdinfo.name}}</td>
+                    </tr>
+                    <tr>
+                      <td>Project ID</td>
+                      <td>{{vnfdinfo.projectId}}</td>
+                    </tr>
+                    <tr>
+                    <tr>
+                      <td>Type</td>
+                      <td>{{vnfdinfo.type}}</td>
+                    </tr>
+                    <tr>
+                      <td>Version</td>
+                      <td>{{vnfdinfo.version}}</td>
+                    </tr>
+                    <tr>
+                      <td>Endpoint</td>
+                      <td>{{vnfdinfo.endpoint}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.auto_scale_policy">
+                      <td>Auto Scaling Policy</td>
+                      <td>{{vnfdinfo.auto_scale_policy}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.connection_point">
+                      <td>Connection point</td>
+                      <td>{{vnfdinfo.connection_point}}</td>
+                    </tr>
+                    <tr>
+                      <td>Cyclic Dependency</td>
+                      <td>{{vnfdinfo.cyclicDependency}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.manifest_file_security">
+                      <td>Manifest File Security</td>
+                      <td>{{vnfdinfo.manifest_file_security}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.monitoring_parameter">
+                      <td>Monitoring Parameters</td>
+                      <td>{{vnfdinfo.monitoring_parameter}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.provides">
+                      <td>Monitoring Parameters</td>
+                      <td>{{vnfdinfo.monitoring_parameter}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.requires.length > 0">
+                      <td>Requires</td><td>{{vnfdinfo.requires}}</td>
+                    </tr>
+                    <!--tr ng-show="vnfdinfo.service_deployment_flavour">
+                      <td>Service Deployment Flavour</td><td>{{vnfdinfo.service_deployment_flavour"}}</td>
+                    </tr-->
+                    <tr ng-show="vnfdinfo.vdu_dependency">
+                      <td>VDU dependency</td><td>{{vnfdinfo.vdu_dependency}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.vld">
+                      <td>VLD</td><td>{{vnfdinfo.vld}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.vnfPackageLocation">
+                      <td>VNF Package Location</td><td>{{vnfdinfo.vnfPackageLocation}}</td>
+                    </tr>
+                    <tr ng-show="vnfdinfo.vnffgd">
+                      <td>VNF Forwarding Graph</td><td>{{vnfdinfo.vnffgd}}</td>
+                    </tr>
+
+
+
+                  </tbody>
+           </table>
+        </div>
+     </div>
         <div class="col-lg-12">
+
             <div>
-                <h2>VNF Descriptor: {{vnfdinfo.name}}</h2>
-                <dl class="dl-horizontal">
+                <!--dl class="dl-horizontal">
                     <dt>name</dt>
                     <dd>{{vnfdinfo.name}}</dd>
                     <dt>type</dt>
@@ -71,7 +154,7 @@
                         </spam>
 
                     </spam>
-                </dl>
+                </dl-->
                 <tabset>
                     <tab heading="Vdu">
                         <div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
