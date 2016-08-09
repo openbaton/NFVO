@@ -167,18 +167,18 @@
                                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
+                                    <th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vim Name
+                                    <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
                                         <i
                                                 class="fa fa-sort"></i>
                                     </th>
 
-                                    <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                    <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i
                                             class="fa fa-sort"></i>
                                     </th>
 
@@ -250,10 +250,10 @@
                                     <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
+                                    <th ng-show='vnfdinfo.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
+                                    <th ng-show='vnfdinfo.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
                                         Constraint <i
                                                 class="fa fa-sort"></i>
                                     </th>
@@ -264,8 +264,8 @@
                                 <tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
                                     <td>{{df.id}}</td>
                                     <td>{{df.version}}</td>
-                                    <td>{{df.flavour_key}}</td>
-                                    <td>
+                                    <td ng-show='vnfdinfo.deployment_flavour[0].flavour_key'>{{df.flavour_key}}</td>
+                                    <td ng-show='df.df_constraint'>
                                         {{df.df_constraint}}
                                     </td>
                                 </tr>
@@ -284,13 +284,13 @@
                                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i
+                                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i
+                                    <th ng-show="vl.extID" ng-click="predicate = 'extId'; reverse = !reverse">External ID <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'qos'; reverse = !reverse">qos <i
+                                    <th ng-show="vl.qos" ng-click="predicate = 'qos'; reverse = !reverse">QoS <i
                                             class="fa fa-sort"></i>
                                     </th>
 
@@ -300,8 +300,8 @@
                                 <tr ng-repeat="vl in vnfdinfo.virtual_link | orderBy:predicate:reverse">
                                     <td>{{vl.id}}</td>
                                     <td>{{vl.name}}</td>
-                                    <td>{{vl.extId}}</td>
-                                    <td>{{vl.qos}}</td>
+                                    <td ng-show="vl.extID">{{vl.extId}}</td>
+                                    <td ng-show="vl.qos">{{vl.qos}}</td>
 
                                 </tr>
                                 </tbody>
