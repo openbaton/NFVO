@@ -26,7 +26,7 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     //release = 1 
     priority = 'optional'
     arch = 'all'
-    maintainer = 'Open Baton Team <info@open-baton.org>'
+    maintainer = 'Open Baton Team <dev@openbaton.org>'
     vendor = 'Open Source (Implemented by Fraunhofer FOKUS and TUB)'
     license = 'Apache 2.0 License'
     url = 'http://openbaton.github.io/index.html'
