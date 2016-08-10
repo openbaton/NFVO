@@ -1,43 +1,63 @@
-# Open Baton
+  <img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/openBaton.png" width="250"/>
+
+  Copyright © 2015-2016 [Open Baton](http://openbaton.org).
+  Licensed under [Apache v2 License](http://www.apache.org/licenses/LICENSE-2.0).
 [![Build Status](https://travis-ci.org/openbaton/NFVO.svg?branch=master)](https://travis-ci.org/openbaton/NFVO)
 [![Join the chat at https://gitter.im/openbaton/NFVO](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/openbaton/NFVO?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation Status](https://readthedocs.org/projects/openbaton-docs/badge/?version=latest)](http://openbaton-docs.readthedocs.org/en/latest/?badge=latest)
 
-Open Baton is an open source project providing a reference implementation of the NFVO and VNFM based on the ETSI [NFV MANO] specification. 
+# Open Baton NFVO
 
-## Getting Started
+Open Baton NFVO is an open source project providing a reference implementation of the NFVO based on the ETSI MANO specification. 
 
-Open Baton is implemented in java using the [spring.io] framework. For more details about the NFVO architecture, you can refer to the following page.
+# Technical Requirements
 
-## install the latest NFVO version from the source code
+* openjdk or oracle JDK
 
+# How to install Open Baton NFVO
 
-The NFVO uses the AMQP protocol for communicating with the VNFMs. Therefore an implementation of it is necessary, we chose RabbitMQ. To facilitate the installation procedures we provide an installation procedure which will install the NFVO and the prerequired libraries. To execute the following command you need to have curl installed (see http://curl.haxx.se/).
+We strongly suggest to follow the [installation guide](http://openbaton.github.io/documentation/nfvo-installation-deb/) that will check for all the requirements
 
-To install the OpenBaton NFVO through its debian package you can type the following command:
+# How to use Open Baton NFVO
 
-```bash
-bash <(curl -fsSkL http://get.openbaton.org/bootstrap)
-```
+## APIs
 
-Please follow the documentation on [our website][installation-guide] for more information on how to configure and use it.
+For the full list of APIs please refer to [this document](http://get.openbaton.org/api/ApiDoc.pdf)
 
-## Development
+# How to extend Open Baton NFVO
 
-Want to contribute? Great! [Get in contact with us](mailto:info@openbaton.org).
+In our [documentation](http://openbaton.github.io/documentation/extend/) there are multiple tutorials that guide you through this process
 
-## News and Website
-Information about OpenBaton can be found on our @[website]. Follow us on Twitter @[openbaton].
+# Issue tracker
 
-## License
+Issues and bug reports should be posted to the GitHub Issue Tracker of this project
 
-Copyright (c) 2015-2016 Fraunhofer FOKUS. All rights reserved.
+# What is Open Baton?
+
+OpenBaton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification.
+
+Open Baton is a ETSI NFV MANO compliant framework. Open Baton was part of the OpenSDNCore (www.opensdncore.org) project started almost three years ago by Fraunhofer FOKUS with the objective of providing a compliant implementation of the ETSI NFV specification.
+
+Open Baton is easily extensible. It integrates with OpenStack, and provides a plugin mechanism for supporting additional VIM types. It supports Network Service management either using a generic VNFM or interoperating with VNF-specific VNFM. It uses different mechanisms (REST or PUB/SUB) for interoperating with the VNFMs. It integrates with additional components for the runtime management of a Network Service. For instance, it provides autoscaling and fault management based on monitoring information coming from the the monitoring system available at the NFVI level.
+
+# Source Code and documentation
+
+The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc] .
+
+# News and Website
+
+Check the [Open Baton Website][openbaton]
+Follow us on Twitter @[openbaton][openbaton-twitter].
+
+# Licensing and distribution
+Copyright [2015-2016] Open Baton project
 
 Licensed under the Apache License, Version 2.0 (the "License");
+
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,18 +65,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-## Supported by
-Open Baton is a project developed by Fraunhofer FOKUS and TU Berlin. It is supported by different European publicly funded projects: 
+# Support
+The Open Baton project provides community support through the Open Baton Public Mailing List and through StackOverflow using the tags openbaton.
 
-* [NUBOMEDIA][nubomedia]
-* [Mobile Cloud Networking][mcn]
-* [CogNet][cognet]
+# Supported by
+  <img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png" width="250"/><img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/tu.png" width="150"/>
 
-[spring.io]:https://spring.io/
-[NFV MANO]:http://www.etsi.org/deliver/etsi_gs/NFV-MAN/001_099/001/01.01.01_60/gs_nfv-man001v010101p.pdf
-[openbaton]:http://twitter.com/openbaton
-[website]:http://www.open-baton.org
-[nubomedia]: https://www.nubomedia.eu/
-[mcn]: http://mobile-cloud-networking.eu/site/
-[cognet]: http://www.cognet.5g-ppp.eu/cognet-in-5gpp/
-[installation-guide]: http://openbaton.github.io/documentation/nfvo-installation/
+[fokus-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png
+[openbaton]: http://openbaton.org
+[openbaton-doc]: http://openbaton.org/documentation
+[openbaton-github]: http://github.org/openbaton
+[openbaton-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/openBaton.png
+[openbaton-mail]: mailto:users@openbaton.org
+[openbaton-twitter]: https://twitter.com/openbaton
+[tub-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/tu.png
