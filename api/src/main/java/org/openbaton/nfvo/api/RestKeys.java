@@ -17,29 +17,30 @@
 package org.openbaton.nfvo.api;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.catalogue.security.User;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.core.interfaces.KeyManagement;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/keys")
@@ -73,7 +74,7 @@ public class RestKeys {
    */
   @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public byte[] generateKey(
+  public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
       throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
           IOException {
