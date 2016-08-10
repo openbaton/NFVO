@@ -25,7 +25,7 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     version = debianApplicationVersionFull
     //release = 1 
     priority = 'optional'
-    arch = 'amd64'
+    arch = 'all'
     maintainer = 'Open Baton Team <info@open-baton.org>'
     vendor = 'Open Source (Implemented by Fraunhofer FOKUS and TUB)'
     license = 'Apache 2.0 License'
