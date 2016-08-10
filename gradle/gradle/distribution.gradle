@@ -20,11 +20,11 @@ startScripts {
     }
 }
 //TODO rename build/script/openbaton in build/script/openbaton-nfvo
-/*applicationDistribution.from("${rootProject.projectDir}/") {
+applicationDistribution.from("${rootProject.projectDir}/") {
         // Rename openbaton in openbaton-nfvo
         from("${startScripts.outputDir}/") {
             include "openbaton*"
-            rename(/openbaton(\.bat)?/, 'openbatonnfvo$1')
+            rename(/openbaton(\.bat)?/, 'openbaton-nfvo$1')
             into "bin"
         }
-}*/
+}
