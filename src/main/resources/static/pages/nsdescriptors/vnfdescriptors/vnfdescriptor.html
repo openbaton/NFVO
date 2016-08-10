@@ -187,7 +187,8 @@
                                 <tbody>
                                 <tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
                                     <td>
-                                        <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+                                        <!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
+                                        {{vdu.id}}
                                     </td>
                                     <td>{{vdu.version}}</td>
                                     <td>{{vdu.vm_image}}</td>
