@@ -8,7 +8,7 @@ PID_FILE=~/.openbaton-nfvo.pid
 ###################
 
 check_rabbitmq () {
-    instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l)
+    instance=$(ps aux | grep -v grep | grep rabbitmq | wc -l)
     if [ ${instance} -eq 0 ]; then
         echo "rabbitmq is not running"
         exit 1
