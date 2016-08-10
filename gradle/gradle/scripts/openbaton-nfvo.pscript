@@ -99,7 +99,7 @@ stop (){
 		echo "$APP_NAME not running"
 		return 1
 	else
-	    echo -n "Stopping $APP_NAME"
+	    echo "Stopping $APP_NAME"
 		APP_PID="$(get_pid)"
 		kill $APP_PID
 		COUNTER=10
