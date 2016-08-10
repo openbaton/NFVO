@@ -3,7 +3,6 @@
 . /lib/lsb/init-functions
 
 OPENBATON_NFVO_CONFIG_FILE=/etc/openbaton/openbaton.properties
-LAUNCHD_APP_LABEL=org.openbaton.nfvo.app
 INSTALL_DIR=/usr/lib/openbaton
 PID_FILE=/var/run/openbaton-nfvo.pid
 DAEMON_USER=root
@@ -43,6 +42,19 @@ start_rabbitmq () {
 #### Open Baton ####
 ####################
 
+get_pid() {
+	local PID
+	if [ -e "$PID_FILE" ]; then
+		PID=$(cat "$PID_FILE")
+	fi
+
+	if [ -n "$PID" ]; then
+		echo $PID
+	else
+		echo -1
+	fi
+}
+
 check_already_running () {
     if [ "$OSTYPE" = "Linux" ]; then
         instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
@@ -51,11 +63,15 @@ check_already_running () {
             exit 1
         fi
     elif [ ${OSTYPE} -eq "Darwin" ]; then
-        PROCESS_PID=$(launchctl list | grep "$LAUNCHD_APP_LABEL" | awk {'print $1}')
-        if [ "$PROCESS_PID" != "-" ]; then
-            echo "OpenBaton NFVO is already running"
-            exit 1
-        fi
+        ID=$(get_pid)
+
+	    if [ "$ID" == "-1" ]; then
+		    echo "0"
+	    elif [ -n "$(ps -p"$ID" -opid=)" ]; then
+		    echo "1"
+	    else
+		    echo "0"
+	    fi
     fi
 }
 
@@ -83,7 +99,26 @@ start () {
     if [ "$OSTYPE" = "Linux" ]; then
         start-stop-daemon --start --background --pidfile ${PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE}
     elif [ ${OSTYPE} -eq "Darwin" ]; then
-        launchctl start "$LAUNCHD_APP_LABEL"
+        nohup "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.openbaton.nfvo.main.Application --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE} > /dev/null 2>&1 &
+        OPENBATON_PID="-1"
+		TRIES=10
+
+		while [ "$DAEMON_RUNNING" == "0" -a $TRIES -gt 0 ]; do
+			DAEMON_RUNNING=$(daemon_running)
+			echo -n "."
+
+			DAEMON_PID="$(daemon_get_pid)"
+			TRIES=$(($TRIES-1))
+			sleep 1
+		done
+
+		if [ $TRIES -eq 0 ]; then
+			echo " Failed to start process. EXITING."
+			echo "Failed command line: $ $DAEMON $DAEMON_CMD"
+			exit 2
+		fi
+
+		echo " $DAEMON_NAME (pid $DAEMON_PID)."
     fi
 }
 

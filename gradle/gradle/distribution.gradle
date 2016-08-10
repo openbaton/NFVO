@@ -1,0 +1,30 @@
+apply plugin: "application"
+
+startScripts {
+    doLast {
+        def unixFile = file getUnixScript()
+
+        def unixTextTmp = ""
+        def unixText = unixFile.text
+        def unixDaemonScript = new File("${rootProject.projectDir}/gradle/gradle/scripts/openbaton-nfvo.pscript").text
+
+        unixText.readLines().each {
+            line ->
+                if (line.startsWith("exec")) {
+                    unixTextTmp += unixDaemonScript;
+                } else {
+                    unixTextTmp += line + '\n'
+                }
+        }
+        unixFile.text = unixTextTmp
+    }
+}
+//TODO rename build/script/openbaton in build/script/openbaton-nfvo
+/*applicationDistribution.from("${rootProject.projectDir}/") {
+        // Rename openbaton in openbaton-nfvo
+        from("${startScripts.outputDir}/") {
+            include "openbaton*"
+            rename(/openbaton(\.bat)?/, 'openbatonnfvo$1')
+            into "bin"
+        }
+}*/
