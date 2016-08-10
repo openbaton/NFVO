@@ -17,14 +17,6 @@ startScripts {
                 }
         }
         unixFile.text = unixTextTmp
+        unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
     }
-}
-//TODO rename build/script/openbaton in build/script/openbaton-nfvo
-applicationDistribution.from("${rootProject.projectDir}/") {
-        // Rename openbaton in openbaton-nfvo
-        from("${startScripts.outputDir}/") {
-            include "openbaton*"
-            rename(/openbaton(\.bat)?/, 'openbaton-nfvo$1')
-            into "bin"
-        }
 }
