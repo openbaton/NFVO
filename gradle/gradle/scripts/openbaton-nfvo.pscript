@@ -11,6 +11,11 @@ check_rabbitmq () {
     instance=$(ps aux | grep -v grep | grep rabbitmq | wc -l)
     if [ ${instance} -eq 0 ]; then
         echo "rabbitmq is not running"
+        echo "Note: once you start rabbitmq make sure to have the admin user with all the privileges"
+        echo "Those are the commands:"
+        echo "rabbitmqctl add_user admin openbaton"
+        echo "rabbitmqctl set_user_tags admin administrator"
+        echo 'rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"'
         exit 1
     fi
 }
