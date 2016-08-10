@@ -134,9 +134,10 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return "ssh-rsa " + publicKeyEncoded + " " + user;
   }
 
-  public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException, IOException {
+  public static void main(String[] args)
+      throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
+          IOException {
     KeyManagement keyManagement = new KeyManagement();
     System.out.println(keyManagement.generateKey("projectID", "test"));
   }
-
 }
