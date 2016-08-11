@@ -138,6 +138,10 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies', 'an
                 templateUrl: 'pages/copyright.html',
                 controller: ''
             }).
+            when('/keypairs', {
+                templateUrl: 'pages/keypairs/keypairs.html',
+                controller: 'keyPairsCtrl'
+            }).
             otherwise({
 //                        redirectTo: '/'
             });
