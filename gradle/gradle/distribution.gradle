@@ -20,3 +20,26 @@ startScripts {
         unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
     }
 }
+
+// to be executed just before the new release so that it gets the right version
+task makeBrewFormula() {
+
+    def brewFormula = new File("${rootProject.projectDir}/gradle/gradle/scripts/osx/openbaton-nfvo.rb")
+    String brewFormulaText = brewFormula.text
+    String brewFormulaTextNew = ""
+    String newVersion = version.toString().replace("-SNAPSHOT","")
+
+    brewFormulaText.readLines().each {
+        line ->
+            if (line.trim().startsWith("version")){
+                brewFormulaTextNew += "  version \""+newVersion + "\"" + '\n'
+            }
+            else if(line.trim().startsWith("url")){
+                brewFormulaTextNew += "  url \"https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/"+newVersion+"\"" + '\n'
+            }
+            else {
+                brewFormulaTextNew += line + '\n'
+            }
+    }
+    brewFormula.text = brewFormulaTextNew
+}
