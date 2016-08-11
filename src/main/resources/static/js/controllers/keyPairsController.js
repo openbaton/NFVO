@@ -72,7 +72,10 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
                     var key = document.createElement("a");
                     key.download = $scope.createKeyName + '.pem';
                     key.href = 'data:application/x-pem-file,' + encodeURIComponent(response);
-                    key.click();
+                    document.body.appendChild(key);
+                    key.click()
+                    document.body.removeChild(key);
+                    delete key;
                     //document.location = 'title: key.pem, data:application/x-pem-file,' +
                       //  encodeURIComponent(response);
                     //location.reload();
