@@ -72,7 +72,7 @@ public class RestKeys {
    *
    * @param name : name of the key to be created
    */
-  @RequestMapping(method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+  @RequestMapping(value = "generate", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
