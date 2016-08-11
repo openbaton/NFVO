@@ -81,6 +81,19 @@ public class RestKeys {
     return keyManagement.generateKey(projectId, name);
   }
 
+  /**
+   * Removes the Key from the key repository
+   *
+   * @param id : the id of the key to be removed
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    keyManagement.delete(projectId, id);
+  }
+
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
