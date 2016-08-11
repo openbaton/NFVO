@@ -21,8 +21,8 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 import org.openbaton.catalogue.security.Key;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by mob on 15.09.15.
@@ -31,7 +31,7 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private Map<String, VimInstance> vimInstances;
   private String userdata;
-  private Collection<Key> keyPairs;
+  private Set<Key> keyPairs;
 
   public VnfmOrAllocateResourcesMessage() {
     this.action = Action.ALLOCATE_RESOURCES;
@@ -76,11 +76,11 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
     return userdata;
   }
 
-  public void setKeyPairs(Collection<Key> keyPairs) {
+  public void setKeyPairs(Set<Key> keyPairs) {
     this.keyPairs = keyPairs;
   }
 
-  public Collection<Key> getKeyPairs() {
+  public Set<Key> getKeyPairs() {
     return keyPairs;
   }
 }
