@@ -54,15 +54,14 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     this.action = Action.INSTANTIATE;
   }
 
-  public OrVnfmInstantiateMessage(
-      VirtualNetworkFunctionDescriptor vnfd,
-      VNFDeploymentFlavour vnfdf,
-      String vnfInstanceName,
-      Set<VirtualLinkRecord> vlrs,
-      Map<String, String> extension,
-      Map<String, Collection<VimInstance>> vimInstances,
-      Set<Key> keys,
-      VNFPackage vnfPackage) {
+  public OrVnfmInstantiateMessage(VirtualNetworkFunctionDescriptor vnfd,
+                                  VNFDeploymentFlavour vnfdf,
+                                  String vnfInstanceName,
+                                  Set<VirtualLinkRecord> vlrs,
+                                  Map<String, String> extension,
+                                  Map<String, Collection<VimInstance>> vimInstances,
+                                  Set<Key> keys,
+                                  VNFPackage vnfPackage) {
     this.vnfd = vnfd;
     this.keys = keys;
     this.vnfdf = vnfdf;
@@ -132,19 +131,20 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
 
   @Override
   public String toString() {
-    String result =
-        "OrVnfmInstantiateMessage{"
-            + "vnfd="
-            + vnfd
-            + ", vnfdf="
-            + vnfdf
-            + ", vnfInstanceName='"
-            + vnfInstanceName
-            + '\''
-            + ", vlrs="
-            + vlrs
-            + ", vimInstances="
-            + vimInstances;
+    String
+        result =
+        "OrVnfmInstantiateMessage{" +
+        "vnfd=" +
+        vnfd +
+        ", vnfdf=" +
+        vnfdf +
+        ", vnfInstanceName='" +
+        vnfInstanceName +
+        '\'' +
+        ", vlrs=" +
+        vlrs +
+        ", vimInstances=" +
+        vimInstances;
     if (vnfPackage != null) {
       result += ", vnfPackage=" + vnfPackage.getName();
     } else {

@@ -194,8 +194,8 @@ public abstract class AbstractVnfm
     try {
       log.debug(
           "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-              + message.getAction()
-              + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+          + message.getAction()
+          + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       log.trace("VNFM: Received Message: " + message.getAction());
       NFVMessage nfvMessage = null;
       OrVnfmGenericMessage orVnfmGenericMessage = null;
