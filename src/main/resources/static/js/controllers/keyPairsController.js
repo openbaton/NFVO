@@ -69,8 +69,12 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
                     showOk('Key: ' + $scope.createKeyName + ' generated.');
                     setTimeout(loadTable(),250);
                     //console.log(response);
-                    document.location = 'data:application/x-pem-file,' +
-                        encodeURIComponent(response);
+                    var key = document.createElement("a");
+                    key.download = $scope.createKeyName + '.pem';
+                    key.href = 'data:application/x-pem-file,' + encodeURIComponent(response);
+                    key.click();
+                    //document.location = 'title: key.pem, data:application/x-pem-file,' +
+                      //  encodeURIComponent(response);
                     //location.reload();
                 })
                 .error(function (response, status) {
