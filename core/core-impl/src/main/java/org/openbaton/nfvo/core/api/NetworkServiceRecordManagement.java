@@ -178,8 +178,7 @@ public class NetworkServiceRecordManagement
       for (Object k : keys) {
         log.debug("Looking for keyname: " + k);
         Key key = keyRepository.findKey(projectID, (String) k);
-        if (key == null)
-          throw new NotFoundException("No key where found with name " + k);
+        if (key == null) throw new NotFoundException("No key where found with name " + k);
         keys1.add(key);
       }
       body.setKeys(keys1);
@@ -738,8 +737,8 @@ public class NetworkServiceRecordManagement
     NetworkServiceRecord networkServiceRecord;
     networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
     networkServiceRecord.setCreatedAt(new Date());
-    if (body != null || body.getKeys() != null || !body.getKeys().isEmpty()) {
-      networkServiceRecord.setKeyNames(new HashSet<String>());
+    networkServiceRecord.setKeyNames(new HashSet<String>());
+    if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
       for (Key key : body.getKeys()) {
         networkServiceRecord.getKeyNames().add(key.getName());
       }

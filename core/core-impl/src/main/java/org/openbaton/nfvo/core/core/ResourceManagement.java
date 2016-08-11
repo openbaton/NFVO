@@ -382,7 +382,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("ID: " + virtualDeploymentUnit.getId());
     // TODO retrive nsr->getKeys->keyRepository->getKeys
     Set<Key> keys = new HashSet<>();
-    for (String keyName : nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getKeyNames()){
+    for (String keyName :
+        nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getKeyNames()) {
       keys.add(keyRepository.findKey(virtualNetworkFunctionRecord.getProjectId(), keyName));
     }
     String vnfc =
