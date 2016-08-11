@@ -31,6 +31,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -147,7 +148,8 @@ public class VimTestSuiteClass {
                 anySet(),
                 anySet(),
                 anyString(),
-                anyMap()))
+                anyMap(),
+                anySet()))
         .thenReturn(server);
     VimInstance vimInstance = createVIM();
     try {
@@ -159,7 +161,8 @@ public class VimTestSuiteClass {
               vnfr,
               vdu.getVnfc().iterator().next(),
               "",
-              new HashMap<String, String>());
+              new HashMap<String, String>(),
+              new HashSet<Key>());
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -172,7 +175,13 @@ public class VimTestSuiteClass {
 
     exception.expect(VimException.class);
     openstackVIM.allocate(
-        vimInstance, vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
+        vimInstance,
+        vdu,
+        vnfr,
+        vdu.getVnfc().iterator().next(),
+        "",
+        new HashMap<String, String>(),
+        new HashSet<Key>());
   }
 
   @Test

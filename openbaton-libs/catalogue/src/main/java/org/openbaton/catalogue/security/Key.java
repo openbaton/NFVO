@@ -21,8 +21,14 @@ package org.openbaton.catalogue.security;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * Created by mpa on 09.08.16.
@@ -40,6 +46,7 @@ public class Key implements Serializable {
 
   private String projectId;
 
+  @Column(length = 500)
   private String publicKey;
 
   public String getId() {

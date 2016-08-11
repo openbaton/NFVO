@@ -22,9 +22,22 @@ import org.openbaton.catalogue.mano.common.NetworkServiceDeploymentFlavour;
 import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * Created by lto on 06/02/15.
@@ -143,6 +156,28 @@ public class NetworkServiceRecord implements Serializable {
    * Record of detailed operational events. TODO: maybe a pointer to a file?
    * */
   private String audit_log;
+
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  @Temporal(TemporalType.TIME)
+  private Date createdAt;
+
+  public Set<String> getKeyNames() {
+    return keyNames;
+  }
+
+  public void setKeyNames(Set<String> keyNames) {
+    this.keyNames = keyNames;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<String> keyNames;
 
   private String name;
 

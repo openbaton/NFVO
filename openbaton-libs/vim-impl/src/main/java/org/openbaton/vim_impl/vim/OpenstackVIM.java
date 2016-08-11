@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -346,7 +347,8 @@ public class OpenstackVIM extends GenericVIM {
       VirtualNetworkFunctionRecord vnfr,
       VNFComponent vnfComponent,
       String userdata,
-      Map<String, String> floatingIps)
+      Map<String, String> floatingIps,
+      Set<Key> keys)
       throws VimException {
     log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
     log.debug("VDU is : " + vdu.toString());
@@ -413,7 +415,8 @@ public class OpenstackVIM extends GenericVIM {
               networks,
               vimInstance.getSecurityGroups(),
               userdata,
-              floatingIps);
+              floatingIps,
+              new HashSet<>(keys));
       log.debug(
           "Launched VM with hostname "
               + hostname

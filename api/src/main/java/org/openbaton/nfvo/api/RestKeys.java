@@ -72,13 +72,27 @@ public class RestKeys {
    *
    * @param name : name of the key to be created
    */
-  @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
       throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
           IOException {
+    log.debug("Generating key with name: " + name);
     return keyManagement.generateKey(projectId, name);
+  }
+
+  /**
+   * Removes the Key from the key repository
+   *
+   * @param id : the id of the key to be removed
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    keyManagement.delete(projectId, id);
   }
 
   @RequestMapping(

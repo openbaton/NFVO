@@ -28,12 +28,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.security.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
-import static org.apache.commons.codec.binary.Base64.*;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 /**
  * Created by lto on 13/05/15.
@@ -56,9 +65,12 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
   @Override
   public Key queryById(String projectId, String id) throws NotFoundException {
     Key key = keyRepository.findFirstById(id);
-    if (key == null) throw new NotFoundException("Not found key with id " + id);
-    if (!key.getProjectId().equals(projectId))
+    if (key == null) {
+      throw new NotFoundException("Not found key with id " + id);
+    }
+    if (!key.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException("Forbidden to query this project");
+    }
     return key;
   }
 
@@ -70,9 +82,12 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
   @Override
   public void delete(String projectId, String id) throws NotFoundException {
     Key keyToDelete = keyRepository.findFirstById(id);
-    if (keyToDelete == null) throw new NotFoundException("Not found key with id " + id);
-    if (!keyToDelete.getProjectId().equals(projectId))
+    if (keyToDelete == null) {
+      throw new NotFoundException("Not found key with id " + id);
+    }
+    if (!keyToDelete.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException("Forbidden to delete this project");
+    }
     keyRepository.delete(id);
   }
 
@@ -84,15 +99,15 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
     KeyPair keyPair = keyGen.genKeyPair();
-    PrivateKey privateKey = keyPair.getPrivate();
-    PublicKey publicKey = keyPair.getPublic();
+    RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+    RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
     String publicKeyString = encodePublicKey(publicKey, name);
     Key key = new Key();
     key.setName(name);
     key.setProjectId(projectId);
     key.setPublicKey(publicKeyString);
-    log.debug(new String(Base64.encodeBase64(publicKey.getEncoded())));
-    //keyRepository.save(key);
+    log.debug(publicKeyString);
+    keyRepository.save(key);
     log.info("Added new key: " + key);
     //Project project = projectManagement.query(projectId);
     //    project.getKeys().add(key);
@@ -117,6 +132,33 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     sb.append("\n");
     sb.append("-----END RSA PRIVATE KEY-----\n");
     return sb.toString();
+  }
+
+  public String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    /* encode the "ssh-rsa" string */
+    byte[] sshrsa = new byte[] {0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a'};
+    out.write(sshrsa);
+    /* Encode the public exponent */
+    BigInteger e = key.getPublicExponent();
+    byte[] data = e.toByteArray();
+    encodeUInt32(data.length, out);
+    out.write(data);
+    /* Encode the modulus */
+    BigInteger m = key.getModulus();
+    data = m.toByteArray();
+    encodeUInt32(data.length, out);
+    out.write(data);
+    return "ssh-rsa " + Base64.encodeBase64String(out.toByteArray()) + " " + keyname;
+  }
+
+  public void encodeUInt32(int value, OutputStream out) throws IOException {
+    byte[] tmp = new byte[4];
+    tmp[0] = (byte) ((value >>> 24) & 0xff);
+    tmp[1] = (byte) ((value >>> 16) & 0xff);
+    tmp[2] = (byte) ((value >>> 8) & 0xff);
+    tmp[3] = (byte) (value & 0xff);
+    out.write(tmp);
   }
 
   private String encodePublicKey(PublicKey publicKey, String user) throws IOException {
