@@ -68,8 +68,8 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
                 .success(function (response) {
                     showOk('Key: ' + $scope.createKeyName + ' generated.');
                     setTimeout(loadTable(),250);
-                    console.log(response);
-                    document.location = 'data:Application/octet-stream,' +
+                    //console.log(response);
+                    document.location = 'data:application/x-pem-file,' +
                         encodeURIComponent(response);
                     //location.reload();
                 })
