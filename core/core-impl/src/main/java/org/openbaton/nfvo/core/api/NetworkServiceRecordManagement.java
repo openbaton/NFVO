@@ -79,6 +79,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -176,7 +177,10 @@ public class NetworkServiceRecordManagement
       List<Key> keys1 = new ArrayList<>();
       for (Object k : keys) {
         log.debug("Looking for keyname: " + k);
-        keys1.add(keyRepository.findKey(projectID, (String) k));
+        Key key = keyRepository.findKey(projectID, (String) k);
+        if (key == null)
+          throw new NotFoundException("No key where found with name " + k);
+        keys1.add(key);
       }
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
@@ -733,6 +737,13 @@ public class NetworkServiceRecordManagement
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
     NetworkServiceRecord networkServiceRecord;
     networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
+    networkServiceRecord.setCreatedAt(new Date());
+    if (body != null || body.getKeys() != null || !body.getKeys().isEmpty()) {
+      networkServiceRecord.setKeyNames(new HashSet<String>());
+      for (Key key : body.getKeys()) {
+        networkServiceRecord.getKeyNames().add(key.getName());
+      }
+    }
     log.trace("Creating " + networkServiceRecord);
 
     for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {

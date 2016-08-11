@@ -28,6 +28,8 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
+import org.openbaton.nfvo.repositories.KeyRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -92,6 +94,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Autowired private VimRepository vimInstanceRepository;
 
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
+  @Autowired private NetworkServiceRecordRepository nsrRepository;
+  @Autowired private KeyRepository keyRepository;
 
   public void setUsername(String username) {
     this.username = username;
@@ -378,6 +382,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("ID: " + virtualDeploymentUnit.getId());
     // TODO retrive nsr->getKeys->keyRepository->getKeys
     Set<Key> keys = new HashSet<>();
+    for (String keyName : nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getKeyNames()){
+      keys.add(keyRepository.findKey(virtualNetworkFunctionRecord.getProjectId(), keyName));
+    }
     String vnfc =
         allocateVNFC(
             vimInstance,
