@@ -96,6 +96,7 @@ import javax.persistence.NoResultException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -143,7 +144,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 any(VirtualNetworkFunctionRecord.class),
                 any(VimInstance.class),
                 anyString(),
-                keys))
+                anySet()))
         .thenReturn(new AsyncResult<List<String>>(new ArrayList<String>()));
     when(vimBroker.getVim(anyString())).thenReturn(vim);
     when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
@@ -156,7 +157,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 any(VNFComponent.class),
                 anyString(),
                 anyMap(),
-                keys))
+                anySet()))
         .thenReturn(new AsyncResult<>(vnfcInstance));
     Map<String, VimInstance> res = new HashMap<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
@@ -269,7 +270,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    nsrManagement.onboard(nsd_exp, projectId, body);
+    nsrManagement.onboard(nsd_exp, projectId, null, null);
   }
 
   @Test
@@ -324,7 +325,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     /**
      * Real Method
      */
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null);
   }
 
   @Test
@@ -382,7 +383,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
 
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null);
   }
 
   @Test
