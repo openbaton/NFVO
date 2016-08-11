@@ -40,15 +40,15 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private Map<String, Collection<VimInstance>> vimInstances;
   private VNFPackage vnfPackage;
 
-  public Collection<Key> getKeys() {
+  public Set<Key> getKeys() {
     return keys;
   }
 
-  public void setKeys(Collection<Key> keys) {
+  public void setKeys(Set<Key> keys) {
     this.keys = keys;
   }
 
-  private Collection<Key> keys;
+  private Set<Key> keys;
 
   public OrVnfmInstantiateMessage() {
     this.action = Action.INSTANTIATE;
@@ -61,7 +61,7 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
       Set<VirtualLinkRecord> vlrs,
       Map<String, String> extension,
       Map<String, Collection<VimInstance>> vimInstances,
-      Collection<Key> keys,
+      Set<Key> keys,
       VNFPackage vnfPackage) {
     this.vnfd = vnfd;
     this.keys = keys;

@@ -1117,7 +1117,7 @@ public class GenericVIM extends Vim {
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,
-              keys);
+              new HashSet<>(keys));
       log.debug(
           "Launched VM with hostname "
               + hostname

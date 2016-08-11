@@ -416,7 +416,7 @@ public class OpenstackVIM extends GenericVIM {
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,
-              keys);
+              new HashSet<>(keys));
       log.debug(
           "Launched VM with hostname "
               + hostname
