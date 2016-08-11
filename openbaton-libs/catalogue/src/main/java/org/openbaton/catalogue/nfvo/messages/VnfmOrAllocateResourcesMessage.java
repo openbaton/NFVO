@@ -40,15 +40,15 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
   @Override
   public String toString() {
     return "VnfmOrAllocateResourcesMessage{"
-           + "virtualNetworkFunctionRecord="
-           + virtualNetworkFunctionRecord
-           + ", vimInstances="
-           + vimInstances
-           + ", userdata='"
-           + (userdata == null || userdata.equals("") ? "none" : "yes")
-           + '\''
-           + "} "
-           + super.toString();
+        + "virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", vimInstances="
+        + vimInstances
+        + ", userdata='"
+        + (userdata == null || userdata.equals("") ? "none" : "yes")
+        + '\''
+        + "} "
+        + super.toString();
   }
 
   public Map<String, VimInstance> getVimInstances() {
