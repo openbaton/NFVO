@@ -126,7 +126,7 @@ public class RestNetworkServiceRecord {
   public NetworkServiceRecord create(
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody JsonObject jsonObject)
+      @RequestBody(required = false) JsonObject jsonObject)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException {
 

@@ -47,6 +47,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -264,100 +265,120 @@ public class VnfmManager
       DeployNSRBody body)
       throws NotFoundException {
 
-    log.debug("Ordered: " + ordered);
-    if (ordered) {
-      vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
-      log.debug("here");
-      Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
-      fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
-      vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
+    try {
 
-      log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
-    }
+      log.debug("Ordered: " + ordered);
+      if (ordered) {
+        vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
+        log.debug("here");
+        Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
+        fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
+        vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
 
-    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      log.debug("Processing VNFD: " + vnfd.getName());
+        log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
+      }
 
-      Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
+      for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+        log.debug("Processing VNFD: " + vnfd.getName());
 
-      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
-        Collection<String> instanceNames;
-        if (body == null
-            || body.getVduVimInstances() == null
-            || body.getVduVimInstances().get(vdu.getName()) == null)
-          instanceNames = vdu.getVimInstanceName();
-        else instanceNames = body.getVduVimInstances().get(vdu.getName());
-        for (String vimInstanceName : instanceNames) {
-          log.debug("Looking for " + vimInstanceName);
-          VimInstance vimInstance = null;
+        Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
-          for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-            if (vimInstanceName.equals(vi.getName())) vimInstance = vi;
+        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+          vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
+          Collection<String> instanceNames;
+          if (body == null
+              || body.getVduVimInstances() == null
+              || body.getVduVimInstances().get(vdu.getName()) == null) {
+            instanceNames = vdu.getVimInstanceName();
+          } else {
+            instanceNames = body.getVduVimInstances().get(vdu.getName());
           }
+          for (String vimInstanceName : instanceNames) {
+            log.debug("Looking for " + vimInstanceName);
+            VimInstance vimInstance = null;
 
-          vimInstances.get(vdu.getId()).add(vimInstance);
+            for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+              if (vimInstanceName.equals(vi.getName())) {
+                vimInstance = vi;
+              }
+            }
+
+            vimInstances.get(vdu.getId()).add(vimInstance);
+          }
         }
-      }
-      for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
+        for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
 
-        if (vimInstance.getValue().isEmpty())
-          for (VimInstance vimInstance1 : vimInstanceRepository.findAll())
-            vimInstance.getValue().add(vimInstance1);
-        for (VimInstance vi : vimInstance.getValue()) log.debug("\t" + vi.getName());
-        log.debug("~~~~~~");
-      }
+          if (vimInstance.getValue().isEmpty()) {
+            for (VimInstance vimInstance1 : vimInstanceRepository.findAll()) {
+              vimInstance.getValue().add(vimInstance1);
+            }
+          }
+          for (VimInstance vi : vimInstance.getValue()) {
+            log.debug("\t" + vi.getName());
+          }
+          log.debug("~~~~~~");
+        }
 
-      //Creating the extension
-      Map<String, String> extension = getExtension();
+        //Creating the extension
+        Map<String, String> extension = getExtension();
 
-      extension.put("nsr-id", networkServiceRecord.getId());
+        extension.put("nsr-id", networkServiceRecord.getId());
 
-      NFVMessage message;
-      if (vnfd.getVnfPackageLocation() != null) {
-        VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
-        message =
-            new OrVnfmInstantiateMessage(
-                vnfd,
-                getDeploymentFlavour(vnfd),
-                vnfd.getName(),
-                networkServiceRecord.getVlr(),
-                extension,
-                vimInstances,
-                new HashSet<>(body.getKeys()),
-                vnfPackage);
-      } else {
-        message =
-            new OrVnfmInstantiateMessage(
-                vnfd,
-                getDeploymentFlavour(vnfd),
-                vnfd.getName(),
-                networkServiceRecord.getVlr(),
-                extension,
-                vimInstances,
-                new HashSet<>(body.getKeys()),
-                null);
-      }
-      VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
-      if (endpoint == null) {
-        throw new NotFoundException(
-            "VnfManager of type "
-                + vnfd.getType()
-                + " (endpoint = "
-                + vnfd.getEndpoint()
-                + ") is not registered");
-      }
+        NFVMessage message;
+        HashSet<Key> keys;
+        if (body.getKeys() != null) {
+          keys = new HashSet<>(body.getKeys());
+        } else {
+          keys = new HashSet<>();
+        }
+        if (vnfd.getVnfPackageLocation() != null) {
+          VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+          message =
+              new OrVnfmInstantiateMessage(
+                  vnfd,
+                  getDeploymentFlavour(vnfd),
+                  vnfd.getName(),
+                  networkServiceRecord.getVlr(),
+                  extension,
+                  vimInstances,
+                  keys,
+                  vnfPackage);
+        } else {
+          message =
+              new OrVnfmInstantiateMessage(
+                  vnfd,
+                  getDeploymentFlavour(vnfd),
+                  vnfd.getName(),
+                  networkServiceRecord.getVlr(),
+                  extension,
+                  vimInstances,
+                  keys,
+                  null);
+        }
+        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
+        if (endpoint == null) {
+          throw new NotFoundException(
+              "VnfManager of type "
+                  + vnfd.getType()
+                  + " (endpoint = "
+                  + vnfd.getEndpoint()
+                  + ") is not registered");
+        }
 
-      VnfmSender vnfmSender;
-      try {
-        vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
-      } catch (BeansException e) {
-        throw new NotFoundException(e);
+        VnfmSender vnfmSender;
+        try {
+          vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+        } catch (BeansException e) {
+          throw new NotFoundException(e);
+        }
+        vnfmSender.sendCommand(message, endpoint);
+        log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
       }
-      vnfmSender.sendCommand(message, endpoint);
-      log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
+      return new AsyncResult<>(null);
+    } catch (Exception e) {
+      log.error("", e);
+      throw e;
     }
-    return new AsyncResult<>(null);
   }
 
   private Map<String, String> getExtension() {

@@ -170,12 +170,17 @@ public class NetworkServiceRecordManagement
     }
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
-    List<Key> keys1 = new ArrayList<>();
-    for (Object k : keys) {
-      log.debug("Looking for keyname: " + ((String) k));
-      keys1.add(keyRepository.findKey(networkServiceDescriptor.getProjectId(), (String) k));
+    if (keys == null) {
+      body.setKeys(null);
+    } else {
+      List<Key> keys1 = new ArrayList<>();
+      for (Object k : keys) {
+        log.debug("Looking for keyname: " + k);
+        keys1.add(keyRepository.findKey(projectID, (String) k));
+      }
+      body.setKeys(keys1);
+      log.debug("Found keys: " + body.getKeys());
     }
-    body.setKeys(keys1);
     return deployNSR(networkServiceDescriptor, projectID, body);
   }
 
@@ -191,11 +196,17 @@ public class NetworkServiceRecordManagement
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
-    List<Key> keys1 = new ArrayList<>();
-    for (Object k : keys) {
-      keys1.add(keyRepository.findKey(networkServiceDescriptor.getProjectId(), (String) k));
+    if (keys == null) {
+      body.setKeys(null);
+    } else {
+      List<Key> keys1 = new ArrayList<>();
+      for (Object k : keys) {
+        log.debug("Looking for keyname: " + k);
+        keys1.add(keyRepository.findKey(projectId, (String) k));
+      }
+      body.setKeys(keys1);
+      log.debug("Found keys: " + body.getKeys());
     }
-    body.setKeys(keys1);
     return deployNSR(networkServiceDescriptor, projectId, body);
   }
 

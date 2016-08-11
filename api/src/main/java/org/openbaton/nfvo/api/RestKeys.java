@@ -78,6 +78,7 @@ public class RestKeys {
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
       throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
           IOException {
+    log.debug("Generating key with name: " + name);
     return keyManagement.generateKey(projectId, name);
   }
 
