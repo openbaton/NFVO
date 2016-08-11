@@ -19,8 +19,10 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
+import org.openbaton.catalogue.security.Key;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by mob on 15.09.15.
@@ -29,6 +31,7 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private Map<String, VimInstance> vimInstances;
   private String userdata;
+  private Set<Key> keyPairs;
 
   public VnfmOrAllocateResourcesMessage() {
     this.action = Action.ALLOCATE_RESOURCES;
@@ -37,15 +40,15 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
   @Override
   public String toString() {
     return "VnfmOrAllocateResourcesMessage{"
-        + "virtualNetworkFunctionRecord="
-        + virtualNetworkFunctionRecord
-        + ", vimInstances="
-        + vimInstances
-        + ", userdata='"
-        + (userdata == null || userdata.equals("") ? "none" : "yes")
-        + '\''
-        + "} "
-        + super.toString();
+           + "virtualNetworkFunctionRecord="
+           + virtualNetworkFunctionRecord
+           + ", vimInstances="
+           + vimInstances
+           + ", userdata='"
+           + (userdata == null || userdata.equals("") ? "none" : "yes")
+           + '\''
+           + "} "
+           + super.toString();
   }
 
   public Map<String, VimInstance> getVimInstances() {
@@ -71,5 +74,13 @@ public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
 
   public String getUserdata() {
     return userdata;
+  }
+
+  public void setKeyPairs(Set<Key> keyPairs) {
+    this.keyPairs = keyPairs;
+  }
+
+  public Set<Key> getKeyPairs() {
+    return keyPairs;
   }
 }

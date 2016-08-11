@@ -23,9 +23,11 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.*;
+import org.openbaton.catalogue.security.Key;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by lto on 23/09/15.
@@ -35,11 +37,13 @@ public class VnfmUtils {
   public static NFVMessage getNfvInstantiateMessage(
       VirtualNetworkFunctionRecord payload,
       Map<String, VimInstance> vimInstances,
-      String userData) {
+      String userData,
+      Set<Key> keys) {
     VnfmOrAllocateResourcesMessage nfvMessage = new VnfmOrAllocateResourcesMessage();
     nfvMessage.setVirtualNetworkFunctionRecord(payload);
     nfvMessage.setVimInstances(vimInstances);
     nfvMessage.setUserdata(userData);
+    nfvMessage.setKeyPairs(keys);
     return nfvMessage;
   }
 

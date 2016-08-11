@@ -16,8 +16,15 @@
 package org.openbaton.vim.drivers;
 
 import com.google.gson.reflect.TypeToken;
+
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -28,12 +35,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PreDestroy;
 
 /**
  * Created by lto on 26/11/15.
@@ -220,7 +232,8 @@ public class VimDriverCaller extends VimDriver {
       Set<String> networks,
       Set<String> securityGroups,
       String s,
-      Map<String, String> floatingIps)
+      Map<String, String> floatingIps,
+      Set<Key> keys)
       throws VimDriverException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
@@ -232,6 +245,7 @@ public class VimDriverCaller extends VimDriver {
     params.add((Serializable) securityGroups);
     params.add(s);
     params.add((Serializable) floatingIps);
+    params.add((Serializable) keys);
     Serializable res;
     try {
       res = pluginCaller.executeRPC("launchInstanceAndWait", params, Server.class);

@@ -23,11 +23,12 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -44,7 +45,8 @@ public interface ResourceManagement {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent vnfComponent,
       String userdata,
-      Map<String, String> floatingIps)
+      Map<String, String> floatingIps,
+      Set<Key> keys)
       throws VimException;
 
   /**
