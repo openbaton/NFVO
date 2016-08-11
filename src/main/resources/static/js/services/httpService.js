@@ -55,6 +55,20 @@ angular.module('app')
             });
 
         };
+        http.postPlain = function (url, data) {
+            customHeaders['project-id'] = $cookieStore.get('project').id;
+            customHeaders['Accept'] = 'text/plain';
+            customHeaders['Content-type'] = 'text/plain';
+            //console.log(data);
+            $('#modalSend').modal('show');
+            return $http({
+                url: url,
+                method: 'POST',
+                data: data,
+                headers: customHeaders
+            });
+
+        };
         http.postLog = function (url) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
             $('#modalSend').modal('show');

@@ -35,6 +35,7 @@
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
@@ -45,6 +46,7 @@
                            href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
                     <td>{{data.name}}</td>
                     <td>{{data.status}}</td>
+                    <td>{{data.createdAt}}</td>
 
                     <td>
                         <div class="btn-group">

@@ -63,12 +63,14 @@
                     <td>{{nsd.name}}</td>
                     <td>{{nsd.vendor}}</td>
                     <td>{{nsd.version}}</td>
+
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="" data-toggle="modal"
+                                       data-target="#launchForm"
                                        ng-click="launchOption(nsd)"
                                 >Launch</a>
                                 <li><a href="" data-toggle="modal" data-target="#editModal"
@@ -1046,3 +1048,41 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="launchForm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Please choose the ssh keys to use</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                    <h3>Key <a title="Add a new key to this NSR" href="" ng-click="addLaunchKey()"><li class="fa fa-plus-square"></li></a></h3>
+                    <div class="form-group" ng-repeat="key in launchKeys track by $index">
+
+                            <label for="action" class="col-sm-2 control-label">Key</label>
+                            <div class="col-sm-3">
+                                <select name="typeSelect" class="form-control modal-select" id="action"
+                                        ng-model="launchKeys[$index]"
+                                        ng-options="key.name as key.name for key in keys"
+                                        ng-change="">
+                                </select>
+                            </div>
+
+                        <div class="col-sm-1">
+                            <a href="" ng-click="launchKeys.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="launch()">Launch</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="launchWithoutkey()">Launch with VIM key</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

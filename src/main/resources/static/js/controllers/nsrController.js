@@ -406,7 +406,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsrecords = response;
-                    //console.log(response);
+                    console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);

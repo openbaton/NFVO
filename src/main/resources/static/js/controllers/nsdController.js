@@ -8,6 +8,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     var urlVNFD = baseURL + '/vnf-descriptors/';
 
     loadTable();
+    loadKeys();
 
     $.fn.bootstrapSwitch.defaults.size = 'mini';
 
@@ -29,6 +30,32 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.file = '';
     $scope.alerts = [];
     $scope.vimInstances = [];
+    $scope.keys = {};
+    $scope.launchKeys = [];
+    $scope.launchObj = {"keys":[]};
+    function loadKeys() {
+
+        //console.log($routeParams.userId);
+            http.get(baseURL + '/keys')
+                .success(function (response) {
+                    $scope.keys = response;
+                    //console.log($scope.users.length);
+
+                    console.log($scope.keys);
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+                });
+
+
+        }
+
+   $scope.addLaunchKey = function() {
+     var key = "";
+     $scope.launchKeys.push(key);
+   }
+
+
     http.get(urlVim)
         .success(function (response, status) {
             $scope.vimInstances = response;
@@ -342,18 +369,37 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
         //$('#madalLaunch').modal('show');
-        $scope.launch();
+
     };
 
     $scope.launch = function () {
         //console.log($scope.nsdToSend);
-        http.post(urlRecord + $scope.nsdToSend.id)
+        $scope.launchObj.keys = $scope.launchKeys;
+        console.log($scope.launchObj);
+        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
             .error(function (data, status) {
                 showError(status, data);
             });
+            $scope.launchKeys = [];
+            $scope.launchObj = {"keys":[]};
+    };
+
+    $scope.launchWithoutkey = function () {
+        console.log("Launching without key");
+
+
+        http.post(urlRecord + $scope.nsdToSend.id, empty = {})
+            .success(function (response) {
+                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
+            })
+            .error(function (data, status) {
+                showError(status, data);
+            });
+            $scope.launchKeys = [];
+            $scope.launchObj = {"keys":[]};
     };
 
     $scope.Jsplumb = function () {
@@ -489,4 +535,3 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     }
 
 });
-
