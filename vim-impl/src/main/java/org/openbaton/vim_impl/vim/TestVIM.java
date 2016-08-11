@@ -28,6 +28,7 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -135,7 +137,8 @@ public class TestVIM extends Vim {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent vnfComponent,
       String userdata,
-      Map<String, String> floatingIps)
+      Map<String, String> floatingIps,
+      Set<Key> keys)
       throws VimException {
     log.trace("Initializing " + vimInstance);
     try {
