@@ -21,8 +21,12 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -30,12 +34,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/ns-descriptors")
@@ -466,18 +477,18 @@ public class RestNetworkServiceDescriptor {
     throw new UnsupportedOperationException();
   }
 
-  @RequestMapping(
-    value = "/records",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  @ResponseStatus(HttpStatus.CREATED)
-  public NetworkServiceRecord createRecord(
-      @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
-      @RequestHeader(value = "project-id") String projectId)
-      throws BadFormatException, InterruptedException, ExecutionException, VimException,
-          NotFoundException, VimDriverException, QuotaExceededException, PluginException {
-    return networkServiceRecordManagement.onboard(networkServiceDescriptor, projectId);
-  }
+  //  @RequestMapping(
+  //    value = "/records",
+  //    method = RequestMethod.POST,
+  //    consumes = MediaType.APPLICATION_JSON_VALUE,
+  //    produces = MediaType.APPLICATION_JSON_VALUE
+  //  )
+  //  @ResponseStatus(HttpStatus.CREATED)
+  //  public NetworkServiceRecord createRecord(
+  //      @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
+  //      @RequestHeader(value = "project-id") String projectId)
+  //      throws BadFormatException, InterruptedException, ExecutionException, VimException,
+  //          NotFoundException, VimDriverException, QuotaExceededException, PluginException {
+  //    return networkServiceRecordManagement.onboard(networkServiceDescriptor, projectId, body);
+  //  }
 }

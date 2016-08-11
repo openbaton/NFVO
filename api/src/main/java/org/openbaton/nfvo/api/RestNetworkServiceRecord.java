@@ -16,14 +16,27 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.QuotaExceededException;
+import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
@@ -32,12 +45,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.validation.Valid;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -46,6 +70,7 @@ public class RestNetworkServiceRecord {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private NetworkServiceRecordManagement networkServiceRecordManagement;
+  @Autowired private Gson gson;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -63,23 +88,54 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.CREATED)
   public NetworkServiceRecord create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
-      @RequestHeader(value = "project-id") String projectId)
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException {
-    return networkServiceRecordManagement.onboard(networkServiceDescriptor, projectId);
+
+    JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
+    return networkServiceRecordManagement.onboard(
+        networkServiceDescriptor,
+        projectId,
+        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class));
   }
 
+  /**
+   * @param id
+   * @param projectId
+   * @param bodyJson the body json is: { "vduVimInstances":{ "vduName":["viminstancename"],
+   * "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"] }
+   * @return
+   * @throws InterruptedException
+   * @throws ExecutionException
+   * @throws VimException
+   * @throws NotFoundException
+   * @throws BadFormatException
+   * @throws VimDriverException
+   * @throws QuotaExceededException
+   * @throws PluginException
+   */
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
   public NetworkServiceRecord create(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      @PathVariable("id") String id,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody JsonObject jsonObject)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException {
-    return networkServiceRecordManagement.onboard(id, projectId);
+
+    log.debug("Json Body is" + jsonObject);
+    return networkServiceRecordManagement.onboard(
+        id,
+        projectId,
+        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class));
   }
 
   /**
@@ -120,7 +176,9 @@ public class RestNetworkServiceRecord {
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws InterruptedException, ExecutionException, WrongStatusException, VimException,
           NotFoundException {
-    for (String id : ids) networkServiceRecordManagement.delete(id, projectId);
+    for (String id : ids) {
+      networkServiceRecordManagement.delete(id, projectId);
+    }
   }
 
   /**
@@ -447,7 +505,9 @@ public class RestNetworkServiceRecord {
     for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
       for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
         for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-          if (vnfcInstance.getId().equals(vnfcId)) return vnfcInstance.getHostname();
+          if (vnfcInstance.getId().equals(vnfcId)) {
+            return vnfcInstance.getHostname();
+          }
         }
       }
     }

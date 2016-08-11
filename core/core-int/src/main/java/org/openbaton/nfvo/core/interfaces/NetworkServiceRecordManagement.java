@@ -22,9 +22,16 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.QuotaExceededException;
+import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -36,7 +43,7 @@ public interface NetworkServiceRecordManagement {
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.
    */
-  NetworkServiceRecord onboard(String nsd_id, String projectId)
+  NetworkServiceRecord onboard(String nsd_id, String projectId, List keys, Map vduVimInstances)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException;
 
@@ -44,7 +51,11 @@ public interface NetworkServiceRecordManagement {
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.
    */
-  NetworkServiceRecord onboard(NetworkServiceDescriptor networkServiceDescriptor, String projectId)
+  NetworkServiceRecord onboard(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      String projectId,
+      List keys,
+      Map vduVimInstances)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException;
 

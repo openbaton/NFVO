@@ -142,7 +142,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 any(VirtualDeploymentUnit.class),
                 any(VirtualNetworkFunctionRecord.class),
                 any(VimInstance.class),
-                anyString()))
+                anyString(),
+                keys))
         .thenReturn(new AsyncResult<List<String>>(new ArrayList<String>()));
     when(vimBroker.getVim(anyString())).thenReturn(vim);
     when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
@@ -154,7 +155,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 any(VirtualNetworkFunctionRecord.class),
                 any(VNFComponent.class),
                 anyString(),
-                anyMap()))
+                anyMap(),
+                keys))
         .thenReturn(new AsyncResult<>(vnfcInstance));
     Map<String, VimInstance> res = new HashMap<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
@@ -267,7 +269,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    nsrManagement.onboard(nsd_exp, projectId);
+    nsrManagement.onboard(nsd_exp, projectId, body);
   }
 
   @Test
@@ -322,7 +324,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     /**
      * Real Method
      */
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null);
   }
 
   @Test
@@ -380,7 +382,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
 
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null);
   }
 
   @Test

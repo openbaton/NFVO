@@ -26,6 +26,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -48,6 +50,7 @@ public class AllocateresourcesTask extends AbstractTask {
   @Autowired private ResourceManagement resourceManagement;
   private Map<String, VimInstance> vims;
   private String userData;
+  private Set<Key> keys;
 
   @Override
   protected NFVMessage doWork() throws Exception {
@@ -65,7 +68,7 @@ public class AllocateresourcesTask extends AbstractTask {
         try {
           ids.add(
               resourceManagement.allocate(
-                  vdu, virtualNetworkFunctionRecord, vimInstance, userData));
+                  vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
 
           for (Future<List<String>> id : ids) {
             id.get();
@@ -125,5 +128,9 @@ public class AllocateresourcesTask extends AbstractTask {
 
   public void setUserData(String userData) {
     this.userData = userData;
+  }
+
+  public void setKeys(Set<Key> keys) {
+    this.keys = keys;
   }
 }

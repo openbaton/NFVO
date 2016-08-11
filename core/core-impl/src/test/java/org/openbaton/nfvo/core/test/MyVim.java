@@ -6,15 +6,15 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.exceptions.PluginException;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.VimDriverCaller;
-import org.openbaton.exceptions.VimDriverException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import static org.mockito.Mockito.mock;
@@ -110,7 +110,8 @@ public class MyVim extends Vim {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent vnfComponent,
       String userdata,
-      Map<String, String> floatingIps)
+      Map<String, String> floatingIps,
+      Set<Key> keys)
       throws VimException {
     return null;
   }

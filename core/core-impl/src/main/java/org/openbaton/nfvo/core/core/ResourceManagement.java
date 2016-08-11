@@ -23,6 +23,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -41,8 +42,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
@@ -156,7 +159,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VirtualDeploymentUnit virtualDeploymentUnit,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VimInstance vimInstance,
-      String userdata)
+      String userdata,
+      Set<Key> keys)
       throws VimException, VimDriverException, ExecutionException, InterruptedException,
           PluginException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
@@ -185,7 +189,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
               virtualNetworkFunctionRecord,
               component,
               userdata,
-              floatingIps);
+              floatingIps,
+              keys);
       instances.add(added);
     }
     List<String> ids = new ArrayList<>();
@@ -216,7 +221,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim,
       VNFComponent component,
-      String userdata)
+      String userdata,
+      Set<Key> keys)
       throws InterruptedException, ExecutionException, VimException, VimDriverException {
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
@@ -231,7 +237,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 virtualNetworkFunctionRecord,
                 component,
                 userdata,
-                floatinIps)
+                floatinIps,
+                keys)
             .get();
     virtualDeploymentUnit.getVnfc_instance().add(added);
     if (!floatinIps.isEmpty() && added.getFloatingIps().isEmpty())
@@ -369,6 +376,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
     log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
     log.debug("ID: " + virtualDeploymentUnit.getId());
+    // TODO retrive nsr->getKeys->keyRepository->getKeys
+    Set<Key> keys = new HashSet<>();
     String vnfc =
         allocateVNFC(
             vimInstance,
@@ -376,7 +385,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             virtualNetworkFunctionRecord,
             vim,
             componentToAdd,
-            userdata);
+            userdata,
+            keys);
     return new AsyncResult<>(vnfc);
   }
 }

@@ -22,11 +22,13 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.VimDriverException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -42,7 +44,8 @@ public interface ResourceManagement {
       VirtualDeploymentUnit virtualDeploymentUnit,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VimInstance vimInstance,
-      String userdata)
+      String userdata,
+      Set<Key> keys)
       throws VimDriverException, ExecutionException, InterruptedException, VimException,
           PluginException;
 

@@ -18,6 +18,7 @@ package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
 
+import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -47,7 +48,6 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
@@ -88,6 +88,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -258,7 +259,9 @@ public class VnfmManager
   @Override
   @Async
   public Future<Void> deploy(
-      NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord)
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord,
+      DeployNSRBody body)
       throws NotFoundException {
 
     log.debug("Ordered: " + ordered);
@@ -279,7 +282,13 @@ public class VnfmManager
 
       for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
         vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
-        for (String vimInstanceName : vdu.getVimInstanceName()) {
+        Collection<String> instanceNames;
+        if (body == null
+            || body.getVduVimInstances() == null
+            || body.getVduVimInstances().get(vdu.getName()) == null)
+          instanceNames = vdu.getVimInstanceName();
+        else instanceNames = body.getVduVimInstances().get(vdu.getName());
+        for (String vimInstanceName : instanceNames) {
           log.debug("Looking for " + vimInstanceName);
           VimInstance vimInstance = null;
 
@@ -315,6 +324,7 @@ public class VnfmManager
                 networkServiceRecord.getVlr(),
                 extension,
                 vimInstances,
+                new HashSet<>(body.getKeys()),
                 vnfPackage);
       } else {
         message =
@@ -325,6 +335,7 @@ public class VnfmManager
                 networkServiceRecord.getVlr(),
                 extension,
                 vimInstances,
+                new HashSet<>(body.getKeys()),
                 null);
       }
       VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
@@ -447,6 +458,8 @@ public class VnfmManager
           vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
       Map<String, VimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
       ((AllocateresourcesTask) task).setVims(vimChosen);
+      ((AllocateresourcesTask) task)
+          .setKeys(new HashSet<>(vnfmOrAllocateResourcesMessage.getKeyPairs()));
       ((AllocateresourcesTask) task).setUserData(vnfmOrAllocateResourcesMessage.getUserdata());
     } else {
       VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;

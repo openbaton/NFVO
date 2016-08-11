@@ -92,7 +92,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     key.setProjectId(projectId);
     key.setPublicKey(publicKeyString);
     log.debug(new String(Base64.encodeBase64(publicKey.getEncoded())));
-    //keyRepository.save(key);
+    keyRepository.save(key);
     log.info("Added new key: " + key);
     //Project project = projectManagement.query(projectId);
     //    project.getKeys().add(key);

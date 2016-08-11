@@ -147,7 +147,8 @@ public class VimTestSuiteClass {
                 anySet(),
                 anySet(),
                 anyString(),
-                anyMap()))
+                anyMap(),
+                keys))
         .thenReturn(server);
     VimInstance vimInstance = createVIM();
     try {
@@ -159,7 +160,8 @@ public class VimTestSuiteClass {
               vnfr,
               vdu.getVnfc().iterator().next(),
               "",
-              new HashMap<String, String>());
+              new HashMap<String, String>(),
+              keys);
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -172,7 +174,13 @@ public class VimTestSuiteClass {
 
     exception.expect(VimException.class);
     openstackVIM.allocate(
-        vimInstance, vdu, vnfr, vdu.getVnfc().iterator().next(), "", new HashMap<String, String>());
+        vimInstance,
+        vdu,
+        vnfr,
+        vdu.getVnfc().iterator().next(),
+        "",
+        new HashMap<String, String>(),
+        keys);
   }
 
   @Test

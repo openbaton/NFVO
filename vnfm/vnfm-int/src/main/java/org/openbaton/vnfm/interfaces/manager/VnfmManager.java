@@ -16,6 +16,7 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -25,7 +26,6 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 
@@ -42,7 +42,9 @@ public interface VnfmManager {
   void init();
 
   Future<Void> deploy(
-      NetworkServiceDescriptor networkServiceDescriptor, NetworkServiceRecord networkServiceRecord)
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord,
+      DeployNSRBody body)
       throws NotFoundException;
 
   VnfmSender getVnfmSender(EndpointType endpointType);
