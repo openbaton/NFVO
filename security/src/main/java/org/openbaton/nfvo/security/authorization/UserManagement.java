@@ -9,7 +9,6 @@ import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
-import org.openbaton.nfvo.security.interfaces.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,11 +94,6 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   @Override
   public void delete(User user) throws NotAllowedException {
     checkCurrentUserObAdmin(getCurrentUser());
-    for (Role role : user.getRoles()) {
-      if (role.getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
-        throw new NotAllowedException("Failed to delete the ADMIN");
-      }
-    }
     userDetailsManager.deleteUser(user.getUsername());
     userRepository.delete(user);
   }
