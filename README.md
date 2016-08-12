@@ -1,41 +1,56 @@
-Open Baton LIBS
-----------------
+  <img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/openBaton.png" width="250"/>
+  
+  Copyright © 2015-2016 [Open Baton](http://openbaton.org). 
+  Licensed under [Apache v2 License](http://www.apache.org/licenses/LICENSE-2.0).
 
-Open Baton is an open source project providing a reference implementation of the NFVO and VNFM based on the [ETSI][NFV MANO] specification, is implemented in java using the [spring.io] framework. It consists of two main components: a NFVO and a generic VNFM. This project **openbaton-libs** contains modules that are shared among different projects inside the **Open Baton** framework.
+[![Build Status](https://travis-ci.org/openbaton/openbaton-libs.svg?branch=master)](https://travis-ci.org/openbaton/openbaton-libs)
 
-## How does this works? 
+# Open Baton LIBS
+This project **openbaton-libs** contains modules that are shared among different projects inside the **Open Baton** framework.
 
-As said before, **openbaton-libs** are shared folders. In order to achieve that we took advantage of git subtrees. We belive that in this way it will be easier for users since they don't have to take care of procedures for retrieving any sub-folder. If you are reading that, it means that you are a developer so it is important that you are aware of a couple of things. 
+The **openbaton-libs** are shared folders. In order to achieve that we took advantage of git subtrees. We belive that in this way it will be easier for users since they don't have to take care of procedures for retrieving any sub-folder. If you are reading that, it means that you are a developer so it is important that you are aware of a couple of things. 
 
-## Which project uses **openbaton-libs**?
+The projects containing **openbaton-libs** are almost all, but not all use everything available from **openbaton-libs**.
 
-The project containing **openbaton-libs** are almost all, but not all use everything available from **openbaton-libs**.
-
-* [NFVO][nfvo-link]: contains **openbaton-libs** and uses almst all 
+* [NFVO][nfvo-link]: contains **openbaton-libs** and uses almost all 
 * [Generic VNFM][generic-link]: contains openbaton-libs and uses only vnfm-sdks 
 * All the plugins contains the plugin-sdk, that in turn contains **openbaton-libs**.
 * [OpenBaton Client][client-link]: contains **openbaton-libs**, basically because of the catalogue.
 
-## Ok, then?
+# How to extend Open Baton LIBS
 
 Well, any modification to this project needs to be reflected in all other projects, so it is extremely important that doesn't brake the status of the depending projects.
 
-## Development
+# Issue tracker
 
-Want to contribute? Great! Get in contact with us. You can find us on twitter @[openbaton]
+Issues and bug reports should be posted to the GitHub Issue Tracker of this project
 
-## News and Website
-Information about OpenBaton can be found on our website. Follow us on Twitter @[openbaton].
+# What is Open Baton?
 
-## License
+OpenBaton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification.
 
-Copyright (c) 2015-2016 Fraunhofer FOKUS. All rights reserved.
+Open Baton is a ETSI NFV MANO compliant framework. Open Baton was part of the OpenSDNCore (www.opensdncore.org) project started almost three years ago by Fraunhofer FOKUS with the objective of providing a compliant implementation of the ETSI NFV specification. 
+
+Open Baton is easily extensible. It integrates with OpenStack, and provides a plugin mechanism for supporting additional VIM types. It supports Network Service management either using a generic VNFM or interoperating with VNF-specific VNFM. It uses different mechanisms (REST or PUB/SUB) for interoperating with the VNFMs. It integrates with additional components for the runtime management of a Network Service. For instance, it provides autoscaling and fault management based on monitoring information coming from the the monitoring system available at the NFVI level.
+
+# Source Code and documentation
+
+The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc] .
+
+# News and Website
+
+Check the [Open Baton Website][openbaton]
+Follow us on Twitter @[openbaton][openbaton-twitter].
+
+# Licensing and distribution
+Copyright [2015-2016] Open Baton project
 
 Licensed under the Apache License, Version 2.0 (the "License");
+
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +58,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+# Support
+The Open Baton project provides community support through the Open Baton Public Mailing List and through StackOverflow using the tags openbaton.
 
+# Supported by
+  <img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png" width="250"/><img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/tu.png" width="150"/>
+
+[fokus-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png
+[openbaton]: http://openbaton.org
+[openbaton-doc]: http://openbaton.org/documentation
+[openbaton-github]: http://github.org/openbaton
+[openbaton-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/openBaton.png
+[openbaton-mail]: mailto:users@openbaton.org
+[openbaton-twitter]: https://twitter.com/openbaton
+[tub-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/tu.png
 [nfvo-link]: https://github.com/openbaton/NFVO
 [generic-link]:https://github.com/openbaton/generic-vnfm
 [client-link]: https://github.com/openbaton/openbaton-client
