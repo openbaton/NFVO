@@ -23,7 +23,6 @@ import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy
 import org.openbaton.catalogue.util.IdGenerator;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -36,8 +35,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * Created by lto on 06/02/15.
@@ -157,16 +154,15 @@ public class NetworkServiceRecord implements Serializable {
    * */
   private String audit_log;
 
-  public Date getCreatedAt() {
+  public String getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(String createdAt) {
     this.createdAt = createdAt;
   }
 
-  @Temporal(TemporalType.TIME)
-  private Date createdAt;
+  private String createdAt;
 
   public Set<String> getKeyNames() {
     return keyNames;
