@@ -42,36 +42,11 @@ start_rabbitmq () {
 #### Open Baton ####
 ####################
 
-get_pid() {
-	local PID
-	if [ -e "$PID_FILE" ]; then
-		PID=$(cat "$PID_FILE")
-	fi
-
-	if [ -n "$PID" ]; then
-		echo $PID
-	else
-		echo -1
-	fi
-}
-
 check_already_running () {
-    if [ "$OSTYPE" = "Linux" ]; then
-        instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
-        if [ ${instance} -ne 0 ] ; then
-            log_warning_msg "OpenBaton NFVO is already running"
-            exit 1
-        fi
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
-        ID=$(get_pid)
-
-	    if [ "$ID" == "-1" ]; then
-		    echo "0"
-	    elif [ -n "$(ps -p"$ID" -opid=)" ]; then
-		    echo "1"
-	    else
-		    echo "0"
-	    fi
+	instance=$(ps aux | grep -v grep | grep "openbaton-nfvo" | grep jar | wc -l)
+    if [ ${instance} -ne 0 ] ; then
+        log_warning_msg "The OpenBaton NFVO is already running"
+        exit 1
     fi
 }
 
@@ -88,47 +63,19 @@ set_jar_version () {
 configure () {
     check_already_running
     check_rabbitmq
-    if [ "$OSTYPE" = "Linux" ]; then
-        set_jar_version
-    fi
+    set_jar_version
 }
 
 start () {
     configure
     log_success_msg "Starting the Open Baton NFVO .."
-    if [ "$OSTYPE" = "Linux" ]; then
-        start-stop-daemon --start --background --pidfile ${PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE}
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
-        nohup "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.openbaton.nfvo.main.Application --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE} > /dev/null 2>&1 &
-        OPENBATON_PID="-1"
-		TRIES=10
 
-		while [ "$DAEMON_RUNNING" == "0" -a $TRIES -gt 0 ]; do
-			DAEMON_RUNNING=$(daemon_running)
-			echo -n "."
-
-			DAEMON_PID="$(daemon_get_pid)"
-			TRIES=$(($TRIES-1))
-			sleep 1
-		done
-
-		if [ $TRIES -eq 0 ]; then
-			echo " Failed to start process. EXITING."
-			echo "Failed command line: $ $DAEMON $DAEMON_CMD"
-			exit 2
-		fi
-
-		echo " $DAEMON_NAME (pid $DAEMON_PID)."
-    fi
+    start-stop-daemon --start --background --pidfile ${PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${INSTALL_DIR}/${OPENBATON_NFVO_JAR} --spring.config.location=file:${OPENBATON_NFVO_CONFIG_FILE}
 }
 
 stop () {
     log_success_msg "Stopping the Open Baton NFVO .."
-    if [ "$OSTYPE" = "Linux" ]; then
-        start-stop-daemon --stop --pidfile $PID_FILE
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
-        launchctl stop "$LAUNCHD_APP_LABEL"
-    fi
+    start-stop-daemon --stop --pidfile $PID_FILE
 }
 
 restart () {
@@ -137,29 +84,11 @@ restart () {
 }
 
 
-
 usage () {
     echo "Open Baton NFVO"
-    if [ "$OSTYPE" = "Linux" ]; then
-        echo "Usage:\n\t [openbaton-nfvo start|stop|restart] | [service openbaton-nfvo start|stop|restart] | [start|stop openbaton-nfvo] | [systemctl start|stop openbaton-nfvo.service]"
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
-        echo "Usage:\n\t openbaton-nfvo [status|start|stop|restart]"
-    fi
+    echo "Usage:\n\t [openbaton-nfvo start|stop|restart] | [service openbaton-nfvo start|stop|restart] | [start|stop openbaton-nfvo] | [systemctl start|stop openbaton-nfvo.service]"
 }
 
-function status {
-    if [ "$OSTYPE" = "Linux" ]; then
-        #TODO status function for linux
-        usage
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
-        PROCESS_PID=$(launchctl list | grep "$LAUNCHD_APP_LABEL" | awk {'print $1}')
-        if [ "$PROCESS_PID" != "-" ]; then
-            echo "OpenBaton NFVO is running"
-        else
-            echo "OpenBaton NFVO is stopped"
-        fi
-    fi
-}
 
 ##
 #   MAIN
@@ -180,8 +109,6 @@ do
             stop ;;
         "restart" )
             restart ;;
-        "status" )
-            status ;;
          *)   
 	        usage;;
     esac
