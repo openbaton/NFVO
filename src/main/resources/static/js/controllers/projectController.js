@@ -11,7 +11,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     loadTable();
 
     $scope.projectObj = {
-        'name': 'projectName'
+        'name': '',
+        'description': ''
     };
 
     /* -- multiple delete functions Start -- */
@@ -40,6 +41,9 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
+          if (k === $scope.defaultID) {
+            return;
+          }
             $scope.selection.ids[k] = newValue.checkbox;
         });
         //console.log($scope.selection.ids);
@@ -71,11 +75,11 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     /* -- multiple delete functions END -- */
 
 
-    $scope.types = ['REST', 'RABBIT', 'JMS'];
+    $scope.types = ['REST', 'RABBIT'];
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Event: ' + data.name + ' deleted.');
+                showOk('Project: ' + data.name + ' deleted.');
                 loadTable();
                 location.reload();
             })
@@ -95,17 +99,28 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .success(function (response) {
                 showOk('Project: ' + $scope.projectObj.name + ' saved.');
                 loadTable();
-                location.reload();
+                $scope.projectObj = {
+                    'name': '',
+                    'description': ''
+                };
+                //location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
             });
     };
+    $scope.defaultID = "";
     function loadTable() {
             http.get(url)
                 .success(function (response) {
                     $scope.projects = response;
                     //console.log(response);
+                    for (i = 0; i < $scope.projects.length; i++) {
+                      if ($scope.projects[i].name === 'default') {
+                        $scope.defaultID = $scope.projects[i].id;
+                      }
+                    }
+                    //console.log($scope.defaultID);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -129,5 +144,14 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         loadTable();
         $('.modal').modal('hide');
     }
+
+    $scope.admin = function() {
+      //console.log($cookieStore.get('userName'));
+      if($cookieStore.get('userName') === 'admin') {
+        return true;
+      } else {
+        return false;
+      }
+    };
 
 });

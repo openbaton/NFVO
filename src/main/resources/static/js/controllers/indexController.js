@@ -9,7 +9,7 @@ var app = angular.module('app');
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http, $window) {
     $scope.currentUser = null;
     //$scope.URL = 'http://lore:8080';
-    //$scope.URL = 'http://192.168.161.6:8080';
+
     $scope.URL = '';
     $scope.credential = {
         "username": '',
@@ -102,12 +102,23 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
     $('#side-menu').metisMenu();
-
+    $scope.adminRole = "ADMIN";
+    $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
 
     $scope.config = {};
-
-
+    $scope.userLogged = {};
+    function loadCurrentUser() {
+        http.get(url +'/users/current')
+            .success(function (response) {
+                console.log(response);
+                $scope.userLogged = response
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
+    };
+    loadCurrentUser();
     function getConfig() {
 
         http.get(url + '/configurations/')
@@ -161,6 +172,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
             });
             $scope.numberUnits = units;
         });
+
     }
 
 
@@ -173,6 +185,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
             $cookieStore.put('project', newValue);
             loadNumbers();
             getConfig();
+            loadCurrentUser();
         }
     });
 
@@ -272,6 +285,17 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     }
 
     };
+
+    $scope.admin = function() {
+      //console.log($scope.userLogged);
+
+      if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
 
 
 });

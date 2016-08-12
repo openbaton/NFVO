@@ -3,9 +3,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     var url = $cookieStore.get('URL') + "/api/v1/users/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
-    //$scope.URL = 'http://lore:8080';
-    //var url = "http://lore:8080/api/v1/users/";
-    //var urlprojects = "http://lore:8080/api/v1/projects/";
+
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -13,28 +11,31 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.roles = [
         'GUEST',
-        'ADMIN',
-        'OB_ADMIN'
+        'USER'
     ];
 
     loadTable();
-
-    $scope.roleAdd = {
-        "role": "GUEST",
-        "project": "*"
-    };
+    $scope.newpassword = "";
     $scope.addRole = function() {
       var newRole = {
-          "role": "GUEST",
-          "project": "*"
+          "role": "USER",
+          "project": ""
       };
       $scope.userObj.roles.push(newRole);
     };
+    $scope.addRoleUpdate = function() {
+      var newRole = {
+          "role": "USER",
+          "project": ""
+      };
+      $scope.userUpdate.roles.push(newRole);
+    };
+    $scope.currentUser = {};
 
-    $scope.loadCurrentUser = function(){
+    loadCurrentUser = function(){
         http.get(url +'current')
             .success(function (response) {
-                console.log(response);
+                //console.log(response);
                 $scope.currentUser= response
             })
             .error(function (response, status) {
@@ -46,7 +47,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         .success(function (response) {
             //console.log(response);
             $scope.projects = response;
-            $scope.projects.push({name: '*'});
+            //$scope.projects.push({name: '*'});
         })
         .error(function (response, status) {
             showError(response, status);
@@ -54,17 +55,18 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
 
     $scope.userObj = {
-        "username": "guest",
+        "username": "",
         "password": "",
+        "email": "",
         "enabled": true,
         "roles": [
-            {
-                "role": "GUEST",
-                "project": "*"
-            }
+
         ]
     };
-
+    $scope.adminRole = {
+      "role":"ADMIN",
+      "project":"*"
+    };
     /* -- multiple delete functions Start -- */
 
     $scope.multipleDeleteReq = function () {
@@ -77,7 +79,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
-                showOk('user: ' + ids.toString() + ' deleted.');
+                showOk('User: ' + ids.toString() + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
@@ -91,9 +93,11 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
+            if (k === $scope.currentUser.id) {
+              return;
+            }
             $scope.selection.ids[k] = newValue.checkbox;
         });
-        //console.log($scope.selection.ids);
     }, true);
 
     $scope.$watch('selection', function (newValue, oldValue) {
@@ -116,11 +120,13 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }, true);
 
     $scope.multipleDelete = true;
+    $scope.userUpdate = "";
 
     $scope.selection = {};
     $scope.selection.ids = {};
-    /* -- multiple delete functions END -- */
 
+    /* -- multiple delete functions END -- */
+    $scope.makeAdmin = false;
 
     $scope.deleteUser = function (data) {
         http.delete(url + data.id)
@@ -138,17 +144,73 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     };
 
 
-    $scope.save = function () {
+    $scope.save = function() {
+      //console.log("Saving");
+      if ($scope.makeAdmin) {
+        $scope.saveAsAdmin();
+      } else {
+        $scope.saveAsUser();
+      }
+      $scope.makeAdmin = false;
+    };
+
+    $scope.updateSave = function() {
+      if ($scope.makeAdmin) {
+        updateAsAdmin();
+      } else {
+        updateAsUser();
+      }
+      $scope.makeAdmin = false;
+    };
+
+
+    $scope.saveAsUser = function () {
         //console.log($scope.userObj);
+        if ($scope.userObj.password !== $scope.newpassword) {
+          alert("New passwords are not the same");
+          return;
+        }
         http.post(url, $scope.userObj)
             .success(function (response) {
-                showOk('Project: ' + $scope.userObj.name + ' saved.');
+                showOk('User: ' + $scope.userObj.username + ' saved.');
                 loadTable();
             })
             .error(function (response, status) {
                 showError(response, status);
             });
     };
+
+    $scope.update = function(data) {
+      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+      //console.log(data);
+    };
+
+    //Save as admin function
+    $scope.adminObj = {};
+    $scope.saveAsAdmin = function() {
+      //console.log("Adding admin user");
+      if ($scope.userObj.password !== $scope.newpassword) {
+        alert("New passwords are not the same");
+        return;
+      }
+      $scope.adminObj.username = $scope.userObj.username;
+      $scope.adminObj.password = $scope.userObj.password;
+      $scope.adminObj.email = $scope.userObj.email;
+      $scope.adminObj.enabled = $scope.userObj.enabled;
+      $scope.adminObj.roles = [];
+      $scope.adminObj.roles.push($scope.adminRole);
+
+      http.post(url, $scope.adminObj)
+          .success(function (response) {
+              showOk('User: ' + $scope.adminObj.username + ' saved.');
+              loadTable();
+          })
+          .error(function (response, status) {
+              showError(response, status);
+          });
+            $scope.adminObj = {};
+    };
+
     function loadTable() {
         //console.log($routeParams.userId);
         if (!angular.isUndefined($routeParams.userId))
@@ -165,7 +227,14 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
-                    //console.log(response);
+                    //console.log($scope.users.length);
+                    for (i = 0; i < $scope.users.length; i++) {
+                      if ($scope.users[i].username === 'admin') {
+                        $scope.adminID = $scope.users[i].id;
+                      }
+                    }
+                    loadCurrentUser();
+                    //console.log($scope.currentUser);
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -193,5 +262,70 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         loadTable();
         $('.modal').modal('hide');
     }
+    function updateAsUser() {
+        //console.log($scope.userUpdate);
+        /*if ($scope.userUpdate.password !== $scope.newpassword) {
+          alert("New passwords are not the same");
+          return;
+        }*/
+        updateObj = {};
+        updateObj.username = $scope.userUpdate.username;
+        //updateObj.password = $scope.userUpdate.password;
+        updateObj.email = $scope.userUpdate.email;
+        updateObj.enabled = $scope.userUpdate.enabled;
+        updateObj.id = $scope.userUpdate.id;
+        updateObj.roles = [];
+        for (i = 0; i < $scope.userUpdate.roles.length; i++) {
+          var newRole = {
+              "id": $scope.userUpdate.roles[i].id,
+              "role": $scope.userUpdate.roles[i].role,
+              "project": $scope.userUpdate.roles[i].project
+          };
+          updateObj.roles.push(newRole);
+        }
+          //console.log("Copied");
+        //console.log(updateObj);
+        http.put(url + updateObj.username, updateObj)
+            .success(function (response) {
+                showOk('User: ' + $scope.userObj.username + ' updated.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+          delete updateObj;
+          delete $scope.userUpdate;
+    };
+    function updateAsAdmin() {
+        //console.log($scope.userUpdate);
+        /*if ($scope.userUpdate.password !== $scope.newpassword) {
+          alert("New passwords are not the same");
+          return;
+        }*/
+        updateObj = {};
+        updateObj.username = $scope.userUpdate.username;
+        updateObj.id = $scope.userUpdate.id;
+        //updateObj.password = $scope.userUpdate.password;
+        updateObj.email = $scope.userUpdate.email;
+        updateObj.enabled = $scope.userUpdate.enabled;
+        updateObj.roles = [];
+        updateObj.roles.push($scope.adminRole);
+          //console.log("Copied");
+        //console.log(updateObj);
+        http.put(url + updateObj.username, updateObj)
+            .success(function (response) {
+                showOk('User: ' + $scope.userObj.username + ' updated.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+          delete updateObj;
+          delete $scope.userUpdate;
+    };
+    $scope.update = function(data) {
+      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+      //console.log(data);
+    };
 
 });

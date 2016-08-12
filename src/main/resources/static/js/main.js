@@ -37,7 +37,8 @@ require({
         indexController: "controllers/indexController",
         vnfcomponentController: "controllers/vnfcomponentController",
         vnfmanagerController: "controllers/vnfmanagerController",
-        vnfdController: "controllers/vnfdController"
+        vnfdController: "controllers/vnfdController",
+        keyPairsController: "controllers/keyPairsController"
     },
     shim: {
         jquery: {
@@ -150,7 +151,11 @@ require({
         dropzone:{
             deps: ['jquery'],
             exports: 'Dropzone'
+        },
+        keyPairsController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         }
+
 
     }
 }), require([
@@ -172,7 +177,8 @@ require({
     'projectController',
     'userController',
     'nsrController',
-    'vimInstanceController'
+    'vimInstanceController',
+    'keyPairsController'
 ], function (require) {
     return require(['bootstrap']);
 });
