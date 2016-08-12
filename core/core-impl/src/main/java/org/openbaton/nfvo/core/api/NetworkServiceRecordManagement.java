@@ -77,6 +77,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -736,7 +737,8 @@ public class NetworkServiceRecordManagement
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
     NetworkServiceRecord networkServiceRecord;
     networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-    networkServiceRecord.setCreatedAt(new Date());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    networkServiceRecord.setCreatedAt(format.format(new Date()));
     networkServiceRecord.setKeyNames(new HashSet<String>());
     if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
       for (Key key : body.getKeys()) {

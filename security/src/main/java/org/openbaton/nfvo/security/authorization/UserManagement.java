@@ -95,7 +95,6 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public void delete(User user) throws NotAllowedException {
     checkCurrentUserObAdmin(getCurrentUser());
     userDetailsManager.deleteUser(user.getUsername());
-    userRepository.delete(user);
   }
 
   @Override
