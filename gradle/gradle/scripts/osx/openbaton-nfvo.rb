@@ -3,7 +3,7 @@ class OpenbatonNfvo < Formula
   homepage "http://www.openbaton.org"
   url "https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/2.1.2"
   version "2.1.2"
-  sha256 "9dcedc2035905eab7a787c887ba2040f0f1153d51b14622d1844b6af5dbcb71a"
+  # sha256 "9dcedc2035905eab7a787c887ba2040f0f1153d51b14622d1844b6af5dbcb71a"
 
   depends_on :java => "1.7+"
   depends_on "gradle"
