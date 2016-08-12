@@ -3,6 +3,8 @@
   Copyright © 2015-2016 [Open Baton](http://openbaton.org). 
   Licensed under [Apache v2 License](http://www.apache.org/licenses/LICENSE-2.0).
 
+[![Build Status](https://travis-ci.org/openbaton/openbaton-libs.svg?branch=master)](https://travis-ci.org/openbaton/openbaton-libs)
+
 # Open Baton LIBS
 This project **openbaton-libs** contains modules that are shared among different projects inside the **Open Baton** framework.
 
