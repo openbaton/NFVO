@@ -9,6 +9,7 @@ import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
+import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
   @Autowired private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private UserRepository userRepository;
 
   @Override
   public Project add(Project project) {
@@ -49,7 +51,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
   @Override
   public void delete(Project project) throws EntityInUseException, NotAllowedException {
     int size = 0;
-    for (Project p : projectRepository.findAll()) {
+    for (Project ignored : projectRepository.findAll()) {
       size++;
     }
 
@@ -87,6 +89,11 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     if (!vnfPackageRepository.findByProjectId(projectToDelete.getId()).isEmpty()) return false;
     if (!networkServiceDescriptorRepository.findByProjectId(projectToDelete.getId()).isEmpty())
       return false;
+    for (User user : userRepository.findAll()) {
+      for (Role role : user.getRoles()) {
+        if (role.getProject().equals(projectToDelete.getName())) return false;
+      }
+    }
     return networkServiceRecordRepository.findByProjectId(projectToDelete.getId()).isEmpty();
   }
 
