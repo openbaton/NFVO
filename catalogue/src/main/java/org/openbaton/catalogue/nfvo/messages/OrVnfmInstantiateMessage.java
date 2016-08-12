@@ -22,6 +22,7 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.openbaton.catalogue.security.Key;
 
 import java.util.Collection;
 import java.util.Map;
@@ -39,6 +40,16 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private Map<String, Collection<VimInstance>> vimInstances;
   private VNFPackage vnfPackage;
 
+  public Set<Key> getKeys() {
+    return keys;
+  }
+
+  public void setKeys(Set<Key> keys) {
+    this.keys = keys;
+  }
+
+  private Set<Key> keys;
+
   public OrVnfmInstantiateMessage() {
     this.action = Action.INSTANTIATE;
   }
@@ -50,8 +61,10 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
       Set<VirtualLinkRecord> vlrs,
       Map<String, String> extension,
       Map<String, Collection<VimInstance>> vimInstances,
+      Set<Key> keys,
       VNFPackage vnfPackage) {
     this.vnfd = vnfd;
+    this.keys = keys;
     this.vnfdf = vnfdf;
     this.vnfInstanceName = vnfInstanceName;
     this.vlrs = vlrs;
@@ -132,8 +145,11 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
             + vlrs
             + ", vimInstances="
             + vimInstances;
-    if (vnfPackage != null) result += ", vnfPackage=" + vnfPackage.getName();
-    else result += ", vnfPackage=" + vnfPackage;
+    if (vnfPackage != null) {
+      result += ", vnfPackage=" + vnfPackage.getName();
+    } else {
+      result += ", vnfPackage=" + vnfPackage;
+    }
     result += ", extension=" + extension + '}';
     return result;
   }

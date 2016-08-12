@@ -28,7 +28,13 @@ import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.*;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -39,14 +45,19 @@ import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * Created by lto on 08/07/15.
@@ -247,19 +258,26 @@ public abstract class AbstractVnfm
                 break;
               }
             }
-            if (found) break;
+            if (found) {
+              break;
+            }
           }
           if (vnfcInstance_new == null) {
             throw new RuntimeException("no new VNFCInstance found. This should not happen...");
           }
-          if (mode != null && mode.equals("standby")) vnfcInstance_new.setState(mode);
+          if (mode != null && mode.equals("standby")) {
+            vnfcInstance_new.setState(mode);
+          }
 
           checkEMS(vnfcInstance_new.getHostname());
           Object scripts;
-          if (scalingMessage.getVnfPackage() == null) scripts = new HashSet<>();
-          else if (scalingMessage.getVnfPackage().getScriptsLink() != null)
+          if (scalingMessage.getVnfPackage() == null) {
+            scripts = new HashSet<>();
+          } else if (scalingMessage.getVnfPackage().getScriptsLink() != null) {
             scripts = scalingMessage.getVnfPackage().getScriptsLink();
-          else scripts = scalingMessage.getVnfPackage().getScripts();
+          } else {
+            scripts = scalingMessage.getVnfPackage().getScripts();
+          }
           nfvMessage =
               VnfmUtils.getNfvMessageScaled(
                   Action.SCALED,
@@ -303,6 +321,7 @@ public abstract class AbstractVnfm
           Map<String, String> extension = orVnfmInstantiateMessage.getExtension();
 
           log.debug("Extensions are: " + extension);
+          log.debug("Keys are: " + orVnfmInstantiateMessage.getKeys());
           getExtension(extension);
 
           Map<String, Collection<VimInstance>> vimInstances =
@@ -329,26 +348,31 @@ public abstract class AbstractVnfm
             AllocateResources allocateResources = new AllocateResources();
             allocateResources.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
             allocateResources.setVimInstances(vimInstanceChosen);
+            allocateResources.setKeyPairs(orVnfmInstantiateMessage.getKeys());
             virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
           }
           setupProvides(virtualNetworkFunctionRecord);
 
-          for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
-            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance())
+          for (VirtualDeploymentUnit virtualDeploymentUnit :
+              virtualNetworkFunctionRecord.getVdu()) {
+            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
               checkEMS(vnfcInstance.getHostname());
+            }
+          }
           if (orVnfmInstantiateMessage.getVnfPackage() != null) {
-            if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null)
+            if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null) {
               virtualNetworkFunctionRecord =
                   instantiate(
                       virtualNetworkFunctionRecord,
                       orVnfmInstantiateMessage.getVnfPackage().getScriptsLink(),
                       vimInstances);
-            else
+            } else {
               virtualNetworkFunctionRecord =
                   instantiate(
                       virtualNetworkFunctionRecord,
                       orVnfmInstantiateMessage.getVnfPackage().getScripts(),
                       vimInstances);
+            }
           } else {
             virtualNetworkFunctionRecord =
                 instantiate(virtualNetworkFunctionRecord, null, vimInstances);
@@ -391,7 +415,7 @@ public abstract class AbstractVnfm
       log.debug(
           "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       if (nfvMessage != null) {
-        log.debug("send to NFVO");
+        log.debug("send " + nfvMessage.getClass().getSimpleName() + " to NFVO");
         vnfmHelper.sendToNfvo(nfvMessage);
       }
     } catch (Exception e) {
@@ -568,6 +592,7 @@ public abstract class AbstractVnfm
 
   class AllocateResources implements Callable<VirtualNetworkFunctionRecord> {
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+    private Set<Key> keyPairs;
 
     public void setVimInstances(Map<String, VimInstance> vimInstances) {
       this.vimInstances = vimInstances;
@@ -593,7 +618,7 @@ public abstract class AbstractVnfm
         response =
             vnfmHelper.sendAndReceive(
                 VnfmUtils.getNfvInstantiateMessage(
-                    virtualNetworkFunctionRecord, vimInstances, userData));
+                    virtualNetworkFunctionRecord, vimInstances, userData, keyPairs));
       } catch (Exception e) {
         log.error("" + e.getMessage());
         throw new VnfmSdkException(
@@ -615,6 +640,10 @@ public abstract class AbstractVnfm
     @Override
     public VirtualNetworkFunctionRecord call() throws Exception {
       return this.allocateResources();
+    }
+
+    public void setKeyPairs(Set<Key> keyPairs) {
+      this.keyPairs = keyPairs;
     }
   }
 

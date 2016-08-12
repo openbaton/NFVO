@@ -19,6 +19,8 @@ public class Project implements Serializable {
   @Column(unique = true)
   private String name;
 
+  private String description;
+
   private Quota quota;
 
   public String getId() {
@@ -39,7 +41,19 @@ public class Project implements Serializable {
 
   @Override
   public String toString() {
-    return "Project{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", quota=" + quota + '}';
+    return "Project{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", quota="
+        + quota
+        + '}';
   }
 
   public Quota getQuota() {
@@ -53,5 +67,13 @@ public class Project implements Serializable {
   @PrePersist
   public void ensureId() {
     id = IdGenerator.createUUID();
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

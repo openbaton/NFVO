@@ -53,7 +53,7 @@ public class Role implements Serializable {
 
   public enum RoleEnum {
     GUEST,
+    USER,
     ADMIN,
-    OB_ADMIN,
   }
 }
