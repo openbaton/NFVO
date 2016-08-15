@@ -34,8 +34,6 @@
              <table
                     class="table table-bordered table-hover tablesorter"
                     id="vnfdTabletable">
-                    <thead>
-                    </thead>
                     <tbody>
                       <tr>
                         <td>Name</td>
@@ -79,8 +77,8 @@
                         <td>{{vnfd.monitoring_parameter}}</td>
                       </tr>
                       <tr ng-show="vnfd.provides">
-                        <td>Monitoring Parameters</td>
-                        <td>{{vnfd.monitoring_parameter}}</td>
+                        <td>Provides</td>
+                        <td>{{vnfd.provides}}</td>
                       </tr>
                       <tr ng-show="vnfd.requires.length > 0">
                         <td>Requires</td><td>{{vnfd.requires}}</td>
