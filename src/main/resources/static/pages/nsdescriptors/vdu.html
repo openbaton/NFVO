@@ -66,24 +66,7 @@
                             </div>
                           <div class="col-lg-12">
                           <tabset>
-                             <tab heading="Fault Management Policies" ng-if="vdu.fault_management_policy  > 0">
-                                 <div class="table-responsive" >
-                                 <table
-                                         class="table table-bordered table-striped table-hover tablesorter"
-                                         id="fmpTable">
-                                      <thead>
-                                      <tr>
-                                        <th>Fault Management Policy</th>
-                                      </tr>
-                                      </thead>
-                                      <tbody>
-                                      <tr ng-repeat="n in vdu.fault_management_policy track by $index">
-                                      <td>{{n}}</td>
-                                      </tr>
-                                      </tbody>
-                                </table>
-                                 </div>
-                             </tab>
+
                              <tab heading="Lifecycle Events"  ng-if="vdu.lifecycle_event  > 0">
                                  <div class="table-responsive" >
                                  <table
@@ -159,6 +142,38 @@
                                       <!--td>{{n.connection_point}}</td-->
                                       <td>{{n.connection_point[0].virtual_link_reference}}</td>
                                       <td>{{n.connection_point[0].floatingIp}}</td>
+                                      </tr>
+                                      </tbody>
+                                </table>
+                                 </div>
+                             </tab>
+                             <tab heading="Fault Management Policies" ng-show="vdu.fault_management_policy">
+                                 <div class="table-responsive" >
+                                 <table
+                                         class="table table-bordered table-striped table-hover tablesorter"
+                                         id="fmpTable">
+                                      <thead>
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>VNF Alarm</th>
+                                        <th>Period</th>
+                                        <th>Severity</th>
+                                        <th>Parameter</th>
+                                        <th>Comparison Operator</th>
+                                        <th>Threshold</th>
+                                        <th>Function</th>
+                                      </tr>
+                                      </thead>
+                                      <tbody>
+                                      <tr ng-repeat="policy in vdu.fault_management_policy">
+                                      <td>{{policy.name}}</td>
+                                      <td>{{policy.isVNFAlarm}}</td>
+                                      <td>{{policy.period}}</td>
+                                      <td>{{policy.severity}}</td>
+                                      <td> {{policy.criteria[0].parameter_ref}}</td>
+                                      <td>{{policy.criteria[0].comparison_operator}}</td>
+                                      <td>{{policy.criteria[0].threshold}}</td>
+                                      <td>{{policy.criteria[0].function}}</td>
                                       </tr>
                                       </tbody>
                                 </table>
