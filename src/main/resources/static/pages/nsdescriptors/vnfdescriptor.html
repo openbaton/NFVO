@@ -56,10 +56,6 @@
                         <td>Endpoint</td>
                         <td>{{vnfd.endpoint}}</td>
                       </tr>
-                      <tr ng-show="vnfd.auto_scale_policy">
-                        <td>Auto Scaling Policy</td>
-                        <td>{{vnfd.auto_scale_policy}}</td>
-                      </tr>
                       <tr ng-show="vnfd.connection_point">
                         <td>Connection point</td>
                         <td>{{vnfd.connection_point}}</td>
@@ -324,6 +320,34 @@
                                 </table>
                             </div>
                         </tab>
+                        <tab  heading="Auto Scaling Policies" ng-show="vnfd.auto_scale_policy">
+                            <div class="table-responsive">
+                              <h3>Auto Scaling Policies</h3>
+                              <table
+                                      class="table table-bordered table-striped table-hover tablesorter"
+                                      id="">
+                              <thead>
+                              <tr><th>Version</th><th>Name</th><th>Threshold</th><th>Comparison Operator</th><th>Period</th><th>Cooldown</th><th>Mode</th><th>Type</th><th>Alarms</th><th>Actions</th></tr>
+                              </thead>
+                              <tbody>
+                                <tr ng-repeat="policy in vnfd.auto_scale_policy">
+                                    <td>{{policy.version}}</td>
+                                    <td>{{policy.name}}</td>
+                                    <td>{{policy.threshold}}</td>
+                                    <td>{{policy.comparisonOperator}}</td>
+                                    <td>{{policy.period}}</td>
+                                    <td>{{policy.cooldown}}</td>
+                                    <td>{{policy.mode}}</td>
+                                    <td>{{policy.type}}</td>
+                                    <td> <div ng-repeat="alarm in policy.alarms">
+                                      {{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div></td>
+                                    <td><div ng-repeat="action in policy.actions" >{{action.type}} {{action.value}} <br></div></td>
+                                </tr>
+                              </tbody>
+                              </table>
+                            </div>
+                        </tab>
+
                     </tabset>
                     <br/>
                     <br/>

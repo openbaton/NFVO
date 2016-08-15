@@ -188,7 +188,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         http.delete(url + data.id)
             .success(function (response) {
                 showOk('Deleted Network Service Descriptor with id: ' + data.id);
-                loadTable();
+                setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
                 showError(status, data);
@@ -307,7 +307,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         http.delete(url + data.id)
             .success(function (response) {
                 showOk('Network Service Record deleted!');
-                window.setTimeout(loadTable, 250);
+                window.setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
                 showError(status, data);
