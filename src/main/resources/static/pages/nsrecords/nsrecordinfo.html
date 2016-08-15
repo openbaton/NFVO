@@ -23,23 +23,42 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
-        <div class="col-lg-12">
-            <h2>NSR name: {{nsrinfo.name}}</h2>
-            <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+
+
+            <div>
+            <div class="col-lg-6">
+              <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+              <br/>
+              <a href="#nsrecords/{{nsrinfo.id}}/graph">Show Graph</a>
+              <div class = "table-responsive">
+                 <table
+                        class="table table-bordered table-hover tablesorter"
+                        id="nsrTabletable">
+                        <tbody>
+                          <tr>
+                            <td>Name</td>
+                            <td>{{nsrinfo.name}}</td>
+                          </tr>
+                          <tr>
+                            <td>Vendor</td>
+                            <td>{{nsrinfo.vendor}}</td>
+                          </tr>
+                          <tr>
+                            <td>Version</td>
+                            <td>{{nsrinfo.version}}</td>
+                          </tr>
+                          <tr>
+                            <td>Status</td>
+                            <td>{{nsrinfo.status}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
             <br/>
-            <a href="#nsrecords/{{nsrinfo.id}}/graph">Show Graph</a>
-            <dl class="dl-horizontal">
-                <dt>id:</dt>
-                <dd>{{nsrinfo.id}}</dd>
-                <dt>Vendor:</dt>
-                <dd>{{nsrinfo.vendor}}</dd>
-                <dt>Version:</dt>
-                <dd>{{nsrinfo.version}}</dd>
-                <dt>Status:</dt>
-                <dd>{{nsrinfo.status}}</dd>
-            </dl>
             <br/>
-            <br/>
+            <div class="col-lg-12" ng-show="nsrinfo">
             <tabset>
                 <tab heading="VNF Records">
                     <div class="table-responsive" ng-if="nsrinfo.vnfr.length > 0">
@@ -173,6 +192,7 @@
                     </div>
                 </tab>
             </tabset>
+          </div>
         </div>
 
 

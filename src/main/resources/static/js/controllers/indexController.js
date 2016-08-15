@@ -111,7 +111,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
-                console.log(response);
+                //console.log(response);
                 $scope.userLogged = response
             })
             .error(function (response, status) {

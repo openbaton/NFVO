@@ -21,23 +21,41 @@
         </alert>
 
         <div class="col-lg-12" ng-show="vnfmanager">
-            <h3>VNF Manager type: {{vnfmanager.type}}</h3>
-            <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
 
-            <dl class="dl-horizontal">
-        <span class="dl-horizontal" ng-repeat="(key,value) in vnfmanager">
-                    <div ng-if="key !== 'image'">
-                        <dt>{{key}}:</dt>
-                        <dd>{{value}}</dd>
-                    </div>
-                    <div ng-if="key === 'image'">
-                        <dt>image:</dt>
-                        <dd><span ng-repeat="(k, v) in value"><b>{{k}}</b>: {{v}}
-                            <span ng-if="!$last">, </span>
-                            </span></dd>
-                    </div>
-                </span>
-            </dl>
+
+            <div class="col-lg-6">
+              <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+              <div class = "table-responsive">
+                 <table
+                        class="table table-bordered table-hover tablesorter"
+                        id="vnfmTabletable">
+                        <tbody>
+                          <tr>
+                            <td>Type</td>
+                            <td>{{vnfmanager.type}}</td>
+                          </tr>
+                          <tr>
+                            <td ng-show="vnfmanager.descripton">Description</td>
+                            <td ng-show="vnfmanager.descripton">{{"vnfmanager.descripton"}}</td>
+                          </tr>
+                          <tr>
+                            <td>Enabled</td>
+                            <td>{{vnfmanager.enabled}}</td>
+                          </tr>
+                          <tr>
+                            <td>Endpoint</td>
+                            <td>{{vnfmanager.endpoint}}</td>
+                          </tr>
+                          <tr>
+                            <td>ID</td>
+                            <td>{{vnfmanager.id}}</td>
+                          </tr>
+                          <tr>
+                            <td>Version</td>
+                            <td>{{vnfmanager.version}}</td>
+                          </tr>
+                        </tbody>
+                </table>
         </div>
     </div>
 </div>
@@ -62,4 +80,3 @@
         </div>
     </div>
 </div>
-

@@ -247,7 +247,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 .success(function (response, status) {
                     $scope.vnfdinfo = response;
                     $scope.vnfdJson = JSON.stringify(response, undefined, 4);
-                    console.log(response);
+                    //console.log($scope.vnfdJson);
                 })
                 .error(function (data, status) {
                     showError(status, data);
