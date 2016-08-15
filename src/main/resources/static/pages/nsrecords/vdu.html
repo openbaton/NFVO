@@ -238,6 +238,20 @@
                           </table>
                            </div>
                        </tab>
+                       <tab heading="Monitoring Parameters" ng-show="vdu.monitoring_parameter">
+                              <div class="table-responsive" >
+                                <table
+                                        class="table table-bordered table-striped table-hover tablesorter"
+                                        id="fmpTable">
+                                <tbody>
+                                  <tr ng-repeat="parameter in vdu.monitoring_parameter">
+                                   <td>{{parameter}}</td>
+                                  </tr>
+
+                                </tbody>
+                                </table>
+                              </div>
+                      </tab>
                     </tabset>
                   </div>
 
