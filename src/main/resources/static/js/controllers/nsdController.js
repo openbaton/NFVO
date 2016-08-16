@@ -6,7 +6,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     var urlRecord = baseURL + '/ns-records/';
     var urlVim = baseURL + '/datacenters/';
     var urlVNFD = baseURL + '/vnf-descriptors/';
-
+    $interval(loadTable, 2000);
+    $interval(loadKeys, 2000);
     loadTable();
     loadKeys();
 
@@ -41,7 +42,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                     $scope.keys = response;
                     //console.log($scope.users.length);
 
-                    console.log($scope.keys);
+                    //console.log($scope.keys);
                 })
                 .error(function (data, status) {
                     showError(data, status);

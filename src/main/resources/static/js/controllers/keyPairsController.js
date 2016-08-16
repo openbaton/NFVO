@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window) {
+app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/keys/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
@@ -8,6 +8,7 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
     $scope.keypairs = "";
     $scope.newKey = {name:"", publicKey:""};
     $scope.alerts = [];
+    $interval(loadTable, 2000);
     loadTable();
     function loadTable() {
 
@@ -17,7 +18,7 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
                     $scope.keypairs = response;
                     //console.log($scope.users.length);
 
-                    console.log($scope.keypairs);
+                    //console.log($scope.keypairs);
                 })
                 .error(function (data, status) {
                     showError(data, status);

@@ -1,10 +1,10 @@
-var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard) {
+var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard, $interval) {
 
     var baseUrl = $cookieStore.get('URL')+"/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
 
-
+    $interval(loadTable, 2000);
     loadTable();
 
     $scope.alerts = [];
@@ -236,7 +236,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             http.get(url)
                 .success(function (response, status) {
                     $scope.vnfdescriptors = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);

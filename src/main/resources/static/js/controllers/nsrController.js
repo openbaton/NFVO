@@ -1,11 +1,11 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location, $interval) {
 
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + 'ns-records/';
     var urlVNFD = baseUrl + 'vnf-descriptors/';
     var urlLog = baseUrl + 'logs/';
 
-
+    $interval(loadTable, 2000);
     loadTable();
 
 
@@ -306,7 +306,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.deleteNSR = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Network Service Record deleted!');
+                showOk('The removal of the NSR will be done shortly!');
                 window.setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
@@ -406,7 +406,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             http.get(url)
                 .success(function (response, status) {
                     $scope.nsrecords = response;
-                    console.log(response);
+                    //console.log(response);
                 })
                 .error(function (data, status) {
                     showError(status, data);
