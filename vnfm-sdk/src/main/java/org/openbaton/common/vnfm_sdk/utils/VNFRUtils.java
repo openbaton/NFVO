@@ -242,7 +242,7 @@ public class VNFRUtils {
     for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
       Collection<VimInstance> vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
       if (vimInstancesTmp == null){
-        vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName())
+        vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName());
       }
       for (VimInstance vi : vimInstancesTmp) {
         for (String name : virtualDeploymentUnit.getVimInstanceName()) {
