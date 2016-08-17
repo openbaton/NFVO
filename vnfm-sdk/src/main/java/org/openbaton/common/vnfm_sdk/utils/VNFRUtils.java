@@ -240,7 +240,11 @@ public class VNFRUtils {
     // TODO find a way to choose between deployment flavors and create the new one
     virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
     for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
-      for (VimInstance vi : vimInstances.get(virtualDeploymentUnit.getId())) {
+      Collection<VimInstance> vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
+      if (vimInstancesTmp == null){
+        vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName())
+      }
+      for (VimInstance vi : vimInstancesTmp) {
         for (String name : virtualDeploymentUnit.getVimInstanceName()) {
           if (name.equals(vi.getName())) {
             if (!existsDeploymentFlavor(
