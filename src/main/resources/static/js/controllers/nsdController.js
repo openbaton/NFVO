@@ -407,11 +407,15 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         //$('#madalLaunch').modal('show');
 
     };
-
+    $scope.vimForLaunch = {};
     $scope.launch = function () {
+      prepareVIMs();
+      //console.log(JSON.stringify($scope.vimForLaunch));
+
         //console.log($scope.nsdToSend);
         $scope.launchObj.keys = $scope.launchKeys;
-        console.log($scope.launchObj);
+        $scope.launchObj.vduVimInstances = $scope.vimForLaunch;
+        //console.log(JSON.stringify($scope.launchObj));
         http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
@@ -420,22 +424,44 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
                 showError(status, data);
             });
             $scope.launchKeys = [];
-            $scope.launchObj = {"keys":[]};
+            $scope.launchObj.keys.splice(0);
+            $scope.launchObj.vduVimInstances = {};
+
     };
 
+
     //@param bodyJson the body json is: { "vduVimInstances":{ "vduName":["viminstancename"],
-    //* "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"] }
-    $scope.vimForLaunch = {};
+    //"vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"] }
+
+
     function prepareVIMs() {
-      if (!vnfdLevelVIM) {
-        for (i = 0; i < )
+
+      if (!$scope.vnfdLevelVim) {
+        //console.log("NSD level");
+        for (i = 0; i < $scope.vnfdToVIM.length; i++) {
+          for (j = 0; j < $scope.vnfdToVIM[i].vdu.length; j++) {
+              $scope.vimForLaunch[$scope.vnfdToVIM[i].vdu[j].vduName] = [$scope.launchNsdVim];
+
+          }
+        }
+      } else {
+        //console.log("VNFD level");
+          for (i = 0; i < $scope.vnfdToVIM.length; i++) {
+            for (j = 0; j < $scope.vnfdToVIM[i].vdu.length; j++) {
+              if (!$scope.vnfdToVIM[i].vduLevel) {
+                $scope.vimForLaunch[$scope.vnfdToVIM[i].vdu[j].vduName] = [$scope.vnfdToVIM[i].vim]
+              } else {
+                $scope.vimForLaunch[$scope.vnfdToVIM[i].vdu[j].vduName] = [$scope.vnfdToVIM[i].vdu[j].vim];
+              }
+
+          }
+        }
       }
 
 
 
-    };
 
-
+    }
     $scope.launchWithoutkey = function () {
         console.log("Launching without key");
 
