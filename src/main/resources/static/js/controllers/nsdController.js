@@ -396,8 +396,8 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
         for (i = 0; i < $scope.nsdToSend.vnfd.length; i++) {
           newVNFD = {"vnfdname":$scope.nsdToSend.vnfd[i].name, "vim":"", "vduLevel":false, "vdu": []};
           for (j = 0; j < $scope.nsdToSend.vnfd[i].vdu.length; j++) {
-            console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
-            newVDU = {"vduId":$scope.nsdToSend.vnfd[i].vdu[j].id, "vim":""};
+            //console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
+            newVDU = {"vduName":$scope.nsdToSend.vnfd[i].vdu[j].id, "vim":""};
             newVNFD.vdu.push(newVDU);
           }
 
@@ -422,6 +422,19 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
             $scope.launchKeys = [];
             $scope.launchObj = {"keys":[]};
     };
+
+    //@param bodyJson the body json is: { "vduVimInstances":{ "vduName":["viminstancename"],
+    //* "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"] }
+    $scope.vimForLaunch = {};
+    function prepareVIMs() {
+      if (!vnfdLevelVIM) {
+        for (i = 0; i < )
+      }
+
+
+
+    };
+
 
     $scope.launchWithoutkey = function () {
         console.log("Launching without key");

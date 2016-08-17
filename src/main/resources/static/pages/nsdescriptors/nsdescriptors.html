@@ -1077,20 +1077,20 @@
               <form role="form" class="form-horizontal" ng-show="vnfdLevelVim">
                   <h3>VNFD to VIM <a title="Choose a VIM for the NSR" <li class="fa fa-tasks"></li></a></h3>
                   <div class="form-group" ng-repeat="vnfdToVIMel in vnfdToVIM track by $index">
-                      <label for="action" class="col-sm-5 control-label">VIM for {{vnfdToVIM[$index].vnfdname}}</label>
+                      <label for="action" class="col-sm-5 control-label">VIM for {{vnfdToVIMel.vnfdname}}</label>
                           <div class="col-sm-3">
                               <select name="typeSelect" class="form-control modal-select" id="action"
-                                      ng-model="vnfdToVIM[$index].vim"
+                                      ng-model="vnfdToVIMel.vim"
                                       ng-options="vim.name as vim.name for vim in vimInstances"
                                       ng-change="">
                               </select>
                           </div>
-                          <td><input type="checkbox" ng-model="vnfdToVIM[$index].vduLevel"/>Choose VIM on VDU level</td>
-                          <div ng-show="vnfdToVIM[$index].vduLevel" ng-repeat="vdu in vnfdToVIMel.vdu track by $index">
-                            <label for="action" class="col-sm-5 control-label">VIM for {{vdu[$index].vduId}}</label>
+                          <td><input type="checkbox" ng-model="vnfdToVIMel.vduLevel"/>Choose VIM on VDU level</td>
+                          <div ng-show="vnfdToVIMel.vduLevel" ng-repeat="vduEl in vnfdToVIMel.vdu track by $index">
+                            <label for="action" class="col-sm-5 control-label">VIM for {{vduEl.vduId}}</label>
                                 <div class="col-sm-3">
                                     <select name="typeSelect" class="form-control modal-select" id="action"
-                                            ng-model="vdu[$index].vim"
+                                            ng-model="vduEl[$index].vim"
                                             ng-options="vim.name as vim.name for vim in vimInstances"
                                             ng-change="">
                                     </select>
