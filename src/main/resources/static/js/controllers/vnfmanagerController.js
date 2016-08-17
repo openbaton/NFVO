@@ -5,7 +5,7 @@ angular.module('app').
 
         $scope.alerts = [];
 
-        $interval(loadTable, 2000);
+        //$interval(loadTable, 2000);
         loadTable();
 
 

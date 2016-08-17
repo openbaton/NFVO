@@ -6,10 +6,10 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     var urlRecord = baseURL + '/ns-records/';
     var urlVim = baseURL + '/datacenters/';
     var urlVNFD = baseURL + '/vnf-descriptors/';
-    $interval(loadTable, 2000);
-    $interval(loadKeys, 2000);
+
     loadTable();
     loadKeys();
+    loadVIMs();
 
     $.fn.bootstrapSwitch.defaults.size = 'mini';
 
@@ -34,6 +34,11 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     $scope.keys = {};
     $scope.launchKeys = [];
     $scope.launchObj = {"keys":[]};
+    $scope.launchNsdVim = "";
+    $scope.vnfdLevelVim = false;
+    $scope.vnfdToVIM = [];
+    $scope.vduLevelVim = [];
+    $scope.vduToVIM = [];
     function loadKeys() {
 
         //console.log($routeParams.userId);
@@ -50,6 +55,22 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
         }
+        function loadVIMs() {
+
+            //console.log($routeParams.userId);
+                http.get(urlVim)
+                    .success(function (response) {
+                        $scope.vimInstances = response;
+
+
+                        //console.log($scope.keys);
+                    })
+                    .error(function (data, status) {
+                        showError(data, status);
+                    });
+
+
+            }
 
    $scope.addLaunchKey = function() {
      var key = "";
@@ -369,6 +390,20 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
+        $scope.vnfdToVIM.splice(0);
+        $scope.vnfdLevelVim = false;
+
+        for (i = 0; i < $scope.nsdToSend.vnfd.length; i++) {
+          newVNFD = {"vnfdname":$scope.nsdToSend.vnfd[i].name, "vim":"", "vduLevel":false, "vdu": []};
+          for (j = 0; j < $scope.nsdToSend.vnfd[i].vdu.length; j++) {
+            console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
+            newVDU = {"vduId":$scope.nsdToSend.vnfd[i].vdu[j].id, "vim":""};
+            newVNFD.vdu.push(newVDU);
+          }
+
+          $scope.vnfdToVIM.push(newVNFD);
+        }
+        console.log($scope.vnfdToVIM);
         //$('#madalLaunch').modal('show');
 
     };

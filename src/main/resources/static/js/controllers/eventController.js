@@ -7,7 +7,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-    $interval(loadTable, 2000);
+  
     loadTable();
 
     $scope.eventObj = {

@@ -5,7 +5,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     var urlVNFD = baseUrl + 'vnf-descriptors/';
     var urlLog = baseUrl + 'logs/';
 
-    $interval(loadTable, 2000);
+
     loadTable();
 
 
