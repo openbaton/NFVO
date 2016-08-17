@@ -935,7 +935,7 @@ public class NetworkServiceRecordManagement
     if (networkServiceRecord == null) {
       throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
     }
-    
+
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

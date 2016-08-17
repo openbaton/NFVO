@@ -58,6 +58,7 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -230,7 +231,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest1()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException {
+          QuotaExceededException, PluginException, MissingParameterException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
@@ -277,7 +278,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest2()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException {
+          QuotaExceededException, PluginException, MissingParameterException {
     /**
      * Initial settings
      */
@@ -332,7 +333,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest3()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException {
+          QuotaExceededException, PluginException, MissingParameterException {
     /**
      * Initial settings
      */
