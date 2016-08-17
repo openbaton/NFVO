@@ -241,7 +241,7 @@ public class VNFRUtils {
     virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
     for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
       Collection<VimInstance> vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
-      if (vimInstancesTmp == null){
+      if (vimInstancesTmp == null) {
         vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName());
       }
       for (VimInstance vi : vimInstancesTmp) {
