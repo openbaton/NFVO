@@ -61,10 +61,10 @@ public class RestKeys {
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void importKey(
+  @ResponseStatus(HttpStatus.CREATED)
+  public Key importKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key) {
-    keyManagement.addKey(projectId, key.getName(), key.getPublicKey());
+    return keyManagement.addKey(projectId, key.getName(), key.getPublicKey());
   }
 
   /**
