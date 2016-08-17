@@ -69,8 +69,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       throws VimException, PluginException, EntityUnreachableException, IOException {
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
-    vimInstance = vimRepository.save(vimInstance);
     this.refresh(vimInstance);
+    vimInstance = vimRepository.save(vimInstance);
     return vimInstance;
   }
 

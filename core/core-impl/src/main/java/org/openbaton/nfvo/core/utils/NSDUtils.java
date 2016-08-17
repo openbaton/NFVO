@@ -141,24 +141,31 @@ public class NSDUtils {
       throw new NotFoundException("No VimInstances in the Database");
     }
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-      for (String name : vdu.getVimInstanceName()) {
-        log.debug("vim instance name=" + name);
-        boolean fetched = false;
-        for (VimInstance vimInstance : vimInstances) {
-          if ((vimInstance.getName() != null
-              && vimInstance
-                  .getName()
-                  .equals(
-                      name)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
-            log.info("Found vimInstance: " + vimInstance.getName());
-            fetched = true;
-            break;
+      if (vdu.getVimInstanceName() != null) {
+        for (String name : vdu.getVimInstanceName()) {
+          log.debug("vim instance name=" + name);
+          boolean fetched = false;
+          for (VimInstance vimInstance : vimInstances) {
+            if ((vimInstance.getName() != null
+                && vimInstance
+                    .getName()
+                    .equals(
+                        name)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
+              log.info("Found vimInstance: " + vimInstance.getName());
+              fetched = true;
+              break;
+            }
+          }
+          if (!fetched) {
+            throw new NotFoundException(
+                "No VimInstance with name equals to " + name + " in the catalogue");
           }
         }
-        if (!fetched) {
-          throw new NotFoundException(
-              "No VimInstance with name equals to " + name + " in the catalogue");
-        }
+      } else {
+        log.info(
+            "No vimInstances are defined in the vdu "
+                + vdu.getName()
+                + ". Remember to define during the NSR onboarding.");
       }
     }
   }
@@ -373,78 +380,85 @@ public class NSDUtils {
         for (VirtualDeploymentUnit virtualDeploymentUnit :
             virtualNetworkFunctionDescriptor.getVdu()) {
           if (inAllVims.equals("in-all-vims")) {
-            for (String vimName : virtualDeploymentUnit.getVimInstanceName()) {
-              VimInstance vimInstance = null;
+            if (virtualDeploymentUnit.getVimInstanceName() != null
+                && !virtualDeploymentUnit.getVimInstanceName().isEmpty()) {
+              for (String vimName : virtualDeploymentUnit.getVimInstanceName()) {
+                VimInstance vimInstance = null;
 
-              for (VimInstance vi :
-                  vimRepository.findByProjectId(virtualDeploymentUnit.getProjectId())) {
-                if (vimName.equals(vi.getName())) vimInstance = vi;
-              }
+                for (VimInstance vi :
+                    vimRepository.findByProjectId(virtualDeploymentUnit.getProjectId())) {
+                  if (vimName.equals(vi.getName())) vimInstance = vi;
+                }
 
-              if (virtualDeploymentUnit.getScale_in_out() < 1)
-                throw new NetworkServiceIntegrityException(
-                    "Regarding the VirtualNetworkFunctionDescriptor "
-                        + virtualNetworkFunctionDescriptor.getName()
-                        + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
-                        + virtualDeploymentUnit.getScale_in_out()
-                        + ") must be at least 1");
-              if (virtualDeploymentUnit.getScale_in_out()
-                  < virtualDeploymentUnit.getVnfc().size()) {
-                throw new NetworkServiceIntegrityException(
-                    "Regarding the VirtualNetworkFunctionDescriptor "
-                        + virtualNetworkFunctionDescriptor.getName()
-                        + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
-                        + virtualDeploymentUnit.getScale_in_out()
-                        + ") must not be less than the number of starting VNFComponent: "
-                        + virtualDeploymentUnit.getVnfc().size());
-              }
-
-              for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
-                flavors.add(deploymentFlavour.getFlavour_key());
-              }
-
-              for (NFVImage image : vimInstance.getImages()) {
-                imageNames.add(image.getName());
-                imageIds.add(image.getExtId());
-              }
-
-              //All "names" must be contained in the "flavors"
-              if (!flavors.containsAll(names)) {
-                throw new NetworkServiceIntegrityException(
-                    "Regarding the VirtualNetworkFunctionDescriptor "
-                        + virtualNetworkFunctionDescriptor.getName()
-                        + ": in one of the VirtualDeploymentUnit, not all DeploymentFlavour"
-                        + names
-                        + " are contained into the flavors of the vimInstance chosen. Please choose one from: "
-                        + flavors);
-              }
-              for (String image : virtualDeploymentUnit.getVm_image()) {
-                if (!imageNames.contains(image) && !imageIds.contains(image))
+                if (virtualDeploymentUnit.getScale_in_out() < 1)
                   throw new NetworkServiceIntegrityException(
                       "Regarding the VirtualNetworkFunctionDescriptor "
                           + virtualNetworkFunctionDescriptor.getName()
-                          + ": in one of the VirtualDeploymentUnit, image"
-                          + image
-                          + " is not contained into the images of the vimInstance chosen. Please choose one from: "
-                          + imageNames
-                          + " or from "
-                          + imageIds);
-              }
-              flavors.clear();
+                          + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
+                          + virtualDeploymentUnit.getScale_in_out()
+                          + ") must be at least 1");
+                if (virtualDeploymentUnit.getScale_in_out()
+                    < virtualDeploymentUnit.getVnfc().size()) {
+                  throw new NetworkServiceIntegrityException(
+                      "Regarding the VirtualNetworkFunctionDescriptor "
+                          + virtualNetworkFunctionDescriptor.getName()
+                          + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
+                          + virtualDeploymentUnit.getScale_in_out()
+                          + ") must not be less than the number of starting VNFComponent: "
+                          + virtualDeploymentUnit.getVnfc().size());
+                }
 
-              for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-                for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-                  if (!internalVirtualLink.contains(connectionPoint.getVirtual_link_reference())) {
+                for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
+                  flavors.add(deploymentFlavour.getFlavour_key());
+                }
+
+                for (NFVImage image : vimInstance.getImages()) {
+                  imageNames.add(image.getName());
+                  imageIds.add(image.getExtId());
+                }
+
+                //All "names" must be contained in the "flavors"
+                if (!flavors.containsAll(names)) {
+                  throw new NetworkServiceIntegrityException(
+                      "Regarding the VirtualNetworkFunctionDescriptor "
+                          + virtualNetworkFunctionDescriptor.getName()
+                          + ": in one of the VirtualDeploymentUnit, not all DeploymentFlavour"
+                          + names
+                          + " are contained into the flavors of the vimInstance chosen. Please choose one from: "
+                          + flavors);
+                }
+                for (String image : virtualDeploymentUnit.getVm_image()) {
+                  if (!imageNames.contains(image) && !imageIds.contains(image))
                     throw new NetworkServiceIntegrityException(
                         "Regarding the VirtualNetworkFunctionDescriptor "
                             + virtualNetworkFunctionDescriptor.getName()
-                            + ": in one of the VirtualDeploymentUnit, the virtualLinkReference "
-                            + connectionPoint.getVirtual_link_reference()
-                            + " of a VNFComponent is not contained in the InternalVirtualLink "
-                            + internalVirtualLink);
+                            + ": in one of the VirtualDeploymentUnit, image"
+                            + image
+                            + " is not contained into the images of the vimInstance chosen. Please choose one from: "
+                            + imageNames
+                            + " or from "
+                            + imageIds);
+                }
+                flavors.clear();
+
+                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
+                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+                    if (!internalVirtualLink.contains(
+                        connectionPoint.getVirtual_link_reference())) {
+                      throw new NetworkServiceIntegrityException(
+                          "Regarding the VirtualNetworkFunctionDescriptor "
+                              + virtualNetworkFunctionDescriptor.getName()
+                              + ": in one of the VirtualDeploymentUnit, the virtualLinkReference "
+                              + connectionPoint.getVirtual_link_reference()
+                              + " of a VNFComponent is not contained in the InternalVirtualLink "
+                              + internalVirtualLink);
+                    }
                   }
                 }
               }
+            } else {
+              log.warn(
+                  "Impossible to complete Integrity check because of missing VimInstances definition");
             }
           } else {
             log.error("" + inAllVims + " not yet implemented!");

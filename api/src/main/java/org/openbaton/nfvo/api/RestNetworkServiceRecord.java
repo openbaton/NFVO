@@ -33,6 +33,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -91,7 +92,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
     return networkServiceRecordManagement.onboard(
@@ -128,7 +130,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) JsonObject jsonObject)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException {
 
     log.debug("Json Body is" + jsonObject);
     return networkServiceRecordManagement.onboard(

@@ -28,6 +28,7 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.WrongStatusException;
 
 import java.util.List;
@@ -45,7 +46,8 @@ public interface NetworkServiceRecordManagement {
    */
   NetworkServiceRecord onboard(String nsd_id, String projectId, List keys, Map vduVimInstances)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException;
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -57,7 +59,8 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException;
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD

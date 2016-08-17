@@ -46,6 +46,7 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -160,7 +161,8 @@ public class NetworkServiceRecordManagement
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (!networkServiceDescriptor.getProjectId().equals(projectID)) {
@@ -195,7 +197,8 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException {
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException {
     networkServiceDescriptor.setProjectId(projectId);
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -721,7 +724,8 @@ public class NetworkServiceRecordManagement
 
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
-      throws NotFoundException, BadFormatException, VimException, PluginException {
+      throws NotFoundException, BadFormatException, VimException, PluginException,
+          MissingParameterException {
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -754,6 +758,10 @@ public class NetworkServiceRecordManagement
           if (body == null
               || body.getVduVimInstances() == null
               || body.getVduVimInstances().get(vdu.getName()) == null) {
+            if (vdu.getVimInstanceName() == null) {
+              throw new MissingParameterException(
+                  "No VimInstances specified for vdu: " + vdu.getName());
+            }
             instanceNames = vdu.getVimInstanceName();
           } else {
             instanceNames = body.getVduVimInstances().get(vdu.getName());
@@ -924,12 +932,13 @@ public class NetworkServiceRecordManagement
   public void delete(String id, String projectId) throws NotFoundException, WrongStatusException {
     log.info("Removing NSR with id: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
+    }
+    
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
-    if (networkServiceRecord == null) {
-      throw new NotFoundException("NetworkServiceRecord with id " + id + " was not found");
     }
 
     if (!deleteInAllStatus) {
