@@ -40,6 +40,10 @@
                           class="table table-bordered table-hover tablesorter"
                           id="vduTabletable">
                           <tbody>
+                            <tr ng-show="vdu.name">
+                              <td>Name</td>
+                              <td>{{vdu.name}}</td>
+                            </tr>
                             <tr>
                               <td>ID</td>
                               <td>{{vdu.id}}</td>
@@ -180,6 +184,7 @@
                                        </th>
                                        <th ng-click="predicate = 'vnfComponent'; reverse = !reverse">vnfComponent <i
                                                class="fa fa-sort"></i></th>
+                                       <th>Action</th>
                                    </tr>
                                    </thead>
                                    <tbody>
@@ -201,6 +206,23 @@
                                                <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
                                            </p>
                                        </td>
+                                       <td>
+                                       <div class="btn-group">
+                                           <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Start/Stop
+                                               <span class="caret"></span></button>
+                                           <ul class="dropdown-menu" role="menu">
+                                               <li><a href="" data-toggle="modal"
+                                                      ng-click="startVNFCI(vnfci, vnfr)"
+                                               >Start</a>
+                                               <li><a href="" data-toggle="modal"
+                                                      ng-click="stopVNFCI(vnfci, vnfr)"
+                                               >Stop</a>
+                                               </li>
+
+                                           </ul>
+                                       </div>
+
+                                     </td>
                                    </tr>
                                    </tbody>
                                </table>
