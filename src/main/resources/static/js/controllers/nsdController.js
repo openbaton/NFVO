@@ -390,7 +390,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
     $scope.addPoPtoNSD = function () {
       if (!$scope.vnfdLevelVim) {
-      $scope.launchNsdVim.push("");
+      $scope.launchNsdVim.push($scope.vimInstances[0].name);
     }
     };
     $scope.clearPoPs = function () {
@@ -398,7 +398,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
     };
     $scope.addPoPtoVNFD = function (index) {
       if (!$scope.vnfdToVIM[index].vduLevel) {
-      $scope.vnfdToVIM[index].vim.push("");
+      $scope.vnfdToVIM[index].vim.push($scope.vimInstances[0].name);
     }
     };
 
@@ -408,7 +408,7 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
     $scope.addPoPtoVDU = function (index, parentindex) {
       //console.log(index, parentindex);
-      $scope.vnfdToVIM[parentindex].vdu[index].vim.push("");
+      $scope.vnfdToVIM[parentindex].vdu[index].vim.push($scope.vimInstances[0].name);
     };
     $scope.deletePoPfromVDU = function (parentparentindex, parentindex, index) {
       //console.log(index, parentindex, parentparentindex);
@@ -483,6 +483,9 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
 
 
     function prepareVIMs() {
+      if (!$scope.vnfdLevelVim && $scope.launchNsdVim.length === 0) {
+        return;
+      }
 
       if (!$scope.vnfdLevelVim) {
         //console.log("NSD level");
@@ -497,8 +500,14 @@ var app = angular.module('app').controller('NsdCtrl', function ($scope, $compile
           for (i = 0; i < $scope.vnfdToVIM.length; i++) {
             for (j = 0; j < $scope.vnfdToVIM[i].vdu.length; j++) {
               if (!$scope.vnfdToVIM[i].vduLevel) {
+                if ($scope.vnfdToVIM[i].vim.length === 0) {
+                  continue;
+                }
                 $scope.vimForLaunch[$scope.vnfdToVIM[i].vdu[j].vduName] = $scope.vnfdToVIM[i].vim
               } else {
+                if ($scope.vnfdToVIM[i].vdu[j].vim.length === 0) {
+                  continue;
+                }
                 $scope.vimForLaunch[$scope.vnfdToVIM[i].vdu[j].vduName] = $scope.vnfdToVIM[i].vdu[j].vim;
               }
 
