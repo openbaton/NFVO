@@ -13,7 +13,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         'GUEST',
         'USER'
     ];
-    $interval(loadTable, 2000);
+    
     loadTable();
     $scope.newpassword = "";
     $scope.addRole = function() {

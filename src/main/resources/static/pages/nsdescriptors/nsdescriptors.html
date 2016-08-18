@@ -1054,9 +1054,87 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Please choose the ssh keys to use</h4>
+                <h4 class="modal-title">Please choose the ssh keys and VIM to use</h4>
             </div>
             <div class="modal-body">
+              <div class="row">
+              <form role="form" class="form-horizontal">
+                  <h3 title="Choose a VIM for the NSR. You can expand the NSD to lower level if you have named VDUs">PoP for {{nsdToSend.name}}      <td><input ng-disabled="!vduWithName" ng-click="clearPoPs()" type="checkbox" ng-init="vnfdLevelVim = false" ng-model="vnfdLevelVim"/>Expand      </td ><a href=""  ng-click="addPoPtoNSD()"><li  class="fa fa-plus-square" ng-disabled="vnfdLevelVim"></li></a></h3>
+
+
+                          <div class="row" ng-repeat="vim in launchNsdVim track by $index" >
+                          <label for="action" class="col-sm-1 control-label"></label>
+                          <div class="col-sm-3">
+                              <select title="Will be ignored if lower level VIM selection chosen, disabled if no vdu with names are available" ng-disabled="!vduWithName" name="typeSelect" class="form-control modal-select" id="action"
+                                      ng-model="launchNsdVim[$index]"
+                                      ng-options="vim.name as vim.name for vim in vimInstances"
+                                      ng-change="">
+                              </select>
+
+                          </div>
+                          <div class="col-sm-1">
+                              <a href="" ng-click="launchNsdVim.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                          </div>
+                          <br>
+                        </div>
+
+
+              </div>
+              </form>
+              <br>
+              <div class="form-group row">
+              <form role="form" class="form-horizontal" ng-show="vnfdLevelVim">
+
+                  <div class="form-group" ng-repeat="vnfdToVIMel in vnfdToVIM track by $index">
+                    <div class="form-group row">
+                      <label for="action" class="col-sm-7 control-label"> {{vnfdToVIMel.vnfdname}} <td><input title= "If there are no VDU with name, this parameter is disabled" ng-click="clearPoPSVNFD($index)" ng-disabled="vnfdToVIMel.vdu.length === 0" type="checkbox" ng-model="vnfdToVIMel.vduLevel"/>Expand</td>  <a href=""  ng-click="addPoPtoVNFD($index)"><li  class="fa fa-plus-square" ng-disabled="vnfdToVIMel.vduLevel" ></li></a></label>
+                    </div>
+
+                            <div class=" form-group row"  ng-repeat="vim in vnfdToVIMel.vim track by $index" >
+                              <div class="col-sm-6"></div>
+                              <div class="col-sm-3">
+                              <select ng-disabled="vnfdToVIMel.vduLevel" name="typeSelect" class="form-control modal-select" id="action"
+                                      ng-model="vnfdToVIMel.vim[$index]"
+                                      ng-options="vim.name as vim.name for vim in vimInstances"
+                                      ng-change="">
+                              </select>
+
+                          </div>
+                          <div class="col-sm-1">
+                              <a href="" ng-click="vnfdToVIMel.vim.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                          </div>
+
+                      </div>
+
+                      <br>
+                        <div class="form-group row">
+                          <div ng-show="vnfdToVIMel.vduLevel" ng-repeat="vduEl in vnfdToVIMel.vdu track by $index">
+                            <div  class="form-group row">
+                            <label for="action" class="col-sm-7 control-label">{{vduEl.vduName}} <a href=""  ng-click="addPoPtoVDU($index, $parent.$index)"><li  class="fa fa-plus-square" ></li></a></label>
+                          </div>
+
+                            <div class=" form-group row" ng-repeat="vim in vduEl.vim track by $index" >
+                              <div class="col-sm-7"></div>
+                                <div class="col-sm-3">
+
+                                    <select name="typeSelect" class="form-control modal-select" id="action"
+                                            ng-model="vduEl.vim[$index]"
+                                            ng-options="vim.name as vim.name for vim in vimInstances"
+                                            ng-change="">
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="" ng-click="deletePoPfromVDU($parent.$parent.$index, $parent.$index, $index)"><h4><li class="fa fa-trash"></li></h4></a>
+                                </div>
+                            </div>
+                          </div>
+
+                      </div>
+
+
+              </form>
+            </div>
+              <br>
                 <form role="form" class="form-horizontal">
                     <h3>Key <a title="Add a new key to this NSR" href="" ng-click="addLaunchKey()"><li class="fa fa-plus-square"></li></a></h3>
                     <div class="form-group" ng-repeat="key in launchKeys track by $index">

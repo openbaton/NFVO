@@ -4,7 +4,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
 
-    $interval(loadTable, 2000);
+    //$interval(loadTable, 2000);
     loadTable();
 
     $scope.alerts = [];

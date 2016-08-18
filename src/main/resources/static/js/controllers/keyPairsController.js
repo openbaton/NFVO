@@ -8,7 +8,7 @@ app.controller('keyPairsCtrl', function ($scope, serviceAPI, $routeParams, http,
     $scope.keypairs = "";
     $scope.newKey = {name:"", publicKey:""};
     $scope.alerts = [];
-    $interval(loadTable, 2000);
+  
     loadTable();
     function loadTable() {
 

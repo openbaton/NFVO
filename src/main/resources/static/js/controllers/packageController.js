@@ -7,7 +7,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-    $interval(loadTable, 2000);
+    
     loadTable();
 
 
