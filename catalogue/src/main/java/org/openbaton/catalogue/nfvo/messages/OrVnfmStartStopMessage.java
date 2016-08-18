@@ -3,6 +3,7 @@ package org.openbaton.catalogue.nfvo.messages;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
 /**
@@ -14,13 +15,35 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
   private VNFCInstance vnfcInstance;
   private VNFRecordDependency vnfrDependency;
 
+  public OrVnfmStartStopMessage(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFCInstance vnfcInstance,
+      Action action) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    this.vnfcInstance = vnfcInstance;
+    this.action = action;
+  }
+
+  public OrVnfmStartStopMessage(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFCInstance vnfcInstance,
+      VNFRecordDependency vnfrDependency,
+      Action action) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    this.vnfcInstance = vnfcInstance;
+    this.vnfrDependency = vnfrDependency;
+    this.action = action;
+  }
+
   @Override
   public String toString() {
-    return "OrVnfmScalingMessage{"
+    return "OrVnfmStartStopMessage{"
         + "virtualNetworkFunctionRecord="
         + virtualNetworkFunctionRecord
         + ", vnfcInstance="
         + vnfcInstance
+        + ", vnfRecordDependency="
+        + vnfrDependency
         + "} "
         + super.toString();
   }
