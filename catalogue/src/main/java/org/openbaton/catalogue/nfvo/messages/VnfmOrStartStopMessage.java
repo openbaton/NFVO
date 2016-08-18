@@ -4,18 +4,18 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
 /**
- * Created by fmu on 17/08/16.
+ * Created by fmu on 18/08/16.
  */
-public class OrVnfmStartStopMessage extends OrVnfmMessage {
+public class VnfmOrStartStopMessage extends VnfmOrMessage {
 
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private VNFCInstance vnfcInstance;
   private VNFRecordDependency vnfrDependency;
 
-  public OrVnfmStartStopMessage(
+  public VnfmOrStartStopMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFCInstance vnfcInstance,
       Action action) {
@@ -24,7 +24,7 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
     this.action = action;
   }
 
-  public OrVnfmStartStopMessage(
+  public VnfmOrStartStopMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFCInstance vnfcInstance,
       VNFRecordDependency vnfrDependency,
@@ -37,7 +37,7 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
 
   @Override
   public String toString() {
-    return "OrVnfmStartStopMessage{"
+    return "VnfmOrStartStopMessage{"
         + "virtualNetworkFunctionRecord="
         + virtualNetworkFunctionRecord
         + ", vnfcInstance="
