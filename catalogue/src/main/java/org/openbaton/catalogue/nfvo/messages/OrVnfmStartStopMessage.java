@@ -1,6 +1,7 @@
 package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
@@ -9,8 +10,9 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
  */
 public class OrVnfmStartStopMessage extends OrVnfmMessage {
 
-  private VNFCInstance vnfcInstance;
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
+  private VNFCInstance vnfcInstance;
+  private VNFRecordDependency vnfrDependency;
 
   @Override
   public String toString() {
@@ -38,5 +40,13 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
 
   public void setVnfcInstance(VNFCInstance vnfcInstance) {
     this.vnfcInstance = vnfcInstance;
+  }
+
+  public VNFRecordDependency getVnfrd() {
+    return vnfrDependency;
+  }
+
+  public void setVnfrd(VNFRecordDependency vnfrDependency) {
+    this.vnfrDependency = vnfrDependency;
   }
 }
