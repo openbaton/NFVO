@@ -69,9 +69,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       throws VimException, PluginException, EntityUnreachableException, IOException {
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
-    this.refresh(vimInstance);
-    vimInstance = vimRepository.save(vimInstance);
-    return vimInstance;
+    return this.refresh(vimInstance);
   }
 
   @Override
@@ -105,7 +103,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public void refresh(VimInstance vimInstance) throws VimException, PluginException, IOException {
+  public VimInstance refresh(VimInstance vimInstance)
+      throws VimException, PluginException, IOException {
     if (vimCheck
         && !vimInstance
             .getType()
@@ -114,7 +113,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     this.checkVimInstances();
     else vimInstance.setActive(true);
 
-    if (!vimInstance.isActive()) return;
+    if (!vimInstance.isActive() && vimInstance.getId() != null) return vimInstance;
     //Refreshing Images
     Set<NFVImage> images_refreshed = new HashSet<>();
     Set<NFVImage> images_new = new HashSet<>();
@@ -273,7 +272,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
     vimInstance.getFlavours().addAll(flavors_new);
     vimInstance.getFlavours().removeAll(flavors_old);
-    vimRepository.save(vimInstance);
+    return vimRepository.save(vimInstance);
   }
 
   /**
