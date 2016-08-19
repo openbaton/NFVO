@@ -15,6 +15,15 @@ public class VnfmOrStartStopMessage extends VnfmOrMessage {
   private VNFCInstance vnfcInstance;
   private VNFRecordDependency vnfrDependency;
 
+  public VnfmOrStartStopMessage() {}
+
+  public VnfmOrStartStopMessage(
+          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+          VNFCInstance vnfcInstance) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    this.vnfcInstance = vnfcInstance;
+  }
+
   public VnfmOrStartStopMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFCInstance vnfcInstance,
@@ -22,6 +31,15 @@ public class VnfmOrStartStopMessage extends VnfmOrMessage {
     this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     this.vnfcInstance = vnfcInstance;
     this.action = action;
+  }
+
+  public VnfmOrStartStopMessage(
+          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+          VNFCInstance vnfcInstance,
+          VNFRecordDependency vnfrDependency) {
+    this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
+    this.vnfcInstance = vnfcInstance;
+    this.vnfrDependency = vnfrDependency;
   }
 
   public VnfmOrStartStopMessage(
