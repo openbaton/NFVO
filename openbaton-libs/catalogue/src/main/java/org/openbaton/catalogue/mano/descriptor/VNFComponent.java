@@ -97,12 +97,10 @@ public class VNFComponent implements Serializable {
     VNFComponent that = (VNFComponent) o;
 
     return id.equals(that.id);
-
   }
 
   @Override
   public int hashCode() {
     return id.hashCode();
   }
-  
 }
