@@ -18,8 +18,7 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
   public OrVnfmStartStopMessage() {}
 
   public OrVnfmStartStopMessage(
-          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-          VNFCInstance vnfcInstance) {
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
     this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     this.vnfcInstance = vnfcInstance;
   }
@@ -34,9 +33,9 @@ public class OrVnfmStartStopMessage extends OrVnfmMessage {
   }
 
   public OrVnfmStartStopMessage(
-          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-          VNFCInstance vnfcInstance,
-          VNFRecordDependency vnfrDependency) {
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFCInstance vnfcInstance,
+      VNFRecordDependency vnfrDependency) {
     this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     this.vnfcInstance = vnfcInstance;
     this.vnfrDependency = vnfrDependency;
