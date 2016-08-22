@@ -17,11 +17,12 @@ package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import java.io.Serializable;
 
 /**
  * Created by lto on 18/05/15.
@@ -33,6 +34,36 @@ public class ConfigurationParameter implements Serializable {
 
   private String confKey;
   private String value;
+
+  @Override
+  public String toString() {
+    return "ConfigurationParameter{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", confKey='"
+        + confKey
+        + '\''
+        + ", value='"
+        + value
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + '}';
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  private String description;
 
   @PrePersist
   public void ensureId() {
@@ -69,22 +100,5 @@ public class ConfigurationParameter implements Serializable {
 
   public void setValue(String value) {
     this.value = value;
-  }
-
-  @Override
-  public String toString() {
-    return "ConfigurationParameter{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", confKey='"
-        + confKey
-        + '\''
-        + ", value='"
-        + value
-        + '\''
-        + '}';
   }
 }
