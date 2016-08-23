@@ -2,7 +2,6 @@ package org.openbaton.nfvo.security.authorization;
 
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
-import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotAllowedException;
@@ -15,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -48,17 +45,12 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public User getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String currentUserName = authentication.getName();
-    return queryDB(currentUserName);
-  }
-
-  @Override
   public User add(User user)
       throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
+    log.debug("Adding new user: " + user);
 
-    checkCurrentUserObAdmin(getCurrentUser());
+    if (userRepository.findFirstByUsername(user.getUsername()) != null)
+      throw new BadRequestException("Username exists already");
 
     checkIntegrity(user);
 
@@ -85,25 +77,18 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     return userRepository.save(user);
   }
 
-  private void checkCurrentUserObAdmin(User currentUser) {
-    if (currentUser.getRoles().iterator().next().getRole().ordinal() != RoleEnum.ADMIN.ordinal()) {
-      throw new UnauthorizedUserException("Sorry only ADMIN can add/delete/update/query Users");
-    }
-  }
-
   @Override
   public void delete(User user) throws NotAllowedException {
-    checkCurrentUserObAdmin(getCurrentUser());
+    log.debug("Deleting user: " + user);
     userDetailsManager.deleteUser(user.getUsername());
+    userRepository.delete(user);
   }
 
   @Override
   public User update(User new_user)
       throws NotAllowedException, BadRequestException, NotFoundException {
 
-    checkCurrentUserObAdmin(getCurrentUser());
-
-    User user = queryById(new_user.getId());
+    User user = query(new_user.getId());
     if (!user.getUsername().equals(new_user.getUsername()))
       throw new NotAllowedException("Forbidden to change the username");
     new_user.setPassword(user.getPassword());
@@ -132,27 +117,24 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
   @Override
   public Iterable<User> query() {
-    checkCurrentUserObAdmin(getCurrentUser());
+    log.trace("Listing users");
     return userRepository.findAll();
   }
 
   @Override
-  public User query(String username) {
-    checkCurrentUserObAdmin(getCurrentUser());
-    log.trace("Looking for user: " + username);
-    return userRepository.findFirstByUsername(username);
-  }
-
-  @Override
-  public User queryById(String id) {
-    checkCurrentUserObAdmin(getCurrentUser());
+  public User query(String id) throws NotFoundException {
     log.trace("Looking for user with id: " + id);
-    return userRepository.findFirstById(id);
+    User user = userRepository.findFirstById(id);
+    if (user == null) throw new NotFoundException("Not found user with id: " + id);
+    return user;
   }
 
   @Override
-  public User queryDB(String username) {
-    return userRepository.findFirstByUsername(username);
+  public User queryByName(String username) throws NotFoundException {
+    log.trace("Get user: " + username);
+    User user = userRepository.findFirstByUsername(username);
+    if (user == null) throw new NotFoundException("Not found user " + username);
+    return user;
   }
 
   @Override
