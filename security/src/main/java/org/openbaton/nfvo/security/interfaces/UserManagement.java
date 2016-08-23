@@ -27,8 +27,6 @@ import org.openbaton.exceptions.PasswordWeakException;
  */
 public interface UserManagement {
 
-  User getCurrentUser();
-
   /**
    *
    * @param user
@@ -56,11 +54,18 @@ public interface UserManagement {
    *
    * @param username
    */
-  User query(String username);
+  User queryByName(String username) throws NotFoundException;
 
-  User queryById(String id);
+  /**
+   *
+   * @param id
+   */
+  User query(String id) throws NotFoundException;
 
-  User queryDB(String currentUserName);
-
+  /**
+   *
+   * @param oldPwd
+   * @param newPwd
+   */
   void changePassword(String oldPwd, String newPwd) throws PasswordWeakException;
 }

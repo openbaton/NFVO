@@ -82,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return handleExceptionInternal(e, exc, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
   }
 
-  @ExceptionHandler({UnauthorizedUserException.class})
+  @ExceptionHandler({UnauthorizedUserException.class, NotAllowedException.class})
   @ResponseStatus(value = HttpStatus.FORBIDDEN)
   protected ResponseEntity<Object> handleUnauthorized(Exception e, WebRequest request) {
     if (log.isDebugEnabled()) {

@@ -1,8 +1,10 @@
 package org.openbaton.nfvo.api.interceptors;
 
+import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
@@ -42,98 +44,69 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     if (authentication != null) {
       if (!(authentication instanceof AnonymousAuthenticationToken)) {
         String currentUserName = authentication.getName();
-        log.trace("Current User: " + currentUserName);
-
-        if (currentUserName.equals("anonymousUser")) {
-          if (request.getMethod().equalsIgnoreCase("get")) {
-            return true;
-          } else {
-            log.warn("AnonymousUser requesting a method: " + request.getMethod());
-            return true;
-          }
-        } else {
-          return checkAuthorization(projectId, request, currentUserName);
-        }
+        return checkAuthorization(projectId, request, currentUserName);
       } else /*if (request.getMethod().equalsIgnoreCase("get"))*/ {
-        log.trace("AnonymousUser requesting a method: " + request.getMethod());
-        return true;
+        log.trace(
+            "AnonymousUser requesting method: "
+                + request.getMethod()
+                + " on "
+                + request.getRequestURI());
+        if (request.getMethod().equalsIgnoreCase("get") && request.getRequestURI().equals("/")) {
+          return true;
+        } else {
+          return false;
+        }
       }
     } else {
-      log.warn("AnonymousUser requesting a method: " + request.getMethod());
-      return true;
+      log.warn(
+          "AnonymousUser requesting method: "
+              + request.getMethod()
+              + " on "
+              + request.getRequestURI());
+      return false;
     }
   }
 
   private boolean checkAuthorization(
-      String project, HttpServletRequest request, String currentUserName) throws NotFoundException {
+      String project, HttpServletRequest request, String currentUserName)
+      throws NotFoundException, NotAllowedException {
 
     log.trace("Current User: " + currentUserName);
     log.trace("projectId: " + project);
     log.trace(request.getMethod() + " URI: " + request.getRequestURI());
-
-    if ((request.getRequestURI().equals("/api/v1/projects/")
-            || (request.getRequestURI().equals("/api/v1/projects"))
-            || (request.getRequestURI().contains("/api/v1/users/")
-                || (request.getRequestURI().contains("/api/v1/users"))))
-        && request.getMethod().equalsIgnoreCase("get")) {
-      return true;
-    }
-
-    log.trace(request.getMethod() + " URL: " + request.getRequestURL());
     log.trace("UserManagement: " + userManagement);
-    User user = userManagement.queryDB(currentUserName);
-
-    if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
-      if ((request.getRequestURI().contains("/api/v1/users/")
-              || (request.getRequestURI().contains("/api/v1/users")))
-          && request.getMethod().equalsIgnoreCase("put")) {
-        return true;
-      }
-      if ((request.getRequestURI().contains("/api/v1/users/")
-              || (request.getRequestURI().contains("/api/v1/users")))
-          && request.getMethod().equalsIgnoreCase("delete")) {
-        return true;
-      }
-
-      if ((request.getRequestURI().contains("/api/v1/projects/")
-              || (request.getRequestURI().contains("/api/v1/projects")))
-          && request.getMethod().equalsIgnoreCase("delete")) {
+    User user = userManagement.queryByName(currentUserName);
+    for (Role role : user.getRoles()) {
+      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
         return true;
       }
     }
-
-    if (project != null) {
+    if (project != null && !project.isEmpty()) {
       if (!projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
       }
-      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.ADMIN.ordinal()) {
-        log.trace("Return true for admin");
-        return true;
-      }
-
-      if (user.getRoles().iterator().next().getRole().ordinal() == RoleEnum.GUEST.ordinal()) {
-        if (request.getMethod().equalsIgnoreCase("get")) {
-          log.trace("Return true for guest");
-          return true;
-        } else {
-          log.trace("Return false for guest");
-          return false;
-        }
-      }
-
       for (Role role : user.getRoles()) {
         String pjName = projectManagement.query(project).getName();
         log.trace(role.getProject() + " == " + pjName);
         if (role.getProject().equals(pjName)) {
-          log.trace("Return true");
-          return true;
+          if (role.getRole().ordinal() == Role.RoleEnum.GUEST.ordinal()
+              && !request.getMethod().equalsIgnoreCase("get")) {
+            throw new NotAllowedException("Guest is only allowed to execute GET");
+          } else {
+            log.trace("Return true");
+            return true;
+          }
         }
       }
-
-      throw new UnauthorizedUserException(
-          currentUserName + " user is not unauthorized for executing this request!");
+    } else {
+      Iterable<Project> userProjects = projectManagement.query(user);
+      if (userProjects.iterator().hasNext()) {
+        return checkAuthorization(userProjects.iterator().next().getId(), request, currentUserName);
+      } else {
+        throw new NotFoundException(
+            "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
+      }
     }
-    log.trace("Return false for project null");
     return false;
   }
 }

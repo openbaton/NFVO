@@ -1,6 +1,8 @@
 package org.openbaton.nfvo.security.interfaces;
 
 import org.openbaton.catalogue.security.Project;
+import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
@@ -19,13 +21,14 @@ public interface ProjectManagement {
    *
    * @param project
    */
-  void delete(Project project) throws EntityInUseException, NotAllowedException;
+  void delete(Project project)
+      throws EntityInUseException, NotAllowedException, BadRequestException, NotFoundException;
 
   /**
    *
    * @param new_project
    */
-  Project update(Project new_project);
+  Project update(Project new_project) throws NotAllowedException, NotFoundException;
 
   /**
    */
@@ -35,7 +38,7 @@ public interface ProjectManagement {
    *
    * @param id
    */
-  Project query(String id);
+  Project query(String id) throws NotFoundException;
 
   /**
    *
@@ -44,7 +47,7 @@ public interface ProjectManagement {
    */
   Project queryByName(String name);
 
-  Iterable<Project> queryForUser();
+  Iterable<Project> query(User user);
 
   boolean exist(String project);
 }
