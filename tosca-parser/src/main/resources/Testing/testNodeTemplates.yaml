@@ -1,0 +1,22 @@
+node_templates:
+  CP12:
+    type: tosca.nodes.nfv.CP
+    properties:
+      type: vPort
+      anti_spoofing_protection: false
+    requirements:
+      virtualLink: InternalNetwork
+      virtualBinding: VDU1
+    attributes:
+        address: smtn
+
+    CP13:
+      type: tosca.nodes.nfv.CP
+      properties:
+        type: vPort
+        anti_spoofing_protection: false
+      requirements:
+        virtualLink: InternalNetwork
+        virtualBinding: VDU1
+      attributes:
+        address: smtn

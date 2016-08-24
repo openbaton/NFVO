@@ -1,0 +1,136 @@
+tosca_definitions_version: tosca_simple_profile_for_type_1_0_0
+tosca_default_namespace:    # Optional. default namespace (schema, types version)
+description: NSD for deploing an iperf scenario
+metadata:
+  ID:                 # ID of this Network Service Descriptor
+  vendor: Fokus       # Provider or vendor of the Network Service
+  version: 0.1 Alpha  # Version of the Network Service Descriptor imports:
+imports:
+  - tosca_base_type_definition.yaml
+  # list of import statements for importing other definitions files
+
+dsl_definitions:
+  host_capabilities: &host_capabilities
+      disk_size: 10 GB
+      num_cpus: 1
+      mem_size: 4096 MB
+
+topology_template:
+  node_templates:
+    iperf-server: #VNF1
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: server-configurations
+          configurationParameters:
+            - key: value
+            - key2: value2
+        vnfPackageLocation: https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: private
+        - host:
+            node: VDU2
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        Standard: # lifecycle
+          create: install.sh
+#          configure:
+#            implementation: install-srv.sh
+#            inputs:
+#              server_ip: { get_attribute: [iperf-server, private_address] }
+          start: install-srv.sh
+    iperf-client:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: server-configurations
+          configurationParameters:
+            - key: value
+            - key2: value2
+        vnfPackageLocation: https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: private
+        - host:
+            node: VDU1
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - install.sh
+          CONFIGURE:
+            - server_configure_only.sh
+          START:
+            - iperf_client_start.sh
+  #        CONFIGURE:
+  #          implementation: server_configure.sh
+  #          inputs:
+  #            iperf_server_ip: { get_attribute: [iperf-server, private] }
+    VDU1:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 2
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP1]
+      capabilities:
+        host:
+          properties: *host_capabilities
+          valid_source_types: openbaton.type.VDU
+    VDU2:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 2
+        vimInstanceName: vim-instance
+      requirements:
+        - virtual_link: [CP2]
+      capabilities:
+        host:
+          properties: *host_capabilities
+          valid_source_types: openbaton.type.VDU
+
+    private:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+      capabilities:
+        virtual_linkable:
+          valid_source_types: tosca.nodes.nfv.CP
+
+    CP1: #endpoints of VNF1
+      type: tosca.nodes.nfv.CP
+      properties:
+      requirements:
+        virtualbinding: VDU1
+      virtualLink: private
+
+    CP2: #endpoints of VNF2
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU2
+      virtualLink: private
+
+relationships_template:
+  connection_server_client:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: iperf-server
+    target: iperf-client
+    parameters:
+        - private
+
+

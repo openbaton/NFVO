@@ -1,0 +1,15 @@
+tosca.nodes.nfv.VNF:
+  derived_from: tosca.nodes.Root   # Or should this be its own top-level type?
+  properties:
+    id:
+      type: string
+      description: ID of this VNF
+    vendor:
+      type: string
+      description: name of the vendor who generate this VNF
+    version:
+      type: version
+      description: version of the software for this VNF
+    requirements:
+      - virtualLink:
+          capability: tosca.capabilities.nfv.VirtualLinkable

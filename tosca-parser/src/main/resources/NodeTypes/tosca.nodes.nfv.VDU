@@ -1,0 +1,20 @@
+tosca.nodes.nfv.VDU:
+  derived_from: tosca.nodes.SoftwareComponent
+  properties:
+  #TODO Define the properties
+  capabilities:
+    high_availability:
+      type: nfv.capabilities.HA
+    virtualbinding:
+      type: tosca.capabilities.nfv.VirtualBindable
+  monitoring_parameter:
+      type: nfv.capabilities.Metric
+  requirements:
+    - high_availability:
+        capability: nfv.capabilities.HA
+        relationship: nfv.relationships.HA
+        occurrences: [ 0, 1 ]
+    - host:
+        capability: tosca.capabilities.Container
+        node: tosca.nodes.Compute
+        relationship: tosca.relationships.HostedOn

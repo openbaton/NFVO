@@ -1,0 +1,364 @@
+# curl -X POST -v -F file=@OpenIMSCore.csar "http://localhost:8080/api/v1/csar"
+# curl -i -X POST http://localhost:8080/api/v1/tosca -H "Content-Type: text/yaml" "Accept: application/json" --data-binary @openIms.yaml
+
+tosca_definitions_version: tosca_OpenIMSCore
+tosca_default_namespace:    # Optional. default namespace (schema, types version)
+description: NSD for deploing the OpenIMSCore
+metadata:
+  ID:                 # ID of this Network Service Descriptor
+  vendor: Fokus       # Provider or vendor of the Network Service
+  version: 0.1 Alpha  # Version of the Network Service Descriptor imports:
+
+topology_template:
+  node_templates:
+
+    bind9:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: client-configuration
+          configurationParameters:
+            - realm: epc.mnc001.mcc001.3gppnetwork.org
+            - useFloatingIpsForEntries: true
+        vnfPackageLocation:
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: mgmt
+        - host:
+            node: VDU1
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - bind9/bind9_install.sh
+          CONFIGURE:
+            - bind9/fhoss_relation_joined.sh
+            - bind9/icscf_relation_joined.sh
+            - bind9/scscf_relation_joined.sh
+            - bind9/pcscf_relation_joined.sh
+            - bind9/mmechess_relation_joined.sh
+          START:
+            - bind9/generate_zone_file.sh
+            - bind9/bind9_restart.sh
+    VDU1:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 1
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP1]
+      capabilities:
+        host:
+          valid_source_types: openbaton.type.VDU
+    CP1: 
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU1
+      virtualLink: mgmt
+
+    fhoss:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: client-configuration
+          configurationParameters:
+            - diameter_p: 3868
+            - name: hss
+        vnfPackageLocation:
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: mgmt
+        - host:
+            node: VDU2
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - fhoss/fhoss_install.sh
+          CONFIGURE:
+            - fhoss/bind9_relation_joined.sh
+            - fhoss/icscf_relation_joined.sh
+            - fhoss/scscf_relation_joined.sh
+          START:
+            - fhoss/fhoss_generate_config.sh
+            - fhoss/fhoss_start.sh
+    VDU2:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 1
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP2]
+      capabilities:
+        host:
+          valid_source_types: openbaton.type.VDU
+    CP2: 
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU2
+      virtualLink: mgmt
+
+    icscf:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: client-configuration
+          configurationParameters:
+            - name: icscf
+            - port: 5060
+            - diameter_p: 3869
+        vnfPackageLocation:
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: mgmt
+        - host:
+            node: VDU3
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - icscf/icscf_install.sh
+          CONFIGURE:
+            - icscf/bind9_relation_joined.sh
+            - icscf/fhoss_relation_joined.sh
+            - icscf/scscf_relation_joined.sh
+          START:
+            - icscf/icscf_generate_config.sh
+            - icscf/icscf_start.sh
+    VDU3:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 1
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP3]
+      capabilities:
+        host:
+          valid_source_types: openbaton.type.VDU
+    CP3: 
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU3
+      virtualLink: mgmt
+    pcscf:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: client-configuration
+          configurationParameters:
+            - name: pcscf
+            - port: 4060
+        vnfPackageLocation:
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: mgmt
+        - host:
+            node: VDU4
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - pcscf/pcscf_install.sh
+          CONFIGURE:
+            - pcscf/bind9_relation_joined.sh
+          START:
+            - pcscf/pcscf_generate_config.sh
+            - pcscf/pcscf_start.sh
+    VDU4:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 1
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP4]
+      capabilities:
+        host:
+          valid_source_types: openbaton.type.VDU
+    CP4: 
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU4
+      virtualLink: mgmt
+    scscf:
+      type: openbaton.type.VNF.GENERIC
+      properties:
+        id:
+        vendor: Fokus
+        version: 0.1
+        configurations:
+          name: client-configuration
+          configurationParameters:
+            - name: scscf
+            - port: 6060
+            - diameter_p: 3870
+        vnfPackageLocation:
+        deployment_flavour:
+          - flavour_key: m1.small
+      requirements:
+        - virtualLink: mgmt
+        - host:
+            node: VDU5
+            type: openbaton.relationships.HostedOn
+      interfaces:
+        openbaton.interfaces.lifecycle: # lifecycle
+          INSTANCIATE:
+            - scscf/scscf_install.sh
+          CONFIGURE:
+            - scscf/bind9_relation_joined.sh
+            - scscf/fhoss_relation_joined.sh
+            - scscf/icscf_relation_joined.sh
+          START:
+            - scscf/scscf_generate_config.sh
+            - scscf/scscf_start.sh
+    VDU5:
+      type: openbaton.type.VDU
+      properties:
+        vm_image:
+          - ubuntu-14.04-server-cloudimg-amd64-disk1
+        scale_in_out: 1
+        vimInstanceName: vim-instance
+      requirements:
+         - virtual_link: [CP5]
+      capabilities:
+        host:
+          valid_source_types: openbaton.type.VDU
+    CP5: 
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIp: random
+      requirements:
+        virtualbinding: VDU5
+      virtualLink: mgmt
+    mgmt:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+      capabilities:
+        virtual_linkable:
+          valid_source_types: tosca.nodes.nfv.CP
+
+relationships_template:
+  rel1:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: bind9
+    target: fhoss
+    parameters:
+        - realm
+  rel2:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: bind9
+    target: icscf
+    parameters:
+        - realm
+  rel3:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: bind9
+    target: scscf
+    parameters:
+        - realm
+  rel4:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: bind9
+    target: pcscf
+    parameters:
+        - realm
+  rel5:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: fhoss
+    target: bind9
+    parameters:
+        - name
+  rel6:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: icscf
+    target: bind9
+    parameters:
+        - name
+  rel7:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: scscf
+    target: bind9
+    parameters:
+        - name
+        - port
+  rel8:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: pcscf
+    target: bind9
+    parameters:
+        - name
+        - port
+  rel9:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: fhoss
+    target: icscf
+    parameters:
+        - name
+        - port
+  rel10:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: fhoss
+    target: scscf
+    parameters:
+        - name
+        - port
+  rel11:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: scscf
+    target: fhoss
+    parameters:
+        - name
+        - port
+        - diameter_p
+  rel12:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: icscf
+    target: fhoss
+    parameters:
+        - name
+        - diameter_p
+  rel13:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: scscf
+    target: icscf
+    parameters:
+        - name
+        - port
+  rel14:
+    type: tosca.nodes.relationships.ConnectsTo
+    source: icscf
+    target: scscf
+    parameters:
+        - name
