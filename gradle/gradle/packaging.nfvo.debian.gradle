@@ -40,6 +40,7 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     requires('openjdk-7-jre')
     requires('rabbitmq-server')
     requires('wget')
+    requires('openbaton-test-vimplugin')
 
     // Copy files from "from path" to "into path"
     from('etc/openbaton.properties') 			                    { into '/etc/openbaton/' }                 // properties file

@@ -115,20 +115,9 @@ configureRabbitMQ () {
 #### VIM-Drivers Plugins ####
 #############################
 
-pluginsPrereq () {
-    log_success_msg "Configuring the Plugins environment .."
-    mkdir -p ${OPENBATON_PLUGINS_FOLDER}
+setPluginsFolder () {
     export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
     $_ex 'sed -i "s~nfvo.plugin.installation-dir = ./plugins~nfvo.plugin.installation-dir = "${OPENBATON_PLUGINS_FOLDER}"~" /etc/openbaton/openbaton.properties'
-}
-
-installTestVIMPlugin () {
-    pluginsPrereq
-    log_success_msg "Getting Test VIM Plugin .."
-    wget -nH --cut-dirs 2 -r --no-parent  --reject "index.html*" "${OPENBATON_PLUGINS_TEST_URL}" -P "${TMPFOLDER}"
-    export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
-    export TMPFOLDER="${TMPFOLDER}"
-    $_ex 'cp ${TMPFOLDER}/* "${OPENBATON_PLUGINS_FOLDER}"'
 }
 
 
@@ -172,7 +161,7 @@ configure () {
     if [ "${CONFIGURE_RABBITMQ_FOR_OPENBATON}" = "true" ]; then
         configureRabbitMQ
     fi
-    installTestVIMPlugin
+    setPluginsFolder
     setPassword
     $_ex "chmod a+x ${OPENBATON_EXE_FOLDER}/openbaton-nfvo"
 
