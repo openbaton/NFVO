@@ -1,0 +1,5 @@
+tosca.nodes.nfv.VL.ELine:
+  derived_from: tosca.nodes.nfv.VL
+  capabilities:
+    virtual_linkable:
+      occurrences: 2

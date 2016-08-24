@@ -1,0 +1,3 @@
+tosca.relationships.nfv.VirtualLinksTo:
+  derived_from: tosca.relationships.ConnectsTo
+  valid_target_types: [ tosca.capabilities.nfv.VirtualLinkable ]

@@ -1,0 +1,9 @@
+type: tosca.nodes.nfv.CP
+properties:
+    type: hhuh
+    anti_spoof_protection: false
+requirements:
+    virtualLink: VDU1
+    virtualBinding: Smtn
+attributes:
+    address: smtn

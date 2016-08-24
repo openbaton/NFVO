@@ -1,0 +1,10 @@
+tosca.nodes.nfv.VL:
+  derived_from: tosca.nodes.Root
+  properties:
+    vendor:
+      type: string
+      required: true
+      description: name of the vendor who generate this VL
+  capabilities:
+    virtual_linkable:
+      type: nfv.capabilities.VirtualLinkable
