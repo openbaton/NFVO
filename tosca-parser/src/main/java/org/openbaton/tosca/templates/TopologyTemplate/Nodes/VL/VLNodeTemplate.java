@@ -9,57 +9,63 @@ import java.util.Map;
  */
 public class VLNodeTemplate {
 
-    private String type = "";
-    private String name = "";
-    private String vendor = "";
+  private String type = "";
+  private String name = "";
+  private String vendor = "";
 
-    public VLNodeTemplate(NodeTemplate vl, String name){
+  public VLNodeTemplate(NodeTemplate vl, String name) {
 
-        this.name = name;
+    this.name = name;
 
-        this.type = vl.getType();
+    this.type = vl.getType();
 
-        if( vl.getProperties() != null ){
+    if (vl.getProperties() != null) {
 
-            Map<String, Object> propertiesMap = (Map<String, Object>) vl.getProperties();
+      Map<String, Object> propertiesMap = (Map<String, Object>) vl.getProperties();
 
-            if(propertiesMap.containsKey("vendor")){
+      if (propertiesMap.containsKey("vendor")) {
 
-                this.vendor = (String) propertiesMap.get("vendor");
-            }
-        }
+        this.vendor = (String) propertiesMap.get("vendor");
+      }
     }
+  }
 
+  public String getType() {
+    return type;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getVendor() {
+    return vendor;
+  }
 
-    public String getVendor() {
-        return vendor;
-    }
+  public void setVendor(String vendor) {
+    this.vendor = vendor;
+  }
 
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
+  public String toString() {
 
-    public String toString(){
-
-        return "VL: " + "\n" +
-                "type: " + type + "\n" +
-                "name: " + name + "\n" +
-                "vendor: " + vendor + "\n";
-    }
+    return "VL: "
+        + "\n"
+        + "type: "
+        + type
+        + "\n"
+        + "name: "
+        + name
+        + "\n"
+        + "vendor: "
+        + vendor
+        + "\n";
+  }
 }

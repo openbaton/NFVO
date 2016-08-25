@@ -20,238 +20,242 @@ import java.util.*;
  */
 public class TOSCAParser {
 
-    public TOSCAParser(){}
+  public TOSCAParser() {}
 
+  private InternalVirtualLink parseVL(VLNodeTemplate vlNodeTemplate) {
 
-    private InternalVirtualLink parseVL(VLNodeTemplate vlNodeTemplate){
+    InternalVirtualLink vl = new InternalVirtualLink();
 
-        InternalVirtualLink vl = new InternalVirtualLink();
+    vl.setName(vlNodeTemplate.getName());
 
-        vl.setName(vlNodeTemplate.getName());
+    return vl;
+  }
 
-        return vl;
+  private VNFDConnectionPoint parseCPTemplate(CPNodeTemplate cpTemplate) {
+
+    VNFDConnectionPoint cp = new VNFDConnectionPoint();
+
+    cp.setVirtual_link_reference(cpTemplate.getRequirements().getVirtualLink());
+
+    if (cpTemplate.getProperties() != null) {
+      if (cpTemplate.getProperties().getFloatingIP() != null) {
+        cp.setFloatingIp(cpTemplate.getProperties().getFloatingIP());
+      }
     }
 
-    private VNFDConnectionPoint parseCPTemplate(CPNodeTemplate cpTemplate){
+    return cp;
+  }
 
-        VNFDConnectionPoint cp = new VNFDConnectionPoint();
+  private VirtualDeploymentUnit parseVDUTemplate(
+      VDUNodeTemplate vduTemplate, List<CPNodeTemplate> cps) {
 
-        cp.setVirtual_link_reference(cpTemplate.getRequirements().getVirtualLink());
+    VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
+    vdu.setName(vduTemplate.getName());
 
-        if(cpTemplate.getProperties() != null){
-            if(cpTemplate.getProperties().getFloatingIP() != null){
-                cp.setFloatingIp(cpTemplate.getProperties().getFloatingIP());
-            }
-        }
+    // ADD Settings
+    vdu.setScale_in_out(vduTemplate.getProperties().getScale_in_out());
+    vdu.setVm_image(vduTemplate.getArtifacts());
 
-        return cp;
+    vdu.setVimInstanceName(vduTemplate.getProperties().getVim_instance_name());
+
+    // ADD VNF Connection Points
+    Set<VNFComponent> vnfComponents = new HashSet<>();
+    VNFComponent vnfc = new VNFComponent();
+    Set<VNFDConnectionPoint> connectionPoints = new HashSet<>();
+
+    for (CPNodeTemplate cp : cps) {
+      if (cp.getRequirements().getVirtualBinding().equals(vduTemplate.getName())) {
+
+        connectionPoints.add(parseCPTemplate(cp));
+      }
+    }
+    vnfc.setConnection_point(connectionPoints);
+    vnfComponents.add(vnfc);
+    vdu.setVnfc(vnfComponents);
+
+    return vdu;
+  }
+
+  private void parseRelationships(
+      NetworkServiceDescriptor nsd, Map<String, RelationshipsTemplate> relationshipsTemplates) {
+
+    for (String key : relationshipsTemplates.keySet()) {
+      VNFDependency vnfDependency = new VNFDependency();
+
+      RelationshipsTemplate relationshipsTemplate = relationshipsTemplates.get(key);
+      VirtualNetworkFunctionDescriptor vnfdSouce = new VirtualNetworkFunctionDescriptor();
+      VirtualNetworkFunctionDescriptor vnfdTarget = new VirtualNetworkFunctionDescriptor();
+
+      vnfdSouce.setName(relationshipsTemplate.getSource());
+      vnfdTarget.setName(relationshipsTemplate.getTarget());
+
+      vnfDependency.setSource(vnfdSouce);
+      vnfDependency.setTarget(vnfdTarget);
+      vnfDependency.setParameters(new HashSet<String>(relationshipsTemplate.getParameters()));
+
+      nsd.getVnf_dependency().add(vnfDependency);
+    }
+  }
+
+  private VirtualNetworkFunctionDescriptor parseVNFNode(
+      VNFNodeTemplate vnf, TopologyTemplate topologyTemplate) {
+
+    VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+
+    vnfd.setName(vnf.getName());
+    vnfd.setVendor(vnf.getProperties().getVendor());
+    vnfd.setVersion((Double.toString(vnf.getProperties().getVersion())));
+
+    vnfd.setDeployment_flavour(vnf.getProperties().getDeploymentFlavourConverted());
+    vnfd.setVnfPackageLocation(vnf.getProperties().getVnfPackageLocation());
+    vnfd.setEndpoint(vnf.getProperties().getEndpoint());
+    vnfd.setType(vnf.getProperties().getType());
+
+    ArrayList<String> vduList = vnf.getRequirements().getVDUS();
+
+    // ADD VDUs
+    Set<VirtualDeploymentUnit> vdus = new HashSet<>();
+
+    for (VDUNodeTemplate vdu : topologyTemplate.getVDUNodes()) {
+
+      if (vduList.contains(vdu.getName())) {
+
+        vdus.add(parseVDUTemplate(vdu, topologyTemplate.getCPNodes()));
+      }
+    }
+    vnfd.setVdu(vdus);
+
+    // ADD VLs
+    ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
+    Set<InternalVirtualLink> vls = new HashSet<>();
+
+    for (VLNodeTemplate vl : topologyTemplate.getVLNodes()) {
+
+      if (vl_list.contains(vl.getName())) {
+
+        vls.add(parseVL(vl));
+      }
+    }
+    vnfd.setVirtual_link(vls);
+
+    vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
+
+    //ADD CONFIGURATIONS
+    if (vnf.getProperties().getConfigurations() != null) {
+      Configuration configuration = new Configuration();
+      configuration.setName(vnf.getProperties().getConfigurations().getName());
+
+      Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+
+      for (HashMap<String, String> pair :
+          vnf.getProperties().getConfigurations().getConfigurationParameters()) {
+
+        ConfigurationParameter configurationParameter = new ConfigurationParameter();
+        configurationParameter.setConfKey((String) pair.keySet().toArray()[0]);
+        configurationParameter.setValue((String) pair.values().toArray()[0]);
+        configurationParameters.add(configurationParameter);
+      }
+
+      configuration.setConfigurationParameters(configurationParameters);
+      vnfd.setConfigurations(configuration);
     }
 
-    private VirtualDeploymentUnit parseVDUTemplate(VDUNodeTemplate vduTemplate, List<CPNodeTemplate> cps){
+    return vnfd;
+  }
 
-        VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-        vdu.setName(vduTemplate.getName());
+  public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate vnfdTemplate) {
 
-        // ADD Settings
-        vdu.setScale_in_out(vduTemplate.getProperties().getScale_in_out());
-        vdu.setVm_image(new HashSet<String>(vduTemplate.getProperties().getVm_image()));
+    VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 
+    // ADD SETTINGS
 
-        vdu.setVimInstanceName(vduTemplate.getProperties().getVim_instance_name());
+    vnfd.setName(vnfdTemplate.getMetadata().getID());
+    vnfd.setVendor(vnfdTemplate.getMetadata().getVendor());
+    vnfd.setVersion(vnfdTemplate.getMetadata().getVersion());
 
-        // ADD VNF Connection Points
-        Set<VNFComponent> vnfComponents = new HashSet<>();
-        VNFComponent vnfc = new VNFComponent();
-        Set<VNFDConnectionPoint> connectionPoints = new HashSet<>();
+    vnfd.setDeployment_flavour(vnfdTemplate.getInputs().getDeploymentFlavourConverted());
+    vnfd.setVnfPackageLocation(vnfdTemplate.getInputs().getVnfPackageLocation());
+    vnfd.setEndpoint(vnfdTemplate.getInputs().getEndpoint());
+    vnfd.setType(vnfdTemplate.getInputs().getType());
 
-        for( CPNodeTemplate cp : cps){
-            if(cp.getRequirements().getVirtualBinding().equals(vduTemplate.getName())){
+    // ADD VDUs
+    Set<VirtualDeploymentUnit> vdus = new HashSet<>();
 
-                connectionPoints.add(parseCPTemplate(cp));
-            }
-        }
-        vnfc.setConnection_point(connectionPoints);
-        vnfComponents.add(vnfc);
-        vdu.setVnfc(vnfComponents);
+    for (VDUNodeTemplate vdu : vnfdTemplate.getTopology_template().getVDUNodes()) {
 
-        return vdu;
+      vdus.add(parseVDUTemplate(vdu, vnfdTemplate.getTopology_template().getCPNodes()));
+    }
+    vnfd.setVdu(vdus);
+
+    // ADD VLs
+    Set<InternalVirtualLink> vls = new HashSet<>();
+
+    for (VLNodeTemplate vl : vnfdTemplate.getTopology_template().getVLNodes()) {
+
+      vls.add(parseVL(vl));
     }
 
-    private void parseRelationships(NetworkServiceDescriptor nsd,
-                                             Map<String, RelationshipsTemplate> relationshipsTemplates){
+    vnfd.setVirtual_link(vls);
 
-        for(String key : relationshipsTemplates.keySet()) {
-            VNFDependency vnfDependency = new VNFDependency();
+    vnfd.setLifecycle_event(vnfdTemplate.getInputs().getInterfaces().getOpLifecycle());
 
-            RelationshipsTemplate relationshipsTemplate = relationshipsTemplates.get(key);
-            VirtualNetworkFunctionDescriptor vnfdSouce = new VirtualNetworkFunctionDescriptor();
-            VirtualNetworkFunctionDescriptor vnfdTarget = new VirtualNetworkFunctionDescriptor();
+    //ADD CONFIGURATIONS
+    if (vnfdTemplate.getInputs().getConfigurations() != null) {
 
-            vnfdSouce.setName(relationshipsTemplate.getSource());
-            vnfdTarget.setName(relationshipsTemplate.getTarget());
+      VNFConfigurations configurations =
+          new VNFConfigurations(vnfdTemplate.getInputs().getConfigurations());
 
-            vnfDependency.setSource(vnfdSouce);
-            vnfDependency.setTarget(vnfdTarget);
-            vnfDependency.setParameters(new HashSet<String>(relationshipsTemplate.getParameters()));
+      Configuration configuration = new Configuration();
+      configuration.setName(configurations.getName());
 
-            nsd.getVnf_dependency().add(vnfDependency);
-        }
+      Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+
+      for (HashMap<String, String> pair : configurations.getConfigurationParameters()) {
+
+        ConfigurationParameter configurationParameter = new ConfigurationParameter();
+        configurationParameter.setConfKey((String) pair.keySet().toArray()[0]);
+        configurationParameter.setValue((String) pair.values().toArray()[0]);
+        configurationParameters.add(configurationParameter);
+      }
+
+      configuration.setConfigurationParameters(configurationParameters);
+      vnfd.setConfigurations(configuration);
     }
 
-    private VirtualNetworkFunctionDescriptor parseVNFNode(VNFNodeTemplate vnf, TopologyTemplate topologyTemplate){
+    return vnfd;
+  }
 
-        VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+  public NetworkServiceDescriptor parseNSDTemplate(NSDTemplate nsdTemplate) {
 
-        vnfd.setName(vnf.getName());
-        vnfd.setVendor(vnf.getProperties().getVendor());
-        vnfd.setVersion((Double.toString(vnf.getProperties().getVersion())));
+    NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 
-        vnfd.setDeployment_flavour(vnf.getProperties().getDeploymentFlavourConverted());
-        vnfd.setVnfPackageLocation(vnf.getProperties().getVnfPackageLocation());
-        vnfd.setEndpoint(vnf.getProperties().getEndpoint());
+    nsd.setVersion(nsdTemplate.getMetadata().getVersion());
+    nsd.setVendor(nsdTemplate.getMetadata().getVendor());
+    nsd.setName(nsdTemplate.getMetadata().getID());
 
-        ArrayList<String> vduList = vnf.getRequirements().getVDUS();
+    // ADD VNFDS
 
-        // ADD VDUs
-        Set<VirtualDeploymentUnit> vdus = new HashSet<>();
+    for (VNFNodeTemplate vnfNodeTemplate : nsdTemplate.getTopology_template().getVNFNodes()) {
 
-        for(VDUNodeTemplate vdu : topologyTemplate.getVDUNodes()){
+      VirtualNetworkFunctionDescriptor vnf =
+          parseVNFNode(vnfNodeTemplate, nsdTemplate.getTopology_template());
 
-            if( vduList.contains(vdu.getName()) ){
-
-                vdus.add(parseVDUTemplate(vdu, topologyTemplate.getCPNodes()));
-            }
-        }
-        vnfd.setVdu(vdus);
-
-        // ADD VLs
-        ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
-        Set<InternalVirtualLink> vls = new HashSet<>();
-
-        for(VLNodeTemplate vl : topologyTemplate.getVLNodes()){
-
-            if(vl_list.contains(vl.getName())){
-
-                vls.add(parseVL(vl));
-            }
-        }
-        vnfd.setVirtual_link(vls);
-
-        vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
-
-        //ADD CONFIGURATIONS
-        if( vnf.getProperties().getConfigurations() != null ){
-            Configuration configuration = new Configuration();
-            configuration.setName(vnf.getProperties().getConfigurations().getName());
-
-            Set<ConfigurationParameter> configurationParameters = new HashSet<>();
-
-            for(HashMap<String, String> pair : vnf.getProperties().getConfigurations().getConfigurationParameters()){
-
-                ConfigurationParameter configurationParameter = new ConfigurationParameter();
-                configurationParameter.setConfKey((String) pair.keySet().toArray()[0]);
-                configurationParameter.setValue((String) pair.values().toArray()[0]);
-                configurationParameters.add(configurationParameter);
-            }
-
-            configuration.setConfigurationParameters(configurationParameters);
-            vnfd.setConfigurations(configuration);
-        }
-
-        return vnfd;
+      nsd.getVnfd().add(vnf);
     }
 
-    public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate vnfdTemplate){
+    // ADD VLS
+    nsd.setVld(new HashSet<VirtualLinkDescriptor>());
 
-        VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+    for (VLNodeTemplate vlNode : nsdTemplate.getTopology_template().getVLNodes()) {
 
-        // ADD SETTINGS
-
-        vnfd.setName(vnfdTemplate.getMetadata().getID());
-        vnfd.setVendor(vnfdTemplate.getMetadata().getVendor());
-        vnfd.setVersion(vnfdTemplate.getMetadata().getVersion());
-
-        vnfd.setDeployment_flavour(vnfdTemplate.getInputs().getDeploymentFlavourConverted());
-        vnfd.setVnfPackageLocation(vnfdTemplate.getInputs().getVnfPackageLocation());
-        vnfd.setEndpoint(vnfdTemplate.getInputs().getEndpoint());
-
-        // ADD VDUs
-        Set<VirtualDeploymentUnit> vdus = new HashSet<>();
-
-        for(VDUNodeTemplate vdu : vnfdTemplate.getTopology_template().getVDUNodes()){
-
-            vdus.add(parseVDUTemplate(vdu, vnfdTemplate.getTopology_template().getCPNodes()));
-        }
-        vnfd.setVdu(vdus);
-
-        // ADD VLs
-        Set<InternalVirtualLink> vls = new HashSet<>();
-
-        for(VLNodeTemplate vl : vnfdTemplate.getTopology_template().getVLNodes()){
-
-            vls.add(parseVL(vl));
-        }
-
-        vnfd.setVirtual_link(vls);
-
-        vnfd.setLifecycle_event(vnfdTemplate.getInputs().getInterfaces().getOpLifecycle());
-
-        //ADD CONFIGURATIONS
-        if( vnfdTemplate.getInputs().getConfigurations() != null ){
-
-            VNFConfigurations configurations = new VNFConfigurations(vnfdTemplate.getInputs().getConfigurations());
-
-            Configuration configuration = new Configuration();
-            configuration.setName(configurations.getName());
-
-            Set<ConfigurationParameter> configurationParameters = new HashSet<>();
-
-            for(HashMap<String, String> pair : configurations.getConfigurationParameters()){
-
-                ConfigurationParameter configurationParameter = new ConfigurationParameter();
-                configurationParameter.setConfKey((String) pair.keySet().toArray()[0]);
-                configurationParameter.setValue((String) pair.values().toArray()[0]);
-                configurationParameters.add(configurationParameter);
-            }
-
-            configuration.setConfigurationParameters(configurationParameters);
-            vnfd.setConfigurations(configuration);
-        }
-
-        return vnfd;
+      VirtualLinkDescriptor vld = new VirtualLinkDescriptor();
+      vld.setName(vlNode.getName());
+      nsd.getVld().add(vld);
     }
 
+    // ADD DEPENDENCIES
+    parseRelationships(nsd, nsdTemplate.getRelationships_template());
 
-    public NetworkServiceDescriptor parseNSDTemplate(NSDTemplate nsdTemplate){
-
-        NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-
-        nsd.setVersion(nsdTemplate.getMetadata().getVersion());
-        nsd.setVendor(nsdTemplate.getMetadata().getVendor());
-        nsd.setName(nsdTemplate.getMetadata().getID());
-
-        // ADD VNFDS
-
-        for(VNFNodeTemplate vnfNodeTemplate : nsdTemplate.getTopology_template().getVNFNodes()){
-
-            VirtualNetworkFunctionDescriptor vnf = parseVNFNode(vnfNodeTemplate, nsdTemplate.getTopology_template());
-
-            nsd.getVnfd().add(vnf);
-        }
-
-        // ADD VLS
-        nsd.setVld(new HashSet<VirtualLinkDescriptor>());
-
-        for( VLNodeTemplate vlNode :  nsdTemplate.getTopology_template().getVLNodes()){
-
-            VirtualLinkDescriptor vld = new VirtualLinkDescriptor();
-            vld.setName(vlNode.getName());
-            nsd.getVld().add(vld);
-        }
-
-        // ADD DEPENDENCIES
-        parseRelationships(nsd, nsdTemplate.getRelationships_template());
-
-        return nsd;
-    }
+    return nsd;
+  }
 }

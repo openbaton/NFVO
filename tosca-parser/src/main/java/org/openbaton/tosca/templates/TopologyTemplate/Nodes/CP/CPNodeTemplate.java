@@ -5,79 +5,86 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 /**
  * Created by rvl on 17.08.16.
  */
-public class CPNodeTemplate{
+public class CPNodeTemplate {
 
-    private String name = null;
-    private String type = null;
-    private CPProperties properties = null;
-    private CPRequirements requirements = null;
-    private CPAttributes attributes = null;
+  private String name = null;
+  private String type = null;
+  private CPProperties properties = null;
+  private CPRequirements requirements = null;
+  private CPAttributes attributes = null;
 
-    public CPNodeTemplate(){}
+  public CPNodeTemplate() {}
 
-    public CPNodeTemplate(NodeTemplate nodeTemplate, String name){
-        this.type = nodeTemplate.getType();
+  public CPNodeTemplate(NodeTemplate nodeTemplate, String name) {
+    this.type = nodeTemplate.getType();
 
-        if(nodeTemplate.getProperties() != null ){
-            this.properties = new CPProperties(nodeTemplate.getProperties());
-        }
-        if(nodeTemplate.getAttributes() != null ){
-            this.attributes = new CPAttributes(nodeTemplate.getAttributes());
-        }
-        if(nodeTemplate.getRequirements() != null ){
-            this.requirements = new CPRequirements(nodeTemplate.getRequirements());
-        }
+    if (nodeTemplate.getProperties() != null) {
+      this.properties = new CPProperties(nodeTemplate.getProperties());
     }
-
-    public CPProperties getProperties() {
-        return properties;
+    if (nodeTemplate.getAttributes() != null) {
+      this.attributes = new CPAttributes(nodeTemplate.getAttributes());
     }
-
-    public void setProperties(CPProperties properties) {
-        this.properties = properties;
+    if (nodeTemplate.getRequirements() != null) {
+      this.requirements = new CPRequirements(nodeTemplate.getRequirements());
     }
+  }
 
-    public CPAttributes getAttributes() {
-        return attributes;
-    }
+  public CPProperties getProperties() {
+    return properties;
+  }
 
-    public void setAttributes(CPAttributes attributes) {
-        this.attributes = attributes;
-    }
+  public void setProperties(CPProperties properties) {
+    this.properties = properties;
+  }
 
-    public CPRequirements getRequirements() {
-        return requirements;
-    }
+  public CPAttributes getAttributes() {
+    return attributes;
+  }
 
-    public void setRequirements(CPRequirements requirements) {
-        this.requirements = requirements;
-    }
+  public void setAttributes(CPAttributes attributes) {
+    this.attributes = attributes;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public CPRequirements getRequirements() {
+    return requirements;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setRequirements(CPRequirements requirements) {
+    this.requirements = requirements;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    @Override
-    public String toString(){
-        return "CP Node: \n" +
-                "name: " + name + "\n" +
-                "type: " + type + "\n" +
-                "Properties: " + properties + "\n" +
-                "Requirements: " + requirements + "\n" +
-                "Attributes: " + attributes;
-    }
+  public String getName() {
+    return name;
+  }
 
+  public void setName(String name) {
+    this.name = name;
+  }
 
+  @Override
+  public String toString() {
+    return "CP Node: \n"
+        + "name: "
+        + name
+        + "\n"
+        + "type: "
+        + type
+        + "\n"
+        + "Properties: "
+        + properties
+        + "\n"
+        + "Requirements: "
+        + requirements
+        + "\n"
+        + "Attributes: "
+        + attributes;
+  }
 }

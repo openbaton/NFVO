@@ -21,11 +21,11 @@ package org.openbaton.tosca.exceptions;
  */
 public class NotSupportedType extends Exception {
 
-    public NotSupportedType(String exc){
-        super(exc);
-    }
+  public NotSupportedType(String exc) {
+    super(exc);
+  }
 
-    public NotSupportedType(Throwable e) {
-        super(e);
-    }
+  public NotSupportedType(Throwable e) {
+    super(e);
+  }
 }

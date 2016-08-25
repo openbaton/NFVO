@@ -13,79 +13,85 @@ import java.util.Set;
  */
 public class VNFDInputsTemplate {
 
+  private String vnfPackageLocation = null;
+  private ArrayList<HashMap<String, String>> deploymentFlavour = null;
+  private VNFInterfaces interfaces = null;
+  private Object configurations = null;
+  private String endpoint = null;
+  private String type = null;
 
-    private String vnfPackageLocation = null;
-    private ArrayList<HashMap<String, String>> deploymentFlavour = null;
-    private VNFInterfaces interfaces = null;
-    private Object configurations = null;
-    private String endpoint = null;
+  public String getVnfPackageLocation() {
+    return vnfPackageLocation;
+  }
 
-    public String getVnfPackageLocation() {
-        return vnfPackageLocation;
-    }
+  public void setVnfPackageLocation(String vnfPackageLocation) {
+    this.vnfPackageLocation = vnfPackageLocation;
+  }
 
-    public void setVnfPackageLocation(String vnfPackageLocation) {
-        this.vnfPackageLocation = vnfPackageLocation;
-    }
+  public ArrayList<HashMap<String, String>> getDeploymentFlavour() {
+    return deploymentFlavour;
+  }
 
-    public ArrayList<HashMap<String, String>> getDeploymentFlavour() {
-        return deploymentFlavour;
-    }
+  public void setDeploymentFlavour(ArrayList<HashMap<String, String>> deploymentFlavour) {
+    this.deploymentFlavour = deploymentFlavour;
+  }
 
-    public void setDeploymentFlavour(ArrayList<HashMap<String, String>> deploymentFlavour) {
-        this.deploymentFlavour = deploymentFlavour;
-    }
+  public Set<VNFDeploymentFlavour> getDeploymentFlavourConverted() {
 
-    public Set<VNFDeploymentFlavour> getDeploymentFlavourConverted(){
+    Set<VNFDeploymentFlavour> vnfdf = new HashSet<>();
 
-        Set<VNFDeploymentFlavour> vnfdf = new HashSet<>();
+    if (deploymentFlavour != null) {
+      for (HashMap<String, String> df : this.deploymentFlavour) {
 
-        if(deploymentFlavour != null){
-            for(HashMap<String, String> df : this.deploymentFlavour){
+        for (String key : df.keySet()) {
+          if (key.equals("flavour_key")) {
 
-                for( String key : df.keySet()){
-                    if(key.equals("flavour_key")){
-
-                        VNFDeploymentFlavour new_df = new VNFDeploymentFlavour();
-                        new_df.setFlavour_key(df.get("flavour_key"));
-                        vnfdf.add(new_df);
-                    }
-                }
-            }
+            VNFDeploymentFlavour new_df = new VNFDeploymentFlavour();
+            new_df.setFlavour_key(df.get("flavour_key"));
+            vnfdf.add(new_df);
+          }
         }
-
-        return vnfdf;
+      }
     }
 
-    public VNFInterfaces getInterfaces() {
-        return interfaces;
-    }
+    return vnfdf;
+  }
 
-    public void setInterfaces(VNFInterfaces vnfInterfaces) {
-        this.interfaces = vnfInterfaces;
-    }
+  public VNFInterfaces getInterfaces() {
+    return interfaces;
+  }
 
-    public Object getConfigurations() {
-        return configurations;
-    }
+  public void setInterfaces(VNFInterfaces vnfInterfaces) {
+    this.interfaces = vnfInterfaces;
+  }
 
-    public void setConfigurations(Object configurations) {
-        this.configurations = configurations;
-    }
+  public Object getConfigurations() {
+    return configurations;
+  }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
+  public void setConfigurations(Object configurations) {
+    this.configurations = configurations;
+  }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+  public String getEndpoint() {
+    return endpoint;
+  }
 
-    @Override
-    public String toString(){
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
 
-        return
-                "vnf_interfaces: " + interfaces + "\n" +
-                "vnfPackageLoc: " + vnfPackageLocation + "\n";
-    }
+  @Override
+  public String toString() {
+
+    return "vnf_interfaces: " + interfaces + "\n" + "vnfPackageLoc: " + vnfPackageLocation + "\n";
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 }

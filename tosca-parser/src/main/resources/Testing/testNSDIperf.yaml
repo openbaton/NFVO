@@ -16,6 +16,7 @@ topology_template:
           vendor: Fokus
           version: 0.1
           endpoint: dummy
+          type: server
           configurations:
             name: server-configurations
             configurationParameters:
@@ -39,6 +40,7 @@ topology_template:
         ID: x
         vendor: Fokus
         version: 0.1
+        type: client
         vnfPackageLocation: https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git
         deploymentFlavour:
           - flavour_key: m1.small
@@ -58,11 +60,13 @@ topology_template:
     VDU1:
       type: tosca.nodes.nfv.VDU
       properties:
-        vm_image:
-          - ubuntu-14.04-server-cloudimg-amd64-disk1
         scale_in_out: 1
         vim_instance_name:
-          - vim-instance
+          - test-vim-instance
+      artifacts:
+        VDU1Image:
+          type: tosca.artifacts.Deployment.Image.VM
+          file: ubuntu-14.04-server-cloudimg-amd64-disk1
 
     VDU2:
       type: tosca.nodes.nfv.VDU
@@ -71,9 +75,13 @@ topology_template:
           - ubuntu-14.04-server-cloudimg-amd64-disk1
         scale_in_out: 2
         vimInstanceName:
-          - vim-instance
+          - test-vim-instance
       requirements:
         - virtual_link: CP2
+      artifacts:
+        VDU1Image:
+          type: tosca.artifacts.Deployment.Image.VM
+          file: ubuntu-14.04-server-cloudimg-amd64-disk1
 
     CP1:
       type: tosca.nodes.nfv.CP

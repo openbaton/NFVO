@@ -33,6 +33,7 @@ include 'vim-drivers'
 include 'dashboard'
 include 'plugin'
 include 'security'
+include 'tosca-parser'
 
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')
 project(':monitoring').projectDir = file('openbaton-libs/monitoring')
@@ -54,6 +55,7 @@ project(':plugin').projectDir = file('openbaton-libs/plugin')
 project(':vnfm-impl').projectDir = file('vnfm/vnfm-impl')
 project(':vnfm-int').projectDir = file('vnfm/vnfm-int')
 project(':repository').projectDir = file('repository')
+project(':tosca-parser').projectDir = file('tosca-parser')
 
 //File nfvoDir = file('.')
 //String nfvoName = nfvoDir.name
