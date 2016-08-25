@@ -7,42 +7,40 @@ import java.util.Map;
  */
 public class VDUArtifact {
 
-    private String type;
-    private String file;
+  private String type;
+  private String file;
 
-    public VDUArtifact(Object artifact) {
+  public VDUArtifact(Object artifact) {
 
-        Map<String, String> artifactMap = (Map<String, String>) artifact;
+    Map<String, String> artifactMap = (Map<String, String>) artifact;
 
-        if(artifactMap.containsKey("type")){
-            this.type = artifactMap.get("type");
-        }
-
-        if(artifactMap.containsKey("file")){
-            this.file = artifactMap.get("file");
-        }
+    if (artifactMap.containsKey("type")) {
+      this.type = artifactMap.get("type");
     }
 
-    public String getType() {
-        return type;
+    if (artifactMap.containsKey("file")) {
+      this.file = artifactMap.get("file");
     }
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public String getFile() {
-        return file;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setFile(String file) {
-        this.file = file;
-    }
+  public String getFile() {
+    return file;
+  }
 
-    @Override
-    public String toString(){
-        return "Artifact: \n" +
-                "type: " + type + "\n" +
-                "file: " + file;
-    }
+  public void setFile(String file) {
+    this.file = file;
+  }
+
+  @Override
+  public String toString() {
+    return "Artifact: \n" + "type: " + type + "\n" + "file: " + file;
+  }
 }

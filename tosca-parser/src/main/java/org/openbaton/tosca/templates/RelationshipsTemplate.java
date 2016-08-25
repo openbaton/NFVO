@@ -7,50 +7,56 @@ import java.util.ArrayList;
  */
 public class RelationshipsTemplate {
 
-    private String type;
-    private String source;
-    private String target;
-    private ArrayList<String> parameters;
+  private String type;
+  private String source;
+  private String target;
+  private ArrayList<String> parameters;
 
+  public String getType() {
+    return type;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getSource() {
+    return source;
+  }
 
-    public String getSource() {
-        return source;
-    }
+  public void setSource(String source) {
+    this.source = source;
+  }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
+  public String getTarget() {
+    return target;
+  }
 
-    public String getTarget() {
-        return target;
-    }
+  public void setTarget(String target) {
+    this.target = target;
+  }
 
-    public void setTarget(String target) {
-        this.target = target;
-    }
+  public ArrayList<String> getParameters() {
+    return parameters;
+  }
 
-    public ArrayList<String> getParameters() {
-        return parameters;
-    }
+  public void setParameters(ArrayList<String> parameters) {
+    this.parameters = parameters;
+  }
 
-    public void setParameters(ArrayList<String> parameters) {
-        this.parameters = parameters;
-    }
+  @Override
+  public String toString() {
 
-    @Override
-    public String toString(){
-
-        return "Relationships: " + "\n" +
-                "source: " + source+ "\n" +
-                "target: " + target + "\n" +
-                "Parameters " + parameters + "\n";
-    }
+    return "Relationships: "
+        + "\n"
+        + "source: "
+        + source
+        + "\n"
+        + "target: "
+        + target
+        + "\n"
+        + "Parameters "
+        + parameters
+        + "\n";
+  }
 }

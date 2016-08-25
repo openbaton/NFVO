@@ -9,44 +9,49 @@ import java.util.Map;
  */
 public class VNFConfigurations {
 
-    private String name = "";
-    private ArrayList<HashMap<String, String>> configurationParameters = null;
+  private String name = "";
+  private ArrayList<HashMap<String, String>> configurationParameters = null;
 
-    public VNFConfigurations(Object config){
+  public VNFConfigurations(Object config) {
 
-        Map<String, Object> configMap = (Map<String, Object>) config;
+    Map<String, Object> configMap = (Map<String, Object>) config;
 
-        if(configMap.containsKey("name")){
-            this.name = (String) configMap.get("name");
-        }
-
-        if(configMap.containsKey("configurationParameters")){
-            this.configurationParameters =
-                    (ArrayList<HashMap<String, String>>) configMap.get("configurationParameters");
-        }
+    if (configMap.containsKey("name")) {
+      this.name = (String) configMap.get("name");
     }
 
-    public String getName() {
-        return name;
+    if (configMap.containsKey("configurationParameters")) {
+      this.configurationParameters =
+          (ArrayList<HashMap<String, String>>) configMap.get("configurationParameters");
     }
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public ArrayList<HashMap<String, String>> getConfigurationParameters() {
-        return configurationParameters;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setConfigurationParameters(ArrayList<HashMap<String, String>> configurationParameters) {
-        this.configurationParameters = configurationParameters;
-    }
+  public ArrayList<HashMap<String, String>> getConfigurationParameters() {
+    return configurationParameters;
+  }
 
-    @Override
-    public String toString() {
-        return "Configuration{" + "\n" +
-                "name='" + name + "\n" +
-                ", configurationParameters=" + configurationParameters +
-                '}';
-    }
+  public void setConfigurationParameters(
+      ArrayList<HashMap<String, String>> configurationParameters) {
+    this.configurationParameters = configurationParameters;
+  }
+
+  @Override
+  public String toString() {
+    return "Configuration{"
+        + "\n"
+        + "name='"
+        + name
+        + "\n"
+        + ", configurationParameters="
+        + configurationParameters
+        + '}';
+  }
 }

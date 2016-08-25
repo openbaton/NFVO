@@ -5,34 +5,31 @@ package org.openbaton.tosca.templates;
  */
 public class TOSCAMetadata {
 
-    private String ID;
-    private String vendor;
-    private String version;
+  private String ID;
+  private String vendor;
+  private String version;
 
+  public String getID() {
+    return ID;
+  }
 
-    public String getID() {
-        return ID;
-    }
+  public void setID(String ID) {
+    this.ID = ID;
+  }
 
-    public void setID(String ID) {
-        this.ID = ID;
-    }
+  public String getVendor() {
+    return vendor;
+  }
 
-    public String getVendor() {
-        return vendor;
-    }
+  public void setVendor(String vendor) {
+    this.vendor = vendor;
+  }
 
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-
+  public void setVersion(String version) {
+    this.version = version;
+  }
 }
