@@ -40,6 +40,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -71,9 +72,8 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
     return inMemManager.loadUserByUsername(username);
   }
 
-  @Override
-  public void run(String... args) throws Exception {
-
+  @PostConstruct
+  public void init() {
     log.debug("Creating initial Users...");
 
     User admin = userRepository.findFirstByUsername("admin");
@@ -146,6 +146,9 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
       log.debug("Created project: " + project);
     } else log.debug("One project is already existing");
   }
+
+  @Override
+  public void run(String... args) throws Exception {}
 
   @Override
   public void createUser(UserDetails user) {
