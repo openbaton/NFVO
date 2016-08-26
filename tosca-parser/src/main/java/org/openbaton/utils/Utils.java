@@ -16,6 +16,11 @@
 
 package org.openbaton.utils;
 
+import org.openbaton.tosca.templates.NSDTemplate;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
 import java.io.*;
 import java.net.URI;
 import java.util.Deque;
@@ -101,5 +106,17 @@ public final class Utils {
     } finally {
       out.close();
     }
+  }
+
+  public static NSDTemplate fileToNSDTemplate(String fileName) throws FileNotFoundException {
+
+    InputStream tosca = new FileInputStream(new File(fileName));
+    Constructor constructor = new Constructor(NSDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(tosca, NSDTemplate.class);
   }
 }

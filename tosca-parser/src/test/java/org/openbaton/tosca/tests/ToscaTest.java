@@ -31,8 +31,7 @@ public class ToscaTest {
   public void testVNFDTemplate() throws FileNotFoundException, NotSupportedType {
 
     InputStream vnfdFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testVNFDTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
 
     Constructor constructor = new Constructor(VNFDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(VNFDTemplate.class);
@@ -48,8 +47,7 @@ public class ToscaTest {
   public void testGetNodesFromVNFDTemplate() throws FileNotFoundException, NotSupportedType {
 
     InputStream vnfdFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testVNFDTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
 
     Constructor constructor = new Constructor(VNFDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(VNFDTemplate.class);
@@ -67,8 +65,7 @@ public class ToscaTest {
   public void testGettingVDUNodes() throws FileNotFoundException, NotSupportedType {
 
     InputStream cpFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testTopologyTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
 
     Constructor constructor = new Constructor(TopologyTemplate.class);
     TypeDescription typeDescription = new TypeDescription(TopologyTemplate.class);
@@ -88,8 +85,7 @@ public class ToscaTest {
   public void testGettingVLNodes() throws FileNotFoundException, NotSupportedType {
 
     InputStream cpFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testVNFDTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
 
     Constructor constructor = new Constructor(VNFDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(VNFDTemplate.class);
@@ -109,8 +105,7 @@ public class ToscaTest {
   public void testTopologyTemplate() throws NotSupportedType, FileNotFoundException {
 
     InputStream cpFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testTopologyTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
 
     Constructor constructor = new Constructor(TopologyTemplate.class);
     TypeDescription typeDescription = new TypeDescription(TopologyTemplate.class);
@@ -126,8 +121,7 @@ public class ToscaTest {
   public void testGettingCPNodes() throws NotSupportedType, FileNotFoundException {
 
     InputStream cpFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testTopologyTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
 
     Constructor constructor = new Constructor(TopologyTemplate.class);
     TypeDescription typeDescription = new TypeDescription(TopologyTemplate.class);
@@ -147,8 +141,7 @@ public class ToscaTest {
   public void testCreatingVNFDInstance() throws FileNotFoundException, NotSupportedType {
 
     InputStream vnfdFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/testVNFDTemplate.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
 
     Constructor constructor = new Constructor(VNFDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(VNFDTemplate.class);
@@ -169,8 +162,7 @@ public class ToscaTest {
   public void testVNFDServerIperf() throws FileNotFoundException, NotSupportedType {
 
     InputStream vnfdFile =
-        new FileInputStream(
-            new File("tosca-parser/src/main/resources/Testing/vnfd_server_iperf.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/vnfd_server_iperf.yaml"));
 
     Constructor constructor = new Constructor(VNFDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(VNFDTemplate.class);
@@ -190,7 +182,7 @@ public class ToscaTest {
   public void testNSDIperfTemplate() throws FileNotFoundException, NotSupportedType {
 
     InputStream nsdFile =
-        new FileInputStream(new File("tosca-parser/src/main/resources/Testing/testNSDIperf.yaml"));
+        new FileInputStream(new File("src/main/resources/Testing/testNSDIperf.yaml"));
 
     Constructor constructor = new Constructor(NSDTemplate.class);
     TypeDescription typeDescription = new TypeDescription(NSDTemplate.class);
