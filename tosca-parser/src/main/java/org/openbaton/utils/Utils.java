@@ -17,67 +17,17 @@
 package org.openbaton.utils;
 
 import org.openbaton.tosca.templates.NSDTemplate;
+import org.openbaton.tosca.templates.VNFDTemplate;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
-import java.net.URI;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by dbo on 31/01/16.
  */
 public final class Utils {
-  public static void addFileToFolder(String sourceFile, String targetDir) throws IOException {
-    File dir = new File(targetDir);
-    if (!dir.exists()) dir.mkdir();
-    try {
-      FileInputStream in = new FileInputStream(sourceFile);
-      FileOutputStream out = new FileOutputStream(targetDir + (new File(sourceFile)).getName());
-      byte[] buf = new byte[1024];
-      int i = 0;
-      while ((i = in.read(buf)) != -1) {
-        out.write(buf, 0, i);
-      }
-      in.close();
-      out.close();
-    } catch (IOException e) {
-      System.out.println("Error copying file");
-    }
-  }
-
-  public static void createTar(File directory, File zipfile) throws IOException {
-    URI base = directory.toURI();
-    Deque<File> queue = new LinkedList<File>();
-    queue.push(directory);
-    OutputStream out = new FileOutputStream(zipfile);
-    Closeable res = out;
-    try {
-      ZipOutputStream zout = new ZipOutputStream(out);
-      res = zout;
-      while (!queue.isEmpty()) {
-        directory = queue.pop();
-        for (File kid : directory.listFiles()) {
-          String name = base.relativize(kid.toURI()).getPath();
-          if (kid.isDirectory()) {
-            queue.push(kid);
-            name = name.endsWith("/") ? name : name + "/";
-            zout.putNextEntry(new ZipEntry(name));
-          } else {
-            zout.putNextEntry(new ZipEntry(name));
-            Utils.copy(kid, zout);
-            zout.closeEntry();
-          }
-        }
-      }
-    } finally {
-      res.close();
-    }
-  }
 
   public static void copy(InputStream in, OutputStream out) throws IOException {
     byte[] buffer = new byte[1024];
@@ -118,5 +68,17 @@ public final class Utils {
 
     Yaml yaml = new Yaml(constructor);
     return yaml.loadAs(tosca, NSDTemplate.class);
+  }
+
+  public static VNFDTemplate fileToVNFDTemplate(String fileName) throws FileNotFoundException {
+
+    InputStream tosca = new FileInputStream(new File(fileName));
+    Constructor constructor = new Constructor(VNFDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(tosca, VNFDTemplate.class);
   }
 }

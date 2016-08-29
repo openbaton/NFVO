@@ -1,27 +1,28 @@
 package org.openbaton.tosca.parser;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.tosca.Metadata.Metadata;
 import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.NSDTemplate;
+import org.openbaton.tosca.templates.VNFDTemplate;
 import org.openbaton.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,7 +72,7 @@ public class CSARParser {
     in.close();
   }
 
-  public List<String> getFileList(InputStream zipFile) throws Exception {
+  public Set<Script> getFileList(InputStream zipFile) throws Exception {
 
     ZipInputStream zipStream = new ZipInputStream(zipFile);
 
@@ -153,62 +154,140 @@ public class CSARParser {
     if (this.entryDefinitions == null || !fileList.contains(this.entryDefinitions))
       throw new FileNotFoundException("Error not found the file:" + this.entryDefinitions);
 
-    //TODO:
+    return scripts;
+  }
+
+  public void parseVNFCSAR(String vnfd_csar) throws Exception {
+
+    InputStream input = new FileInputStream(new File(vnfd_csar));
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    VNFDTemplate vnfdTemplate =
+        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+
+    createVNFPackage(vnfd, scripts);
+  }
+
+  public ByteArrayOutputStream parseNSDCSAR(String nsd_csar) throws Exception {
+
+    InputStream input = new FileInputStream(new File(nsd_csar));
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
     NSDTemplate nsdTemplate =
         Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-    System.out.println(craeteVNFPackages(nsd));
 
-    return fileList;
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      return createVNFPackage(vnfd, scripts);
+    }
+
+    return null;
   }
 
-  private Set<String> craeteVNFPackages(NetworkServiceDescriptor nsd) throws IOException {
-    this.vnfPackagesPaths = new HashSet<>();
+  public ByteArrayOutputStream parseNSDCSARFromByte(byte[] bytes) throws Exception {
+
+    File temp = File.createTempFile("CSAR", null);
+    FileOutputStream fos = new FileOutputStream(temp);
+    fos.write(bytes);
+    InputStream input = new FileInputStream(temp);
+
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    NSDTemplate nsdTemplate =
+        Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
+
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-
-      Metadata metadata = new Metadata();
-      metadata.setName(vnfd.getType());
-      Image image = metadata.getImage();
-      image.setUpload("false");
-
-      Set<VirtualDeploymentUnit> vdus = vnfd.getVdu();
-      for (VirtualDeploymentUnit vdu : vdus) {
-        for (String imageString : vdu.getVm_image())
-          if (!image.getNames().contains(imageString)) image.getNames().add(imageString);
-      }
-      metadata.setImage(image);
-
-      Constructor constructor = new Constructor(Metadata.class);
-      TypeDescription typeDescription = new TypeDescription(Metadata.class);
-      constructor.addTypeDescription(typeDescription);
-
-      Writer jsonWriter = new FileWriter(this.pathUnzipFiles + "/vndf.json");
-      Gson gson = new GsonBuilder().create();
-      gson.toJson(vnfd, jsonWriter);
-      jsonWriter.close();
-
-      Utils.addFileToFolder(this.pathUnzipFiles + "/vndf.json", vnfd.getName() + "/");
-      Yaml yaml = new Yaml(constructor);
-      Writer metadataFile = new FileWriter(this.pathUnzipFiles + "/Metadata.yaml");
-      yaml.dump(metadata, metadataFile);
-      metadataFile.close();
-      Utils.addFileToFolder(this.pathUnzipFiles + "/Metadata.yaml", vnfd.getName() + "/");
-
-      for (LifecycleEvent lifecycleEvents : vnfd.getLifecycle_event()) {
-
-        for (String event : lifecycleEvents.getLifecycle_events()) {
-          Utils.addFileToFolder(
-              this.pathUnzipFiles + "/Scripts/" + event, vnfd.getName() + "/scripts/");
-          System.out.println(this.pathUnzipFiles + "/" + event);
-        }
-      }
-
-      File directory = new File(vnfd.getName());
-      File tar = new File(vnfd.getName() + ".tar");
-      Utils.createTar(directory, tar);
-      //            log.debug(String.valueOf(this.vnfPackagesPaths));
-      this.vnfPackagesPaths.add(tar.getAbsolutePath());
+      return createVNFPackage(vnfd, scripts);
     }
-    return this.vnfPackagesPaths;
+
+    return null;
+  }
+
+  private void writeMetadata(Metadata metadata, ArchiveOutputStream my_tar_ball)
+      throws IOException {
+
+    File tar_input_file = File.createTempFile("Metadata", null);
+    Map<String, Object> data = new HashMap<>();
+
+    data.put("image", metadata.getImage().toHashMap());
+    data.put("image-config", metadata.getImage_config().toHashMap());
+    data.put("name", metadata.getName());
+    data.put("scripts_link", metadata.getScripts_link());
+
+    DumperOptions dumperOptions = new DumperOptions();
+    dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+    Yaml yaml = new Yaml(dumperOptions);
+
+    Writer metadataFile = new FileWriter(tar_input_file);
+    yaml.dump(data, metadataFile);
+    TarArchiveEntry tar_file = new TarArchiveEntry(tar_input_file, "Metadata.yaml");
+    tar_file.setSize(tar_input_file.length());
+    my_tar_ball.putArchiveEntry(tar_file);
+    IOUtils.copy(new FileInputStream(tar_input_file), my_tar_ball);
+
+    /* Close Archieve entry, write trailer information */
+    my_tar_ball.closeArchiveEntry();
+
+    metadataFile.close();
+  }
+
+  private ByteArrayOutputStream createVNFPackage(
+      VirtualNetworkFunctionDescriptor vnfd, Set<Script> scripts)
+      throws IOException, ArchiveException {
+
+    ByteArrayOutputStream tar_output = new ByteArrayOutputStream();
+    ArchiveOutputStream my_tar_ball =
+        new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, tar_output);
+
+    Metadata metadata = new Metadata(vnfd);
+    writeMetadata(metadata, my_tar_ball);
+
+    File tar_input_file = File.createTempFile("vnfd", null);
+    TarArchiveEntry tar_file = new TarArchiveEntry(tar_input_file, "vnfd.json");
+    Writer writer = new FileWriter(tar_input_file);
+    Gson gson = new Gson();
+    String vnfdJson = gson.toJson(vnfd);
+    writer.write(vnfdJson);
+    writer.close();
+    tar_file.setSize(tar_input_file.length());
+    my_tar_ball.putArchiveEntry(tar_file);
+    IOUtils.copy(new FileInputStream(tar_input_file), my_tar_ball);
+    /* Close Archieve entry, write trailer information */
+    my_tar_ball.closeArchiveEntry();
+
+    for (LifecycleEvent lifecycleEvents : vnfd.getLifecycle_event()) {
+
+      for (Script script : scripts) {
+
+        tar_input_file = File.createTempFile("script", null);
+        tar_file = new TarArchiveEntry(tar_input_file, "scripts/" + script.getName());
+        FileOutputStream outputStream = new FileOutputStream(tar_input_file);
+        outputStream.write(script.getPayload());
+        outputStream.close();
+        tar_file.setSize(tar_input_file.length());
+        my_tar_ball.putArchiveEntry(tar_file);
+        IOUtils.copy(new FileInputStream(tar_input_file), my_tar_ball);
+        my_tar_ball.closeArchiveEntry();
+      }
+    }
+
+    //close tar
+    my_tar_ball.finish();
+    /* Close output stream, our files are zipped */
+    tar_output.close();
+
+    //try(OutputStream outputStream = new FileOutputStream(vnfd.getName() + ".tar")){
+    //tar_output.writeTo(outputStream);
+    //};
+
+    return tar_output;
   }
 }
