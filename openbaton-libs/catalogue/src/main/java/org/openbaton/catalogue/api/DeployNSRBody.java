@@ -1,5 +1,6 @@
 package org.openbaton.catalogue.api;
 
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.security.Key;
 
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Map;
 public class DeployNSRBody {
   private Map<String, Collection<String>> vduVimInstances;
   private Collection<Key> keys;
+  private Map<String, Configuration> configurations;
 
   public Map<String, Collection<String>> getVduVimInstances() {
     return vduVimInstances;
@@ -18,6 +20,14 @@ public class DeployNSRBody {
 
   public void setVduVimInstances(Map<String, Collection<String>> vduVimInstances) {
     this.vduVimInstances = vduVimInstances;
+  }
+
+  public Map<String, Configuration> getConfigurations() {
+    return configurations;
+  }
+
+  public void setConfigurations(Map<String, Configuration> configurations) {
+    this.configurations = configurations;
   }
 
   public Collection<Key> getKeys() {
