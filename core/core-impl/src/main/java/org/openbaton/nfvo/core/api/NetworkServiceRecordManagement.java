@@ -72,12 +72,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
@@ -167,7 +162,11 @@ public class NetworkServiceRecordManagement
     }
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
-    body.setConfigurations(configurations);
+    if (configurations == null) {
+      body.setConfigurations(new HashMap());
+    } else {
+      body.setConfigurations(configurations);
+    }
     if (keys == null) {
       body.setKeys(null);
     } else {
@@ -198,7 +197,11 @@ public class NetworkServiceRecordManagement
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
-    body.setConfigurations(configurations);
+    if (configurations == null) {
+      body.setConfigurations(new HashMap());
+    } else {
+      body.setConfigurations(configurations);
+    }
     if (keys == null) {
       body.setKeys(null);
     } else {

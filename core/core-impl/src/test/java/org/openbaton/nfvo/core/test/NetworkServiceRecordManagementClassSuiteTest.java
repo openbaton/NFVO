@@ -271,7 +271,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    nsrManagement.onboard(nsd_exp, projectId, null, null);
+    nsrManagement.onboard(nsd_exp, projectId, null, null, null);
   }
 
   @Test
@@ -326,7 +326,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     /**
      * Real Method
      */
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null);
   }
 
   @Test
@@ -384,7 +384,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
 
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null);
   }
 
   @Test
