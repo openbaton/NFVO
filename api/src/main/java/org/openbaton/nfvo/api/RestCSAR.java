@@ -11,21 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by rvl on 29.08.16.
  */
 @RestController
-@RequestMapping("/api/v1/csar-nsd")
 public class RestCSAR {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
 
-  @RequestMapping(method = RequestMethod.POST)
+  @RequestMapping(value = "/api/v1/csar-nsd", method = RequestMethod.POST)
   @ResponseBody
-  public String onboard(
+  public String onboardNSD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
       throws Exception {
@@ -36,7 +36,37 @@ public class RestCSAR {
     if (!file.isEmpty()) {
       byte[] bytes = file.getBytes();
 
-      ByteArrayOutputStream byteArray = csarParser.parseNSDCSARFromByte(bytes);
+      ArrayList<ByteArrayOutputStream> byteArrayList = csarParser.parseNSDCSARFromByte(bytes);
+      String output = "";
+
+      for (ByteArrayOutputStream byteArray : byteArrayList) {
+        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+            vnfPackageManagement.onboard(byteArray.toByteArray(), projectId);
+        output +=
+            "{ \"id\": \""
+                + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
+                + "\"}"
+                + "\n";
+      }
+
+      return output;
+    } else throw new IOException("File is empty!");
+  }
+
+  @RequestMapping(value = "/api/v1/csar-vnfd", method = RequestMethod.POST)
+  @ResponseBody
+  public String onboardVNFD(
+      @RequestParam("file") MultipartFile file,
+      @RequestHeader(value = "project-id") String projectId)
+      throws Exception {
+
+    CSARParser csarParser = new CSARParser();
+
+    log.debug("Onboarding");
+    if (!file.isEmpty()) {
+      byte[] bytes = file.getBytes();
+
+      ByteArrayOutputStream byteArray = csarParser.parseVNFDCSARFromByte(bytes);
 
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
           vnfPackageManagement.onboard(byteArray.toByteArray(), projectId);

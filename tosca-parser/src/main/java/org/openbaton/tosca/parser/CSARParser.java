@@ -171,10 +171,29 @@ public class CSARParser {
     createVNFPackage(vnfd, scripts);
   }
 
-  public ByteArrayOutputStream parseNSDCSAR(String nsd_csar) throws Exception {
+  public ByteArrayOutputStream parseVNFDCSARFromByte(byte[] bytes) throws Exception {
+
+    File temp = File.createTempFile("CSAR", null);
+    FileOutputStream fos = new FileOutputStream(temp);
+    fos.write(bytes);
+    InputStream input = new FileInputStream(temp);
+
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    VNFDTemplate vnfdTemplate =
+        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+
+    return createVNFPackage(vnfd, scripts);
+  }
+
+  public ArrayList<ByteArrayOutputStream> parseNSDCSAR(String nsd_csar) throws Exception {
 
     InputStream input = new FileInputStream(new File(nsd_csar));
     Set<Script> scripts = getFileList(input);
+    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
 
     readMetaData();
 
@@ -183,15 +202,17 @@ public class CSARParser {
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      return createVNFPackage(vnfd, scripts);
+      vnfpList.add(createVNFPackage(vnfd, scripts));
     }
 
-    return null;
+    return vnfpList;
   }
 
-  public ByteArrayOutputStream parseNSDCSARFromByte(byte[] bytes) throws Exception {
+  public ArrayList<ByteArrayOutputStream> parseNSDCSARFromByte(byte[] bytes) throws Exception {
 
     File temp = File.createTempFile("CSAR", null);
+    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
+
     FileOutputStream fos = new FileOutputStream(temp);
     fos.write(bytes);
     InputStream input = new FileInputStream(temp);
@@ -205,10 +226,10 @@ public class CSARParser {
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      return createVNFPackage(vnfd, scripts);
+      vnfpList.add(createVNFPackage(vnfd, scripts));
     }
 
-    return null;
+    return vnfpList;
   }
 
   private void writeMetadata(Metadata metadata, ArchiveOutputStream my_tar_ball)
