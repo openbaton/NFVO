@@ -2,9 +2,6 @@ package org.openbaton.tosca.tests;
 
 import org.junit.Test;
 import org.openbaton.tosca.parser.CSARParser;
-import org.openbaton.utils.Utils;
-
-import java.io.FileNotFoundException;
 
 /**
  * Created by rvl on 26.08.16.
@@ -12,7 +9,7 @@ import java.io.FileNotFoundException;
 public class CSARTest {
 
   @Test
-  public void testFileList() throws Exception {
+  public void testNSD() throws Exception {
 
     CSARParser csarParser = new CSARParser();
 
@@ -20,9 +17,10 @@ public class CSARTest {
   }
 
   @Test
-  public void testFileToNSD() throws FileNotFoundException {
+  public void testVNFD() throws Exception {
 
-    System.out.println(
-        Utils.fileToNSDTemplate("src/main/resources/Testing/testNSDIperf.yaml").toString());
+    CSARParser csarParser = new CSARParser();
+
+    csarParser.parseVNFCSAR("src/main/resources/Testing/iperf-server.csar");
   }
 }

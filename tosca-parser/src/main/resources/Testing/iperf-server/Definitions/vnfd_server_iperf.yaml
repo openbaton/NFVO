@@ -1,0 +1,52 @@
+tosca_definitions_version: tosca_simple_profile_for_nfv_1_0
+description: Example of VNFD Template
+
+metadata:
+  ID: dummy-server
+  vendor: Fokus
+  version: 0.1
+
+inputs:
+  interfaces:
+    lifecycle:
+      INSTANTIATE :
+        - install.sh
+        - start-srv.sh
+
+  deploymentFlavour:
+    - flavour_key: m1.small
+  configurations:
+    name: server-configurations
+    configurationParameters:
+      - key: value
+      - key2: value2
+
+  vnfPackageLocation: https://github.com/openbaton/vnf-scripts.git
+  endpoint: dummy
+  type: server
+
+topology_template:
+
+  node_templates:
+
+    vdu1:
+      type: tosca.nodes.nfv.VDU
+      properties:
+        scale_in_out: 1
+        vim_instance_name:
+         - vim-instance
+      artifacts:
+        VDU1Image:
+          type: tosca.artifacts.Deployment.Image.VM
+          file: ubuntu-14.04-server-cloudimg-amd64-disk1
+
+    cp1:
+      type: tosca.nodes.nfv.CP
+      requirements:
+        virtualBinding: vdu1
+        virtualLink: private
+
+    private:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
