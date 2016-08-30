@@ -1,4 +1,4 @@
-angular.module('app').controller('vimInstanceCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore) {
+angular.module('app').controller('vimInstanceCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/datacenters/";
 
@@ -233,4 +233,3 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     }
 
 });
-

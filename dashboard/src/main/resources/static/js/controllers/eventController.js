@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
+app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
 
     var url = $cookieStore.get('URL') + "/api/v1/events/";
 
@@ -7,7 +7,7 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-
+  
     loadTable();
 
     $scope.eventObj = {
@@ -155,6 +155,3 @@ app.controller('EventCtrl', function ($scope, serviceAPI, $routeParams, http, $c
     }
 
 });
-
-
-

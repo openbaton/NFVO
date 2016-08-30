@@ -16,39 +16,73 @@
     </div>
 </div>
 <div class="row">
-    <h3>Vim instance Name: {{vimInstance.name}} <a href="" ng-click="refreshDc()"><i id="refreshIco"
-                                                                                     class="fa fa-refresh"></i>
-    </a></h3>
-    <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+
+
 
     <!--<h4><a href="#/vim-instances/{{vimInstance.id}}/networks" >Networks<i class=""></i></a></h4>-->
-    <dl class="dl-horizontal">
-        <span class="dl-horizontal" ng-repeat="(key,value) in vimInstance">
-            <span ng-if="key != 'location'  && key != 'flavours' && key != 'images' && key != 'networks' && key != 'password'">
-                <dt>{{key}}:</dt>
-                <dd>{{value}}</dd>
-            </span>
-            <span ng-if="key == 'location'">
-                <dt>{{key}}:</dt>
-                <dd>id: {{value.id}}</dd>
-                <dd>version: {{value.version}}</dd>
-                <dd>name: {{value.name}}</dd>
-            </span>
-            <span ng-if="key == 'password'">
-                 <dt>{{key}}:</dt>
-                <span ng-show="!showPass">
-                <dd>********* <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye" title="show password"> </i></a>
-                </dd>
-                </span>
-                <span ng-show="showPass">
-                    <dd>{{vimInstance.password}} <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye-slash"
-                                                                                             title="hide password"> </i></a>
-                    </dd>
-                </span>
-            </span>
+    <div class="col-lg-6">
+      <h3>Refresh status <a href="" ng-click="refreshDc()"><i id="refreshIco"
+                                                                                       class="fa fa-refresh"></i>
+      </a></h3>
+        <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+      <div class = "table-responsive">
+         <table
+                class="table table-bordered table-hover tablesorter"
+                id="nsdTabletable">
+                <tbody>
+                  <tr>
+                    <td>Name</td><td>{{vimInstance.name}}</td>
+                  </tr>
+                  <tr>
+                    <td>Authorisation URL</td><td>{{vimInstance.authUrl}}</td>
+                  </tr>
+                  <tr>
+                    <td>Tenant</td><td>{{vimInstance.tenant}}</td>
+                  </tr>
+                  <tr>
+                    <td>Username</td><td>{{vimInstance.username}}</td>
+                  </tr>
+                  <!--tr>
+                    <td>VIM Key Pair</td><td>{{vimInstance.keyPair}}</td>
+                  </tr-->
+                  <!--tr>
+                    <td>Password</td><td>  <span ng-show="!showPass">
+                      <dd>********* <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye" title="show password"> </i></a>
+                      </dd>
+                      </span>
+                      <span ng-show="showPass">
+                          <dd>{{vimInstance.password}} <a ng-click="showPass=!showPass" href=""><i class="fa fa-eye-slash"
+                                                                                                   title="hide password"> </i></a>
+                          </dd>
+                      </span>
+                    </td>
+                  </tr-->
+                  <tr>
+                    <td>ID</td><td>{{vimInstance.id}}</td>
+                  </tr>
+                  <tr>
+                    <td>Location ID</td><td>{{vimInstance.location.id}}</td>
+                  </tr>
+                  <tr>
+                    <td>Location version</td><td>{{vimInstance.location.version}}</td>
+                 </tr>
+                  <tr>
+                    <td>Location name</td><td>{{vimInstance.location.name}}</td>
+                  </tr>
+                  <tr>
+                    <td>Project ID</td><td>{{vimInstance.projectId}}</td>
+                  </tr>
+                  <tr>
+                    <td>Security Groups</td><td>{{vimInstance.securityGroups}}</td>
+                  </tr>
+                  <tr>
+                    <td>Version</td><td>{{vimInstance.version}}</td>
+                  </tr>
+                </tbody>
+        </table>
 
-        </span>
-    </dl>
+
+
 </div>
 <tabset>
 

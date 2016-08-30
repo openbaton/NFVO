@@ -19,9 +19,42 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
-
+        <div>
+        <div class="col-lg-6">
+          <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+          <br/>
+          <div class = "table-responsive">
+             <table
+                    class="table table-bordered table-hover tablesorter"
+                    id="packageTabletable">
+                    <tbody>
+                      <tr>
+                        <td>Name</td>
+                        <td>{{vnfpackage.name}}</td>
+                      </tr>
+                      <tr>
+                        <td>Project ID</td>
+                        <td>{{vnfpackage.projectId}}</td>
+                      </tr>
+                      <tr>
+                        <td>ID</td>
+                        <td>{{vnfpackage.id}}</td>
+                      </tr>
+                      <tr>
+                        <td>Version</td>
+                        <td>{{vnfpackage.version}}</td>
+                      </tr>
+                      <tr>
+                        <td>Scripts link</td>
+                        <td>{{vnfpackage.scriptsLink}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+          </div>
+        </div>
         <div class="col-lg-12" ng-show="vnfpackage">
-            <h3>VNF Package name: {{vnfpackage.name}}</h3>
+            <!--h3>VNF Package name: {{vnfpackage.name}}</h3>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
 
             <dl class="dl-horizontal">
@@ -39,13 +72,13 @@
                     </div>
                 </span>
 
-            </dl>
+            </dl-->
 
 
         </div>
-        <tabset>
-            <tab heading="Scripts">
-                <div ng-if="vnfpackage.scripts.length>0">
+        <tabset ng-if="vnfpackage.scripts.length > 0">
+            <tab heading="Scripts" ng-if="vnfpackage.scripts.length > 0">
+                <div ng-if="vnfpackage.scripts.length > 0">
                     <h4>Scripts</h4>
                     <table
                             class="table table-bordered table-striped table-hover tablesorter"
@@ -141,4 +174,3 @@
         </div>
     </div>
 </div>
-

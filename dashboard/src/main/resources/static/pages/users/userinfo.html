@@ -21,28 +21,56 @@
         </alert>
 
         <div class="col-lg-12" ng-show="user">
-            <h3>Username: {{user.username}}</h3>
-            <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+          <div class="col-lg-7">
+          <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+            <div class = "table-responsive">
+               <table
+                      class="table table-bordered table-hover tablesorter"
+                      id="nsrTabletable">
+                      <tbody>
+                        <tr>
+                          <td>Name</td>
+                          <td>{{user.username}}</td>
+                        </tr>
+                        <tr>
+                          <td>Enabled</td>
+                          <td>{{user.enabled}}</td>
+                        </tr>
+                        <tr>
+                          <td>ID</td>
+                          <td>{{user.id}}</td>
+                        </tr>
+                      </tbody>
+                </table>
+              </div>
+           </div>
+          <div class="col-lg-12">
+            <tabset>
+              <tab heading="Roles">
+                <div class="table-responsive">
+                  <table
+                          class="table table-bordered table-striped table-hover tablesorter"
+                          id="rolesTabletable">
+                          <thead>
+                          <tr>
+                              <th>Project</th>
+                              <th>Role</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="role in user.roles">
+                            <td>{{role.project}}</td>
+                            <td>{{role.role}}</td>
+                            </tr>
+                          </tbody>
 
-            <dl class="dl-horizontal">
-        <span class="dl-horizontal" ng-repeat="(key,value) in user" ng-if="key !== 'scripts'">
+                  </table>
+                </div>
+              </tab>
+            </tabset>
+          </div>
 
-                    <div ng-if="key !== 'roles'">
-                        <dt>{{key}}:</dt>
-                        <dd>{{value}}</dd>
-                    </div>
-                    <div ng-if="key === 'roles'">
-                        <dt>roles:</dt>
-                        <dd><span ng-repeat="role in value">
-                            <b>id</b>: {{role.id}},
-                            <b>project</b>: {{role.project}},
-                            <b>role</b>: {{role.role}}
-                            <span ng-if="!$last">; </span>
-                            </span></dd>
-                    </div>
-                </span>
 
-            </dl>
         </div>
     </div>
 </div>
@@ -66,4 +94,3 @@
         </div>
     </div>
 </div>
-

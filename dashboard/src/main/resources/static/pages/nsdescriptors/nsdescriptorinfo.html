@@ -23,8 +23,39 @@
         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
             <div ng-bind-html="alert.msg"></div>
         </alert>
+        <div>
+        <div class="col-lg-6">
+          <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+          <br/>
+          <a href="#nsrecords/{{nsdinfo.id}}/graph">Show Graph</a>
+          <div class = "table-responsive">
+             <table
+                    class="table table-bordered table-hover tablesorter"
+                    id="nsdTabletable">
+                    <tbody>
+                      <tr>
+                        <td>Name</td>
+                        <td>{{nsdinfo.name}}</td>
+                      </tr>
+                      <tr>
+                        <td>Vendor</td>
+                        <td>{{nsdinfo.vendor}}</td>
+                      </tr>
+                      <tr>
+                        <td>Version</td>
+                        <td>{{nsdinfo.version}}</td>
+                      </tr>
+                      <tr>
+                        <td>Enabled</td>
+                        <td>{{nsdinfo.enabled}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+          </div>
+        </div>
         <div class="col-lg-12">
-            <h2>NSD name: {{nsdinfo.name}}</h2>
+            <!--h2>NSD name: {{nsdinfo.name}}</h2>
             <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
             <br/>
             <a href="#nsdescriptors/{{nsdinfo.id}}/graph">Show Graph</a>
@@ -37,7 +68,7 @@
                 <dd>{{nsdinfo.version}}</dd>
                 <dt>Enabled:</dt>
                 <dd>{{nsdinfo.enabled}}</dd>
-            </dl>
+            </dl-->
             <!--<dt>Service Deployment Flavor:</dt>
             <dd ng-repeat="sdf in nsdinfo.service_deployment_flavour">
                 <spam ng-repeat="(k,v) in sdf"><b>{{k}}</b>: {{v}}
@@ -46,8 +77,6 @@
             </dd>
 -->
 
-            <br/>
-            <br/>
             <tabset>
                 <tab heading="VNF Descriptors" ng-if="nsdinfo.vnfd.length > 0">
                     <div class="table-responsive">
