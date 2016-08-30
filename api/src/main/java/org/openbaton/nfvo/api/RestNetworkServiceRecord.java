@@ -19,6 +19,7 @@ package org.openbaton.nfvo.api;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import com.google.gson.reflect.TypeToken;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -27,6 +28,7 @@ import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -54,12 +56,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.validation.Valid;
@@ -100,14 +99,20 @@ public class RestNetworkServiceRecord {
         networkServiceDescriptor,
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class));
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
+        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class));
   }
 
   /**
    * @param id
    * @param projectId
-   * @param jsonObject the body json is: { "vduVimInstances":{ "vduName":["viminstancename"],
-   * "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"] }
+   * @param jsonObject the body json is: { "vduVimInstances":{ "vduName1":["viminstancename"],
+   * "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
+   * "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1", "value":"value1",
+   * "description":"description1"}, {"confKey":"key2", "value":"value2",
+   * "description":"description2"}]}, "vnfrName2":{"name":"conf2",
+   * "configurationParameters":[{"confKey":"key1", "value":"value1", "description":"description1"},
+   * {"confKey":"key2", "value":"value2", "description":"description2"}]} } }
    * @return
    * @throws InterruptedException
    * @throws ExecutionException
@@ -134,11 +139,13 @@ public class RestNetworkServiceRecord {
           MissingParameterException {
 
     log.debug("Json Body is" + jsonObject);
+    Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
     return networkServiceRecordManagement.onboard(
         id,
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class));
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
+        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
   }
 
   /**
