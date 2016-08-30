@@ -1,6 +1,9 @@
 package org.openbaton.nfvo.api;
 
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.tosca.parser.CSARParser;
 import org.slf4j.Logger;
@@ -11,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by rvl on 29.08.16.
@@ -22,34 +24,23 @@ public class RestCSAR {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
+  @Autowired private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
+  @Autowired private CSARParser csarParser;
 
   @RequestMapping(value = "/api/v1/csar-nsd", method = RequestMethod.POST)
   @ResponseBody
-  public String onboardNSD(
+  public NetworkServiceDescriptor onboardNSD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
-      throws Exception {
-
-    CSARParser csarParser = new CSARParser();
+      throws Exception, BadFormatException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
       byte[] bytes = file.getBytes();
 
-      ArrayList<ByteArrayOutputStream> byteArrayList = csarParser.parseNSDCSARFromByte(bytes);
-      String output = "";
+      NetworkServiceDescriptor nsd = csarParser.parseNSDCSARFromByte(bytes, projectId);
 
-      for (ByteArrayOutputStream byteArray : byteArrayList) {
-        VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-            vnfPackageManagement.onboard(byteArray.toByteArray(), projectId);
-        output +=
-            "{ \"id\": \""
-                + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
-                + "\"}"
-                + "\n";
-      }
-
-      return output;
+      return networkServiceDescriptorManagement.onboard(nsd, projectId);
     } else throw new IOException("File is empty!");
   }
 
@@ -59,8 +50,6 @@ public class RestCSAR {
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
       throws Exception {
-
-    CSARParser csarParser = new CSARParser();
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
