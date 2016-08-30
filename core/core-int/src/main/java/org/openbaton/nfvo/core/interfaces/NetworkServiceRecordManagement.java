@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -44,7 +45,8 @@ public interface NetworkServiceRecordManagement {
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.
    */
-  NetworkServiceRecord onboard(String nsd_id, String projectId, List keys, Map vduVimInstances)
+  NetworkServiceRecord onboard(
+      String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException;
@@ -57,7 +59,8 @@ public interface NetworkServiceRecordManagement {
       NetworkServiceDescriptor networkServiceDescriptor,
       String projectId,
       List keys,
-      Map vduVimInstances)
+      Map vduVimInstances,
+      Map configurations)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException;

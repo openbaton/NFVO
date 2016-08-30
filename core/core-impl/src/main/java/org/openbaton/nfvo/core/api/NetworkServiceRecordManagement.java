@@ -31,14 +31,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
@@ -159,7 +152,7 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      String idNsd, String projectID, List keys, Map vduVimInstances)
+      String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException {
@@ -174,6 +167,7 @@ public class NetworkServiceRecordManagement
     }
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
+    body.setConfigurations(configurations);
     if (keys == null) {
       body.setKeys(null);
     } else {
@@ -195,7 +189,8 @@ public class NetworkServiceRecordManagement
       NetworkServiceDescriptor networkServiceDescriptor,
       String projectId,
       List keys,
-      Map vduVimInstances)
+      Map vduVimInstances,
+      Map configurations)
       throws ExecutionException, InterruptedException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException {
@@ -203,6 +198,7 @@ public class NetworkServiceRecordManagement
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
+    body.setConfigurations(configurations);
     if (keys == null) {
       body.setKeys(null);
     } else {
@@ -814,32 +810,38 @@ public class NetworkServiceRecordManagement
     networkServiceRecord.setProjectId(projectID);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     log.debug(
-        "Persited NSR "
+        "Persisted NSR "
             + networkServiceRecord.getName()
             + ". Got id: "
             + networkServiceRecord.getId());
 
-    /**
-     * now check for the requires pointing to the nfvo
-     */
-    //TODO check where to put this
-    if (networkServiceRecord.getVnfr() != null) {
-      for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
-          networkServiceRecord.getVnfr()) {
-        for (ConfigurationParameter configurationParameter :
-            virtualNetworkFunctionRecord.getRequires().getConfigurationParameters()) {
-          log.debug("Checking parameter: " + configurationParameter.getConfKey());
-          if (configurationParameter
-              .getConfKey()
-              .startsWith("nfvo:")) { //the parameters known from the nfvo
-            String[] params = configurationParameter.getConfKey().split(":");
-            for (ConfigurationParameter configurationParameterSystem :
-                configurationManagement.queryByName("system").getConfigurationParameters()) {
-              if (configurationParameterSystem.getConfKey().equals(params[1])) {
-                log.debug("Found parameter: " + configurationParameterSystem);
-                configurationParameter.setValue(configurationParameterSystem.getValue());
+    if (networkServiceDescriptor.getVnfd() != null) {
+      for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+          networkServiceDescriptor.getVnfd()) {
+        for (String vnfrName : body.getConfigurations().keySet()) {
+          if (virtualNetworkFunctionDescriptor.getName() != null) {
+            if (virtualNetworkFunctionDescriptor.getName().equals(vnfrName)) {
+              if (virtualNetworkFunctionDescriptor.getConfigurations() != null) {
+                if (body.getConfigurations().get(vnfrName).getName() != null
+                    && !body.getConfigurations().get(vnfrName).getName().isEmpty()) {
+                  virtualNetworkFunctionDescriptor
+                      .getConfigurations()
+                      .setName(body.getConfigurations().get(vnfrName).getName());
+                }
+                virtualNetworkFunctionDescriptor
+                    .getConfigurations()
+                    .getConfigurationParameters()
+                    .addAll(body.getConfigurations().get(vnfrName).getConfigurationParameters());
+              } else {
+                virtualNetworkFunctionDescriptor.setConfigurations(
+                    body.getConfigurations().get(vnfrName));
               }
             }
+          } else {
+            log.warn(
+                "Not found name for VNFD "
+                    + virtualNetworkFunctionDescriptor.getId()
+                    + ". Cannot set configuration parameters");
           }
         }
       }
