@@ -11,6 +11,7 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.tosca.Metadata.Metadata;
 import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.NSDTemplate;
@@ -18,6 +19,8 @@ import org.openbaton.tosca.templates.VNFDTemplate;
 import org.openbaton.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -29,7 +32,10 @@ import java.util.zip.ZipInputStream;
 /**
  * Created by rvl on 26.08.16.
  */
+@Service
 public class CSARParser {
+
+  @Autowired private VNFPackageManagement vnfPackageManagement;
 
   private String pathUnzipFiles = "/tmp/files";
   private Set<String> vnfPackagesPaths;
@@ -208,7 +214,8 @@ public class CSARParser {
     return vnfpList;
   }
 
-  public ArrayList<ByteArrayOutputStream> parseNSDCSARFromByte(byte[] bytes) throws Exception {
+  public NetworkServiceDescriptor parseNSDCSARFromByte(byte[] bytes, String projectId)
+      throws Exception {
 
     File temp = File.createTempFile("CSAR", null);
     ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
@@ -229,7 +236,13 @@ public class CSARParser {
       vnfpList.add(createVNFPackage(vnfd, scripts));
     }
 
-    return vnfpList;
+    nsd.getVnfd().clear();
+
+    for (ByteArrayOutputStream byteArray : vnfpList) {
+      nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
+    }
+
+    return nsd;
   }
 
   private void writeMetadata(Metadata metadata, ArchiveOutputStream my_tar_ball)
