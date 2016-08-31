@@ -2,6 +2,8 @@ package org.openbaton.tosca.Metadata;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
+import java.util.ArrayList;
+
 /**
  * Created by rvl on 26.08.16.
  */
@@ -11,16 +13,16 @@ public class Metadata {
   private Image image;
   private ImageConfig image_config;
 
-  public Metadata(VirtualNetworkFunctionDescriptor vnfd) {
+  public Metadata(VirtualNetworkFunctionDescriptor vnfd, ArrayList<String> image_names) {
 
-    Image image = new Image(vnfd);
+    Image image = new Image(vnfd, image_names);
     ImageConfig image_config = new ImageConfig();
 
     this.setName(vnfd.getName());
     this.setScripts_link(vnfd.getVnfPackageLocation());
 
     this.setImage(image);
-    this.setImage_config(image_config);
+    //this.setImage_config(image_config);
   }
 
   public String getName() {

@@ -91,5 +91,4 @@ public class VDUNodeTemplate {
         + properties
         + "\n";
   }
-
 }

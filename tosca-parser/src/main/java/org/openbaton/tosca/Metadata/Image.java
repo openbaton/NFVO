@@ -16,7 +16,7 @@ public class Image {
   private ArrayList<String> names = new ArrayList<>();
   private String link;
 
-  public Image(VirtualNetworkFunctionDescriptor vnfd) {
+  public Image(VirtualNetworkFunctionDescriptor vnfd, ArrayList<String> image_names) {
     this.setUpload("false");
 
     Set<VirtualDeploymentUnit> vdus = vnfd.getVdu();
@@ -26,7 +26,10 @@ public class Image {
         if (!this.getNames().contains(imageString)) this.getNames().add(imageString);
     }
 
-    link = "http://releases.ubuntu.com/14.04/ubuntu-14.04.4-desktop-amd64.iso";
+    for(String name : image_names){
+      names.add(name);
+    }
+    //link = "http://releases.ubuntu.com/14.04/ubuntu-14.04.4-desktop-amd64.iso";
   }
 
   public String getLink() {

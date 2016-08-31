@@ -12,12 +12,14 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFConfiguration
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
  * Created by rvl on 17.08.16.
  */
+@Service
 public class TOSCAParser {
 
   public TOSCAParser() {}
@@ -70,7 +72,7 @@ public class TOSCAParser {
     Set<VNFDConnectionPoint> connectionPoints = new HashSet<>();
 
     for (CPNodeTemplate cp : cps) {
-      if (cp.getRequirements().getVirtualBinding().equals(vduTemplate.getName())) {
+      if (cp.getRequirements().getVirtualBinding().contains(vduTemplate.getName())) {
 
         connectionPoints.add(parseCPTemplate(cp));
       }

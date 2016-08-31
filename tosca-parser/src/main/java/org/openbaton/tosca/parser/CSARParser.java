@@ -43,6 +43,7 @@ public class CSARParser {
   private String author = null;
   private String version = null;
   private String entryDefinitions = null;
+  private ArrayList<String> image_names = new ArrayList<>();
 
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
@@ -65,6 +66,9 @@ public class CSARParser {
     String entryDefinition = "Entry-Definitions:";
     String author = "Created-By:";
     String version = "CSAR-Version:";
+    String image = "image:";
+
+    image_names.clear();
 
     while ((strLine = br.readLine()) != null) {
 
@@ -76,6 +80,11 @@ public class CSARParser {
       if (strLine.contains(entryDefinition)) {
         this.entryDefinitions =
             strLine.substring(entryDefinition.length(), strLine.length()).trim();
+      }
+
+      if (strLine.contains(image)) {
+        this.image_names.add(
+                strLine.substring(image.length(), strLine.length()).trim());
       }
     }
 
@@ -165,15 +174,15 @@ public class CSARParser {
   }
 
   private void writeMetadata(Metadata metadata, ArchiveOutputStream my_tar_ball)
-          throws IOException {
+      throws IOException {
 
     File tar_input_file = File.createTempFile("Metadata", null);
     Map<String, Object> data = new HashMap<>();
 
     data.put("image", metadata.getImage().toHashMap());
-    data.put("image-config", metadata.getImage_config().toHashMap());
+    //data.put("image-config", metadata.getImage_config().toHashMap());
     data.put("name", metadata.getName());
-    data.put("scripts_link", metadata.getScripts_link());
+    //data.put("scripts_link", metadata.getScripts_link());
 
     DumperOptions dumperOptions = new DumperOptions();
     dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -193,14 +202,14 @@ public class CSARParser {
   }
 
   private ByteArrayOutputStream createVNFPackage(
-          VirtualNetworkFunctionDescriptor vnfd, Set<Script> scripts)
-          throws IOException, ArchiveException {
+      VirtualNetworkFunctionDescriptor vnfd, Set<Script> scripts)
+      throws IOException, ArchiveException {
 
     ByteArrayOutputStream tar_output = new ByteArrayOutputStream();
     ArchiveOutputStream my_tar_ball =
-            new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, tar_output);
+        new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, tar_output);
 
-    Metadata metadata = new Metadata(vnfd);
+    Metadata metadata = new Metadata(vnfd, this.image_names);
     writeMetadata(metadata, my_tar_ball);
 
     File tar_input_file = File.createTempFile("vnfd", null);
@@ -237,9 +246,10 @@ public class CSARParser {
     /* Close output stream, our files are zipped */
     tar_output.close();
 
-    //try(OutputStream outputStream = new FileOutputStream(vnfd.getName() + ".tar")){
-    //tar_output.writeTo(outputStream);
-    //};
+    try (OutputStream outputStream = new FileOutputStream(vnfd.getName() + ".tar")) {
+      tar_output.writeTo(outputStream);
+    }
+    ;
 
     return tar_output;
   }
@@ -284,7 +294,7 @@ public class CSARParser {
   }
 
   public VirtualNetworkFunctionDescriptor parseVNFDCSARFromByte(byte[] bytes, String projectId)
-          throws Exception {
+      throws Exception {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
@@ -296,14 +306,13 @@ public class CSARParser {
     readMetaData();
 
     VNFDTemplate vnfdTemplate =
-            Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
     VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
 
     ByteArrayOutputStream byteArray = createVNFPackage(vnfd, scripts);
 
     return vnfPackageManagement.onboard(byteArray.toByteArray(), projectId);
   }
-
 
   public NetworkServiceDescriptor parseNSDCSARFromByte(byte[] bytes, String projectId)
       throws Exception {

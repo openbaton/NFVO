@@ -19,7 +19,7 @@ public class VNFProperties {
   private String type = null;
   private VNFInterfaces interfaces = null;
 
-  public VNFProperties(){}
+  public VNFProperties() {}
 
   public VNFProperties(Object properties) {
 
@@ -173,5 +173,4 @@ public class VNFProperties {
         + deploymentFlavour
         + "\n";
   }
-
 }

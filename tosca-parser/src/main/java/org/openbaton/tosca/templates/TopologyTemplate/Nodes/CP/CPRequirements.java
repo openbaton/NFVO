@@ -14,7 +14,7 @@ public class CPRequirements {
   public CPRequirements(Object reqs) {
 
     ArrayList<LinkedHashMap<String, String>> resMap =
-            (ArrayList<LinkedHashMap<String, String>>) reqs;
+        (ArrayList<LinkedHashMap<String, String>>) reqs;
 
     for (LinkedHashMap<String, String> pair : resMap) {
 
@@ -22,8 +22,8 @@ public class CPRequirements {
         virtualLink.add(pair.get("virtualLink").toString());
       }
 
-      if (pair.keySet().toArray()[0].equals("vdu")) {
-        virtualBinding.add(pair.get("vdu").toString());
+      if (pair.keySet().toArray()[0].equals("virtualBinding")) {
+        virtualBinding.add(pair.get("virtualBinding").toString());
       }
     }
   }

@@ -12,7 +12,7 @@ public class VNFConfigurations {
   private String name = "";
   private ArrayList<HashMap<String, String>> configurationParameters = null;
 
-  public VNFConfigurations(){}
+  public VNFConfigurations() {}
 
   public VNFConfigurations(Object config) {
 
