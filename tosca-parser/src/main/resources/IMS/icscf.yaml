@@ -1,0 +1,57 @@
+tosca_definitions_version: tosca_simple_profile_for_nfv_1_0
+description: fhoss Template part of IMSCore
+
+metadata:
+  ID: icscf
+  vendor: fokus
+  version: 0.1
+
+inputs:
+  interfaces:
+    lifecycle:
+      INSTANTIATE:
+        - icscf_install.sh
+      START:
+        - "icscf_generate_config.sh"
+        - "icscf_start.sh"
+      CONFIGURE:
+        - "bind9_relation_joined.sh"
+        - "fhoss_relation_joined.sh"
+        - "scscf_relation_joined.sh"
+
+  deploymentFlavour:
+    - flavour_key: m1.small
+  configurations:
+    name: client-configuration
+    configurationParameters:
+      - diameter_p: "3868"
+      - name: icscf
+      - port: "5060"
+
+  endpoint: generic
+  type: icscf
+
+topology_template:
+
+  node_templates:
+
+    vdu1:
+      type: tosca.nodes.nfv.VDU
+      properties:
+        scale_in_out: 1
+        vim_instance_name:
+         - vim-instance
+
+    cp1:
+      type: tosca.nodes.nfv.CP
+      requirements:
+        - virtualBinding: vdu1
+        - virtualLink: mgmt
+      properties:
+        floatingIP: random
+
+    mgmt:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+

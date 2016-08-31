@@ -1,0 +1,58 @@
+tosca_definitions_version: tosca_simple_profile_for_nfv_1_0
+description: bind9 Template part of IMSCore
+
+metadata:
+  ID: bind9
+  vendor: fokus
+  version: 0.1
+
+inputs:
+  interfaces:
+    lifecycle:
+      INSTANTIATE:
+        - bind9_install.sh
+      START:
+        - generate_zone_file.sh
+        - bind9_restart.sh
+      CONFIGURE:
+        - fhoss_relation_joined.sh
+        - icscf_relation_joined.sh
+        - scscf_relation_joined.sh
+        - pcscf_relation_joined.sh
+        - mmechess_relation_joined.sh
+
+  deploymentFlavour:
+    - flavour_key: m1.small
+  configurations:
+    name: client-configuration
+    configurationParameters:
+      - realm: epc.mnc001.mcc001.3gppnetwork.org
+      - useFloatingIpsForEntries: "true"
+
+  endpoint: generic
+  type: bind9
+
+topology_template:
+
+  node_templates:
+
+    vdu1:
+      type: tosca.nodes.nfv.VDU
+      properties:
+        scale_in_out: 1
+        vim_instance_name:
+         - vim-instance
+
+    cp1:
+      type: tosca.nodes.nfv.CP
+      requirements:
+        - virtualBinding: "vdu1"
+        - virtualLink: mgmt
+      properties:
+        floatingIP: random
+
+    mgmt:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+
