@@ -8,12 +8,10 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.VirtualNetworkFunctionManagement;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.VNFDTemplate;
+import org.openbaton.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * Created by rvl on 26.08.16.
@@ -23,6 +21,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 public class RestToscaVirtualNetworkFunctionDescriptor {
 
   @Autowired private VirtualNetworkFunctionManagement vnfdManagement;
+  @Autowired private TOSCAParser toscaParser;
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.ACCEPTED)
@@ -31,15 +30,7 @@ public class RestToscaVirtualNetworkFunctionDescriptor {
       throws NetworkServiceIntegrityException, BadFormatException, NotFoundException,
           CyclicDependenciesException {
 
-    Constructor constructor = new Constructor(VNFDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    VNFDTemplate vnfdTemplate = yaml.loadAs(vnfd_yaml, VNFDTemplate.class);
-
-    TOSCAParser toscaParser = new TOSCAParser();
+    VNFDTemplate vnfdTemplate = Utils.stringToVNFDTemplate(vnfd_yaml);
     VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
 
     return vnfdManagement.add(vnfd, projectId);

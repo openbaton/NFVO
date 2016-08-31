@@ -36,8 +36,6 @@ public class VNFInterfaces {
           case "start":
             lifecycleEvent.setEvent(Event.START);
             break;
-            //TODO: EDIT LIKE IN THE PREVIOUS VERSION
-            // ADD PARAMETERS
           case "configure":
             lifecycleEvent.setEvent(Event.CONFIGURE);
             break;

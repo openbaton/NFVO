@@ -9,14 +9,17 @@ import java.util.*;
  */
 public class VNFProperties {
 
-  private String vendor;
-  private String ID;
-  private double version;
+  private String vendor = null;
+  private String ID = null;
+  private double version = 0.0;
   private String vnfPackageLocation;
   private ArrayList<HashMap<String, String>> deploymentFlavour;
   private VNFConfigurations configurations = null;
   private String endpoint = null;
   private String type = null;
+  private VNFInterfaces interfaces = null;
+
+  public VNFProperties(){}
 
   public VNFProperties(Object properties) {
 
@@ -133,6 +136,22 @@ public class VNFProperties {
     this.endpoint = endpoint;
   }
 
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public VNFInterfaces getInterfaces() {
+    return interfaces;
+  }
+
+  public void setInterfaces(VNFInterfaces interfaces) {
+    this.interfaces = interfaces;
+  }
+
   @Override
   public String toString() {
 
@@ -155,11 +174,4 @@ public class VNFProperties {
         + "\n";
   }
 
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
 }

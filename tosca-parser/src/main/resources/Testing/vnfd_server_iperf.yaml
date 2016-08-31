@@ -43,8 +43,8 @@ topology_template:
     cp1:
       type: tosca.nodes.nfv.CP
       requirements:
-        virtualBinding: vdu1
-        virtualLink: private
+        - virtualBinding: vdu1
+        - virtualLink: private
 
     private:
       type: tosca.nodes.nfv.VL

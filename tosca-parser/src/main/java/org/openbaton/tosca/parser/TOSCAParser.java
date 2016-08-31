@@ -22,6 +22,12 @@ public class TOSCAParser {
 
   public TOSCAParser() {}
 
+  /*
+   *
+   * HELPER FUNCTIONS - PARSING THE TOPOLOGY TEMPLATE
+   *
+   */
+
   private InternalVirtualLink parseVL(VLNodeTemplate vlNodeTemplate) {
 
     InternalVirtualLink vl = new InternalVirtualLink();
@@ -35,7 +41,7 @@ public class TOSCAParser {
 
     VNFDConnectionPoint cp = new VNFDConnectionPoint();
 
-    cp.setVirtual_link_reference(cpTemplate.getRequirements().getVirtualLink());
+    cp.setVirtual_link_reference(cpTemplate.getRequirements().getVirtualLink().get(0));
 
     if (cpTemplate.getProperties() != null) {
       if (cpTemplate.getProperties().getFloatingIP() != null) {
@@ -163,6 +169,12 @@ public class TOSCAParser {
     return vnfd;
   }
 
+  /*
+   *
+   * MAIN FUNCTIONS
+   *
+   */
+
   public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate vnfdTemplate) {
 
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
@@ -202,8 +214,7 @@ public class TOSCAParser {
     //ADD CONFIGURATIONS
     if (vnfdTemplate.getInputs().getConfigurations() != null) {
 
-      VNFConfigurations configurations =
-          new VNFConfigurations(vnfdTemplate.getInputs().getConfigurations());
+      VNFConfigurations configurations = vnfdTemplate.getInputs().getConfigurations();
 
       Configuration configuration = new Configuration();
       configuration.setName(configurations.getName());

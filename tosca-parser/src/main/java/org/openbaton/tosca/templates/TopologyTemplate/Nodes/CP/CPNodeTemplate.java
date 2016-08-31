@@ -11,9 +11,6 @@ public class CPNodeTemplate {
   private String type = null;
   private CPProperties properties = null;
   private CPRequirements requirements = null;
-  private CPAttributes attributes = null;
-
-  public CPNodeTemplate() {}
 
   public CPNodeTemplate(NodeTemplate nodeTemplate, String name) {
     this.type = nodeTemplate.getType();
@@ -21,9 +18,7 @@ public class CPNodeTemplate {
     if (nodeTemplate.getProperties() != null) {
       this.properties = new CPProperties(nodeTemplate.getProperties());
     }
-    if (nodeTemplate.getAttributes() != null) {
-      this.attributes = new CPAttributes(nodeTemplate.getAttributes());
-    }
+
     if (nodeTemplate.getRequirements() != null) {
       this.requirements = new CPRequirements(nodeTemplate.getRequirements());
     }
@@ -35,14 +30,6 @@ public class CPNodeTemplate {
 
   public void setProperties(CPProperties properties) {
     this.properties = properties;
-  }
-
-  public CPAttributes getAttributes() {
-    return attributes;
-  }
-
-  public void setAttributes(CPAttributes attributes) {
-    this.attributes = attributes;
   }
 
   public CPRequirements getRequirements() {
@@ -82,9 +69,6 @@ public class CPNodeTemplate {
         + properties
         + "\n"
         + "Requirements: "
-        + requirements
-        + "\n"
-        + "Attributes: "
-        + attributes;
+        + requirements;
   }
 }
