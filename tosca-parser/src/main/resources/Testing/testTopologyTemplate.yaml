@@ -14,8 +14,8 @@ node_templates:
         type: hhuh
         anti_spoof_protection: false
     requirements:
-      virtualLink: InternalNetwork
-      virtualBinding: VDU1
+      - virtualLink: InternalNetwork
+      - virtualBinding: VDU1
 
   CP13:
       type: tosca.nodes.nfv.CP
@@ -23,8 +23,8 @@ node_templates:
           type: hhuh
           anti_spoof_protection: false
       requirements:
-        virtualLink: InternalNetwork
-        virtualBinding: VDU1
+        - virtualLink: InternalNetwork
+        - virtualBinding: VDU1
       attributes:
             address: smtn
 

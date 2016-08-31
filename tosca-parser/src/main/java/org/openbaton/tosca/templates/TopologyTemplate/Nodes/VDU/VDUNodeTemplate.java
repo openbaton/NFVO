@@ -10,10 +10,8 @@ import java.util.Map;
  */
 public class VDUNodeTemplate {
 
-  //TODO: FIGURE OUT WHAT IS RELEVANT AND GET RID OF THE OTHER STUFF
   private String type;
   private String name;
-  private VDUCapabilities capabilities = null;
   private HashSet<String> artifacts = new HashSet<>();
   private Object interfaces = null;
   private VDUProperties properties = null;
@@ -37,11 +35,6 @@ public class VDUNodeTemplate {
       }
     }
 
-    if (nodeTemplate.getCapabilities() != null) {
-
-      capabilities = new VDUCapabilities(nodeTemplate.getCapabilities());
-    }
-
     if (nodeTemplate.getProperties() != null) {
       properties = new VDUProperties(nodeTemplate.getProperties());
     }
@@ -53,14 +46,6 @@ public class VDUNodeTemplate {
 
   public void setType(String type) {
     this.type = type;
-  }
-
-  public VDUCapabilities getCapabilities() {
-    return capabilities;
-  }
-
-  public void setCapabilities(VDUCapabilities capabilities) {
-    this.capabilities = capabilities;
   }
 
   public HashSet<String> getArtifacts() {
@@ -79,6 +64,14 @@ public class VDUNodeTemplate {
     this.name = name;
   }
 
+  public VDUProperties getProperties() {
+    return properties;
+  }
+
+  public void setProperties(VDUProperties properties) {
+    this.properties = properties;
+  }
+
   @Override
   public String toString() {
     return "Node: \n"
@@ -87,9 +80,6 @@ public class VDUNodeTemplate {
         + "\n"
         + "name: "
         + name
-        + "\n"
-        + "Capabilities: "
-        + capabilities
         + "\n"
         + "Interfaces: "
         + interfaces
@@ -102,11 +92,4 @@ public class VDUNodeTemplate {
         + "\n";
   }
 
-  public VDUProperties getProperties() {
-    return properties;
-  }
-
-  public void setProperties(VDUProperties properties) {
-    this.properties = properties;
-  }
 }

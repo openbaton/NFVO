@@ -52,9 +52,8 @@ topology_template:
              type: hhuh
              anti_spoof_protection: false
          requirements:
-           virtualLink: InternalNetwork
-           virtualBinding: VDU1
-           floatingIP: 3
+           - virtualLink: InternalNetwork
+           - virtualBinding: VDU1
 
      CP13:
               type: tosca.nodes.nfv.CP
@@ -62,9 +61,8 @@ topology_template:
                   type: hhuh
                   anti_spoof_protection: false
               requirements:
-                virtualLink: InternalNetwork
-                virtualBinding: VDU1
-                floatingIP: 3
+                - virtualLink: InternalNetwork
+                - virtualBinding: VDU1
 
 
      private:

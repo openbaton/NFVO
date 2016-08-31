@@ -81,4 +81,26 @@ public final class Utils {
     Yaml yaml = new Yaml(constructor);
     return yaml.loadAs(tosca, VNFDTemplate.class);
   }
+
+  public static NSDTemplate stringToNSDTemplate(String someYaml){
+
+    Constructor constructor = new Constructor(NSDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(someYaml, NSDTemplate.class);
+  }
+
+  public static VNFDTemplate stringToVNFDTemplate(String someYaml){
+
+    Constructor constructor = new Constructor(VNFDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(someYaml, VNFDTemplate.class);
+  }
 }

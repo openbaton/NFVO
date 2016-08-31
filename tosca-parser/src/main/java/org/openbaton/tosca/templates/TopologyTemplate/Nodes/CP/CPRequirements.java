@@ -1,41 +1,46 @@
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * Created by rvl on 17.08.16.
  */
 public class CPRequirements {
 
-  //TODO: FIX FOR LIST OF PAIRS
-  private String virtualLink = null;
-  private String virtualBinding = null;
+  private ArrayList<String> virtualLink = new ArrayList<>();
+  private ArrayList<String> virtualBinding = new ArrayList<>();
 
-  public CPRequirements(Object requirements) {
-    Map<String, String> requirementsMap = (Map<String, String>) requirements;
+  public CPRequirements(Object reqs) {
 
-    if (requirementsMap.containsKey("virtualLink")) {
-      this.virtualLink = requirementsMap.get("virtualLink");
-    }
+    ArrayList<LinkedHashMap<String, String>> resMap =
+            (ArrayList<LinkedHashMap<String, String>>) reqs;
 
-    if (requirementsMap.containsKey("virtualBinding")) {
-      this.virtualBinding = requirementsMap.get("virtualBinding");
+    for (LinkedHashMap<String, String> pair : resMap) {
+
+      if (pair.keySet().toArray()[0].equals("virtualLink")) {
+        virtualLink.add(pair.get("virtualLink").toString());
+      }
+
+      if (pair.keySet().toArray()[0].equals("vdu")) {
+        virtualBinding.add(pair.get("vdu").toString());
+      }
     }
   }
 
-  public String getVirtualLink() {
+  public ArrayList<String> getVirtualLink() {
     return virtualLink;
   }
 
-  public void setVirtualLink(String virtualLink) {
+  public void setVirtualLink(ArrayList<String> virtualLink) {
     this.virtualLink = virtualLink;
   }
 
-  public String getVirtualBinding() {
+  public ArrayList<String> getVirtualBinding() {
     return virtualBinding;
   }
 
-  public void setVirtualBinding(String virtualBinding) {
+  public void setVirtualBinding(ArrayList<String> virtualBinding) {
     this.virtualBinding = virtualBinding;
   }
 

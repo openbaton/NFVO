@@ -1,5 +1,6 @@
 package org.openbaton.tosca.templates;
 
+import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFProperties;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 
 /**
@@ -12,7 +13,7 @@ public class VNFDTemplate {
   private TOSCAMetadata metadata;
   private Object node_types = null;
   private TopologyTemplate topology_template;
-  private VNFDInputsTemplate inputs;
+  private VNFProperties inputs;
 
   public String getTosca_definitions_version() {
     return tosca_definitions_version;
@@ -54,11 +55,11 @@ public class VNFDTemplate {
     return this.topology_template;
   }
 
-  public void setInputs(VNFDInputsTemplate inputs) {
+  public void setInputs(VNFProperties inputs) {
     this.inputs = inputs;
   }
 
-  public VNFDInputsTemplate getInputs() {
+  public VNFProperties getInputs() {
     return inputs;
   }
 

@@ -8,14 +8,12 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.NSDTemplate;
+import org.openbaton.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * Created by rvl on 25.08.16.
@@ -27,6 +25,7 @@ public class RestToscaNetworkServiceDescriptor {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private NetworkServiceDescriptorManagement networkServiceDescriptorManagement;
+  @Autowired private TOSCAParser toscaParser;
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.ACCEPTED)
@@ -35,18 +34,7 @@ public class RestToscaNetworkServiceDescriptor {
       throws NetworkServiceIntegrityException, BadFormatException, NotFoundException,
           CyclicDependenciesException {
 
-    log.debug(nsd_yaml.toString());
-
-    Constructor constructor = new Constructor(NSDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    NSDTemplate nsdTemplate = yaml.loadAs(nsd_yaml, NSDTemplate.class);
-    log.debug(NSDTemplate.class.toString());
-
-    TOSCAParser toscaParser = new TOSCAParser();
+    NSDTemplate nsdTemplate = Utils.stringToNSDTemplate(nsd_yaml);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     return networkServiceDescriptorManagement.onboard(nsd, projectId);

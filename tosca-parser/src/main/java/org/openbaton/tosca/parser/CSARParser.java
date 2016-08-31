@@ -6,7 +6,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -38,7 +37,6 @@ public class CSARParser {
   @Autowired private VNFPackageManagement vnfPackageManagement;
 
   private String pathUnzipFiles = "/tmp/files";
-  private Set<String> vnfPackagesPaths;
   private TOSCAParser toscaParser;
   Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -49,6 +47,12 @@ public class CSARParser {
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
   }
+
+  /*
+   *
+   * Helper functions - Reading a csar and creating a proper vnf package
+   *
+   */
 
   private void readMetaData() throws IOException {
 
@@ -83,7 +87,6 @@ public class CSARParser {
     ZipInputStream zipStream = new ZipInputStream(zipFile);
 
     File dir = new File(this.pathUnzipFiles);
-    UrlValidator urlValidator = new UrlValidator();
     if (dir.exists()) dir.delete();
     dir.mkdir();
 
@@ -99,7 +102,6 @@ public class CSARParser {
         fileList.add(currentEntry.trim());
         File destFile = new File(this.pathUnzipFiles + '/' + currentEntry, currentEntry);
         destFile = new File(this.pathUnzipFiles, destFile.getName());
-        log.debug(destFile.getAbsolutePath());
 
         File destinationParent = destFile.getParentFile();
         String pathEntry = "" + destinationParent + '/' + currentEntry;
@@ -150,7 +152,6 @@ public class CSARParser {
       zipStream.close();
     }
 
-    log.info("Files into CSAR: " + String.valueOf(fileList));
     if (fileList.contains("TOSCA-Metadata/TOSCA.meta"))
       log.debug("Found: /TOSCA-Metadata/TOSCA.meta");
     else throw new NotFoundException("In the csar file is missing the TOSCA-Metadata/TOSCA.meta");
@@ -163,90 +164,8 @@ public class CSARParser {
     return scripts;
   }
 
-  public void parseVNFCSAR(String vnfd_csar) throws Exception {
-
-    InputStream input = new FileInputStream(new File(vnfd_csar));
-    Set<Script> scripts = getFileList(input);
-
-    readMetaData();
-
-    VNFDTemplate vnfdTemplate =
-        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
-
-    createVNFPackage(vnfd, scripts);
-  }
-
-  public ByteArrayOutputStream parseVNFDCSARFromByte(byte[] bytes) throws Exception {
-
-    File temp = File.createTempFile("CSAR", null);
-    FileOutputStream fos = new FileOutputStream(temp);
-    fos.write(bytes);
-    InputStream input = new FileInputStream(temp);
-
-    Set<Script> scripts = getFileList(input);
-
-    readMetaData();
-
-    VNFDTemplate vnfdTemplate =
-        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
-
-    return createVNFPackage(vnfd, scripts);
-  }
-
-  public ArrayList<ByteArrayOutputStream> parseNSDCSAR(String nsd_csar) throws Exception {
-
-    InputStream input = new FileInputStream(new File(nsd_csar));
-    Set<Script> scripts = getFileList(input);
-    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
-
-    readMetaData();
-
-    NSDTemplate nsdTemplate =
-        Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
-    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      vnfpList.add(createVNFPackage(vnfd, scripts));
-    }
-
-    return vnfpList;
-  }
-
-  public NetworkServiceDescriptor parseNSDCSARFromByte(byte[] bytes, String projectId)
-      throws Exception {
-
-    File temp = File.createTempFile("CSAR", null);
-    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
-
-    FileOutputStream fos = new FileOutputStream(temp);
-    fos.write(bytes);
-    InputStream input = new FileInputStream(temp);
-
-    Set<Script> scripts = getFileList(input);
-
-    readMetaData();
-
-    NSDTemplate nsdTemplate =
-        Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
-    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      vnfpList.add(createVNFPackage(vnfd, scripts));
-    }
-
-    nsd.getVnfd().clear();
-
-    for (ByteArrayOutputStream byteArray : vnfpList) {
-      nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
-    }
-
-    return nsd;
-  }
-
   private void writeMetadata(Metadata metadata, ArchiveOutputStream my_tar_ball)
-      throws IOException {
+          throws IOException {
 
     File tar_input_file = File.createTempFile("Metadata", null);
     Map<String, Object> data = new HashMap<>();
@@ -274,12 +193,12 @@ public class CSARParser {
   }
 
   private ByteArrayOutputStream createVNFPackage(
-      VirtualNetworkFunctionDescriptor vnfd, Set<Script> scripts)
-      throws IOException, ArchiveException {
+          VirtualNetworkFunctionDescriptor vnfd, Set<Script> scripts)
+          throws IOException, ArchiveException {
 
     ByteArrayOutputStream tar_output = new ByteArrayOutputStream();
     ArchiveOutputStream my_tar_ball =
-        new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, tar_output);
+            new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, tar_output);
 
     Metadata metadata = new Metadata(vnfd);
     writeMetadata(metadata, my_tar_ball);
@@ -323,5 +242,97 @@ public class CSARParser {
     //};
 
     return tar_output;
+  }
+
+  /*
+   *
+   * MAIN FUNCTIONS
+   *
+   */
+
+  public void parseVNFCSAR(String vnfd_csar) throws Exception {
+
+    InputStream input = new FileInputStream(new File(vnfd_csar));
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    VNFDTemplate vnfdTemplate =
+        Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+
+    createVNFPackage(vnfd, scripts);
+  }
+
+  public ArrayList<ByteArrayOutputStream> parseNSDCSAR(String nsd_csar) throws Exception {
+
+    InputStream input = new FileInputStream(new File(nsd_csar));
+    Set<Script> scripts = getFileList(input);
+    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
+
+    readMetaData();
+
+    NSDTemplate nsdTemplate =
+        Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
+
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      vnfpList.add(createVNFPackage(vnfd, scripts));
+    }
+
+    return vnfpList;
+  }
+
+  public VirtualNetworkFunctionDescriptor parseVNFDCSARFromByte(byte[] bytes, String projectId)
+          throws Exception {
+
+    File temp = File.createTempFile("CSAR", null);
+    FileOutputStream fos = new FileOutputStream(temp);
+    fos.write(bytes);
+    InputStream input = new FileInputStream(temp);
+
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    VNFDTemplate vnfdTemplate =
+            Utils.fileToVNFDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+
+    ByteArrayOutputStream byteArray = createVNFPackage(vnfd, scripts);
+
+    return vnfPackageManagement.onboard(byteArray.toByteArray(), projectId);
+  }
+
+
+  public NetworkServiceDescriptor parseNSDCSARFromByte(byte[] bytes, String projectId)
+      throws Exception {
+
+    File temp = File.createTempFile("CSAR", null);
+    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
+
+    FileOutputStream fos = new FileOutputStream(temp);
+    fos.write(bytes);
+    InputStream input = new FileInputStream(temp);
+
+    Set<Script> scripts = getFileList(input);
+
+    readMetaData();
+
+    NSDTemplate nsdTemplate =
+        Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
+    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
+
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      vnfpList.add(createVNFPackage(vnfd, scripts));
+    }
+
+    nsd.getVnfd().clear();
+
+    for (ByteArrayOutputStream byteArray : vnfpList) {
+      nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
+    }
+
+    return nsd;
   }
 }

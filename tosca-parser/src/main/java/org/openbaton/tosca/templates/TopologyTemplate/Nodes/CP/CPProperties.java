@@ -8,7 +8,6 @@ import java.util.Map;
 public class CPProperties {
 
   private String type = null;
-  //TODO: FIX
   private boolean anti_spoof_protection = false;
   private String floatingIP = null;
 

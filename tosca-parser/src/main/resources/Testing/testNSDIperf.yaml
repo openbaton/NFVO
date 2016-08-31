@@ -88,14 +88,14 @@ topology_template:
       properties:
         floatingIP: random
       requirements:
-        virtualBinding: VDU1
-        virtualLink: private
+        - virtualBinding: VDU1
+        - virtualLink: private
 
     CP2: #endpoints of VNF2
       type: tosca.nodes.nfv.CP
       requirements:
-        virtualBinding: VDU2
-        virtualLink: private
+        - virtualBinding: VDU2
+        - virtualLink: private
 
     private:
       type: tosca.nodes.nfv.VL
