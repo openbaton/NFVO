@@ -1,6 +1,8 @@
 package org.openbaton.tosca.tests;
 
+import com.google.gson.Gson;
 import org.junit.Test;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.tosca.parser.CSARParser;
 
 /**
@@ -13,7 +15,10 @@ public class CSARTest {
 
     CSARParser csarParser = new CSARParser();
 
-    csarParser.parseNSDCSAR("src/main/resources/Testing/iperf.csar");
+    NetworkServiceDescriptor nsd = csarParser.parseNSDCSAR("src/main/resources/Testing/iperf.csar");
+
+    Gson gson = new Gson();
+    System.out.println(gson.toJson(nsd));
   }
 
   @Test

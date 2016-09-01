@@ -26,7 +26,7 @@ public class Image {
         if (!this.getNames().contains(imageString)) this.getNames().add(imageString);
     }
 
-    for(String name : image_names){
+    for (String name : image_names) {
       names.add(name);
     }
     //link = "http://releases.ubuntu.com/14.04/ubuntu-14.04.4-desktop-amd64.iso";

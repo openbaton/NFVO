@@ -83,8 +83,7 @@ public class CSARParser {
       }
 
       if (strLine.contains(image)) {
-        this.image_names.add(
-                strLine.substring(image.length(), strLine.length()).trim());
+        this.image_names.add(strLine.substring(image.length(), strLine.length()).trim());
       }
     }
 
@@ -274,7 +273,7 @@ public class CSARParser {
     createVNFPackage(vnfd, scripts);
   }
 
-  public ArrayList<ByteArrayOutputStream> parseNSDCSAR(String nsd_csar) throws Exception {
+  public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
 
     InputStream input = new FileInputStream(new File(nsd_csar));
     Set<Script> scripts = getFileList(input);
@@ -286,11 +285,23 @@ public class CSARParser {
         Utils.fileToNSDTemplate(this.pathUnzipFiles + '/' + this.entryDefinitions);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
+    ArrayList<String> ids = new ArrayList<>();
+
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
       vnfpList.add(createVNFPackage(vnfd, scripts));
+      ids.add("asgasgas");
     }
 
-    return vnfpList;
+    nsd.getVnfd().clear();
+
+    for (String id : ids) {
+
+      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+      vnfd.setId(id);
+      nsd.getVnfd().add(vnfd);
+    }
+
+    return nsd;
   }
 
   public VirtualNetworkFunctionDescriptor parseVNFDCSARFromByte(byte[] bytes, String projectId)
@@ -339,7 +350,14 @@ public class CSARParser {
     nsd.getVnfd().clear();
 
     for (ByteArrayOutputStream byteArray : vnfpList) {
+
       nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
+
+      //TODO: Update when its possible to onboard a nsd without vdus
+      /*String id = vnfPackageManagement.onboard(byteArray.toByteArray(), projectId).getId();
+      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+      vnfd.setId(id);
+      nsd.getVnfd().add(vnfd);*/
     }
 
     return nsd;
