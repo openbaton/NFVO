@@ -99,7 +99,7 @@ public class VnfmUtils {
   }
 
   public static NFVMessage getNfvMessageStartStop(
-          Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+      Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
     VnfmOrStartStopMessage vnfmOrStartStopMessage = new VnfmOrStartStopMessage();
     vnfmOrStartStopMessage.setVirtualNetworkFunctionRecord(payload);
     vnfmOrStartStopMessage.setVnfcInstance(vnfcInstance);
