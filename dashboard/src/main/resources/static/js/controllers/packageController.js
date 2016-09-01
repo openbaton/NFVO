@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService) {
+app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/vnf-packages/";
 
@@ -7,7 +7,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-
+    
     loadTable();
 
 
@@ -120,7 +120,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
         if (!angular.isUndefined($routeParams.packageid))
             http.get(url + $routeParams.packageid)
                 .success(function (response, status) {
-                    console.log(response);
+                    //console.log(response);
                     $scope.vnfpackage = response;
                     $scope.vnfpackageJSON = JSON.stringify(response, undefined, 4);
 
@@ -236,6 +236,3 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
 
 });
-
-
-

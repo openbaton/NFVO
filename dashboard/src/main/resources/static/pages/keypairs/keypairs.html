@@ -1,0 +1,133 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Key Pairs
+            <small> List of key pairs</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-key"></i> Key Pairs</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <button id="btn_add_key" href="#" class="btn btn-primary pull-right"
+                title="Add a new key pair" data-toggle="modal"
+                data-target="#addKey">Import key
+        </button>
+        <button id="btn_add_key" href="#" class="btn btn-primary"
+                title="Add a new key pair" data-toggle="modal"
+                data-target="#createKey">Create key
+        </button>
+
+    </div>
+</div>
+<div class="row top-buffer">
+    <div class="col-lg-12">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="table-responsive">
+
+            <table
+                    class="table table-bordered table-striped table-hover tablesorter" ng-show="keypairs.length>0">
+                <thead>
+                <tr>
+                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+                    <th>Actions <i class="fa"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="data in keypairs| filter:search|orderBy:predicate:reverse">
+                    <!--td><input type="checkbox"  ng-disabled="data.name==projectSelected.name"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td-->
+                    <!--<td><a href="#projects/{{data.id}}">{{data.id}} </a></td>-->
+                    <td>{{data.id}}</td>
+                    <td>{{data.name}}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger pull right" ng-disabled="data.name==projectSelected.name" ng-click="delete(data)"> Delete
+                              </button>
+                            <!--ul class="dropdown-menu" role="menu">
+                                <li ng-if="data.name!==projectSelected.name"><a href="" ng-click="deleteEvent(data)">Delete</a></li>
+                            </ul-->
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addKey">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add a new key pair</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="projectname" class="col-sm-4 control-label">Key Name</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="projectname" name="projectname"
+                                   ng-model="keyName"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Pub key" class="col-sm-4 control-label">Public key</label>
+                        <div class="col-sm-6">
+                        <textarea style="width:350px;" name="Pub key" ng-model="pubKey" id="Pub key" class="form-control" rows="5" cols="50">
+                        </textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="createKey">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Provide the name of the key</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="projectname" class="col-sm-4 control-label">Key Name</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="projectname" name="projectname"
+                                   ng-model="createKeyName"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="createKey()">Generate</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

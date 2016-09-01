@@ -1,11 +1,11 @@
 angular.module('app').
-    controller('VnfManagerCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore) {
+    controller('VnfManagerCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore, $interval) {
 
         var url = $cookieStore.get('URL')+"/api/v1/vnfmanagers/";
 
         $scope.alerts = [];
 
-
+        //$interval(loadTable, 2000);
         loadTable();
 
 
@@ -21,7 +21,7 @@ angular.module('app').
             if (!angular.isUndefined($routeParams.vnfmanagerId))
                 http.get(url + $routeParams.vnfmanagerId)
                     .success(function (response, status) {
-                        console.log(response);
+                        //console.log(response);
                         $scope.vnfmanager = response;
                         $scope.vnfmanagerJSON = JSON.stringify(response, undefined, 4);
 
@@ -61,4 +61,3 @@ angular.module('app').
         }
 
     });
-

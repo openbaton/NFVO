@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window) {
+app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/projects/";
 
@@ -7,7 +7,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-
+  
     loadTable();
 
     $scope.projectObj = {

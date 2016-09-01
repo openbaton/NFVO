@@ -1,12 +1,12 @@
 angular.module('app').
-    controller('VnfcCtrl', function ($scope, $routeParams, http, $location, AuthService,$cookieStore) {
+    controller('VnfcCtrl', function ($scope, $routeParams, http, $location, AuthService,$cookieStore, $interval) {
 
         var url = $cookieStore.get('URL')+"/api/v1/vnfcomponents/";
 
 
         $scope.alerts = [];
 
-
+        //$interval(loadTable, 2000);
         loadTable();
 
 
@@ -22,7 +22,7 @@ angular.module('app').
             if (!angular.isUndefined($routeParams.vimInstanceId))
                 http.get(url + $routeParams.vimInstanceId)
                     .success(function (response, status) {
-                        console.log(response);
+                        //console.log(response);
                         $scope.vnfcomponent = response;
                         $scope.vnfcomponentJSON = JSON.stringify(response, undefined, 4);
 
@@ -62,4 +62,3 @@ angular.module('app').
         }
 
     });
-

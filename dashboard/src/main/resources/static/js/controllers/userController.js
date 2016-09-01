@@ -1,5 +1,5 @@
 var app = angular.module('app');
-app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window) {
+app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/users/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
@@ -13,7 +13,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         'GUEST',
         'USER'
     ];
-
+    
     loadTable();
     $scope.newpassword = "";
     $scope.addRole = function() {

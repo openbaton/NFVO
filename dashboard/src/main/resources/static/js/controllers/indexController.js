@@ -89,13 +89,13 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
-
+    //$interval(loadNumbers, 2000);
     $scope.config = {};
     $scope.userLogged = {};
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
-                console.log(response);
+                //console.log(response);
                 $scope.userLogged = response
             })
             .error(function (response, status) {

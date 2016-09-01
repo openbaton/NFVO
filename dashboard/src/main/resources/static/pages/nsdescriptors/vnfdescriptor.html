@@ -28,11 +28,84 @@
 </div>
 <div class="row">
     <div class="col-lg-12 top-buffer" ng-show="nsdinfo">
+      <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
+        <div class="col-lg-6">
+          <div class = "table-responsive">
+             <table
+                    class="table table-bordered table-hover tablesorter"
+                    id="vnfdTabletable">
+                    <tbody>
+                      <tr>
+                        <td>Name</td>
+                        <td>{{vnfd.name}}</td>
+                      </tr>
+                      <tr>
+                        <td>Project ID</td>
+                        <td>{{vnfd.projectId}}</td>
+                      </tr>
+                      <tr>
+                      <tr>
+                        <td>Type</td>
+                        <td>{{vnfd.type}}</td>
+                      </tr>
+                      <tr>
+                        <td>Version</td>
+                        <td>{{vnfd.version}}</td>
+                      </tr>
+                      <tr>
+                        <td>Endpoint</td>
+                        <td>{{vnfd.endpoint}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.connection_point">
+                        <td>Connection point</td>
+                        <td>{{vnfd.connection_point}}</td>
+                      </tr>
+                      <tr>
+                        <td>Cyclic Dependency</td>
+                        <td>{{vnfd.cyclicDependency}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.manifest_file_security">
+                        <td>Manifest File Security</td>
+                        <td>{{vnfd.manifest_file_security}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.monitoring_parameter">
+                        <td>Monitoring Parameters</td>
+                        <td>{{vnfd.monitoring_parameter}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.provides">
+                        <td>Provides</td>
+                        <td>{{vnfd.provides}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.requires.length > 0">
+                        <td>Requires</td><td>{{vnfd.requires}}</td>
+                      </tr>
+                      <!--tr ng-show="vnfd.service_deployment_flavour">
+                        <td>Service Deployment Flavour</td><td>{{vnfd.service_deployment_flavour"}}</td>
+                      </tr-->
+                      <tr ng-show="vnfd.vdu_dependency">
+                        <td>VDU dependency</td><td>{{vnfd.vdu_dependency}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.vld">
+                        <td>VLD</td><td>{{vnfd.vld}}</td>
+                      </tr>
+                      <tr ng-show="vnfd.vnfPackageLocation">
+                        <td>VNF Package Location</td><td><a href="#packages/{{vnfd.vnfPackageLocation}}">{{vnfd.vnfPackageLocation}}</a></td>
+                      </tr>
+                      <tr ng-show="vnfd.vnffgd">
+                        <td>VNF Forwarding Graph</td><td>{{vnfd.vnffgd}}</td>
+                      </tr>
+
+
+
+                    </tbody>
+             </table>
+          </div>
+       </div>
+     </div>
         <div class="col-lg-12">
             <div>
                 <div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
-                    <h2>VNF Descriptor: {{vnfd.name}}</h2>
-                    <dl class="dl-horizontal">
+                    <!--dl class="dl-horizontal">
                         <dt>name</dt>
                         <dd>{{vnfd.name}}</dd>
                         <dt>type</dt>
@@ -79,7 +152,7 @@
                             </spam>
 
                         </spam>
-                    </dl>
+                    </dl-->
                     <tabset>
                         <tab heading="Vdu">
                             <div class="table-responsive" ng-show="vnfd.vdu.length > 0">
@@ -92,18 +165,18 @@
                                         <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'vm_image'; reverse = !reverse">vm image <i
+                                        <th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">vim Name
+                                        <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
                                             <i
                                                     class="fa fa-sort"></i>
                                         </th>
 
-                                        <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
+                                        <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i
                                                 class="fa fa-sort"></i>
                                         </th>
                                         <th>
@@ -189,10 +262,10 @@
                                         <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
+                                        <th ng-show='vnfd.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">Flavour Key <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
+                                        <th ng-show='vnfd.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
                                             Constraint <i
                                                     class="fa fa-sort"></i>
                                         </th>
@@ -203,8 +276,8 @@
                                     <tr ng-repeat="df in vnfd.deployment_flavour | orderBy:predicate:reverse">
                                         <td>{{df.id}}</td>
                                         <td>{{df.version}}</td>
-                                        <td>{{df.flavour_key}}</td>
-                                        <td>
+                                        <td ng-show='df.flavour_key'> {{df.flavour_key}}</td>
+                                        <td ng-show='df.df_constraint'>
                                             {{df.df_constraint}}
                                         </td>
                                     </tr>
@@ -223,13 +296,13 @@
                                         <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'name'; reverse = !reverse">name <i
+                                        <th ng-click="predicate = 'name'; reverse = !reverse">Name <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i
+                                        <th ng-show='vl.extId' ng-click="predicate = 'extId'; reverse = !reverse">External ID <i
                                                 class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'qos'; reverse = !reverse">qos <i
+                                        <th ng-show='vl.qos' ng-click="predicate = 'qos'; reverse = !reverse">QoS <i
                                                 class="fa fa-sort"></i>
                                         </th>
 
@@ -239,14 +312,42 @@
                                     <tr ng-repeat="vl in vnfd.virtual_link | orderBy:predicate:reverse">
                                         <td>{{vl.id}}</td>
                                         <td>{{vl.name}}</td>
-                                        <td>{{vl.extId}}</td>
-                                        <td>{{vl.qos}}</td>
+                                        <td ng-show='vl.extId'>{{vl.extId}}</td>
+                                        <td ng-show='vl.qos'>{{vl.qos}}</td>
 
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </tab>
+                        <tab  heading="Auto Scaling Policies" ng-show="vnfd.auto_scale_policy">
+                            <div class="table-responsive">
+                              <h3>Auto Scaling Policies</h3>
+                              <table
+                                      class="table table-bordered table-striped table-hover tablesorter"
+                                      id="">
+                              <thead>
+                              <tr><th>Version</th><th>Name</th><th>Threshold</th><th>Comparison Operator</th><th>Period</th><th>Cooldown</th><th>Mode</th><th>Type</th><th>Alarms</th><th>Actions</th></tr>
+                              </thead>
+                              <tbody>
+                                <tr ng-repeat="policy in vnfd.auto_scale_policy">
+                                    <td>{{policy.version}}</td>
+                                    <td>{{policy.name}}</td>
+                                    <td>{{policy.threshold}}</td>
+                                    <td>{{policy.comparisonOperator}}</td>
+                                    <td>{{policy.period}}</td>
+                                    <td>{{policy.cooldown}}</td>
+                                    <td>{{policy.mode}}</td>
+                                    <td>{{policy.type}}</td>
+                                    <td> <div ng-repeat="alarm in policy.alarms">
+                                      {{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div></td>
+                                    <td><div ng-repeat="action in policy.actions" >{{action.type}} {{action.value}} <br></div></td>
+                                </tr>
+                              </tbody>
+                              </table>
+                            </div>
+                        </tab>
+
                     </tabset>
                     <br/>
                     <br/>

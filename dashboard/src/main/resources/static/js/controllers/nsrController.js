@@ -1,4 +1,4 @@
-var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location) {
+var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location, $interval) {
 
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + 'ns-records/';
@@ -188,7 +188,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         http.delete(url + data.id)
             .success(function (response) {
                 showOk('Deleted Network Service Descriptor with id: ' + data.id);
-                loadTable();
+                setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
                 showError(status, data);
@@ -306,8 +306,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.deleteNSR = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Network Service Record deleted!');
-                window.setTimeout(loadTable, 250);
+                showOk('The removal of the NSR will be done shortly!');
+                window.setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
                 showError(status, data);
@@ -428,6 +428,32 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
 
     }
+
+    $scope.startVNFCI = function(vnfci, vnfr) {
+      startObj = {};
+      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/start';
+      //console.log(vnfciaddres);
+      http.post(vnfciurl, startObj)
+          .success(function (response) {
+              showOk("Stopped VNFCI with id" + vnfci.id);
+          })
+          .error(function (data, status) {
+              showError(status, data);
+          });
+    };
+
+    $scope.stopVNFCI = function(vnfci, vnfr) {
+      startObj = {};
+      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/stop';
+      //console.log(vnfciaddres);
+      http.post(vnfciurl, startObj)
+          .success(function (response) {
+              showOk("Stopped VNFCI with id" + vnfci.id);
+          })
+          .error(function (data, status) {
+              showError(status, data);
+          });
+    };
 
 
 });
