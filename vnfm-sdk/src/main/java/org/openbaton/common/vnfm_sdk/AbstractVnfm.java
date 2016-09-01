@@ -400,40 +400,40 @@ public abstract class AbstractVnfm
               VnfmUtils.getNfvMessage(Action.CONFIGURE, configure(orVnfmGenericMessage.getVnfr()));
           break;
         case START:
-        {
-          OrVnfmStartStopMessage orVnfmStartStopMessage = (OrVnfmStartStopMessage) message;
-          virtualNetworkFunctionRecord = orVnfmStartStopMessage.getVirtualNetworkFunctionRecord();
-          nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
-          VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
+          {
+            OrVnfmStartStopMessage orVnfmStartStopMessage = (OrVnfmStartStopMessage) message;
+            virtualNetworkFunctionRecord = orVnfmStartStopMessage.getVirtualNetworkFunctionRecord();
+            nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
+            VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
 
-          if (vnfcInstance == null) // Start the VNF Record
+            if (vnfcInstance == null) // Start the VNF Record
             nfvMessage = VnfmUtils.getNfvMessage(Action.START, start(virtualNetworkFunctionRecord));
-          else // Start the VNFC Instance
+            else // Start the VNFC Instance
             nfvMessage =
-                    VnfmUtils.getNfvMessageStartStop(
-                            Action.START,
-                            startVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
-                            vnfcInstance);
-          break;
-        }
+                  VnfmUtils.getNfvMessageStartStop(
+                      Action.START,
+                      startVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
+                      vnfcInstance);
+            break;
+          }
         case STOP:
-        {
-          OrVnfmStartStopMessage orVnfmStartStopMessage = (OrVnfmStartStopMessage) message;
-          virtualNetworkFunctionRecord = orVnfmStartStopMessage.getVirtualNetworkFunctionRecord();
-          nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
-          VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
+          {
+            OrVnfmStartStopMessage orVnfmStartStopMessage = (OrVnfmStartStopMessage) message;
+            virtualNetworkFunctionRecord = orVnfmStartStopMessage.getVirtualNetworkFunctionRecord();
+            nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
+            VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
 
-          if (vnfcInstance == null) // Stop the VNF Record
+            if (vnfcInstance == null) // Stop the VNF Record
             nfvMessage = VnfmUtils.getNfvMessage(Action.STOP, stop(virtualNetworkFunctionRecord));
-          else // Stop the VNFC Instance
+            else // Stop the VNFC Instance
             nfvMessage =
-                    VnfmUtils.getNfvMessageStartStop(
-                            Action.STOP,
-                            stopVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
-                            vnfcInstance);
+                  VnfmUtils.getNfvMessageStartStop(
+                      Action.STOP,
+                      stopVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
+                      vnfcInstance);
 
-          break;
-        }
+            break;
+          }
       }
 
       log.debug(
@@ -548,15 +548,15 @@ public abstract class AbstractVnfm
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
   public abstract VirtualNetworkFunctionRecord stop(
-          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
   public abstract VirtualNetworkFunctionRecord startVNFCInstance(
-          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
-          throws Exception;
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
+      throws Exception;
 
   public abstract VirtualNetworkFunctionRecord stopVNFCInstance(
-          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
-          throws Exception;
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
+      throws Exception;
 
   public abstract VirtualNetworkFunctionRecord configure(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
