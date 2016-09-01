@@ -32,12 +32,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by lto on 06/08/15.
+ * Created by fmu on 19/08/16.
  */
 @Service
 @Scope("prototype")
-@ConfigurationProperties(prefix = "nfvo.start")
-public class StartTask extends AbstractTask {
+@ConfigurationProperties(prefix = "nfvo.stop")
+public class StopTask extends AbstractTask {
 
   @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
 
@@ -63,7 +63,7 @@ public class StartTask extends AbstractTask {
 
   @Override
   public NFVMessage doWork() throws Exception {
-    log.info("Started VNFR: " + virtualNetworkFunctionRecord.getName());
+    log.info("Stopped VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
     log.debug("vnfr arrived version= " + virtualNetworkFunctionRecord.getHb_version());
@@ -83,32 +83,32 @@ public class StartTask extends AbstractTask {
 
     saveVirtualNetworkFunctionRecord();
 
-    if (ordered != null && Boolean.parseBoolean(ordered)) {
-      VirtualNetworkFunctionRecord nextToCallStart =
-          getNextToCallStart(virtualNetworkFunctionRecord);
-      if (nextToCallStart != null) {
-        log.info(
-            "Calling START to: " + nextToCallStart.getName() + " because is the next in order");
-        vnfmManager.removeVnfrName(
-            virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
-        sendStart(nextToCallStart);
-      }
-    }
+    /*if (ordered != null && Boolean.parseBoolean(ordered)) {
+    		VirtualNetworkFunctionRecord nextToCallStart =
+    						getNextToCallStart(virtualNetworkFunctionRecord);
+    		if (nextToCallStart != null) {
+    				log.info(
+    								"Calling START to: " + nextToCallStart.getName() + " because is the next in order");
+    				vnfmManager.removeVnfrName(
+    								virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
+    				sendStop(nextToCallStart);
+    		}
+    }*/
 
     return null;
   }
 
-  private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+  private void sendStop(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException {
     VnfmSender vnfmSender;
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
     /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.STOP),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfmSender.sendCommand(
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.STOP),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
   }
 }

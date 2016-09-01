@@ -41,6 +41,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
@@ -517,7 +518,6 @@ public class NetworkServiceRecordManagement
           "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
-
       throw new WrongStatusException(
           "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
     }
@@ -529,6 +529,152 @@ public class NetworkServiceRecordManagement
         virtualNetworkFunctionRecord,
         virtualDeploymentUnit,
         getVNFCI(virtualDeploymentUnit, idVNFCI));
+  }
+
+  @Override
+  public void startVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException {
+    /*NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+    if (!networkServiceRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+    if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualDeploymentUnit virtualDeploymentUnit =
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+    if (virtualDeploymentUnit.getProjectId() != null
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    VNFCInstance stoppedVNFCInstance = null;
+    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+      log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
+      if (vnfcInstance.getId().equals(idVNFCI)) {
+        stoppedVNFCInstance = vnfcInstance;
+        log.debug("VNFCInstance to be started FOUND:" + stoppedVNFCInstance);
+      }
+    }
+    if (stoppedVNFCInstance == null) {
+      throw new NotFoundException(
+              "No VNFCInstance to be started has be FOUND");
+    }
+
+    OrVnfmStartStopMessage startMessage = new OrVnfmStartStopMessage();
+    startMessage.setAction(Action.START);
+    startMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    startMessage.setVnfcInstance(stoppedVNFCInstance);
+
+    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, startMessage);*/
+    startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.START);
+  }
+
+  @Override
+  public void stopVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException {
+    /*NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+    if (!networkServiceRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+    if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualDeploymentUnit virtualDeploymentUnit =
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+    if (virtualDeploymentUnit.getProjectId() != null
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    VNFCInstance startedVNFCInstance = null;
+    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+      log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
+      if (vnfcInstance.getId().equals(idVNFCI)) {
+        startedVNFCInstance = vnfcInstance;
+        log.debug("VNFCInstance to be stopped FOUND:" + startedVNFCInstance);
+      }
+    }
+    if (startedVNFCInstance == null) {
+      throw new NotFoundException(
+              "No VNFCInstance to be started has be FOUND");
+    }
+
+    OrVnfmStartStopMessage stopMessage = new OrVnfmStartStopMessage();
+    stopMessage.setAction(Action.STOP);
+    stopMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    stopMessage.setVnfcInstance(startedVNFCInstance);
+
+    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, stopMessage);*/
+    startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.STOP);
+  }
+
+  private void startStopVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
+      throws NotFoundException, WrongStatusException {
+    NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+    if (!networkServiceRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+    if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualDeploymentUnit virtualDeploymentUnit =
+        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+    if (virtualDeploymentUnit.getProjectId() != null
+        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    VNFCInstance vnfcInstanceToStartStop = null;
+    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+      log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
+      if (vnfcInstance.getId().equals(idVNFCI)) {
+        vnfcInstanceToStartStop = vnfcInstance;
+        switch (action) {
+          case START:
+            log.debug("VNFCInstance to be started NOT FOUND:" + vnfcInstanceToStartStop);
+          case STOP:
+            log.debug("VNFCInstance to be stopped NOT FOUND:" + vnfcInstanceToStartStop);
+        }
+      }
+    }
+    if (vnfcInstanceToStartStop == null) {
+      switch (action) {
+        case START:
+          throw new NotFoundException("VNFCInstance to be started NOT FOUND");
+        case STOP:
+          throw new NotFoundException("VNFCInstance to be stopped NOT FOUND");
+      }
+    }
+
+    OrVnfmStartStopMessage startStopMessage =
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, vnfcInstanceToStartStop);
+    switch (action) {
+      case START:
+        startStopMessage.setAction(Action.START);
+      case STOP:
+        startStopMessage.setAction(Action.STOP);
+    }
+
+    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, startStopMessage);
   }
 
   @Override
@@ -567,7 +713,7 @@ public class NetworkServiceRecordManagement
         log.debug("VNFComponentInstance in " + mode + " mode FOUND :" + standByVNFCInstance);
       }
       if (vnfcInstance.getId().equals(failedVnfcInstance.getId())) {
-        vnfcInstance.setState("failed");
+        vnfcInstance.setState("FAILED");
         log.debug(
             "The vnfcInstance: "
                 + vnfcInstance.getHostname()

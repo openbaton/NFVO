@@ -176,6 +176,36 @@ public interface NetworkServiceRecordManagement {
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
           VimException, PluginException;
 
+  /**
+   * This method will start a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
+   *
+   * @param id
+   * @param idVnf
+   * @param idVdu
+   * @param idVNFCI
+   * @param projectId
+   * @throws NotFoundException
+   * @throws WrongStatusException
+   */
+  void startVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException;
+
+  /**
+   * This method will stop a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
+   *
+   * @param id
+   * @param idVnf
+   * @param idVdu
+   * @param idVNFCI
+   * @param projectId
+   * @throws NotFoundException
+   * @throws WrongStatusException
+   */
+  void stopVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException;
+
   void switchToRedundantVNFCInstance(
       String id,
       String idVnf,
