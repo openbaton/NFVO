@@ -10,7 +10,10 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.tosca.Metadata.Metadata;
 import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.NSDTemplate;
@@ -35,6 +38,8 @@ import java.util.zip.ZipInputStream;
 public class CSARParser {
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
+  @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VNFDRepository vnfdRepository;
 
   private String pathUnzipFiles = "/tmp/files";
   private TOSCAParser toscaParser;
@@ -351,15 +356,28 @@ public class CSARParser {
 
     for (ByteArrayOutputStream byteArray : vnfpList) {
 
-      nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
+      //nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
 
-      //TODO: Update when its possible to onboard a nsd without vdus
-      /*String id = vnfPackageManagement.onboard(byteArray.toByteArray(), projectId).getId();
+      String id = "";
+      String vnfPackageLocation =
+          vnfPackageManagement.onboard(byteArray.toByteArray(), projectId).getVnfPackageLocation();
+
+      Iterable<VNFPackage> vnfPackages = vnfPackageRepository.findAll();
+      Iterable<VirtualNetworkFunctionDescriptor> vnfds = vnfdRepository.findByProjectId(projectId);
+      for (VirtualNetworkFunctionDescriptor vnfd : vnfds) {
+        if (vnfd.getVnfPackageLocation().equals(vnfPackageLocation)) {
+
+          id = vnfd.getId();
+        }
+      }
+
       VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
       vnfd.setId(id);
-      nsd.getVnfd().add(vnfd);*/
+      nsd.getVnfd().add(vnfd);
     }
 
+    Gson gson = new Gson();
+    log.error("NSD: " + gson.toJson(nsd));
     return nsd;
   }
 }
