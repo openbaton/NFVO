@@ -4,6 +4,7 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
@@ -25,5 +26,8 @@ public interface KeyManagement {
       throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException,
           IOException;
 
-  Key addKey(String projectId, String name, String key);
+  Key addKey(String projectId, String name, String key) throws
+                                                        UnsupportedEncodingException,
+                                                        NoSuchAlgorithmException,
+                                                        InvalidKeySpecException;
 }
