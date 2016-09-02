@@ -624,7 +624,7 @@ public class NetworkServiceRecordManagement
   private void startStopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
       throws NotFoundException, WrongStatusException {
-    NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+    NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -645,14 +645,31 @@ public class NetworkServiceRecordManagement
 
     VNFCInstance vnfcInstanceToStartStop = null;
     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-      log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
+      log.debug(
+          "VNFCInstance: (ID: "
+              + vnfcInstance.getId()
+              + " - HOSTNAME: "
+              + vnfcInstance.getHostname()
+              + " - STATE: "
+              + vnfcInstance.getState()
+              + ")");
       if (vnfcInstance.getId().equals(idVNFCI)) {
         vnfcInstanceToStartStop = vnfcInstance;
         switch (action) {
           case START:
-            log.debug("VNFCInstance to be started NOT FOUND:" + vnfcInstanceToStartStop);
+            log.debug(
+                "VNFCInstance to be started: "
+                    + vnfcInstanceToStartStop.getId()
+                    + " - "
+                    + vnfcInstanceToStartStop.getHostname());
+            break;
           case STOP:
-            log.debug("VNFCInstance to be stopped NOT FOUND:" + vnfcInstanceToStartStop);
+            log.debug(
+                "VNFCInstance to be stopped: "
+                    + vnfcInstanceToStartStop.getId()
+                    + " - "
+                    + vnfcInstanceToStartStop.getHostname());
+            break;
         }
       }
     }
@@ -670,8 +687,10 @@ public class NetworkServiceRecordManagement
     switch (action) {
       case START:
         startStopMessage.setAction(Action.START);
+        break;
       case STOP:
         startStopMessage.setAction(Action.STOP);
+        break;
     }
 
     vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, startStopMessage);
@@ -852,6 +871,16 @@ public class NetworkServiceRecordManagement
       throw new NotFoundException("No VirtualNetworkFunctionRecord found with id " + idVnf);
     }
     return virtualNetworkFunctionRecord;
+  }
+
+  private synchronized NetworkServiceRecord getNetworkServiceRecordInAnyState(String id)
+      throws NotFoundException, WrongStatusException {
+    NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException("No NetworkServiceRecord found with id " + id);
+    }
+
+    return networkServiceRecord;
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInActiveState(String id)
