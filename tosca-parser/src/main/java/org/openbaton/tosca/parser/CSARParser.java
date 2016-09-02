@@ -10,7 +10,6 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -356,13 +355,10 @@ public class CSARParser {
 
     for (ByteArrayOutputStream byteArray : vnfpList) {
 
-      //nsd.getVnfd().add(vnfPackageManagement.onboard(byteArray.toByteArray(), projectId));
-
       String id = "";
       String vnfPackageLocation =
           vnfPackageManagement.onboard(byteArray.toByteArray(), projectId).getVnfPackageLocation();
 
-      Iterable<VNFPackage> vnfPackages = vnfPackageRepository.findAll();
       Iterable<VirtualNetworkFunctionDescriptor> vnfds = vnfdRepository.findByProjectId(projectId);
       for (VirtualNetworkFunctionDescriptor vnfd : vnfds) {
         if (vnfd.getVnfPackageLocation().equals(vnfPackageLocation)) {
@@ -376,8 +372,6 @@ public class CSARParser {
       nsd.getVnfd().add(vnfd);
     }
 
-    Gson gson = new Gson();
-    log.error("NSD: " + gson.toJson(nsd));
     return nsd;
   }
 }
