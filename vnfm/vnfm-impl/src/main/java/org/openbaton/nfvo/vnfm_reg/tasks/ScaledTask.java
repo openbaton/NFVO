@@ -87,6 +87,23 @@ public class ScaledTask extends AbstractTask {
     //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies
     if (vnfcInstance != null) {
       log.debug("The current vnfcInstance is: " + vnfcInstance.toString());
+      try {
+        log.debug("Saving VNFCInstance");
+        log.debug("Status of unsaved vnfcinstance is: " + vnfcInstance.getState());
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+          for (VNFCInstance vnfcInstanceTmp : vdu.getVnfc_instance()) {
+            if (vnfcInstanceTmp.getHostname().equals(vnfcInstance.getHostname())
+                && vnfcInstanceTmp.getVim_id().equals(vnfcInstance.getVim_id())) {
+              vnfcInstanceTmp.setState("ACTIVE");
+              vnfcInstance = vnfcInstanceRepository.save(vnfcInstanceTmp);
+            }
+          }
+        }
+        log.debug("Status of saved vnfcinstance is: " + vnfcInstance.getState());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       if (vnfcInstance.getState() != null && vnfcInstance.getState().equals("standby")) return null;
     }
 
@@ -203,6 +220,12 @@ public class ScaledTask extends AbstractTask {
               message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
         }
       }
+    }
+    try {
+      log.debug("Saving VNFCInstance");
+      vnfcInstanceRepository.save(vnfcInstance);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     return null;
   }

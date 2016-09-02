@@ -33,6 +33,7 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.StartTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.StopTask;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -224,7 +225,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         break;
       case SCALED:
         status = Status.ACTIVE;
-        break;
+        {
+          VNFCInstance vnfciScaled = ((ScaledTask) this).getVnfcInstance();
+          vnfciScaled.setState("ACTIVE");
+          break;
+        }
       case RELEASE_RESOURCES_FINISH:
         status = Status.TERMINATED;
         break;
@@ -234,34 +239,27 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
       case CONFIGURE:
         break;
       case START:
-        log.debug(" ************************ doing start");
-        log.debug(" ************************ VNFR: " + virtualNetworkFunctionRecord.toString());
+        {
+          VNFCInstance vnfciStarted = ((StartTask) this).getVnfcInstance();
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+            for (VNFCInstance instanceInVNFR : vdu.getVnfc_instance()) {
 
-        VNFCInstance vnfciStarted = ((StartTask) this).getVnfcInstance();
-        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-          for (VNFCInstance instanceInVNFR : vdu.getVnfc_instance()) {
+              log.debug("VNFCInstance: " + instanceInVNFR.getHostname());
 
-            log.debug("************************** instance: " + instanceInVNFR.getHostname());
-
-            // if vnfciStarted is not null then the START message received refers to the VNFCInstance
-            if (vnfciStarted != null) {
-              if (instanceInVNFR.getId().equals(vnfciStarted.getId())) {
+              // if vnfciStarted is not null then the START message received refers to the VNFCInstance
+              if (vnfciStarted != null) {
+                if (instanceInVNFR.getId().equals(vnfciStarted.getId())) {
+                  instanceInVNFR.setState("ACTIVE");
+                }
+              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to "ACTIVE"
                 instanceInVNFR.setState("ACTIVE");
-                log.debug(
-                    "************************************** setting active only the VNFRC instance: "
-                        + instanceInVNFR);
-                //break;
               }
-            } else { // START refers to the VNFR then the status of all the VNFCInstance is set to "ACTIVE"
-              log.debug("************************************** setting active all the VNFR");
-              instanceInVNFR.setState("ACTIVE");
             }
           }
-        }
 
-        log.debug(" ************************ finishing start");
-        status = Status.ACTIVE;
-        break;
+          status = Status.ACTIVE;
+          break;
+        }
       case STOP:
         VNFCInstance vnfciStopped = ((StopTask) this).getVnfcInstance();
         boolean stopVNFR = true;

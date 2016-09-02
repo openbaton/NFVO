@@ -104,9 +104,6 @@ public class StartTask extends AbstractTask {
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-    /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
-    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfmSender.sendCommand(
         new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
