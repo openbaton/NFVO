@@ -64,10 +64,8 @@ public class RestKeys {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public Key importKey(
-      @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key) throws
-                                                                                          UnsupportedEncodingException,
-                                                                                          NoSuchAlgorithmException,
-                                                                                          InvalidKeySpecException {
+      @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
     return keyManagement.addKey(projectId, key.getName(), key.getPublicKey());
   }
 

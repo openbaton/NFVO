@@ -26,8 +26,6 @@ public interface KeyManagement {
       throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException,
           IOException;
 
-  Key addKey(String projectId, String name, String key) throws
-                                                        UnsupportedEncodingException,
-                                                        NoSuchAlgorithmException,
-                                                        InvalidKeySpecException;
+  Key addKey(String projectId, String name, String key)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException;
 }
