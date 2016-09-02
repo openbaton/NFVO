@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.api;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.KeyRepository;
@@ -32,9 +33,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
@@ -105,24 +108,50 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     Key key = new Key();
     key.setName(name);
     key.setProjectId(projectId);
+    key.setFingerprint(calculateFingerprint(publicKey.getEncoded()));
     key.setPublicKey(publicKeyString);
     log.debug(publicKeyString);
     keyRepository.save(key);
     log.info("Added new key: " + key);
-    //Project project = projectManagement.query(projectId);
-    //    project.getKeys().add(key);
-    //projectManagement.update(project);
     return parsePrivateKey(privateKey.getEncoded());
   }
 
   @Override
-  public Key addKey(String projectId, String name, String key) {
+  public Key addKey(String projectId, String name, String key) throws
+                                                               UnsupportedEncodingException,
+                                                               NoSuchAlgorithmException,
+                                                               InvalidKeySpecException {
     Key keyToAdd = new Key();
     keyToAdd.setName(name);
     keyToAdd.setProjectId(projectId);
     keyToAdd.setPublicKey(key);
+    keyToAdd.setFingerprint(calculateFingerprint(parsePublicKey(key)));
     keyRepository.save(keyToAdd);
     return keyToAdd;
+  }
+
+  private String calculateFingerprint(byte[] publicKey) throws NoSuchAlgorithmException {
+    MessageDigest   digest = MessageDigest.getInstance("SHA1");
+
+    String start = Hex.encodeHexString(digest.digest(publicKey));
+    String res = new String();
+    for (int i = 0 ; i< start.length() ; i++) {
+      if (i != 0 && i % 2 == 0) {
+        res += ":";
+      }
+      res += start.charAt(i);
+    }
+    System.out.println(res);
+    return res;
+  }
+
+  private byte[] parsePublicKey(String decodedKey) throws
+                                                     UnsupportedEncodingException,
+                                                     NoSuchAlgorithmException,
+                                                     InvalidKeySpecException {
+    decodedKey = decodedKey.split(" ")[1];
+    byte[] keyBytes = Base64.decodeBase64(decodedKey.getBytes("utf-8"));
+    return keyBytes;
   }
 
   private String parsePrivateKey(byte[] encodedKey) {
@@ -180,6 +209,8 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
       throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
           IOException {
     KeyManagement keyManagement = new KeyManagement();
-    System.out.println(keyManagement.generateKey("projectID", "test"));
+//    System.out.println(keyManagement.generateKey("projectID", "test"));
+    keyManagement.parsePublicKey("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMK/Jp56ykfSNoEQalX9HYS2VqM9cQwcBvhmryp6I5PIYpJ7b2cRexygKrFNG994Xg7WghnOHIuxR89Z5kSOilaVx91Wid1Ez7ftNpFvyxv8CJ59Ry5R/OQ3zAFlsWdov+QJh5s7zlbh3P1m2PbhrJ0Q7Qe7J4uTXwXDT2K0a9EOHSc9iZ5dWGTAxz0LtyWEDdLHwSjmg4LvQwmWsFs9P+k0WTJH3efYvTmsBHmo3n4XiPKUIpoO3MQycFedOkGvo/LlRlktp9mdz+HIZBJL3tLzUcRERUOVsUwlFPWGdYp0Urpvb6gSMkOFFAb1LwZU3xeD0oN7qlsa1xZaTbU6a1 test");
+
   }
 }
