@@ -807,3 +807,33 @@ h4 > a, h4 > a:hover {
 .dl-table dt{
     margin-left: -60px;
 }
+
+.table-scroll thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-scroll tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    display: block;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-scroll tr {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+td p {
+    text-overflow: ellipsis !important;
+    word-wrap: break-word;
+    /*overflow: hidden;*/
+    /*white-space: nowrap;*/
+    height:10px;
+    width:280px;
+}
+

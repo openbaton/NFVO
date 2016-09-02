@@ -429,23 +429,23 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     }
 
-    $scope.startVNFCI = function(vdu, vnfci, vnfr) {
+    $scope.startVNFCI = function(vnfci, vnfr) {
       startObj = {};
-      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vdunits/' + vdu.id + '/vnfcinstances/' + vnfci.id + '/start';
-      //console.log(vnfciurl);
+      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/start';
+      //console.log(vnfciaddres);
       http.post(vnfciurl, startObj)
           .success(function (response) {
-              showOk("Started VNFCI with id" + vnfci.id);
+              showOk("Stopped VNFCI with id" + vnfci.id);
           })
           .error(function (data, status) {
               showError(status, data);
           });
     };
 
-    $scope.stopVNFCI = function(vdu, vnfci, vnfr) {
+    $scope.stopVNFCI = function(vnfci, vnfr) {
       startObj = {};
-      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vdunits/' + vdu.id + '/vnfcinstances/' + vnfci.id + '/stop';
-      //console.log(vnfciurl);
+      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/stop';
+      //console.log(vnfciaddres);
       http.post(vnfciurl, startObj)
           .success(function (response) {
               showOk("Stopped VNFCI with id" + vnfci.id);
