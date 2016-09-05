@@ -1,7 +1,7 @@
 //-----------NEXUS--------------------------
 
 gradle.taskGraph.whenReady { taskGraph ->
-    if (taskGraph.allTasks.any { it.name == 'uploadArchives' }) {
+    if (taskGraph.allTasks.any { it  instanceof Sign }) {
         Console console = System.console()
         console.printf "\n\nWe have to sign some things in this build." +
                 "\n\nPlease enter your signing details.\n\n"
