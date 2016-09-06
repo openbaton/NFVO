@@ -87,5 +87,5 @@ public class VNFComponent implements Serializable {
         + ", version="
         + version
         + '}';
-  }
+  }  
 }
