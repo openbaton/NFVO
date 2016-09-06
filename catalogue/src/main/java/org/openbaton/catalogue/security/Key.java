@@ -49,6 +49,37 @@ public class Key implements Serializable {
   @Column(length = 500)
   private String publicKey;
 
+  @Override
+  public String toString() {
+    return "Key{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", projectId='"
+        + projectId
+        + '\''
+        + ", publicKey='"
+        + publicKey
+        + '\''
+        + ", fingerprint='"
+        + fingerprint
+        + '\''
+        + '}';
+  }
+
+  public String getFingerprint() {
+    return fingerprint;
+  }
+
+  public void setFingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+  }
+
+  private String fingerprint;
+
   public String getId() {
     return id;
   }
@@ -86,23 +117,5 @@ public class Key implements Serializable {
 
   public void setProjectId(String projectId) {
     this.projectId = projectId;
-  }
-
-  @Override
-  public String toString() {
-    return "Key{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", projectId='"
-        + projectId
-        + '\''
-        + ", publicKey='"
-        + publicKey
-        + '\''
-        + '}';
   }
 }
