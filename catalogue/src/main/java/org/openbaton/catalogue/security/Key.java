@@ -76,37 +76,6 @@ public class Key implements Serializable {
 
   private String fingerprint;
 
-  @Override
-  public String toString() {
-    return "Key{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", projectId='"
-        + projectId
-        + '\''
-        + ", publicKey='"
-        + publicKey
-        + '\''
-        + ", fingerprint='"
-        + fingerprint
-        + '\''
-        + '}';
-  }
-
-  public String getFingerprint() {
-    return fingerprint;
-  }
-
-  public void setFingerprint(String fingerprint) {
-    this.fingerprint = fingerprint;
-  }
-
-  private String fingerprint;
-
   public String getId() {
     return id;
   }
