@@ -97,4 +97,13 @@ public class VnfmUtils {
     vnfmOrScalingMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
     return vnfmOrScalingMessage;
   }
+
+  public static NFVMessage getNfvMessageStartStop(
+      Action action, VirtualNetworkFunctionRecord payload, VNFCInstance vnfcInstance) {
+    VnfmOrStartStopMessage vnfmOrStartStopMessage = new VnfmOrStartStopMessage();
+    vnfmOrStartStopMessage.setVirtualNetworkFunctionRecord(payload);
+    vnfmOrStartStopMessage.setVnfcInstance(vnfcInstance);
+    vnfmOrStartStopMessage.setAction(action);
+    return vnfmOrStartStopMessage;
+  }
 }

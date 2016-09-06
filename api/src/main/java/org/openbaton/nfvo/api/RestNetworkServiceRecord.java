@@ -328,6 +328,40 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
   }
 
+  @RequestMapping(
+    value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}/start",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public void startVNFCInstance(
+      @PathVariable("id") String id,
+      @PathVariable("idVnf") String idVnf,
+      @PathVariable("idVdu") String idVdu,
+      @PathVariable("idVNFCI") String idVNFCI,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadFormatException, WrongStatusException {
+    log.debug("start a VNF component instance");
+    networkServiceRecordManagement.startVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
+  }
+
+  @RequestMapping(
+    value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}/stop",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public void stopVNFCInstance(
+      @PathVariable("id") String id,
+      @PathVariable("idVnf") String idVnf,
+      @PathVariable("idVdu") String idVdu,
+      @PathVariable("idVNFCI") String idVNFCI,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadFormatException, WrongStatusException {
+    log.debug("stop a VNF component instance");
+    networkServiceRecordManagement.stopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
+  }
+
   /////// Fault management utilities
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/standby",

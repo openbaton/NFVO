@@ -34,10 +34,7 @@ import javax.persistence.UniqueConstraint;
  * Created by mpa on 09.08.16.
  */
 @Entity
-@Table(
-  name = "PublicKeys",
-  uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
-)
+@Table(name = "PublicKeys", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
 public class Key implements Serializable {
 
   @Id private String id;
@@ -46,8 +43,38 @@ public class Key implements Serializable {
 
   private String projectId;
 
-  @Column(length = 500)
-  private String publicKey;
+  @Column(length = 500) private String publicKey;
+
+  @Override
+  public String toString() {
+    return "Key{" +
+           "id='" +
+           id +
+           '\'' +
+           ", name='" +
+           name +
+           '\'' +
+           ", projectId='" +
+           projectId +
+           '\'' +
+           ", publicKey='" +
+           publicKey +
+           '\'' +
+           ", fingerprint='" +
+           fingerprint +
+           '\'' +
+           '}';
+  }
+
+  public String getFingerprint() {
+    return fingerprint;
+  }
+
+  public void setFingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+  }
+
+  private String fingerprint;
 
   @Override
   public String toString() {
@@ -84,7 +111,8 @@ public class Key implements Serializable {
     return id;
   }
 
-  public Key() {}
+  public Key() {
+  }
 
   public void setId(String id) {
     this.id = id;

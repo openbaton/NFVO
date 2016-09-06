@@ -21,6 +21,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -91,8 +92,11 @@ public class ModifyTask extends AbstractTask {
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+    /*vnfmSender.sendCommand(
+    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfmSender.sendCommand(
-        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
   }
 

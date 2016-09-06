@@ -16,8 +16,10 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
@@ -31,6 +33,9 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
+import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.StartTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.StopTask;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -220,7 +225,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         break;
       case SCALED:
         status = Status.ACTIVE;
-        break;
+        {
+          VNFCInstance vnfciScaled = ((ScaledTask) this).getVnfcInstance();
+          vnfciScaled.setState("ACTIVE");
+          break;
+        }
       case RELEASE_RESOURCES_FINISH:
         status = Status.TERMINATED;
         break;
@@ -230,7 +239,49 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
       case CONFIGURE:
         break;
       case START:
-        status = Status.ACTIVE;
+        {
+          VNFCInstance vnfciStarted = ((StartTask) this).getVnfcInstance();
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+            for (VNFCInstance instanceInVNFR : vdu.getVnfc_instance()) {
+
+              log.debug("VNFCInstance: " + instanceInVNFR.getHostname());
+
+              // if vnfciStarted is not null then the START message received refers to the VNFCInstance
+              if (vnfciStarted != null) {
+                if (instanceInVNFR.getId().equals(vnfciStarted.getId())) {
+                  instanceInVNFR.setState("ACTIVE");
+                }
+              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to "ACTIVE"
+                instanceInVNFR.setState("ACTIVE");
+              }
+            }
+          }
+
+          status = Status.ACTIVE;
+          break;
+        }
+      case STOP:
+        VNFCInstance vnfciStopped = ((StopTask) this).getVnfcInstance();
+        boolean stopVNFR = true;
+
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+          for (VNFCInstance instanceInVNFR : vdu.getVnfc_instance()) {
+
+            // if vnfciStopped is NOT null then the STOP message received refers to the VNFCInstance
+            if (vnfciStopped != null) {
+              // set the status of the stopped VNFCInstance inside the VNFR to "INACTIVE"
+              if (instanceInVNFR.getId().equals(vnfciStopped.getId()))
+                instanceInVNFR.setState("INACTIVE");
+
+              // check for the "last VNFCInstance being stopped": as long as in the record there is
+              // at least one VNFCInstance in state "ACTIVE" then the VNFR status remains "ACTIVE"
+              if (instanceInVNFR.getState().equals("ACTIVE")) stopVNFR = false;
+            } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to "INACTIVE"
+              instanceInVNFR.setState("INACTIVE");
+            }
+          }
+        }
+        if (stopVNFR) status = Status.INACTIVE;
         break;
     }
     virtualNetworkFunctionRecord.setStatus(status);

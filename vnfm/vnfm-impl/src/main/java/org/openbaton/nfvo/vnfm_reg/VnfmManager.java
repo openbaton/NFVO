@@ -36,17 +36,8 @@ import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -55,12 +46,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vnfm_reg.tasks.AllocateresourcesTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ErrorTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.HealTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ScaledTask;
-import org.openbaton.nfvo.vnfm_reg.tasks.ScalingTask;
+import org.openbaton.nfvo.vnfm_reg.tasks.*;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
@@ -482,6 +468,16 @@ public class VnfmManager
       ((AllocateresourcesTask) task)
           .setKeys(new HashSet<>(vnfmOrAllocateResourcesMessage.getKeyPairs()));
       ((AllocateresourcesTask) task).setUserData(vnfmOrAllocateResourcesMessage.getUserdata());
+    } else if (nfvMessage.getAction().ordinal() == Action.START.ordinal()) {
+      VnfmOrStartStopMessage vnfmOrStartStopMessage = (VnfmOrStartStopMessage) nfvMessage;
+      virtualNetworkFunctionRecord = vnfmOrStartStopMessage.getVirtualNetworkFunctionRecord();
+      VNFCInstance vnfcInstance = vnfmOrStartStopMessage.getVnfcInstance();
+      if (vnfcInstance != null) ((StartTask) task).setVnfcInstance(vnfcInstance);
+    } else if (nfvMessage.getAction().ordinal() == Action.STOP.ordinal()) {
+      VnfmOrStartStopMessage vnfmOrStartStopMessage = (VnfmOrStartStopMessage) nfvMessage;
+      virtualNetworkFunctionRecord = vnfmOrStartStopMessage.getVirtualNetworkFunctionRecord();
+      VNFCInstance vnfcInstance = vnfmOrStartStopMessage.getVnfcInstance();
+      if (vnfcInstance != null) ((StopTask) task).setVnfcInstance(vnfcInstance);
     } else {
       VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
@@ -638,7 +634,6 @@ public class VnfmManager
     }
     VnfmSender vnfmSender;
     try {
-
       vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
     } catch (BeansException e) {
       throw new NotFoundException(e);

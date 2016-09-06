@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.DependencyQueuer;
@@ -132,8 +133,11 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getName()
             + " because it has 0 dependencies");
     log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
+    /*vnfmSender.sendCommand(
+    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfmSender.sendCommand(
-        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
   }
 

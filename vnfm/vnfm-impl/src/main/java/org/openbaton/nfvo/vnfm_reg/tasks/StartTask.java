@@ -21,7 +21,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -41,6 +41,9 @@ public class StartTask extends AbstractTask {
 
   @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
 
+  private String ordered;
+  private VNFCInstance vnfcInstance;
+
   @Override
   public boolean isAsync() {
     return true;
@@ -50,7 +53,13 @@ public class StartTask extends AbstractTask {
     this.ordered = ordered;
   }
 
-  private String ordered;
+  public VNFCInstance getVnfcInstance() {
+    return vnfcInstance;
+  }
+
+  public void setVnfcInstance(VNFCInstance vnfcInstance) {
+    this.vnfcInstance = vnfcInstance;
+  }
 
   @Override
   public NFVMessage doWork() throws Exception {
@@ -95,8 +104,11 @@ public class StartTask extends AbstractTask {
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+    /*vnfmSender.sendCommand(
+    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfmSender.sendCommand(
-        new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
   }
 }

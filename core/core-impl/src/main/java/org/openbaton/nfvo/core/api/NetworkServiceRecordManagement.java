@@ -34,6 +34,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
@@ -516,7 +517,6 @@ public class NetworkServiceRecordManagement
           "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
-
       throw new WrongStatusException(
           "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
     }
@@ -528,6 +528,95 @@ public class NetworkServiceRecordManagement
         virtualNetworkFunctionRecord,
         virtualDeploymentUnit,
         getVNFCI(virtualDeploymentUnit, idVNFCI));
+  }
+
+  @Override
+  public void startVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException {
+    startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.START);
+  }
+
+  @Override
+  public void stopVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+      throws NotFoundException, WrongStatusException {
+    startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.STOP);
+  }
+
+  private void startStopVNFCInstance(
+      String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
+      throws NotFoundException, WrongStatusException {
+    NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
+    if (!networkServiceRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+    if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    VirtualDeploymentUnit virtualDeploymentUnit =
+        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+    if (virtualDeploymentUnit.getProjectId() != null
+        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+
+    VNFCInstance vnfcInstanceToStartStop = null;
+    for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+      log.debug(
+          "VNFCInstance: (ID: "
+              + vnfcInstance.getId()
+              + " - HOSTNAME: "
+              + vnfcInstance.getHostname()
+              + " - STATE: "
+              + vnfcInstance.getState()
+              + ")");
+      if (vnfcInstance.getId().equals(idVNFCI)) {
+        vnfcInstanceToStartStop = vnfcInstance;
+        switch (action) {
+          case START:
+            log.debug(
+                "VNFCInstance to be started: "
+                    + vnfcInstanceToStartStop.getId()
+                    + " - "
+                    + vnfcInstanceToStartStop.getHostname());
+            break;
+          case STOP:
+            log.debug(
+                "VNFCInstance to be stopped: "
+                    + vnfcInstanceToStartStop.getId()
+                    + " - "
+                    + vnfcInstanceToStartStop.getHostname());
+            break;
+        }
+      }
+    }
+    if (vnfcInstanceToStartStop == null) {
+      switch (action) {
+        case START:
+          throw new NotFoundException("VNFCInstance to be started NOT FOUND");
+        case STOP:
+          throw new NotFoundException("VNFCInstance to be stopped NOT FOUND");
+      }
+    }
+
+    OrVnfmStartStopMessage startStopMessage =
+        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, vnfcInstanceToStartStop);
+    switch (action) {
+      case START:
+        startStopMessage.setAction(Action.START);
+        break;
+      case STOP:
+        startStopMessage.setAction(Action.STOP);
+        break;
+    }
+
+    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, startStopMessage);
   }
 
   @Override
@@ -566,7 +655,7 @@ public class NetworkServiceRecordManagement
         log.debug("VNFComponentInstance in " + mode + " mode FOUND :" + standByVNFCInstance);
       }
       if (vnfcInstance.getId().equals(failedVnfcInstance.getId())) {
-        vnfcInstance.setState("failed");
+        vnfcInstance.setState("FAILED");
         log.debug(
             "The vnfcInstance: "
                 + vnfcInstance.getHostname()
@@ -650,6 +739,37 @@ public class NetworkServiceRecordManagement
 
     vduRepository.save(virtualDeploymentUnit);
 
+    log.debug("Calculating NSR status");
+    log.debug("Actual NSR stats is: " + networkServiceRecord.getStatus());
+    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+      boolean stopVNFR = true;
+      for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+        for (VNFCInstance instanceInVNFR : vdu.getVnfc_instance()) {
+
+          log.debug("VNFCInstance status is: " + instanceInVNFR.getState());
+          // if vnfciStarted is not null then the START message received refers to the VNFCInstance
+          if (instanceInVNFR.getState() != null) {
+            if ((instanceInVNFR.getState().equals("ACTIVE"))
+                && (networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())) {
+              stopVNFR = false;
+              break;
+            }
+          }
+        }
+      }
+      if (stopVNFR) {
+        virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
+        break;
+      }
+    }
+
+    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+      if (vnfr.getStatus().ordinal() == Status.INACTIVE.ordinal()) {
+        networkServiceRecord.setStatus(Status.INACTIVE);
+        break;
+      }
+    }
+
     ApplicationEventNFVO event =
         new ApplicationEventNFVO(Action.SCALE_IN, virtualNetworkFunctionRecord);
     EventNFVO eventNFVO = new EventNFVO(this);
@@ -657,7 +777,8 @@ public class NetworkServiceRecordManagement
     log.debug("Publishing event: " + event);
     publisher.dispatchEvent(eventNFVO);
 
-    networkServiceRecord.setStatus(Status.ACTIVE);
+    if (networkServiceRecord.getStatus().ordinal() == Status.SCALING.ordinal())
+      networkServiceRecord.setStatus(Status.ACTIVE);
     nsrRepository.save(networkServiceRecord);
   }
 
@@ -705,6 +826,16 @@ public class NetworkServiceRecordManagement
       throw new NotFoundException("No VirtualNetworkFunctionRecord found with id " + idVnf);
     }
     return virtualNetworkFunctionRecord;
+  }
+
+  private synchronized NetworkServiceRecord getNetworkServiceRecordInAnyState(String id)
+      throws NotFoundException, WrongStatusException {
+    NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException("No NetworkServiceRecord found with id " + id);
+    }
+
+    return networkServiceRecord;
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInActiveState(String id)
