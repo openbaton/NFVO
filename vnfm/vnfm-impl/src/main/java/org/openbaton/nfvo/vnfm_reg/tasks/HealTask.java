@@ -3,6 +3,7 @@ package org.openbaton.nfvo.vnfm_reg.tasks;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -66,9 +66,9 @@ public class HealTask extends AbstractTask {
     if (vnfcInstance.getState() != null && vnfcInstance.getState().equals("active"))
       log.debug("The vnfcInstance activated is: " + vnfcInstance.toString());
     else {
-      log.error(
-          "The vnfcInstance returned for the switch to standby function has STATE null or different to ACTIVE");
-      return null;
+            log.error(
+                "The vnfcInstance returned for the switch to standby function has STATE null or different to ACTIVE");
+            return null;
     }
 
     //Find all the dependency (VNFC) sources where I am the target
@@ -187,18 +187,11 @@ public class HealTask extends AbstractTask {
       log.debug("Dependency updated: " + dependency);
       //----
 
-      /*//Preparing scaling in message
-      OrVnfmScalingMessage orVnfmScalingMessage = new OrVnfmScalingMessage();
-      orVnfmScalingMessage.setAction(Action.SCALE_IN);
-      orVnfmScalingMessage.setVirtualNetworkFunctionRecord(vnfrToNotify);
-      orVnfmScalingMessage.setVnfcInstance(failedVnfc);
-
-      //Getting the sender
-      VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());
-      VnfmSender vnfmSender = this.getVnfmSender(vnfmManagerEndpoint.getEndpointType());
-      vnfmSender.sendCommand(orVnfmScalingMessage, vnfmManagerEndpoint);
-      log.debug("scaling in message sent");
-      Thread.sleep(2000);*/
+      /**
+       * Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH
+       */
+      vnfrToNotify.setStatus(Status.INITIALIZED);
+      vnfrToNotify = vnfrRepository.save(vnfrToNotify);
       VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());
       VnfmSender vnfmSender = this.getVnfmSender(vnfmManagerEndpoint.getEndpointType());
 
