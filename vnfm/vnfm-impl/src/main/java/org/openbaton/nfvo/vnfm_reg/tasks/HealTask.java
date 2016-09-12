@@ -66,9 +66,9 @@ public class HealTask extends AbstractTask {
     if (vnfcInstance.getState() != null && vnfcInstance.getState().equals("active"))
       log.debug("The vnfcInstance activated is: " + vnfcInstance.toString());
     else {
-            log.error(
-                "The vnfcInstance returned for the switch to standby function has STATE null or different to ACTIVE");
-            return null;
+      log.error(
+          "The vnfcInstance returned for the switch to standby function has STATE null or different to ACTIVE");
+      return null;
     }
 
     //Find all the dependency (VNFC) sources where I am the target
