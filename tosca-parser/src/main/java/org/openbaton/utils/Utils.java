@@ -16,6 +16,7 @@
 
 package org.openbaton.utils;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.yaml.snakeyaml.TypeDescription;
@@ -102,5 +103,27 @@ public final class Utils {
 
     Yaml yaml = new Yaml(constructor);
     return yaml.loadAs(someYaml, VNFDTemplate.class);
+  }
+
+  public static VNFDTemplate bytesToVNFDTemplate(ByteArrayOutputStream b) {
+
+    Constructor constructor = new Constructor(VNFDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(new ByteArrayInputStream(b.toByteArray()), VNFDTemplate.class);
+  }
+
+  public static NSDTemplate bytesToNSDTemplate(ByteArrayOutputStream b) {
+
+    Constructor constructor = new Constructor(NSDTemplate.class);
+    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
+
+    constructor.addTypeDescription(projectDesc);
+
+    Yaml yaml = new Yaml(constructor);
+    return yaml.loadAs(new ByteArrayInputStream(b.toByteArray()), NSDTemplate.class);
   }
 }
