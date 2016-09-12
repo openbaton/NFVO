@@ -75,4 +75,4 @@ dependencies {
     compile project(':main')
 }
 
-build.dependsOn verifyGoogleJavaFormat
+compileJava.dependsOn tasks.googleJavaFormat
