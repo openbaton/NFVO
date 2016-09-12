@@ -459,6 +459,7 @@ public class OpenstackVIM extends GenericVIM {
               + ". Caused by: "
               + e.getMessage(),
           e,
+          vdu,
           vnfcInstance);
     }
 

@@ -16,6 +16,7 @@
 
 package org.openbaton.exceptions;
 
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 
 /**
@@ -23,6 +24,16 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
  */
 public class VimException extends Exception {
   private VNFCInstance vnfcInstance;
+
+  public VirtualDeploymentUnit getVirtualDeploymentUnit() {
+    return virtualDeploymentUnit;
+  }
+
+  public void setVirtualDeploymentUnit(VirtualDeploymentUnit virtualDeploymentUnit) {
+    this.virtualDeploymentUnit = virtualDeploymentUnit;
+  }
+
+  private VirtualDeploymentUnit virtualDeploymentUnit;
 
   public VimException(String s) {
     super(s);
@@ -36,8 +47,13 @@ public class VimException extends Exception {
     super(message, cause);
   }
 
-  public VimException(String s, Exception e, VNFCInstance vnfcInstance) {
+  public VimException(
+      String s,
+      Exception e,
+      VirtualDeploymentUnit virtualDeploymentUnit,
+      VNFCInstance vnfcInstance) {
     super(s, e);
+    this.virtualDeploymentUnit = virtualDeploymentUnit;
     this.vnfcInstance = vnfcInstance;
   }
 

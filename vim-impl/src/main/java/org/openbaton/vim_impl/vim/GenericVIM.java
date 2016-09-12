@@ -1163,6 +1163,7 @@ public class GenericVIM extends Vim {
               + ". Caused by: "
               + e.getMessage(),
           e,
+          vdu,
           vnfcInstance);
     }
 
