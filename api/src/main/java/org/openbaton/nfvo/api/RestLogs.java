@@ -1,6 +1,7 @@
 package org.openbaton.nfvo.api;
 
 import com.google.gson.JsonObject;
+
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.LogManagement;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,16 +37,20 @@ public class RestLogs {
       throws NotFoundException {
 
     int lines = 0;
-    if (request != null) lines = request.get("lines").getAsInt();
+    if (request != null) {
+      lines = request.get("lines").getAsInt();
+    }
 
     log.debug("requesting last " + lines + " lines");
 
-    List<String> logs = logManager.getLog(nsrId, vnfrName, hostname);
-    log.debug("There are " + logs.size() + " lines");
+    HashMap<String, List<String>> logs = logManager.getLog(nsrId, vnfrName, hostname);
+    log.debug("There are " + logs.get("error").size() + " lines for error logs");
+    log.debug("There are " + logs.get("output").size() + " lines for output logs");
     if (lines > 0) {
-      List<String> subList = logs.subList(logs.size() - lines - 1, logs.size() - 1);
-      log.debug("returning " + subList);
-      return subList;
-    } else return logs;
+      logs.put(
+          "output",
+          logs.get("output").subList(logs.size() - lines - 1, logs.get("output").size() - 1));
+    }
+    return logs.get("error").size() == 0 ? logs.get("output") : logs.get("error");
   }
 }

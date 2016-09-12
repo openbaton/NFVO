@@ -1,9 +1,9 @@
 package org.openbaton.nfvo.core.core;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
+
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by lto on 17/05/16.
@@ -32,8 +32,7 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public List<String> getLog(String nsrId, String vnfrName, String hostname)
-      throws NotFoundException {
+  public HashMap getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException {
     for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
         networkServiceRecordRepository.findFirstById(nsrId).getVnfr()) {
       if (virtualNetworkFunctionRecord.getName().equals(vnfrName)) {
@@ -47,26 +46,29 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
                       rabbitTemplate.convertSendAndReceive(
                           "nfvo.vnfm.logs",
                           "{\"vnfrName\":\"" + vnfrName + "\", \"hostname\":\"" + hostname + "\"}");
-              log.debug("RECEIVED: " + json);
+              log.trace("RECEIVED: " + json);
 
               JsonReader reader = new JsonReader(new StringReader(json));
               reader.setLenient(true);
-              JsonArray answer = null;
+              JsonObject answer = null;
               try {
                 answer =
                     ((JsonObject) gson.fromJson(reader, JsonObject.class))
                         .get("answer")
-                        .getAsJsonArray();
-              } catch (IllegalStateException ignored) {
+                        .getAsJsonObject();
+              } catch (IllegalStateException e) {
                 LinkedList<String> error = new LinkedList<>();
                 error.add(
                     ((JsonObject) gson.fromJson(reader, JsonObject.class))
                         .get("answer")
                         .getAsString());
-                return error;
+                for (String line : error) {
+                  log.error(line);
+                }
+                throw e;
               }
-              log.debug("ANSWER: " + answer);
-              return gson.fromJson(answer, LinkedList.class);
+              log.trace("ANSWER: " + answer);
+              return gson.fromJson(answer, HashMap.class);
             }
           }
         }
