@@ -34,6 +34,7 @@
                     <td><input type="checkbox" ng-model="main.checkbox"></td>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'task'; reverse = !reverse">Task <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
@@ -45,6 +46,7 @@
                     <td><a popover="Show Info for this NSR" popover-placement="right" popover-trigger="mouseenter"
                            href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
                     <td>{{data.name}}</td>
+                    <td>{{data.task}}</td>
                     <td>{{data.status}}</td>
                     <td>{{data.createdAt}}</td>
 

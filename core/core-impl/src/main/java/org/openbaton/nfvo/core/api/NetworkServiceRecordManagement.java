@@ -347,6 +347,8 @@ public class NetworkServiceRecordManagement
       VNFComponent component,
       String mode)
       throws BadFormatException, NotFoundException {
+
+    networkServiceRecord.setTask("Scaling out");
     List<String> componentNetworks = new ArrayList<>();
 
     for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
@@ -377,7 +379,7 @@ public class NetworkServiceRecordManagement
 
     //        virtualDeploymentUnit.getVnfc().add(component);
     vnfcRepository.save(component);
-    nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.save(networkServiceRecord);
     log.debug("new VNFComponent is " + component);
 
     VNFRecordDependency dependencyTarget =
@@ -706,6 +708,8 @@ public class NetworkServiceRecordManagement
     List<VNFRecordDependency> dependencySource =
         dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
+    networkServiceRecord.setTask("Scaling in");
+
     if (!dependencySource.isEmpty()) {
       for (VNFRecordDependency dependency : dependencySource) {
         List<String> paramsToRemove = new ArrayList<>();
@@ -777,8 +781,10 @@ public class NetworkServiceRecordManagement
     log.debug("Publishing event: " + event);
     publisher.dispatchEvent(eventNFVO);
 
-    if (networkServiceRecord.getStatus().ordinal() == Status.SCALING.ordinal())
+    if (networkServiceRecord.getStatus().ordinal() == Status.SCALING.ordinal()) {
       networkServiceRecord.setStatus(Status.ACTIVE);
+      networkServiceRecord.setTask("Scaled in");
+    }
     nsrRepository.save(networkServiceRecord);
   }
 
@@ -873,6 +879,7 @@ public class NetworkServiceRecordManagement
     networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceRecord.setCreatedAt(format.format(new Date()));
+    networkServiceRecord.setTask("Onboarding");
     networkServiceRecord.setKeyNames(new HashSet<String>());
     if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
       for (Key key : body.getKeys()) {

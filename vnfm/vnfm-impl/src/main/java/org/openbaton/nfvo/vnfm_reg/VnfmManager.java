@@ -603,7 +603,7 @@ public class VnfmManager
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         foundAndSet = true;
       } catch (OptimisticLockingFailureException ignored) {
-        log.info(
+        log.debug(
             "OptimisticLockingFailureException during findAndSet. Don't worry we will try it again.");
         status = Status.TERMINATED;
       }
@@ -618,7 +618,24 @@ public class VnfmManager
                   .size()
               == networkServiceRecord.getVnfr().size();
       if (nsrFilledWithAllVnfr) {
-        publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+
+        if (networkServiceRecord.getTask().contains("Scaling in")) {
+          networkServiceRecord.setTask("Scaled in");
+          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
+          publishEvent(Action.SCALE_IN, networkServiceRecord);
+        } else if (networkServiceRecord.getTask().contains("Scaling out")) {
+          networkServiceRecord.setTask("Scaled out");
+          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
+          publishEvent(Action.SCALE_OUT, networkServiceRecord);
+        } else if (networkServiceRecord.getTask().contains("Healing")) {
+          networkServiceRecord.setTask("Healed");
+          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
+          publishEvent(Action.HEAL, networkServiceRecord);
+        } else {
+          networkServiceRecord.setTask("Onboarded");
+          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
+          publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+        }
       } else {
         log.debug("Nsr is ACTIVE but not all vnfr have been received");
       }
@@ -627,7 +644,23 @@ public class VnfmManager
       nsrRepository.delete(networkServiceRecord);
     }
 
-    log.debug("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
+    log.trace("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
+  }
+
+  private NetworkServiceRecord safeSaveNetworkServiceRecord(
+      NetworkServiceRecord networkServiceRecord) {
+    boolean foundAndSet = false;
+
+    while (!foundAndSet) {
+      try {
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        foundAndSet = true;
+      } catch (OptimisticLockingFailureException ignored) {
+        log.debug(
+            "OptimisticLockingFailureException during findAndSet. Don't worry we will try it again.");
+      }
+    }
+    return networkServiceRecord;
   }
 
   private void publishEvent(Action action, Serializable payload) {
