@@ -2,7 +2,6 @@ package org.openbaton.nfvo.api.interceptors;
 
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
-import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -51,7 +49,9 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
                 + request.getMethod()
                 + " on "
                 + request.getRequestURI());
-        if (request.getMethod().equalsIgnoreCase("get") && request.getRequestURI().equals("/")) {
+        if (isLogin(request)) {
+          return true;
+        } else if (alwaysAllowedPath(request)) {
           return true;
         } else {
           return false;
@@ -65,6 +65,18 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
               + request.getRequestURI());
       return false;
     }
+  }
+
+  //TODO realize this configurable
+  private boolean alwaysAllowedPath(HttpServletRequest request) {
+    return (request.getMethod().equalsIgnoreCase("post")
+            && request.getRequestURI().equals("/admin/v1/vnfm-register"))
+        || (request.getMethod().equalsIgnoreCase("post")
+            && request.getRequestURI().equals("/admin/v1/vnfm-unregister"));
+  }
+
+  private boolean isLogin(HttpServletRequest request) {
+    return request.getMethod().equalsIgnoreCase("get") && request.getRequestURI().equals("/");
   }
 
   private boolean checkAuthorization(
