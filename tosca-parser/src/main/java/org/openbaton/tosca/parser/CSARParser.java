@@ -225,8 +225,6 @@ public class CSARParser {
 
     VNFDTemplate vnfdTemplate = Utils.bytesToVNFDTemplate(this.template);
     VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
-
-    createVNFPackage(vnfd, this.scripts);
   }
 
   public VirtualNetworkFunctionDescriptor parseVNFDCSARFromByte(byte[] bytes, String projectId)
@@ -259,22 +257,6 @@ public class CSARParser {
 
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-
-    ArrayList<String> ids = new ArrayList<>();
-
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      vnfpList.add(createVNFPackage(vnfd, scripts));
-      ids.add("asgasgas");
-    }
-
-    nsd.getVnfd().clear();
-
-    for (String id : ids) {
-
-      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
-      vnfd.setId(id);
-      nsd.getVnfd().add(vnfd);
-    }
 
     return nsd;
   }
