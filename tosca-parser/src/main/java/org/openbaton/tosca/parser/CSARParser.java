@@ -77,13 +77,9 @@ public class CSARParser {
 
         if (file_name.endsWith(".meta")) {
           this.metadata = baos;
-        }
-
-        if (file_name.endsWith(".yaml")) {
+        } else if (file_name.endsWith(".yaml")) {
           this.template = baos;
-        }
-
-        if (file_name.endsWith(".sh")) {
+        } else {
 
           Script script = new Script();
           String[] splittedName = file_name.split("/");
@@ -202,10 +198,6 @@ public class CSARParser {
     my_tar_ball.finish();
     /* Close output stream, our files are zipped */
     tar_output.close();
-
-    try (OutputStream outputStream = new FileOutputStream(vnfd.getName() + ".tar")) {
-      tar_output.writeTo(outputStream);
-    }
 
     return tar_output;
   }
