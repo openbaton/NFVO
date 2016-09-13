@@ -89,7 +89,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
-    $interval(loadNumbers, 2000);
+    $interval(loadNumbers, 120000);
     $scope.config = {};
     $scope.userLogged = {};
     function loadCurrentUser() {
