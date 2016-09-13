@@ -6,7 +6,7 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 templateUrl: 'login.html',
                 controller: 'LoginController'
             }).
-            when('/', {
+            when('/main', {
                 templateUrl: 'pages/contents.html',
                 controller: 'IndexCtrl'
             }).
