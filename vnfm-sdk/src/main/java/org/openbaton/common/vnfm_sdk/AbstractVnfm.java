@@ -214,7 +214,8 @@ public abstract class AbstractVnfm
           break;
         case SCALE_OUT:
           scalingMessage = (OrVnfmScalingMessage) message;
-          // TODO I don't know if, using a bean of this class the instance can be destroyed and recreated and parameters could be lost
+          // TODO I don't know if, using a bean of this class the instance can be destroyed and recreated and
+          // parameters could be lost
           getExtension(scalingMessage.getExtension());
 
           nsrId = scalingMessage.getVirtualNetworkFunctionRecord().getParent_ns_id();
@@ -333,7 +334,16 @@ public abstract class AbstractVnfm
           grantOperation.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
           Future<OrVnfmGrantLifecycleOperationMessage> result = executor.submit(grantOperation);
-          OrVnfmGrantLifecycleOperationMessage msg = result.get();
+          OrVnfmGrantLifecycleOperationMessage msg;
+          try {
+            msg = result.get();
+            if (msg == null) {
+              return;
+            }
+          } catch (ExecutionException e) {
+            log.error("Got exception while allocating vms");
+            throw e.getCause();
+          }
 
           virtualNetworkFunctionRecord = msg.getVirtualNetworkFunctionRecord();
           Map<String, VimInstance> vimInstanceChosen = msg.getVduVim();
@@ -347,7 +357,9 @@ public abstract class AbstractVnfm
             allocateResources.setKeyPairs(orVnfmInstantiateMessage.getKeys());
             try {
               virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
-              if (virtualNetworkFunctionRecord == null) return;
+              if (virtualNetworkFunctionRecord == null) {
+                return;
+              }
             } catch (ExecutionException e) {
               log.error("Got exception while allocating vms");
               throw e.getCause();
@@ -414,13 +426,17 @@ public abstract class AbstractVnfm
             VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
 
             if (vnfcInstance == null) // Start the VNF Record
-            nfvMessage = VnfmUtils.getNfvMessage(Action.START, start(virtualNetworkFunctionRecord));
-            else // Start the VNFC Instance
-            nfvMessage =
+            {
+              nfvMessage =
+                  VnfmUtils.getNfvMessage(Action.START, start(virtualNetworkFunctionRecord));
+            } else // Start the VNFC Instance
+            {
+              nfvMessage =
                   VnfmUtils.getNfvMessageStartStop(
                       Action.START,
                       startVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
                       vnfcInstance);
+            }
             break;
           }
         case STOP:
@@ -431,13 +447,16 @@ public abstract class AbstractVnfm
             VNFCInstance vnfcInstance = orVnfmStartStopMessage.getVnfcInstance();
 
             if (vnfcInstance == null) // Stop the VNF Record
-            nfvMessage = VnfmUtils.getNfvMessage(Action.STOP, stop(virtualNetworkFunctionRecord));
-            else // Stop the VNFC Instance
-            nfvMessage =
+            {
+              nfvMessage = VnfmUtils.getNfvMessage(Action.STOP, stop(virtualNetworkFunctionRecord));
+            } else // Stop the VNFC Instance
+            {
+              nfvMessage =
                   VnfmUtils.getNfvMessageStartStop(
                       Action.STOP,
                       stopVNFCInstance(virtualNetworkFunctionRecord, vnfcInstance),
                       vnfcInstance);
+            }
 
             break;
           }
@@ -616,14 +635,19 @@ public abstract class AbstractVnfm
       } catch (Exception e) {
         throw new VnfmSdkException("Not able to grant operation", e, virtualNetworkFunctionRecord);
       }
-      if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
-        throw new VnfmSdkException(
-            "Not able to grant operation because: " + ((OrVnfmErrorMessage) response).getMessage(),
-            ((OrVnfmErrorMessage) response).getVnfr());
+      if (response != null) {
+        if (response.getAction().ordinal() == Action.ERROR.ordinal()) {
+          throw new VnfmSdkException(
+              "Not able to grant operation because: "
+                  + ((OrVnfmErrorMessage) response).getMessage(),
+              ((OrVnfmErrorMessage) response).getVnfr());
+        }
+        OrVnfmGrantLifecycleOperationMessage orVnfmGrantLifecycleOperationMessage =
+            (OrVnfmGrantLifecycleOperationMessage) response;
+
+        return orVnfmGrantLifecycleOperationMessage;
       }
-      OrVnfmGrantLifecycleOperationMessage orVnfmGrantLifecycleOperationMessage =
-          (OrVnfmGrantLifecycleOperationMessage) response;
-      return orVnfmGrantLifecycleOperationMessage;
+      return null;
     }
 
     @Override
