@@ -51,7 +51,7 @@ public class ErrorTask extends AbstractTask {
     } else log.error("ERROR from VNFM: " + this.getException().getMessage());
 
     if (virtualNetworkFunctionRecord.getId() == null)
-      vnfrRepository.save(virtualNetworkFunctionRecord);
+      saveVirtualNetworkFunctionRecord();
 
     if (virtualNetworkFunctionRecord != null) {
       try {
