@@ -143,7 +143,7 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 controller: 'keyPairsCtrl'
             }).
             otherwise({
-//                        redirectTo: '/'
+                        redirectTo: '/main'
             });
         $locationProvider.html5Mode(false);
     });

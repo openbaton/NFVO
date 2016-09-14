@@ -92,6 +92,9 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $interval(loadNumbers, 120000);
     $scope.config = {};
     $scope.userLogged = {};
+    loadCurrentUser();
+    loadNumbers();
+
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
@@ -102,7 +105,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
                 showError(status, response);
             });
     };
-    loadCurrentUser();
+
     function getConfig() {
 
         http.get(url + '/configurations/')
