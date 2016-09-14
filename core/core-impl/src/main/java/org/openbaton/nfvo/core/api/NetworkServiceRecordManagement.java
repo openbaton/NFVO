@@ -749,7 +749,7 @@ public class NetworkServiceRecordManagement
           log.debug("VNFCInstance status is: " + instanceInVNFR.getState());
           // if vnfciStarted is not null then the START message received refers to the VNFCInstance
           if (instanceInVNFR.getState() != null) {
-            if ((instanceInVNFR.getState().equals("ACTIVE"))
+            if ((instanceInVNFR.getState().equalsIgnoreCase("active"))
                 && (networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())) {
               stopVNFR = false;
               break;
