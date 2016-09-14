@@ -8,7 +8,7 @@ var app = angular.module('app');
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://localhost:8080';
+    //$scope.URL = 'http://lore:8080';
     $scope.URL = '';
     $scope.credential = {
         "username": '',
@@ -89,7 +89,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
     var url = $cookieStore.get('URL') + "/api/v1";
-    //$interval(loadNumbers, 2000);
+    $interval(loadNumbers, 120000);
     $scope.config = {};
     $scope.userLogged = {};
     function loadCurrentUser() {
