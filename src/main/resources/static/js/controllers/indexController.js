@@ -88,6 +88,11 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $('#side-menu').metisMenu();
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
+    $scope.numberNSR = 0;
+    $scope.numberNSD = 0;
+    $scope.numberVNF = 0;
+    $scope.numberUnits = 0;
+    $scope.numberKeys = 0;
     var url = $cookieStore.get('URL') + "/api/v1";
     $interval(loadNumbers, 120000);
     $scope.config = {};
@@ -134,6 +139,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.numberNSD = 0;
     $scope.numberVNF = 0;
     $scope.numberUnits = 0;
+    $scope.numberKeys = 0;
 
     function loadNumbers() {
         http.syncGet(url + '/ns-descriptors/').then(function (data) {
@@ -158,6 +164,10 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
                 });
             });
             $scope.numberUnits = units;
+        });
+
+        http.syncGet(url + '/keys/').then(function (data) {
+            $scope.numberKeys = data.length;
         });
 
     }
