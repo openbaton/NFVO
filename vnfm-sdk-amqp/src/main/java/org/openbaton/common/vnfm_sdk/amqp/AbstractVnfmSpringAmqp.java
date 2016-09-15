@@ -46,8 +46,10 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
 
   @Value("${spring.rabbitmq.host}")
   private String rabbitHost;
+
   @Value("${spring.rabbitmq.username}")
   private String rabbitUsername;
+
   @Value("${spring.rabbitmq.password}")
   private String rabbitPassword;
 
