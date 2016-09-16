@@ -47,6 +47,12 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
   @Value("${spring.rabbitmq.host}")
   private String rabbitHost;
 
+  @Value("${spring.rabbitmq.username}")
+  private String rabbitUsername;
+
+  @Value("${spring.rabbitmq.password}")
+  private String rabbitPassword;
+
   @Autowired private Gson gson;
   @Autowired private ConfigurableApplicationContext context;
 
@@ -75,6 +81,8 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
       ConnectionFactory factory = new ConnectionFactory();
 
       factory.setHost(rabbitHost);
+      factory.setUsername(rabbitUsername);
+      factory.setPassword(rabbitPassword);
       Connection connection = null;
       try {
         connection = factory.newConnection();
