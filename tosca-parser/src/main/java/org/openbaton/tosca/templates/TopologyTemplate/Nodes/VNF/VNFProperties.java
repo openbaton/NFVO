@@ -18,6 +18,7 @@ public class VNFProperties {
   private String endpoint = null;
   private String type = null;
   private VNFInterfaces interfaces = null;
+  private VNFAutoscaling auto_scale_policy = null;
 
   public VNFProperties() {}
 
@@ -28,34 +29,30 @@ public class VNFProperties {
     if (propertiesMap.containsKey("vendor")) {
       vendor = (String) propertiesMap.get("vendor");
     }
-
     if (propertiesMap.containsKey("version")) {
       version = (double) propertiesMap.get("version");
     }
-
     if (propertiesMap.containsKey("vnfPackageLocation")) {
       vnfPackageLocation = (String) propertiesMap.get("vnfPackageLocation");
     }
-
     if (propertiesMap.containsKey("deploymentFlavour")) {
       deploymentFlavour =
           (ArrayList<HashMap<String, String>>) propertiesMap.get("deploymentFlavour");
     }
-
     if (propertiesMap.containsKey("ID")) {
       ID = (String) propertiesMap.get("ID");
     }
-
     if (propertiesMap.containsKey("configurations")) {
       configurations = new VNFConfigurations(propertiesMap.get("configurations"));
     }
-
     if (propertiesMap.containsKey("endpoint")) {
       endpoint = (String) propertiesMap.get("endpoint");
     }
-
     if (propertiesMap.containsKey("type")) {
       type = (String) propertiesMap.get("type");
+    }
+    if (propertiesMap.containsKey("auto_scale_policy")) {
+      auto_scale_policy = new VNFAutoscaling(propertiesMap.get("auto_scale_policy"));
     }
   }
 
@@ -150,6 +147,14 @@ public class VNFProperties {
 
   public void setInterfaces(VNFInterfaces interfaces) {
     this.interfaces = interfaces;
+  }
+
+  public VNFAutoscaling getAuto_scale_policy() {
+    return auto_scale_policy;
+  }
+
+  public void setAuto_scale_policy(VNFAutoscaling auto_scale_policy) {
+    this.auto_scale_policy = auto_scale_policy;
   }
 
   @Override

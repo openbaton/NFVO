@@ -198,4 +198,25 @@ public class ToscaTest {
     Gson gson = new Gson();
     System.out.println(gson.toJson(nsd));
   }
+
+  @Test
+  public void testNSDIperfASTemplate() throws FileNotFoundException, NotSupportedType {
+
+    InputStream nsdFile =
+        new FileInputStream(new File("src/main/resources/Testing/testNSDIperfAutoscaling.yaml"));
+
+    Constructor constructor = new Constructor(NSDTemplate.class);
+    TypeDescription typeDescription = new TypeDescription(NSDTemplate.class);
+    constructor.addTypeDescription(typeDescription);
+
+    Yaml yaml = new Yaml(constructor);
+    NSDTemplate nsdInput = yaml.loadAs(nsdFile, NSDTemplate.class);
+
+    TOSCAParser parser = new TOSCAParser();
+
+    NetworkServiceDescriptor nsd = parser.parseNSDTemplate(nsdInput);
+
+    Gson gson = new Gson();
+    System.out.println(gson.toJson(nsd));
+  }
 }

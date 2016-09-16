@@ -119,6 +119,11 @@ public class TOSCAParser {
     vnfd.setEndpoint(vnf.getProperties().getEndpoint());
     vnfd.setType(vnf.getProperties().getType());
 
+    if (vnf.getProperties().getAuto_scale_policy() != null) {
+
+      vnfd.setAuto_scale_policy(vnf.getProperties().getAuto_scale_policy().getAutoScalePolicySet());
+    }
+
     ArrayList<String> vduList = vnf.getRequirements().getVDUS();
 
     // ADD VDUs
