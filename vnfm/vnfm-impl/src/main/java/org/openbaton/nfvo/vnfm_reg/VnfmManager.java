@@ -33,6 +33,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -44,6 +45,8 @@ import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.*;
@@ -152,6 +155,9 @@ public class VnfmManager
 
   @Value("${nfvo.ems.queue.autodelete:true}")
   private String emsAutodelete;
+
+  @Autowired private VNFDRepository vnfdRepository;
+  @Autowired private VNFRRepository vnfrRepository;
 
   private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
     List<Entry<K, V>> list = new LinkedList<>(map.entrySet());
@@ -413,8 +419,9 @@ public class VnfmManager
   //As a default operation of the NFVO, it get always the first DeploymentFlavour!
   private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd)
       throws NotFoundException {
-    if (!vnfd.getDeployment_flavour().iterator().hasNext())
+    if (!vnfd.getDeployment_flavour().iterator().hasNext()) {
       throw new NotFoundException("There are no DeploymentFlavour in vnfd: " + vnfd.getName());
+    }
     return vnfd.getDeployment_flavour().iterator().next();
   }
 
@@ -472,12 +479,16 @@ public class VnfmManager
       VnfmOrStartStopMessage vnfmOrStartStopMessage = (VnfmOrStartStopMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrStartStopMessage.getVirtualNetworkFunctionRecord();
       VNFCInstance vnfcInstance = vnfmOrStartStopMessage.getVnfcInstance();
-      if (vnfcInstance != null) ((StartTask) task).setVnfcInstance(vnfcInstance);
+      if (vnfcInstance != null) {
+        ((StartTask) task).setVnfcInstance(vnfcInstance);
+      }
     } else if (nfvMessage.getAction().ordinal() == Action.STOP.ordinal()) {
       VnfmOrStartStopMessage vnfmOrStartStopMessage = (VnfmOrStartStopMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrStartStopMessage.getVirtualNetworkFunctionRecord();
       VNFCInstance vnfcInstance = vnfmOrStartStopMessage.getVnfcInstance();
-      if (vnfcInstance != null) ((StopTask) task).setVnfcInstance(vnfcInstance);
+      if (vnfcInstance != null) {
+        ((StopTask) task).setVnfcInstance(vnfcInstance);
+      }
     } else {
       VnfmOrGenericMessage vnfmOrGeneric = (VnfmOrGenericMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrGeneric.getVirtualNetworkFunctionRecord();
@@ -492,11 +503,12 @@ public class VnfmManager
               nsrRepository
                   .findFirstById(virtualNetworkFunctionRecord.getParent_ns_id())
                   .getProjectId());
-          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu())
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
             vdu.setProjectId(
                 nsrRepository
                     .findFirstById(virtualNetworkFunctionRecord.getParent_ns_id())
                     .getProjectId());
+          }
         }
       }
 
@@ -512,9 +524,9 @@ public class VnfmManager
               + virtualNetworkFunctionRecord.hasCyclicDependency());
     }
     log.trace("AsyncExecutor is: " + asyncExecutor);
-    if (isaReturningTask(nfvMessage.getAction()))
+    if (isaReturningTask(nfvMessage.getAction())) {
       return gson.toJson(asyncExecutor.submit(task).get());
-    else {
+    } else {
       asyncExecutor.submit(task);
       return null;
     }
@@ -545,7 +557,8 @@ public class VnfmManager
     Status status = Status.TERMINATED;
     NetworkServiceRecord networkServiceRecord = null;
 
-    // this while loop is necessary because the NSR and it's components might have changed before the save call resulting in an OptimisticLockingFailureException
+    // this while loop is necessary because the NSR and it's components might have changed before the save call
+    // resulting in an OptimisticLockingFailureException
     boolean foundAndSet = false;
     while (!foundAndSet) {
       try {
@@ -599,8 +612,11 @@ public class VnfmManager
                   .getVnfd()
                   .size()
               == networkServiceRecord.getVnfr().size();
-      if (nsrFilledWithAllVnfr) publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
-      else log.debug("Nsr is ACTIVE but not all vnfr have been received");
+      if (nsrFilledWithAllVnfr) {
+        publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+      } else {
+        log.debug("Nsr is ACTIVE but not all vnfr have been received");
+      }
     } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
       publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
       nsrRepository.delete(networkServiceRecord);
@@ -775,7 +791,9 @@ public class VnfmManager
   @Override
   public void removeVnfrName(String nsdId, String vnfrName) {
     vnfrNames.get(nsdId).remove(vnfrName);
-    if (vnfrNames.get(nsdId).isEmpty()) vnfrNames.remove(nsdId);
+    if (vnfrNames.get(nsdId).isEmpty()) {
+      vnfrNames.remove(nsdId);
+    }
   }
 
   @Override
@@ -785,5 +803,22 @@ public class VnfmManager
     task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
     this.asyncExecutor.submit(task);
+  }
+
+  @Override
+  public void updateScript(Script script, String vnfPackageId) throws NotFoundException {
+
+    for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
+      if (vnfd.getVnfPackageLocation().equals(vnfPackageId)) {
+        for (VirtualNetworkFunctionRecord vnfr : vnfrRepository.findAll()) {
+          OrVnfmUpdateMessage orVnfmUpdateMessage = new OrVnfmUpdateMessage();
+          orVnfmUpdateMessage.setScript(script);
+          orVnfmUpdateMessage.setVnfr(vnfr);
+          if (vnfr.getPackageId().equals(vnfPackageId)) {
+            sendMessageToVNFR(vnfr, orVnfmUpdateMessage);
+          }
+        }
+      }
+    }
   }
 }

@@ -25,7 +25,6 @@ import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 /**
  * Created by mpa on 05/05/15.
@@ -76,7 +75,7 @@ public interface VNFPackageManagement {
    */
   void delete(String id, String projectId) throws WrongAction;
 
-  Script updateScript(Script script);
+  Script updateScript(Script script, String vnfPackageId) throws NotFoundException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

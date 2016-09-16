@@ -80,7 +80,7 @@ public class StartTask extends AbstractTask {
         log.trace("VNFCI existing version: " + vnfcInstance.getVersion());
       }
     }
-    
+
     saveVirtualNetworkFunctionRecord();
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {

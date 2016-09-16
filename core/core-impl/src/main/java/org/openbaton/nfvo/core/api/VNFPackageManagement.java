@@ -42,6 +42,7 @@ import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
+import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,7 @@ public class VNFPackageManagement
   @Autowired private ScriptRepository scriptRepository;
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
+  @Autowired private VnfmManager vnfmManager;
 
   public boolean isCascadeDelete() {
     return cascadeDelete;
@@ -308,92 +310,117 @@ public class VNFPackageManagement
       }
       for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
         if (vdu.getVimInstanceName() != null) {
-          for (String vimName : vdu.getVimInstanceName()) {
+          if (vdu.getVimInstanceName().size() != 0) {
+            for (String vimName : vdu.getVimInstanceName()) {
 
-            VimInstance vimInstance = null;
+              VimInstance vimInstance = null;
 
-            for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-              if (vimName.equals(vi.getName())) vimInstance = vi;
-            }
-
-            if (vimInstance == null) {
-              throw new NotFoundException(
-                  "Vim Instance with name " + vimName + " was not found in project: " + projectId);
-            }
-
-            boolean found = false;
-            //First, check for image ids
-            if (imageDetails.containsKey("ids")) {
-              for (NFVImage nfvImage : vimInstance.getImages()) {
-                if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
-                  if (!found) {
-                    vdu.getVm_image().add(nfvImage.getExtId());
-                    found = true;
-                  } else {
-                    throw new NotFoundException(
-                        "VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know which one to choose");
-                  }
+              for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+                if (vimName.equals(vi.getName())) {
+                  vimInstance = vi;
                 }
               }
-            }
 
-            //If no one was found, check for the names
-            if (!found) {
-              if (imageDetails.containsKey("names")) {
+              if (vimInstance == null) {
+                throw new NotFoundException(
+                    "Vim Instance with name "
+                        + vimName
+                        + " was not found in project: "
+                        + projectId);
+              }
+
+              boolean found = false;
+              //First, check for image ids
+              if (imageDetails.containsKey("ids")) {
                 for (NFVImage nfvImage : vimInstance.getImages()) {
-                  if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
+                  if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
                     if (!found) {
                       vdu.getVm_image().add(nfvImage.getExtId());
                       found = true;
                     } else {
                       throw new NotFoundException(
-                          "VNFPackageManagement: Multiple images found with the same name. Do not know which one to choose. To avoid this, define the id");
+                          "VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know "
+                              + "which one to choose");
                     }
                   }
                 }
               }
-            }
-            //if no image was found with the defined ids or names, the image doesn't exist
-            if (!found) {
-              if (imageDetails.get("upload").equals("check")) {
-                if (vnfPackage.getImageLink() == null && imageFile == null) {
-                  throw new NotFoundException(
-                      "VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define at least one if you want to upload a new image");
-                } else if (vnfPackage.getImageLink() != null) {
-                  log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
-                  if (!vimInstances.contains(
-                      vimInstance.getId())) { // check if we didn't already upload it
-                    Vim vim = vimBroker.getVim(vimInstance.getType());
-                    log.debug(
-                        "VNFPackageManagement: Uploading a new Image to VimInstance "
-                            + vimInstance.getName());
-                    image = vim.add(vimInstance, image, vnfPackage.getImageLink());
-                    if (vdu.getVm_image() == null) vdu.setVm_image(new HashSet<String>());
-                    vdu.getVm_image().add(image.getExtId());
-                    vimInstances.add(vimInstance.getId());
-                  }
-                } else if (imageFile != null) {
-                  log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
-                  if (!vimInstances.contains(
-                      vimInstance.getId())) { // check if we didn't already upload it
-                    Vim vim = vimBroker.getVim(vimInstance.getType());
-                    log.debug(
-                        "VNFPackageManagement: Uploading a new Image to VimInstance "
-                            + vimInstance.getName());
-                    image = vim.add(vimInstance, image, imageFile);
-                    if (vdu.getVm_image() == null) vdu.setVm_image(new HashSet<String>());
-                    vimInstances.add(vimInstance.getId());
-                    vdu.getVm_image().add(image.getExtId());
+
+              //If no one was found, check for the names
+              if (!found) {
+                if (imageDetails.containsKey("names")) {
+                  for (NFVImage nfvImage : vimInstance.getImages()) {
+                    if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
+                      if (!found) {
+                        vdu.getVm_image().add(nfvImage.getExtId());
+                        found = true;
+                      } else {
+                        throw new NotFoundException(
+                            "VNFPackageManagement: Multiple images found with the same name. Do not know which one to"
+                                + " choose. To avoid this, define the id");
+                      }
+                    }
                   }
                 }
-              } else {
-                throw new NotFoundException(
-                    "VNFPackageManagement: Neither the defined ids nor the names were found. Use upload option 'check' to get sure that the image will be available");
               }
-            } else {
-              log.debug("VNFPackageManagement: Found image");
+              //if no image was found with the defined ids or names, the image doesn't exist
+              if (!found) {
+                if (imageDetails.get("upload").equals("check")) {
+                  if (vnfPackage.getImageLink() == null && imageFile == null) {
+                    throw new NotFoundException(
+                        "VNFPackageManagement: Neither the image link is defined nor the image file is available. "
+                            + "Please define at least one if you want to upload a new image");
+                  } else if (vnfPackage.getImageLink() != null) {
+                    log.debug(
+                        "VNFPackageManagement: Uploading a new Image by using the image link");
+                    if (!vimInstances.contains(
+                        vimInstance.getId())) { // check if we didn't already upload it
+                      Vim vim = vimBroker.getVim(vimInstance.getType());
+                      log.debug(
+                          "VNFPackageManagement: Uploading a new Image to VimInstance "
+                              + vimInstance.getName());
+                      image = vim.add(vimInstance, image, vnfPackage.getImageLink());
+                      if (vdu.getVm_image() == null) {
+                        vdu.setVm_image(new HashSet<String>());
+                      }
+                      vdu.getVm_image().add(image.getExtId());
+                      vimInstances.add(vimInstance.getId());
+                    }
+                  } else if (imageFile != null) {
+                    log.debug(
+                        "VNFPackageManagement: Uploading a new Image by using the image file");
+                    if (!vimInstances.contains(
+                        vimInstance.getId())) { // check if we didn't already upload it
+                      Vim vim = vimBroker.getVim(vimInstance.getType());
+                      log.debug(
+                          "VNFPackageManagement: Uploading a new Image to VimInstance "
+                              + vimInstance.getName());
+                      image = vim.add(vimInstance, image, imageFile);
+                      if (vdu.getVm_image() == null) {
+                        vdu.setVm_image(new HashSet<String>());
+                      }
+                      vimInstances.add(vimInstance.getId());
+                      vdu.getVm_image().add(image.getExtId());
+                    }
+                  }
+                } else {
+                  throw new NotFoundException(
+                      "VNFPackageManagement: Neither the defined ids nor the names were found. Use upload option "
+                          + "'check' to get sure that the image will be available");
+                }
+              } else {
+                log.debug("VNFPackageManagement: Found image");
+              }
             }
+          } else { // vimInstanceName is not defined, just put the name into the vdu
+            List names = (List) imageDetails.get("names");
+            log.debug("Adding names: " + names);
+            vdu.getVm_image().addAll(names);
           }
+        } else { // vimInstanceName is not defined, just put the name into the vdu
+          List names = (List) imageDetails.get("names");
+          log.debug("Adding names: " + names);
+          vdu.getVm_image().addAll(names);
         }
       }
     }
@@ -486,8 +513,11 @@ public class VNFPackageManagement
   }
 
   @Override
-  public Script updateScript(Script script) {
-    return scriptRepository.save(script);
+  public Script updateScript(Script script, String vnfPackageId) throws NotFoundException {
+
+    script = scriptRepository.save(script);
+    vnfmManager.updateScript(script, vnfPackageId);
+    return script;
   }
 
   @Override

@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -76,4 +77,6 @@ public interface VnfmManager {
   void removeVnfrName(String nsdId, String vnfrName);
 
   void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+  void updateScript(Script script, String vnfPackageId) throws NotFoundException;
 }
