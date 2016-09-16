@@ -58,6 +58,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
       case "HEAL":
         result = gson.fromJson(json, OrVnfmHealVNFRequestMessage.class);
         break;
+      case "UPDATE":
+        result = gson.fromJson(json, OrVnfmUpdateMessage.class);
+        break;
       case "START":
         result = gson.fromJson(json, OrVnfmStartStopMessage.class);
         break;
