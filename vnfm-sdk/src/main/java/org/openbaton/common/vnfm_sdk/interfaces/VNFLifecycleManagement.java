@@ -19,10 +19,10 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,8 +80,12 @@ public interface VNFLifecycleManagement {
 
   /**
    * This operation allows applying a minor/limited software update (e.g. patch) to a VNF instance.
+   *
+   * @param script
+   * @param virtualNetworkFunctionRecord
    */
-  void updateSoftware();
+  VirtualNetworkFunctionRecord updateSoftware(
+      Script script, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
   /**
    * This operation allows making structural changes (e.g. configuration, topology, behavior,

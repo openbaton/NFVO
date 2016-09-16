@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.*;
@@ -157,7 +158,8 @@ public abstract class AbstractVnfm
       throws Exception;
 
   @Override
-  public abstract void updateSoftware();
+  public abstract VirtualNetworkFunctionRecord updateSoftware(
+      Script script, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
   @Override
   public abstract VirtualNetworkFunctionRecord modify(
@@ -394,6 +396,13 @@ public abstract class AbstractVnfm
           nfvMessage = VnfmUtils.getNfvMessage(Action.INSTANTIATE, virtualNetworkFunctionRecord);
           break;
         case RELEASE_RESOURCES_FINISH:
+          break;
+        case UPDATE:
+          OrVnfmUpdateMessage orVnfmUpdateMessage = (OrVnfmUpdateMessage) message;
+          nfvMessage =
+              VnfmUtils.getNfvMessage(
+                  Action.UPDATE,
+                  updateSoftware(orVnfmUpdateMessage.getScript(), orVnfmUpdateMessage.getVnfr()));
           break;
         case HEAL:
           OrVnfmHealVNFRequestMessage orVnfmHealMessage = (OrVnfmHealVNFRequestMessage) message;
