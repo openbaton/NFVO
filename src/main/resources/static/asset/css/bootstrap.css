@@ -3020,7 +3020,7 @@ table th[class*=col-] {
 
 .table-responsive {
     min-height: .01%;
-    overflow-x: auto
+    overflow-x: visible;
 }
 
 @media screen and (max-width:767px) {
@@ -4295,7 +4295,7 @@ tbody.collapse.in {
 
 .dropdown,
 .dropup {
-    position: relative
+    position: absolute;
 }
 
 .dropdown-toggle:focus {
@@ -4322,7 +4322,9 @@ tbody.collapse.in {
     border: 1px solid rgba(0, 0, 0, .15);
     border-radius: 4px;
     -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, .175)
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    overflow:initial;
+
 }
 
 .dropdown-menu.pull-right {
@@ -4333,18 +4335,21 @@ tbody.collapse.in {
 .dropdown-menu .divider {
     height: 1px;
     margin: 9px 0;
-    overflow: hidden;
+    overflow: visible;
     background-color: #e5e5e5
 }
 
 .dropdown-menu>li>a {
+    position: relative;
     display: block;
     padding: 3px 20px;
     clear: both;
     font-weight: 400;
     line-height: 1.42857143;
     color: #333;
-    white-space: nowrap
+    white-space: nowrap;
+    overflow-x: visible;
+    overflow-y: visible;
 }
 
 .dropdown-menu>li>a:focus,
@@ -5133,7 +5138,7 @@ textarea.input-group-sm>.input-group-btn>.btn {
     }
 }
 
-.container-fluid>.navbar-collapse,
+.44-fluid>.navbar-collapse,
 .container-fluid>.navbar-header,
 .container>.navbar-collapse,
 .container>.navbar-header {
