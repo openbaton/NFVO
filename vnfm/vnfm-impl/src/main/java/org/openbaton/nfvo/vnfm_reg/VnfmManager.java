@@ -156,6 +156,9 @@ public class VnfmManager
   @Value("${nfvo.ems.queue.autodelete:true}")
   private String emsAutodelete;
 
+  @Value("${spring.rabbitmq.port:5672}")
+  private String brokerPort;
+
   @Autowired private VNFDRepository vnfdRepository;
   @Autowired private VNFRRepository vnfrRepository;
 
@@ -376,6 +379,7 @@ public class VnfmManager
   private Map<String, String> getExtension() {
     Map<String, String> extension = new HashMap<>();
     extension.put("brokerIp", brokerIp.trim());
+    extension.put("brokerPort", brokerPort.trim());
     extension.put("monitoringIp", monitoringIp.trim());
     extension.put("timezone", timezone);
     extension.put("emsVersion", emsVersion);
@@ -571,6 +575,7 @@ public class VnfmManager
         }
 
         try {
+          log.debug("looking for NSD with id: " + networkServiceRecord.getDescriptor_reference());
           if (nsdRepository
                   .findFirstById(networkServiceRecord.getDescriptor_reference())
                   .getVnfd()
