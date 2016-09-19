@@ -28,6 +28,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $location.replace();
     //console.log($scope.logged);
     $scope.loggedF = function () {
+
         return $scope.logged;
     };
 
@@ -84,8 +85,9 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 });
 
 
-app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window) {
+app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window, $route) {
     $('#side-menu').metisMenu();
+
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
     $scope.numberNSR = 0;
@@ -99,7 +101,12 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.userLogged = {};
     loadCurrentUser();
     loadNumbers();
-
+    //rootTracker();
+    function rootTracker() {
+      if ($route.current.templateUrl == "login.html")
+      console.log($route.current.templateUrl);
+      $location.path("/");
+    };
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
