@@ -85,7 +85,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 });
 
 
-app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window, $route) {
+app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window, $route) {
     $('#side-menu').metisMenu();
 
     $scope.adminRole = "ADMIN";
@@ -101,6 +101,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     $scope.userLogged = {};
     loadCurrentUser();
     loadNumbers();
+    //loadChart();
     //rootTracker();
     function rootTracker() {
       if ($route.current.templateUrl == "login.html")
@@ -289,7 +290,7 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
     }
 
     };
-
+    $scope.test = 34;
     $scope.admin = function() {
       //console.log($scope.userLogged);
 
@@ -299,6 +300,53 @@ app.controller('IndexCtrl', function ($scope, $compile, $routeParams, serviceAPI
         return false;
       }
     };
+
+
+ $(document).ready(function() {});
+
+$.getScript('asset/js/plugins/chart.min.js',function(){
+
+  var data = [  {
+        value: $scope.test,
+        color:"#4ED18F",
+        highlight: "#15BA67",
+        label: "Floating IPs"
+    },
+    {
+        value: 250,
+        color: "#15BA67",
+        highlight: "#15BA67",
+        label: "CPUs"
+    },
+    {
+        value: 100,
+        color: "#5BAABF",
+        highlight: "#15BA67",
+        label: "RAM"
+    },
+    {
+        value: 40,
+        color: "#94D7E9",
+        highlight: "#15BA67",
+        label: "HDD"
+    }
+
+    ]
+
+    var options = {
+      responsive : true,
+      showTooltips: true
+    };
+
+    //Get the context of the canvas element we want to select
+    var c = $('#myChart');
+    var ct = c.get(0).getContext('2d');
+    var ctx = document.getElementById("myChart").getContext("2d");
+    /*************************************************************************/
+    myNewChart = new Chart(ct).Doughnut(data, options);
+
+})
+
 
 
 
