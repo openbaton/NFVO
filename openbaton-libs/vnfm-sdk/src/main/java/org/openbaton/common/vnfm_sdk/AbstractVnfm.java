@@ -71,6 +71,7 @@ public abstract class AbstractVnfm
   protected VnfmManagerEndpoint vnfmManagerEndpoint;
   private ExecutorService executor;
   protected static String brokerIp;
+  protected static String brokerPort;
   protected static String monitoringIp;
   protected static String timezone;
   protected static String emsVersion;
@@ -506,6 +507,7 @@ public abstract class AbstractVnfm
     log.debug("Extensions are: " + extension);
 
     brokerIp = extension.get("brokerIp");
+    brokerPort = extension.get("brokerPort");
     monitoringIp = extension.get("monitoringIp");
     timezone = extension.get("timezone");
     emsVersion = extension.get("emsVersion");
