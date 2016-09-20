@@ -35,8 +35,7 @@ public class RestCSAR {
     if (!file.isEmpty()) {
       byte[] bytes = file.getBytes();
 
-      NetworkServiceDescriptor nsd = csarParser.parseNSDCSARFromByte(bytes, projectId);
-
+      NetworkServiceDescriptor nsd = csarParser.onboardNSD(bytes, projectId);
       return networkServiceDescriptorManagement.onboard(nsd, projectId);
     } else throw new IOException("File is empty!");
   }
@@ -52,7 +51,7 @@ public class RestCSAR {
     if (!file.isEmpty()) {
       byte[] bytes = file.getBytes();
 
-      VirtualNetworkFunctionDescriptor vnfd = csarParser.parseVNFDCSARFromByte(bytes, projectId);
+      VirtualNetworkFunctionDescriptor vnfd = csarParser.onboardVNFD(bytes, projectId);
 
       return "{ \"id\": \"" + vnfd.getVnfPackageLocation() + "\"}";
     } else throw new IOException("File is empty!");

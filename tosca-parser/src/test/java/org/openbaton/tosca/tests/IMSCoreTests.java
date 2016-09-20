@@ -81,13 +81,5 @@ public class IMSCoreTests {
     CSARParser csarParser = new CSARParser();
 
     csarParser.parseVNFCSAR("src/main/resources/IMS/bind9.csar");
-
-    csarParser.parseVNFCSAR("src/main/resources/IMS/fhoss.csar");
-
-    csarParser.parseVNFCSAR("src/main/resources/IMS/icscf.csar");
-
-    csarParser.parseVNFCSAR("src/main/resources/IMS/pcscf.csar");
-
-    csarParser.parseVNFCSAR("src/main/resources/IMS/scscf.csar");
   }
 }
