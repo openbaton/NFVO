@@ -95,14 +95,19 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.numberVNF = 0;
     $scope.numberUnits = 0;
     $scope.numberKeys = 0;
+    $scope.quota = null;
+    var chartsHere = false;
     var url = $cookieStore.get('URL') + "/api/v1";
     $interval(loadNumbers, 120000);
+    $interval(waitCharts, 1000);
     $scope.config = {};
     $scope.userLogged = {};
     loadCurrentUser();
     loadNumbers();
+    loadQuota();
     //loadChart();
     //rootTracker();
+
     function rootTracker() {
       if ($route.current.templateUrl == "login.html")
       console.log($route.current.templateUrl);
@@ -148,6 +153,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.numberVNF = 0;
     $scope.numberUnits = 0;
     $scope.numberKeys = 0;
+
+    function stop() {
+      $interval.cancel(promise);
+    };
 
     function loadNumbers() {
         http.syncGet(url + '/ns-descriptors/').then(function (data) {
@@ -304,48 +313,124 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
  $(document).ready(function() {});
 
-$.getScript('asset/js/plugins/chart.min.js',function(){
+ function loadQuota() {
+     http.get(url +'/quotas')
+         .success(function (response) {
+             console.log(response);
+             $scope.quota = response;
 
-  var data = [  {
-        value: $scope.test,
-        color:"#4ED18F",
-        highlight: "#15BA67",
-        label: "Floating IPs"
-    },
-    {
-        value: 250,
-        color: "#15BA67",
-        highlight: "#15BA67",
-        label: "CPUs"
-    },
-    {
-        value: 100,
-        color: "#5BAABF",
-        highlight: "#15BA67",
-        label: "RAM"
-    },
-    {
-        value: 40,
-        color: "#94D7E9",
-        highlight: "#15BA67",
-        label: "HDD"
+              //console.log($scope.quota.left.ram)
+         })
+         .error(function (response, status) {
+             showError(status, response);
+         });
+}
+
+  function waitCharts() {
+  if (!chartsHere) {
+      if ($scope.quota !== null) {
+        createCharts();
+        chartsHere = true;
+      }
     }
+  }
 
-    ]
+  function createCharts() {
 
-    var options = {
-      responsive : true,
-      showTooltips: true
-    };
+         $.getScript('asset/js/plugins/chart.min.js',function(){
+           while (false) {
+             console.log("null");
+           }
+           var ramData = [  {
+                 value: $scope.quota.left.ram,
+                 color:"#4ED18F",
+                 highlight: "#15BA67",
+                 label: "Availaible"
+             },
+             {
+                 value: $scope.quota.total.ram,
+                 color: "#15BA67",
+                 highlight: "#15BA67",
+                 label: "Used"
+             }
 
-    //Get the context of the canvas element we want to select
-    var c = $('#myChart');
-    var ct = c.get(0).getContext('2d');
-    var ctx = document.getElementById("myChart").getContext("2d");
-    /*************************************************************************/
-    myNewChart = new Chart(ct).Doughnut(data, options);
+             ]
 
-})
+             var instData = [  {
+                   value: $scope.quota.left.instances,
+                   color:"#4ED18F",
+                   highlight: "#15BA67",
+                   label:  "Availaible"
+               },
+               {
+                   value: $scope.quota.total.instances,
+                   color: "#15BA67",
+                   highlight: "#15BA67",
+                   label: "Used"
+               }
+
+               ]
+
+               var cpuData = [  {
+                     value: $scope.quota.left.cores,
+                     color:"#4ED18F",
+                     highlight: "#15BA67",
+                     label:  "Availaible"
+                 },
+                 {
+                     value: $scope.quota.total.cores,
+                     color: "#15BA67",
+                     highlight: "#15BA67",
+                     label: "Used"
+                 }
+
+                 ]
+
+                 var ipData = [  {
+                       value: $scope.quota.left.floatingIps,
+                       color:"#4ED18F",
+                       highlight: "#15BA67",
+                       label:  "Availaible"
+                   },
+                   {
+                       value: $scope.quota.total.floatingIps,
+                       color: "#15BA67",
+                       highlight: "#15BA67",
+                       label: "Used"
+                   }
+
+                   ]
+
+             var options = {
+               responsive : false,
+               showTooltips: true
+             };
+
+             //Get the context of the canvas element we want to select
+             var c = $('#cpuChart');
+             var cp = c.get(0).getContext('2d');
+
+             cpuChart = new Chart(cp).Doughnut(cpuData, options);
+
+             var r = $('#ramChart');
+             var ra = r.get(0).getContext('2d');
+
+             ramChart = new Chart(ra).Doughnut(ramData, options);
+
+             var i = $('#ipChart');
+             var ip = i.get(0).getContext('2d');
+
+             ipChart = new Chart(ip).Doughnut(ipData, options);
+
+             var h = $('#instChart');
+             var hd = h.get(0).getContext('2d');
+
+             hddChart = new Chart(hd).Doughnut(instData, options);
+
+         })
+
+ };
+
 
 
 
