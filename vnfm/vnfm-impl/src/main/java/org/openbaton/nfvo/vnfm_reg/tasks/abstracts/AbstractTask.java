@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
+import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -28,6 +30,8 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.util.EventFinishEvent;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -53,6 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lto on 06/08/15.
@@ -116,47 +121,35 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     NFVMessage result = null;
     try {
       result = this.doWork();
-    } catch (Exception e) {
-      e.printStackTrace();
-      VnfmSender vnfmSender;
-      try {
-        vnfmSender =
-            this.getVnfmSender(
-                vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-      } catch (NotFoundException e1) {
-        e1.printStackTrace();
-        throw new RuntimeException(e1);
-      }
-      NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-      try {
-        vnfmSender.sendCommand(
-            message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
-      } catch (NotFoundException e1) {
-        e1.printStackTrace();
-        throw new RuntimeException(e1);
-      }
-      if (log.isDebugEnabled()) {
-        log.error(
-            "There was an uncaught exception in task: "
-                + virtualNetworkFunctionRecord.getTask()
-                + ". ",
-            e);
-      } else {
-        log.error("There was an uncaught exception. Message is: " + e.getMessage());
-      }
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof VimException) {
 
-      EventFinishEvent eventFinishEvent = new EventFinishEvent();
-      eventFinishEvent.setAction(Action.ERROR);
-      virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-      saveVirtualNetworkFunctionRecord();
-      log.info(
-          "Saved the VNFR "
-              + virtualNetworkFunctionRecord.getName()
-              + " with status error after an exception");
-      eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-      EventFinishNFVO event = new EventFinishNFVO(this);
-      event.setEventNFVO(eventFinishEvent);
-      this.publisher.publishEvent(event);
+        e.printStackTrace();
+        log.error(e.getMessage());
+        LifecycleEvent lifecycleEvent = new LifecycleEvent();
+        lifecycleEvent.setEvent(Event.ERROR);
+        VNFCInstance vnfcInstance = ((VimException) e.getCause()).getVnfcInstance();
+
+        if (vnfcInstance != null) {
+          log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
+          log.debug("Details are: " + vnfcInstance);
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+            if (vdu.getId()
+                .equals(((VimException) e.getCause()).getVirtualDeploymentUnit().getId())) {
+              vdu.getVnfc_instance().add(vnfcInstance);
+
+              log.debug("Found VDU and set vnfcInstance");
+            }
+          }
+        }
+        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+        saveVirtualNetworkFunctionRecord();
+        return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+      } else if (e.getCause() instanceof VimDriverException) {
+        return handleVimDriverException((VimDriverException) e.getCause());
+      } else genericExceptionHandling(e);
+    } catch (Exception e) {
+      genericExceptionHandling(e);
     }
     /**
      * Send event finish
@@ -173,7 +166,65 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
       log.debug("Publishing event: " + eventPublic);
       publisher.publishEvent(eventNFVO);
       return null;
-    } else return result;
+    } else {
+      return result;
+    }
+  }
+
+  private NFVMessage handleVimDriverException(VimDriverException e) {
+    e.printStackTrace();
+    log.error(e.getMessage());
+    LifecycleEvent lifecycleEvent = new LifecycleEvent();
+    lifecycleEvent.setEvent(Event.ERROR);
+    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+    virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+    saveVirtualNetworkFunctionRecord();
+    return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+  }
+
+  private void genericExceptionHandling(Exception e) {
+    log.debug("The exception is: " + e.getClass().getName());
+    log.debug("The cause is: " + e.getCause().getClass().getName());
+    e.printStackTrace();
+    VnfmSender vnfmSender;
+    try {
+      vnfmSender =
+          this.getVnfmSender(
+              vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
+    } catch (NotFoundException e1) {
+      e1.printStackTrace();
+      throw new RuntimeException(e1);
+    }
+    NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+    try {
+      vnfmSender.sendCommand(
+          message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+    } catch (NotFoundException e1) {
+      e1.printStackTrace();
+      throw new RuntimeException(e1);
+    }
+    if (log.isDebugEnabled()) {
+      log.error(
+          "There was an uncaught exception in task: "
+              + virtualNetworkFunctionRecord.getTask()
+              + ". ",
+          e);
+    } else {
+      log.error("There was an uncaught exception. Message is: " + e.getMessage());
+    }
+
+    EventFinishEvent eventFinishEvent = new EventFinishEvent();
+    eventFinishEvent.setAction(Action.ERROR);
+    virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+    saveVirtualNetworkFunctionRecord();
+    log.info(
+        "Saved the VNFR "
+            + virtualNetworkFunctionRecord.getName()
+            + " with status error after an exception");
+    eventFinishEvent.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    EventFinishNFVO event = new EventFinishNFVO(this);
+    event.setEventNFVO(eventFinishEvent);
+    this.publisher.publishEvent(event);
   }
 
   protected abstract NFVMessage doWork() throws Exception;
@@ -270,18 +321,23 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
             // if vnfciStopped is NOT null then the STOP message received refers to the VNFCInstance
             if (vnfciStopped != null) {
               // set the status of the stopped VNFCInstance inside the VNFR to "INACTIVE"
-              if (instanceInVNFR.getId().equals(vnfciStopped.getId()))
+              if (instanceInVNFR.getId().equals(vnfciStopped.getId())) {
                 instanceInVNFR.setState("INACTIVE");
+              }
 
               // check for the "last VNFCInstance being stopped": as long as in the record there is
               // at least one VNFCInstance in state "ACTIVE" then the VNFR status remains "ACTIVE"
-              if (instanceInVNFR.getState().equals("ACTIVE")) stopVNFR = false;
+              if (instanceInVNFR.getState().equals("ACTIVE")) {
+                stopVNFR = false;
+              }
             } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to "INACTIVE"
               instanceInVNFR.setState("INACTIVE");
             }
           }
         }
-        if (stopVNFR) status = Status.INACTIVE;
+        if (stopVNFR) {
+          status = Status.INACTIVE;
+        }
         break;
     }
     virtualNetworkFunctionRecord.setStatus(status);
@@ -324,7 +380,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   }
 
   protected boolean allVnfrInInactive(NetworkServiceRecord nsr) {
-    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr())
+    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
       if (virtualNetworkFunctionRecord.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
         log.debug(
             "VNFR "
@@ -333,6 +389,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
                 + virtualNetworkFunctionRecord.getStatus());
         return false;
       }
+    }
     return true;
   }
 }

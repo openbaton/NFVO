@@ -19,16 +19,11 @@ package org.openbaton.nfvo.vnfm_reg.tasks;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,49 +53,20 @@ public class AllocateresourcesTask extends AbstractTask {
     log.info(
         "Executing task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
     log.debug("Verison is: " + virtualNetworkFunctionRecord.getHb_version());
-    try {
-      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-        List<Future<List<String>>> ids = new ArrayList<>();
-        VimInstance vimInstance = vims.get(vdu.getId());
-        if (vimInstance == null)
-          throw new NullPointerException(
-              "Our algorithms are too complex, even for us, this is what abnormal IQ means :(");
-        try {
-          ids.add(
-              resourceManagement.allocate(
-                  vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+      List<Future<List<String>>> ids = new ArrayList<>();
+      VimInstance vimInstance = vims.get(vdu.getId());
+      if (vimInstance == null)
+        throw new NullPointerException(
+            "Our algorithms are too complex, even for us, this is what abnormal IQ means :(");
+      ids.add(
+          resourceManagement.allocate(
+              vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
 
-          for (Future<List<String>> id : ids) {
-            id.get();
-          }
-        } catch (VimException e) {
-          e.printStackTrace();
-          log.error(e.getMessage());
-          LifecycleEvent lifecycleEvent = new LifecycleEvent();
-          lifecycleEvent.setEvent(Event.ERROR);
-          VNFCInstance vnfcInstance = e.getVnfcInstance();
-
-          if (vnfcInstance != null) {
-            log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
-            log.debug("Details are: " + vnfcInstance);
-            vdu.getVnfc_instance().add(vnfcInstance);
-          }
-          virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-          saveVirtualNetworkFunctionRecord();
-          return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
-        }
+      for (Future<List<String>> id : ids) {
+        id.get();
       }
-    } catch (VimDriverException e) {
-      e.printStackTrace();
-      log.error(e.getMessage());
-      LifecycleEvent lifecycleEvent = new LifecycleEvent();
-      lifecycleEvent.setEvent(Event.ERROR);
-      virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-      virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-      saveVirtualNetworkFunctionRecord();
-      return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
     }
-
     for (LifecycleEvent event : virtualNetworkFunctionRecord.getLifecycle_event()) {
       if (event.getEvent().ordinal() == Event.ALLOCATE.ordinal()) {
         virtualNetworkFunctionRecord.getLifecycle_event_history().add(event);
