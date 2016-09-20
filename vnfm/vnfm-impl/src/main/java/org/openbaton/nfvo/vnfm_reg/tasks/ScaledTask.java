@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -95,7 +94,9 @@ public class ScaledTask extends AbstractTask {
           for (VNFCInstance vnfcInstanceTmp : vdu.getVnfc_instance()) {
             if (vnfcInstanceTmp.getHostname().equals(vnfcInstance.getHostname())
                 && vnfcInstanceTmp.getVim_id().equals(vnfcInstance.getVim_id())) {
-              vnfcInstanceTmp.setState("ACTIVE");
+              if (!vnfcInstanceTmp.getState().equalsIgnoreCase("standby")) {
+                vnfcInstanceTmp.setState("ACTIVE");
+              }
               vnfcInstance = vnfcInstanceRepository.save(vnfcInstanceTmp);
             }
           }
@@ -104,7 +105,9 @@ public class ScaledTask extends AbstractTask {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      if (vnfcInstance.getState() != null && vnfcInstance.getState().equals("standby")) return null;
+      if (vnfcInstance.getState() != null && vnfcInstance.getState().equalsIgnoreCase("standby")) {
+        return null;
+      }
     }
 
     List<VNFRecordDependency> dependenciesSource =
@@ -154,11 +157,13 @@ public class ScaledTask extends AbstractTask {
           DependencyParameters vnfcDP = new DependencyParameters();
           vnfcDP.setParameters(new HashMap<String, String>());
 
-          for (Ip ip : vnfcInstance.getFloatingIps())
+          for (Ip ip : vnfcInstance.getFloatingIps()) {
             vnfcDP.getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
+          }
 
-          for (Ip ip : vnfcInstance.getIps())
+          for (Ip ip : vnfcInstance.getIps()) {
             vnfcDP.getParameters().put(ip.getNetName(), ip.getIp());
+          }
 
           vnfcDP.getParameters().put("hostname", vnfcInstance.getHostname());
 
@@ -195,11 +200,12 @@ public class ScaledTask extends AbstractTask {
                   .getVnfcParameters()
                   .get(virtualNetworkFunctionRecord.getType())
                   .getParameters()
-              == null)
+              == null) {
             dependency
                 .getVnfcParameters()
                 .get(virtualNetworkFunctionRecord.getType())
                 .setParameters(new HashMap<String, DependencyParameters>());
+          }
           dependency
               .getVnfcParameters()
               .get(virtualNetworkFunctionRecord.getType())
