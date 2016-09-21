@@ -116,10 +116,19 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
     return projectRepository.findFirstByName(name);
   }
 
+  /**
+   *
+   * @param user
+   * @return all Projects assigned to the User
+   */
   @Override
   public Iterable<Project> query(User user) {
     List<Project> projects = new ArrayList<>();
-    for (Role role : user.getRoles()) projects.add(this.queryByName(role.getProject()));
+    for (Role role : user.getRoles()) {
+      // if the User is admin return all Projects
+      if (role.getRole().equals(RoleEnum.ADMIN)) return query();
+      else projects.add(this.queryByName(role.getProject()));
+    }
     return projects;
   }
 

@@ -47,6 +47,11 @@ public interface ProjectManagement {
    */
   Project queryByName(String name);
 
+  /**
+   *
+   * @param user
+   * @return all Projects assigned to the User
+   */
   Iterable<Project> query(User user);
 
   boolean exist(String project);
