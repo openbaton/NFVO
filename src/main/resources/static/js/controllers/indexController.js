@@ -348,8 +348,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                  label: "Availaible"
              },
              {
-                 value: $scope.quota.total.ram,
-                 color: "#15BA67",
+                 value: $scope.quota.total.ram - $scope.quota.left.ram,
+                 color: "#B22222",
                  highlight: "#15BA67",
                  label: "Used"
              }
@@ -363,8 +363,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                    label:  "Availaible"
                },
                {
-                   value: $scope.quota.total.instances,
-                   color: "#15BA67",
+                   value: $scope.quota.total.instances - $scope.quota.left.instances,
+                   color: "#B22222",
                    highlight: "#15BA67",
                    label: "Used"
                }
@@ -378,8 +378,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                      label:  "Availaible"
                  },
                  {
-                     value: $scope.quota.total.cores,
-                     color: "#15BA67",
+                     value: $scope.quota.total.cores - $scope.quota.left.cores,
+                     color: "#B22222",
                      highlight: "#15BA67",
                      label: "Used"
                  }
@@ -393,8 +393,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                        label:  "Availaible"
                    },
                    {
-                       value: $scope.quota.total.floatingIps,
-                       color: "#15BA67",
+                       value: $scope.quota.total.floatingIps - $scope.quota.left.floatingIps,
+                       color: "#B22222",
                        highlight: "#15BA67",
                        label: "Used"
                    }
@@ -402,8 +402,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                    ]
 
              var options = {
-               responsive : false,
-               showTooltips: true
+               responsive : true,
+              showTooltips: true
              };
 
              //Get the context of the canvas element we want to select
