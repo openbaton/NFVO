@@ -114,7 +114,7 @@ class EventDispatcher
 
     for (EventEndpoint endpoint : endpoints) {
       log.debug("Checking endpoint: " + endpoint);
-      log.debug(
+      log.trace(
           endpoint.getEvent()
               + ":"
               + endpoint.getEvent().ordinal()
