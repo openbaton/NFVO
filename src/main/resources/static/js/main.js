@@ -39,7 +39,8 @@ require({
         vnfcomponentController: "controllers/vnfcomponentController",
         vnfmanagerController: "controllers/vnfmanagerController",
         vnfdController: "controllers/vnfdController",
-        keyPairsController: "controllers/keyPairsController"
+        keyPairsController: "controllers/keyPairsController",
+        marketCtrl:"controllers/marketCtrl"
     },
     shim: {
         jquery: {
@@ -155,6 +156,9 @@ require({
         },
         keyPairsController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
+        marketCtrl: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         }
 
 
@@ -180,7 +184,8 @@ require({
     'userController',
     'nsrController',
     'vimInstanceController',
-    'keyPairsController'
+    'keyPairsController',
+    'marketCtrl'
 ], function (require) {
     return require(['bootstrap']);
 });
