@@ -43,7 +43,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (!(authentication instanceof AnonymousAuthenticationToken)) {
         String currentUserName = authentication.getName();
         return checkAuthorization(projectId, request, currentUserName);
-      } else /*if (request.getMethod().equalsIgnoreCase("get"))*/ {
+      } else {
         log.trace(
             "AnonymousUser requesting method: "
                 + request.getMethod()
@@ -67,14 +67,6 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     }
   }
 
-  //TODO realize this configurable
-  private boolean alwaysAllowedPath(HttpServletRequest request) {
-    return (request.getMethod().equalsIgnoreCase("post")
-            && request.getRequestURI().equals("/admin/v1/vnfm-register"))
-        || (request.getMethod().equalsIgnoreCase("post")
-            && request.getRequestURI().equals("/admin/v1/vnfm-unregister"));
-  }
-
   private boolean isLogin(HttpServletRequest request) {
     return request.getMethod().equalsIgnoreCase("get") && request.getRequestURI().equals("/");
   }
@@ -85,17 +77,19 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
     log.trace("Current User: " + currentUserName);
     log.trace("projectId: " + project);
-    log.trace(request.getMethod() + " URI: " + request.getRequestURI());
+    log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
     User user = userManagement.queryByName(currentUserName);
-    for (Role role : user.getRoles()) {
-      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
-        return true;
-      }
-    }
+
     if (project != null && !project.isEmpty()) {
-      if (!projectManagement.exist(project)) {
+
+      if (projectIsNecessary(request) && !projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
+      }
+      for (Role role : user.getRoles()) {
+        if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
+          return true;
+        }
       }
       for (Role role : user.getRoles()) {
         String pjName = projectManagement.query(project).getName();
@@ -120,5 +114,21 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       }
     }
     return false;
+  }
+
+  //TODO realize this configurable
+  private boolean alwaysAllowedPath(HttpServletRequest request) {
+    return (request.getMethod().equalsIgnoreCase("post")
+            && request.getRequestURI().equals("/admin/v1/vnfm-register"))
+        || (request.getMethod().equalsIgnoreCase("post")
+            && request.getRequestURI().equals("/admin/v1/vnfm-unregister"));
+  }
+
+  //TODO realize this configurable
+  private boolean projectIsNecessary(HttpServletRequest request) {
+    return !((request.getRequestURI().equals("/api/v1/projects"))
+        || (request.getRequestURI().equals("/api/v1/projects/"))
+        || (request.getRequestURI().equals("/api/v1/users"))
+        || (request.getRequestURI().equals("/api/v1/users/")));
   }
 }
