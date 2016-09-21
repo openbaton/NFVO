@@ -76,12 +76,12 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       throws NotFoundException, NotAllowedException {
 
     log.trace("Current User: " + currentUserName);
-    log.trace("projectId: " + project);
+    log.trace("projectId: \"" + project + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
     User user = userManagement.queryByName(currentUserName);
 
-    if (project != null && !project.isEmpty()) {
+    if (project != null /*&& !project.isEmpty()*/) {
 
       if (projectIsNecessary(request) && !projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
@@ -128,6 +128,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
   private boolean projectIsNecessary(HttpServletRequest request) {
     return !((request.getRequestURI().equals("/api/v1/projects"))
         || (request.getRequestURI().equals("/api/v1/projects/"))
+        || (request.getRequestURI().equals("/api/v1/users/current"))
         || (request.getRequestURI().equals("/api/v1/users"))
         || (request.getRequestURI().equals("/api/v1/users/")));
   }
