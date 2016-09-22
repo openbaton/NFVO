@@ -45,7 +45,7 @@ import javax.persistence.PrePersist;
 public class NetworkServiceRecord implements Serializable {
   @Id private String id;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<AutoScalePolicy> auto_scale_policy;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
