@@ -588,7 +588,6 @@ public class VnfmManager
               nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
           log.trace("Found NSR: " + networkServiceRecord);
         } catch (Exception ignored) {
-          ignored.printStackTrace();
           log.error("No NSR found with id " + virtualNetworkFunctionRecord.getParent_ns_id());
           return;
         }
@@ -605,7 +604,11 @@ public class VnfmManager
             return;
           }
         } catch (NullPointerException ignored) {
-          log.warn("Descriptor was already removed, calculating the status anyway...");
+          if (networkServiceRecord == null) {
+            log.info("The Record was already deleted by a previous task");
+          } else {
+            log.warn("Descriptor was already removed, calculating the status anyway...");
+          }
         }
 
         log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
@@ -637,8 +640,9 @@ public class VnfmManager
                   .size()
               == networkServiceRecord.getVnfr().size();
       if (nsrFilledWithAllVnfr) {
-        if (networkServiceRecord.getTask() == null)
+        if (networkServiceRecord.getTask() == null) {
           networkServiceRecord.setTask("");
+        }
         if (networkServiceRecord.getTask().contains("Scaling in")) {
           networkServiceRecord.setTask("Scaled in");
           networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);

@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,10 +31,19 @@ public class RabbitConfiguration {
   final static String queueName_eventRegister = "nfvo.event.register";
   final static String queueName_eventUnregister = "nfvo.event.unregister";
 
+  @Value("${nfvo.rabbitmq.autodelete:true}")
   private boolean autodelete;
+
+  @Value("${nfvo.rabbitmq.durable:true}")
   private boolean durable;
+
+  @Value("${nfvo.rabbitmq.exclusive:false}")
   private boolean exclusive;
+
+  @Value("${spring.rabbitmq.listener.concurrency:5}")
   private int minConcurrency;
+
+  @Value("${spring.rabbitmq.listener.max-concurrency:15}")
   private int maxConcurrency;
 
   public int getMaxConcurrency() {
