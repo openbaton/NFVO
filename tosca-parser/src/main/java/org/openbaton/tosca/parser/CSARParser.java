@@ -122,7 +122,7 @@ public class CSARParser {
       throw new NotFoundException("CSARParser: Not found VNFD / NSD Template");
     }
 
-    zipStream.close();
+    //zipStream.close();
   }
 
   private void readMetaData() throws IOException {
@@ -168,8 +168,6 @@ public class CSARParser {
     readFiles(input);
 
     readMetaData();
-    ArrayList<ByteArrayOutputStream> vnfpList = new ArrayList<>();
-
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
@@ -438,19 +436,16 @@ public class CSARParser {
   }
 
   private String saveVNFD(
-      VirtualNetworkFunctionDescriptor vnfd, String projectId, InputStream input)
+      VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
       throws PluginException, VimException, NotFoundException, IOException {
 
     VNFPackage vnfPackage = new VNFPackage();
-    readFiles(input);
-
-    vnfPackage.setScripts(new HashSet<Script>());
-    vnfPackage.getScripts().addAll(scripts);
 
     vnfPackage.setImage(getImage(vnfPackage, vnfd, projectId));
+    vnfPackage.setScripts(vnfScripts);
     vnfPackage.setName(vnfd.getName());
     vnfPackage.setProjectId(projectId);
-    System.out.println(vnfPackage);
+
     vnfPackageRepository.save(vnfPackage);
 
     vnfd.setProjectId(projectId);
@@ -479,7 +474,7 @@ public class CSARParser {
     VNFDTemplate vnfdt = Utils.bytesToVNFDTemplate(this.template);
     VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdt);
 
-    saveVNFD(vnfd, projectId, input);
+    saveVNFD(vnfd, projectId, scripts);
 
     input.close();
     fos.close();
@@ -504,7 +499,14 @@ public class CSARParser {
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      ids.add(saveVNFD(vnfd, projectId, input));
+      Set<Script> vnfScripts = new HashSet<>();
+      for (Script script : scripts) {
+        Script s = new Script();
+        s.setName(script.getName());
+        s.setPayload(script.getPayload());
+        vnfScripts.add(s);
+      }
+      ids.add(saveVNFD(vnfd, projectId, vnfScripts));
     }
     nsd.getVnfd().clear();
 
