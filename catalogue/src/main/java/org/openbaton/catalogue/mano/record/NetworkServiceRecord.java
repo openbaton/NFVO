@@ -64,6 +64,7 @@ public class NetworkServiceRecord implements Serializable {
 
   private String vendor;
   private String projectId;
+  private String task;
 
   public String getProjectId() {
     return projectId;
@@ -378,6 +379,12 @@ public class NetworkServiceRecord implements Serializable {
         + ", vendor='"
         + vendor
         + '\''
+        + ", projectId='"
+        + projectId
+        + '\''
+        + ", task='"
+        + task
+        + '\''
         + ", version='"
         + version
         + '\''
@@ -414,9 +421,22 @@ public class NetworkServiceRecord implements Serializable {
         + ", audit_log='"
         + audit_log
         + '\''
+        + ", createdAt='"
+        + createdAt
+        + '\''
+        + ", keyNames="
+        + keyNames
         + ", name='"
         + name
         + '\''
         + '}';
+  }
+
+  public void setTask(String task) {
+    this.task = task;
+  }
+
+  public String getTask() {
+    return task;
   }
 }
