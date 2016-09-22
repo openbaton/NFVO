@@ -36,5 +36,6 @@ public enum Action {
   INSTANTIATE_FINISH,
   CONFIGURE,
   START,
-  STOP;
+  STOP,
+  RESUME
 }
