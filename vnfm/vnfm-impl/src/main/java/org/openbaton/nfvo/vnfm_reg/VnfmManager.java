@@ -637,7 +637,8 @@ public class VnfmManager
                   .size()
               == networkServiceRecord.getVnfr().size();
       if (nsrFilledWithAllVnfr) {
-
+        if (networkServiceRecord.getTask() == null)
+          networkServiceRecord.setTask("");
         if (networkServiceRecord.getTask().contains("Scaling in")) {
           networkServiceRecord.setTask("Scaled in");
           networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
