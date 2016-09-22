@@ -149,9 +149,9 @@ public class RestNetworkServiceRecord {
   }
 
   /**
-   * This operation is used to remove a disabled Network Service Descriptor
+   * This operation is used to remove a Network Service Record
    *
-   * @param id : the id of Network Service Descriptor
+   * @param id : the id of Network Service Record
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)

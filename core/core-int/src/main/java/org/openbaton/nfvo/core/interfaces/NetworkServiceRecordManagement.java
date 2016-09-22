@@ -94,7 +94,7 @@ public interface NetworkServiceRecordManagement {
   NetworkServiceRecord query(String id, String projectId);
 
   /**
-   * This operation is used to remove a disabled Network Service Descriptor.
+   * This operation is used to remove a Network Service Record.
    *
    * @param id
    * @param projectId
