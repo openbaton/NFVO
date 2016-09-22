@@ -94,7 +94,8 @@ public class ScaledTask extends AbstractTask {
           for (VNFCInstance vnfcInstanceTmp : vdu.getVnfc_instance()) {
             if (vnfcInstanceTmp.getHostname().equals(vnfcInstance.getHostname())
                 && vnfcInstanceTmp.getVim_id().equals(vnfcInstance.getVim_id())) {
-              if (!vnfcInstanceTmp.getState().equalsIgnoreCase("standby")) {
+              if (vnfcInstanceTmp.getState() == null
+                  || !vnfcInstanceTmp.getState().equalsIgnoreCase("standby")) {
                 vnfcInstanceTmp.setState("ACTIVE");
               }
               vnfcInstance = vnfcInstanceRepository.save(vnfcInstanceTmp);
