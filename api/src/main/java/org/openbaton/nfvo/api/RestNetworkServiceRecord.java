@@ -167,6 +167,24 @@ public class RestNetworkServiceRecord {
   }
 
   /**
+   * This operation is used to resume a failed Network Service Record
+   *
+   * @param id : the id of Network Service Record
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.POST)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void resume(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws VimException, InterruptedException, ExecutionException, NotFoundException {
+    try {
+      networkServiceRecordManagement.resume(id, projectId);
+    } catch (WrongStatusException e) {
+      e.printStackTrace();
+      throw new StateException(id);
+    }
+  }
+
+  /**
    * Removes multiple Network Service Descriptor from the NSDescriptors repository
    *
    * @param ids: the id list of Network Service Descriptors

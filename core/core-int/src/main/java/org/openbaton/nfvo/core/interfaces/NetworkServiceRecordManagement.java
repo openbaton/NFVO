@@ -101,6 +101,14 @@ public interface NetworkServiceRecordManagement {
    */
   void delete(String id, String projectId) throws NotFoundException, WrongStatusException;
 
+  /**
+   * This operation is used to resume a failed Network Service Record.
+   *
+   * @param id
+   * @param projectId
+   */
+  void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
+
   void deleteVNFRecord(String idNsr, String idVnf, String projectId);
 
   /**

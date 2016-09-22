@@ -1122,6 +1122,16 @@ public class NetworkServiceRecordManagement
     }
   }
 
+  @Override
+  public void resume(String id, String projectId) throws NotFoundException, WrongStatusException {
+    NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
+    if (!networkServiceRecord.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    log.info("Resuming NSR with id: " + id);
+  }
+
   public int getTimeout() {
     return timeout;
   }
