@@ -314,6 +314,17 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
     };
 
+    $scope.resumeNSR = function (data) {
+        http.post(url + data.id)
+            .success(function (response) {
+                showOk('The resume of the NSR will be done shortly!');
+                window.setTimeout(loadTable, 500);
+            })
+            .error(function (data, status) {
+                showError(status, data);
+            });
+    };
+
     /* -- multiple delete functions Start -- */
 
     $scope.multipleDeleteReq = function () {
