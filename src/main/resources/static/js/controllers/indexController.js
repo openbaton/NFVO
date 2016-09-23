@@ -98,21 +98,17 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.quota = null;
     var chartsHere = false;
     var url = $cookieStore.get('URL') + "/api/v1";
-    $interval(loadNumbers, 120000);
+
     $interval(waitCharts, 1000);
     $scope.config = {};
     $scope.userLogged = {};
+    $location.replace();
     loadCurrentUser();
-    loadNumbers();
-    loadQuota();
+
     //loadChart();
     //rootTracker();
 
-    function rootTracker() {
-      if ($route.current.templateUrl == "login.html")
-      console.log($route.current.templateUrl);
-      $location.path("/");
-    };
+
     function loadCurrentUser() {
         http.get(url +'/users/current')
             .success(function (response) {
@@ -145,7 +141,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
     $scope.logged = $cookieStore.get('logged');
     //console.log($scope.logged);
-    $location.replace();
+
 
 
     $scope.numberNSR = 0;
@@ -198,6 +194,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
+            loadQuota();
             getConfig();
             loadCurrentUser();
         }
@@ -328,7 +325,6 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
   function waitCharts() {
   if (!chartsHere) {
-      loadQuota();
       if ($scope.quota !== null) {
         chartsHere = true;
         createCharts();
