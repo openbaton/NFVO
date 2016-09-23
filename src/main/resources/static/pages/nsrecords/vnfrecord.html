@@ -5,7 +5,7 @@
         </h1>
         <ol class="breadcrumb">
             <li>
-                <a href="#"><i class="fa fa-dashboard"></i>
+                <a href="#main"><i class="fa fa-dashboard"></i>
                     Overview</a>
             </li>
             <li>
@@ -68,7 +68,7 @@
                               <td>Endpoint</td>
                               <td>{{vnfr.endpoint}}</td>
                             </tr>
-                            <tr ng-show="vnfr.connection_point">
+                            <tr ng-show="vnfr.connection_point.length > 0">
                               <td>Connection point</td>
                               <td>{{vnfr.connection_point}}</td>
                             </tr>
@@ -76,7 +76,7 @@
                               <td>Cyclic Dependency</td>
                               <td>{{vnfr.cyclicDependency}}</td>
                             </tr>
-                            <tr ng-show="vnfr.manifest_file_security">
+                            <tr ng-show="vnfr.manifest_file_security.length > 0">
                               <td>Manifest File Security</td>
                               <td>{{vnfr.manifest_file_security}}</td>
                             </tr>
@@ -94,16 +94,16 @@
                             <!--tr ng-show="vnfr.service_deployment_flavour">
                               <td>Service Deployment Flavour</td><td>{{vnfr.service_deployment_flavour"}}</td>
                             </tr-->
-                            <tr ng-show="vnfr.vdu_dependency">
+                            <tr ng-show="vnfr.vdu_dependency.length > 0">
                               <td>VDU dependency</td><td>{{vnfr.vdu_dependency}}</td>
                             </tr>
-                            <tr ng-show="vnfr.vld">
+                            <tr ng-show="vnfr.vld.length > 0">
                               <td>VLD</td><td>{{vnfr.vld}}</td>
                             </tr>
                             <tr ng-show="vnfr.packageId">
                               <td>Package ID</td><td><a href="#packages/{{vnfr.packageId}}">{{vnfr.packageId}}</a></td>
                             </tr>
-                            <tr ng-show="vnfr.connected_external_virtual_link">
+                            <tr ng-show="vnfr.connected_external_virtual_link.length > 0">
                               <td>External Virtual Link</td><td>{{vnfr.connected_external_virtual_link}}</td>
                             </tr>
                             <tr ng-show="vnfr.parent_ns_id">
@@ -112,7 +112,7 @@
                             <tr ng-show="vnfr.projectId">
                               <td>Project ID</td><td>{{vnfr.projectId}}</td>
                             </tr>
-                            <tr ng-show="vnfr.runtime_policy_info">
+                            <tr ng-show="vnfr.runtime_policy_info.length > 0">
                               <td>Runtime Policy Info</td><td>{{vnfr.runtime_policy_info}}</td>
                             </tr>
                             <tr ng-show="vnfr.vnf_adress">

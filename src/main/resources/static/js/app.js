@@ -142,6 +142,10 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 templateUrl: 'pages/keypairs/keypairs.html',
                 controller: 'keyPairsCtrl'
             }).
+            when('/marketplace', {
+                templateUrl: 'pages/marketplace/marketplace.html',
+                controller: 'marketCtrl'
+            }).
             otherwise({
                         redirectTo: '/main'
             });

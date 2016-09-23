@@ -12,9 +12,20 @@
     <title>OpenBaton Overview</title>
     <link rel="shortcut icon" type="image/png" href="img/favicon.ico"/>
     <!-- Bootstrap Core CSS -->
-    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <!--link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"-->
+
     <link href="dist/css/openbaton.css" rel="stylesheet">
     <link href="bower_components/bootstrap/dist/css/bootstrap-switch.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="asset/css/plugins/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="asset/css/plugins/simple-line-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="asset/css/plugins/animate.min.css"/>
+    <link rel="stylesheet" type="text/css" href="asset/css/plugins/fullcalendar.min.css"/>
+    <link href="asset/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="asset/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="asset/css/plugins/spinkit.css"/>
+
+
+
 
     <!-- MetisMenu CSS -->
     <link href="bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
@@ -49,11 +60,12 @@
 <div id="wrapper" ng-controller="LoginController">
     <div ng-if="!loggedF()" ng-init="checkSecurity()"></div>
     <div ng-if="!loggedF()" ng-include="'login.html'"></div>
-    <div ng-if="loggedF()" ng-include="'menu.html'"></div>
+    <div ng-if="loggedF()"  ng-include="'menu.html'"></div>
 </div>
 <!--<script src="js/libs/d3.min.js"></script>-->
 <!--<script src="http://maps.google.com/maps/api/js?sensor=false"></script>-->
 <script data-main="js/main" src="js/libs/require/require.js"></script>
+
 
 
 </body>

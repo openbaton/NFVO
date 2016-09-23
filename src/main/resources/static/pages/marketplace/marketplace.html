@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Marketplace
+            <small>List of packages available on the Open Baton marketplace</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#main"><i class="fa fa-dashboard"></i>
+                Overview</a></li>
+            <li class="active"><i class="fa fa-database"></i>
+                Marketplace
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+  <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+      <div ng-bind-html="alert.msg"></div>
+  </alert>
+</div>
+
+<div class="row">
+  <label for="marketUrl" class="col-lg-2 control-label">Marketplace URL</label>
+  <div class="col-lg-6">
+    <input type="text" class="form-control" id="marketUrl" name="marketUrl" ng-model="marketUrl"/>
+  </div>
+  <button type="button" class="btn btn-primary" ng-click="loadTable()">Load Packages</button>
+</div>
+
+<div class="row top-buffer">
+  <table class="table table-bordered table-striped table-hover tablesorter">
+    <thead>
+      <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+      <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+      <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+      <th>Download <i class="fa"></i></th>
+    </thead>
+    <tbody>
+      <tr ng-repeat="data in packages| filter:search|orderBy:predicate:reverse">
+        <td>{{data.id}}</td>
+        <td class="col-sm-1">{{data.name}}</td>
+        <td>{{data.description}}</td>
+        <td> <button type="button" class="btn btn-primary pull right" ng-click="donwload(data)"> Download
+            </button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
