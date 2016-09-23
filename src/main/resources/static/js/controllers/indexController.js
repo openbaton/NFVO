@@ -328,9 +328,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
   function waitCharts() {
   if (!chartsHere) {
+      loadQuota();
       if ($scope.quota !== null) {
-        createCharts();
         chartsHere = true;
+        createCharts();
       }
     }
   }
@@ -340,9 +341,6 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
   function createCharts() {
 
          $.getScript('asset/js/plugins/chart.min.js',function(){
-           while (false) {
-             console.log("null");
-           }
            var ramData = [  {
                  value: $scope.quota.left.ram,
                  color:"#4ED18F",
@@ -357,6 +355,14 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
              }
 
              ]
+             if ( $scope.quota.total.ram === 0) {
+               var ramData = [{
+                     value: 1,
+                     color:"#4ED18F",
+                     highlight: "#15BA67",
+                     label: "No resources available"
+                 }]
+             }
 
              var instData = [  {
                    value: $scope.quota.left.instances,
@@ -373,6 +379,15 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
                ]
 
+               if ( $scope.quota.total.instances === 0) {
+                 var instData = [{
+                       value: 1,
+                       color:"#4ED18F",
+                       highlight: "#15BA67",
+                       label: "No resources available"
+                   }]
+               }
+
                var cpuData = [  {
                      value: $scope.quota.left.cores,
                      color:"#4ED18F",
@@ -387,6 +402,15 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                  }
 
                  ]
+
+                 if ( $scope.quota.total.cores === 0) {
+                   var cpuData = [{
+                         value: 1,
+                         color:"#4ED18F",
+                         highlight: "#15BA67",
+                         label: "No resources available"
+                     }]
+                 }
 
                  var ipData = [  {
                        value: $scope.quota.left.floatingIps,
@@ -403,9 +427,18 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
                    ]
 
+                   if ( $scope.quota.total.floatingIps === 0) {
+                     var ipData = [{
+                           value: 1,
+                           color:"#4ED18F",
+                           highlight: "#15BA67",
+                           label: "No resources available"
+                       }]
+                   }
+
              var options = {
                responsive : true,
-              showTooltips: true
+               showTooltips: true
              };
 
              //Get the context of the canvas element we want to select
