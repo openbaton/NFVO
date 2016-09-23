@@ -334,7 +334,9 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
       }
     }
   }
-
+  $scope.chartsLoaded = function() {
+    return chartsHere;
+  };
   function createCharts() {
 
          $.getScript('asset/js/plugins/chart.min.js',function(){
