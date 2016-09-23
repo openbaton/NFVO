@@ -632,6 +632,7 @@ public class NetworkServiceRecordManagement
       String projectId)
       throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
+
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -649,10 +650,11 @@ public class NetworkServiceRecordManagement
       throw new UnauthorizedUserException(
           "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
+    networkServiceRecord.setTask("Healing");
     VNFCInstance standByVNFCInstance = null;
     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
       log.debug("current vnfcinstance " + vnfcInstance + " in state" + vnfcInstance.getState());
-      if (vnfcInstance.getState() != null && vnfcInstance.getState().equals(mode)) {
+      if (vnfcInstance.getState() != null && vnfcInstance.getState().equalsIgnoreCase(mode)) {
         standByVNFCInstance = vnfcInstance;
         log.debug("VNFComponentInstance in " + mode + " mode FOUND :" + standByVNFCInstance);
       }
