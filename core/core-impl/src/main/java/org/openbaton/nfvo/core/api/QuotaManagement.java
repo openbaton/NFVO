@@ -21,6 +21,9 @@ public class QuotaManagement implements org.openbaton.nfvo.core.interfaces.Quota
   public Quota getAllQuota(String projectId) throws PluginException, VimException {
     Quota result = new Quota();
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+      if (vimInstance.getType().equals("test")) {
+        continue;
+      }
       Quota tmp = vimBroker.getVim(vimInstance.getType()).getQuota(vimInstance);
       result.setCores(result.getCores() + tmp.getCores());
       result.setFloatingIps(result.getFloatingIps() + tmp.getFloatingIps());
@@ -34,6 +37,9 @@ public class QuotaManagement implements org.openbaton.nfvo.core.interfaces.Quota
   public Quota getLeftQuota(String projectId) throws VimException, PluginException {
     Quota result = new Quota();
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+      if (vimInstance.getType().equals("test")) {
+        continue;
+      }
       Quota tmp = vimBroker.getLeftQuota(vimInstance);
       result.setCores(result.getCores() + tmp.getCores());
       result.setFloatingIps(result.getFloatingIps() + tmp.getFloatingIps());
