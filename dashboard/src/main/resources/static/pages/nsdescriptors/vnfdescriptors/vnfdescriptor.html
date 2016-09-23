@@ -5,7 +5,7 @@
         </h1>
         <ol class="breadcrumb">
             <li>
-                <a href="#"><i class="fa fa-dashboard"></i>
+                <a href="#main"><i class="fa fa-dashboard"></i>
                     Overview</a>
             </li>
 
@@ -49,7 +49,7 @@
                       <td>Endpoint</td>
                       <td>{{vnfdinfo.endpoint}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.connection_point">
+                    <tr ng-show="vnfdinfo.connection_point.length > 0">
                       <td>Connection point</td>
                       <td>{{vnfdinfo.connection_point}}</td>
                     </tr>
@@ -57,15 +57,15 @@
                       <td>Cyclic Dependency</td>
                       <td>{{vnfdinfo.cyclicDependency}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.manifest_file_security">
+                    <tr ng-show="vnfdinfo.manifest_file_security.length > 0">
                       <td>Manifest File Security</td>
                       <td>{{vnfdinfo.manifest_file_security}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.monitoring_parameter">
+                    <tr ng-show="vnfdinfo.monitoring_parameter.length > 0">
                       <td>Monitoring Parameters</td>
                       <td>{{vnfdinfo.monitoring_parameter}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.provides">
+                    <tr ng-show="vnfdinfo.provides.length > 0">
                       <td>Provides</td>
                       <td>{{vnfdinfo.provides}}</td>
                     </tr>
@@ -75,16 +75,16 @@
                     <!--tr ng-show="vnfdinfo.service_deployment_flavour">
                       <td>Service Deployment Flavour</td><td>{{vnfdinfo.service_deployment_flavour"}}</td>
                     </tr-->
-                    <tr ng-show="vnfdinfo.vdu_dependency">
+                    <tr ng-show="vnfdinfo.vdu_dependency.length > 0">
                       <td>VDU dependency</td><td>{{vnfdinfo.vdu_dependency}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.vld">
+                    <tr ng-show="vnfdinfo.vld.length > 0">
                       <td>VLD</td><td>{{vnfdinfo.vld}}</td>
                     </tr>
-                    <tr ng-show="vnfdinfo.vnfPackageLocation">
+                    <tr ng-show="vnfdinfo.vnfPackageLocation.length > 0">
                       <td>VNF Package Location</td><td><a href="#packages/{{vnfdinfo.vnfPackageLocation}}">{{vnfdinfo.vnfPackageLocation}}</a></td>
                     </tr>
-                    <tr ng-show="vnfdinfo.vnffgd">
+                    <tr ng-show="vnfdinfo.vnffgd.length > 0">
                       <td>VNF Forwarding Graph</td><td>{{vnfdinfo.vnffgd}}</td>
                     </tr>
 
@@ -299,7 +299,7 @@
                             </table>
                         </div>
                     </tab>
-                    <tab  heading="Auto Scaling Policies" ng-show="vnfdinfo.auto_scale_policy">
+                    <tab  heading="Auto Scaling Policies" ng-show="vnfdinfo.auto_scale_policy.length > 0">
                         <div class="table-responsive">
                           <h3>Auto Scaling Policies</h3>
                           <table

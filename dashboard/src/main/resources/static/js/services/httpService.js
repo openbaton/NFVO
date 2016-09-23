@@ -43,6 +43,27 @@ angular.module('app')
         };
 
 
+        http.getPlain = function (url) {
+            //console.log(customHeaders);
+
+
+            customHeaders['Accept'] = 'application/json';
+            customHeaders['Content-type'] = 'application/json';
+
+
+
+            //customHeaders['project-id'] = $cookieStore.get('project').id;
+            //console.log(customHeaders);
+            //console.log($cookieStore.get('project'));
+
+            return $http({
+                url: url,
+                method: 'GET',
+                //headers: customHeaders
+            })
+        };
+
+
         http.post = function (url, data) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
             //console.log(data);

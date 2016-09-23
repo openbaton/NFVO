@@ -23,7 +23,7 @@ angular.module('app').factory('AuthService', function ($http, Session, $location
             .then(function (res) {
                 console.log(res);
                 Session.create(URL, res.data.value, credentials.username, true);
-                $location.path("/");
+                $location.path("/main");
                 $window.location.reload();
                 return;
             });
@@ -32,7 +32,7 @@ angular.module('app').factory('AuthService', function ($http, Session, $location
 
     authService.loginGuest = function (URL) {
         Session.create(URL, '', 'guest', true);
-        $location.path("/");
+        $location.path("/main");
         $window.location.reload();
         return;
     };
