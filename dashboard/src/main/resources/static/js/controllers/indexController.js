@@ -8,8 +8,8 @@ var app = angular.module('app');
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://lore:8080';
-    $scope.URL = '';
+    $scope.URL = 'http://lore:8080';
+    //$scope.URL = '';
     $scope.credential = {
         "username": '',
         "password": '',
@@ -87,6 +87,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window, $route) {
     $('#side-menu').metisMenu();
+
 
     $scope.adminRole = "ADMIN";
     $scope.superProject = "*";
@@ -190,14 +191,22 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         console.log(newValue);
         if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
-        }
-        if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
-            $cookieStore.put('project', newValue);
+
             loadNumbers();
             loadQuota();
             getConfig();
             loadCurrentUser();
         }
+        if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
+            $cookieStore.put('project', newValue);
+
+            loadNumbers();
+            loadQuota();
+            getConfig();
+            loadCurrentUser();
+        }
+
+
     });
 
 
