@@ -10,11 +10,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Configuration
 @ConfigurationProperties
@@ -36,7 +36,7 @@ public class FlywayConfig {
     Flyway flyway = new Flyway();
     flyway.setDataSource(datasourceUrl, datasourceUsername, datasourcePassword);
     flyway.setLocations("classpath:/flyway");
-    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.1.3.2"));
+    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.0"));
     try {
       flyway.baseline();
     } catch (FlywayException e) {
