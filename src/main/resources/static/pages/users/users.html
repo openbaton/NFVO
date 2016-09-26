@@ -5,7 +5,7 @@
             <small> List of users</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>
+            <li><a href="#main"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="active"><i class="fa fa-users"></i> Users</li>
         </ol>
@@ -46,7 +46,7 @@
                 <tbody>
                 <tr ng-repeat="data in users| filter:search|orderBy:predicate:reverse">
                     <td><input type="checkbox" ng-disabled="data.username===currentUser.username"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
-                    <td><a href="#users/{{data.username}}">{{data.username}} </a></td>
+                    <td><a href="#users/{{data.id}}">{{data.username}} </a></td>
                     <td>{{data.email}}</td>
                     <td>{{data.enabled}}</td>
                     <td><span ng-repeat="role in data.roles"><b>project</b>: {{role.project}}, <b>role</b>: {{role.role}}<span ng-if="!$last">; </span></span></td>

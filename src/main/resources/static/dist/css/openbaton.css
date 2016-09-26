@@ -3,7 +3,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
+/*
     Created on : Mar 5, 2015, 6:24:23 PM
     Author     : dbo
 */
@@ -684,7 +684,7 @@ h4 > a, h4 > a:hover {
 
     /*    width: 200px;
         height: auto;
-        position: relative; 
+        position: relative;
         padding-top: 5px;
         top: 10px;
         background-color: #f7f7f7;
@@ -806,4 +806,33 @@ h4 > a, h4 > a:hover {
 }
 .dl-table dt{
     margin-left: -60px;
+}
+
+.table-scroll thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-scroll tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    display: block;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-scroll tr {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+td p {
+    text-overflow: ellipsis !important;
+    word-wrap: break-word;
+    /*overflow: hidden;*/
+    /*white-space: nowrap;*/
+    height:10px;
+    width:280px;
 }

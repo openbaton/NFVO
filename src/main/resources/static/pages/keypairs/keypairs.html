@@ -5,7 +5,7 @@
             <small> List of key pairs</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>
+            <li><a href="#main"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="active"><i class="fa fa-key"></i> Key Pairs</li>
         </ol>
@@ -36,6 +36,7 @@
                 <thead>
                 <tr>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'fingerprint'; reverse = !reverse">Fingerprint <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
@@ -45,6 +46,7 @@
                     <!--td><input type="checkbox"  ng-disabled="data.name==projectSelected.name"  ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td-->
                     <!--<td><a href="#projects/{{data.id}}">{{data.id}} </a></td>-->
                     <td>{{data.id}}</td>
+                    <td>{{data.fingerprint}}</td>
                     <td>{{data.name}}</td>
                     <td>
                         <div class="btn-group">
@@ -78,17 +80,17 @@
                 <form role="form" class="form-horizontal">
 
                     <div class="form-group">
-                        <label for="projectname" class="col-sm-4 control-label">Key Name</label>
+                        <label class="col-sm-4 control-label">Key Name</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="projectname" name="projectname"
+                            <input type="text" class="form-control"
                                    ng-model="keyName"/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="Pub key" class="col-sm-4 control-label">Public key</label>
+                        <label class="col-sm-4 control-label">Public key</label>
                         <div class="col-sm-6">
-                        <textarea style="width:350px;" name="Pub key" ng-model="pubKey" id="Pub key" class="form-control" rows="5" cols="50">
+                        <textarea style="width:350px;" ng-model="pubKey" class="form-control" rows="5" cols="50">
                         </textarea>
                         </div>
                     </div>
@@ -96,7 +98,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="importKey(keyName, pubKey)">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -115,18 +117,18 @@
                 <form role="form" class="form-horizontal">
 
                     <div class="form-group">
-                        <label for="projectname" class="col-sm-4 control-label">Key Name</label>
+                        <label class="col-sm-4 control-label">Key Name</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="projectname" name="projectname"
-                                   ng-model="createKeyName"/>
+                            <input type="text" class="form-control"
+                                   ng-model="generateKeyName"/>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="createKey()">Generate</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="generateKey(generateKeyName)">Generate</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

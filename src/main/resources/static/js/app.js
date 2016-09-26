@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies', 'angular-clipboard'])
+angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies', 'angular-clipboard'])
     .config(function ($routeProvider, $locationProvider) {
 
         $routeProvider.
@@ -6,7 +6,7 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies', 'an
                 templateUrl: 'login.html',
                 controller: 'LoginController'
             }).
-            when('/', {
+            when('/main', {
                 templateUrl: 'pages/contents.html',
                 controller: 'IndexCtrl'
             }).
@@ -142,8 +142,12 @@ angular.module('app', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCookies', 'an
                 templateUrl: 'pages/keypairs/keypairs.html',
                 controller: 'keyPairsCtrl'
             }).
+            when('/marketplace', {
+                templateUrl: 'pages/marketplace/marketplace.html',
+                controller: 'marketCtrl'
+            }).
             otherwise({
-//                        redirectTo: '/'
+                        redirectTo: '/main'
             });
         $locationProvider.html5Mode(false);
     });
@@ -172,7 +176,6 @@ angular.module('app').run(function ($rootScope, $location, $cookieStore, $route)
 
     });
 });
-
 
 /*
  * MenuCtrl

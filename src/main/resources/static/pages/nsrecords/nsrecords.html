@@ -5,7 +5,7 @@
             <small>List of NSRs</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i>
+            <li><a href="#main"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
             <li class="active"><i class="fa fa-cloud-upload"></i>
                 NS Records
@@ -53,7 +53,9 @@
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu">
-
+                                <li><a href="" data-toggle="modal" data-target="#modalAdd"
+                                       ng-click="resumeNSR(data)">Resume</a>
+                                </li>
                                 <li class="divider"></li>
                                 <li><a href="" ng-click="deleteNSR(data)">Delete</a></li>
                             </ul>

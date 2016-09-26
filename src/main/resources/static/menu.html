@@ -1,7 +1,7 @@
 <div ng-controller="IndexCtrl">
     <div id="wrapper">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -9,7 +9,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">OpenBaton - NFVO</a>
+
             </div>
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
@@ -51,13 +51,13 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <li id="li-logo">
-                            <div class="container logo">
-                                <img src="img/OpenBatonLogoTransp.png" class="img-responsive"
-                                     alt="Responsive image">
+                            <div   class="container logo">
+                                <a href="#main"><img src="img/OpenBatonLogoTransp.png" class="img-responsive"
+                                     alt="Responsive image"></a>
                             </div>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> Overview</a>
+                            <a href="#main" ><i class="fa fa-dashboard fa-fw"></i> Overview</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-database fa-fw"></i> Catalogue<span class="fa arrow"></span></a>
@@ -78,6 +78,9 @@
                                 <li>
                                     <a href="#keypairs"><i class="fa fa-key fa-fw"></i> Key Pairs</a>
                                 </li>
+                                <!--li>
+                                    <a href="#marketplace"><i class="fa fa-database fa-fw"></i> Marketplace</a>
+                                </li-->
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>

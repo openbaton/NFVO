@@ -9,10 +9,11 @@ require({
         underscore: "libs/underscore/underscore-min",
         raphael: "libs/raphael",
         morris: "morris/morris-0.4.3.min",
-        angular: "libs/angular/angular.min",
+        angular: "libs/angular/angular",
+        ngTable: "libs/angular/ng-table",
         jQueryRotate: "libs/jquery/jQueryRotate",
         angular_route: "libs/angular/angular-route.min",
-        angular_cookies: "libs/angular/angular-cookies.min",
+        angular_cookies: "libs/angular/angular-cookies",
         angular_clipboard: "libs/angular/angular-clipboard",
         d3: "libs/d3.min",
         ui_bootstrap: "libs/angular/ui-bootstrap-tpls-0.10.0.min",
@@ -38,7 +39,8 @@ require({
         vnfcomponentController: "controllers/vnfcomponentController",
         vnfmanagerController: "controllers/vnfmanagerController",
         vnfdController: "controllers/vnfdController",
-        keyPairsController: "controllers/keyPairsController"
+        keyPairsController: "controllers/keyPairsController",
+        marketCtrl:"controllers/marketCtrl"
     },
     shim: {
         jquery: {
@@ -89,7 +91,7 @@ require({
             deps: ['jquery', 'raphael']
         },
         app: {
-            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap', 'angular_clipboard']
+            deps: ['angular', 'angular_route', 'angular_sanitize', 'ui_bootstrap', 'angular_clipboard', 'ngTable']
         },
         angular_route: {
             deps: ['angular']
@@ -154,6 +156,9 @@ require({
         },
         keyPairsController: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
+        marketCtrl: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         }
 
 
@@ -166,6 +171,7 @@ require({
     'underscore',
     'jquery_jsPlumb',
     'angular',
+    'ngTable',
     'angular_route',
     'indexController',
     'nsdController',
@@ -178,7 +184,8 @@ require({
     'userController',
     'nsrController',
     'vimInstanceController',
-    'keyPairsController'
+    'keyPairsController',
+    'marketCtrl'
 ], function (require) {
     return require(['bootstrap']);
 });

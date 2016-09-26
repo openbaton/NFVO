@@ -19,7 +19,7 @@ angular.module('app')
 
 
         http.get = function (url) {
-            console.log(customHeaders);
+            //console.log(customHeaders);
 
             if (url.indexOf("/scripts/") > -1) {
                 customHeaders['Accept'] = 'text/plain';
@@ -39,6 +39,27 @@ angular.module('app')
                 url: url,
                 method: 'GET',
                 headers: customHeaders
+            })
+        };
+
+
+        http.getPlain = function (url) {
+            //console.log(customHeaders);
+
+
+            customHeaders['Accept'] = 'application/json';
+            customHeaders['Content-type'] = 'application/json';
+
+
+
+            //customHeaders['project-id'] = $cookieStore.get('project').id;
+            //console.log(customHeaders);
+            //console.log($cookieStore.get('project'));
+
+            return $http({
+                url: url,
+                method: 'GET',
+                //headers: customHeaders
             })
         };
 

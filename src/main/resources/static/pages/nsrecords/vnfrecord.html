@@ -5,7 +5,7 @@
         </h1>
         <ol class="breadcrumb">
             <li>
-                <a href="#"><i class="fa fa-dashboard"></i>
+                <a href="#main"><i class="fa fa-dashboard"></i>
                     Overview</a>
             </li>
             <li>
@@ -33,8 +33,96 @@
         </alert>
         <div class="col-lg-12" >
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
-
-                <dl class="dl-horizontal" >
+              <div class="col-lg-6">
+                <div class = "table-responsive">
+                   <table
+                          class="table table-bordered table-hover tablesorter"
+                          id="vnfrTabletable">
+                          <tbody>
+                            <tr>
+                              <td>Name</td>
+                              <td>{{vnfr.name}}</td>
+                            </tr>
+                            <tr>
+                              <td>Status</td>
+                              <td>{{vnfr.status}}</td>
+                            </tr>
+                            <tr>
+                              <td>Current Task</td>
+                              <td>{{vnfr.task}}</td>
+                            </tr>
+                            <tr>
+                              <td>Project ID</td>
+                              <td>{{vnfr.projectId}}</td>
+                            </tr>
+                            <tr>
+                            <tr>
+                              <td>Type</td>
+                              <td>{{vnfr.type}}</td>
+                            </tr>
+                            <tr>
+                              <td>Version</td>
+                              <td>{{vnfr.version}}</td>
+                            </tr>
+                            <tr>
+                              <td>Endpoint</td>
+                              <td>{{vnfr.endpoint}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.connection_point.length > 0">
+                              <td>Connection point</td>
+                              <td>{{vnfr.connection_point}}</td>
+                            </tr>
+                            <tr>
+                              <td>Cyclic Dependency</td>
+                              <td>{{vnfr.cyclicDependency}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.manifest_file_security.length > 0">
+                              <td>Manifest File Security</td>
+                              <td>{{vnfr.manifest_file_security}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.monitoring_parameter.length > 0">
+                              <td>Monitoring Parameters</td>
+                              <td>{{vnfr.monitoring_parameter}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.provides">
+                              <td>Provides</td>
+                              <td>{{vnfr.provides}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.requires.length > 0">
+                              <td>Requires</td><td>{{vnfr.requires}}</td>
+                            </tr>
+                            <!--tr ng-show="vnfr.service_deployment_flavour">
+                              <td>Service Deployment Flavour</td><td>{{vnfr.service_deployment_flavour"}}</td>
+                            </tr-->
+                            <tr ng-show="vnfr.vdu_dependency.length > 0">
+                              <td>VDU dependency</td><td>{{vnfr.vdu_dependency}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.vld.length > 0">
+                              <td>VLD</td><td>{{vnfr.vld}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.packageId">
+                              <td>Package ID</td><td><a href="#packages/{{vnfr.packageId}}">{{vnfr.packageId}}</a></td>
+                            </tr>
+                            <tr ng-show="vnfr.connected_external_virtual_link.length > 0">
+                              <td>External Virtual Link</td><td>{{vnfr.connected_external_virtual_link}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.parent_ns_id">
+                              <td>Parent NSR</td><td><a href="#nsrecords/{{vnfr.parent_ns_id}}">{{vnfr.parent_ns_id}}</a></td>
+                            </tr>
+                            <tr ng-show="vnfr.projectId">
+                              <td>Project ID</td><td>{{vnfr.projectId}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.runtime_policy_info.length > 0">
+                              <td>Runtime Policy Info</td><td>{{vnfr.runtime_policy_info}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.vnf_adress">
+                              <td>VNF Adress</td><td>{{vnfr.vnf_adress}}</td>
+                            </tr>
+                          </tbody>
+                     </table>
+                  </div>
+                </div>
+                <!--dl class="dl-horizontal" >
                     <dt>name</dt>
                     <dd>{{vnfr.name}}</dd>
                     <dt>type</dt>
@@ -70,9 +158,9 @@
                               <hr class="hr_title">
                         </span>
                     </span>
-                </dl>
+                </dl-->
 
-
+                <div class="col-lg-12" >
                 <tabset>
                     <tab heading="Vdu">
                         <div class="table-responsive" ng-show="vnfr.vdu.length > 0">
@@ -278,6 +366,33 @@
                             </table>
                         </div>
                     </tab>
+                    <tab  heading="Auto Scaling Policies" ng-show="vnfr.auto_scale_policy">
+                        <div class="table-responsive">
+                          <h3>Auto Scaling Policies</h3>
+                          <table
+                                  class="table table-bordered table-striped table-hover tablesorter"
+                                  id="">
+                          <thead>
+                          <tr><th>Version</th><th>Name</th><th>Threshold</th><th>Comparison Operator</th><th>Period</th><th>Cooldown</th><th>Mode</th><th>Type</th><th>Alarms</th><th>Actions</th></tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="policy in vnfr.auto_scale_policy">
+                                <td>{{policy.version}}</td>
+                                <td>{{policy.name}}</td>
+                                <td>{{policy.threshold}}</td>
+                                <td>{{policy.comparisonOperator}}</td>
+                                <td>{{policy.period}}</td>
+                                <td>{{policy.cooldown}}</td>
+                                <td>{{policy.mode}}</td>
+                                <td>{{policy.type}}</td>
+                                <td> <div ng-repeat="alarm in policy.alarms">
+                                  {{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div></td>
+                                <td><div ng-repeat="action in policy.actions" >{{action.type}} {{action.value}} <br></div></td>
+                            </tr>
+                          </tbody>
+                          </table>
+                        </div>
+                    </tab>
 
                 </tabset>
             </span>
@@ -361,7 +476,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()">Add Instance</button>
+                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()" ng-disabled="connection_points.length===0">Add Instance</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
