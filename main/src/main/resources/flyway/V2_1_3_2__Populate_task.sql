@@ -1,0 +1,2 @@
+UPDATE network_service_record SET task = 'Onboarded' WHERE (task = '' OR task is NULL) AND status = 'ACTIVE';
+UPDATE network_service_record SET task = 'Onboarding' WHERE (task = '' OR task IS NULL) AND (status = 'INACTIVE' OR status IS NULL OR status = 'NULL');

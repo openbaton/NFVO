@@ -1,0 +1,1 @@
+ALTER TABLE network_service_record ADD task varchar(255);

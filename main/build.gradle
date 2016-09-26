@@ -40,6 +40,8 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-actuator:' + springBootVersion
 
+    compile 'org.flywaydb:flyway-core:4.0.3'
+
 //    TEST
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'junit:junit:4.12'
