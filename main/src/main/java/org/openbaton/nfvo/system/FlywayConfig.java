@@ -5,6 +5,7 @@ import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties
@@ -22,19 +24,12 @@ public class FlywayConfig {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Value("${spring.datasource.username}")
-  private String datasourceUsername;
-
-  @Value("${spring.datasource.password}")
-  private String datasourcePassword;
-
-  @Value("${spring.datasource.url}")
-  private String datasourceUrl;
+  @Autowired private DataSource dataSource;
 
   @Bean(initMethod = "migrate")
   Flyway flyway() {
     Flyway flyway = new Flyway();
-    flyway.setDataSource(datasourceUrl, datasourceUsername, datasourcePassword);
+    flyway.setDataSource(dataSource);
     flyway.setLocations("classpath:/flyway");
     flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.0"));
     try {
