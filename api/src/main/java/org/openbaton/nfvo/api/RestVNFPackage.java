@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -73,10 +75,35 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
+  @RequestMapping(
+    value = "/marketdownload",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void marketDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId) {
+      URL packageLink = new URL("");
+
+      InputStream in = new BufferedInputStream(packageLink.openStream());
+      ByteArrayOutputStream out = ByteArrayOutputStream();
+      byte[] bytes = new byte[1024];
+      int n = 0;
+      while (-1!=(n=in.read(bytes))) {
+          out.write(buf,0,n);
+      }
+      out.close();
+      in.close();
+      byte[] packageOnboard = out.toByteArray();
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+              vnfPackageManagement.onboard(packageOnboard, projectId);
+      log.info("We are donwloading stuff from here" + link);
+  }
+
   /**
    * Removes the VNFPackage from the VNFPackages repository
    *
-   * @param id : the id of configuration to be removed
+   * @param link: link to the download location
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
