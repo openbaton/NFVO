@@ -1,12 +1,13 @@
-var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
+var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
-$scope.marketUrl = "http://marketplace.openbaton.org:8082"
+var url =  $cookieStore.get('URL');
+$scope.marketUrl = "http://marketplace.openbaton.org:8082";
 $scope.packages = null;
-loadTable();
+//loadTable();
 function loadTable() {
 
     //console.log($routeParams.userId);
-    http.getPlain($scope.marketUrl + "/api/v1/vnf-packages")
+    $http.get($scope.marketUrl + "/api/v1/vnf-packages")
         .success(function (response) {
             $scope.packages = response;
 
@@ -27,7 +28,18 @@ $scope.loadTable = function() {
 $scope.closeAlert = function (index) {
     $scope.alerts.splice(index, 1);
 };
+$scope.testlink = {};
+$scope.testlink['link'] = 'testlink';
+$scope.download = function(data) {
+    console.log("posting");
+     http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.testlink)).success(function (response) {
+      showOk("Success");
+      })
+     .error(function (data, status) {
+         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
 
+     });
+};
 
 
 function showError(data, status) {

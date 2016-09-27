@@ -28,6 +28,8 @@
 </div>
 
 <div class="row top-buffer">
+  <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
+      </button></td>
   <table class="table table-bordered table-striped table-hover tablesorter">
     <thead>
       <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
@@ -40,7 +42,7 @@
         <td>{{data.id}}</td>
         <td class="col-sm-1">{{data.name}}</td>
         <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary pull right" ng-click="donwload(data)"> Download
+        <td> <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
             </button></td>
       </tr>
     </tbody>
