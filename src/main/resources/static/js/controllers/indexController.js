@@ -144,13 +144,6 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     //console.log($scope.logged);
 
 
-
-    $scope.numberNSR = 0;
-    $scope.numberNSD = 0;
-    $scope.numberVNF = 0;
-    $scope.numberUnits = 0;
-    $scope.numberKeys = 0;
-
     function stop() {
       $interval.cancel(promise);
     };
