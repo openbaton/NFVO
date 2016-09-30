@@ -113,7 +113,7 @@ public class RestVNFPackage {
   /**
    * Removes the VNFPackage from the VNFPackages repository
    *
-   * @param id: link to the download location
+   * @param id: id of the package to delete
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
