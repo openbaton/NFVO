@@ -16,6 +16,9 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -43,6 +46,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 import javax.validation.Valid;
 
@@ -73,10 +80,40 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
+  @RequestMapping(
+    value = "/marketdownload",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String marketDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException {
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    log.debug("This is download link" + downloadlink);
+    URL packageLink = new URL(downloadlink);
+
+    InputStream in = new BufferedInputStream(packageLink.openStream());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n = 0;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+    out.close();
+    in.close();
+    byte[] packageOnboard = out.toByteArray();
+    log.debug("Downloaded " + packageOnboard.length + " bytes");
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        vnfPackageManagement.onboard(packageOnboard, projectId);
+    return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+  }
+
   /**
    * Removes the VNFPackage from the VNFPackages repository
    *
-   * @param id : the id of configuration to be removed
+   * @param id: id of the package to delete
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
