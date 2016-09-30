@@ -1,12 +1,14 @@
-var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
+var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
-$scope.marketUrl = "http://marketplace.openbaton.org:8082"
+var url =  $cookieStore.get('URL');
+$scope.alerts = [];
+$scope.marketUrl = "http://marketplace.openbaton.org:8082";
 $scope.packages = null;
 loadTable();
 function loadTable() {
 
     //console.log($routeParams.userId);
-    http.getPlain($scope.marketUrl + "/api/v1/vnf-packages")
+    $http.get($scope.marketUrl + "/api/v1/vnf-packages")
         .success(function (response) {
             $scope.packages = response;
 
@@ -28,6 +30,18 @@ $scope.closeAlert = function (index) {
     $scope.alerts.splice(index, 1);
 };
 
+$scope.download = function(data) {
+  $scope.requestlink = {};
+  $scope.requestlink['link'] = $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/download/";
+    console.log($scope.requestlink);
+     http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
+      showOk("The package is being downloaded");
+      })
+     .error(function (data, status) {
+         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+
+     });
+};
 
 
 function showError(data, status) {
