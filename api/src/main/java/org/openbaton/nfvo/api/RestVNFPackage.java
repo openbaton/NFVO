@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -55,12 +56,21 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
+@ConfigurationProperties(prefix = "nfvo.marketplace")
 public class RestVNFPackage {
+  private String ip;
+
+  public String getIp() {
+    return this.ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
-
   /**
    * Adds a new VNFPackage to the VNFPackages repository
    */
