@@ -18,7 +18,6 @@ package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -30,16 +29,9 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.ScriptRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -54,13 +46,10 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lto on 22/07/15.
@@ -85,6 +74,8 @@ public class VNFPackageManagement
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private VnfmManager vnfmManager;
 
+  private String real_nfvo_version;
+
   public boolean isCascadeDelete() {
     return cascadeDelete;
   }
@@ -95,7 +86,7 @@ public class VNFPackageManagement
 
   @Override
   public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException {
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage {
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
     Map<String, Object> metadata = null;
@@ -136,6 +127,23 @@ public class VNFPackageManagement
             }
           }
           vnfPackage.setName((String) metadata.get("name"));
+          if (metadata.containsKey("nfvo_version")) {
+            FileInputStream propFile = new FileInputStream("gradle.properties");
+            Properties p = new Properties(System.getProperties());
+            p.load(propFile);
+            // set the system properties
+            System.setProperties(p);
+            real_nfvo_version = System.getProperty("version");
+            String nfvo_version = (String) metadata.get("nfvo_version");
+            if (nfvo_version.equals(real_nfvo_version)) vnfPackage.setNfvo_version(nfvo_version);
+            else
+              throw new IncompatibleVNFPackage(
+                  "The NFVO Version: "
+                      + nfvo_version
+                      + " specified in the Metadata"
+                      + " is not compatible with the this NFVOs version: "
+                      + real_nfvo_version);
+          }
           if (metadata.containsKey("scripts-link"))
             vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
           if (metadata.containsKey("image")) {

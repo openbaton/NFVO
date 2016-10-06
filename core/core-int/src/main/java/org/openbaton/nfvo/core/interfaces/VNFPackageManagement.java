@@ -19,10 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 
 import java.io.IOException;
 
@@ -38,7 +35,7 @@ public interface VNFPackageManagement {
    * @param projectId
    */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException;
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
