@@ -69,9 +69,11 @@ import java.util.Map;
 @Service
 @Scope
 @ConfigurationProperties
-public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
+public class VNFPackageManagement
+    implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
 
-  @Value("${vnfd.vnfp.cascade.delete:false}") private boolean cascadeDelete;
+  @Value("${vnfd.vnfp.cascade.delete:false}")
+  private boolean cascadeDelete;
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
   private Gson mapper = new GsonBuilder().create();
@@ -95,12 +97,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
   }
 
   @Override
-  public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId) throws
-                                                                                 IOException,
-                                                                                 VimException,
-                                                                                 NotFoundException,
-                                                                                 PluginException,
-                                                                                 IncompatibleVNFPackage {
+  public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage {
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
     Map<String, Object> metadata = null;
@@ -129,13 +127,15 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
           YamlJsonParser yaml = new YamlJsonParser();
           metadata = yaml.parseMap(new String(content));
           //Get configuration for NFVImage
-          String[] REQUIRED_PACKAGE_KEYS = new String[]{"name", "image"};
+          String[] REQUIRED_PACKAGE_KEYS = new String[] {"name", "image"};
           for (String requiredKey : REQUIRED_PACKAGE_KEYS) {
             if (!metadata.containsKey(requiredKey)) {
-              throw new NotFoundException("Not found " + requiredKey + " of VNFPackage in Metadata.yaml");
+              throw new NotFoundException(
+                  "Not found " + requiredKey + " of VNFPackage in Metadata.yaml");
             }
             if (metadata.get(requiredKey) == null) {
-              throw new NullPointerException("Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
+              throw new NullPointerException(
+                  "Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
             }
           }
           vnfPackage.setName((String) metadata.get("name"));
@@ -152,66 +152,83 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
             if (nfvo_version.equals(getNfvoVersion())) {
               vnfPackage.setNfvo_version(nfvo_version);
             } else {
-              throw new IncompatibleVNFPackage("The NFVO Version: " +
-                                               nfvo_version +
-                                               " specified in the Metadata" +
-                                               " is not compatible with the this NFVOs version: " +
-                                               real_nfvo_version);
+              throw new IncompatibleVNFPackage(
+                  "The NFVO Version: "
+                      + nfvo_version
+                      + " specified in the Metadata"
+                      + " is not compatible with the this NFVOs version: "
+                      + real_nfvo_version);
             }
           } else {
             //TODO throw exception
-            log.warn("Missing 'nfvo_version' parameter in the vnfpackage, soon this will be an exception");
+            log.warn(
+                "Missing 'nfvo_version' parameter in the vnfpackage, soon this will be an exception");
           }
           if (metadata.containsKey("scripts-link")) {
             vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
           }
           if (metadata.containsKey("image")) {
             imageDetails = (Map<String, Object>) metadata.get("image");
-            String[] REQUIRED_IMAGE_DETAILS = new String[]{"upload"};
+            String[] REQUIRED_IMAGE_DETAILS = new String[] {"upload"};
             log.debug("image: " + imageDetails);
             for (String requiredKey : REQUIRED_IMAGE_DETAILS) {
               if (!imageDetails.containsKey(requiredKey)) {
-                throw new NotFoundException("Not found key: " + requiredKey + "of image in Metadata.yaml");
+                throw new NotFoundException(
+                    "Not found key: " + requiredKey + "of image in Metadata.yaml");
               }
               if (imageDetails.get(requiredKey) == null) {
-                throw new NullPointerException("Not defined value of key: " +
-                                               requiredKey +
-                                               " of image in Metadata.yaml");
+                throw new NullPointerException(
+                    "Not defined value of key: " + requiredKey + " of image in Metadata.yaml");
               }
             }
             //If upload==true -> create a new Image
-            if (imageDetails.get("upload").equals("true") || imageDetails.get("upload").equals("check")) {
+            if (imageDetails.get("upload").equals("true")
+                || imageDetails.get("upload").equals("check")) {
               vnfPackage.setImageLink((String) imageDetails.get("link"));
               if (metadata.containsKey("image-config")) {
                 log.debug("image-config: " + metadata.get("image-config"));
-                Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
+                Map<String, Object> imageConfig =
+                    (Map<String, Object>) metadata.get("image-config");
                 //Check if all required keys are available
-                String[]
-                    REQUIRED_IMAGE_CONFIG =
-                    new String[]{"name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"};
+                String[] REQUIRED_IMAGE_CONFIG =
+                    new String[] {
+                      "name",
+                      "diskFormat",
+                      "containerFormat",
+                      "minCPU",
+                      "minDisk",
+                      "minRam",
+                      "isPublic"
+                    };
                 for (String requiredKey : REQUIRED_IMAGE_CONFIG) {
                   if (!imageConfig.containsKey(requiredKey)) {
-                    throw new NotFoundException("Not found key: " + requiredKey + " of image-config in Metadata.yaml");
+                    throw new NotFoundException(
+                        "Not found key: " + requiredKey + " of image-config in Metadata.yaml");
                   }
                   if (imageConfig.get(requiredKey) == null) {
-                    throw new NullPointerException("Not defined value of key: " +
-                                                   requiredKey +
-                                                   " of image-config in Metadata.yaml");
+                    throw new NullPointerException(
+                        "Not defined value of key: "
+                            + requiredKey
+                            + " of image-config in Metadata.yaml");
                   }
                 }
                 image.setName((String) imageConfig.get("name"));
                 image.setDiskFormat(((String) imageConfig.get("diskFormat")).toUpperCase());
-                image.setContainerFormat(((String) imageConfig.get("containerFormat")).toUpperCase());
+                image.setContainerFormat(
+                    ((String) imageConfig.get("containerFormat")).toUpperCase());
                 image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
                 image.setMinDiskSpace((Integer) imageConfig.get("minDisk"));
                 image.setMinRam((Integer) imageConfig.get("minRam"));
-                image.setIsPublic(Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
+                image.setIsPublic(
+                    Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
               } else {
-                throw new NotFoundException("The image-config is not defined. Please define it to upload a new image");
+                throw new NotFoundException(
+                    "The image-config is not defined. Please define it to upload a new image");
               }
             }
           } else {
-            throw new NotFoundException("The image details are not defined. Please define it to use the right image");
+            throw new NotFoundException(
+                "The image details are not defined. Please define it to use the right image");
           }
         } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
           //this must be the vnfd
@@ -219,7 +236,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
           String json = new String(content);
           log.trace("Content of json is: " + json);
           try {
-            virtualNetworkFunctionDescriptor = mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
+            virtualNetworkFunctionDescriptor =
+                mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -231,8 +249,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
           imageFile = content;
           log.debug("imageFile is: " + entry.getName());
           throw new VimException(
-              "Uploading an image file from the VNFPackage is not supported at this moment. Please use the image link" +
-              ".");
+              "Uploading an image file from the VNFPackage is not supported at this moment. Please use the image link"
+                  + ".");
         } else if (entry.getName().startsWith("scripts/")) {
           Script script = new Script();
           script.setName(entry.getName().substring(8));
@@ -246,7 +264,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     }
     if (vnfPackage.getScriptsLink() != null) {
       if (!vnfPackage.getScripts().isEmpty()) {
-        log.debug("VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
+        log.debug(
+            "VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
         vnfPackage.setScripts(new HashSet<Script>());
       }
     }
@@ -254,8 +273,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     if (imageDetails.get("upload").equals("check")) {
       if (vnfPackage.getImageLink() == null && imageFile == null) {
         throw new NotFoundException(
-            "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is " +
-            "defined nor the image file is available. Please define at least one if you want to upload a new image");
+            "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
+                + "defined nor the image file is available. Please define at least one if you want to upload a new image");
       }
     }
 
@@ -263,8 +282,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
       log.debug("VNFPackageManagement: Uploading a new Image");
       if (vnfPackage.getImageLink() == null && imageFile == null) {
         throw new NotFoundException(
-            "VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define " +
-            "at least one if you want to upload a new image");
+            "VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define "
+                + "at least one if you want to upload a new image");
       } else if (vnfPackage.getImageLink() != null) {
         log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
@@ -278,9 +297,12 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 }
               }
 
-              if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+              if (!vimInstances.contains(
+                  vimInstance.getId())) { // check if we didn't already upload it
                 Vim vim = vimBroker.getVim(vimInstance.getType());
-                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                log.debug(
+                    "VNFPackageManagement: Uploading a new Image to VimInstance "
+                        + vimInstance.getName());
                 image = vim.add(vimInstance, image, vnfPackage.getImageLink());
                 if (vdu.getVm_image() == null) {
                   vdu.setVm_image(new HashSet<String>());
@@ -304,9 +326,12 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 }
               }
 
-              if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+              if (!vimInstances.contains(
+                  vimInstance.getId())) { // check if we didn't already upload it
                 Vim vim = vimBroker.getVim(vimInstance.getType());
-                log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                log.debug(
+                    "VNFPackageManagement: Uploading a new Image to VimInstance "
+                        + vimInstance.getName());
                 image = vim.add(vimInstance, image, imageFile);
                 if (vdu.getVm_image() == null) {
                   vdu.setVm_image(new HashSet<String>());
@@ -321,8 +346,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     } else {
       if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
         throw new NotFoundException(
-            "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find " +
-            "the right image.");
+            "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
+                + "the right image.");
       }
       for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
         if (vdu.getVimInstanceName() != null) {
@@ -338,10 +363,11 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
               }
 
               if (vimInstance == null) {
-                throw new NotFoundException("Vim Instance with name " +
-                                            vimName +
-                                            " was not found in project: " +
-                                            projectId);
+                throw new NotFoundException(
+                    "Vim Instance with name "
+                        + vimName
+                        + " was not found in project: "
+                        + projectId);
               }
 
               boolean found = false;
@@ -354,8 +380,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                       found = true;
                     } else {
                       throw new NotFoundException(
-                          "VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know " +
-                          "which one to choose");
+                          "VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know "
+                              + "which one to choose");
                     }
                   }
                 }
@@ -371,8 +397,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                         found = true;
                       } else {
                         throw new NotFoundException(
-                            "VNFPackageManagement: Multiple images found with the same name. Do not know which one to" +
-                            " choose. To avoid this, define the id");
+                            "VNFPackageManagement: Multiple images found with the same name. Do not know which one to"
+                                + " choose. To avoid this, define the id");
                       }
                     }
                   }
@@ -383,13 +409,17 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                 if (imageDetails.get("upload").equals("check")) {
                   if (vnfPackage.getImageLink() == null && imageFile == null) {
                     throw new NotFoundException(
-                        "VNFPackageManagement: Neither the image link is defined nor the image file is available. " +
-                        "Please define at least one if you want to upload a new image");
+                        "VNFPackageManagement: Neither the image link is defined nor the image file is available. "
+                            + "Please define at least one if you want to upload a new image");
                   } else if (vnfPackage.getImageLink() != null) {
-                    log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
-                    if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                    log.debug(
+                        "VNFPackageManagement: Uploading a new Image by using the image link");
+                    if (!vimInstances.contains(
+                        vimInstance.getId())) { // check if we didn't already upload it
                       Vim vim = vimBroker.getVim(vimInstance.getType());
-                      log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                      log.debug(
+                          "VNFPackageManagement: Uploading a new Image to VimInstance "
+                              + vimInstance.getName());
                       image = vim.add(vimInstance, image, vnfPackage.getImageLink());
                       if (vdu.getVm_image() == null) {
                         vdu.setVm_image(new HashSet<String>());
@@ -398,10 +428,14 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                       vimInstances.add(vimInstance.getId());
                     }
                   } else if (imageFile != null) {
-                    log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
-                    if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
+                    log.debug(
+                        "VNFPackageManagement: Uploading a new Image by using the image file");
+                    if (!vimInstances.contains(
+                        vimInstance.getId())) { // check if we didn't already upload it
                       Vim vim = vimBroker.getVim(vimInstance.getType());
-                      log.debug("VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
+                      log.debug(
+                          "VNFPackageManagement: Uploading a new Image to VimInstance "
+                              + vimInstance.getName());
                       image = vim.add(vimInstance, image, imageFile);
                       if (vdu.getVm_image() == null) {
                         vdu.setVm_image(new HashSet<String>());
@@ -412,8 +446,8 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
                   }
                 } else {
                   throw new NotFoundException(
-                      "VNFPackageManagement: Neither the defined ids nor the names were found. Use upload option " +
-                      "'check' to get sure that the image will be available");
+                      "VNFPackageManagement: Neither the defined ids nor the names were found. Use upload option "
+                          + "'check' to get sure that the image will be available");
                 }
               } else {
                 log.debug("VNFPackageManagement: Found image");
@@ -439,24 +473,25 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
     vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-    log.trace("Onboarded VNFPackage (" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + ") successfully");
+    log.trace(
+        "Onboarded VNFPackage ("
+            + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
+            + ") successfully");
     return virtualNetworkFunctionDescriptor;
   }
 
   private String getNfvoVersion() {
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
     if (version.lastIndexOf("_SNAPSHOT") != -1)
-      version = version.substring(0,version.lastIndexOf("_SNAPSHOT"));
+      version = version.substring(0, version.lastIndexOf("_SNAPSHOT"));
     return version;
   }
 
   @Override
-  public void disable() {
-  }
+  public void disable() {}
 
   @Override
-  public void enable() {
-  }
+  public void enable() {}
 
   @Override
   public VNFPackage update(String id, VNFPackage pack_new, String projectId) {
@@ -493,9 +528,11 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
           "VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     //TODO remove image in the VIM
-    Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = vnfdRepository.findAll();
+    Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
+        vnfdRepository.findAll();
     if (cascadeDelete) {
-      for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : virtualNetworkFunctionDescriptors) {
+      for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+          virtualNetworkFunctionDescriptors) {
         if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
           if (!vnfdBelongsToNSD(virtualNetworkFunctionDescriptor)) {
             log.info("Removing VNFDescriptor: " + virtualNetworkFunctionDescriptor.getName());
@@ -508,17 +545,20 @@ public class VNFPackageManagement implements org.openbaton.nfvo.core.interfaces.
         }
       }
     }
-    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : virtualNetworkFunctionDescriptors) {
+    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+        virtualNetworkFunctionDescriptors) {
       if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
-        throw new WrongAction("It is not possible to remove the vnfPackage with id " +
-                              id +
-                              ", a VNFD referencing it is still onboarded");
+        throw new WrongAction(
+            "It is not possible to remove the vnfPackage with id "
+                + id
+                + ", a VNFD referencing it is still onboarded");
       }
     }
     vnfPackageRepository.delete(id);
   }
 
-  private boolean vnfdBelongsToNSD(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
+  private boolean vnfdBelongsToNSD(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
     for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) {
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         if (vnfd.getId().equals(virtualNetworkFunctionDescriptor.getId())) {
