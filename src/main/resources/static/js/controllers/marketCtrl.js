@@ -1,18 +1,43 @@
 var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
 var url =  $cookieStore.get('URL');
+var defaultUrl = "marketplace.openbaton.org:80";
 $scope.alerts = [];
-$scope.marketUrl = "http://marketplace.openbaton.org:8082";
-$scope.packages = null;
-loadTable();
-function loadTable() {
 
+$scope.marketUrl = null;
+$scope.packages = null;
+
+getMarketURL();
+
+
+function getMarketURL() {
+  $http.get(url + "/configprops")
+      .success(function (response) {
+          if (response.restVNFPackage.properties.ip) {
+            $scope.marketUrl = response.restVNFPackage.properties.ip;
+          }
+          else {
+            $scope.marketUrl = defaultUrl;
+          }
+          loadTable();
+
+          console.log($scope.marketUrl);
+      })
+      .error(function (data, status) {
+          showError(data, status);
+      });
+
+
+}
+
+
+function loadTable() {
     //console.log($routeParams.userId);
-    $http.get($scope.marketUrl + "/api/v1/vnf-packages")
+    $http.get("http://"+ $scope.marketUrl + "/api/v1/vnf-packages")
         .success(function (response) {
             $scope.packages = response;
 
-            console.log($scope.packages);
+            //console.log($scope.packages);
         })
         .error(function (data, status) {
             showError(data, status);
@@ -32,7 +57,7 @@ $scope.closeAlert = function (index) {
 
 $scope.download = function(data) {
   $scope.requestlink = {};
-  $scope.requestlink['link'] = $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/download/";
+  $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/download/";
     console.log($scope.requestlink);
      http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
       showOk("The package is being downloaded");
