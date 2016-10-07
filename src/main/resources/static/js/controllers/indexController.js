@@ -106,8 +106,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $location.replace();
     loadCurrentUser();
 
-    //loadChart();
-    //rootTracker();
+    if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length -'login'.length) === 'login')) {
+      window.location.href = window.location.href.substring(0,window.location.href.length -'login'.length) + 'main';
+
+    }
 
 
     function loadCurrentUser() {
