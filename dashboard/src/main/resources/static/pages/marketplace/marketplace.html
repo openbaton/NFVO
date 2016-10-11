@@ -19,16 +19,16 @@
   </alert>
 </div>
 
-<div class="row">
+<!--div class="row">
   <label for="marketUrl" class="col-lg-2 control-label">Marketplace URL</label>
   <div class="col-lg-6">
     <input type="text" class="form-control" id="marketUrl" name="marketUrl" ng-model="marketUrl"/>
   </div>
   <button type="button" class="btn btn-primary" ng-click="loadTable()">Load Packages</button>
-</div>
+</div-->
 
 <div class="row top-buffer">
-  <table class="table table-bordered table-striped table-hover tablesorter">
+  <table class="table table-bordered table-striped table-hover tablesorter" ng-show="packages.length > 0">
     <thead>
       <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
       <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
@@ -40,7 +40,7 @@
         <td>{{data.id}}</td>
         <td class="col-sm-1">{{data.name}}</td>
         <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary pull right" ng-click="donwload(data)"> Download
+        <td> <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
             </button></td>
       </tr>
     </tbody>

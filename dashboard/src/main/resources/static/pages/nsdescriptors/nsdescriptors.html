@@ -1097,7 +1097,7 @@
                                         <td width="300" style="word-wrap: break-word" data-title="'Name'"
                                             sortable="'name'"><p>{{key.name}}</p>
                                         </td>
-                                        <td style="word-wrap: break-word" title="'Fingerprint'">{{key.fingerprint}}</td>
+                                        <td style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
                                         <td style="width:5%">
                                             <a ng-if="key.name.length" title="Remove a key from this NSR" href=""
                                                ng-click="removeLaunchKey(key)">Del
@@ -1155,7 +1155,7 @@
                                         <td width="300" style="word-wrap: break-word" data-title="'Name'" filter="{name: 'text'}"
                                             sortable="'name'"><p>{{key.name}}</p>
                                         </td>
-                                        <td style="word-wrap: break-word" title="'Fingerprint'">{{key.fingerprint}}</td>
+                                        <td width="300" style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
                                         <td style="width:5%">
                                             <a ng-if="key.name.length" title="Add a new key to this NSR" href=""
                                                ng-click="addLaunchKey(key)">Add
