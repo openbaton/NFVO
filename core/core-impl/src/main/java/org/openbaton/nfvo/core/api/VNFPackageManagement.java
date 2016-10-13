@@ -149,7 +149,8 @@ public class VNFPackageManagement
             //            real_nfvo_version = System.getProperty("version");
 
             String nfvo_version = (String) metadata.get("nfvo_version");
-            if (nfvo_version.equals(getNfvoVersion())) {
+            String actualNfvoVersion = getNfvoVersion();
+            if (nfvo_version.equals(actualNfvoVersion)) {
               vnfPackage.setNfvo_version(nfvo_version);
             } else {
               throw new IncompatibleVNFPackage(
@@ -157,7 +158,7 @@ public class VNFPackageManagement
                       + nfvo_version
                       + " specified in the Metadata"
                       + " is not compatible with the this NFVOs version: "
-                      + real_nfvo_version);
+                      + actualNfvoVersion);
             }
           } else {
             //TODO throw exception

@@ -132,6 +132,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         || (request.getRequestURI().equals("/api/v1/projects/"))
         || (request.getRequestURI().equals("/api/v1/users/current"))
         || (request.getRequestURI().equals("/api/v1/users"))
+        || (request.getRequestURI().equals("/api/v1/version"))
         || (request.getRequestURI().equals("/api/v1/users/")));
   }
 }

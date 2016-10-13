@@ -51,7 +51,7 @@ public class RabbitVnfmSender implements VnfmSender {
             + destinationName);
     log.trace("nfvMessage is: " + nfvMessage);
     log.trace("gson is: " + gson);
-    log.trace("RabbitTmeplat is: " + rabbitTemplate);
+    log.trace("RabbitTemplate is: " + rabbitTemplate);
     String json = null;
     try {
       json = gson.toJson(nfvMessage);
