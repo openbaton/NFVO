@@ -531,6 +531,15 @@ public class VNFPackageManagement
     //TODO remove image in the VIM
     Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
         vnfdRepository.findAll();
+    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+        virtualNetworkFunctionDescriptors) {
+      if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
+        throw new WrongAction(
+            "It is not possible to remove the vnfPackage with id "
+                + id
+                + ", a VNFD referencing it is still onboarded");
+      }
+    }
     if (cascadeDelete) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
           virtualNetworkFunctionDescriptors) {
@@ -544,15 +553,6 @@ public class VNFPackageManagement
                 "It is not possible to remove a vnfPackage --> vnfdescriptor if the NSD is still onboarded");
           }
         }
-      }
-    }
-    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-        virtualNetworkFunctionDescriptors) {
-      if (virtualNetworkFunctionDescriptor.getVnfPackageLocation().equals(id)) {
-        throw new WrongAction(
-            "It is not possible to remove the vnfPackage with id "
-                + id
-                + ", a VNFD referencing it is still onboarded");
       }
     }
     vnfPackageRepository.delete(id);
