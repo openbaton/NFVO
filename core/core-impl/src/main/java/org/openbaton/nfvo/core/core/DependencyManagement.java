@@ -89,50 +89,49 @@ public class DependencyManagement
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
     int dep = 0;
-    if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
-      Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
-      for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
-        log.trace(
-            vnfRecordDependency.getTarget() + " == " + virtualNetworkFunctionRecord.getName());
-        if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
-          dep++;
-          //waiting for them to finish
-          Set<String> notInitIds =
-              getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
-          if (!notInitIds.isEmpty()) {
-            dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
-            log.debug(
-                "Found "
-                    + notInitIds.size()
-                    + " for VNFR "
-                    + virtualNetworkFunctionRecord.getName()
-                    + " ( "
-                    + virtualNetworkFunctionRecord.getId()
-                    + " ) ");
-          } else {
-            log.debug(
-                "All sources are initialized, send modify for "
-                    + virtualNetworkFunctionRecord.getName()
-                    + " with dependency "
-                    + vnfRecordDependency);
-            //send sendMessageToVNFR to VNFR
-            OrVnfmGenericMessage orVnfmGenericMessage =
-                new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
-            orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-            vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
-          }
-          return dep;
+    //if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+    Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
+    for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
+      log.trace(vnfRecordDependency.getTarget() + " == " + virtualNetworkFunctionRecord.getName());
+      if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
+        dep++;
+        //waiting for them to finish
+        Set<String> notInitIds =
+            getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
+        if (!notInitIds.isEmpty()) {
+          dependencyQueuer.waitForVNFR(vnfRecordDependency.getId(), notInitIds);
+          log.debug(
+              "Found "
+                  + notInitIds.size()
+                  + " for VNFR "
+                  + virtualNetworkFunctionRecord.getName()
+                  + " ( "
+                  + virtualNetworkFunctionRecord.getId()
+                  + " ) ");
+        } else {
+          log.debug(
+              "All sources are initialized, send modify for "
+                  + virtualNetworkFunctionRecord.getName()
+                  + " with dependency "
+                  + vnfRecordDependency);
+          //send sendMessageToVNFR to VNFR
+          OrVnfmGenericMessage orVnfmGenericMessage =
+              new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
+          orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+          vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
         }
+        return dep;
       }
-      log.debug(virtualNetworkFunctionRecord.getName() + " is no target of a dependency");
-      log.debug(
-          "Found 0 dependencies for VNFR "
-              + virtualNetworkFunctionRecord.getName()
-              + " ( "
-              + virtualNetworkFunctionRecord.getId()
-              + " ) ");
-      return 0;
-    } else return -1;
+    }
+    log.debug(virtualNetworkFunctionRecord.getName() + " is no target of a dependency");
+    log.debug(
+        "Found 0 dependencies for VNFR "
+            + virtualNetworkFunctionRecord.getName()
+            + " ( "
+            + virtualNetworkFunctionRecord.getId()
+            + " ) ");
+    return 0;
+    //} else return -1;
   }
 
   @Override
@@ -288,7 +287,7 @@ public class DependencyManagement
     }
   }
 
-  private Set<String> getNotInitializedVnfrSource(Set<String> ids, NetworkServiceRecord nsr) {
+  public Set<String> getNotInitializedVnfrSource(Set<String> ids, NetworkServiceRecord nsr) {
 
     Set<String> res = new HashSet<>();
     for (String sourceName : ids) {

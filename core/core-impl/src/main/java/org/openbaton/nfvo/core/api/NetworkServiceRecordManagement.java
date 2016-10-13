@@ -33,6 +33,7 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
@@ -46,10 +47,7 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
-import org.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.openbaton.nfvo.core.interfaces.EventDispatcher;
-import org.openbaton.nfvo.core.interfaces.NetworkManagement;
-import org.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.openbaton.nfvo.core.interfaces.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.KeyRepository;
@@ -1123,13 +1121,31 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void resume(String id, String projectId) throws NotFoundException, WrongStatusException {
+  public void resume(String id, String projectId)
+      throws NotFoundException, WrongStatusException, InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     log.info("Resuming NSR with id: " + id);
+
+    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+      if (vnfr.getStatus().ordinal() == (Status.ERROR.ordinal())) {
+        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage();
+        orVnfmGenericMessage.setVnfr(vnfr);
+
+        Set<VNFRecordDependency> vnfRecordDependencies = networkServiceRecord.getVnf_dependency();
+        for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
+          log.debug(vnfRecordDependency.getTarget() + " == " + vnfr.getName());
+          if (vnfRecordDependency.getTarget().equals(vnfr.getName()))
+            orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+        }
+        orVnfmGenericMessage.setAction(Action.RESUME);
+        log.info("Sending resume message for VNFR: " + vnfr.getId());
+        vnfmManager.sendMessageToVNFR(vnfr, orVnfmGenericMessage);
+      }
+    }
   }
 
   public int getTimeout() {

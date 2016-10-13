@@ -107,7 +107,8 @@ public interface NetworkServiceRecordManagement {
    * @param id
    * @param projectId
    */
-  void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
+  void resume(String id, String projectId)
+      throws NotFoundException, WrongStatusException, InterruptedException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId);
 
