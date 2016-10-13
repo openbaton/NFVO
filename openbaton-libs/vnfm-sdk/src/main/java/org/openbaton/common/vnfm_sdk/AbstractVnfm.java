@@ -470,6 +470,25 @@ public abstract class AbstractVnfm
 
             break;
           }
+        case RESUME:
+          {
+            OrVnfmGenericMessage orVnfmResumeMessage = (OrVnfmGenericMessage) message;
+            virtualNetworkFunctionRecord = orVnfmResumeMessage.getVnfr();
+            nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
+
+            Action resumedAction = this.getResumedAction(virtualNetworkFunctionRecord, null);
+            nfvMessage =
+                VnfmUtils.getNfvMessage(resumedAction, resume(virtualNetworkFunctionRecord, null, orVnfmResumeMessage.getVnfrd()));
+            log.debug(
+                "Resuming vnfr '"
+                    + virtualNetworkFunctionRecord.getId()
+                    + "' with dependency target: '"
+                    + orVnfmResumeMessage.getVnfrd().getTarget()
+                    + "' for action: "
+                    + resumedAction
+                    + "'");
+            break;
+          }
       }
 
       log.debug(
@@ -597,6 +616,15 @@ public abstract class AbstractVnfm
 
   public abstract VirtualNetworkFunctionRecord configure(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+
+  public abstract VirtualNetworkFunctionRecord resume(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance, VNFRecordDependency dependency)
+      throws Exception;
+
+  protected Action getResumedAction(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
+    return null;
+  }
 
   /**
    * This method unsubscribe the VNFM in the NFVO
