@@ -69,4 +69,4 @@ repositories {
 dependencies {
 }
 
-build.dependsOn verifyGoogleJavaFormat
+compileJava.dependsOn tasks.googleJavaFormat
