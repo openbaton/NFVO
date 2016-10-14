@@ -478,7 +478,9 @@ public abstract class AbstractVnfm
 
             Action resumedAction = this.getResumedAction(virtualNetworkFunctionRecord, null);
             nfvMessage =
-                VnfmUtils.getNfvMessage(resumedAction, resume(virtualNetworkFunctionRecord, null, orVnfmResumeMessage.getVnfrd()));
+                VnfmUtils.getNfvMessage(
+                    resumedAction,
+                    resume(virtualNetworkFunctionRecord, null, orVnfmResumeMessage.getVnfrd()));
             log.debug(
                 "Resuming vnfr '"
                     + virtualNetworkFunctionRecord.getId()
@@ -618,7 +620,9 @@ public abstract class AbstractVnfm
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
 
   public abstract VirtualNetworkFunctionRecord resume(
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance, VNFRecordDependency dependency)
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFCInstance vnfcInstance,
+      VNFRecordDependency dependency)
       throws Exception;
 
   protected Action getResumedAction(
