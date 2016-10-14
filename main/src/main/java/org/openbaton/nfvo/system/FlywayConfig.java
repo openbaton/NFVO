@@ -18,6 +18,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.sql.DataSource;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Configuration
 @ConfigurationProperties
 public class FlywayConfig {
@@ -43,7 +45,7 @@ public class FlywayConfig {
 
 @Entity
 class schema_version implements Serializable {
-  @Id private int id;
+  @Id private int installed_rank;
 
   private String version;
 
@@ -63,12 +65,12 @@ class schema_version implements Serializable {
 
   private int success;
 
-  public int getId() {
-    return id;
+  public int getInstalled_rank() {
+    return installed_rank;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setInstalled_rank(int installed_rank) {
+    this.installed_rank = installed_rank;
   }
 
   public String getVersion() {
