@@ -148,8 +148,8 @@ class schema_version implements Serializable {
   @Override
   public String toString() {
     return "schema_version{"
-        + "id="
-        + id
+        + "installed_rank="
+        + installed_rank
         + ", version='"
         + version
         + '\''
