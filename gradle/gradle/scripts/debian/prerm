@@ -52,7 +52,7 @@ fi
 ########################################################
 
 stopNFVO () {
-    instance=$(ps aux | grep -v grep | grep "openbaton-*jar" | wc -l)
+    instance=$(ps aux | grep -v grep | grep "openbaton-" | grep ".jar" | wc -l)
     if [ ${instance} -ne 0 ]; then
         if $_ex 'systemctl stop openbaton-nfvo.service' >/dev/null ; then
     	    log_success_msg "Stopping the Open Baton NVFO .."

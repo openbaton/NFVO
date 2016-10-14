@@ -33,6 +33,7 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     summary = 'Open Baton NFV Orchestrator (NFVO)'
     packageDescription = 'The Network Function Virtualization Orchestrator (NFVO) is a component of the Open Baton project which is an ETSI compliant implementation of a NFV Management and Orchestration (MANO) System'
 
+    preInstall file('gradle/gradle/scripts/debian/preinst')
     postInstall file('gradle/gradle/scripts/debian/postinst')
     preUninstall file('gradle/gradle/scripts/debian/prerm')
     postUninstall file('gradle/gradle/scripts/debian/postrm')
