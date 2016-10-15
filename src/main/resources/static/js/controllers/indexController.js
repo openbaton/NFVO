@@ -105,7 +105,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.userLogged = {};
     $location.replace();
     loadCurrentUser();
-
+    //this is here for mozilla browser to redirect user to main overview after login, mozilla does not do it automatically
     if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length -'login'.length) === 'login')) {
       window.location.href = window.location.href.substring(0,window.location.href.length -'login'.length) + 'main';
 

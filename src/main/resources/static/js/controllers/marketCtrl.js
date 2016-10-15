@@ -5,7 +5,8 @@ var defaultUrl = "marketplace.openbaton.org:80";
 $scope.alerts = [];
 
 $scope.marketUrl = null;
-$scope.packages = null;
+$scope.privatepackages = [];
+$scope.publicpackages = [];
 
 getMarketURL();
 
@@ -15,11 +16,12 @@ function getMarketURL() {
       .success(function (response) {
           if (response.restVNFPackage.properties.ip) {
             $scope.marketUrl = response.restVNFPackage.properties.ip;
+            loadTable();
           }
           else {
-            $scope.marketUrl = defaultUrl;
+            return;
           }
-          loadTable();
+
 
           console.log($scope.marketUrl);
       })
@@ -35,7 +37,22 @@ function loadTable() {
     //console.log($routeParams.userId);
     $http.get("http://"+ $scope.marketUrl + "/api/v1/vnf-packages")
         .success(function (response) {
-            $scope.packages = response;
+            $scope.privatepackages = response;
+
+            //console.log($scope.packages);
+        })
+        .error(function (data, status) {
+            showError(data, status);
+        });
+
+
+}
+
+function loadTablePublic() {
+    //console.log($routeParams.userId);
+    $http.get("http://"+ defaultUrl + "/api/v1/vnf-packages")
+        .success(function (response) {
+            $scope.packages = $scope.packages + response;
 
             //console.log($scope.packages);
         })
