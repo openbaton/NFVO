@@ -74,7 +74,7 @@ $scope.closeAlert = function (index) {
 
 $scope.download = function(data) {
   $scope.requestlink = {};
-  $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/download/";
+  $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
     console.log($scope.requestlink);
      http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
       showOk("The package is being downloaded");
