@@ -73,4 +73,10 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
       historyEntityRepository.save(historyEntity);
     }
   }
+
+  @Override
+  public HistoryEntity[] getAll() {
+    return historyEntityRepository.findAll(
+        new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")));
+  }
 }

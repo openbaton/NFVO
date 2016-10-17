@@ -4,12 +4,14 @@ import org.openbaton.catalogue.util.IdGenerator;
 
 import java.text.DateFormat;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 
 /**
  * Created by lto on 17/10/16.
  */
+@Entity
 public class HistoryEntity {
   private String username;
   private String method;
@@ -34,24 +36,25 @@ public class HistoryEntity {
 
   @Override
   public String toString() {
-    return "HistoryEntity{" +
-           "username='" +
-           username +
-           '\'' +
-           ", method='" +
-           method +
-           '\'' +
-           ", path='" +
-           path +
-           '\'' +
-           ", result='" +
-           result +
-           '\'' +
-           ", timestamp=" + DateFormat.getInstance().format(timestamp) +
-           ", id='" +
-           id +
-           '\'' +
-           '}';
+    return "HistoryEntity{"
+        + "username='"
+        + username
+        + '\''
+        + ", method='"
+        + method
+        + '\''
+        + ", path='"
+        + path
+        + '\''
+        + ", result='"
+        + result
+        + '\''
+        + ", timestamp="
+        + DateFormat.getInstance().format(timestamp)
+        + ", id='"
+        + id
+        + '\''
+        + '}';
   }
 
   public void setUsername(String username) {

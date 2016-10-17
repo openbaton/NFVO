@@ -1,5 +1,6 @@
 package org.openbaton.nfvo.core.interfaces;
 
+import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.exceptions.NotFoundException;
 
 /**
@@ -8,4 +9,6 @@ import org.openbaton.exceptions.NotFoundException;
 public interface HistoryManagement {
 
   void addAction(String method, String path, String result) throws NotFoundException;
+
+  HistoryEntity[] getAll();
 }
