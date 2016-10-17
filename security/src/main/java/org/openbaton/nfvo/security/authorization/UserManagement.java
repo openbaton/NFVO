@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -49,8 +51,9 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
     log.debug("Adding new user: " + user);
 
-    if (userRepository.findFirstByUsername(user.getUsername()) != null)
+    if (userRepository.findFirstByUsername(user.getUsername()) != null) {
       throw new BadRequestException("Username exists already");
+    }
 
     checkIntegrity(user);
 
@@ -89,8 +92,9 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       throws NotAllowedException, BadRequestException, NotFoundException {
 
     User user = query(new_user.getId());
-    if (!user.getUsername().equals(new_user.getUsername()))
+    if (!user.getUsername().equals(new_user.getUsername())) {
       throw new NotAllowedException("Forbidden to change the username");
+    }
     new_user.setPassword(user.getPassword());
 
     checkIntegrity(new_user);
@@ -125,7 +129,9 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public User query(String id) throws NotFoundException {
     log.trace("Looking for user with id: " + id);
     User user = userRepository.findFirstById(id);
-    if (user == null) throw new NotFoundException("Not found user with id: " + id);
+    if (user == null) {
+      throw new NotFoundException("Not found user with id: " + id);
+    }
     return user;
   }
 
@@ -133,7 +139,9 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public User queryByName(String username) throws NotFoundException {
     log.trace("Get user: " + username);
     User user = userRepository.findFirstByUsername(username);
-    if (user == null) throw new NotFoundException("Not found user " + username);
+    if (user == null) {
+      throw new NotFoundException("Not found user " + username);
+    }
     return user;
   }
 
@@ -152,7 +160,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
               && password.matches("(?=.*[a-z]).*")
               && password.matches("(?=.*[0-9]).*"))) {
         throw new PasswordWeakException(
-            "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, one "
+            "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, "
+                + "one "
                 + "upper case letter and one digit");
       }
     }
@@ -170,12 +179,14 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       String EMAIL_PATTERN =
           "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
       Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-      if (!pattern.matcher(user.getEmail()).matches())
+      if (!pattern.matcher(user.getEmail()).matches()) {
         throw new BadRequestException("Email is not well formatted");
+      }
     }
     Set<String> assignedProjects = new HashSet<>();
-    if (user.getRoles().isEmpty())
+    if (user.getRoles().isEmpty()) {
       throw new BadRequestException("At least one role must be provided");
+    }
     for (Role role : user.getRoles()) {
       if (role.getProject() == null || role.getProject().equals("")) {
         throw new BadRequestException("Project must be provided");
@@ -185,8 +196,9 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       }
       if (!role.getProject().equals("*")) {
         Project project = projectManagement.queryByName(role.getProject());
-        if (project == null)
+        if (project == null) {
           throw new BadRequestException("Not found project " + role.getProject());
+        }
         if (!assignedProjects.contains(role.getProject())) {
           assignedProjects.add(role.getProject());
         } else {
@@ -194,5 +206,15 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
         }
       }
     }
+  }
+
+  @Override
+  public User getCurrentUser() throws NotFoundException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      return null;
+    }
+    String currentUserName = authentication.getName();
+    return this.queryByName(currentUserName);
   }
 }

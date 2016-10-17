@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,7 +87,7 @@ public class RestUsers {
       throws NotAllowedException, NotFoundException, BadRequestException {
     log.info("Removing user with id " + id);
     if (isAdmin()) {
-      if (!getCurrentUser().getId().equals(id)) {
+      if (!userManagement.getCurrentUser().getId().equals(id)) {
         User user = userManagement.query(id);
         userManagement.delete(user);
       } else {
@@ -143,7 +141,7 @@ public class RestUsers {
 
   @RequestMapping(value = "current", method = RequestMethod.GET)
   public User findCurrentUser() throws NotFoundException {
-    User user = getCurrentUser();
+    User user = userManagement.getCurrentUser();
     log.trace("Found User: " + user);
     return user;
   }
@@ -180,15 +178,8 @@ public class RestUsers {
         jsonObject.get("old_pwd").getAsString(), jsonObject.get("new_pwd").getAsString());
   }
 
-  private User getCurrentUser() throws NotFoundException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) return null;
-    String currentUserName = authentication.getName();
-    return userManagement.queryByName(currentUserName);
-  }
-
   public boolean isAdmin() throws NotAllowedException, NotFoundException {
-    User currentUser = getCurrentUser();
+    User currentUser = userManagement.getCurrentUser();
     log.trace("Check user if admin: " + currentUser.getUsername());
     for (Role role : currentUser.getRoles()) {
       if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
