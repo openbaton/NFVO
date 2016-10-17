@@ -94,7 +94,7 @@ allprojects {
     }
 }
 
-build.dependsOn verifyGoogleJavaFormat
+compileJava.dependsOn tasks.googleJavaFormat
 
 javadoc {
 	source = sourceSets.main.allJava
