@@ -1237,7 +1237,7 @@ public class GenericVIM extends Vim {
     log.debug("Listing all VMs of VimInstance " + vimInstance.getName());
     try {
       List<Server> servers = client.listServer(vimInstance);
-      log.info("Listed VMs of VimInstance " + vimInstance.getName() + " -> VMs: " + servers);
+      log.trace("Listed VMs of VimInstance " + vimInstance.getName() + " -> VMs: " + servers);
       return servers;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
