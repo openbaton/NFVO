@@ -73,6 +73,9 @@
                                 </th>
                                 <th ng-click="predicate = 'name'; reverse = !reverse">VNFR Name <i
                                         class="fa fa-sort"></i></th>
+                                <th ng-click="predicate = 'last_action'; reverse = !reverse">Last Executed Action <i
++                                        class="fa fa-sort"></i>
++                               </th>
                                 <th ng-click="predicate = 'type'; reverse = !reverse">VNFR Type <i
                                         class="fa fa-sort"></i></th>
                                 <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i
@@ -90,6 +93,7 @@
                                 <td><a href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}">{{vnfr.id}}</a>
                                 </td>
                                 <td>{{vnfr.name}}</td>
+                                <td>{{lastActions[vnfr.id]}}</td>
                                 <td>{{vnfr.type}}</td>
                                 <td>{{vnfr.vendor}}</td>
                                 <td>{{vnfr.version}}</td>
