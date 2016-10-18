@@ -20,19 +20,19 @@ public class HistoryLifecycleEvent {
   @Override
   public String toString() {
     return "HistoryLifecycleEvent{"
-           + "id='"
-           + id
-           + '\''
-           + ", event='"
-           + event
-           + '\''
-           + ", description='"
-           + description
-           + '\''
-           + ", executedAt='"
-           + executedAt
-           + '\''
-           + '}';
+        + "id='"
+        + id
+        + '\''
+        + ", event='"
+        + event
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", executedAt='"
+        + executedAt
+        + '\''
+        + '}';
   }
 
   public String getExecutedAt() {
