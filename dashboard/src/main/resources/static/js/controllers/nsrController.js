@@ -12,7 +12,29 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.textTopologyJson = '';
     $scope.file = '';
     $scope.alerts = [];
+    $scope.lastActions = {};
 
+    $scope.getLastHistoryLifecycleEvent = function (vnfs) {
+
+        angular.forEach(vnfs, function (vnf, i) {
+            console.log(vnf.lifecycle_event_history);
+            var result;
+            var timestamp = "0";
+            // console.log("calculating...");
+            angular.forEach(vnf.lifecycle_event_history, function (event_history, i) {
+                console.log(event_history);
+                console.log(event_history.executedAt + " >= " + timestamp);
+                if (event_history.executedAt.localeCompare(timestamp) >= 0) {
+                    timestamp = event_history.executedAt;
+                    result = event_history;
+                    // console.log("Found! " + event_history)
+                }
+            });
+            $scope.lastActions[vnf.id] = "" + result.event + ":" + result.description;
+        });
+        console.log("lastActions");
+        console.log($scope.lastActions);
+    };
 
     $scope.tabs = [
         {active: true},
@@ -427,6 +449,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             http.get(url + $routeParams.nsrecordId)
                 .success(function (response, status) {
                     $scope.nsrinfo = response;
+                    $scope.getLastHistoryLifecycleEvent($scope.nsrinfo.vnfr);
                     $scope.nsrJSON = JSON.stringify(response, undefined, 4);
                     //console.log(response);
                     //topologiesAPI.Jsplumb(response);
