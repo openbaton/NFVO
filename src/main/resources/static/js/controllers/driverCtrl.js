@@ -1,8 +1,9 @@
 var app = angular.module('app').controller('driverCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
   var url =  $cookieStore.get('URL');
-  var defaultUrl = "marketplace.openbaton.org:80";
+  var defaultUrl = "lore:8082";
   $scope.drivers = [];
   $scope.alerts = [];
+  loadTable();
 
 
   function loadTable() {

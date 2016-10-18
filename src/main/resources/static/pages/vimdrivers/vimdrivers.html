@@ -19,6 +19,7 @@
   </alert>
 </div>
 <div class="row top-buffer">
+  <div class="col-lg-8">
   <table class="table table-bordered table-striped table-hover tablesorter" ng-show="drivers.length > 0">
     <thead>
       <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
@@ -31,9 +32,10 @@
         <td>{{data.id}}</td>
         <td class="col-sm-1">{{data.name}}</td>
         <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary pull right" ng-click="install(data)"> Download
+        <td > <button type="button" style="margin-left: 10%; width: 80%;" class="btn btn-primary center" ng-click="install(data)">    Install   
             </button></td>
       </tr>
     </tbody>
   </table>
+</div>
 </div>
