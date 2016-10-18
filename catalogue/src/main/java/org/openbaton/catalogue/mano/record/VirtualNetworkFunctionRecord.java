@@ -23,10 +23,12 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.util.IdGenerator;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -79,10 +81,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
   @OneToMany(
     cascade = {CascadeType.ALL},
-    fetch = FetchType.EAGER,
-    orphanRemoval = true
+    fetch = FetchType.EAGER
   )
-  private Set<LifecycleEvent> lifecycle_event_history;
+  private List<HistoryLifecycleEvent> lifecycle_event_history;
   /**
    * A language attribute may be specified to identify default localisation/language
    */
@@ -376,11 +377,11 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     this.notification = notification;
   }
 
-  public Set<LifecycleEvent> getLifecycle_event_history() {
+  public List<HistoryLifecycleEvent> getLifecycle_event_history() {
     return lifecycle_event_history;
   }
 
-  public void setLifecycle_event_history(Set<LifecycleEvent> lifecycle_event_history) {
+  public void setLifecycle_event_history(List<HistoryLifecycleEvent> lifecycle_event_history) {
     this.lifecycle_event_history = lifecycle_event_history;
   }
 

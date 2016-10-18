@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -47,7 +48,8 @@ public class VNFRUtils {
       Map<String, Collection<VimInstance>> vimInstances)
       throws NotFoundException, BadFormatException {
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = new VirtualNetworkFunctionRecord();
-    virtualNetworkFunctionRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+    virtualNetworkFunctionRecord.setLifecycle_event_history(
+        new LinkedList<HistoryLifecycleEvent>());
     virtualNetworkFunctionRecord.setParent_ns_id(nsr_id);
     virtualNetworkFunctionRecord.setName(vnfd.getName());
     virtualNetworkFunctionRecord.setType(vnfd.getType());
