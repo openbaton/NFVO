@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -24,6 +25,8 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by lto on 06/08/15.
@@ -38,8 +41,6 @@ public class ReleaseresourcesTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
     log.info("Release resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 
-    saveVirtualNetworkFunctionRecord();
-
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
@@ -47,11 +48,23 @@ public class ReleaseresourcesTask extends AbstractTask {
         this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
       }
     }
+    setHistoryLifecycleEvent(new Date());
+    saveVirtualNetworkFunctionRecord();
     return null;
   }
 
   @Override
   public boolean isAsync() {
     return true;
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.RELEASE.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description = "The resources of this VNFR were correctly released";
   }
 }

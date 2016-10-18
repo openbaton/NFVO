@@ -11,4 +11,6 @@ public interface HistoryManagement {
   void addAction(String method, String path, String result) throws NotFoundException;
 
   HistoryEntity[] getAll();
+
+  HistoryEntity[] getAll(int actions);
 }

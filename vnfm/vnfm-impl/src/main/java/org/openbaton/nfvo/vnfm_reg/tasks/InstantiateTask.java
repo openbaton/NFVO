@@ -16,12 +16,12 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by lto on 06/08/15.
@@ -64,17 +66,21 @@ public class InstantiateTask extends AbstractTask {
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
     log.debug("VNFR arrived version= " + virtualNetworkFunctionRecord.getHb_version());
-    if (existing != null) log.debug("VNFR existing version= " + existing.getHb_version());
+    if (existing != null) {
+      log.debug("VNFR existing version= " + existing.getHb_version());
+    }
 
     dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
     log.debug("Filled parameters of " + virtualNetworkFunctionRecord.getName());
+    setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
         networkServiceRecordRepository.findFirstById(
             virtualNetworkFunctionRecord.getParent_ns_id());
-    for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr())
+    for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
       log.debug("Current Vnfrs in the database: " + vnfr.getName());
+    }
     dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(), nsr);
     log.info("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
     int dep;
@@ -144,5 +150,17 @@ public class InstantiateTask extends AbstractTask {
   @Override
   public boolean isAsync() {
     return true;
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.INSTANTIATE.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description =
+        "The instantiate lifecycle event was executed in this VNFR, this includes GRANT_OPERATION and "
+            + "ALLOCATE_RESOURCES";
   }
 }

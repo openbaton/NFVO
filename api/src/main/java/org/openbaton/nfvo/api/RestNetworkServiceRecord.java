@@ -30,6 +30,7 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
@@ -46,6 +47,7 @@ import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PropertyComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -745,6 +747,27 @@ public class RestNetworkServiceRecord {
     nsd.getPnfr().add(pRecord);
     networkServiceRecordManagement.update(nsd, id, projectId);
     return pRecord;
+  }
+
+  @RequestMapping(
+    value = "{id}/vnfrecords/{id_vnf}/history",
+    method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public List<HistoryLifecycleEvent> getHistory(
+      @PathVariable("id") String id,
+      @PathVariable("id_vnf") String id_vnf,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    List<HistoryLifecycleEvent> lifecycle_event_history =
+        networkServiceRecordManagement
+            .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
+            .getLifecycle_event_history();
+    Collections.sort(
+        lifecycle_event_history,
+        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
+    return lifecycle_event_history;
   }
 
   // TODO The Rest of the classes

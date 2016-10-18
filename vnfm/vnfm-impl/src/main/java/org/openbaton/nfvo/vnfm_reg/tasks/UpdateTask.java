@@ -16,10 +16,13 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by lto on 06/08/15.
@@ -34,6 +37,7 @@ public class UpdateTask extends AbstractTask {
     log.info(
         "Updated script for VirtualNetworkFunctionRecord: "
             + virtualNetworkFunctionRecord.getName());
+    setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     return null;
   }
@@ -41,5 +45,15 @@ public class UpdateTask extends AbstractTask {
   @Override
   public boolean isAsync() {
     return true;
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.UPDATE.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description = "The VNFR was correctly updated";
   }
 }

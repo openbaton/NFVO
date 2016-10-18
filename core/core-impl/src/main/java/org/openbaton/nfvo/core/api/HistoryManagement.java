@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -78,5 +79,20 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
   public HistoryEntity[] getAll() {
     return historyEntityRepository.findAll(
         new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")));
+  }
+
+  @Override
+  public HistoryEntity[] getAll(int actions) {
+    if (actions < 0) {
+      actions = 0;
+    }
+    long count = historyEntityRepository.count();
+    if (actions >= count) {
+      actions = (int) (count - 1);
+    }
+    return Arrays.copyOfRange(
+        historyEntityRepository.findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp"))),
+        0,
+        actions);
   }
 }

@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -134,6 +136,7 @@ public class UpdatevnfrTask extends AbstractTask {
     }
     virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
     log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
+    setHistoryLifecycleEvent(new Date());
     virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
     log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo.getName());
     //        vnfmSender.sendCommand(nfvMessage, getTempDestination());
@@ -310,5 +313,15 @@ public class UpdatevnfrTask extends AbstractTask {
   @Override
   public boolean isAsync() {
     return true;
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.UPDATE.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description = "The VNFR was correctly updated";
   }
 }

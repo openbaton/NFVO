@@ -4,6 +4,7 @@ import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.nfvo.core.interfaces.HistoryManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,5 +21,14 @@ public class RestHistory {
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public HistoryEntity[] getHistory() {
     return historyManagement.getAll();
+  }
+
+  @RequestMapping(
+    value = "/{actions}",
+    method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  public HistoryEntity[] getHistory(@PathVariable("actions") int actions) {
+    return historyManagement.getAll(actions);
   }
 }
