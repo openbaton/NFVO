@@ -143,7 +143,7 @@ public abstract class AbstractVnfm
   public abstract VirtualNetworkFunctionRecord scale(
       Action scaleInOrOut,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-      VNFCInstance component,
+      VNFComponent component,
       Object scripts,
       VNFRecordDependency dependency)
       throws Exception;
@@ -243,33 +243,18 @@ public abstract class AbstractVnfm
               this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
               return;
             }
+            VNFCInstance vnfcInstance_new = null;
+            vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
+            if (vnfcInstance_new == null) {
+              throw new RuntimeException("no new VNFCInstance found. This should not happen...");
+            }
+            if (mode != null && mode.equals("standby")) {
+              vnfcInstance_new.setState("STANDBY");
+            }
+
+            checkEMS(vnfcInstance_new.getHostname());
           }
 
-          boolean found = false;
-          VNFCInstance vnfcInstance_new = null;
-          for (VirtualDeploymentUnit virtualDeploymentUnit :
-              virtualNetworkFunctionRecord.getVdu()) {
-            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-              if (vnfcInstance.getVnfComponent().getId().equals(component.getId())) {
-                vnfcInstance_new = vnfcInstance;
-                fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
-                found = true;
-                log.debug("VNFComponentInstance FOUND : " + vnfcInstance_new.getVnfComponent());
-                break;
-              }
-            }
-            if (found) {
-              break;
-            }
-          }
-          if (vnfcInstance_new == null) {
-            throw new RuntimeException("no new VNFCInstance found. This should not happen...");
-          }
-          if (mode != null && mode.equals("standby")) {
-            vnfcInstance_new.setState("STANDBY");
-          }
-
-          checkEMS(vnfcInstance_new.getHostname());
           Object scripts;
           if (scalingMessage.getVnfPackage() == null) {
             scripts = new HashSet<>();
@@ -278,16 +263,17 @@ public abstract class AbstractVnfm
           } else {
             scripts = scalingMessage.getVnfPackage().getScripts();
           }
-          nfvMessage =
-              VnfmUtils.getNfvMessageScaled(
-                  Action.SCALED,
-                  this.scale(
-                      Action.SCALE_OUT,
-                      virtualNetworkFunctionRecord,
-                      vnfcInstance_new,
-                      scripts,
-                      dependency),
-                  vnfcInstance_new);
+
+          VirtualNetworkFunctionRecord vnfr =
+              this.scale(
+                  Action.SCALE_OUT, virtualNetworkFunctionRecord, component, scripts, dependency);
+          VNFCInstance vnfcInstance_new = null;
+          vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
+          if (vnfcInstance_new == null) {
+            log.warn(
+                "No new VNFCInstance found, either a bug or was not possible to instantiate it.");
+          }
+          nfvMessage = VnfmUtils.getNfvMessageScaled(Action.SCALED, vnfr, vnfcInstance_new);
           break;
         case SCALING:
           break;
@@ -470,6 +456,27 @@ public abstract class AbstractVnfm
 
             break;
           }
+        case RESUME:
+          {
+            OrVnfmGenericMessage orVnfmResumeMessage = (OrVnfmGenericMessage) message;
+            virtualNetworkFunctionRecord = orVnfmResumeMessage.getVnfr();
+            nsrId = virtualNetworkFunctionRecord.getParent_ns_id();
+
+            Action resumedAction = this.getResumedAction(virtualNetworkFunctionRecord, null);
+            nfvMessage =
+                VnfmUtils.getNfvMessage(
+                    resumedAction,
+                    resume(virtualNetworkFunctionRecord, null, orVnfmResumeMessage.getVnfrd()));
+            log.debug(
+                "Resuming vnfr '"
+                    + virtualNetworkFunctionRecord.getId()
+                    + "' with dependency target: '"
+                    + orVnfmResumeMessage.getVnfrd().getTarget()
+                    + "' for action: "
+                    + resumedAction
+                    + "'");
+            break;
+          }
       }
 
       log.debug(
@@ -499,6 +506,27 @@ public abstract class AbstractVnfm
       }
       vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId));
     }
+  }
+
+  private VNFCInstance getVnfcInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFComponent component) {
+    VNFCInstance vnfcInstance_new = null;
+    boolean found = false;
+    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+      for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
+        if (vnfcInstance.getVnfComponent().getId().equals(component.getId())) {
+          vnfcInstance_new = vnfcInstance;
+          fillProvidesVNFC(virtualNetworkFunctionRecord, vnfcInstance);
+          found = true;
+          log.debug("VNFComponentInstance FOUND : " + vnfcInstance_new.getVnfComponent());
+          break;
+        }
+      }
+      if (found) {
+        break;
+      }
+    }
+    return vnfcInstance_new;
   }
 
   protected abstract void checkEMS(String hostname);
@@ -597,6 +625,17 @@ public abstract class AbstractVnfm
 
   public abstract VirtualNetworkFunctionRecord configure(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws Exception;
+
+  public abstract VirtualNetworkFunctionRecord resume(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFCInstance vnfcInstance,
+      VNFRecordDependency dependency)
+      throws Exception;
+
+  protected Action getResumedAction(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
+    return null;
+  }
 
   /**
    * This method unsubscribe the VNFM in the NFVO

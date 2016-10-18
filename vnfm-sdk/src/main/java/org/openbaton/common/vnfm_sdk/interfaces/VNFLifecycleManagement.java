@@ -15,6 +15,7 @@
 
 package org.openbaton.common.vnfm_sdk.interfaces;
 
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -59,7 +60,7 @@ public interface VNFLifecycleManagement {
   VirtualNetworkFunctionRecord scale(
       Action scaleOut,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-      VNFCInstance component,
+      VNFComponent component,
       Object scripts,
       VNFRecordDependency dependency)
       throws Exception;

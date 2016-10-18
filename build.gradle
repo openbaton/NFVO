@@ -66,7 +66,37 @@ repositories {
     mavenLocal()
 }
 
-dependencies {
+allprojects {
+
+    sourceSets {
+        main {
+            java      { srcDir 'src/main/java'}
+            resources { srcDir 'src/main/resources'}
+        }
+
+        test {
+            java      { srcDir 'src/test/java'}
+            resources { srcDir 'src/test/resources'}
+        }
+
+        integration {
+            java      { srcDir 'src/test/integration/java' }
+            resources { srcDir 'src/test/resources'}
+            compileClasspath += sourceSets.test.compileClasspath
+            runtimeClasspath += sourceSets.test.runtimeClasspath
+            output.classesDir = sourceSets.test.output.classesDir
+        }
+
+    }
+
+    dependencies {
+        integrationCompile sourceSets.test.output
+    }
 }
 
-build.dependsOn verifyGoogleJavaFormat
+compileJava.dependsOn tasks.googleJavaFormat
+
+javadoc {
+	source = sourceSets.main.allJava
+	classpath = configurations.compile
+}

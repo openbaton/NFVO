@@ -33,6 +33,9 @@ public class VNFPackage implements Serializable {
   //Name of the Package
   private String name;
 
+  //NFVO Version
+  private String nfvo_version;
+
   //URL to the image's location
   private String imageLink;
 
@@ -146,5 +149,13 @@ public class VNFPackage implements Serializable {
 
   public void setImage(NFVImage image) {
     this.image = image;
+  }
+
+  public String getNfvo_version() {
+    return nfvo_version;
+  }
+
+  public void setNfvo_version(String nfvo_version) {
+    this.nfvo_version = nfvo_version;
   }
 }
