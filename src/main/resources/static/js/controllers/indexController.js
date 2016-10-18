@@ -10,6 +10,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.currentUser = null;
     //$scope.URL = 'http://lore:8080';
     $scope.URL = '';
+    $scope.NFVOVersion = "";
     $scope.credential = {
         "username": '',
         "password": '',
@@ -104,12 +105,24 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.config = {};
     $scope.userLogged = {};
     $location.replace();
-    loadCurrentUser();
+
     //this is here for mozilla browser to redirect user to main overview after login, mozilla does not do it automatically
     if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length -'login'.length) === 'login')) {
       window.location.href = window.location.href.substring(0,window.location.href.length -'login'.length) + 'main';
 
     }
+
+    function getVersion() {
+      http.get(url +'/version/')
+          .success(function (response) {
+              console.log("version is " + response);
+              $scope.NFVOversion = response
+          })
+          .error(function (response, status) {
+              showError(status, response);
+          });
+    }
+
 
 
     function loadCurrentUser() {
@@ -191,6 +204,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             loadQuota();
             getConfig();
             loadCurrentUser();
+            getVersion();
+
         }
         if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
@@ -199,6 +214,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             loadQuota();
             getConfig();
             loadCurrentUser();
+            getVersion();
         }
 
 

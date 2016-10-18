@@ -21,7 +21,7 @@ angular.module('app')
         http.get = function (url) {
             //console.log(customHeaders);
 
-            if (url.indexOf("/scripts/") > -1) {
+            if (url.indexOf("/scripts/") > -1 || url.indexOf("/version/") > -1) {
                 customHeaders['Accept'] = 'text/plain';
                 customHeaders['Content-type'] = 'text/plain';
 

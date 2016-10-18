@@ -22,9 +22,9 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
 
   $scope.install = function(data) {
     $scope.requestlink = {};
-    $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/vnf-packages/" + data.id + "/jar/";
+    $scope.requestlink['link'] = data.id;
     http.post(url + "/api/v1/vnf-packages/plugininstall", JSON.stringify($scope.requestlink)).success(function (response) {
-     showOk("Plugin will be installed");
+     showOk("Plugin " + data.name + " will be installed");
      })
     .error(function (data, status) {
         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
