@@ -146,6 +146,10 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 templateUrl: 'pages/marketplace/marketplace.html',
                 controller: 'marketCtrl'
             }).
+            when('/vimdrivers', {
+                templateUrl: 'pages/vimdrivers/vimdrivers.html',
+                controller: 'driverCtrl'
+            }).
             otherwise({
                         redirectTo: '/main'
             });
