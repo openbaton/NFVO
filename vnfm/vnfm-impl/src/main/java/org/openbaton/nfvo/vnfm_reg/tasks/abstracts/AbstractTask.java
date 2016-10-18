@@ -141,7 +141,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         log.error(e.getMessage());
         HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
         lifecycleEvent.setEvent(Event.ERROR.name());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss'-'z");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
         lifecycleEvent.setExecutedAt(format.format(new Date()));
         lifecycleEvent.setDescription(e.getCause().getMessage());
         VNFCInstance vnfcInstance = ((VimException) e.getCause()).getVnfcInstance();
@@ -195,7 +195,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
     lifecycleEvent.setEvent(Event.ERROR.name());
     lifecycleEvent.setDescription(e.getMessage());
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss'-'z");
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
     lifecycleEvent.setExecutedAt(format.format(new Date()));
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
@@ -417,7 +417,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   protected void setHistoryLifecycleEvent(Date date) {
     HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
     lifecycleEvent.setEvent(event);
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss'-'z");
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
     lifecycleEvent.setExecutedAt(format.format(new Date()));
     lifecycleEvent.setDescription(description);
 
