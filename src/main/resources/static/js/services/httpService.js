@@ -66,6 +66,8 @@ angular.module('app')
 
 
         http.post = function (url, data) {
+            customHeaders['Accept'] = 'application/json';
+            customHeaders['Content-type'] = 'application/json';
             customHeaders['project-id'] = $cookieStore.get('project').id;
             //console.log(data);
             $('#modalSend').modal('show');
