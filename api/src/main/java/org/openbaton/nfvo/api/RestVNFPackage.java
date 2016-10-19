@@ -89,22 +89,8 @@ public class RestVNFPackage {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
-    log.debug("This is download link" + downloadlink);
-    URL packageLink = new URL(downloadlink);
-
-    InputStream in = new BufferedInputStream(packageLink.openStream());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] bytes = new byte[1024];
-    int n = 0;
-    while (-1 != (n = in.read(bytes))) {
-      out.write(bytes, 0, n);
-    }
-    out.close();
-    in.close();
-    byte[] packageOnboard = out.toByteArray();
-    log.debug("Downloaded " + packageOnboard.length + " bytes");
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfPackageManagement.onboard(packageOnboard, projectId);
+        vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 

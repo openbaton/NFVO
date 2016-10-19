@@ -55,6 +55,8 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.net.URL;
 
 /**
  * Created by lto on 22/07/15.
@@ -478,6 +481,28 @@ public class VNFPackageManagement
         "Onboarded VNFPackage ("
             + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
             + ") successfully");
+    return virtualNetworkFunctionDescriptor;
+  }
+
+  public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage {
+    String downloadlink = link;
+    log.debug("This is download link" + downloadlink);
+    URL packageLink = new URL(downloadlink);
+
+    InputStream in = new BufferedInputStream(packageLink.openStream());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n = 0;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+    out.close();
+    in.close();
+    byte[] packageOnboard = out.toByteArray();
+    log.debug("Downloaded " + packageOnboard.length + " bytes");
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        onboard(packageOnboard, projectId);
     return virtualNetworkFunctionDescriptor;
   }
 

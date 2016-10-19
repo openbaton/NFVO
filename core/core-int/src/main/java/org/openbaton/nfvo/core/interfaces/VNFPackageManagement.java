@@ -38,6 +38,15 @@ public interface VNFPackageManagement {
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage;
 
   /**
+   * This operation allows submitting and validating the VNF Package from the marketplace.
+   *
+   * @param link
+   * @param projectId
+   */
+  VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage;
+
+  /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
    * further.
    */
