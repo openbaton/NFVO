@@ -69,7 +69,7 @@ public class RestUsers {
     log.info("Adding user: " + user.getUsername());
     if (isAdmin()) {
       user = userManagement.add(user);
-      user.setPassword(null);
+      //      user.setPassword(null);
     } else {
       throw new NotAllowedException("Forbidden to create a new user");
     }

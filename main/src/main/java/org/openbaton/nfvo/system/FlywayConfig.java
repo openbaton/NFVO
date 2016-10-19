@@ -33,7 +33,7 @@ public class FlywayConfig {
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSource);
     flyway.setLocations("classpath:/flyway");
-    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.0"));
+    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.1"));
     try {
       flyway.baseline();
     } catch (FlywayException e) {
