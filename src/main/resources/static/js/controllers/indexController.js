@@ -103,7 +103,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
     $interval(waitCharts, 1000);
     $scope.config = {};
-    $scope.userLogged = {};
+    $scope.userLogged;
     $location.replace();
 
     //this is here for mozilla browser to redirect user to main overview after login, mozilla does not do it automatically
@@ -319,12 +319,14 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.test = 34;
     $scope.admin = function() {
       //console.log($scope.userLogged);
-
-      if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
-        return true;
-      } else {
-        return false;
+      if (typeof $scope.userLogged != 'undefined') {
+        if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
+         return true;
+        }  else {
+         return false;
+        }
       }
+      return false;
     };
 
 
