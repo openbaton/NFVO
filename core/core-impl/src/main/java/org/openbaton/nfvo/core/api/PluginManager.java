@@ -49,10 +49,10 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
 
     String id = type + "/" + name + "/" + version;
     String url = "http://localhost:8082/api/v1/vim-drivers/" + id + "/jar";
-    String path = "plugins/install-plugin/" + name + ".jar";
+    String path = pluginDir + "/install-plugin/" + name + ".jar";
     log.info("Download URL: " + url);
 
-    File installDir = new File("plugins/install-plugin");
+    File installDir = new File(pluginDir + "/install-plugin");
 
     if (!installDir.exists()) {
       installDir.mkdirs();
