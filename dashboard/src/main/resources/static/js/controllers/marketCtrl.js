@@ -1,13 +1,14 @@
 var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
 var url =  $cookieStore.get('URL');
-var defaultUrl = "marketplace.openbaton.org:80";
+var defaultUrl = "marketplace.openbaton.org:8082";
 $scope.alerts = [];
 
 $scope.marketUrl = null;
 $scope.privatepackages = [];
 $scope.publicpackages = [];
 
+loadTablePublic();
 getMarketURL();
 
 
