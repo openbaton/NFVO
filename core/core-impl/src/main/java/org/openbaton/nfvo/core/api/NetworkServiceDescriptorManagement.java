@@ -16,19 +16,16 @@
 
 package org.openbaton.nfvo.core.api;
 
+import com.google.gson.Gson;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.*;
-import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
@@ -41,6 +38,14 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lto on 11/05/15.
@@ -65,6 +70,7 @@ public class NetworkServiceDescriptorManagement
   @Autowired private NSDUtils nsdUtils;
   @Autowired private VnfPackageRepository vnfPackageRepository;
   @Autowired private VirtualNetworkFunctionManagement virtualNetworkFunctionManagement;
+  @Autowired private VNFPackageManagement vnfPackageManagement;
 
   public boolean isCascadeDelete() {
     return cascadeDelete;
@@ -139,6 +145,86 @@ public class NetworkServiceDescriptorManagement
     networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
     log.info("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
     return networkServiceDescriptor;
+  }
+
+  @Override
+  public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+
+    Gson gson = new Gson();
+    InputStream in = new BufferedInputStream(new URL(link).openStream());
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n = 0;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+    out.close();
+    in.close();
+    String json = out.toString();
+
+    NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
+
+    List<String> market_ids = new ArrayList<>();
+
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      market_ids.add(vnfd.getId());
+    }
+    nsd.getVnfd().clear();
+    List<String> vnfd_ids = getIds(market_ids, projectId);
+    log.info(vnfd_ids.toString());
+    for (String vnfd_id : vnfd_ids) {
+      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+      vnfd.setId(vnfd_id);
+      nsd.getVnfd().add(vnfd);
+    }
+    return onboard(nsd, projectId);
+  }
+
+  private List<String> getIds(List<String> market_ids, String project_id)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+    List<String> not_found_ids = new ArrayList<>();
+    List<String> vnfd_ids = new ArrayList<>();
+
+    for (String id : market_ids) {
+      boolean found = false;
+      for (VNFPackage vnfPackage : vnfPackageRepository.findAll()) {
+        String local_id = "";
+        String vnfd_id = "";
+        for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
+          if (vnfd.getVnfPackageLocation().equals(vnfPackage.getId())) {
+            local_id = vnfd.getVendor() + "/" + vnfPackage.getName() + "/" + vnfd.getVersion();
+            vnfd_id = vnfd.getId();
+            break;
+          }
+        }
+        if (local_id.equals(id)) {
+          vnfd_ids.add(vnfd_id);
+          found = true;
+          break;
+        }
+      }
+      if (!found) not_found_ids.add(id);
+    }
+    log.info(vnfd_ids.toString());
+
+    for (String id : not_found_ids) {
+      String link = "http://marketplace.openbaton.org:80/api/v1/vnf-packages/" + id + "/tar";
+      VirtualNetworkFunctionDescriptor vnfd =
+          vnfPackageManagement.onboardFromMarket(link, project_id);
+      String vnfpl = vnfd.getVnfPackageLocation();
+      for (VirtualNetworkFunctionDescriptor vnfd_l : vnfdRepository.findAll()) {
+        if (vnfd.getVnfPackageLocation().equals(vnfpl)) {
+          vnfd_ids.add(vnfd_l.getId());
+          break;
+        }
+      }
+    }
+
+    return vnfd_ids;
   }
 
   /**

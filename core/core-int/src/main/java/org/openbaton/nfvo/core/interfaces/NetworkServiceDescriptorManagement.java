@@ -17,17 +17,15 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
 
 import javax.persistence.NoResultException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Created by mpa on 30/04/15.
@@ -42,6 +40,10 @@ public interface NetworkServiceDescriptorManagement {
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException;
+
+  NetworkServiceDescriptor onboardFromMarketplace(String link, String project_id)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage;
 
   /**
    * This operation allows disabling a Network Service Descriptor, so that it is not possible to
