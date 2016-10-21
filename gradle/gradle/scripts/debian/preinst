@@ -1,0 +1,51 @@
+#!/bin/sh
+
+##########################
+#### General Settings ####
+##########################
+
+set -e
+set -u
+#set -x # only for DEBUG
+
+# Make available the functions defined in /lib/lsb/init-functions
+. /lib/lsb/init-functions
+
+
+##########################
+#### Global Variables ####
+##########################
+
+USER="$(id -un 2>/dev/null || true)"
+
+OPENBATON_BASE=/usr
+INSTALL_DIR=${OPENBATON_BASE}/lib/openbaton
+
+
+####################
+#### Open Baton ####
+####################
+
+remove_existing_old_version_installed () {
+    OPENBATON_NFVO_JAR=$(ls -ct ${INSTALL_DIR} | grep "openbaton-" | grep ".jar" | head -n 1)
+    if [ ${OPENBATON_NFVO_JAR} != "" ]; then
+        rm ${INSTALL_DIR}/${OPENBATON_NFVO_JAR}
+        log_success_msg "Removing old Open Baton NFVO installed .."
+    fi
+        log_warning_msg "The Open Baton NFVO is not installed (jar-file not found)"	    
+}
+
+
+case "${1}" in  
+    install|upgrade)
+        remove_existing_old_version_installed
+        ;;
+    remove|failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+    *)
+        log_failure_msg "preinst called with unknown argument ${1}"
+        exit 1
+        ;;
+esac
+
+exit 0
