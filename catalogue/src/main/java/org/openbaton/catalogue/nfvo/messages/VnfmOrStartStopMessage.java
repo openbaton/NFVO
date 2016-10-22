@@ -17,6 +17,11 @@ public class VnfmOrStartStopMessage extends VnfmOrMessage {
 
   public VnfmOrStartStopMessage() {}
 
+  public VnfmOrStartStopMessage(VirtualNetworkFunctionRecord vnfr, Action action) {
+    this.virtualNetworkFunctionRecord = vnfr;
+    this.action = action;
+  }
+
   public VnfmOrStartStopMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance) {
     this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
