@@ -31,6 +31,24 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
     });
 
   };
+  
+  function showError(data, status) {
+    $scope.alerts.push({
+        type: 'danger',
+        msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
+    });
+    $('.modal').modal('hide');
+    if (status === 401) {
+        //console.log(status + ' Status unauthorized')
+        AuthService.logout();
+    }
+}
+
+function showOk(msg) {
+    $scope.alerts.push({type: 'success', msg: msg});
+    loadTable();
+    $('.modal').modal('hide');
+
 
 
 });
