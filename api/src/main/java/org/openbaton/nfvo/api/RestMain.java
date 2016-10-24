@@ -51,7 +51,7 @@ public class RestMain {
         + "unset OB_NFVO_PORT\n"
         + "unset OB_PROJECT_ID\n"
         + "unset OB_USERNAME\n"
-        + "unset OB_PASSWORD\n"
+        + "unset OB_PASSWORD\n\n"
         + "export OB_NFVO_IP="
         + nfvoIp
         + "\n"
