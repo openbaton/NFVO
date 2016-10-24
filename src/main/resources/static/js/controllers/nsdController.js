@@ -830,7 +830,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 .success(function (response, status) {
                     $scope.nsdinfo = response;
                     $scope.nsdJSON = JSON.stringify(response, undefined, 4);
-                    //console.log(response);
+                    console.log("here" + $scope.nsdinfo);
                 })
                 .error(function (data, status) {
                     showError(status, data);
