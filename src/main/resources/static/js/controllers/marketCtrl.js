@@ -19,7 +19,7 @@ function getMarketURL() {
   $http.get(url + "/configprops")
       .success(function (response) {
           if (response.restVNFPackage.properties.ip) {
-            $scope.marketUrl = response.restVNFPackage.properties.ip;
+            $scope.marketUrl = response.restVNFPackage.properties.privateip;
             loadTable();
           }
           else {
