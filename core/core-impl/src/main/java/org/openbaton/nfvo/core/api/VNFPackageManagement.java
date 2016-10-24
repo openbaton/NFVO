@@ -475,7 +475,7 @@ public class VNFPackageManagement
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
-    vnfdRepository.save(virtualNetworkFunctionDescriptor);
+    virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
     log.trace(
         "Onboarded VNFPackage ("

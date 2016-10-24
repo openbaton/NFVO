@@ -61,6 +61,12 @@ public class NetworkServiceDescriptorManagement
   @Value("${nfvo.vnfd.cascade.delete:false}")
   private boolean cascadeDelete;
 
+  @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
+  private String marketIp;
+
+  @Value("${nfvo.marketplace.port:80}")
+  private int marketPort = 80;
+
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
   @Autowired private VNFDRepository vnfdRepository;
@@ -174,7 +180,7 @@ public class NetworkServiceDescriptorManagement
     }
     nsd.getVnfd().clear();
     List<String> vnfd_ids = getIds(market_ids, projectId);
-    log.info(vnfd_ids.toString());
+    log.debug("Catalogue ids of VNFD are: " + vnfd_ids);
     for (String vnfd_id : vnfd_ids) {
       VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
       vnfd.setId(vnfd_id);
@@ -187,44 +193,48 @@ public class NetworkServiceDescriptorManagement
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
     List<String> not_found_ids = new ArrayList<>();
-    List<String> vnfd_ids = new ArrayList<>();
+    List<String> vnfdIds = new ArrayList<>();
 
     for (String id : market_ids) {
       boolean found = false;
       for (VNFPackage vnfPackage : vnfPackageRepository.findAll()) {
-        String local_id = "";
-        String vnfd_id = "";
+        String localId = "";
+        String vnfdId = "";
         for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
           if (vnfd.getVnfPackageLocation().equals(vnfPackage.getId())) {
-            local_id = vnfd.getVendor() + "/" + vnfPackage.getName() + "/" + vnfd.getVersion();
-            vnfd_id = vnfd.getId();
+            localId = vnfd.getVendor() + "/" + vnfPackage.getName() + "/" + vnfd.getVersion();
+            vnfdId = vnfd.getId();
             break;
           }
         }
-        if (local_id.equals(id)) {
-          vnfd_ids.add(vnfd_id);
+        if (localId.equals(id)) {
+          vnfdIds.add(vnfdId);
           found = true;
           break;
         }
       }
       if (!found) not_found_ids.add(id);
     }
-    log.info(vnfd_ids.toString());
+    log.debug("VNFDs found on the catalogue: " + vnfdIds);
 
     for (String id : not_found_ids) {
-      String link = "http://marketplace.openbaton.org:80/api/v1/vnf-packages/" + id + "/tar";
+
+      String link = "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + id + "/tar";
       VirtualNetworkFunctionDescriptor vnfd =
           vnfPackageManagement.onboardFromMarket(link, project_id);
-      String vnfpl = vnfd.getVnfPackageLocation();
-      for (VirtualNetworkFunctionDescriptor vnfd_l : vnfdRepository.findAll()) {
-        if (vnfd.getVnfPackageLocation().equals(vnfpl)) {
-          vnfd_ids.add(vnfd_l.getId());
-          break;
-        }
-      }
+      log.info(
+          "Onboarded from marketplace VNFD " + vnfd.getName() + " local id is: " + vnfd.getId());
+      vnfdIds.add(vnfd.getId());
+      //      String vnfpl = vnfd.getVnfPackageLocation();
+      //      for (VirtualNetworkFunctionDescriptor vnfd_l : vnfdRepository.findAll()) {
+      //        if (vnfd.getVnfPackageLocation().equals(vnfpl)) {
+      //          vnfdIds.add(vnfd_l.getId());
+      //          break;
+      //        }
+      //      }
     }
 
-    return vnfd_ids;
+    return vnfdIds;
   }
 
   /**
