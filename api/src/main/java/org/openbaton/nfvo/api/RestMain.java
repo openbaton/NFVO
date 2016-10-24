@@ -4,6 +4,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,29 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1/main")
+@ConfigurationProperties
 public class RestMain {
 
-  @Value("${nfvo.rabbit.brokerIp}")
+  public String getNfvoIp() {
+    return nfvoIp;
+  }
+
+  public void setNfvoIp(String nfvoIp) {
+    this.nfvoIp = nfvoIp;
+  }
+
+  public String getNfvoPort() {
+    return nfvoPort;
+  }
+
+  public void setNfvoPort(String nfvoPort) {
+    this.nfvoPort = nfvoPort;
+  }
+
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
   private String nfvoIp;
 
-  @Value("${server.port}")
+  @Value("${server.port:8080}")
   private String nfvoPort;
 
   @Autowired private UserManagement userManagement;
