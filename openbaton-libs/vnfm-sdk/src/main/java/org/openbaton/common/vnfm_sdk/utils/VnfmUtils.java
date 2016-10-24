@@ -57,7 +57,9 @@ public class VnfmUtils {
 
   public static NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
     NFVMessage nfvMessage;
-    if (Action.INSTANTIATE.ordinal() == action.ordinal())
+    if (Action.START.ordinal() == action.ordinal())
+      nfvMessage = new VnfmOrStartStopMessage(payload, Action.START);
+    else if (Action.INSTANTIATE.ordinal() == action.ordinal())
       nfvMessage = new VnfmOrInstantiateMessage(payload);
     else nfvMessage = new VnfmOrGenericMessage(payload, action);
     return nfvMessage;
