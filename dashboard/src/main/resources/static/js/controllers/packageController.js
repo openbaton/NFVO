@@ -2,6 +2,10 @@ var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/vnf-packages/";
+    var urlTosca = $cookieStore.get('URL') + "/api/v1/csar-vnfd/";
+    var dropzoneUrl = url;
+    var myDropzone;
+    $scope.csarPackage = false;
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
@@ -110,6 +114,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             $scope.mainCheckbox = false;
     }, true);
 
+    $scope.$watch('csarPackage', function(newValue, oldValue) {
+        if ($scope.csarPackage) {
+                myDropzone.options.url = urlTosca;
+            } else {
+                myDropzone.options.url = url;
+            }
+            console.log(myDropzone.options.url);
+    });
+
     $scope.multipleDelete = true;
 
     $scope.selection = {};
@@ -171,8 +184,8 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
 
             header['project-id'] = $cookieStore.get('project').id;
-            var myDropzone = new Dropzone('#my-dropzone', {
-                url: url, // Set the url
+            myDropzone = new Dropzone('#my-dropzone', {
+                url: dropzoneUrl, // Set the url
                 method: "POST",
                 parallelUploads: 20,
                 previewTemplate: previewTemplate,

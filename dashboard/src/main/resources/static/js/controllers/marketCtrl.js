@@ -1,14 +1,17 @@
 var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
 var url =  $cookieStore.get('URL');
+//var defaultUrl = "lore:8082"
 var defaultUrl = "marketplace.openbaton.org:8082";
 $scope.alerts = [];
 
 $scope.marketUrl = null;
 $scope.privatepackages = [];
 $scope.publicpackages = [];
+$scope.publicNSDs = [];
 
 loadTablePublic();
+loadTablePublicNSD();
 getMarketURL();
 
 
@@ -53,9 +56,25 @@ function loadTablePublic() {
     //console.log($routeParams.userId);
     $http.get("http://"+ defaultUrl + "/api/v1/vnf-packages")
         .success(function (response) {
-            $scope.packages = $scope.packages + response;
+            $scope.publicpackages = response;
 
             //console.log($scope.packages);
+        })
+        .error(function (data, status) {
+            showError(data, status);
+        });
+
+
+}
+
+function loadTablePublicNSD() {
+    //console.log($routeParams.userId);
+    $http.get("http://"+ defaultUrl + "/api/v1/nsds")
+        .success(function (response) {
+             console.log(response);
+            $scope.publicNSDs = response;
+
+           
         })
         .error(function (data, status) {
             showError(data, status);
@@ -91,6 +110,19 @@ $scope.downloadPrivate = function(data) {
   $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
     console.log($scope.requestlink);
      http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
+      showOk("The package is being downloaded");
+      })
+     .error(function (data, status) {
+         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+
+     });
+};
+
+$scope.downloadNSD = function(data) {
+  $scope.requestlink = {};
+  $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
+    console.log($scope.requestlink);
+     http.post(url + '/api/v1/ns-descriptors/marketdownload', JSON.stringify($scope.requestlink)).success(function (response) {
       showOk("The package is being downloaded");
       })
      .error(function (data, status) {
