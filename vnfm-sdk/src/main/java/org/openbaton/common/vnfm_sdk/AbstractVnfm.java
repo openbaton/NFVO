@@ -264,11 +264,15 @@ public abstract class AbstractVnfm
             scripts = scalingMessage.getVnfPackage().getScripts();
           }
 
-          VirtualNetworkFunctionRecord vnfr =
-              this.scale(
-                  Action.SCALE_OUT, virtualNetworkFunctionRecord, component, scripts, dependency);
           VNFCInstance vnfcInstance_new = null;
           vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
+          VirtualNetworkFunctionRecord vnfr =
+              this.scale(
+                  Action.SCALE_OUT,
+                  virtualNetworkFunctionRecord,
+                  vnfcInstance_new,
+                  scripts,
+                  dependency);
           if (vnfcInstance_new == null) {
             log.warn(
                 "No new VNFCInstance found, either a bug or was not possible to instantiate it.");
