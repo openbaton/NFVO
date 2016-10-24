@@ -17,8 +17,8 @@
         <button id="deleteMultiple" href="#"  ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
                 title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
         </button>
-        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
-                title="Upload a new VNF Package" data-toggle="modal"
+        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right" ng-style="{'margin-left':'25px'}"
+                title="Upload a new VNF Package" ng-click="createDropzone()" data-toggle="modal"
                 data-target="#modalFile">Upload VNFPackage
         </button>
     </div>
@@ -81,6 +81,7 @@
             </div>
             <div class="modal-body">
                 <form role="form" id="my-dropzone" class="">
+                    <td><input type="checkbox" ng-model="csarPackage"/>Use CSAR parser</td>
                     <h4>Drag and drop files below</h4>
 
                     <div class="upload-drop-zone dz-clickable dz-default dz-message" id="drop-zone">

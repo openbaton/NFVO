@@ -113,7 +113,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     }
 
     function getVersion() {
-      http.get(url +'/version/')
+      http.get(url +'/main/version/')
           .success(function (response) {
               console.log("version is " + response);
               $scope.NFVOversion = response
@@ -339,6 +339,25 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
              $scope.quota = response;
 
               //console.log($scope.quota.left.ram)
+         })
+         .error(function (response, status) {
+             showError(status, response);
+         });
+}
+
+$scope.rcdownload = function() {
+    http.getRC(url +'/main/openbaton-rc/')
+         .success(function (response) {
+             console.log(response);
+             var rc = document.createElement("a");
+             rc.download = "openbaton" + '.rc';
+             rc.href = 'data:application/x-shellscript,' + encodeURIComponent(response);
+             document.body.appendChild(rc);
+             rc.click()
+             document.body.removeChild(rc);
+             delete key;
+
+            
          })
          .error(function (response, status) {
              showError(status, response);
