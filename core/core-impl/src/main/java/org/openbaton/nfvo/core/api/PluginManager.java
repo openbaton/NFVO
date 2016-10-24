@@ -44,11 +44,18 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
   private String pluginLogPath;
 
+  @Value("${nfvo.marketplace.ip:markeplace.openbaton.org}")
+  private String marketIp;
+
+  @Value("${nfvo.marketplace.port:80}")
+  private int marketPort;
+
   @Override
   public void downloadPlugin(String type, String name, String version) throws IOException {
 
     String id = type + "/" + name + "/" + version;
-    String url = "http://localhost:8082/api/v1/vim-drivers/" + id + "/jar";
+
+    String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
     String path = pluginDir + "/install-plugin/" + name + ".jar";
     log.info("Download URL: " + url);
 

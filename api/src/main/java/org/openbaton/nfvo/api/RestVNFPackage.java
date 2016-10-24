@@ -53,7 +53,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
-@ConfigurationProperties(prefix = "nfvo.marketplace.private")
+@ConfigurationProperties(prefix = "nfvo.marketplace.privateip")
 public class RestVNFPackage {
   private String ip;
 
