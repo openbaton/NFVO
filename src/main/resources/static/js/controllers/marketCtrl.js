@@ -15,10 +15,11 @@ loadTablePublicNSD();
 getMarketURL();
 
 
+
 function getMarketURL() {
   $http.get(url + "/configprops")
       .success(function (response) {
-          if (response.restVNFPackage.properties.ip) {
+          if (response.restVNFPackage.properties.privateip) {
             $scope.marketUrl = response.restVNFPackage.properties.privateip;
             loadTable();
           }
@@ -27,7 +28,7 @@ function getMarketURL() {
           }
 
 
-          console.log($scope.marketUrl);
+          //console.log($scope.marketUrl);
       })
       .error(function (data, status) {
           showError(data, status);
@@ -100,7 +101,7 @@ $scope.download = function(data) {
       showOk("The package is being downloaded");
       })
      .error(function (data, status) {
-         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+         showError(data, status);
 
      });
 };
@@ -113,7 +114,7 @@ $scope.downloadPrivate = function(data) {
       showOk("The package is being downloaded");
       })
      .error(function (data, status) {
-         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+        showError(data, status);
 
      });
 };
@@ -126,7 +127,7 @@ $scope.downloadNSD = function(data) {
       showOk("The package is being downloaded");
       })
      .error(function (data, status) {
-         console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+        showError(data, status);
 
      });
 };
@@ -146,8 +147,18 @@ function showError(data, status) {
 
 function showOk(msg) {
     $scope.alerts.push({type: 'success', msg: msg});
-    loadTable();
+    window.setTimeout(function() { 
+    for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
     $('.modal').modal('hide');
 }
+
+$scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
 });

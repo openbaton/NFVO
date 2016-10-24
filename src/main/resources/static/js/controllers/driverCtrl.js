@@ -26,7 +26,7 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
      showOk("Plugin " + data.name + " will be installed");
      })
     .error(function (data, status) {
-        console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+        showError(data, status);
 
     });
 
@@ -46,8 +46,13 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
 
 function showOk(msg) {
     $scope.alerts.push({type: 'success', msg: msg});
+    
     loadTable();
     $('.modal').modal('hide');
+}
+$scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
 
 
