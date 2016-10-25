@@ -21,6 +21,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
@@ -31,9 +32,11 @@ import javax.persistence.Version;
  */
 @Entity
 public class ConfigurationParameter implements Serializable {
+
   @Id private String id;
   @Version private int version;
-
+  @Column(length = 1024)
+  private String description;
   private String confKey;
   private String value;
 
@@ -64,8 +67,6 @@ public class ConfigurationParameter implements Serializable {
   public void setDescription(String description) {
     this.description = description;
   }
-
-  private String description;
 
   @PrePersist
   public void ensureId() {
