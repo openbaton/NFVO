@@ -59,7 +59,8 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
             .success(function (data) {
                 //console.log(data);
                 if (data === "false") {
-                    return;
+                    window.location.assign('/login');
+                    window.location.reload();
                 }
             })
             .error(function (data, status) {
