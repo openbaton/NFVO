@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Set;
 
 /**
  * Created by rvl on 19.10.16.
@@ -101,5 +102,10 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         password,
         "" + managementPort,
         pluginLogPath);
+  }
+
+  @Override
+  public Set<String> listInstalledPlugins() {
+    return PluginStartup.getProcesses().keySet();
   }
 }
