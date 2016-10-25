@@ -64,7 +64,7 @@ public class NetworkServiceDescriptorManagement
   @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
   private String marketIp;
 
-  @Value("${nfvo.marketplace.port:80}")
+  @Value("${nfvo.marketplace.port:8082}")
   private int marketPort;
 
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;

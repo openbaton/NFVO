@@ -48,7 +48,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
   private String marketIp;
 
-  @Value("${nfvo.marketplace.port:80}")
+  @Value("${nfvo.marketplace.port:8082}")
   private int marketPort;
 
   @Override
