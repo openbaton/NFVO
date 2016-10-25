@@ -8,6 +8,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -178,7 +179,7 @@ public class CSARParser {
       VNFPackage vnfPackage,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String projectId)
-      throws NotFoundException, PluginException, VimException {
+      throws NotFoundException, PluginException, VimException, IncompatibleVNFPackage {
 
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
@@ -197,6 +198,21 @@ public class CSARParser {
       if (metadata.get(requiredKey) == null) {
         throw new NullPointerException(
             "Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
+      }
+    }
+    vnfPackage.setName((String) metadata.get("name"));
+    if (metadata.containsKey("nfvo_version")) {
+      String nfvo_version = (String) metadata.get("nfvo_version");
+      String actualNfvoVersion = getNfvoVersion();
+      if (nfvo_version.equals(actualNfvoVersion)) {
+        vnfPackage.setNfvo_version(nfvo_version);
+      } else {
+        throw new IncompatibleVNFPackage(
+            "The NFVO Version: "
+                + nfvo_version
+                + " specified in the Metadata"
+                + " is not compatible with the this NFVOs version: "
+                + actualNfvoVersion);
       }
     }
     if (metadata.containsKey("scripts-link"))
@@ -313,7 +329,8 @@ public class CSARParser {
     } else {
       if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
         throw new NotFoundException(
-            "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find the right image.");
+            "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
+                + " the right image.");
       }
       for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
         if (vdu.getVimInstanceName() != null) {
@@ -435,9 +452,19 @@ public class CSARParser {
     return image;
   }
 
+  private String getNfvoVersion() {
+    String version =
+        org.openbaton.nfvo.core.api.VNFPackageManagement.class
+            .getPackage()
+            .getImplementationVersion();
+    if (version.lastIndexOf("_SNAPSHOT") != -1)
+      version = version.substring(0, version.lastIndexOf("_SNAPSHOT"));
+    return version;
+  }
+
   private String saveVNFD(
       VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
-      throws PluginException, VimException, NotFoundException, IOException {
+      throws PluginException, VimException, NotFoundException, IOException, IncompatibleVNFPackage {
 
     VNFPackage vnfPackage = new VNFPackage();
 
@@ -462,7 +489,7 @@ public class CSARParser {
    */
 
   public VirtualNetworkFunctionDescriptor onboardVNFD(byte[] bytes, String projectId)
-      throws NotFoundException, PluginException, VimException, IOException {
+      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
@@ -485,7 +512,7 @@ public class CSARParser {
   }
 
   public NetworkServiceDescriptor onboardNSD(byte[] bytes, String projectId)
-      throws NotFoundException, PluginException, VimException, IOException {
+      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
