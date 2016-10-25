@@ -67,7 +67,7 @@ public class RestCSAR {
   }
 
   @RequestMapping(
-    value = "csar-vnf/marketdownload",
+    value = "/api/v1/csar-vnf/marketdownload",
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
