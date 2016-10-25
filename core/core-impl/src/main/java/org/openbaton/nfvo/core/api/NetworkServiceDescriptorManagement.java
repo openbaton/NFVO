@@ -65,7 +65,7 @@ public class NetworkServiceDescriptorManagement
   private String marketIp;
 
   @Value("${nfvo.marketplace.port:80}")
-  private int marketPort = 80;
+  private int marketPort;
 
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private NetworkServiceRecordRepository nsrRepository;

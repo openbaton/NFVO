@@ -45,7 +45,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
   private String pluginLogPath;
 
-  @Value("${nfvo.marketplace.ip:markeplace.openbaton.org}")
+  @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
   private String marketIp;
 
   @Value("${nfvo.marketplace.port:80}")

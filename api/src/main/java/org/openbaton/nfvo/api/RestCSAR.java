@@ -71,7 +71,7 @@ public class RestCSAR {
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
-  public String marketDownload(
+  public String marketDownloadVNF(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
     Gson gson = new Gson();
@@ -87,13 +87,48 @@ public class RestCSAR {
     while (-1 != (n = in.read(bytes))) {
       out.write(bytes, 0, n);
     }
+
+    byte[] csarOnboard = out.toByteArray();
     out.close();
     in.close();
-    byte[] csarOnboard = out.toByteArray();
 
-    CSARParser csarParser = new CSARParser();
+    log.debug(String.valueOf(csarOnboard.length));
+
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         csarParser.onboardVNFD(csarOnboard, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+  }
+
+  @RequestMapping(
+    value = "/api/v1/csar-ns/marketdownload",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String marketDownloadNS(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    log.debug("This is download link" + downloadlink);
+    URL packageLink = new URL(downloadlink);
+
+    InputStream in = new BufferedInputStream(packageLink.openStream());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n = 0;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+
+    byte[] csarOnboard = out.toByteArray();
+    out.close();
+    in.close();
+
+    log.debug(String.valueOf(csarOnboard.length));
+
+    NetworkServiceDescriptor networkServiceDescriptor =
+        csarParser.onboardNSD(csarOnboard, projectId);
+    return "{ \"id\": \"" + networkServiceDescriptor.getId() + "\"}";
   }
 }
