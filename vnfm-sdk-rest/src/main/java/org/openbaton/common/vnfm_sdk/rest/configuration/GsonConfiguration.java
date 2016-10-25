@@ -14,22 +14,26 @@
  * limitations under the License.
  *
  */
-package org.openbaton.catalogue.util;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.UUID;
+package org.openbaton.common.vnfm_sdk.rest.configuration;
 
-public class IdGenerator {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-  private static SecureRandom random = new SecureRandom();
+/**
+ * Created by tbr on 21.10.16.
+ */
+@Configuration
+public class GsonConfiguration {
 
-  public static String createId() {
-    return new BigInteger(32, random).toString();
-  }
-
-  public static String createUUID() {
-    UUID uuid = UUID.randomUUID();
-    return uuid.toString();
+  @Bean
+  Gson gson() {
+    return new GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+        .create();
   }
 }

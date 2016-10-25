@@ -14,22 +14,15 @@
  * limitations under the License.
  *
  */
-package org.openbaton.catalogue.util;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.UUID;
+package org.openbaton.exceptions;
 
-public class IdGenerator {
+/**
+ * Created by rvl on 05.10.16.
+ */
+public class IncompatibleVNFPackage extends Exception {
 
-  private static SecureRandom random = new SecureRandom();
-
-  public static String createId() {
-    return new BigInteger(32, random).toString();
-  }
-
-  public static String createUUID() {
-    UUID uuid = UUID.randomUUID();
-    return uuid.toString();
+  public IncompatibleVNFPackage(String message) {
+    super(message);
   }
 }

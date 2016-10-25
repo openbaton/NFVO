@@ -19,55 +19,49 @@ package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import javax.persistence.Version;
 
 /**
- * Created by lto on 18/05/15.
+ * Created by lto on 18/10/16.
  */
 @Entity
-public class ConfigurationParameter implements Serializable {
+public class HistoryLifecycleEvent {
 
   @Id private String id;
-  @Version private int version;
+  private String event;
 
   @Column(length = 1024)
   private String description;
 
-  private String confKey;
-  private String value;
+  private String executedAt;
 
   @Override
   public String toString() {
-    return "ConfigurationParameter{"
+    return "HistoryLifecycleEvent{"
         + "id='"
         + id
         + '\''
-        + ", version="
-        + version
-        + ", confKey='"
-        + confKey
-        + '\''
-        + ", value='"
-        + value
+        + ", event='"
+        + event
         + '\''
         + ", description='"
         + description
         + '\''
+        + ", executedAt='"
+        + executedAt
+        + '\''
         + '}';
   }
 
-  public String getDescription() {
-    return description;
+  public String getExecutedAt() {
+    return executedAt;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setExecutedAt(String executedAt) {
+    this.executedAt = executedAt;
   }
 
   @PrePersist
@@ -83,27 +77,19 @@ public class ConfigurationParameter implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
-    return version;
+  public String getEvent() {
+    return event;
   }
 
-  public void setVersion(int version) {
-    this.version = version;
+  public void setEvent(String event) {
+    this.event = event;
   }
 
-  public String getConfKey() {
-    return confKey;
+  public String getDescription() {
+    return description;
   }
 
-  public void setConfKey(String confKey) {
-    this.confKey = confKey;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

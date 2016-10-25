@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.openbaton.catalogue.nfvo;
@@ -32,6 +34,9 @@ public class VNFPackage implements Serializable {
 
   //Name of the Package
   private String name;
+
+  //NFVO Version
+  private String nfvo_version;
 
   //URL to the image's location
   private String imageLink;
@@ -146,5 +151,13 @@ public class VNFPackage implements Serializable {
 
   public void setImage(NFVImage image) {
     this.image = image;
+  }
+
+  public String getNfvo_version() {
+    return nfvo_version;
+  }
+
+  public void setNfvo_version(String nfvo_version) {
+    this.nfvo_version = nfvo_version;
   }
 }
