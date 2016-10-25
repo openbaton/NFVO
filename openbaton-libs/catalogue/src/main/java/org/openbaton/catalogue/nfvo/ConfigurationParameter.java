@@ -35,8 +35,10 @@ public class ConfigurationParameter implements Serializable {
 
   @Id private String id;
   @Version private int version;
+
   @Column(length = 1024)
   private String description;
+
   private String confKey;
   private String value;
 
