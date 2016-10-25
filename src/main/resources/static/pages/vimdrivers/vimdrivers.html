@@ -35,19 +35,19 @@
 <div class="row top-buffer">
   <div class="col-lg-8">
 <tabset>
-    <tab heading="Available plugins">
+    <tab heading="Available drivers">
 <div class="table-responsive">
   <table class="table table-bordered table-striped table-hover tablesorter" ng-show="drivers.length > 0">
     <thead>
       <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-      <th style="width: 25%;" ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+      <th style="width: 25%;" ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
       <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
       <th>Install <i class="fa"></i></th>
     </thead>
     <tbody>
       <tr ng-repeat="data in drivers| filter:search|orderBy:predicate:reverse">
         <td>{{data.id}}</td>
-        <td class="col-sm-1">{{data.name}}</td>
+        <td class="col-sm-1">{{data.type}}</td>
         <td>{{data.description}}</td>
         <td > <button type="button" style="margin-left: 5%; width:90%;" class="btn btn-primary" ng-click="install(data)">Install   
             </button></td>
@@ -57,7 +57,7 @@
 
   </div>
   </tab>
-  <tab heading="Installed Plugins">
+  <tab heading="Installed Drivers">
       <div class="table-responsive">
   <table class="table table-bordered table-striped table-hover tablesorter" ng-show="driversinstalled.length > 0">
     <thead>
