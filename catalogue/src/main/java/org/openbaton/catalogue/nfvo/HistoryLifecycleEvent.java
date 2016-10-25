@@ -32,8 +32,10 @@ public class HistoryLifecycleEvent {
 
   @Id private String id;
   private String event;
+
   @Column(length = 1024)
   private String description;
+
   private String executedAt;
 
   @Override
