@@ -28,11 +28,10 @@ INSTALL_DIR=${OPENBATON_BASE}/lib/openbaton
 
 remove_existing_old_version_installed () {
     OPENBATON_NFVO_JAR=$(ls -ct ${INSTALL_DIR} | grep "openbaton-" | grep ".jar" | head -n 1)
-    if [ ${OPENBATON_NFVO_JAR} != "" ]; then
+    if [ "${OPENBATON_NFVO_JAR}" != "" ]; then
         rm ${INSTALL_DIR}/${OPENBATON_NFVO_JAR}
         log_success_msg "Removing old Open Baton NFVO installed .."
     fi
-        log_warning_msg "The Open Baton NFVO is not installed (jar-file not found)"	    
 }
 
 
