@@ -2,6 +2,7 @@ package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
@@ -14,6 +15,7 @@ public class HistoryLifecycleEvent {
 
   @Id private String id;
   private String event;
+  @Column(length = 1024)
   private String description;
   private String executedAt;
 
