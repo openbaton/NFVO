@@ -53,7 +53,11 @@ public class ErrorTask extends AbstractTask {
 
   @Override
   protected void setDescription() {
-    description = "An Error Occurred in this VNFR, check the VNFM for more info";
+    if (exception != null) {
+      description = exception.getMessage();
+    } else {
+      description = "An Error Occurred in this VNFR, check the VNFM for more info";
+    }
   }
 
   @Override
@@ -61,7 +65,9 @@ public class ErrorTask extends AbstractTask {
 
     if (log.isDebugEnabled()) {
       log.error("ERROR from VNFM: ", this.getException());
-    } else log.error("ERROR from VNFM: " + this.getException().getMessage());
+    } else {
+      log.error("ERROR from VNFM: " + this.getException().getMessage());
+    }
 
     if (virtualNetworkFunctionRecord.getId() == null) {
       saveVirtualNetworkFunctionRecord();
@@ -75,7 +81,9 @@ public class ErrorTask extends AbstractTask {
                     .findFirstById(virtualNetworkFunctionRecord.getId())
                     .getHb_version());
       } catch (Exception e) {
-        if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+        if (log.isDebugEnabled()) {
+          log.error(e.getMessage(), e);
+        }
       }
       log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
       log.error("ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
@@ -84,7 +92,8 @@ public class ErrorTask extends AbstractTask {
       saveVirtualNetworkFunctionRecord();
     } else {
       log.error(
-          "Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the VNFM Logs");
+          "Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the"
+              + " VNFM Logs");
       NetworkServiceRecord networkServiceRecord =
           networkServiceRecordRepository.findFirstById(nsrId);
       networkServiceRecord.setStatus(Status.ERROR);
