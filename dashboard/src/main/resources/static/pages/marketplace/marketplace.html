@@ -1,4 +1,4 @@
- <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+<!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,24 +13,23 @@
  
   limitations under the License.-->
 <div class="row">
-    <div class="col-lg-12">
-        <h1>
-            Marketplace
-            <small>List of packages available on the Open Baton marketplace</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li><a href="#main"><i class="fa fa-dashboard"></i>
+	<div class="col-lg-12">
+		<h1>
+			Marketplace
+			<small>List of packages available on the Open Baton marketplace</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="#main"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
-            <li class="active"><i class="fa fa-database"></i>
-                Marketplace
-            </li>
-        </ol>
-    </div>
+			<li class="active"><i class="fa fa-database"></i> Marketplace
+			</li>
+		</ol>
+	</div>
 </div>
 <div class="row">
-  <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
-      <div ng-bind-html="alert.msg"></div>
-  </alert>
+	<alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+		<div ng-bind-html="alert.msg"></div>
+	</alert>
 </div>
 
 <!--div class="row">
@@ -41,82 +40,109 @@
   <button type="button" class="btn btn-primary" ng-click="loadTable()">Load Packages</button>
 </div-->
 <div class="row top-buffer">
-  <tabset>
-  <tab heading="VNFPackages">
-   <div class="table-responsive">   
-  <table class="table table-bordered table-striped table-hover tablesorter" ng-show="publicpackages.length > 0">
-    <thead>
-      <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-      <th>Download <i class="fa"></i></th>
-    </thead>
-    <tbody>
-      <tr ng-repeat="data in publicpackages| filter:search|orderBy:predicate:reverse">
-        <td>{{data.id}}</td>
-        <td class="col-sm-1">{{data.name}}</td>
-        <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
+	<tabset>
+		<tab heading="VNFPackages">
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="publicpackages.length > 0">
+					<thead>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+						<th>Download <i class="fa"></i></th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="data in publicpackages| filter:search|orderBy:predicate:reverse">
+							<td>{{data.id}}</td>
+							<td class="col-sm-1">{{data.name}}</td>
+							<td>{{data.description}}</td>
+							<td>{{data.type}}</td>
+							<td> <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
             </button></td>
-      </tr>
-    </tbody>
-  </table>
-  <table class="table table-bordered table-striped table-hover tablesorter" ng-show="privatepackages.length > 0">
-    <thead>
-      <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-      <th>Download <i class="fa"></i></th>
-    </thead>
-    <tbody>
-      <tr ng-repeat="data in privatepackages| filter:search|orderBy:predicate:reverse">
-        <td>{{data.id}}</td>
-        <td class="col-sm-1">{{data.name}}</td>
-        <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary" ng-click="downloadPrivate(data)"> Download
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="privatepackages.length > 0">
+					<thead>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+							<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th>Download <i class="fa"></i></th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="data in privatepackages| filter:search|orderBy:predicate:reverse">
+							<td>{{data.id}}</td>
+							<td class="col-sm-1">{{data.name}}</td>
+							<td>{{data.description}}</td>
+							<td> <button type="button" class="btn btn-primary" ng-click="downloadPrivate(data)"> Download
             </button></td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </tab>
-  <tab heading="NSDs">
-   <div class="table-responsive">   
-  <table class="table table-bordered table-striped table-hover tablesorter" ng-show="publicNSDs.length > 0">
-    <thead>
-      <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-      <th>Download <i class="fa"></i></th>
-    </thead>
-    <tbody>
-      <tr ng-repeat="data in publicNSDs| filter:search|orderBy:predicate:reverse">
-        <td>{{data.id}}</td>
-        <td class="col-sm-1">{{data.name}}</td>
-        <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary pull right" ng-click="downloadNSD(data)"> Download
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+		</tab>
+		<tab heading="NSDs">
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="publicNSDs.length > 0">
+					<thead>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th>Download <i class="fa"></i></th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="data in publicNSDs| filter:search|orderBy:predicate:reverse">
+							<td class="col-sm-3">{{data.id}}</td>
+							<td class="col-sm-1">{{data.name}}</td>
+							<td>{{data.description}}</td>
+							<td class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadNSD(data)"> Download
             </button></td>
-      </tr>
-    </tbody>
-  </table>
-  <table class="table table-bordered table-striped table-hover tablesorter" ng-show="privatensds.length > 0">
-    <thead>
-      <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-      <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-      <th>Download <i class="fa"></i></th>
-    </thead>
-    <tbody>
-      <tr ng-repeat="data in privatensds| filter:search|orderBy:predicate:reverse">
-        <td>{{data.id}}</td>
-        <td class="col-sm-1">{{data.name}}</td>
-        <td>{{data.description}}</td>
-        <td> <button type="button" class="btn btn-primary" ng-click="downloadPrivateNSD(data)"> Download
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="privatensds.length > 0">
+					<thead>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th>Download <i class="fa"></i></th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="data in privatensds| filter:search|orderBy:predicate:reverse">
+							<td >{{data.id}}</td>
+							<td class="col-sm-1">{{data.name}}</td>
+							<td>{{data.description}}</td>
+							<td > <button type="button" class="btn btn-primary" ng-click="downloadPrivateNSD(data)"> Download
             </button></td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </tab>
-  </tabset>
+						</tr>
+					</tbody>
+				</table>
+				
+				
+		</tab>
+
+    <tab heading="CSAR NS" ng-show="csarNSs.length > 0">
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="csarNSs.length > 0">
+					<thead>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th>Download <i class="fa"></i></th>
+					</thead>
+					<tbody>
+						<tr ng-repeat="data in csarNSs| filter:search|orderBy:predicate:reverse">
+							<td class="col-sm-1">{{data.id}}</td>
+							<td class="col-sm-1">{{data.name}}</td>
+							<td>{{data.description}}</td>
+							<td> <button type="button" class="btn btn-primary pull right" ng-click="downloadCSARNS(data)"> Download
+            </button></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</tab>
+	</tabset>
 </div>
