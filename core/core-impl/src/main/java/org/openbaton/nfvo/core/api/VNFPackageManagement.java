@@ -130,7 +130,7 @@ public class VNFPackageManagement
           YamlJsonParser yaml = new YamlJsonParser();
           metadata = yaml.parseMap(new String(content));
           //Get configuration for NFVImage
-          String[] REQUIRED_PACKAGE_KEYS = new String[] {"name", "image"};
+          String[] REQUIRED_PACKAGE_KEYS = new String[] {"name", "image", "vim_types"};
           for (String requiredKey : REQUIRED_PACKAGE_KEYS) {
             if (!metadata.containsKey(requiredKey)) {
               throw new NotFoundException(
@@ -170,6 +170,10 @@ public class VNFPackageManagement
           }
           if (metadata.containsKey("scripts-link")) {
             vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
+          }
+          if( metadata.containsKey("vim_types")){
+            List<String> vimTypes = (List<String>) metadata.get("vim_types");
+             vnfPackage.setVimTypes(vimTypes);
           }
           if (metadata.containsKey("image")) {
             imageDetails = (Map<String, Object>) metadata.get("image");
