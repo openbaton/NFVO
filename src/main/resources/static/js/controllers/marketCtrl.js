@@ -30,8 +30,9 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
 
     loadTablePublic();
     loadTablePublicNSD();
+
     getMarketURL();
-   
+
 
 
     function loadCSARTableVNF() {
@@ -46,12 +47,11 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
             });
     }
 
-    function getCSARTableNSD() {
-        $http.get("http://" + defaultUrl + "/api/v1/csar/nsd")
+    function loadCSARTableNSD() {
+        $http.get("http://" + defaultUrl + "/api/v1/csar-ns")
             .success(function (response) {
-                $scope.csarNSs = response;
-
-                //console.log($scope.packages);
+                $scope.publicNSDs = $scope.publicNSDs.concat(response);
+                console.log($scope.publicNSDs);
             })
             .error(function (data, status) {
                 showError(data, status);
@@ -117,7 +117,7 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
             .success(function (response) {
                 console.log(response);
                 $scope.publicNSDs = response;
-
+                loadCSARTableNSD();
 
             })
             .error(function (data, status) {
@@ -150,7 +150,7 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
     };
 
     $scope.download = function (data) {
-        
+
         if (data.type === "csar") {
             $scope.requestlink = {};
             $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/csar-vnf/" + data.id + "/csar/";
@@ -165,17 +165,17 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
         }
         else {
             if (data.type === "tar") {
-            $scope.requestlink = {};
-            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
-            console.log($scope.requestlink);
-            http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
-                showOk("The package is being downloaded");
-            })
-                .error(function (data, status) {
-                    showError(data, status);
+                $scope.requestlink = {};
+                $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
+                console.log($scope.requestlink);
+                http.post(url + "/api/v1/vnf-packages/marketdownload", JSON.stringify($scope.requestlink)).success(function (response) {
+                    showOk("The package is being downloaded");
+                })
+                    .error(function (data, status) {
+                        showError(data, status);
 
-                });
-        }
+                    });
+            }
         }
     };
 
@@ -193,16 +193,30 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
     };
 
     $scope.downloadNSD = function (data) {
-        $scope.requestlink = {};
-        $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
-        console.log($scope.requestlink);
-        http.post(url + '/api/v1/ns-descriptors/marketdownload', JSON.stringify($scope.requestlink)).success(function (response) {
-            showOk("The NSD is being onboarded");
-        })
-            .error(function (data, status) {
-                showError(data, status);
+        if (data.type === "csar") {
+            $scope.requestlink = {};
+            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/csar-ns/" + data.id + "/csar/";
+            console.log($scope.requestlink);
+            http.post(url + '/api/v1/csar-ns/marketdownload', JSON.stringify($scope.requestlink)).success(function (response) {
+                showOk("The NSD is being onboarded");
+            })
+                .error(function (data, status) {
+                    showError(data, status);
 
-            });
+                });
+
+        } else {
+            $scope.requestlink = {};
+            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
+            console.log($scope.requestlink);
+            http.post(url + '/api/v1/ns-descriptors/marketdownload', JSON.stringify($scope.requestlink)).success(function (response) {
+                showOk("The NSD is being onboarded");
+            })
+                .error(function (data, status) {
+                    showError(data, status);
+
+                });
+        }
     };
 
 

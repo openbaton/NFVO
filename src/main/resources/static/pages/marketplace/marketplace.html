@@ -90,13 +90,15 @@
 						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
 						<th>Download <i class="fa"></i></th>
 					</thead>
 					<tbody>
 						<tr ng-repeat="data in publicNSDs| filter:search|orderBy:predicate:reverse">
 							<td class="col-sm-3">{{data.id}}</td>
-							<td class="col-sm-1">{{data.name}}</td>
+							<td class="col-sm-3">{{data.name}}</td>
 							<td>{{data.description}}</td>
+							<td>{{data.type}}</td>
 							<td class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadNSD(data)"> Download
             </button></td>
 						</tr>
@@ -107,6 +109,7 @@
 						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
 						<th>Download <i class="fa"></i></th>
 					</thead>
 					<tbody>
@@ -114,6 +117,7 @@
 							<td >{{data.id}}</td>
 							<td class="col-sm-1">{{data.name}}</td>
 							<td>{{data.description}}</td>
+							<td>{{data.type}}</td>
 							<td > <button type="button" class="btn btn-primary" ng-click="downloadPrivateNSD(data)"> Download
             </button></td>
 						</tr>
@@ -121,28 +125,6 @@
 				</table>
 				
 				
-		</tab>
-
-    <tab heading="CSAR NS" ng-show="csarNSs.length > 0">
-			<div class="table-responsive">
-				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="csarNSs.length > 0">
-					<thead>
-						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-						<th>Download <i class="fa"></i></th>
-					</thead>
-					<tbody>
-						<tr ng-repeat="data in csarNSs| filter:search|orderBy:predicate:reverse">
-							<td class="col-sm-1">{{data.id}}</td>
-							<td class="col-sm-1">{{data.name}}</td>
-							<td>{{data.description}}</td>
-							<td> <button type="button" class="btn btn-primary pull right" ng-click="downloadCSARNS(data)"> Download
-            </button></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
 		</tab>
 	</tabset>
 </div>
