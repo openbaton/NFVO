@@ -53,8 +53,9 @@ public class CSARParser {
   private Set<Script> scripts = new HashSet<>();
   private ByteArrayOutputStream metadata;
   private ByteArrayOutputStream template;
-  private ArrayList<String> image_names = new ArrayList<>();
+  private ArrayList<String> imageNames = new ArrayList<>();
   private ByteArrayOutputStream vnfMetadata;
+  private ArrayList<String> folderNames = new ArrayList<>();
 
   private String entryDefinitions = null;
 
@@ -73,6 +74,7 @@ public class CSARParser {
     ZipInputStream zipStream = new ZipInputStream(csar_file);
     ZipEntry entry;
     this.scripts.clear();
+    this.folderNames.clear();
     this.template = new ByteArrayOutputStream();
     this.metadata = new ByteArrayOutputStream();
 
@@ -87,12 +89,12 @@ public class CSARParser {
           baos.write(buffer, 0, count);
         }
 
-        String file_name = entry.getName();
+        String fileName = entry.getName();
 
-        if (file_name.endsWith(".meta")) {
+        if (fileName.toLowerCase().endsWith(".meta")) {
           this.metadata = baos;
-        } else if (file_name.endsWith(".yaml")) {
-          if (file_name.endsWith("Metadata.yaml")) {
+        } else if (fileName.toLowerCase().endsWith(".yaml")) {
+          if (fileName.toLowerCase().endsWith("metadata.yaml")) {
             this.vnfMetadata = baos;
           } else {
             this.template = baos;
@@ -100,10 +102,10 @@ public class CSARParser {
         } else {
 
           Script script = new Script();
-          String[] splittedName = file_name.split("/");
+          String[] splittedName = fileName.split("/");
           if (splittedName.length > 2) {
-            String scriptName =
-                splittedName[splittedName.length - 2] + "_" + splittedName[splittedName.length - 1];
+            String scriptName = splittedName[1] + "!_!" + splittedName[splittedName.length - 1];
+            folderNames.add(splittedName[1]);
             script.setName(scriptName);
 
           } else script.setName(splittedName[splittedName.length - 1]);
@@ -136,7 +138,7 @@ public class CSARParser {
     String entryDefinition = "Entry-Definitions:";
     String image = "image:";
 
-    image_names.clear();
+    imageNames.clear();
 
     while ((strLine = br.readLine()) != null) {
 
@@ -145,7 +147,7 @@ public class CSARParser {
             strLine.substring(entryDefinition.length(), strLine.length()).trim();
       }
       if (strLine.contains(image)) {
-        this.image_names.add(strLine.substring(image.length(), strLine.length()).trim());
+        this.imageNames.add(strLine.substring(image.length(), strLine.length()).trim());
       }
     }
 
@@ -526,12 +528,24 @@ public class CSARParser {
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      if (!folderNames.contains(vnfd.getType())) {
+        throw new NotFoundException("No Scripts specified for the VNFD of type: " + vnfd.getType());
+      }
       Set<Script> vnfScripts = new HashSet<>();
       for (Script script : scripts) {
-        Script s = new Script();
-        s.setName(script.getName());
-        s.setPayload(script.getPayload());
-        vnfScripts.add(s);
+        String[] splitted_name = script.getName().split("!_!");
+        log.debug(splitted_name[0]);
+        log.debug(script.getName());
+
+        if (splitted_name.length == 2) {
+          String folder_name = splitted_name[0];
+          if (folder_name.equals(vnfd.getType())) {
+            Script s = new Script();
+            s.setName(splitted_name[1]);
+            s.setPayload(script.getPayload());
+            vnfScripts.add(s);
+          }
+        }
       }
       ids.add(saveVNFD(vnfd, projectId, vnfScripts));
     }
