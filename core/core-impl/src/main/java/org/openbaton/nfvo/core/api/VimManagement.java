@@ -22,6 +22,7 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
@@ -73,9 +74,11 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public void delete(String id, String projectId) {
+  public void delete(String id, String projectId) throws NotFoundException {
 
     VimInstance vimInstance = vimRepository.findFirstById(id);
+    if (vimInstance == null)
+      throw new NotFoundException("Vim Instance with id " + id + " was not found");
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

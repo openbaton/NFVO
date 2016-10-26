@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
@@ -44,7 +45,7 @@ public interface VimManagement {
    * @param id
    * @param projectId
    */
-  void delete(String id, String projectId);
+  void delete(String id, String projectId) throws NotFoundException;
 
   /**
    * This operation allows updating the datacenter in the datacenter repository.

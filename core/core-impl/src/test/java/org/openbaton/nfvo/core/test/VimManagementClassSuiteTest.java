@@ -27,6 +27,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.api.VimManagement;
@@ -169,7 +170,7 @@ public class VimManagementClassSuiteTest {
   }
 
   @Test
-  public void nfvImageManagementDeleteTest() {
+  public void nfvImageManagementDeleteTest() throws NotFoundException {
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
     when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
