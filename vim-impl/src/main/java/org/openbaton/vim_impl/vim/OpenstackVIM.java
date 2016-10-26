@@ -400,8 +400,10 @@ public class OpenstackVIM extends GenericVIM {
       if (hostname == null) throw new NullPointerException("hostname is null");
       if (image == null) throw new NullPointerException("image is null");
       if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
-      if (vimInstance.getKeyPair() == null)
-        throw new NullPointerException("vimInstance.getKeyPair() is null");
+      if (vimInstance.getKeyPair() == null) {
+        log.debug("vimInstance.getKeyPair() is null");
+        vimInstance.setKeyPair("");
+      }
       if (networks == null) throw new NullPointerException("networks is null");
       if (vimInstance.getSecurityGroups() == null)
         throw new NullPointerException("vimInstance.getSecurityGroups() is null");
