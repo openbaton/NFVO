@@ -56,6 +56,7 @@ import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -231,7 +232,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest1()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
@@ -278,7 +279,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest2()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
     /**
      * Initial settings
      */
@@ -333,7 +334,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest3()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
     /**
      * Initial settings
      */

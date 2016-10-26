@@ -219,7 +219,7 @@ public class CSARParser {
     }
     if (metadata.containsKey("scripts-link"))
       vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
-    if( metadata.containsKey("vim_types")){
+    if (metadata.containsKey("vim_types")) {
       List<String> vimTypes = (List<String>) metadata.get("vim_types");
       vnfPackage.setVimTypes(vimTypes);
     }

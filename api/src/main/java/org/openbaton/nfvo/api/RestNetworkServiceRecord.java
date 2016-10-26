@@ -34,6 +34,7 @@ import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -94,7 +95,7 @@ public class RestNetworkServiceRecord {
       @RequestBody String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException {
+          MissingParameterException, BadRequestException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
     return networkServiceRecordManagement.onboard(
@@ -138,7 +139,7 @@ public class RestNetworkServiceRecord {
       @RequestBody(required = false) JsonObject jsonObject)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException {
+          MissingParameterException, BadRequestException {
 
     log.debug("Json Body is" + jsonObject);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();

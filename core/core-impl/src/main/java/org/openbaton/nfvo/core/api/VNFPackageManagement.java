@@ -171,9 +171,9 @@ public class VNFPackageManagement
           if (metadata.containsKey("scripts-link")) {
             vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
           }
-          if( metadata.containsKey("vim_types")){
+          if (metadata.containsKey("vim_types")) {
             List<String> vimTypes = (List<String>) metadata.get("vim_types");
-             vnfPackage.setVimTypes(vimTypes);
+            vnfPackage.setVimTypes(vimTypes);
           }
           if (metadata.containsKey("image")) {
             imageDetails = (Map<String, Object>) metadata.get("image");
