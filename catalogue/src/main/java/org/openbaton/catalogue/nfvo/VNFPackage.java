@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -87,6 +88,7 @@ public class VNFPackage implements Serializable {
     this.vimTypes = vimTypes;
   }
 
+  @ElementCollection(fetch = FetchType.EAGER)
   private List<String> vimTypes;
 
   //URL to the image's location
