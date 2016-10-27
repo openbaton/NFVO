@@ -19,6 +19,8 @@ package org.openbaton.catalogue.security;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
+import java.text.DateFormat;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
@@ -65,7 +67,7 @@ public class HistoryEntity {
         + result
         + '\''
         + ", timestamp="
-        + timestamp
+        + DateFormat.getInstance().format(timestamp)
         + ", id='"
         + id
         + '\''

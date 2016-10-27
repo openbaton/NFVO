@@ -19,9 +19,19 @@ package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 
 /**
  * Created by lto on 22/07/15.
@@ -37,6 +47,50 @@ public class VNFPackage implements Serializable {
 
   //NFVO Version
   private String nfvo_version;
+
+  @Override
+  public String toString() {
+    return "VNFPackage{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + ", vimTypes='"
+        + vimTypes
+        + '\''
+        + ", imageLink='"
+        + imageLink
+        + '\''
+        + ", scriptsLink='"
+        + scriptsLink
+        + '\''
+        + ", image="
+        + image
+        + ", scripts="
+        + scripts
+        + ", projectId='"
+        + projectId
+        + '\''
+        + '}';
+  }
+
+  public List<String> getVimTypes() {
+    return vimTypes;
+  }
+
+  public void setVimTypes(List<String> vimTypes) {
+    this.vimTypes = vimTypes;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> vimTypes;
 
   //URL to the image's location
   private String imageLink;
@@ -66,30 +120,6 @@ public class VNFPackage implements Serializable {
 
   public void setProjectId(String projectId) {
     this.projectId = projectId;
-  }
-
-  @Override
-  public String toString() {
-    return "VNFPackage{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
-        + name
-        + '\''
-        + ", imageLink='"
-        + imageLink
-        + '\''
-        + ", scriptsLink='"
-        + scriptsLink
-        + '\''
-        + ", image="
-        + image
-        + ", scripts="
-        + scripts
-        + '}';
   }
 
   public String getImageLink() {
