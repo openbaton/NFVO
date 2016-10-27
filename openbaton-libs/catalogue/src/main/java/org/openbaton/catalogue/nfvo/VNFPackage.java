@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,15 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.openbaton.catalogue.nfvo;
 
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 
 /**
  * Created by lto on 22/07/15.
@@ -32,6 +44,53 @@ public class VNFPackage implements Serializable {
 
   //Name of the Package
   private String name;
+
+  //NFVO Version
+  private String nfvo_version;
+
+  @Override
+  public String toString() {
+    return "VNFPackage{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + ", vimTypes='"
+        + vimTypes
+        + '\''
+        + ", imageLink='"
+        + imageLink
+        + '\''
+        + ", scriptsLink='"
+        + scriptsLink
+        + '\''
+        + ", image="
+        + image
+        + ", scripts="
+        + scripts
+        + ", projectId='"
+        + projectId
+        + '\''
+        + '}';
+  }
+
+  public List<String> getVimTypes() {
+    return vimTypes;
+  }
+
+  public void setVimTypes(List<String> vimTypes) {
+    this.vimTypes = vimTypes;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> vimTypes;
 
   //URL to the image's location
   private String imageLink;
@@ -61,30 +120,6 @@ public class VNFPackage implements Serializable {
 
   public void setProjectId(String projectId) {
     this.projectId = projectId;
-  }
-
-  @Override
-  public String toString() {
-    return "VNFPackage{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
-        + name
-        + '\''
-        + ", imageLink='"
-        + imageLink
-        + '\''
-        + ", scriptsLink='"
-        + scriptsLink
-        + '\''
-        + ", image="
-        + image
-        + ", scripts="
-        + scripts
-        + '}';
   }
 
   public String getImageLink() {
@@ -146,5 +181,13 @@ public class VNFPackage implements Serializable {
 
   public void setImage(NFVImage image) {
     this.image = image;
+  }
+
+  public String getNfvo_version() {
+    return nfvo_version;
+  }
+
+  public void setNfvo_version(String nfvo_version) {
+    this.nfvo_version = nfvo_version;
   }
 }

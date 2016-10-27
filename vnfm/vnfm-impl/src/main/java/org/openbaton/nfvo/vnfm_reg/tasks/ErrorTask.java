@@ -16,12 +16,15 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.catalogue.mano.record.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by lto on 06/08/15.
@@ -44,13 +47,33 @@ public class ErrorTask extends AbstractTask {
   }
 
   @Override
+  protected void setEvent() {
+    event = Event.ERROR.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    if (exception != null) {
+      if (exception.getMessage().length() > 1024) {
+        description = exception.getMessage().substring(0, 1024);
+      } else description = exception.getMessage();
+    } else {
+      description = "An Error Occurred in this VNFR, check the VNFM for more info";
+    }
+  }
+
+  @Override
   public NFVMessage doWork() throws Exception {
 
     if (log.isDebugEnabled()) {
       log.error("ERROR from VNFM: ", this.getException());
-    } else log.error("ERROR from VNFM: " + this.getException().getMessage());
+    } else {
+      log.error("ERROR from VNFM: " + this.getException().getMessage());
+    }
 
-    if (virtualNetworkFunctionRecord.getId() == null) saveVirtualNetworkFunctionRecord();
+    if (virtualNetworkFunctionRecord.getId() == null) {
+      saveVirtualNetworkFunctionRecord();
+    }
 
     if (virtualNetworkFunctionRecord != null) {
       try {
@@ -60,15 +83,19 @@ public class ErrorTask extends AbstractTask {
                     .findFirstById(virtualNetworkFunctionRecord.getId())
                     .getHb_version());
       } catch (Exception e) {
-        if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+        if (log.isDebugEnabled()) {
+          log.error(e.getMessage(), e);
+        }
       }
       log.debug("Received version: " + virtualNetworkFunctionRecord.getHb_version());
       log.error("ERROR for VNFR: " + virtualNetworkFunctionRecord.getName());
       virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+      setHistoryLifecycleEvent(new Date());
       saveVirtualNetworkFunctionRecord();
     } else {
       log.error(
-          "Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the VNFM Logs");
+          "Received Error from some VNFM. No VNFR was received, maybe the error came before the createVNFR? Check the"
+              + " VNFM Logs");
       NetworkServiceRecord networkServiceRecord =
           networkServiceRecordRepository.findFirstById(nsrId);
       networkServiceRecord.setStatus(Status.ERROR);

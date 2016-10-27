@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.openbaton.catalogue.nfvo;
@@ -182,13 +184,16 @@ public class EventEndpoint implements Serializable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof EventEndpoint)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
     EventEndpoint that = (EventEndpoint) o;
 
-    if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
+    if (!getName().equals(that.getName())) {
+      return false;
+    }
+    if (!getProjectId().equals(that.getProjectId())) {
       return false;
     }
     if (getNetworkServiceId() != null
@@ -207,31 +212,22 @@ public class EventEndpoint implements Serializable {
     if (!getEndpoint().equals(that.getEndpoint())) {
       return false;
     }
-    if (getEvent() != that.getEvent()) {
-      return false;
-    }
-    return getDescription() != null
-        ? getDescription().equals(that.getDescription())
-        : that.getDescription() == null
-            && !(getStatus() != null
-                ? !getStatus().equals(that.getStatus())
-                : that.getStatus() != null);
+    return getEvent() == that.getEvent();
   }
 
   @Override
   public int hashCode() {
-    int result = getName() != null ? getName().hashCode() : 0;
+    int result = getName().hashCode();
+    result = 31 * result + getProjectId().hashCode();
     result = 31 * result + (getNetworkServiceId() != null ? getNetworkServiceId().hashCode() : 0);
     result =
         31 * result
             + (getVirtualNetworkFunctionId() != null
                 ? getVirtualNetworkFunctionId().hashCode()
                 : 0);
-    result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+    result = 31 * result + getType().hashCode();
     result = 31 * result + getEndpoint().hashCode();
-    result = 31 * result + (getEvent() != null ? getEvent().hashCode() : 0);
-    result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
-    result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+    result = 31 * result + getEvent().hashCode();
     return result;
   }
 }

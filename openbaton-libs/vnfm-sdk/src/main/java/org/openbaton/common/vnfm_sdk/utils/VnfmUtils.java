@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.openbaton.common.vnfm_sdk.utils;
@@ -57,7 +59,9 @@ public class VnfmUtils {
 
   public static NFVMessage getNfvMessage(Action action, VirtualNetworkFunctionRecord payload) {
     NFVMessage nfvMessage;
-    if (Action.INSTANTIATE.ordinal() == action.ordinal())
+    if (Action.START.ordinal() == action.ordinal())
+      nfvMessage = new VnfmOrStartStopMessage(payload, Action.START);
+    else if (Action.INSTANTIATE.ordinal() == action.ordinal())
       nfvMessage = new VnfmOrInstantiateMessage(payload);
     else nfvMessage = new VnfmOrGenericMessage(payload, action);
     return nfvMessage;

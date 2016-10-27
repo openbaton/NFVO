@@ -1,13 +1,33 @@
+/*
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var app = angular.module('app');
 app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/vnf-packages/";
+    var urlTosca = $cookieStore.get('URL') + "/api/v1/csar-vnfd/";
+    var dropzoneUrl = url;
+    var myDropzone;
+    $scope.csarPackage = false;
 
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-    
+
     loadTable();
 
 
@@ -110,6 +130,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             $scope.mainCheckbox = false;
     }, true);
 
+    $scope.$watch('csarPackage', function(newValue, oldValue) {
+        if ($scope.csarPackage) {
+                myDropzone.options.url = urlTosca;
+            } else {
+                myDropzone.options.url = url;
+            }
+            console.log(myDropzone.options.url);
+    });
+
     $scope.multipleDelete = true;
 
     $scope.selection = {};
@@ -153,6 +182,13 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+         window.setTimeout(function() { 
+            for (i = 0; i < $scope.alerts.length; i++) {
+             if ($scope.alerts[i].type == 'success') {
+             $scope.alerts.splice(i, 1);
+              }
+           }   
+          }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }
@@ -171,8 +207,8 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
 
             header['project-id'] = $cookieStore.get('project').id;
-            var myDropzone = new Dropzone('#my-dropzone', {
-                url: url, // Set the url
+            myDropzone = new Dropzone('#my-dropzone', {
+                url: dropzoneUrl, // Set the url
                 method: "POST",
                 parallelUploads: 20,
                 previewTemplate: previewTemplate,

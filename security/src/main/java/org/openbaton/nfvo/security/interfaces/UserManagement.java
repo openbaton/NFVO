@@ -68,4 +68,6 @@ public interface UserManagement {
    * @param newPwd
    */
   void changePassword(String oldPwd, String newPwd) throws PasswordWeakException;
+
+  User getCurrentUser() throws NotFoundException;
 }

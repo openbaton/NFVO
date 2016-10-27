@@ -50,11 +50,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
 
-  private Gson mapper =
-      new GsonBuilder()
-          .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
-          .setPrettyPrinting()
-          .create();
+  @Autowired private Gson gson;
 
   @Autowired private VNFRRepository vnfrRepository;
 
@@ -69,11 +65,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public String actionFinished(@RequestBody String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
 
-    //TODO rewrite this or better remove it
     log.debug("CORE: Received: " + nfvMessage);
-    String action =
-        mapper.fromJson(mapper.toJson(nfvMessage), JsonObject.class).get("action").getAsString();
-    NFVMessage message = mapper.fromJson(mapper.toJson(nfvMessage), NFVMessage.class);
+    NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
 
     return vnfmManager.executeAction(message);
   }
@@ -88,7 +81,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public void actionFinishedRest(@RequestBody JsonObject nfvMessage)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
 
-    this.actionFinished(mapper.toJson(nfvMessage));
+    this.actionFinished(gson.toJson(nfvMessage));
   }
 
   @RequestMapping(
@@ -100,25 +93,14 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedVoidRest(@RequestBody JsonObject nfvMessage)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
-    this.actionFinishedVoid(mapper.toJson(nfvMessage));
+    this.actionFinishedVoid(gson.toJson(nfvMessage));
   }
 
   @Override
   public void actionFinishedVoid(String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
     log.debug("CORE: Received: " + nfvMessage);
-    String action = mapper.fromJson(nfvMessage, JsonObject.class).get("action").getAsString();
-    NFVMessage message;
-    if (action.equals("INSTANTIATE")) {
-      message = mapper.fromJson(nfvMessage, VnfmOrInstantiateMessage.class);
-      log.trace("DESERIALIZED: " + message);
-    } else if (action.equals("SCALED")) {
-      message = mapper.fromJson(nfvMessage, VnfmOrScaledMessage.class);
-      log.trace("DESERIALIZED: " + message);
-    } else {
-      message = mapper.fromJson(nfvMessage, VnfmOrGenericMessage.class);
-      log.trace("DESERIALIZED: " + message);
-    }
+    NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     vnfmManager.executeAction(message);
   }
 
@@ -136,7 +118,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
     Gson gson = new GsonBuilder().create();
     String executeReturned = vnfmManager.executeAction(message);
-    return mapper.fromJson(executeReturned, OrVnfmGrantLifecycleOperationMessage.class);
+    return this.gson.fromJson(executeReturned, OrVnfmGrantLifecycleOperationMessage.class);
   }
 
   @RequestMapping(
@@ -150,7 +132,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
       throws VimException {
 
     try {
-      return mapper.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
+      return gson.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
     } catch (ExecutionException e1) {
       e1.printStackTrace();
     } catch (InterruptedException e1) {
@@ -168,7 +150,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
-    return mapper.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
+    return gson.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
   }
 
   private VirtualNetworkFunctionRecord saveVirtualNetworkFunctionRecord(
@@ -177,5 +159,13 @@ public class VnfmReceiverRest implements VnfmReceiver {
       return networkServiceRecordRepository.addVnfr(
           virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
     else return vnfrRepository.save(virtualNetworkFunctionRecord);
+  }
+
+  public Gson getGson() {
+    return gson;
+  }
+
+  public void setGson(Gson gson) {
+    this.gson = gson;
   }
 }

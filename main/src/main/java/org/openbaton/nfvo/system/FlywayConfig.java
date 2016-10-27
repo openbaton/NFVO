@@ -18,6 +18,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.sql.DataSource;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Configuration
 @ConfigurationProperties
 public class FlywayConfig {
@@ -31,7 +33,7 @@ public class FlywayConfig {
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSource);
     flyway.setLocations("classpath:/flyway");
-    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.0"));
+    flyway.setBaselineVersion(MigrationVersion.fromVersion("2.2.0.3"));
     try {
       flyway.baseline();
     } catch (FlywayException e) {
@@ -43,7 +45,7 @@ public class FlywayConfig {
 
 @Entity
 class schema_version implements Serializable {
-  @Id private int id;
+  @Id private int installed_rank;
 
   private String version;
 
@@ -63,12 +65,12 @@ class schema_version implements Serializable {
 
   private int success;
 
-  public int getId() {
-    return id;
+  public int getInstalled_rank() {
+    return installed_rank;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setInstalled_rank(int installed_rank) {
+    this.installed_rank = installed_rank;
   }
 
   public String getVersion() {
@@ -146,8 +148,8 @@ class schema_version implements Serializable {
   @Override
   public String toString() {
     return "schema_version{"
-        + "id="
-        + id
+        + "installed_rank="
+        + installed_rank
         + ", version='"
         + version
         + '\''

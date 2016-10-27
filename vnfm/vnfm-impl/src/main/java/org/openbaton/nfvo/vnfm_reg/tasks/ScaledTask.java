@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -37,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -81,6 +83,7 @@ public class ScaledTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getName()
             + " has finished scaling");
     log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+    setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
 
     //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies
@@ -240,5 +243,15 @@ public class ScaledTask extends AbstractTask {
   @Override
   public boolean isAsync() {
     return true;
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.SCALE.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description = "The resources of this VNFR have correctly scaled";
   }
 }

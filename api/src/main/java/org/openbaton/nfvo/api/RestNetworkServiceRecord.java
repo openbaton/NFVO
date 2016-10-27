@@ -30,9 +30,11 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -46,6 +48,7 @@ import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PropertyComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -92,7 +95,7 @@ public class RestNetworkServiceRecord {
       @RequestBody String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException {
+          MissingParameterException, BadRequestException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
     return networkServiceRecordManagement.onboard(
@@ -136,7 +139,7 @@ public class RestNetworkServiceRecord {
       @RequestBody(required = false) JsonObject jsonObject)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException {
+          MissingParameterException, BadRequestException {
 
     log.debug("Json Body is" + jsonObject);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
@@ -149,9 +152,9 @@ public class RestNetworkServiceRecord {
   }
 
   /**
-   * This operation is used to remove a disabled Network Service Descriptor
+   * This operation is used to remove a Network Service Record
    *
-   * @param id : the id of Network Service Descriptor
+   * @param id : the id of Network Service Record
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -160,6 +163,24 @@ public class RestNetworkServiceRecord {
       throws VimException, InterruptedException, ExecutionException, NotFoundException {
     try {
       networkServiceRecordManagement.delete(id, projectId);
+    } catch (WrongStatusException e) {
+      e.printStackTrace();
+      throw new StateException(id);
+    }
+  }
+
+  /**
+   * This operation is used to resume a failed Network Service Record
+   *
+   * @param id : the id of Network Service Record
+   */
+  @RequestMapping(value = "{id}", method = RequestMethod.POST)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void resume(
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws VimException, InterruptedException, ExecutionException, NotFoundException {
+    try {
+      networkServiceRecordManagement.resume(id, projectId);
     } catch (WrongStatusException e) {
       e.printStackTrace();
       throw new StateException(id);
@@ -727,6 +748,27 @@ public class RestNetworkServiceRecord {
     nsd.getPnfr().add(pRecord);
     networkServiceRecordManagement.update(nsd, id, projectId);
     return pRecord;
+  }
+
+  @RequestMapping(
+    value = "{id}/vnfrecords/{id_vnf}/history",
+    method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public List<HistoryLifecycleEvent> getHistory(
+      @PathVariable("id") String id,
+      @PathVariable("id_vnf") String id_vnf,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    List<HistoryLifecycleEvent> lifecycle_event_history =
+        networkServiceRecordManagement
+            .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
+            .getLifecycle_event_history();
+    Collections.sort(
+        lifecycle_event_history,
+        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
+    return lifecycle_event_history;
   }
 
   // TODO The Rest of the classes

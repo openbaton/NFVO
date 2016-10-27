@@ -85,13 +85,16 @@ public class NSDUtils {
           break;
         }
       }
-      if (!found)
+      if (!found) {
         throw new NotFoundException(
             "VNFManager with endpoint: "
                 + virtualNetworkFunctionDescriptor.getEndpoint()
                 + " is not registered or not enable or not active.");
+      }
     }
-    if (!found) throw new NotFoundException("No VNFManagers were found");
+    if (!found) {
+      throw new NotFoundException("No VNFManagers were found");
+    }
   }
 
   /**
@@ -109,12 +112,15 @@ public class NSDUtils {
         log.debug("VNFD to fetch is: " + vnfd.getId());
         VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
         log.trace("VNFD fetched: " + vnfd_new);
-        if (!log.isTraceEnabled()) log.debug("Fetched VNFD: " + vnfd_new.getName());
+        if (!log.isTraceEnabled()) {
+          log.debug("Fetched VNFD: " + vnfd_new.getName());
+        }
         if (vnfd_new == null) {
           throw new NotFoundException(
               "Not found VNFD with id: "
                   + vnfd.getId()
-                  + ". Please do not specify an id if you want to create one VirtualNetworkFunctionDescriptor. Or pick one existing");
+                  + ". Please do not specify an id if you want to create one "
+                  + "VirtualNetworkFunctionDescriptor. Or pick one existing");
         }
         vnfd_add.add(vnfd_new);
         vnfd_remove.add(vnfd);
@@ -150,7 +156,8 @@ public class NSDUtils {
                 && vimInstance
                     .getName()
                     .equals(
-                        name)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))*/) {
+                        name)) /*|| (vimInstance.getId() != null && vimInstance.getId().equals(name_id))
+                                */) {
               log.info("Found vimInstance: " + vimInstance.getName());
               fetched = true;
               break;
@@ -202,21 +209,25 @@ public class NSDUtils {
 
       VirtualNetworkFunctionDescriptor vnfSource =
           getVnfdFromNSD(source.getName(), networkServiceDescriptor);
-      if (vnfSource == null)
+      if (vnfSource == null) {
         throw new NotFoundException(
             "VNFD source name"
                 + source.getName()
                 + " was not found in the NetworkServiceDescriptor");
-      else vnfDependency.setSource(vnfSource);
+      } else {
+        vnfDependency.setSource(vnfSource);
+      }
 
       VirtualNetworkFunctionDescriptor vnfTarget =
           getVnfdFromNSD(target.getName(), networkServiceDescriptor);
-      if (vnfTarget == null)
+      if (vnfTarget == null) {
         throw new NotFoundException(
             "VNFD target name"
                 + source.getName()
                 + " was not found in the NetworkServiceDescriptor");
-      else vnfDependency.setTarget(vnfTarget);
+      } else {
+        vnfDependency.setTarget(vnfTarget);
+      }
 
       // Add an edge to the graph
       g.addEdge(source.getName(), target.getName());
@@ -227,14 +238,16 @@ public class NSDUtils {
     List<List<String>> cycles = dsc.findSimpleCycles();
     // Set cyclicDependency param to the vnfd
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      for (List<String> cycle : cycles)
+      for (List<String> cycle : cycles) {
         if (cycle.contains(vnfd.getName())) {
           vnfd.setCyclicDependency(true);
-          if (ordered != null && Boolean.parseBoolean(ordered.trim()))
+          if (ordered != null && Boolean.parseBoolean(ordered.trim())) {
             throw new CyclicDependenciesException(
                 "There is a cyclic exception and ordered start is selected. This cannot work.");
+          }
           break;
         }
+      }
     }
   }
 
@@ -248,25 +261,32 @@ public class NSDUtils {
   private void createDependenciesFromRequires(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException {
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      if (vnfd.getRequires() == null) continue;
+      if (vnfd.getRequires() == null) {
+        continue;
+      }
 
       for (String vnfdName : vnfd.getRequires().keySet()) {
         VNFDependency dependency = new VNFDependency();
         for (VirtualNetworkFunctionDescriptor vnfd2 : networkServiceDescriptor.getVnfd()) {
-          if (vnfd2.getName().equals(vnfdName)) dependency.setSource(vnfd2);
+          if (vnfd2.getName().equals(vnfdName)) {
+            dependency.setSource(vnfd2);
+          }
         }
-        if (dependency.getSource() == null)
+        if (dependency.getSource() == null) {
           throw new NotFoundException(
               "VNFD source name "
                   + vnfdName
                   + " from the requires field in the VNFD "
                   + vnfd.getName()
                   + " was not found in the NSD.");
+        }
 
         dependency.setTarget(vnfd);
 
         if (vnfd.getRequires().get(vnfdName).getParameters() == null
-            || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) continue;
+            || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
+          continue;
+        }
 
         dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
         networkServiceDescriptor.getVnf_dependency().add(dependency);
@@ -278,8 +298,9 @@ public class NSDUtils {
       String name, NetworkServiceDescriptor networkServiceDescriptor) {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
-      if (virtualNetworkFunctionDescriptor.getName().equals(name))
+      if (virtualNetworkFunctionDescriptor.getName().equals(name)) {
         return virtualNetworkFunctionDescriptor;
+      }
     }
 
     return null;
@@ -301,8 +322,9 @@ public class NSDUtils {
         if (newDependency.getTarget().getName().equals(oldDependency.getTarget().getName())
             && newDependency.getSource().getName().equals(oldDependency.getSource().getName())) {
           log.debug("Old is: " + oldDependency);
-          if (oldDependency.getParameters() != null)
+          if (oldDependency.getParameters() != null) {
             newDependency.getParameters().addAll(oldDependency.getParameters());
+          }
           contained = true;
         }
       }
@@ -312,14 +334,17 @@ public class NSDUtils {
         newDependency.setTarget(oldDependency.getTarget());
         newDependency.setParameters(new HashSet<String>());
         log.debug("Old is: " + oldDependency);
-        if (oldDependency.getParameters() != null)
+        if (oldDependency.getParameters() != null) {
           newDependency.getParameters().addAll(oldDependency.getParameters());
+        }
         newDependencies.add(newDependency);
       }
     }
 
     log.debug("New Dependencies are: ");
-    for (VNFDependency dependency : newDependencies) log.debug("" + dependency);
+    for (VNFDependency dependency : newDependencies) {
+      log.debug("" + dependency);
+    }
     networkServiceDescriptor.setVnf_dependency(newDependencies);
   }
 
@@ -348,10 +373,11 @@ public class NSDUtils {
     Set<String> internalVirtualLink = new HashSet<>();
     Set<String> virtualLinkDescriptors = new HashSet<>();
 
-    if (networkServiceDescriptor.getVld() != null)
+    if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor virtualLinkDescriptor1 : networkServiceDescriptor.getVld()) {
         virtualLinkDescriptors.add(virtualLinkDescriptor1.getName());
       }
+    }
 
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
@@ -359,24 +385,28 @@ public class NSDUtils {
       names.clear();
       internalVirtualLink.clear();
 
-      if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null)
+      if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null) {
         for (DeploymentFlavour deploymentFlavour :
             virtualNetworkFunctionDescriptor.getDeployment_flavour()) {
           names.add(deploymentFlavour.getFlavour_key());
         }
-      else
+      } else {
         throw new NetworkServiceIntegrityException(
             "Flavour must be set in VNFD: "
                 + virtualNetworkFunctionDescriptor.getName()
-                + ". Come on... check the PoP page and pick at least one DeploymentFlavor");
+                + ". Come on... check the PoP page and pick at least one "
+                + "DeploymentFlavor");
+      }
 
-      if (virtualNetworkFunctionDescriptor.getVirtual_link() != null)
+      if (virtualNetworkFunctionDescriptor.getVirtual_link() != null) {
         for (InternalVirtualLink internalVirtualLink1 :
             virtualNetworkFunctionDescriptor.getVirtual_link()) {
           internalVirtualLink.add(internalVirtualLink1.getName());
         }
-      else virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
-      if (virtualNetworkFunctionDescriptor.getVdu() != null)
+      } else {
+        virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
+      }
+      if (virtualNetworkFunctionDescriptor.getVdu() != null) {
         for (VirtualDeploymentUnit virtualDeploymentUnit :
             virtualNetworkFunctionDescriptor.getVdu()) {
           if (inAllVims.equals("in-all-vims")) {
@@ -387,24 +417,30 @@ public class NSDUtils {
 
                 for (VimInstance vi :
                     vimRepository.findByProjectId(virtualDeploymentUnit.getProjectId())) {
-                  if (vimName.equals(vi.getName())) vimInstance = vi;
+                  if (vimName.equals(vi.getName())) {
+                    vimInstance = vi;
+                  }
                 }
 
-                if (virtualDeploymentUnit.getScale_in_out() < 1)
+                if (virtualDeploymentUnit.getScale_in_out() < 1) {
                   throw new NetworkServiceIntegrityException(
                       "Regarding the VirtualNetworkFunctionDescriptor "
                           + virtualNetworkFunctionDescriptor.getName()
-                          + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
+                          + ": in one of the VirtualDeploymentUnit, the scale_in_out"
+                          + " parameter ("
                           + virtualDeploymentUnit.getScale_in_out()
                           + ") must be at least 1");
+                }
                 if (virtualDeploymentUnit.getScale_in_out()
                     < virtualDeploymentUnit.getVnfc().size()) {
                   throw new NetworkServiceIntegrityException(
                       "Regarding the VirtualNetworkFunctionDescriptor "
                           + virtualNetworkFunctionDescriptor.getName()
-                          + ": in one of the VirtualDeploymentUnit, the scale_in_out parameter ("
+                          + ": in one of the VirtualDeploymentUnit, the scale_in_out"
+                          + " parameter ("
                           + virtualDeploymentUnit.getScale_in_out()
-                          + ") must not be less than the number of starting VNFComponent: "
+                          + ") must not be less than the number of starting "
+                          + "VNFComponent: "
                           + virtualDeploymentUnit.getVnfc().size());
                 }
 
@@ -422,22 +458,26 @@ public class NSDUtils {
                   throw new NetworkServiceIntegrityException(
                       "Regarding the VirtualNetworkFunctionDescriptor "
                           + virtualNetworkFunctionDescriptor.getName()
-                          + ": in one of the VirtualDeploymentUnit, not all DeploymentFlavour"
+                          + ": in one of the VirtualDeploymentUnit, not all "
+                          + "DeploymentFlavour"
                           + names
-                          + " are contained into the flavors of the vimInstance chosen. Please choose one from: "
+                          + " are contained into the flavors of the vimInstance "
+                          + "chosen. Please choose one from: "
                           + flavors);
                 }
                 for (String image : virtualDeploymentUnit.getVm_image()) {
-                  if (!imageNames.contains(image) && !imageIds.contains(image))
+                  if (!imageNames.contains(image) && !imageIds.contains(image)) {
                     throw new NetworkServiceIntegrityException(
                         "Regarding the VirtualNetworkFunctionDescriptor "
                             + virtualNetworkFunctionDescriptor.getName()
                             + ": in one of the VirtualDeploymentUnit, image"
                             + image
-                            + " is not contained into the images of the vimInstance chosen. Please choose one from: "
+                            + " is not contained into the images of the vimInstance "
+                            + "chosen. Please choose one from: "
                             + imageNames
                             + " or from "
                             + imageIds);
+                  }
                 }
                 flavors.clear();
 
@@ -448,9 +488,11 @@ public class NSDUtils {
                       throw new NetworkServiceIntegrityException(
                           "Regarding the VirtualNetworkFunctionDescriptor "
                               + virtualNetworkFunctionDescriptor.getName()
-                              + ": in one of the VirtualDeploymentUnit, the virtualLinkReference "
+                              + ": in one of the VirtualDeploymentUnit, the "
+                              + "virtualLinkReference "
                               + connectionPoint.getVirtual_link_reference()
-                              + " of a VNFComponent is not contained in the InternalVirtualLink "
+                              + " of a VNFComponent is not contained in the "
+                              + "InternalVirtualLink "
                               + internalVirtualLink);
                     }
                   }
@@ -465,7 +507,9 @@ public class NSDUtils {
             throw new UnsupportedOperationException("" + inAllVims + " not yet implemented!");
           }
         }
-      else virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>());
+      } else {
+        virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>());
+      }
       if (!virtualLinkDescriptors.containsAll(internalVirtualLink)) {
         throw new NetworkServiceIntegrityException(
             "Regarding the VirtualNetworkFunctionDescriptor "

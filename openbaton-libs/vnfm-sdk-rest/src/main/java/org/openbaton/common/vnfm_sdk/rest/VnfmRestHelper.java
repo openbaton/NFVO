@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Fraunhofer FOKUS
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.openbaton.common.vnfm_sdk.rest;
@@ -22,15 +24,14 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.SSLContexts;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
 import org.openbaton.common.vnfm_sdk.rest.configuration.GsonDeserializerNFVMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
@@ -62,7 +63,7 @@ public class VnfmRestHelper extends VnfmHelper {
   private HttpHeaders headers;
   private HttpStatus status;
   private Logger log = LoggerFactory.getLogger(this.getClass());
-  private Gson mapper;
+  @Autowired private Gson gson;
 
   @PostConstruct
   private void init() {
@@ -78,11 +79,6 @@ public class VnfmRestHelper extends VnfmHelper {
     if (Boolean.parseBoolean(nfvoSsl)) url = "https://" + nfvoHost + ":" + nfvoPort + "/";
     else url = "http://" + nfvoHost + ":" + nfvoPort + "/";
 
-    this.mapper =
-        new GsonBuilder()
-            .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
-            .create();
-
     if (Boolean.parseBoolean(nfvoSsl))
       this.rest = new RestTemplate(new SslClientHttpRequestFactory());
     else this.rest = new RestTemplate();
@@ -94,26 +90,14 @@ public class VnfmRestHelper extends VnfmHelper {
   }
 
   public void sendMessageToQueue(String sendToQueueName, Serializable message) {
-    this.post("admin/v1/vnfm-core-actions", mapper.toJson(message));
+    this.post("admin/v1/vnfm-core-actions", gson.toJson(message));
   }
 
   @Override
   public void sendToNfvo(NFVMessage nfvMessage) {
-    if (nfvMessage instanceof VnfmOrGenericMessage) {
-      VnfmOrGenericMessage message = (VnfmOrGenericMessage) nfvMessage;
-      this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
-    } else if (nfvMessage instanceof VnfmOrInstantiateMessage) {
-      VnfmOrInstantiateMessage message = (VnfmOrInstantiateMessage) nfvMessage;
-      this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
-    } else if (nfvMessage instanceof VnfmOrScaledMessage) {
-      VnfmOrScaledMessage message = (VnfmOrScaledMessage) nfvMessage;
-      this.post("admin/v1/vnfm-core-actions", mapper.toJson(message, nfvMessage.getClass()));
-    } else {
-      log.warn(
-          "Could not send message of type "
-              + nfvMessage.getClass().getSimpleName()
-              + " to the NFVO");
-    }
+    this.post(
+        "admin/v1/vnfm-core-actions",
+        gson.toJson(nfvMessage.getClass().cast(nfvMessage), nfvMessage.getClass()));
   }
 
   @Override
@@ -129,7 +113,7 @@ public class VnfmRestHelper extends VnfmHelper {
       throw new VnfmSdkException(
           "Don't know where to send message with action " + message.getAction());
 
-    return mapper.fromJson(this.post(path, mapper.toJson(message)), NFVMessage.class);
+    return gson.fromJson(this.post(path, gson.toJson(message)), NFVMessage.class);
   }
 
   @Override
@@ -170,11 +154,11 @@ public class VnfmRestHelper extends VnfmHelper {
   }
 
   public void register(VnfmManagerEndpoint body) {
-    this.post("admin/v1/vnfm-register", mapper.toJson(body));
+    this.post("admin/v1/vnfm-register", gson.toJson(body));
   }
 
   public void unregister(VnfmManagerEndpoint body) {
-    this.post("admin/v1/vnfm-unregister", mapper.toJson(body));
+    this.post("admin/v1/vnfm-unregister", gson.toJson(body));
   }
 
   public HttpStatus getStatus() {
@@ -225,12 +209,12 @@ public class VnfmRestHelper extends VnfmHelper {
     this.headers = headers;
   }
 
-  public Gson getMapper() {
-    return mapper;
+  public Gson getGson() {
+    return gson;
   }
 
-  public void setMapper(Gson mapper) {
-    this.mapper = mapper;
+  public void setGson(Gson gson) {
+    this.gson = gson;
   }
 
   /**

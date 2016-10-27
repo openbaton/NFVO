@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.EventManagement;
@@ -66,7 +67,8 @@ public class RestEvent {
   @ResponseStatus(HttpStatus.CREATED)
   public EventEndpoint register(
       @RequestBody @Valid EventEndpoint endpoint,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws MissingParameterException {
     endpoint.setProjectId(projectId);
     return eventDispatcher.register(gson.toJson(endpoint));
   }

@@ -632,37 +632,51 @@ public class VnfmManager
     }
     log.debug("Now the status is: " + networkServiceRecord.getStatus());
     if (status.ordinal() == Status.ACTIVE.ordinal()) {
-      //Check if all vnfr have been received from the vnfm
-      boolean nsrFilledWithAllVnfr =
-          nsdRepository
-                  .findFirstById(networkServiceRecord.getDescriptor_reference())
-                  .getVnfd()
-                  .size()
-              == networkServiceRecord.getVnfr().size();
-      if (nsrFilledWithAllVnfr) {
-        if (networkServiceRecord.getTask() == null) {
-          networkServiceRecord.setTask("");
-        }
-        if (networkServiceRecord.getTask().contains("Scaling in")) {
-          networkServiceRecord.setTask("Scaled in");
-          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
-          publishEvent(Action.SCALE_IN, networkServiceRecord);
-        } else if (networkServiceRecord.getTask().contains("Scaling out")) {
-          networkServiceRecord.setTask("Scaled out");
-          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
-          publishEvent(Action.SCALE_OUT, networkServiceRecord);
-        } else if (networkServiceRecord.getTask().contains("Healing")) {
-          networkServiceRecord.setTask("Healed");
-          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
-          publishEvent(Action.HEAL, networkServiceRecord);
+
+      boolean savedNsr;
+      do {
+        savedNsr = true;
+        networkServiceRecord = nsrRepository.findFirstById(networkServiceRecord.getId());
+        //Check if all vnfr have been received from the vnfm
+        boolean nsrFilledWithAllVnfr =
+            nsdRepository
+                    .findFirstById(networkServiceRecord.getDescriptor_reference())
+                    .getVnfd()
+                    .size()
+                == networkServiceRecord.getVnfr().size();
+        if (nsrFilledWithAllVnfr) {
+          if (networkServiceRecord.getTask() == null) {
+            networkServiceRecord.setTask("");
+          }
+
+          try {
+            if (networkServiceRecord.getTask().contains("Scaling in")) {
+              networkServiceRecord.setTask("Scaled in");
+              networkServiceRecord = nsrRepository.save(networkServiceRecord);
+              publishEvent(Action.SCALE_IN, networkServiceRecord);
+            } else if (networkServiceRecord.getTask().contains("Scaling out")) {
+              networkServiceRecord.setTask("Scaled out");
+              networkServiceRecord = nsrRepository.save(networkServiceRecord);
+              publishEvent(Action.SCALE_OUT, networkServiceRecord);
+            } else if (networkServiceRecord.getTask().contains("Healing")) {
+              networkServiceRecord.setTask("Healed");
+              networkServiceRecord = nsrRepository.save(networkServiceRecord);
+              publishEvent(Action.HEAL, networkServiceRecord);
+            } else {
+              networkServiceRecord.setTask("Onboarded");
+              networkServiceRecord = nsrRepository.save(networkServiceRecord);
+              publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+            }
+          } catch (OptimisticLockingFailureException e) {
+            log.error(
+                "FFFF OptimisticLockingFailureException while setting the task of the NSR. Don't worry we will try it again.");
+            savedNsr = false;
+          }
         } else {
-          networkServiceRecord.setTask("Onboarded");
-          networkServiceRecord = safeSaveNetworkServiceRecord(networkServiceRecord);
-          publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+          log.debug("Nsr is ACTIVE but not all vnfr have been received");
         }
-      } else {
-        log.debug("Nsr is ACTIVE but not all vnfr have been received");
-      }
+      } while (!savedNsr);
+
     } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
       publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
       nsrRepository.delete(networkServiceRecord);

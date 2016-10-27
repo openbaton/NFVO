@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
 var app = angular.module('app');
 
 /**
@@ -10,6 +28,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.currentUser = null;
     //$scope.URL = 'http://lore:8080';
     $scope.URL = '';
+    $scope.NFVOVersion = "";
     $scope.credential = {
         "username": '',
         "password": '',
@@ -40,12 +59,13 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
             .success(function (data) {
                 //console.log(data);
                 if (data === "false") {
-                    AuthService.loginGuest($scope.URL);
+                    window.location.assign('/login');
+                    window.location.reload();
                 }
             })
             .error(function (data, status) {
                 if (status == 404) {
-                    AuthService.loginGuest($scope.URL);
+                    return;
                 }
                 console.info(('status != 404'));
                 console.error('Response error', status, data);
@@ -102,12 +122,26 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
     $interval(waitCharts, 1000);
     $scope.config = {};
-    $scope.userLogged = {};
+    $scope.userLogged;
     $location.replace();
-    loadCurrentUser();
 
-    //loadChart();
-    //rootTracker();
+    //this is here for mozilla browser to redirect user to main overview after login, mozilla does not do it automatically
+    if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length -'login'.length) === 'login')) {
+      window.location.href = window.location.href.substring(0,window.location.href.length -'login'.length) + 'main';
+
+    }
+
+    function getVersion() {
+      http.get(url +'/main/version/')
+          .success(function (response) {
+              console.log("version is " + response);
+              $scope.NFVOversion = response
+          })
+          .error(function (response, status) {
+              showError(status, response);
+          });
+    }
+
 
 
     function loadCurrentUser() {
@@ -143,13 +177,6 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.logged = $cookieStore.get('logged');
     //console.log($scope.logged);
 
-
-
-    $scope.numberNSR = 0;
-    $scope.numberNSD = 0;
-    $scope.numberVNF = 0;
-    $scope.numberUnits = 0;
-    $scope.numberKeys = 0;
 
     function stop() {
       $interval.cancel(promise);
@@ -196,6 +223,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             loadQuota();
             getConfig();
             loadCurrentUser();
+            getVersion();
+
         }
         if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
@@ -204,6 +233,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             loadQuota();
             getConfig();
             loadCurrentUser();
+            getVersion();
         }
 
 
@@ -308,12 +338,14 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.test = 34;
     $scope.admin = function() {
       //console.log($scope.userLogged);
-
-      if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
-        return true;
-      } else {
-        return false;
+      if (typeof $scope.userLogged != 'undefined') {
+        if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
+         return true;
+        }  else {
+         return false;
+        }
       }
+      return false;
     };
 
 
@@ -326,6 +358,25 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
              $scope.quota = response;
 
               //console.log($scope.quota.left.ram)
+         })
+         .error(function (response, status) {
+             showError(status, response);
+         });
+}
+
+$scope.rcdownload = function() {
+    http.getRC(url +'/main/openbaton-rc/')
+         .success(function (response) {
+             console.log(response);
+             var rc = document.createElement("a");
+             rc.download = "openbaton" + '.rc';
+             rc.href = 'data:application/x-shellscript,' + encodeURIComponent(response);
+             document.body.appendChild(rc);
+             rc.click()
+             document.body.removeChild(rc);
+             delete key;
+
+            
          })
          .error(function (response, status) {
              showError(status, response);

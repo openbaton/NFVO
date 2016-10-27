@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.api.RestVimInstances;
@@ -93,7 +94,7 @@ public class ApiRestVimInstancesTest {
   }
 
   @Test
-  public void deleteVimInstance() {
+  public void deleteVimInstance() throws NotFoundException {
     mock.delete("123", "pi");
     restVimInstances.delete("123", "pi");
   }

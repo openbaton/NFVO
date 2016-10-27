@@ -16,6 +16,9 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -23,8 +26,10 @@ import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
@@ -42,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -79,6 +85,32 @@ public class RestNetworkServiceDescriptor {
     log.trace("Just Received: " + networkServiceDescriptor);
     nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);
     return nsd;
+  }
+
+  /**
+   * This operation allows downloading and onboarding an NSD from the Marketplace
+   *
+   * @param link : link to the Network Service Descriptor to be created
+   * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
+   * core
+   */
+  @RequestMapping(
+    value = "/marketdownload",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public NetworkServiceDescriptor marketDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    System.out.println("LINK: " + link);
+    log.info(link.toString());
+    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    return networkServiceDescriptorManagement.onboardFromMarketplace(downloadlink, projectId);
   }
 
   /**

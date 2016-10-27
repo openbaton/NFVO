@@ -17,7 +17,6 @@
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
 import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -26,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.util.EventFinishEvent;
@@ -54,6 +54,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -71,6 +74,13 @@ import java.util.concurrent.ExecutionException;
 public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
   private Action action;
+
+  protected abstract void setEvent();
+
+  protected abstract void setDescription();
+
+  protected String event;
+  protected String description;
 
   @Autowired
   @Qualifier("vnfmRegister")
@@ -117,17 +127,23 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
 
   @Override
   public NFVMessage call() {
+
     changeStatus();
     NFVMessage result = null;
     try {
+      setDescription();
+      setEvent();
       result = this.doWork();
     } catch (ExecutionException e) {
       if (e.getCause() instanceof VimException) {
 
         e.printStackTrace();
         log.error(e.getMessage());
-        LifecycleEvent lifecycleEvent = new LifecycleEvent();
-        lifecycleEvent.setEvent(Event.ERROR);
+        HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+        lifecycleEvent.setEvent(Event.ERROR.name());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+        lifecycleEvent.setExecutedAt(format.format(new Date()));
+        lifecycleEvent.setDescription(e.getCause().getMessage());
         VNFCInstance vnfcInstance = ((VimException) e.getCause()).getVnfcInstance();
 
         if (vnfcInstance != null) {
@@ -147,7 +163,9 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
         return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
       } else if (e.getCause() instanceof VimDriverException) {
         return handleVimDriverException((VimDriverException) e.getCause());
-      } else genericExceptionHandling(e);
+      } else {
+        genericExceptionHandling(e);
+      }
     } catch (Exception e) {
       genericExceptionHandling(e);
     }
@@ -174,8 +192,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   private NFVMessage handleVimDriverException(VimDriverException e) {
     e.printStackTrace();
     log.error(e.getMessage());
-    LifecycleEvent lifecycleEvent = new LifecycleEvent();
-    lifecycleEvent.setEvent(Event.ERROR);
+    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+    lifecycleEvent.setEvent(Event.ERROR.name());
+    lifecycleEvent.setDescription(e.getMessage());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+    lifecycleEvent.setExecutedAt(format.format(new Date()));
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
     saveVirtualNetworkFunctionRecord();
@@ -391,5 +412,20 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
       }
     }
     return true;
+  }
+
+  protected void setHistoryLifecycleEvent(Date date) {
+    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+    lifecycleEvent.setEvent(event);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+    lifecycleEvent.setExecutedAt(format.format(new Date()));
+    lifecycleEvent.setDescription(description);
+
+    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
+      virtualNetworkFunctionRecord.setLifecycle_event_history(
+          new LinkedList<HistoryLifecycleEvent>());
+    }
+    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+    log.debug("Added lifecycle event history: " + lifecycleEvent);
   }
 }

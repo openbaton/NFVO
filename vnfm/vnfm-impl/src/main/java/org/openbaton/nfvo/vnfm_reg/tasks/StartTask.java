@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -30,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by lto on 06/08/15.
@@ -81,6 +84,7 @@ public class StartTask extends AbstractTask {
       }
     }
 
+    setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
@@ -110,5 +114,15 @@ public class StartTask extends AbstractTask {
     vnfmSender.sendCommand(
         new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
         vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+  }
+
+  @Override
+  protected void setEvent() {
+    event = Event.START.name();
+  }
+
+  @Override
+  protected void setDescription() {
+    description = "The start scripts were executed correctly on this VNFR";
   }
 }

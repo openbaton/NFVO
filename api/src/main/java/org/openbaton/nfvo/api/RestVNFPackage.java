@@ -16,9 +16,13 @@
 
 package org.openbaton.nfvo.api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -27,6 +31,7 @@ import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,12 +53,21 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
+@ConfigurationProperties(prefix = "nfvo.marketplace.privateip")
 public class RestVNFPackage {
+  private String ip;
+
+  public String getIp() {
+    return this.ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
-
   /**
    * Adds a new VNFPackage to the VNFPackages repository
    */
@@ -62,7 +76,8 @@ public class RestVNFPackage {
   public String onboard(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException {
+      throws IOException, VimException, NotFoundException, SQLException, PluginException,
+          IncompatibleVNFPackage {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -73,10 +88,26 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
+  @RequestMapping(
+    value = "/marketdownload",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String marketDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
+    return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+  }
+
   /**
    * Removes the VNFPackage from the VNFPackages repository
    *
-   * @param id : the id of configuration to be removed
+   * @param id: id of the package to delete
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)

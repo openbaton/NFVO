@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard, $interval) {
 
-    var baseUrl = $cookieStore.get('URL')+"/api/v1/";
+    var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
 
@@ -24,7 +40,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
             if (value) {
-                ids.push({'id': k});
+                ids.push({ 'id': k });
             }
         });
         //console.log(ids);
@@ -177,7 +193,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
     /* -- multiple delete functions Start -- */
 
-    $scope.multipleDeleteReq = function(){
+    $scope.multipleDeleteReq = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
             if (value) {
@@ -196,7 +212,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
     };
 
-    $scope.main = {checkbox: false};
+    $scope.main = { checkbox: false };
     $scope.$watch('main', function (newValue, oldValue) {
         //console.log(newValue.checkbox);
         //console.log($scope.selection.ids);
@@ -271,7 +287,14 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }
