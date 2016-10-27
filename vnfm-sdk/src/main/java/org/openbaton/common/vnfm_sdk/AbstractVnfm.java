@@ -232,7 +232,7 @@ public abstract class AbstractVnfm
           log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
           log.info("Adding VNFComponent: " + component);
           log.trace("The mode is:" + mode);
-
+          VNFCInstance vnfcInstance_new = null;
           if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
             NFVMessage message2 =
                 vnfmHelper.sendAndReceive(
@@ -245,12 +245,11 @@ public abstract class AbstractVnfm
               this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
               return;
             }
-            VNFCInstance vnfcInstance_new = null;
             vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
             if (vnfcInstance_new == null) {
               throw new RuntimeException("no new VNFCInstance found. This should not happen...");
             }
-            if (mode != null && mode.equals("standby")) {
+            if (mode != null && mode.equalsIgnoreCase("standby")) {
               vnfcInstance_new.setState("STANDBY");
             }
 
@@ -266,8 +265,6 @@ public abstract class AbstractVnfm
             scripts = scalingMessage.getVnfPackage().getScripts();
           }
 
-          VNFCInstance vnfcInstance_new = null;
-          vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
           VirtualNetworkFunctionRecord vnfr =
               this.scale(
                   Action.SCALE_OUT,
