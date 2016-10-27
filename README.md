@@ -29,7 +29,7 @@ Issues and bug reports should be posted to the GitHub Issue Tracker of this proj
 
 Open Baton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification and the TOSCA Standard.
 
-Open Baton provides multiple mechanisms for interoperating with different VNFM vendor solutions. It has a modular archiecture which can be easily extended for supporting additional use cases. 
+Open Baton provides multiple mechanisms for interoperating with different VNFM vendor solutions. It has a modular architecture which can be easily extended for supporting additional use cases. 
 
 It integrates with OpenStack as standard de-facto VIM implementation, and provides a driver mechanism for supporting additional VIM types. It supports Network Service management either using the provided Generic VNFM and Juju VNFM, or integrating additional specific VNFMs. It provides several mechanisms (REST or PUB/SUB) for interoperating with external VNFMs. 
 
@@ -45,7 +45,7 @@ Check the [Open Baton Website][openbaton]
 Follow us on Twitter @[openbaton][openbaton-twitter].
 
 ## Licensing and distribution
-Copyright [2015-2016] Open Baton project
+Copyright © [2015-2016] Open Baton project
 
 Licensed under the Apache License, Version 2.0 (the "License");
 
