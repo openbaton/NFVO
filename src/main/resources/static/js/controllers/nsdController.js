@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var app = angular.module('app')
 
 app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams, $filter, http, serviceAPI, $window, $route, $interval, $http, topologiesAPI, AuthService, NgTableParams) {
@@ -7,6 +23,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     var urlRecord = baseURL + '/ns-records/';
     var urlVim = baseURL + '/datacenters/';
     var urlVNFD = baseURL + '/vnf-descriptors/';
+    var dropzoneUrl = baseURL + '/csar-nsd/';
 
     $scope.list = {}
     $scope.nsdToSend = {};
@@ -809,6 +826,13 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+         window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
         $('.modal').modal('hide');
     }
 
@@ -829,7 +853,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 .success(function (response, status) {
                     $scope.nsdinfo = response;
                     $scope.nsdJSON = JSON.stringify(response, undefined, 4);
-                    //console.log(response);
+                    console.log("here" + $scope.nsdinfo);
                 })
                 .error(function (data, status) {
                     showError(status, data);
@@ -906,4 +930,79 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $scope.tabs.push(tab);
         }
     }
+    angular.element(document).ready(function () {
+        if (angular.isUndefined($routeParams.packageid)) {
+            var previewNode = document.querySelector("#template");
+            previewNode.id = "";
+            var previewTemplate = previewNode.parentNode.innerHTML;
+            previewNode.parentNode.removeChild(previewNode);
+
+            var header = {};
+
+            if ($cookieStore.get('token') !== '')
+                header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
+
+            header['project-id'] = $cookieStore.get('project').id;
+            var myDropzone = new Dropzone('#my-dropzone', {
+                url: dropzoneUrl, // Set the url
+                method: "POST",
+                parallelUploads: 20,
+                previewTemplate: previewTemplate,
+                autoProcessQueue: false, // Make sure the files aren't queued until manually added
+                previewsContainer: "#previews", // Define the container to display the previews
+                headers: header,
+                init: function () {
+                    var submitButton = document.querySelector("#submit-all");
+                    myDropzone = this; // closure
+
+                    submitButton.addEventListener("click", function () {
+                        $scope.$apply(function ($scope) {
+                            myDropzone.processQueue();
+                            loadTable();
+                        });
+                    });
+                    this.on("queuecomplete", function (file, responseText) {
+                        $scope.$apply(function ($scope) {
+                            showOk("Uploaded the CSAR NSD");
+                            loadTable();
+                        });
+
+                    });
+                    this.on("error", function (file, responseText) {
+                        console.log(responseText);
+                        $scope.$apply(function ($scope) {
+                            showError(responseText.message, "422");
+                        });
+                    });
+                }
+            });
+
+
+
+
+// Update the total progress bar
+            myDropzone.on("totaluploadprogress", function (progress) {
+                $('.progress .bar:first').width = progress + "%";
+            });
+
+            myDropzone.on("sending", function (file, xhr, formData) {
+                // Show the total progress bar when upload starts
+                $('.progress .bar:first').opacity = "1";
+
+
+            });
+
+// Hide the total progress bar when nothing's uploading anymore
+            myDropzone.on("queuecomplete", function (progress) {
+                $('.progress .bar:first').opacity = "0";
+
+            });
+
+
+
+            $(".cancel").onclick = function () {
+                myDropzone.removeAllFiles(true);
+            };
+        }
+    });
 });
