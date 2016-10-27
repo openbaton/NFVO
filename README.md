@@ -39,7 +39,7 @@ It can be combined with additional components (Monitoring, Fault Management, Aut
 
 ## Source Code and documentation
 
-The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc]
+The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc] .
 
 ## News and Website
 
