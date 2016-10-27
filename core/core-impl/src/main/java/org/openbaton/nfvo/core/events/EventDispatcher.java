@@ -26,6 +26,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.EventSender;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
@@ -58,9 +59,14 @@ class EventDispatcher
   @Autowired private org.openbaton.nfvo.core.interfaces.EventManagement eventManagement;
 
   @Override
-  public EventEndpoint register(String endpoint_json) {
+  public EventEndpoint register(String endpoint_json) throws MissingParameterException {
 
     EventEndpoint endpoint = gson.fromJson(endpoint_json, EventEndpoint.class);
+
+    if (endpoint.getProjectId() == null) {
+      throw new MissingParameterException("The Event Endpoint needs a project id");
+    }
+
     if (!endpointAlreadyExists(endpoint)) return saveEventEndpoint(endpoint);
     return getEndpointAlreadyRegistered(endpoint);
   }

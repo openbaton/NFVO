@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 
@@ -31,7 +32,7 @@ import org.openbaton.nfvo.common.internal.model.EventNFVO;
  * Rest.
  */
 public interface EventDispatcher {
-  EventEndpoint register(String endpoint_json);
+  EventEndpoint register(String endpoint_json) throws MissingParameterException;
 
   void dispatchEvent(EventNFVO event);
 
