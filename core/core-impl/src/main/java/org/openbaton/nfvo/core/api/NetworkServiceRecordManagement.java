@@ -905,7 +905,9 @@ public class NetworkServiceRecordManagement
               log.debug("Found vim instance " + vimInstance.getName());
               VNFPackage vnfPackage =
                   vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
-              if (vnfPackage.getVimTypes() == null || vnfPackage.getVimTypes().size() == 0) {
+              if (vnfPackage == null
+                  || vnfPackage.getVimTypes() == null
+                  || vnfPackage.getVimTypes().size() == 0) {
                 log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
                 break;
               }
