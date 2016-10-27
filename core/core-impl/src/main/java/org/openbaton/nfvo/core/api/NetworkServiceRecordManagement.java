@@ -905,11 +905,16 @@ public class NetworkServiceRecordManagement
               log.debug("Found vim instance " + vimInstance.getName());
               VNFPackage vnfPackage =
                   vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+              if (vnfPackage.getVimTypes() == null || vnfPackage.getVimTypes().size() == 0) {
+                log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
+                break;
+              }
               log.debug(
                   "Checking if "
                       + vimInstance.getType()
                       + " is contained in "
                       + vnfPackage.getVimTypes());
+
               if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
                 throw new org.openbaton.exceptions.BadRequestException(
                     "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
