@@ -106,7 +106,8 @@ public class RestCSAR {
   )
   public String marketDownloadNS(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
-      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
@@ -129,6 +130,7 @@ public class RestCSAR {
 
     NetworkServiceDescriptor networkServiceDescriptor =
         csarParser.onboardNSD(csarOnboard, projectId);
+    networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);
     return "{ \"id\": \"" + networkServiceDescriptor.getId() + "\"}";
   }
 }
