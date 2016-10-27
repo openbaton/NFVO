@@ -178,6 +178,7 @@ public class TestVIM extends Vim {
       vnfcInstance.setVnfComponent(vnfComponent);
       vnfcInstance.setFloatingIps(new HashSet<Ip>());
       vnfcInstance.setIps(new HashSet<Ip>());
+      vnfcInstance.setHostname(vdu.getHostname() + "-" + ((int) (Math.random() * 1000)));
       vdu.getVnfc_instance().add(vnfcInstance);
 
       for (String network : server.getIps().keySet()) {

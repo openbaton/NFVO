@@ -5,7 +5,7 @@
 
 [![Build Status](https://travis-ci.org/openbaton/openbaton-libs.svg?branch=master)](https://travis-ci.org/openbaton/openbaton-libs)
 
-# Open Baton LIBS
+# Open Baton Libs
 This project **openbaton-libs** contains modules that are shared among different projects inside the **Open Baton** framework.
 
 The **openbaton-libs** are shared folders. In order to achieve that we took advantage of git subtrees. We belive that in this way it will be easier for users since they don't have to take care of procedures for retrieving any sub-folder. If you are reading that, it means that you are a developer so it is important that you are aware of a couple of things. 
@@ -17,33 +17,35 @@ The projects containing **openbaton-libs** are almost all, but not all use every
 * All the plugins contains the plugin-sdk, that in turn contains **openbaton-libs**.
 * [OpenBaton Client][client-link]: contains **openbaton-libs**, basically because of the catalogue.
 
-# How to extend Open Baton LIBS
+## How to extend Open Baton LIBS
 
 Well, any modification to this project needs to be reflected in all other projects, so it is extremely important that doesn't brake the status of the depending projects.
 
-# Issue tracker
+## Issue tracker
 
 Issues and bug reports should be posted to the GitHub Issue Tracker of this project
 
 # What is Open Baton?
 
-OpenBaton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification.
+Open Baton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification and the TOSCA Standard.
 
-Open Baton is a ETSI NFV MANO compliant framework. Open Baton was part of the OpenSDNCore (www.opensdncore.org) project started almost three years ago by Fraunhofer FOKUS with the objective of providing a compliant implementation of the ETSI NFV specification. 
+Open Baton provides multiple mechanisms for interoperating with different VNFM vendor solutions. It has a modular architecture which can be easily extended for supporting additional use cases. 
 
-Open Baton is easily extensible. It integrates with OpenStack, and provides a plugin mechanism for supporting additional VIM types. It supports Network Service management either using a generic VNFM or interoperating with VNF-specific VNFM. It uses different mechanisms (REST or PUB/SUB) for interoperating with the VNFMs. It integrates with additional components for the runtime management of a Network Service. For instance, it provides autoscaling and fault management based on monitoring information coming from the the monitoring system available at the NFVI level.
+It integrates with OpenStack as standard de-facto VIM implementation, and provides a driver mechanism for supporting additional VIM types. It supports Network Service management either using the provided Generic VNFM and Juju VNFM, or integrating additional specific VNFMs. It provides several mechanisms (REST or PUB/SUB) for interoperating with external VNFMs. 
 
-# Source Code and documentation
+It can be combined with additional components (Monitoring, Fault Management, Autoscaling, and Network Slicing Engine) for building a unique MANO comprehensive solution.
+
+## Source Code and documentation
 
 The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc] .
 
-# News and Website
+## News and Website
 
 Check the [Open Baton Website][openbaton]
 Follow us on Twitter @[openbaton][openbaton-twitter].
 
-# Licensing and distribution
-Copyright [2015-2016] Open Baton project
+## Licensing and distribution
+Copyright © [2015-2016] Open Baton project
 
 Licensed under the Apache License, Version 2.0 (the "License");
 
@@ -58,10 +60,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-# Support
+## Support
 The Open Baton project provides community support through the Open Baton Public Mailing List and through StackOverflow using the tags openbaton.
 
-# Supported by
+## Supported by
   <img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png" width="250"/><img src="https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/tu.png" width="150"/>
 
 [fokus-logo]: https://raw.githubusercontent.com/openbaton/openbaton.github.io/master/images/fokus.png
