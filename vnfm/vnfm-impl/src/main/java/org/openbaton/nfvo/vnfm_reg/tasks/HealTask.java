@@ -66,7 +66,7 @@ public class HealTask extends AbstractTask {
       log.error("The vnfcInstance returned for the switch to standby function is null");
       return null;
     }
-    if (vnfcInstance.getState() != null && vnfcInstance.getState().equals("active"))
+    if (vnfcInstance.getState() != null && vnfcInstance.getState().equalsIgnoreCase("ACTIVE"))
       log.debug("The vnfcInstance activated is: " + vnfcInstance.toString());
     else {
       log.error(
