@@ -497,6 +497,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             VimInstance vimInstance = new VimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
+            ArrayList<String> vimInstanceNames = new ArrayList<>();
+            vimInstanceNames.add("test");
+            vdu.setVimInstanceName(vimInstanceNames);
             add(vdu);
           }
         });

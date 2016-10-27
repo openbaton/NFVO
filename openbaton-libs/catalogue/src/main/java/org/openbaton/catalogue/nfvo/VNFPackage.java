@@ -50,34 +50,35 @@ public class VNFPackage implements Serializable {
 
   @Override
   public String toString() {
-    return "VNFPackage{" +
-           "id='" +
-           id +
-           '\'' +
-           ", version=" +
-           version +
-           ", name='" +
-           name +
-           '\'' +
-           ", nfvo_version='" +
-           nfvo_version +
-           '\'' +
-           ", vimTypes='" + vimTypes +
-           '\'' +
-           ", imageLink='" +
-           imageLink +
-           '\'' +
-           ", scriptsLink='" +
-           scriptsLink +
-           '\'' +
-           ", image=" +
-           image +
-           ", scripts=" +
-           scripts +
-           ", projectId='" +
-           projectId +
-           '\'' +
-           '}';
+    return "VNFPackage{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", name='"
+        + name
+        + '\''
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + ", vimTypes='"
+        + vimTypes
+        + '\''
+        + ", imageLink='"
+        + imageLink
+        + '\''
+        + ", scriptsLink='"
+        + scriptsLink
+        + '\''
+        + ", image="
+        + image
+        + ", scripts="
+        + scripts
+        + ", projectId='"
+        + projectId
+        + '\''
+        + '}';
   }
 
   public List<String> getVimTypes() {
