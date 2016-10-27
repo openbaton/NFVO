@@ -27,17 +27,35 @@ You can add the pages to the GUI by simply adding them to the static resources f
 
 Issues and bug reports should be posted to the GitHub Issue Tracker of this project
 
+
 # What is Open Baton?
 
-OpenBaton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification.
+Open Baton is an open source project providing a comprehensive implementation of the ETSI Management and Orchestration (MANO) specification and the TOSCA Standard. Open Baton provides multiple mechanisms for interoperating with different VNFM vendor solutions. 
+It has a modular archiecture which can be easily extended for supporting additional use cases. 
 
-Open Baton is a ETSI NFV MANO compliant framework. Open Baton was part of the OpenSDNCore (www.opensdncore.org) project started almost three years ago by Fraunhofer FOKUS with the objective of providing a compliant implementation of the ETSI NFV specification. 
+It integrates with OpenStack as standard de-facto VIM implementation, and provides a driver mechanism for supporting additional VIM types. It supports Network Service management either using the provided Generic VNFM and Juju VNFM, or integrating additional specific VNFMs. It provides several mechanisms (REST or PUB/SUB) for interoperating with external VNFMs. 
 
-Open Baton is easily extensible. It integrates with OpenStack, and provides a plugin mechanism for supporting additional VIM types. It supports Network Service management either using a generic VNFM or interoperating with VNF-specific VNFM. It uses different mechanisms (REST or PUB/SUB) for interoperating with the VNFMs. It integrates with additional components for the runtime management of a Network Service. For instance, it provides autoscaling and fault management based on monitoring information coming from the the monitoring system available at the NFVI level.
+It can be combined with additional components (Monitoring, Fault Management, Autoscaling, and Network Slicing Engine) for building a unique MANO comprehensive solution.
 
-# Source Code and documentation
+## Source Code and documentation
 
 The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc] .
+
+## News and Website
+
+Check the [Open Baton Website][openbaton]
+
+Follow us on Twitter @[openbaton][openbaton-twitter]
+
+## Source Code and documentation
+
+The Source Code of the other Open Baton projects can be found [here][openbaton-github] and the documentation can be found [here][openbaton-doc]
+
+## News and Website
+
+Check the [Open Baton Website][openbaton]
+
+Follow us on Twitter @[openbaton][openbaton-twitter]
 
 # News and Website
 
