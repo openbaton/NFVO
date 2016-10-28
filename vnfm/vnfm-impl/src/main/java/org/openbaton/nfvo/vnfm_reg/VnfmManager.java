@@ -322,7 +322,7 @@ public class VnfmManager
         for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
 
           if (vimInstance.getValue().isEmpty()) {
-            for (VimInstance vimInstance1 : vimInstanceRepository.findAll()) {
+            for (VimInstance vimInstance1 : vimInstanceRepository.findByProjectId(networkServiceDescriptor.getProjectId())) {
               vimInstance.getValue().add(vimInstance1);
             }
           }
