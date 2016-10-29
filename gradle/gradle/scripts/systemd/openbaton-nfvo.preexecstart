@@ -1,0 +1,90 @@
+#!/bin/sh 
+
+# Copyright (c) 2015-2016 Fraunhofer FOKUS
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+##########################
+#### General Settings ####
+##########################
+
+set -e
+set -u
+#set -x # only for DEBUG
+
+# Make available the functions defined in /lib/lsb/init-functions
+. /lib/lsb/init-functions
+
+
+##########################
+#### Global Variables ####
+##########################
+
+OPENBATON_COMPONENT_SYSTEMD_ENV_FILE=/usr/lib/openbaton/systemd/env/openbaton-nfvo.env
+
+
+##############
+#### Main ####
+##############
+
+pre_exec_start () {
+    OSTYPE=$(uname)
+
+    ####################
+    #### Open Baton ####
+    ####################
+
+    # Check if the Open Baton "${OPENBATON_COMPONENT_NAME}" is already running
+    instance=$(ps aux | grep -v grep | grep "${OPENBATON_COMPONENT_JAR_FILE_NAME}" | grep "jar" | wc -l)
+    if [ ${instance} -ne 0 ]; then
+        log_warning_msg "The Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} is already running"
+        exit 1
+    fi
+    # Select which Open Baton "${OPENBATON_COMPONENT_NAME}" version to start
+    openbaton_component_jar_file_name_versioned=$(ls -ct ${OPENBATON_COMPONENT_JAR_INSTALL_DIR} | grep "${OPENBATON_COMPONENT_JAR_FILE_NAME}" | grep "jar" | head -n 1)
+    if [ "${openbaton_component_jar_file_name_versioned}" = "" ]; then
+        log_failure_msg "The Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} is not installed (jar-file not found)"
+        exit 1
+    fi
+    sed -i "s/OPENBATON_COMPONENT_JAR_FILE_NAME_VERSIONED=.*/OPENBATON_COMPONENT_JAR_FILE_NAME_VERSIONED=${openbaton_component_jar_file_name_versioned}/g" ${OPENBATON_COMPONENT_SYSTEMD_ENV_FILE}
+
+
+    ###################
+    #### Rabbitmq #####
+    ###################
+
+    # Check and eventually starts rabbitmq-server
+    if [ "${OSTYPE}" = "Linux" ]; then
+        instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l)
+        if [ ${instance} -eq 0 ]; then
+            log_warning_msg "rabbit is not running, let's try to start it"
+            $(rabbitmq-server -detached)
+            if (( $? != 0 )); then
+                log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log)"
+                exit 1
+            fi
+        fi
+    elif [ "${OSTYPE}" = "darwin"* ]; then
+        instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l)
+        if [ ${instance} -eq 0 ]; then
+            log_warning_msg "rabbitmq is not running, let's try to start it"
+            $(rabbitmq-server -detached)
+            if [ $? -ne 0 ]; then
+                log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log)"
+                exit 1
+            fi
+        fi
+    fi
+}
+
+pre_exec_start

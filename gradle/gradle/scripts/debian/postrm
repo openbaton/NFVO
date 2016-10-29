@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# Copyright (c) 2015-2016 Fraunhofer FOKUS
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 ##########################
 #### General Settings ####
 ##########################
@@ -16,70 +30,34 @@ set -u
 #### Global Variables ####
 ##########################
 
-USER="$(id -un 2>/dev/null || true)"
-
-OPENBATON_BASE=/usr
-OPENBATON_PLUGINS_FOLDER=${OPENBATON_BASE}/lib/openbaton/plugins
-OPENBATON_LOGS_FOLDER=/var/log/openbaton
+OPENBATON_BASE_DIR=/usr
+OPENBATON_PLUGINS_DIR=${OPENBATON_BASE_DIR}/lib/openbaton/plugins
+OPENBATON_LOGS_DIR=/var/log/openbaton
 
 
-##############################
-#### Execution privileges ####
-##############################
+####################
+#### Open Baton ####
+####################
 
-checkBinary () {
-    if command -v $1 >/dev/null 2>&1 ; then
-        log_success_msg "Checking for '$1'"
-        return 0
-    else
-        log_failure_msg "Checking for '$1'"
-        return 1
-    fi
-}
-
-_ex='sh -c'
-if [ "${USER}" != 'root' ]; then
-    if checkBinary sudo; then
-        _ex='sudo -E sh -c'
-    elif checkBinary su; then
-        _ex='su -c'
-    fi
-fi
-
-
-#############################
-#### VIM-Drivers Plugins ####
-#############################
-
-cleanPlugins () {
-    export OPENBATON_PLUGINS_FOLDER="${OPENBATON_PLUGINS_FOLDER}"
-    if [ -d ${OPENBATON_PLUGINS_FOLDER} ]; then
-    	$_ex 'rm -r ${OPENBATON_PLUGINS_FOLDER}'
+clean_plugins () {
+    export OPENBATON_PLUGINS_DIR="${OPENBATON_PLUGINS_DIR}"
+    if [ -d ${OPENBATON_PLUGINS_DIR} ]; then
+    	rm -r ${OPENBATON_PLUGINS_DIR}
         log_success_msg "Cleaning the environment: deleted plugins"
     fi
 }
 
-
-##############
-#### Logs ####
-##############
-
-cleanLogs () {
-    export OPENBATON_LOGS_FOLDER="${OPENBATON_LOGS_FOLDER}"
-    if [ -d ${OPENBATON_LOGS_FOLDER} ]; then
-    	$_ex 'rm -r ${OPENBATON_LOGS_FOLDER}'
+clean_logs () {
+    export OPENBATON_LOGS_DIR="${OPENBATON_LOGS_DIR}"
+    if [ -d ${OPENBATON_LOGS_DIR} ]; then
+    	rm -r ${OPENBATON_LOGS_DIR}
         log_success_msg "Cleaning the environment: deleted logs"
     fi
 }
 
-
-############################################
-#### Clean Open Baton NFVO installation ####
-############################################
-
 clean () {
-    cleanPlugins
-    cleanLogs
+    clean_plugins
+    clean_logs
 }
 
 

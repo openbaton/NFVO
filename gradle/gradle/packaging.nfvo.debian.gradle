@@ -16,13 +16,18 @@
  */
 
 ext {
-    debianDistribution = (applicationRelease) ? "release" : "snapshot"
     debianApplicationVersionFull = "${applicationVersionFull}".replaceAll("-", ".")
-    openbatonInstallDir = "/opt/openbaton"
+
+    baseName = 'openbaton'
+    componentName = "nfvo"
+    jarSubpathName = "${componentName}".replaceAll("-", "/")
+    fullName = "${baseName}-${componentName}"
+    propertiesDir = '/etc/openbaton'
+    baseBinaryDir = '/usr/lib/openbaton'
 }
 
 task makedeb(type: Deb, dependsOn: [jar, build]) { 
-    packageName = (applicationRelease) ? "openbaton-nfvo" : "openbaton-nfvo-nightly"
+    packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
     version = debianApplicationVersionFull
     //release = 1 
     priority = 'optional'
@@ -42,16 +47,22 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     requires('openjdk-7-jre')
     requires('rabbitmq-server')
     requires('wget')
-    requires('openbaton-test-vimplugin')
+    requires('openbaton-plugin-vimdriver-test')
 
-    // Copy files from "from path" to "into path"
-    from('etc/openbaton.properties') 			                    { into '/etc/openbaton/' }                 // properties file
-    from('etc/keystore.p12') 			                            { into '/etc/openbaton/' }                 // keystore file
-    from(jar.outputs.files) 				                        { into '/usr/lib/openbaton/' }             // jar file
-    from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/usr/bin/'}                        // executable to run the NFVO 
-    from('gradle/gradle/scripts/openbaton-nfvo') 	                { into '/etc/init.d/'}                     // executable to run the NFVO as a service (SysV)
-    from('gradle/gradle/scripts/openbaton-nfvo.conf') 	            { into '/etc/init/'}                       // conf file to run the NFVO as a service (Upstart)
-    from('gradle/gradle/scripts/systemd/openbaton-nfvo.service') 	{ into '/usr/lib/systemd/system/'}         // executable to run the NFVO as a service (Systemd)
-    from('gradle/gradle/scripts/systemd/nfvo.env') 	                { into '/usr/lib/openbaton/systemd/'}      // environment file to run the NFVO as a service (Systemd)
-    from('gradle/gradle/scripts/systemd/nfvo.preexecstart') 	    { into '/usr/lib/openbaton/systemd/'}      // preexecstart file to run the NFVO as a service (Systemd)
+    // Copy files from "from path" to "into path" 
+    from("etc/keystore.p12") 			                                { into "/etc/openbaton/" }                              // keystore file
+    from("etc/openbaton.properties") {                                                                                          // properties file
+        into "${propertiesDir}" 
+        rename("openbaton.properties", "${fullName}.properties")
+    }
+    from(jar.outputs.files) {                                                                                                   // jar file
+        into "${baseBinaryDir}/${jarSubpathName}"
+        rename("(.*)","${fullName}-${version}.jar")
+    }
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/usr/bin/"}                                     // executable to run the NFVO 
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/etc/init.d/"}                                  // executable to run the NFVO as a service (SysV)
+    from("gradle/gradle/scripts/${fullName}.conf") 	                    { into "/etc/init/"}                                    // conf file to run the NFVO as a service (Upstart)
+    from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/"}                      // executable to run the NFVO as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the NFVO as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart"}       // preexecstart file to run the NFVO as a service (Systemd)
 }
