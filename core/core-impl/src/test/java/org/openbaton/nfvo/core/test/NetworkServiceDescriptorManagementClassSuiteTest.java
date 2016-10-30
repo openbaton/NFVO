@@ -42,6 +42,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.WrongStatusException;
@@ -113,7 +114,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementEnableTest()
       throws NotFoundException, WrongStatusException, BadFormatException,
-          NetworkServiceIntegrityException, CyclicDependenciesException {
+          NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
@@ -136,7 +137,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementDisableTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, WrongStatusException {
+          CyclicDependenciesException, WrongStatusException, EntityInUseException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     nsd_exp.setEnabled(true);
     when(vimRepository.findAll())
@@ -166,7 +167,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   }
 
   @Test
-  public void nsdManagementQueryTest() throws WrongStatusException {
+  public void nsdManagementQueryTest() throws WrongStatusException, EntityInUseException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());
@@ -234,7 +235,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementUpdateTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, WrongStatusException {
+          CyclicDependenciesException, WrongStatusException, EntityInUseException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());

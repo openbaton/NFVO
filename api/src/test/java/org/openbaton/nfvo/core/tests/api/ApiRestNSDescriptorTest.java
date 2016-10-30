@@ -110,7 +110,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDDelete() throws WrongStatusException {
+  public void NSDDelete() throws WrongStatusException, EntityInUseException {
     restNetworkService.delete("id", "project-id");
   }
 
@@ -171,7 +171,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void deleteVNFD() throws NotFoundException {
+  public void deleteVNFD() throws NotFoundException, EntityInUseException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor.getVnfd().iterator().next();
     restNetworkService.deleteVirtualNetworkFunctionDescriptor(
