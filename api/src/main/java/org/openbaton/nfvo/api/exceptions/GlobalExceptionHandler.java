@@ -67,7 +67,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     VimException.class,
     CyclicDependenciesException.class,
     WrongAction.class,
-    PasswordWeakException.class
+    PasswordWeakException.class,
+    AlreadyExistingException.class,
+    IncompatibleVNFPackage.class,
+    EntityInUseException.class
   })
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {

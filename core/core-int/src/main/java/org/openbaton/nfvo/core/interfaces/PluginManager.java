@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import org.openbaton.exceptions.AlreadyExistingException;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -25,9 +27,10 @@ import java.util.Set;
  */
 public interface PluginManager {
 
-  void downloadPlugin(String type, String name, String versio) throws IOException;
+  void downloadPlugin(String type, String name, String versio)
+      throws IOException, AlreadyExistingException;
 
   void startPlugin(String path, String name) throws IOException;
 
-  Set<String> listInstalledPlugins();
+  Set<String> listInstalledVimDrivers() throws IOException;
 }

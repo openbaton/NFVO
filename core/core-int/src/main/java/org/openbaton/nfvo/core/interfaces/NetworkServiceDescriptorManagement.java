@@ -22,6 +22,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
@@ -51,7 +52,8 @@ public interface NetworkServiceDescriptorManagement {
 
   NetworkServiceDescriptor onboardFromMarketplace(String link, String project_id)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
-          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage;
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException;
 
   /**
    * This operation allows disabling a Network Service Descriptor, so that it is not possible to

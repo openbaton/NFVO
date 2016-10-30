@@ -18,17 +18,36 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
+
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.PhysicalNetworkFunctionDescriptorRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VNFDependencyRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +57,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.NoResultException;
 
 /**
  * Created by lto on 11/05/15.
@@ -78,6 +97,7 @@ public class NetworkServiceDescriptorManagement
   @Autowired private VnfPackageRepository vnfPackageRepository;
   @Autowired private VirtualNetworkFunctionManagement virtualNetworkFunctionManagement;
   @Autowired private VNFPackageManagement vnfPackageManagement;
+  @Autowired private Gson gson;
 
   public boolean isCascadeDelete() {
     return cascadeDelete;
@@ -157,9 +177,9 @@ public class NetworkServiceDescriptorManagement
   @Override
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
-          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException {
 
-    Gson gson = new Gson();
     InputStream in = new BufferedInputStream(new URL(link).openStream());
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -192,7 +212,8 @@ public class NetworkServiceDescriptorManagement
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
-          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException {
     List<String> not_found_ids = new ArrayList<>();
     List<String> vnfdIds = new ArrayList<>();
 
@@ -209,9 +230,8 @@ public class NetworkServiceDescriptorManagement
           }
         }
         if (localId.equals(id)) {
-          vnfdIds.add(vnfdId);
-          found = true;
-          break;
+          throw new AlreadyExistingException(
+              "There is already a VNFD onboarded with id: " + localId);
         }
       }
       if (!found) not_found_ids.add(id);
@@ -226,13 +246,6 @@ public class NetworkServiceDescriptorManagement
       log.info(
           "Onboarded from marketplace VNFD " + vnfd.getName() + " local id is: " + vnfd.getId());
       vnfdIds.add(vnfd.getId());
-      //      String vnfpl = vnfd.getVnfPackageLocation();
-      //      for (VirtualNetworkFunctionDescriptor vnfd_l : vnfdRepository.findAll()) {
-      //        if (vnfd.getVnfPackageLocation().equals(vnfpl)) {
-      //          vnfdIds.add(vnfd_l.getId());
-      //          break;
-      //        }
-      //      }
     }
 
     return vnfdIds;
@@ -299,7 +312,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Removes the VNFDescriptor with idVnfd from NSD with idNsd
    *
-   * @param nsd
    * @param idNsd of NSD
    * @param idVnfd of VNFD
    */

@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.api;
 
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.core.interfaces.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,13 +44,13 @@ public class RestPlugin {
   @ResponseStatus(HttpStatus.OK)
   public void downloadPlugin(
       @PathVariable String type, @PathVariable String name, @PathVariable String version)
-      throws IOException {
+      throws IOException, AlreadyExistingException {
 
     pluginManager.downloadPlugin(type, name, version);
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public @ResponseBody Set<String> getListPlugin() {
-    return pluginManager.listInstalledPlugins();
+  public @ResponseBody Set<String> getListVimDrivers() throws IOException {
+    return pluginManager.listInstalledVimDrivers();
   }
 }

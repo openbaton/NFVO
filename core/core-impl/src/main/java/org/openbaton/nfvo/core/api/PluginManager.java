@@ -17,7 +17,9 @@
 
 package org.openbaton.nfvo.core.api;
 
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -46,6 +49,9 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
 
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
+
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
 
   @Value("${nfvo.plugin.installation-dir:./plugins}")
   private String pluginDir;
@@ -69,9 +75,16 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   private int marketPort;
 
   @Override
-  public void downloadPlugin(String type, String name, String version) throws IOException {
+  public void downloadPlugin(String type, String name, String version)
+      throws IOException, AlreadyExistingException {
 
     String id = type + "/" + name + "/" + version;
+
+    for (String pluginId : listInstalledVimDrivers()) {
+      if (pluginId.contains(type)) {
+        throw new AlreadyExistingException("Plugin of type " + type + " is already installed");
+      }
+    }
 
     String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
     String path = pluginDir + "/install-plugin/" + name + ".jar";
@@ -122,7 +135,12 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   }
 
   @Override
-  public Set<String> listInstalledPlugins() {
-    return PluginStartup.getProcesses().keySet();
+  public Set<String> listInstalledVimDrivers() throws IOException {
+    Set<String> result = new HashSet<>();
+    for (String pluginId :
+        RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort))) {
+      if (pluginId.startsWith("vim-driver")) result.add(pluginId);
+    }
+    return result;
   }
 }

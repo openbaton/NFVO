@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.api;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.openbaton.catalogue.mano.common.Security;
@@ -25,6 +24,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
@@ -104,13 +104,11 @@ public class RestNetworkServiceDescriptor {
   public NetworkServiceDescriptor marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
-          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage {
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException {
 
-    Gson gson = new Gson();
-    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    System.out.println("LINK: " + link);
-    log.info(link.toString());
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    log.debug("LINK: " + link);
+    String downloadlink = link.get("link").getAsString();
     return networkServiceDescriptorManagement.onboardFromMarketplace(downloadlink, projectId);
   }
 
