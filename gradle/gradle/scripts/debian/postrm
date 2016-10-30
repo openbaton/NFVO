@@ -55,11 +55,17 @@ clean_logs () {
     fi
 }
 
+# TODO: Add clean properties
+
 clean () {
     clean_plugins
     clean_logs
 }
 
+
+##############
+#### Main ####
+##############
 
 case "${1}" in
   purge)

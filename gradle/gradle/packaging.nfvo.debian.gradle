@@ -20,10 +20,10 @@ ext {
 
     baseName = 'openbaton'
     componentName = "nfvo"
-    jarSubpathName = "${componentName}".replaceAll("-", "/")
     fullName = "${baseName}-${componentName}"
     propertiesDir = '/etc/openbaton'
     baseBinaryDir = '/usr/lib/openbaton'
+    jarSubpathName = "${componentName}".replaceAll("-", "/")
 }
 
 task makedeb(type: Deb, dependsOn: [jar, build]) { 
@@ -59,10 +59,10 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
         into "${baseBinaryDir}/${jarSubpathName}"
         rename("(.*)","${fullName}-${version}.jar")
     }
-    from("gradle/gradle/scripts/${fullName}") 	                        { into "/usr/bin/"}                                     // executable to run the NFVO 
-    from("gradle/gradle/scripts/${fullName}") 	                        { into "/etc/init.d/"}                                  // executable to run the NFVO as a service (SysV)
-    from("gradle/gradle/scripts/${fullName}.conf") 	                    { into "/etc/init/"}                                    // conf file to run the NFVO as a service (Upstart)
-    from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/"}                      // executable to run the NFVO as a service (Systemd)
-    from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the NFVO as a service (Systemd)
-    from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/"}      // preexecstart file to run the NFVO as a service (Systemd)
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/usr/bin/"}                                     // executable to run the Component
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/etc/init.d/"}                                  // executable to run the Component as a service (SysV)
+    from("gradle/gradle/scripts/${fullName}.conf") 	                    { into "/etc/init/"}                                    // conf file to run the Component as a service (Upstart)
+    from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/"}                      // executable to run the Component as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the Component as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/"}      // preexecstart file to run the Component as a service (Systemd)
 }

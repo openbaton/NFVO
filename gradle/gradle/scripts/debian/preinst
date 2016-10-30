@@ -30,9 +30,6 @@ set -u
 #### Global Variables ####
 ##########################
 
-OPENBATON_BASE_DIR=/usr
-INSTALL_DIR=${OPENBATON_BASE_DIR}/lib/openbaton
-
 OPENBATON_COMPONENT_NAME_FANCY="NFV Orchestrator (NFVO)"
 OPENBATON_COMPONENT_NAME=nfvo
 OPENBATON_COMPONENT_RELATIVE_SUBPATH=nfvo
@@ -55,6 +52,10 @@ remove_existing_old_version_installed () {
     fi
 }
 
+
+##############
+#### Main ####
+##############
 
 case "${1}" in  
     install|upgrade)

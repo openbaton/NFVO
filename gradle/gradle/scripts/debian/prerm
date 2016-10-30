@@ -30,8 +30,6 @@ set -u
 #### Global Variables ####
 ##########################
 
-OPENBATON_BASE_DIR=/usr
-
 OPENBATON_COMPONENT_NAME_FANCY="NFV Orchestrator (NFVO)"
 OPENBATON_COMPONENT_NAME=nfvo
 
@@ -42,7 +40,7 @@ OPENBATON_COMPONENT_JAR_FILE_NAME=openbaton-${OPENBATON_COMPONENT_NAME}
 #### Open Baton ####
 ####################
 
-stop_nfvo () {
+stop_running () {
     instance=$(ps aux | grep -v grep | grep "${OPENBATON_COMPONENT_JAR_FILE_NAME}" | grep "jar" | wc -l)
     if [ ${instance} -ne 0 ]; then
         if systemctl stop openbaton-${OPENBATON_COMPONENT_NAME}.service >/dev/null 2>&1 ; then
@@ -55,5 +53,4 @@ stop_nfvo () {
     fi
 }
 
-stop_nfvo
-
+stop_running
