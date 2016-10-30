@@ -45,7 +45,7 @@ OSTYPE=$(uname)
 
 
 ###################
-#### Rabbitmq #####
+#### RabbitMQ #####
 ###################
 
 check_rabbitmq () {
@@ -55,7 +55,7 @@ check_rabbitmq () {
             log_warning_msg "rabbit is not running, let's try to start it"
 			start_rabbitmq                        
         fi
-    elif [ ${OSTYPE} -eq "Darwin" ]; then
+    elif [ ${OSTYPE} = "Darwin" ]; then
         instance=$(ps aux | grep -v grep | grep rabbitmq | grep server | wc -l) 
         if [ ${instance} -eq 0 ]; then
             log_warning_msg "rabbitmq is not running, let's try to start it"
@@ -87,7 +87,7 @@ check_already_running () {
 
 set_jar_version () {
 	openbaton_component_jar_file_name_versioned=$(ls -ct ${OPENBATON_COMPONENT_JAR_INSTALL_DIR} | grep "${OPENBATON_COMPONENT_JAR_FILE_NAME}" | grep "jar" | head -n 1)
-	if [ ${openbaton_component_jar_file_name_versioned} = "" ]; then
+	if [ "${openbaton_component_jar_file_name_versioned}" = "" ]; then
         log_failure_msg "The Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} is not installed (jar-file not found)"
 		exit 1
     fi
@@ -102,7 +102,6 @@ configure () {
 start () {
     configure
     log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
-
     start-stop-daemon --start --background --pidfile ${OPENBATON_COMPONENT_PID_FILE} --make-pidfile --user ${DAEMON_USER} --chuid ${DAEMON_USER} --exec /usr/bin/java -- -jar ${OPENBATON_COMPONENT_JAR_INSTALL_DIR}/${openbaton_component_jar_file_name_versioned} --spring.config.location=file:${OPENBATON_COMPONENT_CONFIG_FILE}
 }
 
