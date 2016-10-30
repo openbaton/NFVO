@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.EntityInUseException;
 
 /**
  * Created by mpa on 01.10.15.
@@ -26,7 +27,7 @@ public interface VirtualNetworkFunctionManagement {
   VirtualNetworkFunctionDescriptor add(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String projectId);
 
-  void delete(String id, String projectId);
+  void delete(String id, String projectId) throws EntityInUseException;
 
   Iterable<VirtualNetworkFunctionDescriptor> query();
 

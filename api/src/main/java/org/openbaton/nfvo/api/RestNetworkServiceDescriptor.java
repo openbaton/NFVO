@@ -27,6 +27,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -121,7 +122,7 @@ public class RestNetworkServiceDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws WrongStatusException {
+      throws WrongStatusException, EntityInUseException {
     networkServiceDescriptorManagement.delete(id, projectId);
   }
 
@@ -144,7 +145,7 @@ public class RestNetworkServiceDescriptor {
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException {
+          NotFoundException, EntityInUseException {
     for (String id : ids) networkServiceDescriptorManagement.delete(id, projectId);
   }
 
@@ -232,7 +233,7 @@ public class RestNetworkServiceDescriptor {
       @PathVariable("idNsd") String idNsd,
       @PathVariable("idVfn") String idVfn,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, EntityInUseException {
     networkServiceDescriptorManagement.deleteVnfDescriptor(idNsd, idVfn, projectId);
   }
 

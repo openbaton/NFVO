@@ -31,6 +31,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -102,7 +103,8 @@ public class VNFPackageManagement
 
   @Override
   public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage {
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
+          AlreadyExistingException {
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
     Map<String, Object> metadata = null;
@@ -477,6 +479,14 @@ public class VNFPackageManagement
     vnfPackage.setImage(image);
     myTarFile.close();
     vnfPackage.setProjectId(projectId);
+    for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
+      if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
+          && vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())
+          && vnfd.getVersion().equals(virtualNetworkFunctionDescriptor.getVersion())) {
+        throw new AlreadyExistingException(
+            "A VNF with this vendor, name and version is already existing");
+      }
+    }
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
@@ -490,7 +500,8 @@ public class VNFPackageManagement
   }
 
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage {
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
+          AlreadyExistingException {
     String downloadlink = link;
     log.debug("This is download link" + downloadlink);
     URL packageLink = new URL(downloadlink);

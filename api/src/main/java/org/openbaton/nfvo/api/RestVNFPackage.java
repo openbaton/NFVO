@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -78,7 +79,7 @@ public class RestVNFPackage {
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          IncompatibleVNFPackage {
+          IncompatibleVNFPackage, AlreadyExistingException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -96,7 +97,8 @@ public class RestVNFPackage {
   )
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
-      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          AlreadyExistingException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();

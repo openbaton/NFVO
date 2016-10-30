@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -103,7 +104,7 @@ public interface NetworkServiceDescriptorManagement {
    *
    * @param id
    */
-  void delete(String id, String projectId) throws WrongStatusException;
+  void delete(String id, String projectId) throws WrongStatusException, EntityInUseException;
 
   /**
    * Removes the VNFDescriptor into NSD
@@ -112,7 +113,7 @@ public interface NetworkServiceDescriptorManagement {
    * @param idNsd of NSD
    * @param idVnfd of VNFD
    */
-  void deleteVnfDescriptor(String nsd, String idNsd, String idVnfd);
+  void deleteVnfDescriptor(String nsd, String idNsd, String idVnfd) throws EntityInUseException;
 
   /**
    * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd

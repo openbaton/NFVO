@@ -70,7 +70,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     PasswordWeakException.class,
     AlreadyExistingException.class,
     IncompatibleVNFPackage.class,
-    EntityInUseException.class
+    EntityInUseException.class,
+    org.openbaton.exceptions.EntityUnreachableException.class,
+    org.openbaton.exceptions.MissingParameterException.class,
+    org.openbaton.exceptions.MonitoringException.class,
+    org.openbaton.exceptions.NetworkServiceIntegrityException.class,
+    org.openbaton.exceptions.PluginException.class,
+    org.openbaton.exceptions.VnfmException.class,
+    org.openbaton.exceptions.VimException.class,
+    org.openbaton.exceptions.VimDriverException.class,
+    org.openbaton.exceptions.QuotaExceededException.class,
   })
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   protected ResponseEntity<Object> handleInvalidRequest(Exception e, WebRequest request) {

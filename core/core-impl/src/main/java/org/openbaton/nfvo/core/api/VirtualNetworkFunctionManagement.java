@@ -17,7 +17,10 @@
 
 package org.openbaton.nfvo.core.api;
 
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.slf4j.Logger;
@@ -45,6 +48,8 @@ public class VirtualNetworkFunctionManagement
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
 
+  @Autowired private NetworkServiceDescriptorRepository nsdRepository;
+
   public boolean isCascadeDelete() {
     return cascadeDelete;
   }
@@ -62,9 +67,21 @@ public class VirtualNetworkFunctionManagement
   }
 
   @Override
-  public void delete(String id, String projectId) {
+  public void delete(String id, String projectId) throws EntityInUseException {
+
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfdRepository.findFirstById(id);
+    for (NetworkServiceDescriptor networkServiceDescriptor :
+        nsdRepository.findByProjectId(projectId)) {
+      for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+        if (vnfd.getId().equals(id)) {
+          throw new EntityInUseException(
+              "NSD with id: "
+                  + networkServiceDescriptor.getId()
+                  + " is still onboarded and referencing this VNFD");
+        }
+      }
+    }
     if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

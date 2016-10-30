@@ -34,6 +34,7 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -316,7 +317,13 @@ public class NetworkServiceDescriptorManagement
    * @param idVnfd of VNFD
    */
   @Override
-  public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId) {
+  public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
+      throws EntityInUseException {
+    log.debug("Is there a NSD referencing it? " + nsdRepository.exists(idNsd));
+    if (nsdRepository.exists(idNsd)) {
+      throw new EntityInUseException(
+          "NSD with id: " + idNsd + " is still onboarded and referencing this VNFD");
+    }
     log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfdRepository.findFirstById(idVnfd);
@@ -553,7 +560,8 @@ public class NetworkServiceDescriptorManagement
    * @param id
    */
   @Override
-  public void delete(String id, String projectId) throws WrongStatusException {
+  public void delete(String id, String projectId)
+      throws WrongStatusException, EntityInUseException {
     log.info("Removing NetworkServiceDescriptor with id " + id);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
     if (!networkServiceDescriptor.getProjectId().equals(projectId))
