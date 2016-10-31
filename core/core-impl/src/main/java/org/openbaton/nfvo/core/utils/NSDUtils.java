@@ -417,9 +417,12 @@ public class NSDUtils {
                 VimInstance vimInstance = null;
 
                 for (VimInstance vi :
-                    vimRepository.findByProjectId(virtualDeploymentUnit.getProjectId())) {
+                    vimRepository.findByProjectId(
+                        networkServiceDescriptor.getVnfd().iterator().next().getProjectId())) {
                   if (vimName.equals(vi.getName())) {
                     vimInstance = vi;
+                    log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
+                    break;
                   }
                 }
 
@@ -467,6 +470,7 @@ public class NSDUtils {
                           + flavors);
                 }
                 for (String image : virtualDeploymentUnit.getVm_image()) {
+                  log.debug("Checking image: " + image);
                   if (!imageNames.contains(image) && !imageIds.contains(image)) {
                     throw new NetworkServiceIntegrityException(
                         "Regarding the VirtualNetworkFunctionDescriptor "

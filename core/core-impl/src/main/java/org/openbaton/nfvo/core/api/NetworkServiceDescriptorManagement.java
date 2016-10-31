@@ -117,7 +117,7 @@ public class NetworkServiceDescriptorManagement
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException {
-
+    networkServiceDescriptor.setProjectId(projectId);
     log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
     UrlValidator urlValidator = new UrlValidator();
 
@@ -220,10 +220,10 @@ public class NetworkServiceDescriptorManagement
 
     for (String id : market_ids) {
       boolean found = false;
-      for (VNFPackage vnfPackage : vnfPackageRepository.findAll()) {
+      for (VNFPackage vnfPackage : vnfPackageRepository.findByProjectId(project_id)) {
         String localId = "";
         String vnfdId = "";
-        for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
+        for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
           if (vnfd.getVnfPackageLocation().equals(vnfPackage.getId())) {
             localId = vnfd.getVendor() + "/" + vnfPackage.getName() + "/" + vnfd.getVersion();
             vnfdId = vnfd.getId();
