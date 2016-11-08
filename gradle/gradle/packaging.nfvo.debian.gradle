@@ -46,7 +46,6 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
 
     requires('openjdk-7-jre')
     requires('rabbitmq-server')
-    requires('wget')
     requires('openbaton-plugin-vimdriver-test')
 
     // Copy files from "from path" to "into path" 
