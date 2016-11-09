@@ -62,6 +62,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             $scope.vnfdCreate.vdu.splice($scope.vduEditIndex, 1);
             delete $scope.vduEditIndex;
         }
+        $scope.vduCreate.vimInstanceName = [];
         $scope.vnfdCreate.vdu.push(angular.copy($scope.vduCreate));
     };
     $scope.storeDepFlavour = function () {
@@ -73,18 +74,19 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
     };
 
-    $scope.selection = [];
+    $scope.selectionImage = [];
 
     $scope.toggleSelection = function toggleSelection(image) {
-        var idx = $scope.selection.indexOf(image);
+        console.log(({}).toString.call($scope.selection).match(/\s([a-zA-Z]+)/)[1].toLowerCase())
+        var idx = $scope.selectionImage.indexOf(image);
         if (idx > -1) {
-            $scope.selection.splice(idx, 1);
+            $scope.selectionImage.splice(idx, 1);
         }
         else {
-            $scope.selection.push(image);
+            $scope.selectionImage.push(image);
         }
-        console.log($scope.selection);
-        $scope.vduCreate.vm_image = $scope.selection;
+        console.log($scope.selectionImage);
+        $scope.vduCreate.vm_image = $scope.selectionImage;
     };
 
     $scope.sendVNFD = function () {
