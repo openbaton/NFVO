@@ -90,7 +90,7 @@ public class DependencyManagement
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
     int dep = 0;
-    //if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+
     Set<VNFRecordDependency> vnfRecordDependencies = nsr.getVnf_dependency();
     for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
       log.trace(vnfRecordDependency.getTarget() + " == " + virtualNetworkFunctionRecord.getName());
@@ -116,10 +116,12 @@ public class DependencyManagement
                   + " with dependency "
                   + vnfRecordDependency);
           //send sendMessageToVNFR to VNFR
-          OrVnfmGenericMessage orVnfmGenericMessage =
-              new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
-          orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-          vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
+          if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
+            OrVnfmGenericMessage orVnfmGenericMessage =
+                new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
+            orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+            vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
+          } else return -1;
         }
         return dep;
       }
@@ -132,7 +134,6 @@ public class DependencyManagement
             + virtualNetworkFunctionRecord.getId()
             + " ) ");
     return 0;
-    //} else return -1;
   }
 
   @Override

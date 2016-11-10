@@ -79,6 +79,7 @@ public class InstantiateTask extends AbstractTask {
     NetworkServiceRecord nsr =
         networkServiceRecordRepository.findFirstById(
             virtualNetworkFunctionRecord.getParent_ns_id());
+    log.debug("The current status of the NSR is " + nsr.getStatus());
     for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
       log.debug("Current Vnfrs in the database: " + vnfr.getName());
     }
