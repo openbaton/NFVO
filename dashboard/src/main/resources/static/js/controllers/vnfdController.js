@@ -20,7 +20,12 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
-
+    var defaultvdu = {
+        vm_image:[],
+        vimInstanceName:[],
+        scale_in_out:2,
+        vnfc:[]
+   };
     //$interval(loadTable, 2000);
     loadTable();
 
@@ -63,7 +68,6 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             $scope.vnfdCreate.vdu.splice($scope.vduEditIndex, 1);
             delete $scope.vduEditIndex;
         }
-        $scope.vduCreate.vimInstanceName = [];
         $scope.vnfdCreate.vdu.push(angular.copy($scope.vduCreate));
     };
     $scope.storeDepFlavour = function () {
@@ -161,11 +165,9 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
 
     $scope.addVDU = function () {
-        $http.get('descriptors/vnfd/vdu.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.vduCreate = angular.copy(res.data);
-            });
+       
+                $scope.vduCreate = angular.copy(defaultvdu);
+                $scope.vduCreate.vimInstanceName.push($scope.vimInstances[0].name);
         $('#addEditVDU').modal('show');
     };
 
