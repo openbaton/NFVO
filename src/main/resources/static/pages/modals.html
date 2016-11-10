@@ -60,7 +60,7 @@
             </div>
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
-                    <div class="form-group" ng-repeat="(key,value) in vduCreate"
+                    <!--div class="form-group" ng-repeat="(key,value) in vduCreate"
                          ng-if="key!='vimInstance' && key!='lifecycle_event' && key!='monitoring_parameter'
                          && key!='vm_image'&& key!='vnfc'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
@@ -69,13 +69,23 @@
                             <input type="text" class="form-control" id="{{key}}" name="{{key}}"
                                    ng-model="vduCreate[key]"/>
                         </div>
+                    </div-->
+                    <div class="form-group">
+                        <label for="scale_in_out" class="col-sm-4 control-label">Scale In Out</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="scale_in_out"
+                                   ng-model="vduCreate.scale_in_out"/>
+                        </div>
+
+
                     </div>
                     <div class="form-group">
                         <label for="vimInstance" class="col-sm-4 control-label">vimInstance</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="vimInstance" name="{{key}}"
-                                   ng-model="vduCreate['vimInstance']['name']"/>
+                            <input type="text" class="form-control" id="vimInstance" name="Vim Instance"
+                                   ng-model="vduCreate.vimInstanceName[0]"/>
                         </div>
 
 
@@ -125,7 +135,7 @@
                             </ul>
                             <!--{{vduCreate.monitoring_parameter}}-->
                         </tab>
-                        <tab heading="vm_image">
+                        <tab heading="VM Image">
                             <div class="">
                                 <div class="">
                                     <h4 class="">
