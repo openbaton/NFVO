@@ -71,7 +71,7 @@ public class InstantiateTask extends AbstractTask {
       log.debug("VNFR existing version= " + existing.getHb_version());
     }
 
-    dependencyManagement.fillParameters(virtualNetworkFunctionRecord);
+    dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
     log.debug("Filled parameters of " + virtualNetworkFunctionRecord.getName());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();

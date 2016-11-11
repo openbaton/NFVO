@@ -1181,6 +1181,23 @@ public class NetworkServiceRecordManagement
     }
   }
 
+  private VirtualNetworkFunctionRecord getVNFR(NetworkServiceRecord nsr, String vnfrName) {
+    for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
+      if (vnfr.getName().equalsIgnoreCase(vnfrName)) return vnfr;
+    }
+    log.warn(
+        "No VNFR with name " + vnfrName + " in NSR " + nsr.getName() + " (" + nsr.getId() + ")");
+    return null;
+  }
+
+  private boolean isModifyHasBeenExecuted(VirtualNetworkFunctionRecord vnfr) {
+    for (HistoryLifecycleEvent historyLifecycleEvent : vnfr.getLifecycle_event_history()) {
+      if (historyLifecycleEvent.getEvent().equalsIgnoreCase("MODIFY")
+          || historyLifecycleEvent.getEvent().equalsIgnoreCase("CONFIGURE")) return true;
+    }
+    return false;
+  }
+
   @Override
   public void resume(String id, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException {
@@ -1191,21 +1208,90 @@ public class NetworkServiceRecordManagement
     }
     log.info("Resuming NSR with id: " + id);
 
-    for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
-      if (vnfr.getStatus().ordinal() == (Status.ERROR.ordinal())) {
-        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage();
-        orVnfmGenericMessage.setVnfr(vnfr);
+    networkServiceRecord.setStatus(Status.RESUMING);
 
-        Set<VNFRecordDependency> vnfRecordDependencies = networkServiceRecord.getVnf_dependency();
-        for (VNFRecordDependency vnfRecordDependency : vnfRecordDependencies) {
-          log.debug(vnfRecordDependency.getTarget() + " == " + vnfr.getName());
-          if (vnfRecordDependency.getTarget().equals(vnfr.getName())) {
+    for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()) {
+      // Check for sources and target ready to have their dependencies resolved
+      VirtualNetworkFunctionRecord vnfrTarget =
+          getVNFR(networkServiceRecord, vnfrDependency.getTarget());
+      if (vnfrTarget.getStatus().ordinal() == (Status.INITIALIZED.ordinal())) {
+
+        List<VirtualNetworkFunctionRecord> resolvableVnfrSources = new ArrayList<>();
+        boolean readyToResolve = true;
+        for (String vnfrSourceName : vnfrDependency.getIdType().keySet()) {
+          VirtualNetworkFunctionRecord vnfrSource = getVNFR(networkServiceRecord, vnfrSourceName);
+
+          // Skipping dependency with a source in error
+          if (vnfrSource.getStatus().ordinal() == (Status.ERROR.ordinal())
+              && !isModifyHasBeenExecuted(vnfrSource)
+              && vnfrTarget.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
+            log.info(
+                "Not resolving dependencies for target: "
+                    + vnfrTarget.getName()
+                    + " - Its source: "
+                    + vnfrSource.getName()
+                    + " it is not ready (ERROR state)");
+            readyToResolve = false;
+          }
+          // Resolving ready dependencies
+          else {
+            log.info(
+                "Found resolvable dependency with source: "
+                    + vnfrSource.getName()
+                    + " and target: "
+                    + vnfrTarget.getName());
+            resolvableVnfrSources.add(vnfrSource);
+          }
+        }
+
+        // Filling parameter for resolvable VNFR sources
+        for (VirtualNetworkFunctionRecord resolvableVnfrSource : resolvableVnfrSources) {
+          dependencyManagement.fillDependecyParameters(resolvableVnfrSource);
+        }
+
+        if (readyToResolve) {
+          log.info("Sending MODIFY message to vnfr target: " + vnfrDependency.getTarget());
+
+          OrVnfmGenericMessage orVnfmGenericMessage =
+              new OrVnfmGenericMessage(vnfrTarget, Action.MODIFY);
+
+          // Retrieve from VNFR Dependency Repository the dependency record for VNFR target with ready dependencies
+          VNFRecordDependency resolvableVnfrDependency =
+              vnfRecordDependencyRepository.findFirstById(vnfrDependency.getId());
+          log.debug("Resolvable VNFR Dependency is: " + resolvableVnfrDependency);
+          orVnfmGenericMessage.setVnfrd(resolvableVnfrDependency);
+          vnfmManager.sendMessageToVNFR(vnfrTarget, orVnfmGenericMessage);
+
+        } else {
+          log.info("Not sending MODIFY message to vnfr target: " + vnfrDependency.getTarget());
+        }
+      }
+    }
+
+    // Resuming
+    for (VirtualNetworkFunctionRecord failedVnfr : networkServiceRecord.getVnfr()) {
+
+      // Send resume to VNFR in error
+      if (failedVnfr.getStatus().ordinal() == (Status.ERROR.ordinal())) {
+        failedVnfr.setStatus(Status.RESUMING);
+        failedVnfr = vnfrRepository.save(failedVnfr);
+        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage();
+        orVnfmGenericMessage.setVnfr(failedVnfr);
+        log.debug("Setting VNFR Dependency for RESUMED VNFR");
+        // Setting VNFR Dependency for RESUMED VNFR
+        for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
+          if (vnfRecordDependency.getTarget().equals(failedVnfr.getName())) {
+            log.debug(
+                "Setting dependency to RESUMED VNFR: "
+                    + vnfRecordDependency.getTarget()
+                    + " == "
+                    + failedVnfr.getName());
             orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
           }
         }
         orVnfmGenericMessage.setAction(Action.RESUME);
-        log.info("Sending resume message for VNFR: " + vnfr.getId());
-        vnfmManager.sendMessageToVNFR(vnfr, orVnfmGenericMessage);
+        log.info("Sending resume message for VNFR: " + failedVnfr.getId());
+        vnfmManager.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
       }
     }
   }

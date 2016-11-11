@@ -32,13 +32,22 @@ public interface DependencyManagement {
   int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, InterruptedException;
 
-  void fillParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void fillDependecyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
   VNFRecordDependency getDependencyForAVNFRecordTarget(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
   List<VNFRecordDependency> getDependencyForAVNFRecordSource(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+
+  void fillVnfcParameters(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFRecordDependency vnfRecordDependency,
+      Set<String> parameterKeys);
+
+  Set<String> fillDependecyParameters(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFRecordDependency vnfRecordDependency);
 
   Set<String> getNotInitializedVnfrSource(
       Set<String> strings, NetworkServiceRecord networkServiceRecord);
