@@ -21,11 +21,14 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
     var defaultvdu = {
+        version:0,
+        name: "",
         vm_image:[],
         vimInstanceName:[],
         scale_in_out:2,
-        vnfc:[]
+        vnfc:[ {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]}]
    };
+   $scope.custom_images = [];
     //$interval(loadTable, 2000);
     loadTable();
 
@@ -167,14 +170,30 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     $scope.addVDU = function () {
        
                 $scope.vduCreate = angular.copy(defaultvdu);
-                $scope.vduCreate.vimInstanceName.push($scope.vimInstances[0].name);
+                //$scope.vduCreate.vimInstanceName.push($scope.vimInstances[0].name);
         $('#addEditVDU').modal('show');
     };
 
     $scope.showTab = function (value) {
         return (value > 0);
     };
+    $scope.addVNFC = function() {   
+        var newVnfc = {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]};
+        $scope.vduCreate.vnfc.push(newVnfc);
+    };
+    $scope.addConnection = function(data) {
+        data.connection_point.push({floatingIp:"random",virtual_link_reference:"private"});
+    };
+    $scope.removeVNFC = function(index) {
+        $scope.vduCreate.vnfc.splice(index,1);
+    };
+    $scope.removeConnection = function(data,index) {
+        data.connection_point.splice(index,1);
+    };
+    $scope.saveImageName = function(name){
+        $scope.custom_images.push(name);
 
+    };
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {

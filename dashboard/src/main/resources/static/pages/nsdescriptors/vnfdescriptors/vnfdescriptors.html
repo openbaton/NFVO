@@ -435,6 +435,25 @@
 
 
 					</div>
+					<div class="form-group">
+						<label for="vduName" class="col-sm-4 control-label">Vdu Name</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="vduName" name="Vdu Name" ng-model="vduCreate.name" />
+						</div>
+
+
+					</div>
+					<div class="form-group">
+						<label for="vduVersion" class="col-sm-4 control-label">Version</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="vduVersion" name="Version" ng-model="vduCreate.version" />
+						</div>
+
+
+
+					</div>
 					<tabset>
 						<tab heading="lifecycle_event" ng-show="showTab(vduCreate.lifecycle_event.length)">
 							{{vduCreate.lifecycle_event}}
@@ -479,8 +498,37 @@
 							</ul>
 						</tab-->
 						<tab heading="VM Image">
+							<div class="col-sm-6">
+							<div class="form-group input-group">
+												<input class="form-control" type="text" ng-model="imageName">
+												<span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"
+                                                        ng-click="saveImageName(imageName)"
+                                                        ><i class="fa fa-floppy-o"></i>
+                                                </button>
+                                            </span>
+											</div>
+							</div>
 							<div class="">
 								<div class="">
+									<div class="table-responsive" ng-if="custom_images.length > 0">
+
+											<table class="table table-bordered table-striped table-hover tablesorter" id="w">
+												<thead>
+													<tr>
+														<td></td>
+														<td>Images added manually</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr  ng-repeat="image in custom_images">
+														<td style="width:10%;"><input type="checkbox" name="selectedImages[]" value="{{image}}" ng-checked="selection.indexOf(image) > -1"
+																ng-click="toggleSelection(image)"></td>
+														<td>{{image}}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
 									<div ng-repeat="vim in vimInstances">
 										<div class="table-responsive">
 
@@ -493,7 +541,7 @@
 												</thead>
 												<tbody>
 													<tr ng-if="vim.name==vduCreate.vimInstanceName" ng-repeat="image in vim.images">
-														<td><input type="checkbox" name="selectedImages[]" value="{{image.name}}" ng-checked="selection.indexOf(image.name) > -1"
+														<td style="width:10%;"><input type="checkbox" name="selectedImages[]" value="{{image.name}}" ng-checked="selection.indexOf(image.name) > -1"
 																ng-click="toggleSelection(image.name)"></td>
 														<td>{{image.name}}</td>
 													</tr>
@@ -513,8 +561,51 @@
 								</ul-->
 							<!--{{vduCreate.vm_image}}-->
 						</tab>
-						<tab heading="vnfc" ng-show="showTab(vduCreate.vnfc.length)">
-							{{vduCreate.vnfc}}
+						<tab heading="VNFC">
+							
+							<div ng-repeat="vnfc in vduCreate.vnfc track by $index">
+								<div class="form-group">
+									<div class="col-sm-2">
+									<label for="vnfcVersion" class="control-label">Version</label>
+									</div>
+									<div class="col-sm-6">
+										<input type="text" class="form-control" id="vnfcVersion" name="Version" ng-model="vnfc.version" />
+									</div>
+
+
+
+								</div>
+								
+								<label for="connectionpoints" class="control-label" ng-show="vnfc.connection_point.length > 0">Connection Points</label>
+								<div class="table-responsive">
+
+									<table class="table table-bordered table-striped table-hover tablesorter" id="vnfcTabletable">
+										<thead ng-show="vnfc.connection_point.length > 0">
+											<tr>
+												<td>Floating Ip</td>
+												<td>Virtual link reference</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="connection_point in vnfc.connection_point track by $index">
+												<td><input type="text" class="form-control" id="ip" name="ip" ng-model="connection_point.floatingIp" /></td>
+												<td><input type="text" class="form-control" id="vlr" name="vlr" ng-model="connection_point.virtual_link_reference" /></td>
+												<td><button type="button" ng-click="removeConnection(vnfc, $index)" class="btn btn-primary pull-left">Remove Connection</button></td>
+											</tr>
+											<tr>
+											<td><button type="button" id="addVNFC" ng-click="addConnection(vnfc)" class="btn btn-primary pull-left">Add Connection Point</button></td>
+											<td><button type="button" ng-click="removeVNFC($index)" class="btn btn-primary pull-left">Remove VNFC</button></td>
+											</tr>
+										</tbody>
+										
+									</table>
+									
+								</div>
+								
+							</div>
+							<div class="form-group row">
+							<button type="button" id="addVNFC" ng-click="addVNFC()" style="margin-left:25px;" class="btn btn-primary">Add VNFC</button> 
+							</div>
 						</tab>
 					</tabset>
 
