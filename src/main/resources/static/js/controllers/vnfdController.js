@@ -193,6 +193,12 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.custom_images.push(name);
 
     };
+    $scope.clearVduVims = function() {
+        $scope.vduCreate.vimInstanceName = [];
+        $scope.vduCreate.image = [];
+        $scope.selectionImage = [];
+        console.log($scope.selection);
+    };
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
@@ -323,4 +329,12 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     }
 
 
+});
+
+
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
 });
