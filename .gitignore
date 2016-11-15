@@ -30,7 +30,7 @@ buildSrc/build
 /spring-*/build
 /src/asciidoc/build
 target/*
-
+src/main/resources/static/.vscode
 # Eclipse artifacts, including WTP generated manifests
 .classpath
 .project
