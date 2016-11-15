@@ -195,7 +195,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
     $scope.clearVduVims = function() {
         $scope.vduCreate.vimInstanceName = [];
-        $scope.vduCreate.image = [];
+        $scope.vduCreate.vm_image = [];
         $scope.selectionImage = [];
         console.log($scope.selection);
     };

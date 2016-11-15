@@ -86,7 +86,7 @@
 
 
 <div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
+	<div style="width:50%;" class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -113,7 +113,7 @@
 						<tab class="" heading="connection_point" ng-show="showTab(vnfdCreate.connection_point.length)">
 							{{vnfdCreate.connection_point}}
 						</tab>
-						<tab class="" heading="monitoring_parameter">
+						<tab class="" heading="Monitoring Parameters">
 							<div class="">
 								<div class="">
 									<h4 class="">
@@ -156,15 +156,14 @@
 							<!--{{vnfdCreate.monitoring_parameter}}-->
 						</tab>
 						<!---->
-						<tab class="" heading="vdu">
+						<tab class="" heading="VDU">
 							<div class="">
 								<div class="">
-									<h4 class="">
-										<div class="col-lg-12">Virtual Descriptor Unit
-											<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
-												<i class="fa fa-plus-square"> Add </i></a>
-										</div>
-									</h4>
+
+									<div class="col-lg-12">
+										<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
+											<i class="fa fa-plus-square"> Add </i></a>
+									</div>
 
 								</div>
 							</div>
@@ -172,20 +171,60 @@
 							<br/>
 
 							<div class="row">
-								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}" ng-repeat="vdu in vnfdCreate.vdu track by $index">
+								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}">
 
 									<div class="row">
-										<spam ng-repeat="(key,value) in vdu" ng-if="!isEmpty(value)">
-											<b>{{key}}</b>: {{value}}
-											<spam ng-if="!$last"><br/></spam>
-										</spam>
-										<div class="pull-right">
-											<a href="" title="Edit VDU" ng-click="editVDU(vdu,$index)">
-												<i class="fa fa-pencil-square"> &nbsp; &nbsp;</i></a>
-											<a href="" title="Delete VDU" ng-click="deleteVDU($index)">
-												<i class="fa fa-trash-o"> </i></a>
-										</div>
+										<div class="table-responsive">
+											<h3>Virtual Deployment Unit</h3>
+											<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
+												<thead>
+													<tr>
+														<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+														</th>
+														<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+														</th>
+														<th style="width:30%" ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i class="fa fa-sort"></i>
+														</th>
+														<th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
+															<i class="fa fa-sort"></i>
+														</th>
 
+														<th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i class="fa fa-sort"></i>
+														</th>
+														<th>Action</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="vdu in vnfdCreate.vdu track by $index | orderBy:predicate:reverse">
+														<td>
+															<!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
+															{{vdu.id}}
+														</td>
+														<td>{{vdu.version}}</td>
+														<td>{{vdu.vm_image}}</td>
+														<td>{{vdu.vimInstanceName}}</td>
+														<!--<td>{{vdu.vnfc_instance}}</td>-->
+														<td>
+															<ul ng-repeat="vnfc in vdu.vnfc">
+																<li ng-repeat="cp in vnfc.connection_point">
+																	<b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+																</li>
+															</ul>
+														</td>
+														<td>
+														<div class="btn-group">
+															<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
+                               									 <span class="caret"></span></button>
+															<ul class="dropdown-menu" role="menu">
+																<li><a href="" ng-click="editVDU(vdu,$index)">Edit</a></li>
+																<li><a href="" ng-click="deleteVDU($index)">Delete</a></li>
+															</ul>
+														</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
 									</div>
 									<hr class="hr_title" />
 								</div>
@@ -194,7 +233,7 @@
 						<tab class="" heading="vdu_dependency" ng-show="showTab(vnfdCreate.vdu_dependency.length)">
 							{{vnfdCreate.vdu_dependency}}
 						</tab>
-						<tab class="" heading="deployment_flavour">
+						<tab class="" heading="Deployment Flavour">
 							<h4 class="">
 								<div class="col-lg-12">Deployment Flavour
 									<a class="pull-right" title="Add a New Deployment Flavour" href="" ng-click="addDepFlavour()">
@@ -225,7 +264,7 @@
 							</div>
 							<!--{{vnfdCreate.deployment_flavour}}-->
 						</tab>
-						<tab class="" heading="lifecycle_event" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
+						<tab class="" heading="Lifecycle events" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
 							<!--   {{vnfdCreate.lifecycle_event}}-->
 
 							<h4 class="">
@@ -257,7 +296,7 @@
 								</div>
 							</div>
 						</tab>
-						<tab class="" heading="virtual_link" ng-show="showTab(vnfdCreate.virtual_link.length)">
+						<tab class="" heading="Virtual Links" ng-show="showTab(vnfdCreate.virtual_link.length)">
 							{{vnfdCreate.virtual_link}}
 						</tab>
 					</tabset>
@@ -437,7 +476,7 @@
 						<span class="input-group-btn">
                                                 <button title="Clear VIM" class="btn btn-default" type="button"
                                                         ng-click="clearVduVims()"
-                                                        ><i class="fa fa-floppy-o"></i>
+                                                        ><i class="fa fa-ban"></i>
                                                 </button>
                                             </span>
 
