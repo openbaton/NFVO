@@ -39,7 +39,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
       lifecycle_event:[],
       deployment_flavour:[{"flavour_key":"m1.small"}],
       auto_scale_policy:[],
-      configurations:{name:"conf_name", configurationParameters:[{"key":"value"}]} 
+      configurations:{name:"", configurationParameters:[]} 
    };
    $scope.custom_images = [];
    $scope.lifecycle_event_type = ["INSTANTIATE", "CONFIGURE","START", "TERMINATE", "SCALE_IN"];
@@ -235,7 +235,12 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         event.lifecycle_events.splice(index,1);
 
     };
-
+    $scope.addConfPar = function() {
+        $scope.vnfdCreate.configurations.configurationParameters.push({confKey:"",value:""});
+    };
+    $scope.removeConf = function(index) {
+        $scope.vnfdCreate.configurations.configurationParameters.splice(index, 1);
+    };
 
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
