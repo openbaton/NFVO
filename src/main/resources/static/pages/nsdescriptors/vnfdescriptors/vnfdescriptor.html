@@ -305,8 +305,8 @@
                                 <tr ng-repeat="vl in vnfdinfo.virtual_link | orderBy:predicate:reverse">
                                     <td>{{vl.id}}</td>
                                     <td>{{vl.name}}</td>
-                                    <td ng-show="vl.extID">{{vl.extId}}</td>
-                                    <td ng-show="vl.qos">{{vl.qos}}</td>
+                                    <td ng-show="vl.extID.length > 0">{{vl.extId}}</td>
+                                    <td ng-show="vl.qos.length > 0">{{vl.qos}}</td>
 
                                 </tr>
                                 </tbody>
