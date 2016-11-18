@@ -28,6 +28,20 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         scale_in_out:2,
         vnfc:[ {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]}]
    };
+   var defaultVNFD = {
+      vendor:"",
+      version:"",
+      name:"",
+      type:"",
+      endpoint:"generic",
+      monitoring_parameter:[],
+      vdu:[],
+      virtual_link:[],
+      lifecycle_event:[],
+      deployment_flavour:[{"flavour_key":"m1.small"}],
+      auto_scale_policy:[],
+      configurations:{name:"conf_name", configurationParameters:[{"key":"value"}]} 
+   };
    $scope.custom_images = [];
    $scope.lifecycle_event_type = ["INSTANTIATE", "CONFIGURE","START", "TERMINATE", "SCALE_IN"];
     //$interval(loadTable, 2000);
@@ -228,7 +242,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
                 console.log(res.data);
-                $scope.vnfdCreate = angular.copy(res.data);
+                $scope.vnfdCreate = angular.copy(defaultVNFD);
             });
         $('#addEditVNDF').modal('show');
     };

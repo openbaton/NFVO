@@ -95,7 +95,7 @@
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form-horizontal">
-					<div class="form-group" ng-repeat="(key,value) in vnfdCreate" ng-if="key!='auto_scale_policy' && key!='connection_point' && key!='connection_point'
+					<!--div class="form-group" ng-repeat="(key,value) in vnfdCreate" ng-if="key!='auto_scale_policy' && key!='connection_point' && key!='connection_point'
                          && key!='monitoring_parameter' && key!='vdu'&& key!='vdu_dependency'
                          && key!='deployment_flavour' && key!='lifecycle_event'&& key!='virtual_link' && key!='lifecycle_event'">
 						<label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
@@ -105,6 +105,41 @@
 						</div>
 
 
+					</div-->
+					<div class="form-group">
+						<label for="dendor" class="col-sm-4 control-label">Vendor</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="vendor" ng-model="vnfdCreate.vendor" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="version" class="col-sm-4 control-label">Version</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="scale_in_out" ng-model="vnfdCreate.version" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="name" class="col-sm-4 control-label">Name</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="name" ng-model="vnfdCreate.name" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="type" class="col-sm-4 control-label">Type</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="type" ng-model="vnfdCreate.type" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="endpoint" class="col-sm-4 control-label">Endpoint</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="endpoint" ng-model="vnfdCreate.endpoint" />
+						</div>
 					</div>
 					<tabset>
 						<tab class="" heading="auto_scale_policy" ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
@@ -175,7 +210,7 @@
 
 									<div class="row">
 										<div class="table-responsive">
-											<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
+											<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable" ng-show="vnfdCreate.vdu.length > 0">
 												<thead>
 													<tr>
 														<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
@@ -229,10 +264,7 @@
 								</div>
 							</div>
 						</tab>
-						<tab class="" heading="vdu_dependency" ng-show="showTab(vnfdCreate.vdu_dependency.length)">
-							{{vnfdCreate.vdu_dependency}}
-						</tab>
-						<tab class="" heading="Deployment Flavour">
+						<!--tab class="" heading="Deployment Flavour">
 							<h4 class="">
 								<div class="col-lg-12">Deployment Flavour
 									<a class="pull-right" title="Add a New Deployment Flavour" href="" ng-click="addDepFlavour()">
@@ -261,8 +293,8 @@
 									<hr class="hr_title" />
 								</div>
 							</div>
-							<!--{{vnfdCreate.deployment_flavour}}-->
-						</tab>
+							<{{vnfdCreate.deployment_flavour}}>
+						</tab-->
 						<tab class="" heading="Lifecycle events">
 							<!--   {{vnfdCreate.lifecycle_event}}-->
 
@@ -526,48 +558,6 @@
 
 					</div>
 					<tabset>
-						<tab heading="lifecycle_event" ng-show="showTab(vduCreate.lifecycle_event.length)">
-							{{vduCreate.lifecycle_event}}
-						</tab>
-						<!--tab heading="Monitoring Parameter">
-							<div class="">
-								<div class="">
-									<h4 class="">
-										<div class="col-lg-12">Monitoring Parameters
-											<a class="pull-right" title="Add a New Monitoring Prameter" href="" ng-click="toggle = !toggle">
-												<i class="fa fa-plus-square"> Add </i></a>
-										</div>
-									</h4>
-								</div>
-								<div ng-init="toggle = false" ng-if="toggle" id="">
-									<br/>
-									<br/>
-									<br/>
-
-									<div class="form-group">
-										<label for="newValue" class="col-sm-4 control-label">new Value</label>
-
-										<div class="col-sm-6">
-											<div class="form-group input-group">
-												<input class="form-control" type="text" ng-model="newValue">
-												<span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMP(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-											</div>
-										</div>
-
-									</div>
-
-								</div>
-							</div>
-							<br/>
-							<ul class="col-lg-offset-3" ng-repeat="mp in vduCreate.monitoring_parameter track by $index">
-								<li>{{mp}} <a href="" ng-click="deleteMP($index)"><i class="fa fa-trash-o"></i></a></li>
-							</ul>
-						</tab-->
 						<tab heading="VM Image">
 							<div class="form-group row">
 								<div class="col-sm-6" style="margin-left:20px;">
