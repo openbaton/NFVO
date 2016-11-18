@@ -175,7 +175,6 @@
 
 									<div class="row">
 										<div class="table-responsive">
-											<h3>Virtual Deployment Unit</h3>
 											<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
 												<thead>
 													<tr>
@@ -264,7 +263,7 @@
 							</div>
 							<!--{{vnfdCreate.deployment_flavour}}-->
 						</tab>
-						<tab class="" heading="Lifecycle events" ng-show="showTab(vnfdCreate.lifecycle_event.length)">
+						<tab class="" heading="Lifecycle events">
 							<!--   {{vnfdCreate.lifecycle_event}}-->
 
 							<h4 class="">
@@ -296,8 +295,18 @@
 								</div>
 							</div>
 						</tab>
-						<tab class="" heading="Virtual Links" ng-show="showTab(vnfdCreate.virtual_link.length)">
-							{{vnfdCreate.virtual_link}}
+						
+						<tab class="" heading="Virtual Links">
+							<div class="row">
+							<div class="form-group" ng-style="{'padding-left':'15px','padding-right':'40px'}" ng-repeat = "vl in vnfdCreate.virtual_link track by $index">
+							<i class="fa fa-trash-o" style="wdith:10px; padding-top:10px" href="" ng-click="deleteVL($index)"></i>	
+							<div class="col-sm-6">
+							<input type="text" class="form-control" id="vl" name="vl" ng-model="vl.name" />
+						</div>
+						</div>
+						</div>
+						<button type="button" id="addVL" ng-click="addVL()" class="btn btn-primary">Add virtual link
+               			 </button>
 						</tab>
 					</tabset>
 					<!--{{vnfdCreate}}-->

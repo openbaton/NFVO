@@ -200,6 +200,12 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.selectionImage = [];
         console.log($scope.selection);
     };
+    $scope.deleteVL = function(index) {
+        $scope.vnfdCreate.virtual_link.splice(index, 1);
+    };
+    $scope.addVL = function() {
+        $scope.vnfdCreate.virtual_link.push({name:""});
+    };
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
