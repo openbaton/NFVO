@@ -28,6 +28,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         vnfc:[ {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]}]
    };
    $scope.custom_images = [];
+   $scope.lifecycle_event_type = ["INSTANTIATE", "CONFIGURE","START", "TERMINATE", "SCALE_IN"];
     //$interval(loadTable, 2000);
     loadTable();
 
@@ -205,6 +206,23 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     $scope.addVL = function() {
         $scope.vnfdCreate.virtual_link.push({name:""});
     };
+
+    $scope.addLifecycleEvent = function() {
+        $scope.vnfdCreate.lifecycle_event.push({event:"", lifecycle_events:[]});
+        console.log($scope.vnfdCreate.lifecycle_event);
+    };
+     $scope.removeLifecycleEvent = function(index) {
+        $scope.vnfdCreate.lifecycle_event.splice(index,1);
+    };
+    $scope.addScript = function(index) {
+        $scope.vnfdCreate.lifecycle_event[index].lifecycle_events.push("skript_name");
+    };
+    $scope.removeScript = function(event, index) {
+        event.lifecycle_events.splice(index,1);
+
+    };
+
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
