@@ -25,7 +25,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         vm_image:[],
         vimInstanceName:[],
         scale_in_out:2,
-        vnfc:[ {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]}]
+        vnfc:[ {version:"0",connection_point:[]}]
    };
    var defaultVNFD = {
       vendor:"",
@@ -173,12 +173,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
 
     $scope.addDepFlavour = function () {
-        $http.get('descriptors/vnfd/deployment_flavour.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.depFlavor = angular.copy(res.data);
-            });
-        $('#modaladdDepFlavour').modal('show');
+        $scope.vnfdCreate.deployment_flavour.push({flavour_key:""});
     };
 
     $scope.addVDU = function () {

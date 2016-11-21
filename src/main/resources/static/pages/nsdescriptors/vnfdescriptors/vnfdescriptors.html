@@ -144,36 +144,34 @@
 					<tabset>
 						<tab class="" heading="Configuration Parameters">
 							<div class="row">
-							<div class="col-lg-12">
-								<a class="pull-right" title="Add a New VDU" href="" ng-click="addConfPar()">
-									<i class="fa fa-plus-square"> Add </i></a>
-							</div>
-							<label for="conf_name" class="col-sm-4 control-label">Configuration name</label>
+								<div class="col-lg-12">
+									<a class="pull-right" title="Add a New VDU" href="" ng-click="addConfPar()">
+										<i class="fa fa-plus-square"> Add </i></a>
+								</div>
+								<label for="conf_name" class="col-sm-4 control-label">Configuration name</label>
 
-							<div class="col-sm-6" >
-								<input type="text" class="form-control" id="conf_name" name="conf_name" ng-model="vnfdCreate.configurations.name" />
+								<div class="col-sm-6">
+									<input type="text" class="form-control" id="conf_name" name="conf_name" ng-model="vnfdCreate.configurations.name" />
+								</div>
 							</div>
-							</div>
-						
+
 							<div class="form-group" style="padding-top:15px;" ng-repeat="conf in vnfdCreate.configurations.configurationParameters track by $index ">
 								<label for="confKey" class="col-sm-4 control-label">Configuration Key
 								</label>
 
 								<div class="col-sm-6">
-									<input type="text" class="form-control" id="confkey" name="confkey" ng-model="conf.confKey"
-									/>
-										
+									<input type="text" class="form-control" id="confkey" name="confkey" ng-model="conf.confKey" />
+
 								</div>
 								<label for="value" class="col-sm-4 control-label">Value
 								</label>
 
 								<div class="col-sm-6">
-									<input type="text" class="form-control" id="value" name="value" ng-model="conf.value"
-									/>
+									<input type="text" class="form-control" id="value" name="value" ng-model="conf.value" />
 								</div>
 								<i class="fa fa-trash-o" style="wdith:10px; padding-top:10px" href="" ng-click="removeConf($index)"></i>
 							</div>
-							
+
 						</tab>
 						<tab class="" heading="auto_scale_policy" ng-show="showTab(vnfdCreate.auto_scale_policy.length)">
 							{{vnfdCreate.auto_scale_policy}}
@@ -297,9 +295,9 @@
 								</div>
 							</div>
 						</tab>
-						<!--tab class="" heading="Deployment Flavour">
+						<tab class="" heading="Deployment Flavour">
 							<h4 class="">
-								<div class="col-lg-12">Deployment Flavour
+								<div class="col-lg-12">
 									<a class="pull-right" title="Add a New Deployment Flavour" href="" ng-click="addDepFlavour()">
 										<i class="fa fa-plus-square"> Add </i></a>
 								</div>
@@ -309,8 +307,16 @@
 
 							<div class="row">
 								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}" ng-repeat="df in vnfdCreate.deployment_flavour track by $index">
+									<div class="form-group">
+										<a href="" title="Delete this Deployment Flavour" ng-click="deleteDF($index)">
+												<i class="fa fa-trash-o"> </i></a>
+										<label for="type" class="col-sm-4 control-label">Flavour Key</label>
 
-									<div class="row">
+										<div class="col-sm-6">
+											<input type="text" class="form-control" id="fkey" ng-model="df.flavour_key" />
+										</div>
+									</div>
+									<!--div class="row">
 										<spam ng-repeat="(key,value) in df" ng-if="!isEmpty(value)">
 											<b>{{key}}</b>: {{value}}
 											<spam ng-if="!$last"><br/></spam>
@@ -322,12 +328,11 @@
 												<i class="fa fa-trash-o"> </i></a>
 										</div>
 
-									</div>
+									</div-->
 									<hr class="hr_title" />
 								</div>
 							</div>
-							<{{vnfdCreate.deployment_flavour}}>
-						</tab-->
+						</tab>
 						<tab class="" heading="Lifecycle events">
 							<!--   {{vnfdCreate.lifecycle_event}}-->
 
