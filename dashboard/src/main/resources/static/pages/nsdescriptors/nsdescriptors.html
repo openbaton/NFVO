@@ -637,7 +637,7 @@
 
 
                     <div class="form-group">
-                        <label for="name" class="col-sm-4 control-label">name</label>
+                        <label for="name" class="col-sm-4 control-label">Name</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="name" name="name"
@@ -645,7 +645,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="vendor" class="col-sm-4 control-label">vendor</label>
+                        <label for="vendor" class="col-sm-4 control-label">Vendor</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="vendor" name="vendor"
@@ -653,7 +653,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="version" class="col-sm-4 control-label">version</label>
+                        <label for="version" class="col-sm-4 control-label">Version</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="version" name="version"
@@ -675,7 +675,7 @@
                     </div>
                     <hr>
                     <div ng-if="selectedVNFD">
-                        <tabset>
+                        <!--tabset>
                             <tab heading="Info">
                                 <div class="table-responsive">
                                     <h4>Information</h4>
@@ -730,7 +730,7 @@
                                             <th>vim Name</th>
                                             <!--<th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc_instance <i
                                                     class="fa fa-sort"></i>
-                                            </th>-->
+                                            </th>>
                                             <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i
                                                     class="fa fa-sort"></i>
                                             </th>
@@ -742,7 +742,7 @@
                                             <td>{{vdu.version}}</td>
                                             <td>{{vdu.vm_image}}</td>
                                             <td>{{vdu.vimInstanceName}}</td>
-                                            <!--<td>{{vdu.vnfc_instance}}</td>-->
+                                            <!--<td>{{vdu.vnfc_instance}}</td>>
                                             <td>
                                                 <ul ng-repeat="vnfc in vdu.vnfc">
                                                     <li ng-repeat="cp in vnfc.connection_point">
@@ -832,7 +832,7 @@
                                     </table>
                                 </div>
                             </tab>
-                        </tabset>
+                        </tabset-->
                     </div>
                 </form>
 
