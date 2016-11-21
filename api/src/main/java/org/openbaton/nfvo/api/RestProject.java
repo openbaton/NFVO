@@ -33,12 +33,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.validation.Valid;
 
 /**
  * Created by lto on 25/05/16.
@@ -110,8 +117,8 @@ public class RestProject {
    *
    * @return List<Project>: The list of Projects available
    */
-  @RequestMapping(method = RequestMethod.GET)
-  public Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public @ResponseBody Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
     log.trace("Finding all Projects");
     Set<Project> projects = new HashSet<>();
     if (isAdmin()) {
