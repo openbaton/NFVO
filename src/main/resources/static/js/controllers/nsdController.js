@@ -244,7 +244,11 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
     $scope.addTONSD = function () {
         $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
-        delete $scope.selectedVNFD;
+        
+                $scope.selectedVNFD.virtual_link.map(function(link) {
+                    $scope.nsdCreateTmp.vld.push(link);
+                });
+        console.log($scope.nsdCreateTmp);
     };
 
     $scope.saveDependency = function () {
@@ -345,10 +349,13 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 $scope.vnfdList = response;
                 //console.log(response);
                 $('#modalCreateNSD').modal('show');
+                $scope.selectedVNFD = $scope.vnfdList[0];
             })
             .error(function (data, status) {
                 showError(status, data);
             });
+        
+            
     };
 
     $scope.toggleSelection = function toggleSelection(image) {

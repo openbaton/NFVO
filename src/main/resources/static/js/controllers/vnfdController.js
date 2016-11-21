@@ -25,9 +25,24 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         vm_image:[],
         vimInstanceName:[],
         scale_in_out:2,
-        vnfc:[ {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]}]
+        vnfc:[ {version:"0",connection_point:[]}]
+   };
+   var defaultVNFD = {
+      vendor:"",
+      version:"",
+      name:"",
+      type:"",
+      endpoint:"generic",
+      monitoring_parameter:[],
+      vdu:[],
+      virtual_link:[],
+      lifecycle_event:[],
+      deployment_flavour:[{"flavour_key":"m1.small"}],
+      auto_scale_policy:[],
+      configurations:{name:"", configurationParameters:[]} 
    };
    $scope.custom_images = [];
+   $scope.lifecycle_event_type = ["INSTANTIATE", "CONFIGURE","START", "TERMINATE", "SCALE_IN"];
     //$interval(loadTable, 2000);
     loadTable();
 
@@ -158,12 +173,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
 
     $scope.addDepFlavour = function () {
-        $http.get('descriptors/vnfd/deployment_flavour.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.depFlavor = angular.copy(res.data);
-            });
-        $('#modaladdDepFlavour').modal('show');
+        $scope.vnfdCreate.deployment_flavour.push({flavour_key:""});
     };
 
     $scope.addVDU = function () {
@@ -199,11 +209,39 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.selectionImage = [];
         console.log($scope.selection);
     };
+    $scope.deleteVL = function(index) {
+        $scope.vnfdCreate.virtual_link.splice(index, 1);
+    };
+    $scope.addVL = function() {
+        $scope.vnfdCreate.virtual_link.push({name:""});
+    };
+
+    $scope.addLifecycleEvent = function() {
+        $scope.vnfdCreate.lifecycle_event.push({event:"", lifecycle_events:[]});
+        console.log($scope.vnfdCreate.lifecycle_event);
+    };
+     $scope.removeLifecycleEvent = function(index) {
+        $scope.vnfdCreate.lifecycle_event.splice(index,1);
+    };
+    $scope.addScript = function(index) {
+        $scope.vnfdCreate.lifecycle_event[index].lifecycle_events.push("skript_name");
+    };
+    $scope.removeScript = function(event, index) {
+        event.lifecycle_events.splice(index,1);
+
+    };
+    $scope.addConfPar = function() {
+        $scope.vnfdCreate.configurations.configurationParameters.push({confKey:"",value:""});
+    };
+    $scope.removeConf = function(index) {
+        $scope.vnfdCreate.configurations.configurationParameters.splice(index, 1);
+    };
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
                 console.log(res.data);
-                $scope.vnfdCreate = angular.copy(res.data);
+                $scope.vnfdCreate = angular.copy(defaultVNFD);
             });
         $('#addEditVNDF').modal('show');
     };
