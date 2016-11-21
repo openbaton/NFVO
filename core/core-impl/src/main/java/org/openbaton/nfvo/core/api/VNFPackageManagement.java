@@ -56,17 +56,18 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * Created by lto on 22/07/15.
@@ -154,17 +155,25 @@ public class VNFPackageManagement
             //            System.setProperties(p);
             //            real_nfvo_version = System.getProperty("version");
 
-            String nfvo_version = (String) metadata.get("nfvo_version");
-            String actualNfvoVersion = getNfvoVersion();
-            if (nfvo_version.equals(actualNfvoVersion)) {
-              vnfPackage.setNfvo_version(nfvo_version);
+            String nfvoVersionString = (String) metadata.get("nfvo_version");
+            String[] nfvoVersion = nfvoVersionString.split(Pattern.quote("."));
+            String[] actualNfvoVersion = getNfvoVersion();
+            if (nfvoVersion[0].equals(actualNfvoVersion[0])
+                && nfvoVersion[1].equals(actualNfvoVersion[1])) {
+              vnfPackage.setNfvo_version(nfvoVersionString);
             } else {
               throw new IncompatibleVNFPackage(
                   "The NFVO Version: "
-                      + nfvo_version
+                      + nfvoVersion[0]
+                      + "."
+                      + nfvoVersion[1]
+                      + ".X"
                       + " specified in the Metadata"
                       + " is not compatible with the this NFVOs version: "
-                      + actualNfvoVersion);
+                      + actualNfvoVersion[0]
+                      + "."
+                      + actualNfvoVersion[1]
+                      + ".X");
             }
           } else {
             //TODO throw exception
@@ -522,11 +531,11 @@ public class VNFPackageManagement
     return virtualNetworkFunctionDescriptor;
   }
 
-  private String getNfvoVersion() {
+  private String[] getNfvoVersion() {
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
-    if (version.lastIndexOf("_SNAPSHOT") != -1)
-      version = version.substring(0, version.lastIndexOf("_SNAPSHOT"));
-    return version;
+    if (version.lastIndexOf("-SNAPSHOT") != -1)
+      version = version.substring(0, version.lastIndexOf("-SNAPSHOT"));
+    return version.split(Pattern.quote("."));
   }
 
   @Override
