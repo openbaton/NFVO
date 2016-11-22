@@ -23,7 +23,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.datacenter = {};
     $scope.file = '';
     $scope.showPass = false;
-
+    $scope.newvim = {type:"openstack", securityGroups:[]};
     loadVIM();
 
 
@@ -89,7 +89,23 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         });
     };
     $scope.sendInfrastructure = function () {
-        if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
+        if (!angular.isUndefined($scope.newvim.name) && !angular.isUndefined($scope.newvim.authUrl) && !angular.isUndefined($scope.newvim.tenant) && !angular.isUndefined($scope.newvim.username) 
+        && !angular.isUndefined($scope.newvim.password) && !angular.isUndefined($scope.newvim.location.name) && !angular.isUndefined($scope.newvim.location.latitude) && !angular.isUndefined($scope.newvim.location.longitude)) {
+            console.log($scope.newvim);
+            http.post(url, $scope.newvim)
+                .success(function (response) {
+                    showOk('VIM Instance created.');
+                    $scope.file = '';
+                })
+                .error(function (data, status) {
+                    if (status === 400)
+                        showError(status, "Bad request: your json is not well formatted");
+                    else
+                        showError(status, data);
+
+                });
+        }
+        else if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
             console.log($scope.file);
             http.post(url, $scope.file)
                 .success(function (response) {
@@ -122,6 +138,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             showError('Problem with the VIM Instance');
 
         }
+        console.log("wtf");
     };
 
 
@@ -136,7 +153,12 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         $scope.locationRadio = location;
     };
 
-
+    $scope.addSecurityGroup = function() {
+        $scope.newvim.securityGroups.push("");
+    };
+    $scope.removeSecurityGroup = function(index) {
+        $scope.newvim.securityGroups.splice(index, 1);
+    };
     $scope.saveDataCenter = function (vimInstanceJson) {
         if ($scope.file !== '') {
             vimInstanceJson = $scope.file;

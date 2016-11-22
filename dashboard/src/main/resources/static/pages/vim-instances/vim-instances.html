@@ -1,157 +1,210 @@
- <!--
-  ~ Copyright (c) 2016 Open Baton (http://www.openbaton.org)
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  ~
-  -->
+<!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+ 
+  limitations under the License.-->
 <div class="row">
-    <div class="col-lg-12">
-        <h1>VIM Instances</h1>
-        <ol class="breadcrumb">
-            <li><a href="#main"><i class="fa fa-dashboard"></i>
+	<div class="col-lg-12">
+		<h1>VIM Instances</h1>
+		<ol class="breadcrumb">
+			<li><a href="#main"><i class="fa fa-dashboard"></i>
                 Overview</a></li>
-            <li class="active"><i class="fa fa-tasks"></i>
-                VIM Instances</li>
-        </ol>
-    </div>
+			<li class="active"><i class="fa fa-tasks"></i> VIM Instances</li>
+		</ol>
+	</div>
 </div>
-<div class="row" >
-    <div class="col-lg-12">
-        <button id="btn_create_topology" class="btn btn-primary pull-right"
-                title="Create a new Data Center" data-toggle="modal"
-                data-target="#modalDC" ng-click="createDataCenter()">Register Vim</button>
-    </div>
+<div class="row">
+	<div class="col-lg-12">
+		<button id="btn_create_topology" class="btn btn-primary pull-right" title="Create a new Data Center" data-toggle="modal"
+			data-target="#modalDC" ng-click="createDataCenter()">Register Vim</button>
+	</div>
 </div>
-<div class="row" >
-    <div class="col-lg-12 top-buffer">
-        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)"><div ng-bind-html="alert.msg"></div></alert>
-        <div>
-            <table ng-if="vimInstances.length > 0"class="table table-bordered table-striped table-hover tablesorter">
-                <thead>
-                <tr>
-                    <th ng-click="predicate = 'id'; reverse = !reverse">ID <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
-                    <th>Action </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="data in vimInstances| orderBy:predicate:reverse">
-                    <td><a href="#vim-instances/{{data.id}}">{{data.id}}</a></td>
-                    <td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
-                        <span ng-show="!editValue">{{data.name}}</span>
-                        <span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
-                        <span ng-show="editValue">
+<div class="row">
+	<div class="col-lg-12 top-buffer">
+		<alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+			<div ng-bind-html="alert.msg"></div>
+		</alert>
+		<div>
+			<table ng-if="vimInstances.length > 0" class="table table-bordered table-striped table-hover tablesorter">
+				<thead>
+					<tr>
+						<th ng-click="predicate = 'id'; reverse = !reverse">ID <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+						<th>Action </th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="data in vimInstances| orderBy:predicate:reverse">
+						<td><a href="#vim-instances/{{data.id}}">{{data.id}}</a></td>
+						<td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
+							<span ng-show="!editValue">{{data.name}}</span>
+							<span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
+							<span ng-show="editValue">
                             <div class="input-group">
                                 <span class="input-group-addon" ng-click="editValue=false"><li class="fa fa-close"></li></span>
-                                <input type="text" class="form-control" ng-model="data.name">
-                                <span class="input-group-addon"><li class="fa fa-check"></li></span>
-                            </div>
-                        </span>
-                    </td>
-                    <td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
-                        <span ng-show="!editValue">{{data.type}}</span>
-                        <span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
-                        <span ng-show="editValue">
+							<input type="text" class="form-control" ng-model="data.name">
+							<span class="input-group-addon"><li class="fa fa-check"></li></span>
+		</div>
+		</span>
+		</td>
+		<td ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()" class="col-lg-2">
+			<span ng-show="!editValue">{{data.type}}</span>
+			<span class="pull-right" ng-show="hoverEdit && !editValue" ng-click="editField()"><i class="fa fa-edit"></i></span>
+			<span ng-show="editValue">
                             <div class="input-group">
                                 <span class="input-group-addon" ng-click="editValue=false"><li class="fa fa-close"></li></span>
-                                <input type="text" class="form-control" ng-model="data.type">
-                                <span class="input-group-addon"><li class="fa fa-check"></li></span>
-                            </div>
-                        </span>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+			<input type="text" class="form-control" ng-model="data.type">
+			<span class="input-group-addon"><li class="fa fa-check"></li></span>
+	</div>
+	</span>
+	</td>
+	<td>
+		<div class="btn-group">
+			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                 Action <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="" data-toggle="modal" data-target="#editModal" ng-click="edit(data)">Edit</a></li>
-          <!--                      <li><a href=""  ng-click="loadFormUpdate(data)">Update DataCenter</a></li>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="" data-toggle="modal" data-target="#editModal" ng-click="edit(data)">Edit</a></li>
+				<!--                      <li><a href=""  ng-click="loadFormUpdate(data)">Update DataCenter</a></li>
                                 <li><a href=""  ng-click="loadFormImage(data)">Update Images</a></li>
                                 <li><a href=""  ng-click="loadFormSubnets(data)">Update Subnets</a></li>-->
-                                <li class="divider"></li>
-                                <li><a href=""  ng-click="deleteData(data.id)">Delete</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+				<li class="divider"></li>
+				<li><a href="" ng-click="deleteData(data.id)">Delete</a></li>
+			</ul>
+		</div>
+	</td>
+	</tr>
+	</tbody>
+	</table>
+</div>
 
-    </div>
+</div>
 </div>
 
 
-<div class="modal " id="modalDC" data-backdrop="static"
-     data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="serviceLabel">Create a new VIM Instance</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form" id="formJson">
-                    <div class="form-group">
-                        <br> <label for="jsonInputArea">Infrastructure input</label>
-                        <textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)"id="jsonInputArea" class="form-control" rows="5"
-                                  placeholder="{ }"></textarea>
-                    </div>
+<div class="modal " id="modalDC" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="serviceLabel">Create a new VIM Instance</h4>
+			</div>
+			<div class="modal-body">
+               <label> Form Input </label>
+				<form role="form" class="form-horizontal">
+                    	<label class="col-sm-4 control-label">Name</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.name" />
+						</div>
+                        <label class="col-sm-4 control-label">URL</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.authUrl" />
+						</div>
+                        <label class="col-sm-4 control-label">Tenant</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.tenant" />
+						</div>
+                        <label class="col-sm-4 control-label">Username</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.username" />
+						</div>
+                        <label class="col-sm-4 control-label">Password</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.password" />
+						</div>
+                        <label class="col-sm-4 control-label">Key Pair</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.keypair" />
+						</div>
+                        <label class="col-sm-4 control-label">Location Name </label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.location.name" />
+						</div>   
+                        <label class="col-sm-4 control-label">Location latitude</label>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.location.latitude" />
+						</div>   
+                        <label class="col-sm-4 control-label">Location longitude </label>
 
-                    <div class="form-group">
-                        <label for="jsonInputFile">File input</label>
-                        <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)" >
-                        <p class="help-block">Example: VimInstance.json </p>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="sendInfrastructure()"
-                        data-dismiss="modal">Create Vim Instance</button>
-            </div>
-        </div>
-    </div>
+                        <div class="col-sm-6">
+							<input type="text" class="form-control" ng-model="newvim.location.longitude" />
+						</div>        
+                        <div class="row">
+                            <div class="col-lg-12">
+                        <div ng-repeat="secG in newvim.securityGroups track by $index">
+                            <i class="fa fa-trash-o" style="wdith:10px; padding-top:10px" href="" ng-click="removeSecurityGroup($index)"></i>
+
+                            <label class="col-sm-4 control-label">Security Group </label>
+                            
+                            <div class="col-sm-6">
+                                
+							<input type="text" class="form-control" ng-model="secG" />
+						    </div>  
+                            
+                        </div>
+                        <button style="margin-left:36%;" type="button" class="btn btn-primary" ng-click="addSecurityGroup()">Add Security Group</button>
+                        </div>
+                        </div>
+				</form>
+                
+				<form role="form" id="formJson">
+					<div class="form-group">
+						<br> <label for="jsonInputArea">Plain text input</label>
+						<textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+							class="form-control" rows="2" placeholder="{ }"></textarea>
+					</div>
+
+					<div class="form-group">
+						<label for="jsonInputFile">File input</label>
+						<input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)">
+						<p class="help-block">Example: VimInstance.json </p>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="editModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Edit</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form" class="form-horizontal">
-                    <div class="form-group" ng-repeat="(key,value) in editObj"
-                         ng-if="key!='id' && isArray(value) && key!='hb_version'">
-                        <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+				<h4 class="modal-title">Edit</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form-horizontal">
+					<div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version'">
+						<label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" id="{{key}}" name="{{key}}"
-                                   ng-model="editObj[key]"/>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="{{key}}" name="{{key}}" ng-model="editObj[key]" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" ng-click="updateObj()">Update</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
