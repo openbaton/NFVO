@@ -19,10 +19,14 @@ dependencies {
 
     compile project(':repository')
     compile project(':plugin')
+    compile project(':core-int')
 
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'commons-io:commons-io:2.4'
     compile "org.springframework.shell:spring-shell:1.1.0.RELEASE"
+
+    runtime project(':core-impl')
+
 
 }
 

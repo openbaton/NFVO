@@ -24,11 +24,21 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
+import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +72,7 @@ public class OpenbatonCLI implements CommandLineRunner {
   private final static Map<String, String> helpCommandList =
       new HashMap<String, String>() {
         {
+          //mgmt
           put("help", "Print the usage");
           put("exit", "Exit the application");
           put("installPlugin", "install a plugin");
@@ -71,6 +82,12 @@ public class OpenbatonCLI implements CommandLineRunner {
           put("listVnfms", "list all registered Vnfms");
           put("listUsers", "list all Users");
           put("changeLog", "Change log level");
+
+          //admin
+          put("listDescriptors", "show all Network Service Descriptors");
+          put("listRecords", "show all Network Service Records");
+          put("deleteRecord", "delete the Network Service Record with given id");
+          put("deleteDescriptor", "delete the Network Service Descriptor with given id");
         }
       };
   private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -93,6 +110,10 @@ public class OpenbatonCLI implements CommandLineRunner {
   private String pluginLogPath;
 
   @Autowired private UserRepository userRepository;
+  @Autowired private NetworkServiceRecordRepository nsrRepository;
+  @Autowired private NetworkServiceDescriptorRepository nsdRepository;
+  @Autowired private NetworkServiceRecordManagement nsrManagement;
+  @Autowired private NetworkServiceDescriptorManagement nsdManagement;
 
   private static void exit(int status) {
     System.exit(status);
@@ -187,6 +208,14 @@ public class OpenbatonCLI implements CommandLineRunner {
           listUsers();
         } else if (line.startsWith("changeLog")) {
           changeLog(line);
+        } else if (line.startsWith("listRecords")) {
+          listRecords();
+        } else if (line.startsWith("listDescriptors")) {
+          listDescriptors();
+        } else if (line.startsWith("deleteRecord")) {
+          deleteRecord(line);
+        } else if (line.startsWith("deleteDescriptor")) {
+          deleteDescriptor(line);
         } else if (line.startsWith("listPlugins")) {
           StringTokenizer stringTokenizer = new StringTokenizer(line);
           stringTokenizer.nextToken();
@@ -201,6 +230,108 @@ public class OpenbatonCLI implements CommandLineRunner {
         }
       }
     }
+  }
+
+  private void deleteDescriptor(String line) throws WrongStatusException, EntityInUseException {
+    StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
+
+    if (stringTokenizer.countTokens() != 2) {
+      System.err.println("Error: please provide only the id to be removed");
+    }
+    stringTokenizer.nextToken();
+    String id = stringTokenizer.nextToken();
+    nsdManagement.delete(id, nsdRepository.findFirstById(id).getProjectId());
+  }
+
+  private void deleteRecord(String line) throws NotFoundException, WrongStatusException {
+    StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
+
+    if (stringTokenizer.countTokens() != 2) {
+      System.err.println("Error: please provide only the id to be removed");
+    }
+
+    stringTokenizer.nextToken();
+    String id = stringTokenizer.nextToken();
+
+    nsrManagement.delete(id, nsrRepository.findFirstById(id).getProjectId());
+  }
+
+  private void listRecords() {
+
+    String result = "\n";
+    result += "Available NSRs:\n";
+    result +=
+        String.format(
+                "+%40s+%20s+%40s+",
+                "----------------------------------------",
+                "--------------------",
+                "----------------------------------------")
+            + "\n";
+    result += String.format("|%40s|%20s|%40s|", "id", "name", "project-id") + "\n";
+    result +=
+        String.format(
+                "+%40s+%20s+%40s+",
+                "========================================",
+                "====================",
+                "========================================")
+            + "\n";
+
+    for (NetworkServiceRecord networkServiceRecord : nsrRepository.findAll()) {
+      result +=
+          String.format(
+                  "|%40s|%20s|%40s|",
+                  networkServiceRecord.getId(),
+                  networkServiceRecord.getName(),
+                  networkServiceRecord.getProjectId())
+              + "\n";
+      result +=
+          String.format(
+                  "+%40s+%20s+%40s+",
+                  "----------------------------------------",
+                  "--------------------",
+                  "----------------------------------------")
+              + "\n";
+    }
+    System.out.println(result);
+  }
+
+  private void listDescriptors() {
+
+    String result = "\n";
+    result += "Available NSRs:\n";
+    result +=
+        String.format(
+                "+%40s+%20s+%40s+",
+                "----------------------------------------",
+                "--------------------",
+                "----------------------------------------")
+            + "\n";
+    result += String.format("|%40s|%20s|%40s|", "id", "name", "project-id") + "\n";
+    result +=
+        String.format(
+                "+%40s+%20s+%40s+",
+                "========================================",
+                "====================",
+                "========================================")
+            + "\n";
+
+    for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) {
+      result +=
+          String.format(
+                  "|%40s|%20s|%40s|",
+                  networkServiceDescriptor.getId(),
+                  networkServiceDescriptor.getName(),
+                  networkServiceDescriptor.getProjectId())
+              + "\n";
+      result +=
+          String.format(
+                  "+%40s+%20s+%40s+",
+                  "----------------------------------------",
+                  "--------------------",
+                  "----------------------------------------")
+              + "\n";
+    }
+    System.out.println(result);
   }
 
   private void changeLog(String line) {
@@ -252,13 +383,48 @@ public class OpenbatonCLI implements CommandLineRunner {
     PluginStartup.uninstallPlugin(pluginId);
   }
 
-  private String listPlugins() {
+  private String listPlugins() throws IOException {
     String result = "\n";
     result += "Available plugins:\n";
-    result += String.format("%40s", "plugin name") + "\n";
+    result +=
+        String.format(
+                "+%20s+%20s+%20s+",
+                "--------------------",
+                "--------------------",
+                "--------------------")
+            + "\n";
+    result += String.format("|%20s|%20s|%20s|", "plugin type", "tool type", "plugin name") + "\n";
+    result +=
+        String.format(
+                "+%20s+%20s+%20s+",
+                "====================",
+                "====================",
+                "====================")
+            + "\n";
     System.out.println();
-    for (Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
-      result += String.format("%40s", entry.getKey()) + "\n";
+    //    for (Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
+    //      result += String.format("%40s", entry.getKey()) + "\n";
+    //    }
+
+    for (String queue : RabbitManager.getQueues(brokerIp, username, password, managementPort)) {
+      if (queue.startsWith("vim-drivers") || queue.startsWith("monitoring")) {
+        StringTokenizer stringTokenizer = new StringTokenizer(queue, ".");
+
+        result +=
+            String.format(
+                    "|%20s|%20s|%20s|",
+                    stringTokenizer.nextToken(),
+                    stringTokenizer.nextToken(),
+                    stringTokenizer.nextToken())
+                + "\n";
+        result +=
+            String.format(
+                    "+%20s+%20s+%20s+",
+                    "--------------------",
+                    "--------------------",
+                    "--------------------")
+                + "\n";
+      }
     }
     return result;
   }
