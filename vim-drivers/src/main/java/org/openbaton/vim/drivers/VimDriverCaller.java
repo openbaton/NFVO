@@ -74,14 +74,24 @@ public class VimDriverCaller extends VimDriver {
 
   public VimDriverCaller(String name, String type, String managementPort)
       throws IOException, TimeoutException, NotFoundException {
-    pluginCaller =
-        new PluginCaller(
-            "vim-drivers." + type + "." + name,
-            "localhost",
-            "admin",
-            "openbaton",
-            5672,
-            Integer.parseInt(managementPort));
+    if (name != null && !name.equals(""))
+      pluginCaller =
+          new PluginCaller(
+              "vim-drivers." + type + "." + name,
+              "localhost",
+              "admin",
+              "openbaton",
+              5672,
+              Integer.parseInt(managementPort));
+    else
+      pluginCaller =
+          new PluginCaller(
+              "vim-drivers." + type,
+              "localhost",
+              "admin",
+              "openbaton",
+              5672,
+              Integer.parseInt(managementPort));
   }
 
   public VimDriverCaller(
