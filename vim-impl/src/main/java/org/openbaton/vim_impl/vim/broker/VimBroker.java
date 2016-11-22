@@ -38,9 +38,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Created by lto on 20/05/15.
@@ -97,6 +98,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   @Deprecated
   @Override
   public Vim getVim(String type, String name) throws PluginException {
+    if (type.contains(".")) type = type.split("\\.")[0];
     switch (type) {
       case "test":
         return (Vim) context.getBean("testVIM", type, name, this.managementPort);
@@ -111,6 +113,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
   @Override
   public Vim getVim(String type) throws PluginException {
+    if (type.contains(".")) type = type.split("\\.")[0];
     switch (type) {
       case "test":
         //                return (Vim) context.getBean("testVIM", this.port);
@@ -128,6 +131,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
   @Override
   public Vim getVim(String type, int port) throws PluginException {
+    if (type.contains(".")) type = type.split("\\.")[0];
     switch (type) {
       case "test":
         return (Vim) context.getBean("testVIM", port, this.managementPort);
@@ -142,6 +146,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
   @Override
   public Vim getVim(String type, String name, String port) {
+    if (type.contains(".")) type = type.split("\\.")[0];
     switch (type) {
       case "test":
         return (Vim)
