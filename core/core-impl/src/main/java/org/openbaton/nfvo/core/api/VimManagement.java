@@ -356,7 +356,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
         if (vimInstance.getType().equals("test")) continue;
 
         URL authUrl = new URL(vimInstance.getAuthUrl());
-        log.debug(
+        log.trace(
             "Checking host: " + authUrl.getHost() + " of VimInstance " + vimInstance.getName());
         byte[] bytes = authUrl.getHost().getBytes();
 
