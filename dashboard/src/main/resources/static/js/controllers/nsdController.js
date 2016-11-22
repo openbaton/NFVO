@@ -937,9 +937,14 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $scope.tabs.push(tab);
         }
     }
+    
     angular.element(document).ready(function () {
         if (angular.isUndefined($routeParams.packageid)) {
             var previewNode = document.querySelector("#template");
+            if (previewNode === null) {
+                //console.log("no template");
+                return;
+            }
             previewNode.id = "";
             var previewTemplate = previewNode.parentNode.innerHTML;
             previewNode.parentNode.removeChild(previewNode);
