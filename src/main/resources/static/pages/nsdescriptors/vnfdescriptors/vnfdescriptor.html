@@ -1,4 +1,4 @@
- <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+<!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,105 +13,107 @@
  
   limitations under the License.-->
 <div class="row">
-    <div class="col-lg-12">
-        <h1>VNF Descriptor
-            <small>Information</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li>
-                <a href="#main"><i class="fa fa-dashboard"></i>
+	<div class="col-lg-12">
+		<h1>VNF Descriptor
+			<small>Information</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li>
+				<a href="#main"><i class="fa fa-dashboard"></i>
                     Overview</a>
-            </li>
+			</li>
 
-            <li class="">
-                <a href="#vnfdescriptors"><i class="fa fa-file-text-o"></i>
+			<li class="">
+				<a href="#vnfdescriptors"><i class="fa fa-file-text-o"></i>
                     VNF Descriptors</a>
-            </li>
-            <li class="active"><i class="fa fa-file-text-o"></i>
-                VNF Descriptor {{nsdinfo.name}}
-            </li>
-        </ol>
-    </div>
+			</li>
+			<li class="active"><i class="fa fa-file-text-o"></i> VNF Descriptor {{nsdinfo.name}}
+			</li>
+		</ol>
+	</div>
 </div>
 
 <div class="row">
-    <div class="col-lg-12" ng-show="vnfdinfo">
-      <div class="col-lg-6">
-        <div class = "table-responsive">
-           <table
-                  class="table table-bordered table-hover tablesorter"
-                  id="vnfdTabletable">
-                  <tbody>
-                    <tr>
-                      <td>Name</td>
-                      <td>{{vnfdinfo.name}}</td>
-                    </tr>
-                    <tr>
-                      <td>Project ID</td>
-                      <td>{{vnfdinfo.projectId}}</td>
-                    </tr>
-                    <tr>
-                    <tr>
-                      <td>Type</td>
-                      <td>{{vnfdinfo.type}}</td>
-                    </tr>
-                    <tr>
-                      <td>Version</td>
-                      <td>{{vnfdinfo.version}}</td>
-                    </tr>
-                    <tr>
-                      <td>Endpoint</td>
-                      <td>{{vnfdinfo.endpoint}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.connection_point.length > 0">
-                      <td>Connection point</td>
-                      <td>{{vnfdinfo.connection_point}}</td>
-                    </tr>
-                    <tr>
-                      <td>Cyclic Dependency</td>
-                      <td>{{vnfdinfo.cyclicDependency}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.manifest_file_security.length > 0">
-                      <td>Manifest File Security</td>
-                      <td>{{vnfdinfo.manifest_file_security}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.monitoring_parameter.length > 0">
-                      <td>Monitoring Parameters</td>
-                      <td>{{vnfdinfo.monitoring_parameter}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.provides.length > 0">
-                      <td>Provides</td>
-                      <td>{{vnfdinfo.provides}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.requires.length > 0">
-                      <td>Requires</td><td>{{vnfdinfo.requires}}</td>
-                    </tr>
-                    <!--tr ng-show="vnfdinfo.service_deployment_flavour">
+	<div class="col-lg-12" ng-show="vnfdinfo">
+		<div class="col-lg-6">
+			<div class="table-responsive">
+				<table class="table table-bordered table-hover tablesorter" id="vnfdTabletable">
+					<tbody>
+						<tr>
+							<td>Name</td>
+							<td>{{vnfdinfo.name}}</td>
+						</tr>
+						<tr>
+							<td>Project ID</td>
+							<td>{{vnfdinfo.projectId}}</td>
+						</tr>
+						<tr>
+							<tr>
+								<td>Type</td>
+								<td>{{vnfdinfo.type}}</td>
+							</tr>
+							<tr>
+								<td>Version</td>
+								<td>{{vnfdinfo.version}}</td>
+							</tr>
+							<tr>
+								<td>Endpoint</td>
+								<td>{{vnfdinfo.endpoint}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.connection_point.length > 0">
+								<td>Connection point</td>
+								<td>{{vnfdinfo.connection_point}}</td>
+							</tr>
+							<tr>
+								<td>Cyclic Dependency</td>
+								<td>{{vnfdinfo.cyclicDependency}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.manifest_file_security.length > 0">
+								<td>Manifest File Security</td>
+								<td>{{vnfdinfo.manifest_file_security}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.monitoring_parameter.length > 0">
+								<td>Monitoring Parameters</td>
+								<td>{{vnfdinfo.monitoring_parameter}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.provides.length > 0">
+								<td>Provides</td>
+								<td>{{vnfdinfo.provides}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.requires.length > 0">
+								<td>Requires</td>
+								<td>{{vnfdinfo.requires}}</td>
+							</tr>
+							<!--tr ng-show="vnfdinfo.service_deployment_flavour">
                       <td>Service Deployment Flavour</td><td>{{vnfdinfo.service_deployment_flavour"}}</td>
                     </tr-->
-                    <tr ng-show="vnfdinfo.vdu_dependency.length > 0">
-                      <td>VDU dependency</td><td>{{vnfdinfo.vdu_dependency}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.vld.length > 0">
-                      <td>VLD</td><td>{{vnfdinfo.vld}}</td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.vnfPackageLocation.length > 0">
-                      <td>VNF Package Location</td><td><a href="#packages/{{vnfdinfo.vnfPackageLocation}}">{{vnfdinfo.vnfPackageLocation}}</a></td>
-                    </tr>
-                    <tr ng-show="vnfdinfo.vnffgd.length > 0">
-                      <td>VNF Forwarding Graph</td><td>{{vnfdinfo.vnffgd}}</td>
-                    </tr>
+							<tr ng-show="vnfdinfo.vdu_dependency.length > 0">
+								<td>VDU dependency</td>
+								<td>{{vnfdinfo.vdu_dependency}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.vld.length > 0">
+								<td>VLD</td>
+								<td>{{vnfdinfo.vld}}</td>
+							</tr>
+							<tr ng-show="vnfdinfo.vnfPackageLocation.length > 0">
+								<td>VNF Package Location</td>
+								<td><a href="#packages/{{vnfdinfo.vnfPackageLocation}}">{{vnfdinfo.vnfPackageLocation}}</a></td>
+							</tr>
+							<tr ng-show="vnfdinfo.vnffgd.length > 0">
+								<td>VNF Forwarding Graph</td>
+								<td>{{vnfdinfo.vnffgd}}</td>
+							</tr>
 
 
 
-                  </tbody>
-           </table>
-        </div>
-     </div>
-        <div class="col-lg-12">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-lg-12">
 
-            <div>
-                <!--dl class="dl-horizontal">
+			<div>
+				<!--dl class="dl-horizontal">
                     <dt>name</dt>
                     <dd>{{vnfdinfo.name}}</dd>
                     <dt>type</dt>
@@ -159,248 +161,252 @@
 
                     </spam>
                 </dl-->
-                <tabset>
-                    <tab heading="Vdu">
-                        <div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
-                            <h3>Virtual Deployment Unit</h3>
-                            <table
-                                    class="table table-bordered table-striped table-hover tablesorter"
-                                    id="vduTabletable">
+				<tabset>
+					<tab heading="Vdu">
+						<div class="table-responsive" ng-show="vnfdinfo.vdu.length > 0">
+							<h3>Virtual Deployment Unit</h3>
+							<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
+								<thead>
+									<tr>
+										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
+											<i class="fa fa-sort"></i>
+										</th>
+
+										<th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i class="fa fa-sort"></i>
+										</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
+										<td>
+											<!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
+											{{vdu.id}}
+										</td>
+										<td>{{vdu.version}}</td>
+										<td>{{vdu.vm_image}}</td>
+										<td>{{vdu.vimInstanceName}}</td>
+										<!--<td>{{vdu.vnfc_instance}}</td>-->
+										<td>
+											<ul ng-repeat="vnfc in vdu.vnfc">
+												<li ng-repeat="cp in vnfc.connection_point">
+													<b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
+												</li>
+											</ul>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</tab>
+					<tab heading="Lifecycle Event">
+						<div class="table-responsive" ng-show="vnfdinfo.lifecycle_event.length > 0">
+							<h3>Lifecycle Event</h3>
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
+								<thead>
+									<tr>
+										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'event'; reverse = !reverse">event <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle events <i class="fa fa-sort"></i>
+										</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="le in vnfdinfo.lifecycle_event | orderBy:predicate:reverse">
+										<td>{{le.id}}</td>
+										<td>{{le.event}}</td>
+										<td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
+                                            ng-if="!$last">, </span></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</tab>
+					<tab heading="Deployment Flavour">
+						<div class="table-responsive" ng-show="vnfdinfo.deployment_flavour.length > 0">
+							<h3>Deployment Flavour</h3>
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
+								<thead>
+									<tr>
+										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+										</th>
+										<th ng-show='vnfdinfo.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i class="fa fa-sort"></i>
+										</th>
+										<th ng-show='vnfdinfo.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df Constraint <i class="fa fa-sort"></i>
+										</th>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
+										<td>{{df.id}}</td>
+										<td>{{df.version}}</td>
+										<td ng-show='vnfdinfo.deployment_flavour[0].flavour_key'>{{df.flavour_key}}</td>
+										<td ng-show='df.df_constraint'>
+											{{df.df_constraint}}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</tab>
+					<tab heading="Virtual Link">
+						<div class="table-responsive" ng-show="vnfdinfo.virtual_link.length > 0">
+							<h3>Virtual Link</h3>
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
+								<thead>
+									<tr>
+										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+										</th>
+										<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i>
+										</th>
+										<th ng-show="vl.extID" ng-click="predicate = 'extId'; reverse = !reverse">External ID <i class="fa fa-sort"></i>
+										</th>
+										<th ng-show="vl.qos" ng-click="predicate = 'qos'; reverse = !reverse">QoS <i class="fa fa-sort"></i>
+										</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="vl in vnfdinfo.virtual_link | orderBy:predicate:reverse">
+										<td>{{vl.id}}</td>
+										<td>{{vl.name}}</td>
+										<td ng-show="vl.extID.length > 0">{{vl.extId}}</td>
+										<td ng-show="vl.qos.length > 0">{{vl.qos}}</td>
+
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</tab>
+					<tab heading="Auto Scaling Policies" ng-show="vnfdinfo.auto_scale_policy.length > 0">
+						<div class="table-responsive">
+							<h3>Auto Scaling Policies</h3>
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
+								<thead>
+									<tr>
+										<th>Version</th>
+										<th>Name</th>
+										<th>Threshold</th>
+										<th>Comparison Operator</th>
+										<th>Period</th>
+										<th>Cooldown</th>
+										<th>Mode</th>
+										<th>Type</th>
+										<th>Alarms</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="policy in vnfdinfo.auto_scale_policy">
+										<td>{{policy.version}}</td>
+										<td>{{policy.name}}</td>
+										<td>{{policy.threshold}}</td>
+										<td>{{policy.comparisonOperator}}</td>
+										<td>{{policy.period}}</td>
+										<td>{{policy.cooldown}}</td>
+										<td>{{policy.mode}}</td>
+										<td>{{policy.type}}</td>
+										<td>
+											<div ng-repeat="alarm in policy.alarms">
+												{{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div>
+										</td>
+										<td>
+											<div ng-repeat="action in policy.actions">{{action.type}} {{action.value}} <br></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</tab>
+					<tab heading="Configuration Parameters">
+                        <h3>{{vnfdinfo.configurations.name}}</h3>
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
                                 <thead>
-                                <tr>
-                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
-                                        <i
-                                                class="fa fa-sort"></i>
-                                    </th>
-
-                                    <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-
-                                </tr>
+                                    <tr>
+                                    <th>Parameter</th><th>Value</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
-                                    <td>
-                                        <!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
-                                        {{vdu.id}}
-                                    </td>
-                                    <td>{{vdu.version}}</td>
-                                    <td>{{vdu.vm_image}}</td>
-                                    <td>{{vdu.vimInstanceName}}</td>
-                                    <!--<td>{{vdu.vnfc_instance}}</td>-->
-                                    <td>
-                                        <ul ng-repeat="vnfc in vdu.vnfc">
-                                            <li ng-repeat="cp in vnfc.connection_point">
-                                                <b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="par in vnfdinfo.configurations.configurationParameters">
+                                        <td>{{par.confKey}}</td><td>{{par.value}}</td>
+                                    </tr>
                                 </tbody>
-                            </table>
-                        </div>
-                    </tab>
-                    <tab heading="Lifecycle Event">
-                        <div class="table-responsive" ng-show="vnfdinfo.lifecycle_event.length > 0">
-                            <h3>Lifecycle Event</h3>
-                            <table
-                                    class="table table-bordered table-striped table-hover tablesorter"
-                                    id="">
-                                <thead>
-                                <tr>
-                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'event'; reverse = !reverse">event <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
-                                        events <i class="fa fa-sort"></i>
-                                    </th>
+							</table>
+						</div>
+					</tab>
+				</tabset>
+				<br/>
+				<br/>
+				<br/>
 
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="le in vnfdinfo.lifecycle_event | orderBy:predicate:reverse">
-                                    <td>{{le.id}}</td>
-                                    <td>{{le.event}}</td>
-                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
-                                            ng-if="!$last">, </span></span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </tab>
-                    <tab heading="Deployment Flavour">
-                        <div class="table-responsive" ng-show="vnfdinfo.deployment_flavour.length > 0">
-                            <h3>Deployment Flavour</h3>
-                            <table
-                                    class="table table-bordered table-striped table-hover tablesorter"
-                                    id="">
-                                <thead>
-                                <tr>
-                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'version'; reverse = !reverse">Version <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-show='vnfdinfo.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-show='vnfdinfo.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df
-                                        Constraint <i
-                                                class="fa fa-sort"></i>
-                                    </th>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
-                                    <td>{{df.id}}</td>
-                                    <td>{{df.version}}</td>
-                                    <td ng-show='vnfdinfo.deployment_flavour[0].flavour_key'>{{df.flavour_key}}</td>
-                                    <td ng-show='df.df_constraint'>
-                                        {{df.df_constraint}}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </tab>
-                    <tab heading="Virtual Link">
-                        <div class="table-responsive" ng-show="vnfdinfo.virtual_link.length > 0">
-                            <h3>Virtual Link</h3>
-                            <table
-                                    class="table table-bordered table-striped table-hover tablesorter"
-                                    id="">
-                                <thead>
-                                <tr>
-                                    <th ng-click="predicate = 'id'; reverse = !reverse">Id <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-show="vl.extID" ng-click="predicate = 'extId'; reverse = !reverse">External ID <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-                                    <th ng-show="vl.qos" ng-click="predicate = 'qos'; reverse = !reverse">QoS <i
-                                            class="fa fa-sort"></i>
-                                    </th>
-
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="vl in vnfdinfo.virtual_link | orderBy:predicate:reverse">
-                                    <td>{{vl.id}}</td>
-                                    <td>{{vl.name}}</td>
-                                    <td ng-show="vl.extID.length > 0">{{vl.extId}}</td>
-                                    <td ng-show="vl.qos.length > 0">{{vl.qos}}</td>
-
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </tab>
-                    <tab  heading="Auto Scaling Policies" ng-show="vnfdinfo.auto_scale_policy.length > 0">
-                        <div class="table-responsive">
-                          <h3>Auto Scaling Policies</h3>
-                          <table
-                                  class="table table-bordered table-striped table-hover tablesorter"
-                                  id="">
-                          <thead>
-                          <tr><th>Version</th><th>Name</th><th>Threshold</th><th>Comparison Operator</th><th>Period</th><th>Cooldown</th><th>Mode</th><th>Type</th><th>Alarms</th><th>Actions</th></tr>
-                          </thead>
-                          <tbody>
-                            <tr ng-repeat="policy in vnfdinfo.auto_scale_policy">
-                                <td>{{policy.version}}</td>
-                                <td>{{policy.name}}</td>
-                                <td>{{policy.threshold}}</td>
-                                <td>{{policy.comparisonOperator}}</td>
-                                <td>{{policy.period}}</td>
-                                <td>{{policy.cooldown}}</td>
-                                <td>{{policy.mode}}</td>
-                                <td>{{policy.type}}</td>
-                                <td> <div ng-repeat="alarm in policy.alarms">
-                                  {{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div></td>
-                                <td><div ng-repeat="action in policy.actions" >{{action.type}} {{action.value}} <br></div></td>
-                            </tr>
-                          </tbody>
-                          </table>
-                        </div>
-                    </tab>
-                </tabset>
-                <br/>
-                <br/>
-                <br/>
-
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 <div class="modal fade" id="modalFileCSAR" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Upload a CSAR NSD</h4>
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Upload a CSAR NSD</h4>
 
-            </div>
-            <div class="modal-body">
-                <form role="form" id="my-dropzone" class="">
-                    <h4>Drag and drop files below</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" id="my-dropzone" class="">
+					<h4>Drag and drop files below</h4>
 
-                    <div class="upload-drop-zone dz-clickable dz-default dz-message" id="drop-zone">
-                        Just drag and drop files here
-                    </div>
+					<div class="upload-drop-zone dz-clickable dz-default dz-message" id="drop-zone">
+						Just drag and drop files here
+					</div>
 
-                    <div class="table table-striped" class="files" id="previews">
+					<div class="table table-striped" class="files" id="previews">
 
-                        <div id="template" class="file-row">
-                            <!-- This is used as the file preview template -->
-                            <div>
-                                <span class="preview"><img data-dz-thumbnail/></span>
-                            </div>
-                            <div>
-                                <p class="name" data-dz-name></p>
-                                <strong class="error text-danger" data-dz-errormessage></strong>
-                            </div>
-                            <div>
-                                <p class="size" data-dz-size></p>
+						<div id="template" class="file-row">
+							<!-- This is used as the file preview template -->
+							<div>
+								<span class="preview"><img data-dz-thumbnail/></span>
+							</div>
+							<div>
+								<p class="name" data-dz-name></p>
+								<strong class="error text-danger" data-dz-errormessage></strong>
+							</div>
+							<div>
+								<p class="size" data-dz-size></p>
 
-                                <div id="total-progress" class="progress progress-striped active" role="progressbar"
-                                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                    <div class="progress-bar progress-bar-success" style="width:0%;"
-                                         data-dz-uploadprogress></div>
-                                </div>
-                            </div>
-                            <div>
-                                <button data-dz-remove class="btn btn-warning cancel">
+								<div id="total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+									aria-valuenow="0">
+									<div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+								</div>
+							</div>
+							<div>
+								<button data-dz-remove class="btn btn-warning cancel">
                                     <i class="glyphicon glyphicon-ban-circle"></i>
                                     <span>Cancel</span>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">Close
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close
                 </button>
-                <button type="button" id="submit-all" class="btn btn-primary">Send All</button>
-            </div>
-        </div>
-    </div>
+				<button type="button" id="submit-all" class="btn btn-primary">Send All</button>
+			</div>
+		</div>
+	</div>
 </div>
