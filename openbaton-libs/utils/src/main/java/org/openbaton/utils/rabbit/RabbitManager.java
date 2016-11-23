@@ -55,7 +55,7 @@ public class RabbitManager {
     HttpGet httpGet = new HttpGet("http://" + brokerIp + ":" + managementPort + "/api/queues/");
     httpGet.setHeader("Authorization", "Basic " + encoding);
 
-    log.trace("executing request " + httpGet.getRequestLine());
+    log.debug("executing request " + httpGet.getRequestLine());
     HttpClient httpclient = HttpClients.createDefault();
     HttpResponse response = httpclient.execute(httpGet);
     HttpEntity entity = response.getEntity();

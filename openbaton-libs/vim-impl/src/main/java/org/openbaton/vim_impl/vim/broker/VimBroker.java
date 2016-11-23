@@ -54,6 +54,9 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
+
   @Value("${nfvo.vim.drivers.allowInfiniteQuota:false}")
   private String allowInfiniteQuota;
 
@@ -98,7 +101,9 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   @Deprecated
   @Override
   public Vim getVim(String type, String name) throws PluginException {
-    if (type.contains(".")) type = type.split("\\.")[0];
+    if (type.contains(".")) {
+      type = type.split("\\.")[0];
+    }
     switch (type) {
       case "test":
         return (Vim) context.getBean("testVIM", type, name, this.managementPort);
@@ -113,25 +118,41 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
   @Override
   public Vim getVim(String type) throws PluginException {
-    if (type.contains(".")) type = type.split("\\.")[0];
+    String name = null;
+    if (type.contains(".")) {
+      String[] split = type.split("\\.");
+      type = split[0];
+      name = split[1];
+    }
     switch (type) {
       case "test":
         //                return (Vim) context.getBean("testVIM", this.port);
+        if (name != null) return new TestVIM(name, 5672, this.managementPort);
         return new TestVIM(this.managementPort);
       case "openstack":
         //                return (Vim) context.getBean("openstackVIM", this.port, context);
+        if (name != null)
+          return new OpenstackVIM(name, 5672, this.managementPort, context, brokerIp);
         return new OpenstackVIM(this.managementPort, context);
+
       case "amazon":
         //                return (Vim) context.getBean("amazonVIM", this.port);
         return new AmazonVIM(this.managementPort);
       default:
+        if (name != null)
+          return new GenericVIM(type + "." + name, brokerIp, this.managementPort, context);
         return new GenericVIM(type, context);
     }
   }
 
   @Override
   public Vim getVim(String type, int port) throws PluginException {
-    if (type.contains(".")) type = type.split("\\.")[0];
+    String name = null;
+    if (type.contains(".")) {
+      String[] split = type.split("\\.");
+      type = split[0];
+      name = split[1];
+    }
     switch (type) {
       case "test":
         return (Vim) context.getBean("testVIM", port, this.managementPort);
@@ -140,7 +161,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
       case "amazon":
         return (Vim) context.getBean("amazonVIM", port, this.managementPort);
       default:
-        return new GenericVIM(type, "", port, this.managementPort, context);
+        return new GenericVIM(type + "." + name, this.brokerIp, port, this.managementPort, context);
     }
   }
 
