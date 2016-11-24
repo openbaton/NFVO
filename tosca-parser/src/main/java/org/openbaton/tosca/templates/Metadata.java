@@ -20,7 +20,7 @@ package org.openbaton.tosca.templates;
 /**
  * Created by rvl on 17.08.16.
  */
-public class TOSCAMetadata {
+public class Metadata {
 
   private String ID;
   private String vendor;

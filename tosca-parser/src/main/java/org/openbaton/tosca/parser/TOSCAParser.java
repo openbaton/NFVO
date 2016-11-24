@@ -41,25 +41,29 @@ public class TOSCAParser {
 
   public TOSCAParser() {}
 
-  /*
+  /**
+   * Parser of the Virtual Link
    *
-   * HELPER FUNCTIONS - PARSING THE TOPOLOGY TEMPLATE
-   *
+   * @param vlNodeTemplate
+   * @return
    */
-
   private InternalVirtualLink parseVL(VLNodeTemplate vlNodeTemplate) {
 
     InternalVirtualLink vl = new InternalVirtualLink();
-
     vl.setName(vlNodeTemplate.getName());
 
     return vl;
   }
 
+  /**
+   * Parser of the Connection Point
+   *
+   * @param cpTemplate
+   * @return
+   */
   private VNFDConnectionPoint parseCPTemplate(CPNodeTemplate cpTemplate) {
 
     VNFDConnectionPoint cp = new VNFDConnectionPoint();
-
     cp.setVirtual_link_reference(cpTemplate.getRequirements().getVirtualLink().get(0));
 
     if (cpTemplate.getProperties() != null) {
@@ -71,6 +75,13 @@ public class TOSCAParser {
     return cp;
   }
 
+  /**
+   * Parser of the Virtual Deployment Unit
+   *
+   * @param vduTemplate
+   * @param cps
+   * @return
+   */
   private VirtualDeploymentUnit parseVDUTemplate(
       VDUNodeTemplate vduTemplate, List<CPNodeTemplate> cps) {
 
@@ -90,10 +101,10 @@ public class TOSCAParser {
 
     for (CPNodeTemplate cp : cps) {
       if (cp.getRequirements().getVirtualBinding().contains(vduTemplate.getName())) {
-
         connectionPoints.add(parseCPTemplate(cp));
       }
     }
+
     vnfc.setConnection_point(connectionPoints);
     vnfComponents.add(vnfc);
     vdu.setVnfc(vnfComponents);
@@ -101,6 +112,12 @@ public class TOSCAParser {
     return vdu;
   }
 
+  /**
+   * Parser of the relationship template
+   *
+   * @param nsd
+   * @param relationshipsTemplates
+   */
   private void parseRelationships(
       NetworkServiceDescriptor nsd, Map<String, RelationshipsTemplate> relationshipsTemplates) {
     if(relationshipsTemplates == null)
@@ -123,6 +140,14 @@ public class TOSCAParser {
     }
   }
 
+  /**
+   *
+   * Parser of the VNF Node
+   *
+   * @param vnf
+   * @param topologyTemplate
+   * @return
+   */
   private VirtualNetworkFunctionDescriptor parseVNFNode(
       VNFNodeTemplate vnf, TopologyTemplate topologyTemplate) {
 
@@ -138,7 +163,6 @@ public class TOSCAParser {
     vnfd.setType(vnf.getProperties().getType());
 
     if (vnf.getProperties().getAuto_scale_policy() != null) {
-
       vnfd.setAuto_scale_policy(vnf.getProperties().getAuto_scale_policy().getAutoScalePolicySet());
     }
 
@@ -148,9 +172,7 @@ public class TOSCAParser {
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
 
     for (VDUNodeTemplate vdu : topologyTemplate.getVDUNodes()) {
-
       if (vduList.contains(vdu.getName())) {
-
         vdus.add(parseVDUTemplate(vdu, topologyTemplate.getCPNodes()));
       }
     }
@@ -161,14 +183,11 @@ public class TOSCAParser {
     Set<InternalVirtualLink> vls = new HashSet<>();
 
     for (VLNodeTemplate vl : topologyTemplate.getVLNodes()) {
-
       if (vl_list.contains(vl.getName())) {
-
         vls.add(parseVL(vl));
       }
     }
     vnfd.setVirtual_link(vls);
-
     vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
@@ -194,52 +213,50 @@ public class TOSCAParser {
     return vnfd;
   }
 
-  /*
+  /**
    *
-   * MAIN FUNCTIONS
+   * Parser of the VNF template
    *
+   * @param VNFDTemplate
+   * @return
    */
-
-  public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate vnfdTemplate) {
+  public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate VNFDTemplate) {
 
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 
     // ADD SETTINGS
 
-    vnfd.setName(vnfdTemplate.getMetadata().getID());
-    vnfd.setVendor(vnfdTemplate.getMetadata().getVendor());
-    vnfd.setVersion(vnfdTemplate.getMetadata().getVersion());
+    vnfd.setName(VNFDTemplate.getMetadata().getID());
+    vnfd.setVendor(VNFDTemplate.getMetadata().getVendor());
+    vnfd.setVersion(VNFDTemplate.getMetadata().getVersion());
 
-    vnfd.setDeployment_flavour(vnfdTemplate.getInputs().getDeploymentFlavourConverted());
-    vnfd.setVnfPackageLocation(vnfdTemplate.getInputs().getVnfPackageLocation());
-    vnfd.setEndpoint(vnfdTemplate.getInputs().getEndpoint());
-    vnfd.setType(vnfdTemplate.getInputs().getType());
+    vnfd.setDeployment_flavour(VNFDTemplate.getProperties().getDeploymentFlavourConverted());
+    vnfd.setVnfPackageLocation(VNFDTemplate.getProperties().getVnfPackageLocation());
+    vnfd.setEndpoint(VNFDTemplate.getProperties().getEndpoint());
+    vnfd.setType(VNFDTemplate.getProperties().getType());
 
     // ADD VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
-
-    for (VDUNodeTemplate vdu : vnfdTemplate.getTopology_template().getVDUNodes()) {
-
-      vdus.add(parseVDUTemplate(vdu, vnfdTemplate.getTopology_template().getCPNodes()));
+    for (VDUNodeTemplate vdu : VNFDTemplate.getTopology_template().getVDUNodes()) {
+      vdus.add(parseVDUTemplate(vdu, VNFDTemplate.getTopology_template().getCPNodes()));
     }
     vnfd.setVdu(vdus);
 
     // ADD VLs
     Set<InternalVirtualLink> vls = new HashSet<>();
 
-    for (VLNodeTemplate vl : vnfdTemplate.getTopology_template().getVLNodes()) {
+    for (VLNodeTemplate vl : VNFDTemplate.getTopology_template().getVLNodes()) {
 
       vls.add(parseVL(vl));
     }
 
     vnfd.setVirtual_link(vls);
-
-    vnfd.setLifecycle_event(vnfdTemplate.getInputs().getInterfaces().getOpLifecycle());
+    vnfd.setLifecycle_event(VNFDTemplate.getProperties().getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
-    if (vnfdTemplate.getInputs().getConfigurations() != null) {
+    if (VNFDTemplate.getProperties().getConfigurations() != null) {
 
-      VNFConfigurations configurations = vnfdTemplate.getInputs().getConfigurations();
+      VNFConfigurations configurations = VNFDTemplate.getProperties().getConfigurations();
 
       Configuration configuration = new Configuration();
       configuration.setName(configurations.getName());
@@ -261,6 +278,14 @@ public class TOSCAParser {
     return vnfd;
   }
 
+
+  /**
+   *
+   * Parser of the NSD template
+   *
+   * @param nsdTemplate
+   * @return
+   */
   public NetworkServiceDescriptor parseNSDTemplate(NSDTemplate nsdTemplate) {
 
     NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();

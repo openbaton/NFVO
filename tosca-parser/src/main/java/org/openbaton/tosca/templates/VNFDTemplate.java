@@ -27,10 +27,10 @@ public class VNFDTemplate {
 
   private String tosca_definitions_version;
   private String description = "";
-  private TOSCAMetadata metadata;
+  private Metadata metadata;
   private Object node_types = null;
   private TopologyTemplate topology_template;
-  private VNFProperties inputs;
+  private VNFProperties properties;
 
   public String getTosca_definitions_version() {
     return tosca_definitions_version;
@@ -48,11 +48,11 @@ public class VNFDTemplate {
     this.description = description;
   }
 
-  public TOSCAMetadata getMetadata() {
+  public Metadata getMetadata() {
     return metadata;
   }
 
-  public void setMetadata(TOSCAMetadata metadata) {
+  public void setMetadata(Metadata metadata) {
     this.metadata = metadata;
   }
 
@@ -72,12 +72,12 @@ public class VNFDTemplate {
     return this.topology_template;
   }
 
-  public void setInputs(VNFProperties inputs) {
-    this.inputs = inputs;
+  public void setProperties(VNFProperties properties) {
+    this.properties = properties;
   }
 
-  public VNFProperties getInputs() {
-    return inputs;
+  public VNFProperties getProperties() {
+    return properties;
   }
 
   @Override
@@ -99,6 +99,6 @@ public class VNFDTemplate {
         + topology_template
         + "\n"
         + "inputs_template: "
-        + inputs;
+        + properties;
   }
 }

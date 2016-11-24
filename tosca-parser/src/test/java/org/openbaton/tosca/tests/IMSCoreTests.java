@@ -35,11 +35,11 @@ public class IMSCoreTests {
   @Test
   public void testBind9() throws FileNotFoundException {
 
-    VNFDTemplate vnfdTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/bind9.yaml");
+    VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/bind9.yaml");
 
     TOSCAParser toscaParser = new TOSCAParser();
 
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
     Gson gson = new Gson();
     System.out.println(gson.toJson(vnfd));
   }
@@ -47,11 +47,11 @@ public class IMSCoreTests {
   @Test
   public void testFHOSS() throws FileNotFoundException {
 
-    VNFDTemplate vnfdTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/fhoss.yaml");
+    VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/fhoss.yaml");
 
     TOSCAParser toscaParser = new TOSCAParser();
 
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
     Gson gson = new Gson();
     System.out.println(gson.toJson(vnfd));
   }
@@ -59,11 +59,11 @@ public class IMSCoreTests {
   @Test
   public void testICSCF() throws FileNotFoundException {
 
-    VNFDTemplate vnfdTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/icscf.yaml");
+    VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/icscf.yaml");
 
     TOSCAParser toscaParser = new TOSCAParser();
 
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
     Gson gson = new Gson();
     System.out.println(gson.toJson(vnfd));
   }
@@ -71,11 +71,11 @@ public class IMSCoreTests {
   @Test
   public void testSCSCF() throws FileNotFoundException {
 
-    VNFDTemplate vnfdTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/scscf.yaml");
+    VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/scscf.yaml");
 
     TOSCAParser toscaParser = new TOSCAParser();
 
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
     Gson gson = new Gson();
     System.out.println(gson.toJson(vnfd));
   }
@@ -83,11 +83,11 @@ public class IMSCoreTests {
   @Test
   public void testPCSCF() throws FileNotFoundException {
 
-    VNFDTemplate vnfdTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/pcscf.yaml");
+    VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/pcscf.yaml");
 
     TOSCAParser toscaParser = new TOSCAParser();
 
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
     Gson gson = new Gson();
     System.out.println(gson.toJson(vnfd));
   }

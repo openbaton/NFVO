@@ -102,7 +102,6 @@ public class TopologyTemplate {
 
       NodeTemplate n = node_templates.get(nodeName);
       if (Objects.equals(n.getType(), "tosca.nodes.nfv.VL")) {
-
         VLNodeTemplate vduNode = new VLNodeTemplate(n, nodeName);
         vlNodes.add(vduNode);
       }

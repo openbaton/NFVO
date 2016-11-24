@@ -178,8 +178,8 @@ public class CSARParser {
 
     readMetaData();
 
-    VNFDTemplate vnfdTemplate = Utils.bytesToVNFDTemplate(this.template);
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdTemplate);
+    VNFDTemplate VNFDTemplate = Utils.bytesToVNFDTemplate(this.template);
+    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
   }
 
   public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
