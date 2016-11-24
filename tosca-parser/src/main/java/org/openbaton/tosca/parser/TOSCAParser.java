@@ -120,8 +120,7 @@ public class TOSCAParser {
    */
   private void parseRelationships(
       NetworkServiceDescriptor nsd, Map<String, RelationshipsTemplate> relationshipsTemplates) {
-    if(relationshipsTemplates == null)
-      return;
+    if (relationshipsTemplates == null) return;
     for (String key : relationshipsTemplates.keySet()) {
       VNFDependency vnfDependency = new VNFDependency();
 
@@ -230,10 +229,10 @@ public class TOSCAParser {
     vnfd.setVendor(VNFDTemplate.getMetadata().getVendor());
     vnfd.setVersion(VNFDTemplate.getMetadata().getVersion());
 
-    vnfd.setDeployment_flavour(VNFDTemplate.getProperties().getDeploymentFlavourConverted());
-    vnfd.setVnfPackageLocation(VNFDTemplate.getProperties().getVnfPackageLocation());
-    vnfd.setEndpoint(VNFDTemplate.getProperties().getEndpoint());
-    vnfd.setType(VNFDTemplate.getProperties().getType());
+    vnfd.setDeployment_flavour(VNFDTemplate.getInputs().getDeploymentFlavourConverted());
+    vnfd.setVnfPackageLocation(VNFDTemplate.getInputs().getVnfPackageLocation());
+    vnfd.setEndpoint(VNFDTemplate.getInputs().getEndpoint());
+    vnfd.setType(VNFDTemplate.getInputs().getType());
 
     // ADD VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
@@ -251,12 +250,12 @@ public class TOSCAParser {
     }
 
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(VNFDTemplate.getProperties().getInterfaces().getOpLifecycle());
+    vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
-    if (VNFDTemplate.getProperties().getConfigurations() != null) {
+    if (VNFDTemplate.getInputs().getConfigurations() != null) {
 
-      VNFConfigurations configurations = VNFDTemplate.getProperties().getConfigurations();
+      VNFConfigurations configurations = VNFDTemplate.getInputs().getConfigurations();
 
       Configuration configuration = new Configuration();
       configuration.setName(configurations.getName());
@@ -277,7 +276,6 @@ public class TOSCAParser {
 
     return vnfd;
   }
-
 
   /**
    *
