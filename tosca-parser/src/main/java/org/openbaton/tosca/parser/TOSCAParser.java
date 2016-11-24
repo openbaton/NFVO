@@ -103,7 +103,8 @@ public class TOSCAParser {
 
   private void parseRelationships(
       NetworkServiceDescriptor nsd, Map<String, RelationshipsTemplate> relationshipsTemplates) {
-
+    if(relationshipsTemplates == null)
+      return;
     for (String key : relationshipsTemplates.keySet()) {
       VNFDependency vnfDependency = new VNFDependency();
 
