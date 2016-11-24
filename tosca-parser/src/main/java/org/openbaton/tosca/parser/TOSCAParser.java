@@ -177,12 +177,24 @@ public class TOSCAParser {
     }
     vnfd.setVdu(vdus);
 
+    Set<String> virtualLinkReferences = new HashSet<String>();
+
+    for (VirtualDeploymentUnit vdu : vdus) {
+      for (VNFComponent vnfComponent : vdu.getVnfc()) {
+        for (VNFDConnectionPoint cp : vnfComponent.getConnection_point()) {
+          if (cp.getVirtual_link_reference() != null)
+            virtualLinkReferences.add(cp.getVirtual_link_reference());
+        }
+      }
+    }
+
     // ADD VLs
-    ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
+    //ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
     Set<InternalVirtualLink> vls = new HashSet<>();
 
     for (VLNodeTemplate vl : topologyTemplate.getVLNodes()) {
-      if (vl_list.contains(vl.getName())) {
+
+      if (virtualLinkReferences.contains(vl.getName())) {
         vls.add(parseVL(vl));
       }
     }

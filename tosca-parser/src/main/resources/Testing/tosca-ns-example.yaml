@@ -1,0 +1,83 @@
+tosca_definitions_version: tosca_1.0
+description: NSD-example
+
+metadata:
+  ID: Ref-NS
+  vendor: Fokus
+  version: 0.1
+
+topology_template:
+
+  node_templates:
+
+    Ref_VNF: #VNF1
+        type: openbaton.type.VNF
+        properties:
+          vendor: Fokus
+          version: 0.1
+          endpoint: dummy
+          type: server
+          configurations:
+            name: server-configurations
+            configurationParameters:
+              - key: value
+              - key2: value2
+          vnfPackageLocation: https://github.com/openbaton/vnf-scripts.git
+          deployment_flavour:
+            - flavour_key: m1.small
+        requirements:
+          - virtualLink: mgmt
+          - vdu: Ref_VM
+        interfaces:
+          lifecycle: # lifecycle
+            instantiate:
+              - install.sh
+              - install-srv.sh
+
+
+    Ref_VM:
+      type: tosca.nodes.nfv.VDU
+      properties:
+        scale_in_out: 1
+        vim_instance_name:
+          - test-vim-instance
+      artifacts:
+        Ref_VM_image:
+          type: tosca.artifacts.Deployment.Image.VM
+          file: ubuntu-14.04-server-cloudimg-amd64-disk1
+
+
+    vNIC1:
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIP: random
+      requirements:
+        - virtualBinding: Ref_VM
+        - virtualLink: mgmt
+        
+    vNIC2:
+      type: tosca.nodes.nfv.CP
+      properties:
+        floatingIP: random
+      requirements:
+        - virtualBinding: Ref_VM
+        - virtualLink: data_in
+
+    mgmt:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+   
+    data_in:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+    
+    data_out:
+      type: tosca.nodes.nfv.VL
+      properties:
+        vendor: Fokus
+
+relationships_template:
+
+
