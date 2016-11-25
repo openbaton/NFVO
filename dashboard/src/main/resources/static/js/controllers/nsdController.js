@@ -252,6 +252,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
 
     $scope.saveDependency = function () {
+        //console.log($scope.dependency);
         $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
         //console.log($scope.nsdCreateTmp.vnf_dependency);
         //console.log($scope.dependency);
