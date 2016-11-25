@@ -139,7 +139,8 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             showError('None of the inputs were correct');
 
         }
-        $scope.textTopologyJson = ''
+        $scope.textTopologyJson = '';
+        $scope.file = '';
     };
 
 

@@ -183,7 +183,7 @@
 							<div class="">
 								<div class="">
 									<h4 class="">
-										<div class="col-lg-12">Monitoring Parameters
+										<div class="col-lg-12">
 											<a class="pull-right" title="Add a New Monitoring Prameter" href="" ng-click="toggle = !toggle">
 												<i class="fa fa-plus-square"> Add </i></a>
 										</div>
@@ -225,12 +225,12 @@
 						<tab class="" heading="VDU">
 							<div class="">
 								<div class="">
-
-									<div class="col-lg-12">
-										<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
-											<i class="fa fa-plus-square"> Add </i></a>
-									</div>
-
+									<h4 class="">
+										<div class="col-lg-12">
+											<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
+												<i class="fa fa-plus-square"> Add </i></a>
+										</div>
+									</h4>
 								</div>
 							</div>
 							<br/>
@@ -309,7 +309,7 @@
 								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}" ng-repeat="df in vnfdCreate.deployment_flavour track by $index">
 									<div class="form-group">
 										<a href="" title="Delete this Deployment Flavour" ng-click="deleteDF($index)">
-												<i class="fa fa-trash-o"> </i></a>
+											<i style="width:10px; padding-top:10px" class="fa fa-trash-o"> </i></a>
 										<label for="type" class="col-sm-4 control-label">Flavour Key</label>
 
 										<div class="col-sm-6">
@@ -383,6 +383,12 @@
 						</tab>
 
 						<tab class="" heading="Virtual Links">
+							<h4 class="">
+								<div class="col-lg-12">
+									<a class="pull-right" title="Add a New Deployment Flavour" href="" ng-click="addVL()">
+										<i class="fa fa-plus-square"> Add </i></a>
+								</div>
+							</h4>
 							<div class="row">
 								<div class="form-group" ng-style="{'padding-left':'15px','padding-right':'40px'}" ng-repeat="vl in vnfdCreate.virtual_link track by $index">
 									<i class="fa fa-trash-o" style="wdith:10px; padding-top:10px" href="" ng-click="deleteVL($index)"></i>
@@ -391,8 +397,8 @@
 									</div>
 								</div>
 							</div>
-							<button type="button" id="addVL" ng-click="addVL()" class="btn btn-primary">Add virtual link
-               			 </button>
+							<!--button type="button" id="addVL" ng-click="addVL()" class="btn btn-primary">Add virtual link
+               			 </button-->
 						</tab>
 					</tabset>
 					<!--{{vnfdCreate}}-->
