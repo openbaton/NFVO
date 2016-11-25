@@ -96,10 +96,11 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 .success(function (response) {
                     showOk('VIM Instance created.');
                     $scope.file = '';
+                    loadVIM();
                 })
                 .error(function (data, status) {
                     if (status === 400)
-                        showError(status, "Bad request: your json is not well formatted");
+                        showError(status, "Something went wrong");
                     else
                         showError(status, data);
 
@@ -125,6 +126,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 .success(function (response) {
                     showOk('VIM Instance created.');
                     $scope.file = '';
+                    loadVIM();
                 })
                 .error(function (data, status) {
                     if (status === 400)
@@ -135,10 +137,10 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 });
         }
         else {
-            showError('Problem with the VIM Instance');
+            showError('None of the inputs were correct');
 
         }
-        console.log("wtf");
+        $scope.textTopologyJson = ''
     };
 
 
@@ -266,8 +268,14 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
-
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         $('.modal').modal('hide');
     }
 
