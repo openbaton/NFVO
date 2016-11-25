@@ -947,8 +947,8 @@
 
 
                                     <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="dependency.source"
-                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-model="dependency.source.name"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in nsdCreateTmp.vnfd"
                                             ng-change="">
                                     </select>
 
@@ -962,8 +962,8 @@
                                     <!--{{vnf.deployment_flavour}}-->
 
                                     <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="dependency.target"
-                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-model="dependency.target.name"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in nsdCreateTmp.vnfd"
                                             ng-change="">
                                     </select>
                                 </div>
@@ -1537,7 +1537,7 @@
                 <form role="form" id="my-dropzone" class="">
                     <h4>Drag and drop files below</h4>
 
-                    <div class="upload-drop-zone dz-clickable dz-default dz-message" id="drop-zone">
+                    <div class="upload-drop-zone dz-clickable dz-default dz-messageF" id="drop-zone">
                         Just drag and drop files here
                     </div>
 
