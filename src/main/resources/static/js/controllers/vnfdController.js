@@ -366,6 +366,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $('.modal').modal('hide');
     }
 
+$('.modal-dialog').draggable();
 
 });
 
