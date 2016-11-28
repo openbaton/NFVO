@@ -37,7 +37,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
    * example, when the Network Service is being built top-down or instantiating the member VNFs as
    * well.
    */
-  @OneToMany(
+  @ManyToMany(
     cascade = {
       CascadeType.MERGE,
       CascadeType.REFRESH,
