@@ -22,7 +22,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.datacenter = {};
     $scope.file = '';
     $scope.showPass = false;
-
+    $scope.newvim = {type:"openstack", securityGroups:[]};
     loadVIM();
 
 
@@ -88,7 +88,24 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         });
     };
     $scope.sendInfrastructure = function () {
-        if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
+        if (!angular.isUndefined($scope.newvim.name) && !angular.isUndefined($scope.newvim.authUrl) && !angular.isUndefined($scope.newvim.tenant) && !angular.isUndefined($scope.newvim.username) 
+        && !angular.isUndefined($scope.newvim.password) && !angular.isUndefined($scope.newvim.location.name) && !angular.isUndefined($scope.newvim.location.latitude) && !angular.isUndefined($scope.newvim.location.longitude)) {
+            console.log($scope.newvim);
+            http.post(url, $scope.newvim)
+                .success(function (response) {
+                    showOk('VIM Instance created.');
+                    $scope.file = '';
+                    loadVIM();
+                })
+                .error(function (data, status) {
+                    if (status === 400)
+                        showError(status, "Something went wrong");
+                    else
+                        showError(status, data);
+
+                });
+        }
+        else if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
             console.log($scope.file);
             http.post(url, $scope.file)
                 .success(function (response) {
@@ -108,6 +125,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 .success(function (response) {
                     showOk('VIM Instance created.');
                     $scope.file = '';
+                    loadVIM();
                 })
                 .error(function (data, status) {
                     if (status === 400)
@@ -118,9 +136,11 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 });
         }
         else {
-            showError('Problem with the VIM Instance');
+            showError('None of the inputs were correct');
 
         }
+        $scope.textTopologyJson = '';
+        $scope.file = '';
     };
 
 
@@ -135,7 +155,12 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         $scope.locationRadio = location;
     };
 
-
+    $scope.addSecurityGroup = function() {
+        $scope.newvim.securityGroups.push("");
+    };
+    $scope.removeSecurityGroup = function(index) {
+        $scope.newvim.securityGroups.splice(index, 1);
+    };
     $scope.saveDataCenter = function (vimInstanceJson) {
         if ($scope.file !== '') {
             vimInstanceJson = $scope.file;
@@ -243,8 +268,14 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
-
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         $('.modal').modal('hide');
     }
 

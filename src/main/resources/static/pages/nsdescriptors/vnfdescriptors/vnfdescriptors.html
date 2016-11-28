@@ -86,7 +86,7 @@
 
 
 <div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div style="width:40%;" class="modal-dialog" role="document">
+	<div   style="width:40%;" class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -144,10 +144,13 @@
 					<tabset>
 						<tab class="" heading="Configuration Parameters">
 							<div class="row">
+								<h4 class="">
 								<div class="col-lg-12">
-									<a class="pull-right" title="Add a New VDU" href="" ng-click="addConfPar()">
+									<a class="pull-right" style="padding-right: 15px;" title="Add a New VDU" href="" ng-click="addConfPar()">
 										<i class="fa fa-plus-square"> Add </i></a>
+								
 								</div>
+								</h4>
 								<label for="conf_name" class="col-sm-4 control-label">Configuration name</label>
 
 								<div class="col-sm-6">
@@ -183,7 +186,7 @@
 							<div class="">
 								<div class="">
 									<h4 class="">
-										<div class="col-lg-12">Monitoring Parameters
+										<div class="col-lg-12">
 											<a class="pull-right" title="Add a New Monitoring Prameter" href="" ng-click="toggle = !toggle">
 												<i class="fa fa-plus-square"> Add </i></a>
 										</div>
@@ -225,12 +228,12 @@
 						<tab class="" heading="VDU">
 							<div class="">
 								<div class="">
-
-									<div class="col-lg-12">
-										<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
-											<i class="fa fa-plus-square"> Add </i></a>
-									</div>
-
+									<h4 class="">
+										<div class="col-lg-12">
+											<a class="pull-right" title="Add a New VDU" href="" ng-click="addVDU()">
+												<i class="fa fa-plus-square"> Add </i></a>
+										</div>
+									</h4>
 								</div>
 							</div>
 							<br/>
@@ -309,7 +312,7 @@
 								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}" ng-repeat="df in vnfdCreate.deployment_flavour track by $index">
 									<div class="form-group">
 										<a href="" title="Delete this Deployment Flavour" ng-click="deleteDF($index)">
-												<i class="fa fa-trash-o"> </i></a>
+											<i style="width:10px; padding-top:10px" class="fa fa-trash-o"> </i></a>
 										<label for="type" class="col-sm-4 control-label">Flavour Key</label>
 
 										<div class="col-sm-6">
@@ -383,6 +386,12 @@
 						</tab>
 
 						<tab class="" heading="Virtual Links">
+							<h4 class="">
+								<div class="col-lg-12">
+									<a class="pull-right" title="Add a New Deployment Flavour" href="" ng-click="addVL()">
+										<i class="fa fa-plus-square"> Add </i></a>
+								</div>
+							</h4>
 							<div class="row">
 								<div class="form-group" ng-style="{'padding-left':'15px','padding-right':'40px'}" ng-repeat="vl in vnfdCreate.virtual_link track by $index">
 									<i class="fa fa-trash-o" style="wdith:10px; padding-top:10px" href="" ng-click="deleteVL($index)"></i>
@@ -391,8 +400,8 @@
 									</div>
 								</div>
 							</div>
-							<button type="button" id="addVL" ng-click="addVL()" class="btn btn-primary">Add virtual link
-               			 </button>
+							<!--button type="button" id="addVL" ng-click="addVL()" class="btn btn-primary">Add virtual link
+               			 </button-->
 						</tab>
 					</tabset>
 					<!--{{vnfdCreate}}-->
@@ -630,7 +639,7 @@
 										</table>
 									</div>
 									<div ng-repeat="vim in vimInstances" ng-show="vduCreate.vimInstanceName.length > 0">
-										<div class="table-responsive">
+										<div class="table-responsive" ng-if="vim.name==vduCreate.vimInstanceName">
 
 											<table class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
 												<thead>
@@ -662,9 +671,15 @@
 							<!--{{vduCreate.vm_image}}-->
 						</tab>
 						<tab heading="VNFC">
-
+							<div class="row" ng-style="{'padding-left':'15px','padding-right':'40px'}">
+							
+								<a class="pull-right" title="add VNFC" href="" ng-click="addVNFC()">
+									<i class="fa fa-plus-square"> Add </i></a>
+							
+							</div>
 							<div ng-repeat="vnfc in vduCreate.vnfc track by $index">
 								<div class="form-group">
+									<i class="fa fa-trash-o" title="Remove VNFC" style="wdith:10px; padding-top:10px" href="" ng-click="removeVNFC($index)"></i>
 									<div class="col-sm-2">
 										<label for="vnfcVersion" class="control-label">Version</label>
 									</div>
@@ -677,6 +692,7 @@
 								</div>
 
 								<label for="connectionpoints" class="control-label" ng-show="vnfc.connection_point.length > 0">Connection Points</label>
+
 								<div class="table-responsive">
 
 									<table class="table table-bordered table-striped table-hover tablesorter" id="vnfcTabletable">
@@ -691,11 +707,10 @@
 												<td><input type="text" class="form-control" id="ip" name="ip" ng-model="connection_point.floatingIp" /></td>
 												<td><input type="text" class="form-control" id="vlr" name="vlr" ng-model="connection_point.virtual_link_reference"
 													/></td>
-												<td><button type="button" ng-click="removeConnection(vnfc, $index)" class="btn btn-primary pull-left">Remove Connection</button></td>
+												<td><i class="fa fa-trash-o" title="Remove VNFC" style="wdith:10px; padding-top:10px" href="" ng-click="removeConnection(vnfc, $index)"></i></td>
 											</tr>
 											<tr>
 												<td><button type="button" id="addVNFC" ng-click="addConnection(vnfc)" class="btn btn-primary pull-left">Add Connection Point</button></td>
-												<td><button type="button" ng-click="removeVNFC($index)" class="btn btn-primary pull-left">Remove VNFC</button></td>
 											</tr>
 										</tbody>
 
@@ -703,9 +718,6 @@
 
 								</div>
 
-							</div>
-							<div class="form-group row">
-								<button type="button" id="addVNFC" ng-click="addVNFC()" style="margin-left:25px;" class="btn btn-primary">Add VNFC</button>
 							</div>
 						</tab>
 					</tabset>

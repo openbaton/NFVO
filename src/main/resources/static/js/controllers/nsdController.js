@@ -42,6 +42,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vduLevelVim = [];
     $scope.vduToVIM = [];
     $scope.vduWithName = 0;
+    $scope.tmpVnfd = [];
 
     loadTable();
     loadKeys();
@@ -243,8 +244,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.selection = [];
 
     $scope.addTONSD = function () {
-        $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
-        
+        $scope.nsdCreateTmp.vnfd.push({id:$scope.selectedVNFD.id});
+         $scope.tmpVnfd.push(angular.copy($scope.selectedVNFD));
                 $scope.selectedVNFD.virtual_link.map(function(link) {
                     $scope.nsdCreateTmp.vld.push(link);
                 });
@@ -252,13 +253,17 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
 
     $scope.saveDependency = function () {
+        //console.log($scope.dependency);
         $scope.nsdCreateTmp.vnf_dependency.push(angular.copy($scope.dependency));
         //console.log($scope.nsdCreateTmp.vnf_dependency);
         //console.log($scope.dependency);
 
         $('#modalDependency').modal('hide');
     };
-
+    $scope.deleteVNFDfromNSD = function(index) {
+        $scope.tmpVnfd.splice(index, 1);
+        $scope.nsdCreateTmp.vnfd.splice(index, 1);
+    };
     $scope.selectedVNFD;
     $scope.vnfdList = [];
 
@@ -343,6 +348,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.nsdCreateTmp.vnfd = [];
         $scope.nsdCreateTmp.vnf_dependency = [];
         $scope.nsdCreateTmp.vld = [];
+        $scope.tmpVnfd = [];
 
         http.get(urlVNFD)
             .success(function (response, status) {
@@ -775,7 +781,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             });
 
     };
-
+    
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
         ////console.log(newValue.checkbox);
@@ -937,9 +943,14 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $scope.tabs.push(tab);
         }
     }
+    
     angular.element(document).ready(function () {
         if (angular.isUndefined($routeParams.packageid)) {
             var previewNode = document.querySelector("#template");
+            if (previewNode === null) {
+                //console.log("no template");
+                return;
+            }
             previewNode.id = "";
             var previewTemplate = previewNode.parentNode.innerHTML;
             previewNode.parentNode.removeChild(previewNode);

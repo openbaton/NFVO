@@ -834,7 +834,7 @@
                     </div>
                 </form>
 
-                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                <div class="" ng-if="tmpVnfd.length > 0">
                     <hr>
                     <b>VNFDs into NSD</b>
                     <table class="table table-condensed">
@@ -847,7 +847,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="vnfd in nsdCreateTmp.vnfd track by $index">
+                        <tr ng-repeat="vnfd in tmpVnfd track by $index">
                             <td>{{vnfd.type}}</td>
                             <td>{{vnfd.name}}</td>
                             <td>{{vnfd.endpoint}}</td>
@@ -887,7 +887,7 @@
                     </table>
                 </div>
 
-                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                <div class="" >
                     <hr>
                     <b>Virtual Link Descriptor</b>
                     <div class="form-group">
@@ -947,8 +947,8 @@
 
 
                                     <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="dependency.source"
-                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-model="dependency.source.name"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in tmpVnfd"
                                             ng-change="">
                                     </select>
 
@@ -962,8 +962,8 @@
                                     <!--{{vnf.deployment_flavour}}-->
 
                                     <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="dependency.target"
-                                            ng-options="vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-model="dependency.target.name"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in tmpVnfd"
                                             ng-change="">
                                     </select>
                                 </div>
@@ -1537,7 +1537,7 @@
                 <form role="form" id="my-dropzone" class="">
                     <h4>Drag and drop files below</h4>
 
-                    <div class="upload-drop-zone dz-clickable dz-default dz-message" id="drop-zone">
+                    <div class="upload-drop-zone dz-clickable dz-default dz-messageF" id="drop-zone">
                         Just drag and drop files here
                     </div>
 
