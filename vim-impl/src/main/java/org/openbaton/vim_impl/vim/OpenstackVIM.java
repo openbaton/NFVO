@@ -50,7 +50,7 @@ public class OpenstackVIM extends GenericVIM {
   }
 
   public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-    super("openstack", managementPort, context);
+    super("openstack", "", managementPort, context);
   }
 
   public OpenstackVIM(int port, String managementPort, ApplicationContext context)
