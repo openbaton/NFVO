@@ -43,6 +43,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vduLevelVim = [];
     $scope.vduToVIM = [];
     $scope.vduWithName = 0;
+    $scope.tmpVnfd = [];
 
     loadTable();
     loadKeys();
@@ -243,8 +244,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.selection = [];
 
     $scope.addTONSD = function () {
-        $scope.nsdCreateTmp.vnfd.push(angular.copy($scope.selectedVNFD));
-        
+        $scope.nsdCreateTmp.vnfd.push({id:$scope.selectedVNFD.id});
+         $scope.tmpVnfd.push(angular.copy($scope.selectedVNFD));
                 $scope.selectedVNFD.virtual_link.map(function(link) {
                     $scope.nsdCreateTmp.vld.push(link);
                 });
@@ -259,7 +260,10 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
         $('#modalDependency').modal('hide');
     };
-
+    $scope.deleteVNFDfromNSD = function(index) {
+        $scope.tmpVnfd.splice(index, 1);
+        $scope.nsdCreateTmp.vnfd.splice(index, 1);
+    };
     $scope.selectedVNFD;
     $scope.vnfdList = [];
 
@@ -344,6 +348,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.nsdCreateTmp.vnfd = [];
         $scope.nsdCreateTmp.vnf_dependency = [];
         $scope.nsdCreateTmp.vld = [];
+        $scope.tmpVnfd = [];
 
         http.get(urlVNFD)
             .success(function (response, status) {
@@ -776,7 +781,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             });
 
     };
-
+    
     $scope.main = {checkbox: false};
     $scope.$watch('main', function (newValue, oldValue) {
         ////console.log(newValue.checkbox);

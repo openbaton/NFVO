@@ -836,7 +836,7 @@
                     </div>
                 </form>
 
-                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                <div class="" ng-if="tmpVnfd.length > 0">
                     <hr>
                     <b>VNFDs into NSD</b>
                     <table class="table table-condensed">
@@ -849,7 +849,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="vnfd in nsdCreateTmp.vnfd track by $index">
+                        <tr ng-repeat="vnfd in tmpVnfd track by $index">
                             <td>{{vnfd.type}}</td>
                             <td>{{vnfd.name}}</td>
                             <td>{{vnfd.endpoint}}</td>
@@ -889,7 +889,7 @@
                     </table>
                 </div>
 
-                <div class="" ng-if="nsdCreateTmp.vnfd.length > 0">
+                <div class="" >
                     <hr>
                     <b>Virtual Link Descriptor</b>
                     <div class="form-group">
@@ -950,7 +950,7 @@
 
                                     <select name="typeSelect" class="form-control modal-select"
                                             ng-model="dependency.source.name"
-                                            ng-options="vnfd.name as vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in tmpVnfd"
                                             ng-change="">
                                     </select>
 
@@ -965,7 +965,7 @@
 
                                     <select name="typeSelect" class="form-control modal-select"
                                             ng-model="dependency.target.name"
-                                            ng-options="vnfd.name as vnfd.name for vnfd in nsdCreateTmp.vnfd"
+                                            ng-options="vnfd.name as vnfd.name for vnfd in tmpVnfd"
                                             ng-change="">
                                     </select>
                                 </div>

@@ -86,7 +86,7 @@
 
 
 <div class="modal fade" id="addEditVNDF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div style="width:40%;" class="modal-dialog" role="document">
+	<div   style="width:40%;" class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -144,10 +144,13 @@
 					<tabset>
 						<tab class="" heading="Configuration Parameters">
 							<div class="row">
+								<h4 class="">
 								<div class="col-lg-12">
-									<a class="pull-right" title="Add a New VDU" href="" ng-click="addConfPar()">
+									<a class="pull-right" style="padding-right: 15px;" title="Add a New VDU" href="" ng-click="addConfPar()">
 										<i class="fa fa-plus-square"> Add </i></a>
+								
 								</div>
+								</h4>
 								<label for="conf_name" class="col-sm-4 control-label">Configuration name</label>
 
 								<div class="col-sm-6">
@@ -636,7 +639,7 @@
 										</table>
 									</div>
 									<div ng-repeat="vim in vimInstances" ng-show="vduCreate.vimInstanceName.length > 0">
-										<div class="table-responsive">
+										<div class="table-responsive" ng-if="vim.name==vduCreate.vimInstanceName">
 
 											<table class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
 												<thead>
