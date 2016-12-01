@@ -619,8 +619,8 @@
 </div>
 
 
-<div class="modal" id="modalCreateNSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog">
+<div  class="modal" id="modalCreateNSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" style="width:100%;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
@@ -1442,6 +1442,53 @@
 
                 <!--<tab heading="Configuration">-->
                 <!--</tab>-->
+                <tab heading="Configuration parameters">
+                    <div class="container-fluid">
+                        
+                            <p>
+                              Configuration parameters are the dynamic parameters and would be used during lifecycle events
+                            </p>
+                    <div class="form-group">
+                        <div class="form row">
+						<label for="Configuration Element" class="col-sm-4 control-label">Configuration for Element</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="Configuration Element" ng-model="basicConfiguration.name" />
+						</div>
+                        </div>
+                         <div class="form row">
+                        <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
+
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="Configuration Name" ng-model="basicConfiguraiton.config.name" />
+						</div>
+                        </div>
+					</div>
+                    <div ng-repeat="conf in basicConfiguration.config.configurationParameters track by $index" class="table-responsive">
+						<table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable" >
+					        <thead>
+                                <tr><th> Configuration key </th><th> Configuration value</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.confkey" /></td><td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.value" /></td></tr>
+                            </tbody>
+                            </table>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable" >
+                            
+                            <tbody><tr><td><textarea style="width:100%;" name="Description" ng-model="conf.description" id="conf.description" title="Here you can put a human readable description"
+                                  class="form-control" >
+                                </textarea></td></tr>
+                            </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-click="addConftoLaunch()">Add Parameter</button>        
+                                
+                   
+
+               
+               </div>
+              
+                </tab>
             </tabset>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
