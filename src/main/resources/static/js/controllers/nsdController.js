@@ -247,13 +247,25 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     // ];
 
     $scope.selection = [];
+    function checkPresence(link, links) {
+        console.log(links);
+        for (i = 0; i < links.length; i++) {
+            console.log(links[i].name + " " + link.name );
+            if (links[i].name === link.name) {
+                return true;
+            }
 
+        }
+        return false;
+
+    };
     $scope.addTONSD = function () {
         $scope.nsdCreateTmp.vnfd.push({id:$scope.selectedVNFD.id});
          $scope.tmpVnfd.push(angular.copy($scope.selectedVNFD));
+        
                 $scope.selectedVNFD.virtual_link.map(function(link) {
-                    console.log($scope.nsdCreateTmp.vld.indexOf(link));
-                    if ($scope.nsdCreateTmp.vld.indexOf(link) < 0) {
+                     console.log(checkPresence(link, $scope.nsdCreateTmp.vld));
+                    if (!checkPresence(link, $scope.nsdCreateTmp.vld)) {
                        $scope.nsdCreateTmp.vld.push(link);
                     }
                     
@@ -261,6 +273,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 });
         console.log($scope.nsdCreateTmp);
     };
+
 
     $scope.saveDependency = function () {
         //console.log($scope.dependency);
