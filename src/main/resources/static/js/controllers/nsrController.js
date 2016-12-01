@@ -434,6 +434,13 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+         window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
         $('.modal').modal('hide');
     }
 

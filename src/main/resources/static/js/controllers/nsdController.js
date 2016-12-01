@@ -24,6 +24,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     var urlVim = baseURL + '/datacenters/';
     var urlVNFD = baseURL + '/vnf-descriptors/';
     var dropzoneUrl = baseURL + '/csar-nsd/';
+    var basicConf = {description:"", confKey:"", value:""};
+   
 
     $scope.list = {}
     $scope.nsdToSend = {};
@@ -33,7 +35,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vimInstances = [];
     $scope.keys = [];
     $scope.launchKeys = [];
-    $scope.launchObj = {"keys": []};
+    $scope.launchObj = {"keys": [], configurations:{}};
     $scope.launchNsdVim = [];
     $scope.launchPops = {};
     $scope.launchPopsAvailable = {};
@@ -43,6 +45,9 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vduToVIM = [];
     $scope.vduWithName = 0;
     $scope.tmpVnfd = [];
+    $scope.elementName = "";
+    $scope.basicConfiguration = {name:"", config:{name:"", configurationParameters:[]}};
+    
 
     loadTable();
     loadKeys();
@@ -643,9 +648,11 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         });
 
         // $scope.launchObj.vduVimInstances = $scope.vimForLaunch;
-        console.log(JSON.stringify($scope.launchObj));
-
-        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
+        //console.log($scope.basicConfiguration.name);
+        $scope.launchObj.configurations={};
+        $scope.launchObj.configurations[$scope.basicConfiguration.name] = $scope.basicConfiguration.config;
+         console.log(JSON.stringify($scope.launchObj));
+       http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -943,6 +950,11 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $scope.tabs.push(tab);
         }
     }
+    $scope.addConftoLaunch = function() {
+        
+        $scope.basicConfiguration.config.configurationParameters.push({description:"", confKey:"", value:""});
+        console.log($scope.basicConfiguration);
+    };
     
     angular.element(document).ready(function () {
         if (angular.isUndefined($routeParams.packageid)) {
