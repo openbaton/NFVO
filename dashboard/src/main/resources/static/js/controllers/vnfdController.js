@@ -139,6 +139,9 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
     $scope.saveValueMPfromVNFD = function (newValue) {
         console.log(newValue);
+        if (newValue.length <= 0) {
+            return;
+        };
         $scope.vnfdCreate.monitoring_parameter.push(newValue);
     };
     $scope.editVDU = function (vnfd, index) {
