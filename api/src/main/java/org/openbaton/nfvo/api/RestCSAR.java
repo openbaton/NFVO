@@ -124,7 +124,8 @@ public class RestCSAR {
   public String marketDownloadNS(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException {
+          NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException,
+          EntityInUseException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();

@@ -20,6 +20,7 @@ package org.openbaton.nfvo.api;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
@@ -49,7 +50,7 @@ public class RestToscaNetworkServiceDescriptor {
   private NetworkServiceDescriptor postTosca(
       @RequestBody String nsd_yaml, @RequestHeader(value = "project-id") String projectId)
       throws NetworkServiceIntegrityException, BadFormatException, NotFoundException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
 
     NSDTemplate nsdTemplate = Utils.stringToNSDTemplate(nsd_yaml);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);

@@ -49,12 +49,12 @@ public interface NetworkServiceDescriptorManagement {
   NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException;
+          CyclicDependenciesException, EntityInUseException;
 
   NetworkServiceDescriptor onboardFromMarketplace(String link, String project_id)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException;
+          AlreadyExistingException, EntityInUseException;
 
   /**
    * This operation allows disabling a Network Service Descriptor, so that it is not possible to

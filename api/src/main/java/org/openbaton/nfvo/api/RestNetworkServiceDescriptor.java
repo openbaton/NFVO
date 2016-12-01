@@ -82,7 +82,7 @@ public class RestNetworkServiceDescriptor {
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
     NetworkServiceDescriptor nsd;
     log.trace("Just Received: " + networkServiceDescriptor);
     nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);
@@ -106,7 +106,7 @@ public class RestNetworkServiceDescriptor {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, EntityInUseException {
 
     log.debug("LINK: " + link);
     String downloadlink = link.get("link").getAsString();

@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -116,7 +117,7 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
     UrlValidator urlValidator = new UrlValidator();
@@ -170,7 +171,12 @@ public class NetworkServiceDescriptorManagement
     log.trace("Persisted VNFDependencies");
 
     networkServiceDescriptor.setProjectId(projectId);
-    networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
+    try {
+      networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
+    } catch (Exception e) {
+      throw new org.openbaton.exceptions.EntityInUseException(
+          "One of the VNF chosen is already in use by another NS");
+    }
     log.info("Created NetworkServiceDescriptor with id " + networkServiceDescriptor.getId());
     return networkServiceDescriptor;
   }
@@ -179,7 +185,7 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, EntityInUseException {
 
     InputStream in = new BufferedInputStream(new URL(link).openStream());
 
