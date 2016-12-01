@@ -662,7 +662,7 @@
                     <div class="input-group">
                         <label class=" ">VNFD in the Catalogue</label>
                         <select name="typeSelect" class="form-control modal-open" ng-model="selectedVNFD"
-                                ng-options="vnfd.type for vnfd in vnfdList| orderBy:'itemKey':false">
+                                ng-options="vnfd.name for vnfd in vnfdList| orderBy:'itemKey':false">
                         </select>
                         <span class="input-group-btn">
                             <button class="btn btn-default" ng-click="addTONSD()" type="button"
