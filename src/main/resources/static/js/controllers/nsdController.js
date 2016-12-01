@@ -651,7 +651,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         //console.log($scope.basicConfiguration.name);
         $scope.launchObj.configurations={};
         $scope.launchObj.configurations[$scope.basicConfiguration.name] = $scope.basicConfiguration.config;
-         //console.log(JSON.stringify($scope.launchObj));
+         console.log(JSON.stringify($scope.launchObj));
        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
