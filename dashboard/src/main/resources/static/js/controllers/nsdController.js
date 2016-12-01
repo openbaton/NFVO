@@ -104,7 +104,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             counts: [5, 10, 20],
             total: filteredKeys.length,
             getData: function (params) {
-                console.log($scope.keys);
+               // console.log($scope.keys);
                 filteredKeys = params.sorting() ? $filter('orderBy')($scope.keys, params.orderBy()) : $scope.keys;
                 filteredKeys = params.filter() ? $filter('filter')(filteredKeys, params.filter()) : filteredKeys;
                 $scope.tableParamsFilteredKeys.total(filteredKeys.length);
@@ -154,7 +154,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             counts: [5, 10, 20],
             total: filteredLaunchPops.length,
             getData: function (params) {
-                console.log($scope.selectedVnfd);
+                //console.log($scope.selectedVnfd);
                 filteredLaunchPops = params.sorting() ? $filter('orderBy')($scope.launchPops[$scope.selectedVnfd.name].pops, params.orderBy()) : $scope.launchPops[$scope.selectedVnfd.name].pops;
                 //filteredLaunchPops = params.filter() ? $filter('filter')(filteredLaunchPops, params.filter()) : filteredLaunchPops;
                 $scope.tableParamsFilteredPops.total(filteredLaunchPops.length);
@@ -170,7 +170,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.selectedVnfd = vnfd;
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
-        console.log($scope.selectedVnfd);
+        //console.log($scope.selectedVnfd);
     }
 
     function loadKeys() {
@@ -252,7 +252,12 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.nsdCreateTmp.vnfd.push({id:$scope.selectedVNFD.id});
          $scope.tmpVnfd.push(angular.copy($scope.selectedVNFD));
                 $scope.selectedVNFD.virtual_link.map(function(link) {
-                    $scope.nsdCreateTmp.vld.push(link);
+                    console.log($scope.nsdCreateTmp.vld.indexOf(link));
+                    if ($scope.nsdCreateTmp.vld.indexOf(link) < 0) {
+                       $scope.nsdCreateTmp.vld.push(link);
+                    }
+                    
+               
                 });
         console.log($scope.nsdCreateTmp);
     };
