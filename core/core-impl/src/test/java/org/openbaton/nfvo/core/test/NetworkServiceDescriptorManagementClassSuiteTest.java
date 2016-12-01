@@ -199,7 +199,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Ignore
   public void nsdManagementOnboardExceptionTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
     exception.expect(NotFoundException.class);
@@ -209,7 +209,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementOnboardTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
 
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 

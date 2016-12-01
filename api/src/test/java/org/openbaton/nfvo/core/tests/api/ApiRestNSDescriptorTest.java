@@ -83,7 +83,7 @@ public class ApiRestNSDescriptorTest {
   @Test
   public void NSDCreate()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException {
+          CyclicDependenciesException, EntityInUseException {
     when(nsdManagement.onboard(any(networkServiceDescriptor.getClass()), anyString()))
         .thenReturn(networkServiceDescriptor);
     NetworkServiceDescriptor networkServiceDescriptor2 =
