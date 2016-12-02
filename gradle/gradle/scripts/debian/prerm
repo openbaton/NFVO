@@ -36,6 +36,9 @@ OPENBATON_COMPONENT_NAME=nfvo
 
 OPENBATON_COMPONENT_JAR_FILE_NAME=openbaton-${OPENBATON_COMPONENT_NAME}
 
+OPENBATON_BASE_CONFIG_DIR=/etc/openbaton
+OPENBATON_COMPONENT_CONFIG_FILE=openbaton-${OPENBATON_COMPONENT_NAME}.properties
+
 
 ####################
 #### Open Baton ####
@@ -54,4 +57,29 @@ stop_running () {
     fi
 }
 
+save_old_config_file_for_upgrade () {
+    cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/
+}
+
+
+##############
+#### Main ####
+##############
+
 stop_running
+
+case "${1}" in
+    upgrade)
+        save_old_config_file_for_upgrade
+        ;;
+
+    remove|purge|failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+    
+    *)
+        log_failure_msg "prerm called with unknown argument ${1}"
+        exit 1
+        ;;
+esac
+
+exit 0
