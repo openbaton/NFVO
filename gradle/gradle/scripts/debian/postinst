@@ -58,7 +58,7 @@ DEBIAN_FRONTEND=${DEBIAN_FRONTEND:-$DEBIAN_FRONTEND_DEFAULT}
 configure_rabbitmq () {
     # TODO: check rabbitmq-server is started
     #if rabbitmq is running
-        result=$($_ex 'rabbitmqctl list_users' | grep '^admin' | wc -l)
+        result=$(rabbitmqctl list_users | grep '^admin' | wc -l)
     	if [ ${result} -eq 0 ]; then
             rabbitmqctl add_user admin openbaton
             rabbitmqctl set_user_tags admin administrator
