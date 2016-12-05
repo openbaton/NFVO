@@ -1,0 +1,147 @@
+tosca_definitions_version:
+  required: yes
+  type: String
+
+description:
+  required: yes
+  type: String
+
+metadata:
+  required: yes
+  ID:
+    type: String
+  vendor:
+    type: String
+  version:
+    type: String
+
+topology_template:
+  required: yes
+
+  node_templates:
+    required : yes
+
+    VNF_NODE:
+      type:
+        required: yes
+        type: String
+        value:
+      properties:
+        required: yes
+
+        vnfPackageLocation:
+          required: no
+          type: String
+
+        deploymentFlavour:
+            required: no
+            type: List<String>
+
+          configurations:
+            required: no
+            type: Map
+
+        endpoint:
+            required: no
+            type: String
+
+        type:
+            required: no
+            type: String
+
+        auto_scale_policy:
+            required: no
+            type: AutoScale Policy
+
+      interfaces:
+        required: no
+        type: Map<String,List<String>>
+
+      requirements:
+        required: no
+        type: List of key value pairs
+        - virtualLink: ..
+        - vdu: ...
+
+    VDU_NODE:
+      type:
+        required: yes
+        type: String
+        value: tosca.nodes.nfv.VDU
+      name:
+        required: no
+        type: String
+      artifacts:
+        required: no
+
+        artifact1:
+          type:
+            required: yes
+            type: String
+            value: tosca.artifacts.Deployment.Image.VM
+          file:
+            required: yes
+            type: String
+
+
+      properties:
+        required: no
+
+        scale_in_out:
+          required: no
+          type: String
+        vim_instance_name:
+          required: no
+          type: String
+
+
+    CP_NODE:
+      type:
+        required: yes - not supp
+        type: String
+        value: tosca.nodes.nfv.CP
+      name:
+        required: no
+        type: String
+      properties:
+        required: no
+        floatingIP:
+          required: no
+          type: String
+
+      requirements:
+        required: no
+        type: List<String>
+          - virtualLink : name (String)
+          - virtualBinding: name (String)
+
+
+    VL_NODE:
+      type:
+        required: yes
+        type: String
+        value: tosca.nodes.nfv.VL
+      name:
+        required: no
+        type: String
+      vendor:
+        required: no
+        type: String
+
+relationships_template:
+  required: no
+  relationship1:
+    type:
+      required: yes
+      type: String
+      value: tosca.nodes.relationships.ConnectsTo
+    source:
+      required: yes
+      type: String
+    target:
+      required: yes
+      type: String
+    parameters:
+      required: yes
+      type: List<String>
+
