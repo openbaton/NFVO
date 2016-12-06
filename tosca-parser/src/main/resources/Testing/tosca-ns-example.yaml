@@ -23,7 +23,7 @@ topology_template:
               - key: value
               - key2: value2
           vnfPackageLocation: https://github.com/openbaton/vnf-scripts.git
-          deployment_flavour:
+          deploymentFlavour:
             - flavour_key: m1.small
         requirements:
           - virtualLink: mgmt

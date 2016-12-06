@@ -23,7 +23,7 @@ topology_template:
               - key: value
               - key2: value2
           vnfPackageLocation: https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git
-          deployment_flavour:
+          deploymentFlavour:
             - flavour_key: m1.small
             - flavour_key: m1.large
         requirements:

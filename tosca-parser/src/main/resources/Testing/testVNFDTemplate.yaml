@@ -10,7 +10,8 @@ inputs:
   vnfPackageLocation: https://gitlab.fokus.fraunhofer.de/openbaton/scripts-test-public.git
   deploymentFlavour:
     - flavour_key: m1.small
-
+  type: server
+  endpoint: generic
   interfaces:
       lifecycle: # lifecycle
           INSTANTIATE:

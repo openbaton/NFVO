@@ -62,7 +62,8 @@ public class ToscaTest {
   }
 
   @Test
-  public void testGetNodesFromVNFDTemplate() throws FileNotFoundException, NotSupportedType {
+  public void testGetNodesFromVNFDTemplate()
+      throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -156,7 +157,8 @@ public class ToscaTest {
   }
 
   @Test
-  public void testCreatingVNFDInstance() throws FileNotFoundException, NotSupportedType {
+  public void testCreatingVNFDInstance()
+      throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -177,7 +179,8 @@ public class ToscaTest {
   }
 
   @Test
-  public void testVNFDServerIperf() throws FileNotFoundException, NotSupportedType {
+  public void testVNFDServerIperf()
+      throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/vnfd_server_iperf.yaml"));

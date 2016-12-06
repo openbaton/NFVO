@@ -20,6 +20,7 @@ package org.openbaton.tosca.tests;
 import com.google.gson.Gson;
 import org.junit.Test;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.parser.CSARParser;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.VNFDTemplate;
@@ -33,7 +34,7 @@ import java.io.FileNotFoundException;
 public class IMSCoreTests {
 
   @Test
-  public void testBind9() throws FileNotFoundException {
+  public void testBind9() throws FileNotFoundException, NotFoundException {
 
     VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/bind9.yaml");
 
@@ -45,7 +46,7 @@ public class IMSCoreTests {
   }
 
   @Test
-  public void testFHOSS() throws FileNotFoundException {
+  public void testFHOSS() throws FileNotFoundException, NotFoundException {
 
     VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/fhoss.yaml");
 
@@ -57,7 +58,7 @@ public class IMSCoreTests {
   }
 
   @Test
-  public void testICSCF() throws FileNotFoundException {
+  public void testICSCF() throws FileNotFoundException, NotFoundException {
 
     VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/icscf.yaml");
 
@@ -69,7 +70,7 @@ public class IMSCoreTests {
   }
 
   @Test
-  public void testSCSCF() throws FileNotFoundException {
+  public void testSCSCF() throws FileNotFoundException, NotFoundException {
 
     VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/scscf.yaml");
 
@@ -81,7 +82,7 @@ public class IMSCoreTests {
   }
 
   @Test
-  public void testPCSCF() throws FileNotFoundException {
+  public void testPCSCF() throws FileNotFoundException, NotFoundException {
 
     VNFDTemplate VNFDTemplate = Utils.fileToVNFDTemplate("src/main/resources/IMS/pcscf.yaml");
 
