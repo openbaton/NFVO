@@ -285,13 +285,27 @@ public class DependencyManagement
           }
         }
 
-        for (ConfigurationParameter cp :
-            virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()) {
-          if (cp.getConfKey().equals(keyValueDep.getKey())) {
-            log.debug(
-                "Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
-            keyValueDep.setValue(cp.getValue());
-            break;
+        if (virtualNetworkFunctionRecord.getConfigurations() != null) {
+          log.debug(
+              "VNFR "
+                  + virtualNetworkFunctionRecord.getId()
+                  + " with name "
+                  + virtualNetworkFunctionRecord.getName()
+                  + " does not have any configuration parameters");
+          if (!virtualNetworkFunctionRecord
+              .getConfigurations()
+              .getConfigurationParameters()
+              .isEmpty()) {
+
+            for (ConfigurationParameter cp :
+                virtualNetworkFunctionRecord.getConfigurations().getConfigurationParameters()) {
+              if (cp.getConfKey().equals(keyValueDep.getKey())) {
+                log.debug(
+                    "Filling parameter " + keyValueDep.getKey() + " with value: " + cp.getValue());
+                keyValueDep.setValue(cp.getValue());
+                break;
+              }
+            }
           }
         }
       }

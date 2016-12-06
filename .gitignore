@@ -1,4 +1,5 @@
 *.class
+classes/ 
 
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
