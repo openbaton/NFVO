@@ -18,6 +18,7 @@
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
+import org.openbaton.tosca.exceptions.NotFoundException;
 
 import java.util.*;
 
@@ -113,7 +114,7 @@ public class VNFProperties {
     this.deploymentFlavour = deploymentFlavour;
   }
 
-  public Set<VNFDeploymentFlavour> getDeploymentFlavourConverted() {
+  public Set<VNFDeploymentFlavour> getDeploymentFlavourConverted() throws NotFoundException {
 
     Set<VNFDeploymentFlavour> vnfdf = new HashSet<>();
 
@@ -129,7 +130,7 @@ public class VNFProperties {
           }
         }
       }
-    }
+    } else throw new NotFoundException("Please specify a deployment flavor!");
 
     return vnfdf;
   }

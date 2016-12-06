@@ -17,6 +17,7 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
+import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
 import java.util.Map;
@@ -32,11 +33,14 @@ public class VNFNodeTemplate {
   private VNFInterfaces interfaces = null;
   private VNFRequirements requirements = null;
 
-  public VNFNodeTemplate(NodeTemplate nodeTemplate, String nodeName) {
+  public VNFNodeTemplate(NodeTemplate nodeTemplate, String nodeName) throws NotFoundException {
 
     this.name = nodeName;
     this.type = nodeTemplate.getType();
 
+    if (nodeTemplate.getProperties() == null)
+      throw new NotFoundException(
+          "You should specify at least endpoint, deployment_flavour and type in properties for VNF: ");
     properties = new VNFProperties(nodeTemplate.getProperties());
 
     requirements = new VNFRequirements(nodeTemplate.getRequirements());

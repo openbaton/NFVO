@@ -17,6 +17,7 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate;
 
+import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP.CPNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU.VDUNodeTemplate;
@@ -110,7 +111,7 @@ public class TopologyTemplate {
     return vlNodes;
   }
 
-  public List<VNFNodeTemplate> getVNFNodes() {
+  public List<VNFNodeTemplate> getVNFNodes() throws NotFoundException {
 
     List<VNFNodeTemplate> vnfNodes = new ArrayList<>();
 

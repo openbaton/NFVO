@@ -50,7 +50,8 @@ public class RestToscaNetworkServiceDescriptor {
   private NetworkServiceDescriptor postTosca(
       @RequestBody String nsd_yaml, @RequestHeader(value = "project-id") String projectId)
       throws NetworkServiceIntegrityException, BadFormatException, NotFoundException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException,
+          org.openbaton.tosca.exceptions.NotFoundException {
 
     NSDTemplate nsdTemplate = Utils.stringToNSDTemplate(nsd_yaml);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);

@@ -512,7 +512,8 @@ public class CSARParser {
    */
 
   public VirtualNetworkFunctionDescriptor onboardVNFD(byte[] bytes, String projectId)
-      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage {
+      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
+          org.openbaton.tosca.exceptions.NotFoundException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
@@ -535,7 +536,8 @@ public class CSARParser {
   }
 
   public NetworkServiceDescriptor onboardNSD(byte[] bytes, String projectId)
-      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage {
+      throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
+          org.openbaton.tosca.exceptions.NotFoundException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);

@@ -20,6 +20,7 @@ package org.openbaton.tosca.parser;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.RelationshipsTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP.CPNodeTemplate;
@@ -148,7 +149,7 @@ public class TOSCAParser {
    * @return
    */
   private VirtualNetworkFunctionDescriptor parseVNFNode(
-      VNFNodeTemplate vnf, TopologyTemplate topologyTemplate) {
+      VNFNodeTemplate vnf, TopologyTemplate topologyTemplate) throws NotFoundException {
 
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 
@@ -158,7 +159,11 @@ public class TOSCAParser {
 
     vnfd.setDeployment_flavour(vnf.getProperties().getDeploymentFlavourConverted());
     vnfd.setVnfPackageLocation(vnf.getProperties().getVnfPackageLocation());
+    if (vnf.getProperties().getEndpoint() == null)
+      throw new NotFoundException("No endpoint specified in properties for VNF: " + vnfd.getName());
     vnfd.setEndpoint(vnf.getProperties().getEndpoint());
+    if (vnf.getProperties().getType() == null)
+      throw new NotFoundException("No type specified in properties for VNF: " + vnfd.getName());
     vnfd.setType(vnf.getProperties().getType());
 
     if (vnf.getProperties().getAuto_scale_policy() != null) {
@@ -231,19 +236,28 @@ public class TOSCAParser {
    * @param VNFDTemplate
    * @return
    */
-  public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate VNFDTemplate) {
+  public VirtualNetworkFunctionDescriptor parseVNFDTemplate(VNFDTemplate VNFDTemplate)
+      throws NotFoundException {
 
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
 
     // ADD SETTINGS
-
+    if (VNFDTemplate.getMetadata() == null)
+      throw new NotFoundException("The VNFD Template must have contain metadata child!");
     vnfd.setName(VNFDTemplate.getMetadata().getID());
     vnfd.setVendor(VNFDTemplate.getMetadata().getVendor());
     vnfd.setVersion(VNFDTemplate.getMetadata().getVersion());
 
+    if (VNFDTemplate.getInputs() == null)
+      throw new NotFoundException(
+          "You should specify at least endpoint, deployment_flavour and type in inputs");
     vnfd.setDeployment_flavour(VNFDTemplate.getInputs().getDeploymentFlavourConverted());
     vnfd.setVnfPackageLocation(VNFDTemplate.getInputs().getVnfPackageLocation());
+    if (VNFDTemplate.getInputs().getEndpoint() == null)
+      throw new NotFoundException("No endpoint specified in inputs!");
     vnfd.setEndpoint(VNFDTemplate.getInputs().getEndpoint());
+    if (VNFDTemplate.getInputs().getType() == null)
+      throw new NotFoundException("No type specified in inputs!");
     vnfd.setType(VNFDTemplate.getInputs().getType());
 
     // ADD VDUs
@@ -296,10 +310,13 @@ public class TOSCAParser {
    * @param nsdTemplate
    * @return
    */
-  public NetworkServiceDescriptor parseNSDTemplate(NSDTemplate nsdTemplate) {
+  public NetworkServiceDescriptor parseNSDTemplate(NSDTemplate nsdTemplate)
+      throws NotFoundException {
 
     NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
 
+    if (nsdTemplate.getMetadata() == null)
+      throw new NotFoundException("The NSD Template must have a metadata child!");
     nsd.setVersion(nsdTemplate.getMetadata().getVersion());
     nsd.setVendor(nsdTemplate.getMetadata().getVendor());
     nsd.setName(nsdTemplate.getMetadata().getID());

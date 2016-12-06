@@ -19,6 +19,7 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.tosca.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class VNFInterfaces {
     return lifecycle;
   }
 
-  public Set<LifecycleEvent> getOpLifecycle() {
+  public Set<LifecycleEvent> getOpLifecycle() throws NotFoundException {
 
     Map<String, Object> lifecycleMap = (Map<String, Object>) lifecycle;
     Set<LifecycleEvent> lifecycleEvents = new HashSet<>();

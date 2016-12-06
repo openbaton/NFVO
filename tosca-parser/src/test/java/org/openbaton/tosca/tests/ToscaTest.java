@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import org.junit.Test;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.exceptions.NotSupportedType;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.NSDTemplate;
@@ -196,7 +197,8 @@ public class ToscaTest {
   }
 
   @Test
-  public void testNSDIperfTemplate() throws FileNotFoundException, NotSupportedType {
+  public void testNSDIperfTemplate()
+      throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/testNSDIperf.yaml"));
@@ -217,7 +219,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testMultipleVLs() throws FileNotFoundException, NotSupportedType {
+  public void testMultipleVLs() throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/tosca-ns-example.yaml"));
@@ -238,7 +240,8 @@ public class ToscaTest {
   }
 
   @Test
-  public void testNSDIperfASTemplate() throws FileNotFoundException, NotSupportedType {
+  public void testNSDIperfASTemplate()
+      throws FileNotFoundException, NotSupportedType, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/testNSDIperfAutoscaling.yaml"));
