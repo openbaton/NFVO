@@ -19,7 +19,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     var url = $cookieStore.get('URL') + "/api/v1/users/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
-
+    
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -243,7 +243,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
-                    //console.log($scope.users.length);
+                    console.log($scope.users);
                     for (i = 0; i < $scope.users.length; i++) {
                       if ($scope.users[i].username === 'admin') {
                         $scope.adminID = $scope.users[i].id;
@@ -278,6 +278,17 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         loadTable();
         $('.modal').modal('hide');
     }
+
+    $scope.$watch("userObj.password", function(newValue, oldValue) {
+        if ($scope.userObj.password.length === 0) {
+            console.log("here");
+            $scope.mystyle = {'background-color':'pink'};
+        } else {
+            console.log("22");
+            $scope.mystyle = {'background-color':'white'};
+        }
+    }, true);
+
     function updateAsUser() {
         //console.log($scope.userUpdate);
         /*if ($scope.userUpdate.password !== $scope.newpassword) {

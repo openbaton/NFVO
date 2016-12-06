@@ -92,22 +92,26 @@
                 <h4 class="modal-title">Create a new User</h4>
             </div>
             <div class="modal-body">
+                All fields in this form are mandatory. You can hover over the input forms to see the requirments if there are any. The user should be assigned minimum 1 role.
+                If you want the user to have the admin privileges(being able to manage all users and project), check the "Make Admin". You do not need to specify any roles in this case. 
+                <br/>
+                <br/>
                 <form role="form" class="form-horizontal">
 
                     <div class="form-group">
                           <td><input type="checkbox" ng-model="makeAdmin"/>Make Admin</td>
-                        <label for="username" class="col-sm-4 control-label">Username</label>
+                        <label  required for="username" class="col-sm-4 control-label">Username</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="username" name="username"
-                                   ng-model="userObj.username"/>
+                            <input title="The username can contain only latin characters, digits and symbols" type="text" class="form-control" id="username" name="username"
+                                   ng-model="userObj.username" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="pass" class="col-sm-4 control-label">Password</label>
 
                         <div class="col-sm-6">
-                            <input type="password" class="form-control" id="pass" name="pass"
+                            <input ng-style="mystyle" title="Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit" type="password" class="form-control" id="pass" name="pass"
                                    ng-model="userObj.password"/>
                         </div>
                     </div>
@@ -115,7 +119,7 @@
                         <label for="pass" class="col-sm-4 control-label">Reenter Password</label>
 
                         <div class="col-sm-6">
-                            <input type="password" class="form-control" id="pass" name="pass"
+                            <input type="password" title="Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit" class="form-control" id="pass" name="pass"
                                    ng-model="newpassword"/>
                         </div>
                     </div>
