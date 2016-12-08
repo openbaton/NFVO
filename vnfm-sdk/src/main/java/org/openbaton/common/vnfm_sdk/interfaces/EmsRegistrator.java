@@ -24,9 +24,11 @@ import java.util.Set;
  */
 public interface EmsRegistrator {
 
-  void register(String json);
+  Set<String> getExpectedHostnames();
 
-  Set<String> getHostnames();
+  void register(String hostname);
 
-  void unregister(String s);
+  void unregister(String hostname);
+
+  void unregisterFromMsg(String json);
 }
