@@ -164,4 +164,34 @@ public abstract class AbstractVirtualLink implements Serializable {
   public void setName(String name) {
     this.name = name;
   }
+
+  @Override
+  public String toString() {
+    return "AbstractVirtualLink{"
+        + "id='"
+        + id
+        + '\''
+        + ", hb_version="
+        + hb_version
+        + ", extId='"
+        + extId
+        + '\''
+        + ", root_requirement='"
+        + root_requirement
+        + '\''
+        + ", leaf_requirement='"
+        + leaf_requirement
+        + '\''
+        + ", qos="
+        + qos
+        + ", test_access="
+        + test_access
+        + ", connectivity_type='"
+        + connectivity_type
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + '}';
+  }
 }
