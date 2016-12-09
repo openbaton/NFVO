@@ -947,65 +947,66 @@ public class NetworkServiceRecordManagement
     }
     log.trace("Creating " + networkServiceRecord);
 
-    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
-      for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-          Collection<String> instanceNames;
-          if (body == null
-              || body.getVduVimInstances() == null
-              || body.getVduVimInstances().get(vdu.getName()) == null) {
-            if (vdu.getVimInstanceName() == null) {
-              throw new MissingParameterException(
-                  "No VimInstances specified for vdu: " + vdu.getName());
-            }
-            instanceNames = vdu.getVimInstanceName();
-          } else {
-            instanceNames = body.getVduVimInstances().get(vdu.getName());
+    //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        Collection<String> instanceNames;
+        if (body == null
+            || body.getVduVimInstances() == null
+            || body.getVduVimInstances().get(vdu.getName()) == null) {
+          if (vdu.getVimInstanceName() == null) {
+            throw new MissingParameterException(
+                "No VimInstances specified for vdu: " + vdu.getName());
           }
-          for (String vimInstanceName : instanceNames) {
+          instanceNames = vdu.getVimInstanceName();
+        } else {
+          instanceNames = body.getVduVimInstances().get(vdu.getName());
+        }
+        for (String vimInstanceName : instanceNames) {
 
-            VimInstance vimInstance = null;
+          VimInstance vimInstance = null;
 
-            for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-              if (vimInstanceName.equals(vi.getName())) {
-                vimInstance = vi;
-                break;
-              }
+          for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+            if (vimInstanceName.equals(vi.getName())) {
+              vimInstance = vi;
+              break;
             }
+          }
 
-            //check networks
-            for (VNFComponent vnfc : vdu.getVnfc()) {
-              for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
-                  boolean networkExists = false;
-                  for (Network network : vimInstance.getNetworks()) {
-                    if (network.getName().equals(vlr.getName())
-                        || network.getExtId().equals(vlr.getName())) {
-                      networkExists = true;
-                      vlr.setStatus(LinkStatus.NORMALOPERATION);
-                      vlr.setVim_id(vdu.getId());
-                      vlr.setExtId(network.getExtId());
-                      vlr.getConnection().add(vnfdConnectionPoint.getId());
-                      break;
-                    }
-                  }
-                  if (!networkExists) {
-                    Network network = new Network();
-                    network.setName(vlr.getName());
-                    network.setSubnets(new HashSet<Subnet>());
-                    network = networkManagement.add(vimInstance, network);
-                    vlr.setStatus(LinkStatus.NORMALOPERATION);
-                    vlr.setVim_id(vdu.getId());
-                    vlr.setExtId(network.getExtId());
-                    vlr.getConnection().add(vnfdConnectionPoint.getId());
-                  }
+          //check networks
+          for (VNFComponent vnfc : vdu.getVnfc()) {
+            for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
+              //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
+              boolean networkExists = false;
+              for (Network network : vimInstance.getNetworks()) {
+                //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
+                if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
+                    || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+                  networkExists = true;
+                  //                      vlr.setStatus(LinkStatus.NORMALOPERATION);
+                  //                      vlr.setVim_id(vdu.getId());
+                  //                      vlr.setExtId(network.getExtId());
+                  //                      vlr.getConnection().add(vnfdConnectionPoint.getId());
+                  break;
                 }
               }
+              if (!networkExists) {
+                Network network = new Network();
+                network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+                network.setSubnets(new HashSet<Subnet>());
+                network = networkManagement.add(vimInstance, network);
+                //                    vlr.setStatus(LinkStatus.NORMALOPERATION);
+                //                    vlr.setVim_id(vdu.getId());
+                //                    vlr.setExtId(network.getExtId());
+                //                    vlr.getConnection().add(vnfdConnectionPoint.getId());
+              }
+              //                }
             }
           }
         }
       }
     }
+    //    }
 
     NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
