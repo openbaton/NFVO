@@ -43,13 +43,14 @@ import java.util.concurrent.Future;
 @Scope("prototype")
 public class OpenstackVIM extends GenericVIM {
 
-  public OpenstackVIM(String name, int port, String managementPort, ApplicationContext context)
+  public OpenstackVIM(
+      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
       throws PluginException {
-    super("openstack", name, port, managementPort, context);
+    super("openstack." + name, brokerIp, port, managementPort, context);
   }
 
   public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-    super("openstack", managementPort, context);
+    super("openstack", "", managementPort, context);
   }
 
   public OpenstackVIM(int port, String managementPort, ApplicationContext context)

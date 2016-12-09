@@ -55,7 +55,12 @@ public enum Status {
   /**
    * Terminated
    */
-  TERMINATED(6);
+  TERMINATED(6),
+
+  /**
+   * Terminated
+   */
+  RESUMING(7);
 
   private int value;
 
