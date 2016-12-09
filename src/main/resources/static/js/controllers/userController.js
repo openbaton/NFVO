@@ -19,6 +19,9 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     var url = $cookieStore.get('URL') + "/api/v1/users/";
     var urlprojects = $cookieStore.get('URL') + "/api/v1/projects/";
+    $scope.passwordSame = false;
+    $scope.passwordStrong = false;
+    $scope.emailValid = false;
     
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
@@ -32,17 +35,29 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     
     loadTable();
     $scope.newpassword = "";
+
+    http.get(urlprojects)
+        .success(function (response) {
+            //console.log(response);
+            $scope.projects = response;
+            //$scope.projects.push({name: '*'});
+        })
+        .error(function (response, status) {
+            showError(response, status);
+        });
+
     $scope.addRole = function() {
+        console.log($scope.projects[0]);
       var newRole = {
           "role": "USER",
-          "project": ""
+          "project": $scope.projects[0].name
       };
       $scope.userObj.roles.push(newRole);
     };
     $scope.addRoleUpdate = function() {
       var newRole = {
           "role": "USER",
-          "project": ""
+          "project":  $scope.projects[0].name
       };
       $scope.userUpdate.roles.push(newRole);
     };
@@ -59,16 +74,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             });
     };
 
-    http.get(urlprojects)
-        .success(function (response) {
-            //console.log(response);
-            $scope.projects = response;
-            //$scope.projects.push({name: '*'});
-        })
-        .error(function (response, status) {
-            showError(response, status);
-        });
-
+ 
 
     $scope.userObj = {
         "username": "",
@@ -220,11 +226,12 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
           .success(function (response) {
               showOk('User: ' + $scope.adminObj.username + ' saved.');
               loadTable();
+              $scope.adminObj = {};
           })
           .error(function (response, status) {
               showError(response, status);
           });
-            $scope.adminObj = {};
+            
     };
 
     function loadTable() {
@@ -243,7 +250,6 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
-                    console.log($scope.users);
                     for (i = 0; i < $scope.users.length; i++) {
                       if ($scope.users[i].username === 'admin') {
                         $scope.adminID = $scope.users[i].id;
@@ -280,12 +286,42 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }
 
     $scope.$watch("userObj.password", function(newValue, oldValue) {
-        if ($scope.userObj.password.length === 0) {
-            console.log("here");
-            $scope.mystyle = {'background-color':'pink'};
+        if ($scope.userObj.password.length < 8 || !(/[a-z]/.test($scope.userObj.password)) || !(/[A-Z]/.test($scope.userObj.password)) || !(/[0-9]/.test($scope.userObj.password))) {
+            $scope.passstyle = {'background-color':'pink'};
+            $scope.passwordStrong = false;
         } else {
-            console.log("22");
-            $scope.mystyle = {'background-color':'white'};
+            $scope.passstyle = {'background-color':'white'};
+            $scope.passwordStrong = true;
+        }
+    }, true);
+
+
+     $scope.$watch("userObj.email", function(newValue, oldValue) {
+         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+        if (re.test($scope.userObj.email)) {
+            $scope.emailstyle = {'background-color':'white'};
+            $scope.emailValid = true;
+        } else {
+            $scope.emailstyle = {'background-color':'pink'};
+            $scope.emailValid = false;
+        }
+    }, true);
+
+  
+    $scope.$watchGroup(["userObj.password", "newpassword", "userObj.username"], function(newValue, oldValue) {
+        if ($scope.userObj.password !== $scope.newpassword) {
+            $scope.passwordSame = false;
+            $scope.checkstyle = {'background-color':'pink'};
+        } else {
+            $scope.checkstyle = {'background-color':'white'};
+            $scope.passwordSame = true;
+        }
+        if ($scope.userObj.username.length > 0) {
+            $scope.namestyle = {'background-color':'white'};
+
+        } else {
+            $scope.namestyle = {'background-color':'pink'};
         }
     }, true);
 
