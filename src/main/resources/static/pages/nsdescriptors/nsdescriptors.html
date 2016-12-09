@@ -33,17 +33,17 @@
                 ng-style="{'margin-left':'25px'}"
                 title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
         </button>
-        <button  class="btn btn-primary pull-right"
+        <!--button  class="btn btn-primary pull-right"
                 title="Create a new Network Service Descriptor"
                 ng-style="{'margin-left':'25px'}" data-target="#modalFileCSAR" data-toggle="modal">Upload CSAR NSD
-        </button>
-        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+        </button-->
+        <!--button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
                 title="Create a new Network Service Descriptor" data-toggle="modal"
                 data-target="#modalFile">Upload NSD
-        </button>
+        </button-->
         <button ng-click="loadVNFD()" class="btn btn-primary pull-right"
                 title="Create a new Network Service Descriptor"
-                ng-style="{'margin-right':'20px'}">Create NSD
+                >Add NSD
         </button>
         
         <!-- <button id="btn_create_nsdf" href="#" class="btn btn-primary pull-right"
@@ -621,7 +621,11 @@
 
 <div  class="modal" id="modalCreateNSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog">
+      
+            
         <div class="modal-content">
+              <tabset>
+            <tab heading="Create NSD">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                         aria-hidden="true">&times;</button>
@@ -661,7 +665,7 @@
 
                     <div class="input-group">
                         <label class=" ">VNFD in the Catalogue</label>
-                        <select name="typeSelect" class="form-control modal-open" ng-model="selectedVNFD"
+                        <select name="typeSelect" class="form-control" ng-model="selectedVNFD"
                                 ng-options="vnfd.name for vnfd in vnfdList| orderBy:'itemKey':false">
                         </select>
                         <span class="input-group-btn">
@@ -836,7 +840,7 @@
 
                 <div class="" ng-if="tmpVnfd.length > 0">
                     <hr>
-                    <b>VNFDs into NSD</b>
+                    <b>VNFDs in NSD</b>
                     <table class="table table-condensed">
                         <thead>
                         <tr>
@@ -921,7 +925,95 @@
                     Save NSD
                 </button>
             </div><!--footer-->
+            </tab>
+            <tab heading="Upload NSD">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Save a Network Service Descriptor</h4>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" id="formJson">
+                    <div class="form-group">
+                     
+                        <br> <label for="jsonInputArea">Insert Your Json</label>
+                                <textarea name="textTopologyJson" ng-model="textTopologyJson"
+                                          ng-change="changeText(textTopologyJson)" id="jsonInputArea"
+                                          class="form-control" rows="5"
+                                          placeholder="{ }"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jsonInputFile">File input</label>
+                        <input type="file" id="jsonInputFile" onchange="angular.element(this).scope().setFile(this)">
+
+                        <p class="help-block">Example: NetworkServiceDescriptor.json </p>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="storeNSD"
+                        ng-click="sendFile()" class="btn btn-primary">Store NSD
+                </button>
+            </div>
+            </tab>
+            <tab heading="Upload CSAR">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Upload a CSAR NSD</h4>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" id="my-dropzone" class="">
+                    <h4>Drag and drop files below</h4>
+
+                    <div class="upload-drop-zone dz-clickable dz-default dz-messageF" id="drop-zone">
+                        Just drag and drop files here
+                    </div>
+
+                    <div class="table table-striped" class="files" id="previews">
+
+                        <div id="template" class="file-row">
+                            <!-- This is used as the file preview template -->
+                            <div>
+                                <span class="preview"><img data-dz-thumbnail/></span>
+                            </div>
+                            <div>
+                                <p class="name" data-dz-name></p>
+                                <strong class="error text-danger" data-dz-errormessage></strong>
+                            </div>
+                            <div>
+                                <p class="size" data-dz-size></p>
+
+                                <div id="total-progress" class="progress progress-striped active" role="progressbar"
+                                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                    <div class="progress-bar progress-bar-success" style="width:0%;"
+                                         data-dz-uploadprogress></div>
+                                </div>
+                            </div>
+                            <div>
+                                <button data-dz-remove class="btn btn-warning cancel">
+                                    <i class="glyphicon glyphicon-ban-circle"></i>
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+                <button type="button" id="submit-all" class="btn btn-primary">Send All</button>
+            </div>
+        
+            </tab>
         </div> <!--modal-content-->
+        
     </div><!--modal-dialog-->
 </div><!-- /.modal -->
 

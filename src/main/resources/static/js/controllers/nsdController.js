@@ -26,7 +26,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     var dropzoneUrl = baseURL + '/csar-nsd/';
     var basicConf = {description:"", confKey:"", value:""};
    
-
+    $scope.selectedVNFD = "";
     $scope.list = {}
     $scope.nsdToSend = {};
     $scope.textTopologyJson = '';
@@ -260,8 +260,10 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
     };
     $scope.addTONSD = function () {
+        console.log($scope.selectedVNFD);
         $scope.nsdCreateTmp.vnfd.push({id:$scope.selectedVNFD.id});
          $scope.tmpVnfd.push(angular.copy($scope.selectedVNFD));
+     
         
                 $scope.selectedVNFD.virtual_link.map(function(link) {
                      console.log(checkPresence(link, $scope.nsdCreateTmp.vld));
