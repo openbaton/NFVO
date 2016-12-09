@@ -392,11 +392,18 @@ public class NSDUtils {
           names.add(deploymentFlavour.getFlavour_key());
         }
       } else {
-        throw new NetworkServiceIntegrityException(
-            "Flavour must be set in VNFD: "
-                + virtualNetworkFunctionDescriptor.getName()
-                + ". Come on... check the PoP page and pick at least one "
-                + "DeploymentFlavor");
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+          if (vdu.getComputation_requirement() == null
+              || vdu.getComputation_requirement().isEmpty()) {
+            throw new NetworkServiceIntegrityException(
+                "Flavour must be set in VNFD or all VDUs: "
+                    + virtualNetworkFunctionDescriptor.getName()
+                    + ". Come on... check the PoP page and pick at least one "
+                    + "DeploymentFlavor");
+          } else {
+            names.add(vdu.getComputation_requirement());
+          }
+        }
       }
 
       if (virtualNetworkFunctionDescriptor.getVirtual_link() != null) {
