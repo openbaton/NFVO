@@ -405,7 +405,8 @@ public class OpenstackVIM extends GenericVIM {
         log.debug("vimInstance.getKeyPair() is null");
         vimInstance.setKeyPair("");
       }
-      if (networks == null) throw new NullPointerException("networks is null");
+      if (networks == null || networks.isEmpty())
+        throw new NullPointerException("networks is null");
       if (vimInstance.getSecurityGroups() == null)
         throw new NullPointerException("vimInstance.getSecurityGroups() is null");
 
