@@ -76,11 +76,11 @@ public class ScalingTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
 
     log.debug("NFVO: SCALING");
-    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
     log.debug(
         "The VNFR: "
             + virtualNetworkFunctionRecord.getName()
-            + " is in status --> "
+            + " is in status: "
             + virtualNetworkFunctionRecord.getStatus());
 
     saveVirtualNetworkFunctionRecord();
@@ -104,7 +104,7 @@ public class ScalingTask extends AbstractTask {
       }
     }
 
-    log.info("The component to add is: " + componentToAdd);
+    log.info("The VNFC to add to VNFR ("+virtualNetworkFunctionRecord.getId()+") is: " + componentToAdd);
     if (checkQuota) {
       Map<String, VimInstance> vimInstanceMap =
           lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
@@ -118,7 +118,7 @@ public class ScalingTask extends AbstractTask {
                   componentToAdd,
                   vimInstanceMap.get(vdu.getId()),
                   userdata);
-          log.debug("Added new component with id: " + future.get());
+          log.debug("Added new VNFC with id: " + future.get()+" to VNFR "+virtualNetworkFunctionRecord.getId());
         } catch (ExecutionException exe) {
           try {
             Throwable realException = exe.getCause();
@@ -132,7 +132,7 @@ public class ScalingTask extends AbstractTask {
             saveVirtualNetworkFunctionRecord();
             OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
             errorMessage.setMessage(
-                "Error creating VM while scale out. " + e.getLocalizedMessage());
+                "Error creating VM for VNFR ("+virtualNetworkFunctionRecord.getId()+") while scaling out. " + e.getLocalizedMessage());
             errorMessage.setVnfr(virtualNetworkFunctionRecord);
             errorMessage.setAction(Action.ERROR);
             vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
@@ -142,7 +142,7 @@ public class ScalingTask extends AbstractTask {
             saveVirtualNetworkFunctionRecord();
             OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
             errorMessage.setMessage(
-                "Error creating VM while scale out. " + e.getLocalizedMessage());
+                "Error creating VM for VNFR ("+virtualNetworkFunctionRecord.getId()+") while scaling out. " + e.getLocalizedMessage());
             errorMessage.setVnfr(virtualNetworkFunctionRecord);
             errorMessage.setAction(Action.ERROR);
             vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
@@ -150,11 +150,11 @@ public class ScalingTask extends AbstractTask {
           }
         }
       } else {
-        log.error("Not enough resources for scale out.");
-        log.error("VNFR " + virtualNetworkFunctionRecord.getName() + " stay in status ACTIVE.");
+        log.error("Not enough resources on any of the PoPs in order to scale out. Please check your quota");
+        log.error("VNFR " + virtualNetworkFunctionRecord.getName() + " remains in status ACTIVE.");
         virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
         OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-        errorMessage.setMessage("Not enough resources for scale out.");
+        errorMessage.setMessage("Not enough resources on any of the PoPs in order to scale out. Please check your quota");
         errorMessage.setVnfr(virtualNetworkFunctionRecord);
         errorMessage.setAction(Action.ERROR);
         saveVirtualNetworkFunctionRecord();
@@ -180,7 +180,7 @@ public class ScalingTask extends AbstractTask {
         virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
         OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
         errorMessage.setMessage(
-            "Error creating VM while scale out. Please consider enabling checkQuota ;)");
+            "Error creating VM for VNFR ("+virtualNetworkFunctionRecord.getId()+") while scaling out. Please consider enabling checkQuota ;)");
         errorMessage.setVnfr(virtualNetworkFunctionRecord);
         errorMessage.setAction(Action.ERROR);
         saveVirtualNetworkFunctionRecord();
@@ -192,7 +192,7 @@ public class ScalingTask extends AbstractTask {
         virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
         OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
         errorMessage.setMessage(
-            "Error creating VM while scale out. Please consider enabling checkQuota ;)");
+            "Error creating VM for VNFR ("+virtualNetworkFunctionRecord.getId()+") while scaling out. Please consider enabling checkQuota ;)");
         errorMessage.setVnfr(virtualNetworkFunctionRecord);
         errorMessage.setAction(Action.ERROR);
         saveVirtualNetworkFunctionRecord();
@@ -202,7 +202,7 @@ public class ScalingTask extends AbstractTask {
     }
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
-    log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
     return new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
   }
 

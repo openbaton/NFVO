@@ -159,7 +159,7 @@ public class VnfmManager
   @Value("${nfvo.timezone:CET}")
   private String timezone;
 
-  @Value("${nfvo.ems.version:0.15}")
+  @Value("${nfvo.ems.version:0.19}")
   private String emsVersion;
 
   @Value("${spring.rabbitmq.username:admin}")
@@ -280,10 +280,9 @@ public class VnfmManager
 
     try {
 
-      log.debug("Ordered: " + ordered);
+      log.debug("Parameter ordered set to " + ordered+ ".Consider changing it directly into the openbaton.properties file");
       if (ordered) {
         vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
-        log.debug("here");
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
         fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
         vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
@@ -292,8 +291,7 @@ public class VnfmManager
       }
 
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-        log.debug("Processing VNFD: " + vnfd.getName());
-
+        log.debug("Processing VNFD ("+vnfd.getName()+") for NSD ("+networkServiceDescriptor.getName()+")");
         Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
@@ -307,7 +305,7 @@ public class VnfmManager
             instanceNames = body.getVduVimInstances().get(vdu.getName());
           }
           for (String vimInstanceName : instanceNames) {
-            log.debug("Looking for " + vimInstanceName);
+            log.debug("deployment procedure for ("+vnfd.getName()+"). Looking for " + vimInstanceName);
             VimInstance vimInstance = null;
 
             for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {

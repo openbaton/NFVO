@@ -70,18 +70,18 @@ public class StopTask extends AbstractTask {
     log.info("Stopped VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-    log.debug("vnfr arrived version= " + virtualNetworkFunctionRecord.getHb_version());
-    log.debug("vnfr existing version= " + existing.getHb_version());
+    log.trace("VNFR existing hibernate version = " + existing.getHb_version());
+    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
 
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-        log.trace("VNFCI arrived version: " + vnfcInstance.getVersion());
+        log.trace("VNFCI received hibernate version = " + vnfcInstance.getVersion());
       }
     }
 
     for (VirtualDeploymentUnit virtualDeploymentUnit : existing.getVdu()) {
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-        log.trace("VNFCI existing version: " + vnfcInstance.getVersion());
+        log.trace("VNFCI existing hibernate version = " + vnfcInstance.getVersion());
       }
     }
 
