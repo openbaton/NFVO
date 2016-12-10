@@ -73,6 +73,7 @@ public class RabbitRegister extends VnfmRegister {
 
     VnfmManagerEndpoint endpoint = gson.fromJson(endpoint_json, VnfmManagerEndpoint.class);
     log.debug("Unregistering: " + endpoint);
+    //TODO double check that the equals is done on all parameters..
     for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmEndpointRepository.findAll())
       if (vnfmManagerEndpoint.getEndpoint().equals(endpoint.getEndpoint())) {
         this.unregister(vnfmManagerEndpoint);

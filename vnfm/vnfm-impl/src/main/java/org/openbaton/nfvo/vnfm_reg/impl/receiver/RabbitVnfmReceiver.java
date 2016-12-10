@@ -46,7 +46,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
   public String actionFinished(String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-    log.debug("CORE: Received: " + message.getAction());
+    log.debug("NFVO - core module received (via MB): " + message.getAction());
 
     log.debug("----------Executing ACTION: " + message.getAction());
     String res = vnfmManager.executeAction(message);
@@ -58,7 +58,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
   public void actionFinishedVoid(String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-    log.debug("CORE: Received: " + message.getAction());
+    log.debug("NFVO - core module received (via MB)" + message.getAction());
 
     log.debug("----------Executing ACTION: " + message.getAction());
     vnfmManager.executeAction(message);

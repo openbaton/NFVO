@@ -43,9 +43,9 @@ public class ReleaseresourcesTask extends AbstractTask {
     log.info("Release resources for VNFR: " + virtualNetworkFunctionRecord.getName());
 
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-      log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname());
+      log.debug("Removing VDU: " + virtualDeploymentUnit.getHostname() + " from VNFR "+virtualNetworkFunctionRecord.getId());
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-        log.debug("Removing VNFCInstance: " + vnfcInstance);
+        log.debug("Removing VNFC instance: " + vnfcInstance + " from VNFR "+virtualNetworkFunctionRecord.getId());
         this.resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
       }
     }

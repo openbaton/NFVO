@@ -51,8 +51,9 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
   }
 
   protected void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
-    log.debug("Perisisting: " + endpoint);
+    log.debug("Persisting: " + endpoint);
     for (VnfmManagerEndpoint endpointExisting : vnfmEndpointRepository.findAll()) {
+      //TODO: decide whether the type or the endpoint (or both) is the unique identifier. strategy here is different than in unregister function
       if (endpointExisting.getEndpoint().equals(endpoint.getEndpoint())
           && endpointExisting.getType().equals(endpoint.getType())
           && endpointExisting.getEndpointType().equals(endpoint.getEndpointType()))
@@ -87,6 +88,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
   protected void unregister(VnfmManagerEndpoint endpoint) {
     Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmEndpointRepository.findAll();
     for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
+      //TODO: decide whether the type or the endpoint (or both) is the unique identifier
       if (endpoint.getType().equals(vnfmManagerEndpoint.getType())) {
         log.info("Unregistered vnfm: " + endpoint.getType());
         this.vnfmEndpointRepository.delete(vnfmManagerEndpoint.getId());

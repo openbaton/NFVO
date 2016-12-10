@@ -57,7 +57,7 @@ public class UpdatevnfrTask extends AbstractTask {
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-    log.info("Updating VNFR " + virtualNetworkFunctionRecord.getName());
+    log.info("Updating VNFR " + virtualNetworkFunctionRecord.getName() +" with ID: "+virtualNetworkFunctionRecord.getId());
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo =
         vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
     //Updating VNFR
@@ -97,14 +97,14 @@ public class UpdatevnfrTask extends AbstractTask {
       //VDU ID is null -> NEW
       if (vdu_manager.getId() == null) {
         vdus.add(vdu_manager);
-        log.debug("Update: Added new VDU " + vdu_manager);
+        log.debug("Update VNFR ("+virtualNetworkFunctionRecord.getId()+"): added new VDU " + vdu_manager);
         continue;
       }
       for (VirtualDeploymentUnit vdu_nfvo : virtualNetworkFunctionRecord_nfvo.getVdu()) {
         //Found VDU -> Updating
         if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
           found = true;
-          log.debug("Update: Updating VDU " + vdu_nfvo.getId());
+          log.debug("Update VNFR ("+virtualNetworkFunctionRecord_nfvo.getId()+"): updating VDU " + vdu_nfvo.getId());
           vdu_nfvo.setComputation_requirement(vdu_manager.getComputation_requirement());
           vdu_nfvo.setHigh_availability(vdu_manager.getHigh_availability());
           vdu_nfvo.setScale_in_out(vdu_manager.getScale_in_out());
@@ -116,14 +116,14 @@ public class UpdatevnfrTask extends AbstractTask {
           vdu_nfvo.setVm_image(vdu_manager.getVm_image());
           //Updating VNFComponents
           vdu_nfvo.setVnfc(updateVNFComponents(vdu_nfvo.getVnfc(), vdu_manager.getVnfc()));
-          log.debug("Update: VNFComponents of VDU " + vdu_nfvo.getId() + ": " + vdu_nfvo.getVnfc());
+          log.debug("Update: VNFCs of VDU (" + vdu_nfvo.getId() + "): " + vdu_nfvo.getVnfc());
           //Updating VNFCInstances
           vdu_nfvo.setVnfc_instance(
               updateVNFCInstances(vdu_nfvo.getVnfc_instance(), vdu_manager.getVnfc_instance()));
           log.debug(
-              "Update: VNFCInstances of VDU "
+              "Update: VNFC instances of VDU ("
                   + vdu_nfvo.getId()
-                  + ": "
+                  + "): "
                   + vdu_nfvo.getVnfc_instance());
           vdus.add(vdu_nfvo);
           break;
@@ -132,7 +132,7 @@ public class UpdatevnfrTask extends AbstractTask {
       //VDU was not found -> NEW
       if (!found) {
         vdus.add(vdu_manager);
-        log.debug("Update: Added new VDU " + vdu_manager.getId());
+        log.debug("Update: added new VDU " + vdu_manager.getId());
       }
     }
     virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
@@ -153,7 +153,7 @@ public class UpdatevnfrTask extends AbstractTask {
       //VNFCInstance ID is null -> NEW
       if (vnfComponent_manager.getId() == null) {
         components.add(vnfComponent_manager);
-        log.debug("Update: Added new VNFComponent " + vnfComponent_manager);
+        log.debug("Update: added new VNFC " + vnfComponent_manager);
         continue;
       }
       for (VNFComponent vnfComponent_nfvo : vnfComponents_nfvo) {
@@ -191,7 +191,7 @@ public class UpdatevnfrTask extends AbstractTask {
       //VNFCInstance ID is null -> NEW
       if (vnfcInstance_manager.getId() == null) {
         instances.add(vnfcInstance_manager);
-        log.debug("Update: Added new VNFCInstance " + vnfcInstance_manager);
+        log.debug("Update: added new VNFC instance " + vnfcInstance_manager);
         continue;
       }
       for (VNFCInstance vnfcInstance_nfvo : vnfcInstances_nfvo) {

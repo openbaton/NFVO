@@ -405,7 +405,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   protected boolean allVnfrInInactive(NetworkServiceRecord nsr) {
     for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
       if (virtualNetworkFunctionRecord.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
-        log.debug(
+        log.trace(
             "VNFR "
                 + virtualNetworkFunctionRecord.getName()
                 + " is in state: "

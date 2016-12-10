@@ -66,7 +66,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public String actionFinished(@RequestBody String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
 
-    log.debug("CORE: Received: " + nfvMessage);
+    log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
 
     return vnfmManager.executeAction(message);
@@ -100,7 +100,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @Override
   public void actionFinishedVoid(String nfvMessage)
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
-    log.debug("CORE: Received: " + nfvMessage);
+    log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     vnfmManager.executeAction(message);
   }
@@ -115,7 +115,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message)
       throws VimException, PluginException, ExecutionException, InterruptedException {
 
-    log.debug("CORE: Received: " + message);
+    log.debug("NFVO - core module received (via REST):" + message);
 
     Gson gson = new GsonBuilder().create();
     String executeReturned = vnfmManager.executeAction(message);

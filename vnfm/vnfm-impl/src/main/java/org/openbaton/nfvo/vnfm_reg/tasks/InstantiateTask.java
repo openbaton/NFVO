@@ -62,17 +62,18 @@ public class InstantiateTask extends AbstractTask {
     log.info(
         "Start INSTANTIATE task for vnfr: "
             + virtualNetworkFunctionRecord.getName()
+                + " with VNFR ID " + virtualNetworkFunctionRecord.getId()
             + " his nsr id father is:"
             + virtualNetworkFunctionRecord.getParent_ns_id());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-    log.debug("VNFR arrived version= " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received with hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
     if (existing != null) {
-      log.debug("VNFR existing version= " + existing.getHb_version());
+      log.trace("VNFR ("+existing.getId()+") existing hibernat version is = " + existing.getHb_version());
     }
 
     dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
-    log.debug("Filled parameters of " + virtualNetworkFunctionRecord.getName());
+    log.debug("Filled dependency parameters of " + virtualNetworkFunctionRecord.getName());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
@@ -81,18 +82,16 @@ public class InstantiateTask extends AbstractTask {
             virtualNetworkFunctionRecord.getParent_ns_id());
     log.debug("The current status of the NSR is " + nsr.getStatus());
     for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
-      log.debug("Current Vnfrs in the database: " + vnfr.getName());
+      log.trace("Current VNFRs in the database: " + vnfr.getName());
     }
     dependencyQueuer.releaseVNFR(virtualNetworkFunctionRecord.getName(), nsr);
     log.info("Calling dependency management for VNFR: " + virtualNetworkFunctionRecord.getName());
-    int dep;
-    dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
+    int dep = dependencyManagement.provisionDependencies(virtualNetworkFunctionRecord);
     log.info("Found " + dep + " dependencies");
-    log.debug("Ordered string is: \"" + ordered + "\"");
-    log.debug("Is ordered? " + Boolean.parseBoolean(ordered));
+    log.trace("Is ordered execution of VNFs enabled? " + Boolean.parseBoolean(ordered));
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
-      log.debug("Ordered is enabled");
+      log.debug("Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the deployment, please disable it");
       if (dep == 0) {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         saveVirtualNetworkFunctionRecord();
@@ -110,7 +109,7 @@ public class InstantiateTask extends AbstractTask {
             log.debug(
                 "Removed "
                     + nextToCallStart.getName()
-                    + " from vnfrNames: "
+                    + " from VNFR names: "
                     + vnfmManager
                         .getVnfrNames()
                         .get(virtualNetworkFunctionRecord.getParent_ns_id()));
@@ -140,7 +139,7 @@ public class InstantiateTask extends AbstractTask {
         "Calling START to: "
             + virtualNetworkFunctionRecord.getName()
             + " because it has 0 dependencies");
-    log.debug("HIBERNATE VERSION IS: " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") hibernate version is = " + virtualNetworkFunctionRecord.getHb_version());
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
