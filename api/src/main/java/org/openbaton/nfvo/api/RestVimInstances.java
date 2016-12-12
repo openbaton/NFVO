@@ -88,7 +88,12 @@ public class RestVimInstances {
    */
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VimInstance> findAll(@RequestHeader(value = "project-id") String projectId) {
-    return vimManagement.queryByProjectId(projectId);
+    Iterable<VimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
+    for (VimInstance vim: vimInstances){
+      vim.setPassword("**********");
+    }
+
+    return vimInstances;
   }
 
   /**
@@ -100,7 +105,9 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VimInstance findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    return vimManagement.query(id, projectId);
+    VimInstance vimInstance = vimManagement.query(id, projectId);
+    vimInstance.setPassword("**********");
+    return vimInstance;
   }
 
   /**
