@@ -121,6 +121,6 @@ public interface ResourceManagement {
       VNFComponent componentToAdd,
       VimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, VimException, VimDriverException,
-          PluginException;
+      throws InterruptedException, ExecutionException, PluginException, VimException,
+          VimDriverException;
 }

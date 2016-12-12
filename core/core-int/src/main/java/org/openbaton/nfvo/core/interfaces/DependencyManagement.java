@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public interface DependencyManagement {
   int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException, InterruptedException;
+      throws NotFoundException;
 
   void fillDependecyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 

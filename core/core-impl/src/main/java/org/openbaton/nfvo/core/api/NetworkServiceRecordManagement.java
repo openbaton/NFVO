@@ -151,9 +151,8 @@ public class NetworkServiceRecordManagement
   @Override
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
-      throws VimException, NotFoundException,
-          BadFormatException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (!networkServiceDescriptor.getProjectId().equals(projectID)) {
@@ -195,9 +194,8 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws VimException, NotFoundException,
-          BadFormatException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -552,7 +550,7 @@ public class NetworkServiceRecordManagement
 
   private void startStopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
-      throws NotFoundException, WrongStatusException {
+      throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
@@ -1199,8 +1197,7 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException {
+  public void resume(String id, String projectId) throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(

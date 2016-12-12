@@ -49,8 +49,8 @@ public interface NetworkServiceRecordManagement {
    */
   NetworkServiceRecord onboard(
       String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
-      throws VimException, NotFoundException, BadFormatException, PluginException,
-          MissingParameterException, BadRequestException;
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -62,8 +62,8 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws VimException, NotFoundException, BadFormatException, PluginException,
-          MissingParameterException, BadRequestException;
+      throws VimException, PluginException, NotFoundException, MissingParameterException,
+          BadRequestException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD

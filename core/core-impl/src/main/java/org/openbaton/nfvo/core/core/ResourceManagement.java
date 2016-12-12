@@ -166,8 +166,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimException, ExecutionException, InterruptedException,
-          PluginException {
+      throws VimException, ExecutionException, InterruptedException, PluginException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
@@ -374,8 +373,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent componentToAdd,
       VimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, VimException, VimDriverException,
-          PluginException {
+      throws InterruptedException, ExecutionException, PluginException, VimException,
+          VimDriverException {
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());

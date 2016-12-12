@@ -97,8 +97,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public String generateKey(String projectId, String name)
-      throws NoSuchProviderException, InvalidKeySpecException, IOException,
-          NoSuchAlgorithmException {
+      throws IOException, NoSuchAlgorithmException {
     log.debug("Generating keypair");
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
@@ -119,7 +118,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException {
     Key keyToAdd = new Key();
     keyToAdd.setName(name);
     keyToAdd.setProjectId(projectId);

@@ -39,10 +39,8 @@ public interface KeyManagement {
 
   void delete(String projectId, String id) throws NotFoundException;
 
-  String generateKey(String projectId, String name)
-      throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException,
-          IOException;
+  String generateKey(String projectId, String name) throws NoSuchAlgorithmException, IOException;
 
   Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException;
+      throws UnsupportedEncodingException, NoSuchAlgorithmException;
 }

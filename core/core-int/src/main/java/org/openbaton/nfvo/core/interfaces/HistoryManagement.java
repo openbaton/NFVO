@@ -25,7 +25,7 @@ import org.openbaton.exceptions.NotFoundException;
  */
 public interface HistoryManagement {
 
-  void addAction(String method, String path, String result) throws NotFoundException;
+  void addAction(String method, String path, String result);
 
   HistoryEntity[] getAll();
 
