@@ -849,7 +849,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         if (status === 400)
             $scope.alerts.push({
                 type: 'danger',
-                msg: 'Something is wrong with your NSD'
+                msg: 'Something is wrong with your NSD. Common error: you have specified your vim as a string and not as an array'
             });
 
         else
