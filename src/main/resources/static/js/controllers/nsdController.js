@@ -494,9 +494,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         return (value > 0);
     };
 
-    $scope.sendFile = function () {
-
-
+    $scope.sendFile = function (textTopologyJson) {
         $('.modal').modal('hide');
         var postNSD;
         var sendOk = true;
@@ -507,10 +505,10 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 type = 'definitions';
         }
 
-        else if ($scope.textTopologyJson !== '')
-            postNSD = $scope.textTopologyJson;
-        else if ($scope.topology.serviceContainers.length !== 0)
-            postNSD = $scope.topology;
+        else if (textTopologyJson !== '') {
+        
+            postNSD = textTopologyJson;
+        }
 
         else {
             alert('Problem with NSD');
@@ -523,6 +521,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
         if (sendOk) {
             if (type === 'topology') {
+                console.log(postNSD);
                 http.post(url, postNSD)
                     .success(function (response) {
                         showOk('Network Service Descriptors stored!');
@@ -850,7 +849,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         if (status === 400)
             $scope.alerts.push({
                 type: 'danger',
-                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + "Bad request: your json is not well formatted"
+                msg: 'Something is wrong with your NSD'
             });
 
         else
