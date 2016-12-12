@@ -212,7 +212,6 @@ public class NetworkServiceDescriptorManagement
     List<String> vnfdIds = new ArrayList<>();
 
     for (String id : market_ids) {
-      boolean found = false;
       for (VNFPackage vnfPackage : vnfPackageRepository.findByProjectId(project_id)) {
         String localId = "";
         String vnfdId = "";
@@ -228,7 +227,6 @@ public class NetworkServiceDescriptorManagement
               "There is already a VNFD onboarded with id: " + localId);
         }
       }
-      if (!found) not_found_ids.add(id);
     }
     log.debug("VNFDs found on the catalogue: " + vnfdIds);
 

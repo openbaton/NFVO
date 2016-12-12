@@ -974,6 +974,8 @@ public class NetworkServiceRecordManagement
               for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
                 if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
                   boolean networkExists = false;
+                  if (vimInstance.getNetworks() == null)
+                    throw new VimException("VIM instance "+vimInstance.getName()+"does not have networks ");
                   for (Network network : vimInstance.getNetworks()) {
                     if (network.getName().equals(vlr.getName())
                         || network.getExtId().equals(vlr.getName())) {

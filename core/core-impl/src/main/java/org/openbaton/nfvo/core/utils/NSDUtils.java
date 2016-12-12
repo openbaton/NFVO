@@ -26,10 +26,7 @@ import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -395,7 +392,7 @@ public class NSDUtils {
         throw new NetworkServiceIntegrityException(
             "Flavour must be set in VNFD: "
                 + virtualNetworkFunctionDescriptor.getName()
-                + ". Come on... check the PoP page and pick at least one "
+                + ".Check the PoP page and pick at least one "
                 + "DeploymentFlavor");
       }
 
@@ -447,7 +444,8 @@ public class NSDUtils {
                           + "VNFComponent: "
                           + virtualDeploymentUnit.getVnfc().size());
                 }
-
+                if(vimInstance.getFlavours() == null)
+                  throw new NetworkServiceIntegrityException("No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
                 for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
                   flavors.add(deploymentFlavour.getFlavour_key());
                 }

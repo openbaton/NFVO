@@ -128,7 +128,8 @@ public class VNFLifecycleOperationGranting
             break;
           }
         }
-
+        if (flavor == null)
+          throw new VimException("deployment flavor object is null, it means that there is no PoP supporting the deployment flavour selected");
         //Subtract needed resources from the left resources
         int nc = 0;
 

@@ -139,7 +139,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
       }
       res += start.charAt(i);
     }
-    System.out.println(res);
+    log.debug(res);
     return res;
   }
 

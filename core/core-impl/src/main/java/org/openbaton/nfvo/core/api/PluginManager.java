@@ -111,9 +111,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         }
       }
     } finally {
-      if (out != null) {
-        out.flush();
-      }
+      out.flush();
     }
 
     startPlugin(path, name);

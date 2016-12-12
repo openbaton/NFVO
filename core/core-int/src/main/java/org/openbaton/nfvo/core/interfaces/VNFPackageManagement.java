@@ -23,6 +23,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Created by mpa on 05/05/15.
@@ -45,9 +46,7 @@ public interface VNFPackageManagement {
    * @param link
    * @param projectId
    */
-  VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException;
+  VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId) throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException, NotFoundException, PluginException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
