@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -219,19 +220,34 @@ public class CSARParser {
             "Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
       }
     }
+    String[] actualNfvoVersion;
+    try {
+      actualNfvoVersion = getNfvoVersion();
+    } catch (NotFoundException ne) {
+      log.warn(ne.getMessage());
+      actualNfvoVersion = null;
+    }
     vnfPackage.setName((String) metadata.get("name"));
     if (metadata.containsKey("nfvo_version")) {
-      String nfvo_version = (String) metadata.get("nfvo_version");
-      String actualNfvoVersion = getNfvoVersion();
-      if (nfvo_version.equals(actualNfvoVersion)) {
-        vnfPackage.setNfvo_version(nfvo_version);
+      String nfvoVersionString = (String) metadata.get("nfvo_version");
+      String[] nfvoVersion = nfvoVersionString.split(Pattern.quote("."));
+
+      if (nfvoVersion[0].equals(actualNfvoVersion[0])
+          && nfvoVersion[1].equals(actualNfvoVersion[1])) {
+        vnfPackage.setNfvo_version(nfvoVersionString);
       } else {
         throw new IncompatibleVNFPackage(
             "The NFVO Version: "
-                + nfvo_version
+                + nfvoVersion[0]
+                + "."
+                + nfvoVersion[1]
+                + ".X"
                 + " specified in the Metadata"
                 + " is not compatible with the this NFVOs version: "
-                + actualNfvoVersion);
+                + actualNfvoVersion[0]
+                + "."
+                + actualNfvoVersion[1]
+                + ".X");
       }
     }
     if (metadata.containsKey("scripts-link"))
@@ -475,14 +491,15 @@ public class CSARParser {
     return image;
   }
 
-  private String getNfvoVersion() {
+  private String[] getNfvoVersion() throws NotFoundException {
     String version =
         org.openbaton.nfvo.core.api.VNFPackageManagement.class
             .getPackage()
             .getImplementationVersion();
-    if (version.lastIndexOf("_SNAPSHOT") != -1)
-      version = version.substring(0, version.lastIndexOf("_SNAPSHOT"));
-    return version;
+    if (version == null) throw new NotFoundException("The NFVO version number is not available");
+    if (version.lastIndexOf("-SNAPSHOT") != -1)
+      version = version.substring(0, version.lastIndexOf("-SNAPSHOT"));
+    return version.split(Pattern.quote("."));
   }
 
   private String saveVNFD(
