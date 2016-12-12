@@ -444,8 +444,9 @@ public class NSDUtils {
                           + "VNFComponent: "
                           + virtualDeploymentUnit.getVnfc().size());
                 }
-                if(vimInstance.getFlavours() == null)
-                  throw new NetworkServiceIntegrityException("No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
+                if (vimInstance.getFlavours() == null)
+                  throw new NetworkServiceIntegrityException(
+                      "No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
                 for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
                   flavors.add(deploymentFlavour.getFlavour_key());
                 }

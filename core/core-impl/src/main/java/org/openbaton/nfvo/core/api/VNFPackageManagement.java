@@ -498,8 +498,9 @@ public class VNFPackageManagement
     myTarFile.close();
     vnfPackage.setProjectId(projectId);
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
-      if(virtualNetworkFunctionDescriptor.getVendor() == null)
-        throw new NotFoundException("it seems that there is a descriptor with a null vendor field. This is definetvely a bug");
+      if (virtualNetworkFunctionDescriptor.getVendor() == null)
+        throw new NotFoundException(
+            "it seems that there is a descriptor with a null vendor field. This is definetvely a bug");
       if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
           && vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())
           && vnfd.getVersion().equals(virtualNetworkFunctionDescriptor.getVersion())) {
@@ -519,7 +520,9 @@ public class VNFPackageManagement
     return virtualNetworkFunctionDescriptor;
   }
 
-  public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId) throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException, NotFoundException, PluginException {
+  public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException {
     log.debug("This is download link" + link);
     URL packageLink = new URL(link);
 
