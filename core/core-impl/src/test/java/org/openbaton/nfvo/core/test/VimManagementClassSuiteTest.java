@@ -27,6 +27,8 @@ import org.openbaton.catalogue.nfvo.Location;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -80,7 +82,8 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void vimManagementRefreshTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException {
+      throws VimException, PluginException, IOException, EntityUnreachableException,
+          BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance = createVimInstance();
     vimManagement.refresh(vimInstance);
@@ -92,7 +95,8 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void vimManagementUpdateTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException {
+      throws VimException, PluginException, IOException, EntityUnreachableException,
+          BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -124,7 +128,8 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void nfvImageManagementAddTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException {
+      throws VimException, PluginException, IOException, EntityUnreachableException,
+          BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
