@@ -27,7 +27,7 @@ import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
-import org.openbaton.nfvo.api.RestVimInstances;
+import org.openbaton.nfvo.api.admin.RestVimInstances;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

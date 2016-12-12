@@ -79,7 +79,9 @@ public class ErrorTask extends AbstractTask {
     if (virtualNetworkFunctionRecord != null) {
       try {
         log.trace(
-            "VNFR ("+virtualNetworkFunctionRecord.getId()+") existing hibernate version is = "
+            "VNFR ("
+                + virtualNetworkFunctionRecord.getId()
+                + ") existing hibernate version is = "
                 + vnfrRepository
                     .findFirstById(virtualNetworkFunctionRecord.getId())
                     .getHb_version());
@@ -88,8 +90,14 @@ public class ErrorTask extends AbstractTask {
           log.error(e.getMessage(), e);
         }
       }
-      log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received hibernate version is: " + virtualNetworkFunctionRecord.getHb_version());
-      log.error("Received ERROR message from VNFM related to VNFR: " + virtualNetworkFunctionRecord.getName());
+      log.trace(
+          "VNFR ("
+              + virtualNetworkFunctionRecord.getId()
+              + ") received hibernate version is: "
+              + virtualNetworkFunctionRecord.getHb_version());
+      log.error(
+          "Received ERROR message from VNFM related to VNFR: "
+              + virtualNetworkFunctionRecord.getName());
       virtualNetworkFunctionRecord.setStatus(Status.ERROR);
       setHistoryLifecycleEvent(new Date());
       saveVirtualNetworkFunctionRecord();

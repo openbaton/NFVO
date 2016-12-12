@@ -35,9 +35,7 @@ public class UpdateTask extends AbstractTask {
   @Override
   protected NFVMessage doWork() throws Exception {
 
-    log.info(
-        "Updated script for VNFR: "
-            + virtualNetworkFunctionRecord.getName());
+    log.info("Updated script for VNFR: " + virtualNetworkFunctionRecord.getName());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     return null;

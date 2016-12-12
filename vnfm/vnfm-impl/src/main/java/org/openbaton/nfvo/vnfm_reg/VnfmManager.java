@@ -280,7 +280,10 @@ public class VnfmManager
 
     try {
 
-      log.debug("Parameter ordered set to " + ordered+ ".Consider changing it directly into the openbaton.properties file");
+      log.debug(
+          "Parameter ordered set to "
+              + ordered
+              + ".Consider changing it directly into the openbaton.properties file");
       if (ordered) {
         vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
@@ -291,7 +294,12 @@ public class VnfmManager
       }
 
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-        log.debug("Processing VNFD ("+vnfd.getName()+") for NSD ("+networkServiceDescriptor.getName()+")");
+        log.debug(
+            "Processing VNFD ("
+                + vnfd.getName()
+                + ") for NSD ("
+                + networkServiceDescriptor.getName()
+                + ")");
         Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
@@ -305,7 +313,11 @@ public class VnfmManager
             instanceNames = body.getVduVimInstances().get(vdu.getName());
           }
           for (String vimInstanceName : instanceNames) {
-            log.debug("deployment procedure for ("+vnfd.getName()+"). Looking for " + vimInstanceName);
+            log.debug(
+                "deployment procedure for ("
+                    + vnfd.getName()
+                    + "). Looking for "
+                    + vimInstanceName);
             VimInstance vimInstance = null;
 
             for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
