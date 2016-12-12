@@ -96,9 +96,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    vimInstance = vimRepository.save(vimInstance);
-    refresh(vimInstance);
-    return vimInstance;
+    //    vimInstance = vimRepository.save(vimInstance);
+    return refresh(vimInstance);
+    //    return vimInstance;
   }
 
   @Override
