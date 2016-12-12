@@ -64,7 +64,11 @@ public class AllocateresourcesTask extends AbstractTask {
 
     log.info(
         "Executing task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
-    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received hibernate version is = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") received hibernate version is = "
+            + virtualNetworkFunctionRecord.getHb_version());
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       List<Future<List<String>>> ids = new ArrayList<>();
       VimInstance vimInstance = vims.get(vdu.getId());
@@ -85,7 +89,9 @@ public class AllocateresourcesTask extends AbstractTask {
 
     OrVnfmGenericMessage orVnfmGenericMessage =
         new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ALLOCATE_RESOURCES);
-    log.debug("Answering the AllocateResources call via RPC with the following message: " + orVnfmGenericMessage);
+    log.debug(
+        "Answering the AllocateResources call via RPC with the following message: "
+            + orVnfmGenericMessage);
     log.info(
         "Finished task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
     return orVnfmGenericMessage;

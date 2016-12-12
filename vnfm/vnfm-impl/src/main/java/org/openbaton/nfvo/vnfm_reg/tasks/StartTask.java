@@ -93,7 +93,9 @@ public class StartTask extends AbstractTask {
           getNextToCallStart(virtualNetworkFunctionRecord);
       if (nextToCallStart != null) {
         log.info(
-            "Calling START for VNFR: " + nextToCallStart.getName() + " because is the next in order (ordered deployment is enabled in the openbaton.properties)");
+            "Calling START for VNFR: "
+                + nextToCallStart.getName()
+                + " because is the next in order (ordered deployment is enabled in the openbaton.properties)");
         vnfmManager.removeVnfrName(
             virtualNetworkFunctionRecord.getParent_ns_id(), nextToCallStart.getName());
         sendStart(nextToCallStart);

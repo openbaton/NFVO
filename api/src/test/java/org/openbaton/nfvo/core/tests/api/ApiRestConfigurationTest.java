@@ -25,7 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.nfvo.api.RestConfiguration;
+import org.openbaton.nfvo.api.admin.RestConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -51,21 +51,30 @@ public class ModifyTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
     description = "All the configuration scripts setting up dependencies were correctly executed";
     virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
-    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(
+    NetworkServiceRecord nsr =
+        networkServiceRecordRepository.findFirstById(
             virtualNetworkFunctionRecord.getParent_ns_id());
     log.info("MODIFY finished for VNFR: " + virtualNetworkFunctionRecord.getName());
-    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") received hibernate version = "
+            + virtualNetworkFunctionRecord.getHb_version());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
-    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") current hibernate version is: " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") current hibernate version is: "
+            + virtualNetworkFunctionRecord.getHb_version());
     log.debug(
         "VNFR "
             + virtualNetworkFunctionRecord.getName()
             + " Status is: "
             + virtualNetworkFunctionRecord.getStatus());
-    boolean allVnfrInInactive =
-        allVnfrInInactive(nsr);
-    log.debug("Are all VNFR of NSR ("+nsr.getId()+") in an INACTIVE state? " + allVnfrInInactive);
+    boolean allVnfrInInactive = allVnfrInInactive(nsr);
+    log.debug(
+        "Are all VNFR of NSR (" + nsr.getId() + ") in an INACTIVE state? " + allVnfrInInactive);
 
     log.trace("Is ordered execution of VNFs enabled? " + Boolean.parseBoolean(ordered));
     if (ordered != null && Boolean.parseBoolean(ordered)) {
