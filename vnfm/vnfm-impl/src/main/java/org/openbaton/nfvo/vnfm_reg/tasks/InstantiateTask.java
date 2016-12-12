@@ -62,14 +62,23 @@ public class InstantiateTask extends AbstractTask {
     log.info(
         "Start INSTANTIATE task for vnfr: "
             + virtualNetworkFunctionRecord.getName()
-                + " with VNFR ID " + virtualNetworkFunctionRecord.getId()
+            + " with VNFR ID "
+            + virtualNetworkFunctionRecord.getId()
             + " his nsr id father is:"
             + virtualNetworkFunctionRecord.getParent_ns_id());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") received with hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") received with hibernate version = "
+            + virtualNetworkFunctionRecord.getHb_version());
     if (existing != null) {
-      log.trace("VNFR ("+existing.getId()+") existing hibernat version is = " + existing.getHb_version());
+      log.trace(
+          "VNFR ("
+              + existing.getId()
+              + ") existing hibernat version is = "
+              + existing.getHb_version());
     }
 
     dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
@@ -91,7 +100,8 @@ public class InstantiateTask extends AbstractTask {
     log.trace("Is ordered execution of VNFs enabled? " + Boolean.parseBoolean(ordered));
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
-      log.debug("Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the deployment, please disable it");
+      log.debug(
+          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the deployment, please disable it");
       if (dep == 0) {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         saveVirtualNetworkFunctionRecord();
@@ -139,7 +149,11 @@ public class InstantiateTask extends AbstractTask {
         "Calling START to: "
             + virtualNetworkFunctionRecord.getName()
             + " because it has 0 dependencies");
-    log.trace("VNFR ("+virtualNetworkFunctionRecord.getId()+") hibernate version is = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") hibernate version is = "
+            + virtualNetworkFunctionRecord.getHb_version());
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/

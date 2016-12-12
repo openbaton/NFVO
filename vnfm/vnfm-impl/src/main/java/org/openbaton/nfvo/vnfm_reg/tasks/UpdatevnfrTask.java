@@ -52,12 +52,15 @@ public class UpdatevnfrTask extends AbstractTask {
 
   @Override
   protected NFVMessage doWork() throws Exception {
-    VnfmSender vnfmSender;
-    vnfmSender =
+    VnfmSender vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
 
-    log.info("Updating VNFR " + virtualNetworkFunctionRecord.getName() +" with ID: "+virtualNetworkFunctionRecord.getId());
+    log.info(
+        "Updating VNFR "
+            + virtualNetworkFunctionRecord.getName()
+            + " with ID: "
+            + virtualNetworkFunctionRecord.getId());
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo =
         vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
     //Updating VNFR
@@ -97,14 +100,22 @@ public class UpdatevnfrTask extends AbstractTask {
       //VDU ID is null -> NEW
       if (vdu_manager.getId() == null) {
         vdus.add(vdu_manager);
-        log.debug("Update VNFR ("+virtualNetworkFunctionRecord.getId()+"): added new VDU " + vdu_manager);
+        log.debug(
+            "Update VNFR ("
+                + virtualNetworkFunctionRecord.getId()
+                + "): added new VDU "
+                + vdu_manager);
         continue;
       }
       for (VirtualDeploymentUnit vdu_nfvo : virtualNetworkFunctionRecord_nfvo.getVdu()) {
         //Found VDU -> Updating
         if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
           found = true;
-          log.debug("Update VNFR ("+virtualNetworkFunctionRecord_nfvo.getId()+"): updating VDU " + vdu_nfvo.getId());
+          log.debug(
+              "Update VNFR ("
+                  + virtualNetworkFunctionRecord_nfvo.getId()
+                  + "): updating VDU "
+                  + vdu_nfvo.getId());
           vdu_nfvo.setComputation_requirement(vdu_manager.getComputation_requirement());
           vdu_nfvo.setHigh_availability(vdu_manager.getHigh_availability());
           vdu_nfvo.setScale_in_out(vdu_manager.getScale_in_out());

@@ -30,7 +30,7 @@ import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.*;
-import org.openbaton.nfvo.api.RestNetworkServiceDescriptor;
+import org.openbaton.nfvo.api.catalogue.RestNetworkServiceDescriptor;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -37,4 +37,9 @@ public class VNFManagerManagement
   public VnfmManagerEndpoint query(String id) {
     return vnfmManagerEndpointRepository.findFirstById(id);
   }
+
+  @Override
+  public void delete(String id) {
+    vnfmManagerEndpointRepository.delete(id);
+  }
 }

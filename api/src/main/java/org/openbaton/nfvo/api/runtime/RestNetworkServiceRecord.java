@@ -1,21 +1,20 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2016 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.openbaton.nfvo.api;
+package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -108,8 +107,8 @@ public class RestNetworkServiceRecord {
   }
 
   /**
-   * @param id
-   * @param projectId
+   * @param id of the NSR
+   * @param projectId if of the project
    * @param jsonObject the body json is: { "vduVimInstances":{ "vduName1":["viminstancename"],
    * "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
    * "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1", "value":"value1",
@@ -117,7 +116,7 @@ public class RestNetworkServiceRecord {
    * "description":"description2"}]}, "vnfrName2":{"name":"conf2",
    * "configurationParameters":[{"confKey":"key1", "value":"value1", "description":"description1"},
    * {"confKey":"key2", "value":"value2", "description":"description2"}]} } }
-   * @return
+   * @return the created NSR
    * @throws InterruptedException
    * @throws ExecutionException
    * @throws VimException
@@ -303,8 +302,8 @@ public class RestNetworkServiceRecord {
   /**
    * Removes the VirtualNetworkFunctionRecord with idVnf into NSR with idNsr
    *
-   * @param idNsr
-   * @param idVnf
+   * @param idNsr id of the NSR
+   * @param idVnf id of the VNF
    * @throws NotFoundException
    */
   @RequestMapping(value = "{idNsr}/vnfrecords/{idVnf}", method = RequestMethod.DELETE)
