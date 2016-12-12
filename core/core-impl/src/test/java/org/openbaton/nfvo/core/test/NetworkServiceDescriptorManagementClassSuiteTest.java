@@ -17,11 +17,7 @@
 
 package org.openbaton.nfvo.core.test;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -35,32 +31,18 @@ import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.NoResultException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -279,6 +261,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
     nsd.setProjectId(projectId);
     nsd.setVendor("FOKUS");
+    nsd.setName("dummy-nsd");
     Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 =
         getVirtualNetworkFunctionDescriptor();
@@ -300,6 +283,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         new VirtualNetworkFunctionDescriptor();
     virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 1000)));
     virtualNetworkFunctionDescriptor.setEndpoint("test");
+    virtualNetworkFunctionDescriptor.setType("type");
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(
         new HashSet<String>() {
           {
