@@ -392,11 +392,18 @@ public class NSDUtils {
           names.add(deploymentFlavour.getFlavour_key());
         }
       } else {
-        throw new NetworkServiceIntegrityException(
-            "Flavour must be set in VNFD: "
-                + virtualNetworkFunctionDescriptor.getName()
-                + ". Come on... check the PoP page and pick at least one "
-                + "DeploymentFlavor");
+        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+          if (vdu.getComputation_requirement() == null
+              || vdu.getComputation_requirement().isEmpty()) {
+            throw new NetworkServiceIntegrityException(
+                "Flavour must be set in VNFD or all VDUs: "
+                    + virtualNetworkFunctionDescriptor.getName()
+                    + ". Come on... check the PoP page and pick at least one "
+                    + "DeploymentFlavor");
+          } else {
+            names.add(vdu.getComputation_requirement());
+          }
+        }
       }
 
       if (virtualNetworkFunctionDescriptor.getVirtual_link() != null) {
@@ -486,22 +493,22 @@ public class NSDUtils {
                 }
                 flavors.clear();
 
-                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-                    if (!internalVirtualLink.contains(
-                        connectionPoint.getVirtual_link_reference())) {
-                      throw new NetworkServiceIntegrityException(
-                          "Regarding the VirtualNetworkFunctionDescriptor "
-                              + virtualNetworkFunctionDescriptor.getName()
-                              + ": in one of the VirtualDeploymentUnit, the "
-                              + "virtualLinkReference "
-                              + connectionPoint.getVirtual_link_reference()
-                              + " of a VNFComponent is not contained in the "
-                              + "InternalVirtualLink "
-                              + internalVirtualLink);
-                    }
-                  }
-                }
+                //                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
+                //                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+                //                    if (!internalVirtualLink.contains(
+                //                        connectionPoint.getVirtual_link_reference())) {
+                //                      throw new NetworkServiceIntegrityException(
+                //                          "Regarding the VirtualNetworkFunctionDescriptor "
+                //                              + virtualNetworkFunctionDescriptor.getName()
+                //                              + ": in one of the VirtualDeploymentUnit, the "
+                //                              + "virtualLinkReference "
+                //                              + connectionPoint.getVirtual_link_reference()
+                //                              + " of a VNFComponent is not contained in the "
+                //                              + "InternalVirtualLink "
+                //                              + internalVirtualLink);
+                //                    }
+                //                  }
+                //                }
               }
             } else {
               log.warn(
@@ -515,15 +522,15 @@ public class NSDUtils {
       } else {
         virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>());
       }
-      if (!virtualLinkDescriptors.containsAll(internalVirtualLink)) {
-        throw new NetworkServiceIntegrityException(
-            "Regarding the VirtualNetworkFunctionDescriptor "
-                + virtualNetworkFunctionDescriptor.getName()
-                + ": the InternalVirtualLinks "
-                + internalVirtualLink
-                + " are not contained in the VirtualLinkDescriptors "
-                + virtualLinkDescriptors);
-      }
+      //      if (!virtualLinkDescriptors.containsAll(internalVirtualLink)) {
+      //        throw new NetworkServiceIntegrityException(
+      //            "Regarding the VirtualNetworkFunctionDescriptor "
+      //                + virtualNetworkFunctionDescriptor.getName()
+      //                + ": the InternalVirtualLinks "
+      //                + internalVirtualLink
+      //                + " are not contained in the VirtualLinkDescriptors "
+      //                + virtualLinkDescriptors);
+      //      }
     }
   }
 }

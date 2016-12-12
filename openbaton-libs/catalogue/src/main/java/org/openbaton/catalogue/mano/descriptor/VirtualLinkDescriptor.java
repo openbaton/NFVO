@@ -114,4 +114,25 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   public void setVld_security(Security vld_security) {
     this.vld_security = vld_security;
   }
+
+  @Override
+  public String toString() {
+    return "VirtualLinkDescriptor{"
+        + "projectId='"
+        + projectId
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", connection="
+        + connection
+        + ", vld_security="
+        + vld_security
+        + '}';
+  }
 }

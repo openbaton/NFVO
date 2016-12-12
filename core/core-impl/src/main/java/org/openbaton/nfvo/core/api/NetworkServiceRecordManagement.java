@@ -77,6 +77,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 import javax.annotation.PostConstruct;
 
@@ -934,20 +935,25 @@ public class NetworkServiceRecordManagement
     nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
-    NetworkServiceRecord networkServiceRecord;
-    networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-    networkServiceRecord.setCreatedAt(format.format(new Date()));
-    networkServiceRecord.setTask("Onboarding");
-    networkServiceRecord.setKeyNames(new HashSet<String>());
-    if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
-      for (Key key : body.getKeys()) {
-        networkServiceRecord.getKeyNames().add(key.getName());
+    NetworkServiceRecord networkServiceRecord = null;
+    boolean savedNsrSuccessfully = false;
+    int attempt = 0;
+    // this while loop is necessary, because while creating the NSR also a VIM might be changed (newly created networks).
+    // then saving the NSR might produce OptimisticLockingFailureExceptions.
+    while (!savedNsrSuccessfully) {
+      networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
+      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+      networkServiceRecord.setCreatedAt(format.format(new Date()));
+      networkServiceRecord.setTask("Onboarding");
+      networkServiceRecord.setKeyNames(new HashSet<String>());
+      if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
+        for (Key key : body.getKeys()) {
+          networkServiceRecord.getKeyNames().add(key.getName());
+        }
       }
-    }
-    log.trace("Creating " + networkServiceRecord);
+      log.trace("Creating " + networkServiceRecord);
 
-    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+      //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
           Collection<String> instanceNames;
@@ -976,46 +982,62 @@ public class NetworkServiceRecordManagement
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {
               for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
-                  boolean networkExists = false;
-                  for (Network network : vimInstance.getNetworks()) {
-                    if (network.getName().equals(vlr.getName())
-                        || network.getExtId().equals(vlr.getName())) {
-                      networkExists = true;
-                      vlr.setStatus(LinkStatus.NORMALOPERATION);
-                      vlr.setVim_id(vdu.getId());
-                      vlr.setExtId(network.getExtId());
-                      vlr.getConnection().add(vnfdConnectionPoint.getId());
-                      break;
-                    }
-                  }
-                  if (!networkExists) {
-                    Network network = new Network();
-                    network.setName(vlr.getName());
-                    network.setSubnets(new HashSet<Subnet>());
-                    network = networkManagement.add(vimInstance, network);
-                    vlr.setStatus(LinkStatus.NORMALOPERATION);
-                    vlr.setVim_id(vdu.getId());
-                    vlr.setExtId(network.getExtId());
-                    vlr.getConnection().add(vnfdConnectionPoint.getId());
+                //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
+                boolean networkExists = false;
+                for (Network network : vimInstance.getNetworks()) {
+                  //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
+                  if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
+                      || network
+                          .getExtId()
+                          .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+                    networkExists = true;
+                    //                      vlr.setStatus(LinkStatus.NORMALOPERATION);
+                    //                      vlr.setVim_id(vdu.getId());
+                    //                      vlr.setExtId(network.getExtId());
+                    //                      vlr.getConnection().add(vnfdConnectionPoint.getId());
+                    break;
                   }
                 }
+                if (!networkExists) {
+                  Network network = new Network();
+                  network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+                  network.setSubnets(new HashSet<Subnet>());
+                  network = networkManagement.add(vimInstance, network);
+                  //                    vlr.setStatus(LinkStatus.NORMALOPERATION);
+                  //                    vlr.setVim_id(vdu.getId());
+                  //                    vlr.setExtId(network.getExtId());
+                  //                    vlr.getConnection().add(vnfdConnectionPoint.getId());
+                }
+                //                }
               }
             }
           }
         }
       }
+      //    }
+
+      NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
+
+      networkServiceRecord.setProjectId(projectID);
+      try {
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        savedNsrSuccessfully = true;
+        log.debug(
+            "Persisted NSR "
+                + networkServiceRecord.getName()
+                + ". Got id: "
+                + networkServiceRecord.getId());
+      } catch (OptimisticLockingFailureException e) {
+        if (attempt >= 3) {
+          log.error(
+              "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop trying.");
+          throw e;
+        }
+        log.warn("OptimisticLockingFailureException while creating the NSR. We will try it again.");
+        savedNsrSuccessfully = false;
+        attempt++;
+      }
     }
-
-    NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
-
-    networkServiceRecord.setProjectId(projectID);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
-    log.debug(
-        "Persisted NSR "
-            + networkServiceRecord.getName()
-            + ". Got id: "
-            + networkServiceRecord.getId());
 
     if (networkServiceDescriptor.getVnfd() != null) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
