@@ -669,7 +669,7 @@
                                 ng-options="vnfd.name for vnfd in vnfdList| orderBy:'itemKey':false">
                         </select>
                         <span class="input-group-btn">
-                            <button class="btn btn-default" ng-click="addTONSD()" type="button"
+                            <button class="btn btn-default" ng-click="addTONSD(selectedVNFD)" type="button"
                                     title="Add this VNFD to NSD" ng-style="{'margin-top':'25px'}">
                                 <span class="fa fa-plus" aria-hidden="true"></span>
                             </button>
@@ -933,6 +933,7 @@
 
             </div>
             <div class="modal-body">
+                Here you can add an NSD via pasting the json or choosing a file
                 <form role="form" id="formJson">
                     <div class="form-group">
                      
@@ -967,6 +968,7 @@
 
             </div>
             <div class="modal-body">
+                Here you can upload TOSCA complient packages
                 <form role="form" id="my-dropzone" class="">
                     <h4>Drag and drop files below</h4>
 
