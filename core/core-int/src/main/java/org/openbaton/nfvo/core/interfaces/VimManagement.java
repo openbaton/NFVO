@@ -19,6 +19,8 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -38,7 +40,8 @@ public interface VimManagement {
    * @param projectId
    */
   VimInstance add(VimInstance vimInstance, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException;
 
   /**
    * This operation allows deleting the datacenter from the datacenter repository.
@@ -56,14 +59,17 @@ public interface VimManagement {
    * @param projectId
    */
   VimInstance update(VimInstance new_vimInstance, String id, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException;
 
   /**
    * This operation allows querying the information of the datacenter in the datacenter repository.
    */
   VimInstance query(String id, String projectId);
 
-  VimInstance refresh(VimInstance vimInstance) throws VimException, PluginException, IOException;
+  VimInstance refresh(VimInstance vimInstance)
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException;
 
   /**
    * Adds a new NFVImage to the VimInstance with id
@@ -74,7 +80,8 @@ public interface VimManagement {
    * @return NFVImage
    */
   NFVImage addImage(String id, NFVImage image, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException;
 
   /**
    * Returns the NFVImage with idImage from VimInstance with idVim
@@ -95,7 +102,8 @@ public interface VimManagement {
    * @param projectId
    */
   void deleteImage(String idVim, String idImage, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException;
 
   Iterable<VimInstance> queryByProjectId(String projectId);
 }

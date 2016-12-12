@@ -22,6 +22,8 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -68,7 +70,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance add(VimInstance vimInstance, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
     return this.refresh(vimInstance);
@@ -88,7 +91,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance update(VimInstance vimInstance, String id, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -108,16 +112,29 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance refresh(VimInstance vimInstance)
-      throws VimException, PluginException, IOException {
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException {
     if (vimCheck
         && !vimInstance
             .getType()
             .equals(
                 "test")) // just setting it to active without this check may lead to an ObjectOptimisticLockingFailureException
-    this.checkVimInstances();
-    else vimInstance.setActive(true);
+    {
+      this.checkVimInstances();
+    } else vimInstance.setActive(true);
 
-    if (!vimInstance.isActive() && vimInstance.getId() != null) return vimInstance;
+    if (!vimInstance.isActive() && vimInstance.getId() != null) {
+      return vimInstance;
+    }
+
+    if (vimInstanceWithSameNameExists(vimInstance)) {
+      throw new AlreadyExistingException(
+          "VimInstance with name \""
+              + vimInstance.getName()
+              + "\" already exists in project with id: "
+              + vimInstance.getProjectId());
+    }
+
     //Refreshing Images
     Set<NFVImage> images_refreshed = new HashSet<>();
     Set<NFVImage> images_new = new HashSet<>();
@@ -180,6 +197,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           Set<Subnet> subnets_refreshed = new HashSet<>();
           Set<Subnet> subnets_new = new HashSet<>();
           Set<Subnet> subnets_old = new HashSet<>();
+          if (network_new.getSubnets() == null) {
+            throw new BadRequestException(
+                "New network: " + network_new.getName() + " has no subnets");
+          }
           subnets_refreshed.addAll(network_new.getSubnets());
           if (network_nfvo.getSubnets() == null) {
             network_nfvo.setSubnets(new HashSet<Subnet>());
@@ -279,6 +300,17 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     return vimRepository.save(vimInstance);
   }
 
+  private boolean vimInstanceWithSameNameExists(VimInstance vimInstance) {
+    if (vimInstance.getId() == null) {
+      for (VimInstance vimInstance1 : vimRepository.findByProjectId(vimInstance.getProjectId())) {
+        if (vimInstance1.getName().equals(vimInstance.getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /**
    * Adds a new NFVImage to the VimInstance with id
    *
@@ -289,7 +321,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
    */
   @Override
   public NFVImage addImage(String id, NFVImage image, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     VimInstance vimInstance = vimRepository.findFirstById(id);
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
@@ -325,7 +358,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
    */
   @Override
   public void deleteImage(String idVim, String idImage, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     VimInstance vimInstance = vimRepository.findFirstById(idVim);
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
