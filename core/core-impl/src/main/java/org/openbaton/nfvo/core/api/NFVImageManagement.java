@@ -34,7 +34,7 @@ import java.util.Date;
 @Scope
 public class NFVImageManagement implements org.openbaton.nfvo.core.interfaces.NFVImageManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ImageRepository imageRepository;
 

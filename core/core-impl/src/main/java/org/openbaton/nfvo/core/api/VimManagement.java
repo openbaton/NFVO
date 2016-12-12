@@ -60,7 +60,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Autowired private NetworkRepository networkRepository;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.vim.active.check:false}")
   private boolean
@@ -68,7 +68,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance add(VimInstance vimInstance, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, IOException {
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
     return this.refresh(vimInstance);
@@ -88,7 +88,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance update(VimInstance vimInstance, String id, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, IOException {
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

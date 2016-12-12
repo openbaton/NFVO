@@ -56,7 +56,7 @@ import java.util.List;
 public class NetworkServiceDescriptorManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.vnfd.cascade.delete:false}")
   private boolean cascadeDelete;
@@ -206,8 +206,7 @@ public class NetworkServiceDescriptorManagement
   }
 
   private List<String> getIds(List<String> market_ids, String project_id)
-      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
-          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+      throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException {
     List<String> not_found_ids = new ArrayList<>();
     List<String> vnfdIds = new ArrayList<>();

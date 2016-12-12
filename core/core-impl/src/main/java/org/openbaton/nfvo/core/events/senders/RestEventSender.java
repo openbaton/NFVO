@@ -44,7 +44,7 @@ import java.util.concurrent.Future;
 @Scope
 public class RestEventSender implements EventSender {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   @Async

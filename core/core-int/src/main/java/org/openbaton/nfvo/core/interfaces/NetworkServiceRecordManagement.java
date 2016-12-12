@@ -49,8 +49,7 @@ public interface NetworkServiceRecordManagement {
    */
   NetworkServiceRecord onboard(
       String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+      throws VimException, NotFoundException, BadFormatException, PluginException,
           MissingParameterException, BadRequestException;
 
   /**
@@ -63,8 +62,7 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+      throws VimException, NotFoundException, BadFormatException, PluginException,
           MissingParameterException, BadRequestException;
 
   /**
@@ -109,8 +107,7 @@ public interface NetworkServiceRecordManagement {
    * @param id
    * @param projectId
    */
-  void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException;
+  void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId);
 

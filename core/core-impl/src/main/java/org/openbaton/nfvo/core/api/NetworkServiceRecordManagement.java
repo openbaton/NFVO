@@ -89,7 +89,7 @@ import javax.annotation.PostConstruct;
 public class NetworkServiceRecordManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private EventDispatcher publisher;
 
@@ -151,8 +151,8 @@ public class NetworkServiceRecordManagement
   @Override
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+      throws VimException, NotFoundException,
+          BadFormatException, PluginException,
           MissingParameterException, BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
@@ -195,8 +195,8 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+      throws VimException, NotFoundException,
+          BadFormatException, PluginException,
           MissingParameterException, BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
     nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
@@ -841,7 +841,7 @@ public class NetworkServiceRecordManagement
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInAnyState(String id)
-      throws NotFoundException, WrongStatusException {
+      throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
       throw new NotFoundException("No NetworkServiceRecord found with id " + id);
@@ -866,8 +866,8 @@ public class NetworkServiceRecordManagement
 
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
-      throws NotFoundException, BadFormatException, VimException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws NotFoundException, VimException, PluginException, MissingParameterException,
+          BadRequestException {
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -1200,7 +1200,7 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException {
+      throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(

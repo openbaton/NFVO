@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 public class VirtualLinkManagement
     implements org.openbaton.nfvo.core.interfaces.VirtualLinkManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 

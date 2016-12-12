@@ -59,7 +59,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
 
   @Autowired private VNFRDependencyRepository vnfrDependencyRepository;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   private Map<String, Set<String>> queues;
 

@@ -69,7 +69,7 @@ public class NSDUtils {
 
   @Autowired private VNFDRepository vnfdRepository;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   public void checkEndpoint(
       NetworkServiceDescriptor networkServiceDescriptor, Iterable<VnfmManagerEndpoint> endpoints)

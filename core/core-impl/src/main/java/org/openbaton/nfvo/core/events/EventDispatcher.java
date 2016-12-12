@@ -53,8 +53,8 @@ import org.springframework.stereotype.Service;
 class EventDispatcher
     implements ApplicationListener<EventNFVO>, org.openbaton.nfvo.core.interfaces.EventDispatcher {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @Autowired private EventEndpointRepository eventEndpointRepository;
   @Autowired private ConfigurableApplicationContext context;
   @Autowired private org.openbaton.nfvo.core.interfaces.EventManagement eventManagement;

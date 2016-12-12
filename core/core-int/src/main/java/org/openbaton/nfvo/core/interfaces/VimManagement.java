@@ -38,7 +38,7 @@ public interface VimManagement {
    * @param projectId
    */
   VimInstance add(VimInstance vimInstance, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, IOException;
 
   /**
    * This operation allows deleting the datacenter from the datacenter repository.
@@ -56,7 +56,7 @@ public interface VimManagement {
    * @param projectId
    */
   VimInstance update(VimInstance new_vimInstance, String id, String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException;
+      throws VimException, PluginException, IOException;
 
   /**
    * This operation allows querying the information of the datacenter in the datacenter repository.

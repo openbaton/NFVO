@@ -60,5 +60,11 @@ public interface ConfigurationManagement {
    */
   Configuration query(String id, String projectId);
 
+  /**
+   *
+   * @param system
+   * @return
+   * @throws NotFoundException
+   */
   Configuration queryByName(String system) throws NotFoundException;
 }

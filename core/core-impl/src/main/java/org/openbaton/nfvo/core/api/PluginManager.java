@@ -36,7 +36,7 @@ import java.util.Set;
 @Service
 public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginManager {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.plugin.active.consumers:10}")
   private String numConsumers;

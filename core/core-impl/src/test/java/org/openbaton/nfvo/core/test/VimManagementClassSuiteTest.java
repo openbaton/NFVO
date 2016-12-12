@@ -63,7 +63,7 @@ public class VimManagementClassSuiteTest {
 
   @Mock private NetworkRepository networkRepository;
 
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VimManagement vimManagement;
 

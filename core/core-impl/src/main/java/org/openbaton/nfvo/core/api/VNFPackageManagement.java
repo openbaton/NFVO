@@ -81,8 +81,8 @@ public class VNFPackageManagement
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
-  private Gson mapper = new GsonBuilder().create();
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Gson mapper = new GsonBuilder().create();
   @Autowired private NSDUtils nsdUtils;
   @Autowired private VnfPackageRepository vnfPackageRepository;
   @Autowired private VNFDRepository vnfdRepository;
@@ -519,9 +519,8 @@ public class VNFPackageManagement
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException {
-    String downloadlink = link;
-    log.debug("This is download link" + downloadlink);
-    URL packageLink = new URL(downloadlink);
+    log.debug("This is download link" + link);
+    URL packageLink = new URL(link);
 
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -534,9 +533,7 @@ public class VNFPackageManagement
     in.close();
     byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        onboard(packageOnboard, projectId);
-    return virtualNetworkFunctionDescriptor;
+    return onboard(packageOnboard, projectId);
   }
 
   private String[] getNfvoVersion() throws NotFoundException {

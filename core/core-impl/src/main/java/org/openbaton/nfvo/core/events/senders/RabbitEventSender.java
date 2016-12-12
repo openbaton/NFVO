@@ -40,7 +40,7 @@ import java.util.concurrent.Future;
 public class RabbitEventSender implements EventSender {
 
   @Autowired private RabbitTemplate rabbitTemplate;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   @Async

@@ -46,7 +46,7 @@ import java.util.Set;
  */
 public class NSRUtils {
 
-  private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
+  private static final Logger log = LoggerFactory.getLogger(NSRUtils.class);
 
   public static NetworkServiceRecord createNetworkServiceRecord(
       NetworkServiceDescriptor networkServiceDescriptor) {

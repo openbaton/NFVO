@@ -51,7 +51,7 @@ public class ConfigurationManagementClassSuiteTest {
   private static final String projectId = "project-id";
 
   @Rule public ExpectedException exception = ExpectedException.none();
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private ConfigurationManagement configurationManagement;
 

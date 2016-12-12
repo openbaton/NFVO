@@ -43,7 +43,7 @@ public class VirtualNetworkFunctionManagement
 
   @Autowired private VNFDRepository vnfdRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;

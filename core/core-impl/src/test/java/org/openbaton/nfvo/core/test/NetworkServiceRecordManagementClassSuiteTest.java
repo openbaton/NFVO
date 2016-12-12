@@ -118,7 +118,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
 
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @Mock private VimBroker vimBroker;
   @Mock private VimRepository vimRepository;

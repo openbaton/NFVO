@@ -61,7 +61,7 @@ public class DependencyManagement
 
   @Autowired private org.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private NetworkServiceRecordRepository nsrRepository;
 
@@ -77,11 +77,10 @@ public class DependencyManagement
    * @return
    * @throws NoResultException
    * @throws NotFoundException
-   * @throws InterruptedException
    */
   @Override
   public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NoResultException, NotFoundException, InterruptedException {
+      throws NoResultException, NotFoundException {
     log.debug("Provision dependencies for " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());

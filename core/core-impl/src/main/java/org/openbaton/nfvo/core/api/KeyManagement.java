@@ -55,7 +55,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64;
 @Scope
 public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ProjectManagement projectManagement;
 
@@ -97,8 +97,8 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public String generateKey(String projectId, String name)
-      throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException,
-          IOException {
+      throws NoSuchProviderException, InvalidKeySpecException, IOException,
+          NoSuchAlgorithmException {
     log.debug("Generating keypair");
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
@@ -144,11 +144,9 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return res;
   }
 
-  private byte[] parsePublicKey(String decodedKey)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+  private byte[] parsePublicKey(String decodedKey) throws UnsupportedEncodingException {
     decodedKey = decodedKey.split(" ")[1];
-    byte[] keyBytes = Base64.decodeBase64(decodedKey.getBytes("utf-8"));
-    return keyBytes;
+    return Base64.decodeBase64(decodedKey.getBytes("utf-8"));
   }
 
   private String parsePrivateKey(byte[] encodedKey) {
@@ -160,7 +158,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return sb.toString();
   }
 
-  public String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
+  private String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     /* encode the "ssh-rsa" string */
     byte[] sshrsa = new byte[] {0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a'};
@@ -178,7 +176,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return "ssh-rsa " + Base64.encodeBase64String(out.toByteArray()) + " " + keyname;
   }
 
-  public void encodeUInt32(int value, OutputStream out) throws IOException {
+  private void encodeUInt32(int value, OutputStream out) throws IOException {
     byte[] tmp = new byte[4];
     tmp[0] = (byte) ((value >>> 24) & 0xff);
     tmp[1] = (byte) ((value >>> 16) & 0xff);

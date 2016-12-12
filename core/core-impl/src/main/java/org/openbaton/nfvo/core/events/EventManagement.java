@@ -54,7 +54,7 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
 
   @Autowired private EventEndpointRepository eventEndpointRepository;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${spring.rabbitmq.username:admin}")
   private String username;

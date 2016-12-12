@@ -44,7 +44,7 @@ import java.util.Map;
 @Scope
 public class VNFLifecycleOperationGranting
     implements org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting {
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 

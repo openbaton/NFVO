@@ -47,8 +47,7 @@ public interface ResourceManagement {
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimDriverException, ExecutionException, InterruptedException, VimException,
-          PluginException;
+      throws ExecutionException, InterruptedException, VimException, PluginException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an

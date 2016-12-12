@@ -70,7 +70,7 @@ public class NetworkManagementClassSuiteTest {
 
   @Mock private VimDriverCaller vimDriverCaller;
 
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private NetworkManagement networkManagement;
 

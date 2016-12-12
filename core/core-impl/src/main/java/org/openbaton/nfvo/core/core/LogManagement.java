@@ -46,7 +46,7 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
 
   @Autowired private RabbitTemplate rabbitTemplate;
   @Autowired private Gson gson;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   public HashMap getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException {

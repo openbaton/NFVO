@@ -90,7 +90,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Value("${nfvo.timezone:UTC}") // set timezone=UTC if the timezone property is not set
   private String timezone;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 
@@ -166,7 +166,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimException, VimDriverException, ExecutionException, InterruptedException,
+      throws VimException, ExecutionException, InterruptedException,
           PluginException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
@@ -228,7 +228,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException, VimDriverException {
+      throws InterruptedException, ExecutionException, VimException {
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
     for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {

@@ -49,7 +49,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
   @Value("${nfvo.history.level:1}")
   private int historyLevel;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.history.clear:false}")
   private boolean clearHistory;
@@ -63,7 +63,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
   }
 
   @Override
-  public void addAction(String method, String path, String result) throws NotFoundException {
+  public void addAction(String method, String path, String result) {
 
     if (historyLevel > 0) {
       if ((historyLevel == 1 && (method.equalsIgnoreCase("get") || method.equalsIgnoreCase("put")))
