@@ -88,13 +88,13 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Override
   public VimInstance update(VimInstance vimInstance, String id, String projectId)
-      throws VimException, PluginException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException {
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    vimInstance = vimRepository.save(vimInstance);
-    refresh(vimInstance);
-    return vimInstance;
+    //    vimInstance = vimRepository.save(vimInstance);
+    return refresh(vimInstance);
+    //    return vimInstance;
   }
 
   @Override
@@ -114,10 +114,22 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             .getType()
             .equals(
                 "test")) // just setting it to active without this check may lead to an ObjectOptimisticLockingFailureException
-    this.checkVimInstances();
-    else vimInstance.setActive(true);
+    {
+      this.checkVimInstances();
+    } else vimInstance.setActive(true);
 
-    if (!vimInstance.isActive() && vimInstance.getId() != null) return vimInstance;
+    if (!vimInstance.isActive() && vimInstance.getId() != null) {
+      return vimInstance;
+    }
+
+    if (vimInstanceWithSameNameExists(vimInstance)) {
+      throw new AlreadyExistingException(
+          "VimInstance with name \""
+              + vimInstance.getName()
+              + "\" already exists in project with id: "
+              + vimInstance.getProjectId());
+    }
+
     //Refreshing Images
     Set<NFVImage> images_refreshed = new HashSet<>();
     Set<NFVImage> images_new = new HashSet<>();
@@ -180,6 +192,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           Set<Subnet> subnets_refreshed = new HashSet<>();
           Set<Subnet> subnets_new = new HashSet<>();
           Set<Subnet> subnets_old = new HashSet<>();
+          if (network_new.getSubnets() == null) {
+            throw new BadRequestException(
+                "New network: " + network_new.getName() + " has no subnets");
+          }
           subnets_refreshed.addAll(network_new.getSubnets());
           if (network_nfvo.getSubnets() == null) {
             network_nfvo.setSubnets(new HashSet<Subnet>());
@@ -277,6 +293,17 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     vimInstance.getFlavours().addAll(flavors_new);
     vimInstance.getFlavours().removeAll(flavors_old);
     return vimRepository.save(vimInstance);
+  }
+
+  private boolean vimInstanceWithSameNameExists(VimInstance vimInstance) {
+    if (vimInstance.getId() == null) {
+      for (VimInstance vimInstance1 : vimRepository.findByProjectId(vimInstance.getProjectId())) {
+        if (vimInstance1.getName().equals(vimInstance.getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**

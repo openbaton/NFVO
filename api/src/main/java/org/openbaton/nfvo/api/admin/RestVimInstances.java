@@ -18,6 +18,8 @@ package org.openbaton.nfvo.api.admin;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -63,7 +65,8 @@ public class RestVimInstances {
   public VimInstance create(
       @RequestBody @Valid VimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     return vimManagement.add(vimInstance, projectId);
   }
 
@@ -127,7 +130,8 @@ public class RestVimInstances {
       @RequestBody @Valid VimInstance new_vimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     return vimManagement.update(new_vimInstance, id, projectId);
   }
 
@@ -173,7 +177,8 @@ public class RestVimInstances {
       @PathVariable("id") String id,
       NFVImage nfvImage,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     return vimManagement.addImage(id, nfvImage, projectId);
   }
 
@@ -190,7 +195,8 @@ public class RestVimInstances {
       @PathVariable("idVim") String idVim,
       @RequestBody @Valid NFVImage image,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     return vimManagement.addImage(idVim, image, projectId);
   }
 
@@ -206,7 +212,8 @@ public class RestVimInstances {
       @PathVariable("idVim") String idVim,
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     vimManagement.deleteImage(idVim, idImage, projectId);
   }
 
@@ -219,7 +226,8 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public VimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException {
+      throws VimException, PluginException, EntityUnreachableException, IOException,
+          BadRequestException, AlreadyExistingException {
     VimInstance vimInstance = vimManagement.query(id, projectId);
     vimManagement.refresh(vimInstance);
     return vimInstance;

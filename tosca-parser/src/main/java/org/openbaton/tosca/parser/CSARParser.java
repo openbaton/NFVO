@@ -228,7 +228,7 @@ public class CSARParser {
       actualNfvoVersion = null;
     }
     vnfPackage.setName((String) metadata.get("name"));
-    if (metadata.containsKey("nfvo_version")) {
+    if (metadata.containsKey("nfvo_version") && actualNfvoVersion != null) {
       String nfvoVersionString = (String) metadata.get("nfvo_version");
       String[] nfvoVersion = nfvoVersionString.split(Pattern.quote("."));
 
