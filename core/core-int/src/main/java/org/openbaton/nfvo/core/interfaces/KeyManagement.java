@@ -23,8 +23,6 @@ import org.openbaton.exceptions.NotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * Created by lto on 10/03/16.

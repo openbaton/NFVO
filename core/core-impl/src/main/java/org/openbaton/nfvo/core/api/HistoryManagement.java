@@ -19,7 +19,6 @@ package org.openbaton.nfvo.core.api;
 
 import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.catalogue.security.User;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.HistoryEntityRepository;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;

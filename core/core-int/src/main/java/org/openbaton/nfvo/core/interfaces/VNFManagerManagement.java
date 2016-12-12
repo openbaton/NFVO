@@ -18,8 +18,6 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.WrongStatusException;
 
 public interface VNFManagerManagement {
   /**

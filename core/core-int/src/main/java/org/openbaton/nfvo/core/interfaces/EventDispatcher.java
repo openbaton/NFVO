@@ -19,7 +19,6 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 
 /**
