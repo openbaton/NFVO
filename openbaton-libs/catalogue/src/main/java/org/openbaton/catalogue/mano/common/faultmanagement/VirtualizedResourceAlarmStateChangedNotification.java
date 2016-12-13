@@ -20,9 +20,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
 import org.openbaton.catalogue.mano.common.monitoring.AlarmState;
 
-/**
- * Created by mob on 28.10.15.
- */
+/** Created by mob on 28.10.15. */
 public class VirtualizedResourceAlarmStateChangedNotification
     extends AbstractVirtualizedResourceAlarm {
   private AlarmState alarmState;

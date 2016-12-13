@@ -28,9 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by tce on 14.08.15.
- */
+/** Created by tce on 14.08.15. */
 @Service
 @Scope
 public class AgentBroker {

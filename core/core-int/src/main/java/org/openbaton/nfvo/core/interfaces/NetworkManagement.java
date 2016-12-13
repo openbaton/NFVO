@@ -22,33 +22,16 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NetworkManagement {
 
-  /**
-   * This operation allows adding new VNF software images to the image repository.
-   *
-   * @param vimInstance
-   * @param network
-   */
+  /** This operation allows adding new VNF software images to the image repository. */
   Network add(VimInstance vimInstance, Network network) throws VimException, PluginException;
 
-  /**
-   * This operation allows deleting in the VNF software images from the image repository.
-   *
-   * @param vimInstance
-   * @param network
-   */
+  /** This operation allows deleting in the VNF software images from the image repository. */
   void delete(VimInstance vimInstance, Network network) throws VimException, PluginException;
 
-  /**
-   * This operation allows updating the VNF software images in the image repository.
-   *
-   * @param vimInstance
-   * @param new_network
-   */
+  /** This operation allows updating the VNF software images in the image repository. */
   Network update(VimInstance vimInstance, Network new_network) throws VimException, PluginException;
 
   /**
@@ -60,8 +43,6 @@ public interface NetworkManagement {
   /**
    * This operation allows querying the information of the VNF software image in the image
    * repository.
-   *
-   * @param id
    */
   Network query(String id);
 }

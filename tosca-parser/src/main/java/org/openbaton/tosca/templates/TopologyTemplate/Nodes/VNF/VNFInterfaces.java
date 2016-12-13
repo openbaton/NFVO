@@ -17,18 +17,15 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
-import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.tosca.exceptions.NotFoundException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.tosca.exceptions.NotFoundException;
 
-/**
- * Created by rvl on 19.08.16.
- */
+/** Created by rvl on 19.08.16. */
 public class VNFInterfaces {
 
   private Object lifecycle = null;

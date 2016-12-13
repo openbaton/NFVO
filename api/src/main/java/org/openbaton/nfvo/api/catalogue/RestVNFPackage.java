@@ -18,7 +18,10 @@ package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -46,12 +49,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
 @ConfigurationProperties(prefix = "nfvo.marketplace.privateip")
@@ -69,9 +66,7 @@ public class RestVNFPackage {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
-  /**
-   * Adds a new VNFPackage to the VNFPackages repository
-   */
+  /** Adds a new VNFPackage to the VNFPackages repository */
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public String onboard(

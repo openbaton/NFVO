@@ -17,14 +17,11 @@
 
 package org.openbaton.nfvo.repositories;
 
+import java.util.List;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-/**
- * Created by mob on 05.09.15.
- */
+/** Created by mob on 05.09.15. */
 public interface ConfigurationRepository extends CrudRepository<Configuration, String> {
   Configuration findFirstById(String id);
 

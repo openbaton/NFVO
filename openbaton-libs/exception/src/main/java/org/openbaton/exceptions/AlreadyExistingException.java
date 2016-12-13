@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 16/02/16.
- */
+/** Created by lto on 16/02/16. */
 public class AlreadyExistingException extends Exception {
   public AlreadyExistingException(Throwable cause) {
     super(cause);

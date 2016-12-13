@@ -34,19 +34,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by lto on 09/11/15.
- */
+/** Created by lto on 09/11/15. */
 @Configuration
 @EnableRabbit
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class RabbitConfiguration {
-  final static String queueName_vnfmRegister = "nfvo.vnfm.register";
-  final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
-  final static String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
-  final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
-  final static String queueName_eventRegister = "nfvo.event.register";
-  final static String queueName_eventUnregister = "nfvo.event.unregister";
+  static final String queueName_vnfmRegister = "nfvo.vnfm.register";
+  static final String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
+  static final String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
+  static final String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
+  static final String queueName_eventRegister = "nfvo.event.register";
+  static final String queueName_eventUnregister = "nfvo.event.unregister";
 
   @Value("${nfvo.rabbitmq.autodelete:true}")
   private boolean autodelete;

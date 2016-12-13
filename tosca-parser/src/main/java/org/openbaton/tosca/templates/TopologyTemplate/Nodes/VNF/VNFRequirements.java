@@ -20,9 +20,7 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-/**
- * Created by rvl on 19.08.16.
- */
+/** Created by rvl on 19.08.16. */
 public class VNFRequirements {
 
   private ArrayList<String> virtualLinks = new ArrayList<>();

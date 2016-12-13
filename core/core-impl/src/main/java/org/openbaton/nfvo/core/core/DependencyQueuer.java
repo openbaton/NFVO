@@ -17,6 +17,14 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -34,19 +42,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 19/08/15.
- */
+/** Created by lto on 19/08/15. */
 @Service
 @Scope
 public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.DependencyQueuer {
@@ -81,10 +77,6 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
    * Check all dependencies that are waiting in in the map queues for the source vnfr to get
    * instantiated. If the vnfr that got ready was the last source in a waiting dependency send a
    * modify message to the target vnfr.
-   *
-   * @param vnfrSourceName
-   * @param nsrFather
-   * @throws NotFoundException
    */
   @Override
   public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather)

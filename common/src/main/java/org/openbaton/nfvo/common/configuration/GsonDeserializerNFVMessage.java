@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.common.configuration;
 
 import com.google.gson.*;
+import java.lang.reflect.Type;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -25,11 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
-
-/**
- * Created by lto on 10/11/15.
- */
+/** Created by lto on 10/11/15. */
 @Service
 public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 

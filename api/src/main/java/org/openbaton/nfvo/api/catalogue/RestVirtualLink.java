@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.nfvo.core.interfaces.VirtualLinkManagement;
 import org.slf4j.Logger;
@@ -24,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/virtual-link-descriptors")

@@ -17,6 +17,12 @@
 
 package org.openbaton.nfvo.core.test;
 
+import static org.mockito.Mockito.mock;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -29,16 +35,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.VimDriverCaller;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Future;
-
-import static org.mockito.Mockito.mock;
-
-/**
- * Created by lto on 26/11/15.
- */
+/** Created by lto on 26/11/15. */
 @Service
 public class MyVim extends Vim {
 

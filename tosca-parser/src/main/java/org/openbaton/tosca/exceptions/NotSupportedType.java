@@ -17,9 +17,7 @@
 
 package org.openbaton.tosca.exceptions;
 
-/**
- * Created by dbo on 31/01/16.
- */
+/** Created by dbo on 31/01/16. */
 public class NotSupportedType extends Exception {
 
   public NotSupportedType(String exc) {

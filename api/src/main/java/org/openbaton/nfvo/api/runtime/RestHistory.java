@@ -25,9 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Created by lto on 17/10/16.
- */
+/** Created by lto on 17/10/16. */
 @RestController
 @RequestMapping("/api/v1/history")
 public class RestHistory {

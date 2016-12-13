@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 26/05/15.
- */
+/** Created by lto on 26/05/15. */
 public class BadRequestException extends Exception {
   public BadRequestException(String msg) {
     super(msg);

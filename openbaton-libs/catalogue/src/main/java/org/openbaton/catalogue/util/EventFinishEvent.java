@@ -20,9 +20,7 @@ package org.openbaton.catalogue.util;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 
-/**
- * Created by lto on 06/08/15.
- */
+/** Created by lto on 06/08/15. */
 public class EventFinishEvent {
   private Action action;
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;

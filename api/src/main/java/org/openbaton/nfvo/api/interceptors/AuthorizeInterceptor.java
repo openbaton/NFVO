@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.api.interceptors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -32,12 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-/**
- * Created by lto on 25/05/16.
- */
+/** Created by lto on 25/05/16. */
 @Service
 public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 

@@ -17,14 +17,11 @@
 
 package org.openbaton.nfvo.repositories;
 
+import java.util.List;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-/**
- * Created by lto on 30/04/15.
- */
+/** Created by lto on 30/04/15. */
 public interface VnfPackageRepository extends CrudRepository<VNFPackage, String> {
 
   VNFPackage findFirstById(String id);

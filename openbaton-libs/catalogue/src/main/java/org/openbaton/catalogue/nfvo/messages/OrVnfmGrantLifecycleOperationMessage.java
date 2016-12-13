@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Map;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-import java.util.Map;
-
-/**
- * Created by mob on 15.09.15.
- */
+/** Created by mob on 15.09.15. */
 public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage {
   private boolean grantAllowed;
   private Map<String, VimInstance> vduVim;

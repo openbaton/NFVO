@@ -21,9 +21,7 @@ import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourc
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 import org.openbaton.catalogue.mano.common.monitoring.VRAlarm;
 
-/**
- * Created by mob on 27.10.15.
- */
+/** Created by mob on 27.10.15. */
 public class VirtualizedResourceAlarmNotification extends AbstractVirtualizedResourceAlarm {
   private VRAlarm vrAlarm;
 

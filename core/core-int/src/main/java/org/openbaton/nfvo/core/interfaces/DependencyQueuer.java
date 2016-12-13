@@ -17,14 +17,11 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.Set;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.exceptions.NotFoundException;
 
-import java.util.Set;
-
-/**
- * Created by lto on 19/08/15.
- */
+/** Created by lto on 19/08/15. */
 public interface DependencyQueuer {
   void waitForVNFR(String targetDependencyId, Set<String> sourceNames);
 

@@ -17,6 +17,11 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -28,15 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
-
-/**
- * Created by lto on 27/05/15.
- */
+/** Created by lto on 27/05/15. */
 @RestController
 @RequestMapping("/admin/v1")
 public class RestRegister extends VnfmRegister {

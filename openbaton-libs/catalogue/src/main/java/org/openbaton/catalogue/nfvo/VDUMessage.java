@@ -17,13 +17,10 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.io.Serializable;
 import org.openbaton.catalogue.mano.common.Event;
 
-import java.io.Serializable;
-
-/**
- * Created by lto on 12/06/15.
- */
+/** Created by lto on 12/06/15. */
 public class VDUMessage implements Serializable {
 
   private Event lifecycleEvent;

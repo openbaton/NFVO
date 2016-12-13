@@ -17,14 +17,11 @@
 
 package org.openbaton.catalogue.mano.common;
 
+import java.io.Serializable;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-/**
- * Created by mpa on 15/12/15.
- */
+/** Created by mpa on 15/12/15. */
 @Entity
 public class ScalingAction implements Serializable {
   @Id private String id;

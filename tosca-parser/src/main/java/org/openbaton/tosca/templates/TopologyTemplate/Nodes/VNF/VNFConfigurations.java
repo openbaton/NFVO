@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by rvl on 22.08.16.
- */
+/** Created by rvl on 22.08.16. */
 public class VNFConfigurations {
 
   private String name = "";

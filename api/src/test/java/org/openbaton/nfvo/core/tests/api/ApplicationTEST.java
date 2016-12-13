@@ -17,18 +17,15 @@
 
 package org.openbaton.nfvo.core.tests.api;
 
+import static org.mockito.Mockito.mock;
+
+import javax.sound.midi.Receiver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sound.midi.Receiver;
-
-import static org.mockito.Mockito.mock;
-
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 @Configuration
 @ComponentScan(basePackages = "org.project.openbaton.nfvo")
 public class ApplicationTEST {

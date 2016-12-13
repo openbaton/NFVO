@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -25,13 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * Created by lto on 10/03/16.
- */
+/** Created by lto on 10/03/16. */
 @Service
 @Scope
 public class VnfPlacementManagement

@@ -17,17 +17,14 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
+import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import java.io.Serializable;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by mob on 29.10.15.
- */
+/** Created by mob on 29.10.15. */
 @Entity
 public class Criteria implements Serializable {
   @Id private String id;

@@ -22,9 +22,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-/**
- * Created by mob on 08.02.16.
- */
+/** Created by mob on 08.02.16. */
 public class VnfmOrHealedMessage extends VnfmOrMessage {
 
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;

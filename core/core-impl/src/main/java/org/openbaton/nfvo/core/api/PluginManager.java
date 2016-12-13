@@ -17,6 +17,10 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.*;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.plugin.utils.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
@@ -25,14 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Created by rvl on 19.10.16.
- */
+/** Created by rvl on 19.10.16. */
 @Service
 public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginManager {
 

@@ -17,17 +17,16 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.mano.common.NFVEntityDescriptor;
-import org.openbaton.catalogue.mano.common.Security;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.mano.common.NFVEntityDescriptor;
+import org.openbaton.catalogue.mano.common.Security;
 
 /**
  * Created by lto on 05/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class NetworkServiceDescriptor extends NFVEntityDescriptor {

@@ -17,6 +17,12 @@
 
 package org.openbaton.nfvo.core.events;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
@@ -33,16 +39,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 10/03/16.
- */
+/** Created by lto on 10/03/16. */
 @Service
 @Scope
 @EnableAsync

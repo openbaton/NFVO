@@ -17,11 +17,7 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -29,11 +25,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
 
 /**
  * Created by lto on 06/02/15.
- * <p>
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ *
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VirtualLinkRecord extends AbstractVirtualLink {
@@ -45,26 +43,16 @@ public class VirtualLinkRecord extends AbstractVirtualLink {
   private String version;
   private int number_of_endpoints;
 
-  /**
-   * The reference for the Network Service instance (nsr:id) that this VL instance is part of
-   */
+  /** The reference for the Network Service instance (nsr:id) that this VL instance is part of */
   private String parent_ns;
-  /**
-   * References to the records of the VNFFG instances in which this VL instance participates
-   */
+  /** References to the records of the VNFFG instances in which this VL instance participates */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VNFForwardingGraphRecord> vnffgr_reference;
-  /**
-   * Reference to the id of VLD used to instantiate this VL
-   */
+  /** Reference to the id of VLD used to instantiate this VL */
   private String descriptor_reference;
-  /**
-   * The reference to the system managing this VL instance
-   */
+  /** The reference to the system managing this VL instance */
   private String vim_id;
-  /**
-   * Bandwidth allocated for each of the QoS options on this link
-   */
+  /** Bandwidth allocated for each of the QoS options on this link */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> allocated_capacity;
   /**
@@ -79,9 +67,7 @@ public class VirtualLinkRecord extends AbstractVirtualLink {
    */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> notification;
-  /**
-   * Record of significant VL lifecycle event (e.g. Creation, Configuration changes)
-   */
+  /** Record of significant VL lifecycle event (e.g. Creation, Configuration changes) */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event_history;
   /**

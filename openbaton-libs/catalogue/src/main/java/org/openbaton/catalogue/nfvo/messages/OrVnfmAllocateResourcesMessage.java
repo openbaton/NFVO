@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Set;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-import java.util.Set;
-
-/**
- * Created by mob on 15.09.15.
- */
+/** Created by mob on 15.09.15. */
 public class OrVnfmAllocateResourcesMessage extends OrVnfmMessage {
   private Set<VirtualDeploymentUnit> vduSet;
 

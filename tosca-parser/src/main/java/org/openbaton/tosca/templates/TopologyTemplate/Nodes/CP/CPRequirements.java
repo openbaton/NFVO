@@ -20,9 +20,7 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class CPRequirements {
 
   private ArrayList<String> virtualLink = new ArrayList<>();

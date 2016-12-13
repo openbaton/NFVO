@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.mano.common.monitoring;
 
-/**
- * Created by mob on 26.10.15.
- */
+/** Created by mob on 26.10.15. */
 public enum FaultType {
 
   //Compute faults

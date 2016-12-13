@@ -18,7 +18,8 @@ package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.util.List;
+import javax.validation.Valid;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
@@ -38,10 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")

@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -33,13 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by lto on 11/06/15.
- */
+/** Created by lto on 11/06/15. */
 @Service
 @Scope
 public class VNFLifecycleOperationGranting

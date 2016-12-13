@@ -17,6 +17,15 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -43,26 +52,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.regex.Pattern;
-
-/**
- * Created by lto on 11/06/15.
- */
+/** Created by lto on 11/06/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
   //TODO get from RabbitConfiguration
-  private final static String exchangeName = "openbaton-exchange";
+  private static final String exchangeName = "openbaton-exchange";
   private static final Pattern PATTERN =
       Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 

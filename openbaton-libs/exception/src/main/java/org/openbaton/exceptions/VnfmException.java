@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 23/06/15.
- */
+/** Created by lto on 23/06/15. */
 public class VnfmException extends Exception {
   public VnfmException() {
     super();

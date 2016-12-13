@@ -17,15 +17,19 @@
 
 package org.openbaton.nfvo.repositories.tests;
 
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import javax.sql.DataSource;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.openbaton.catalogue.mano.common.ResiliencyLevel;
-import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -44,19 +48,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
-
 //import GenericRepository;
 
-/**
- * Created by lto on 30/04/15.
- */
+/** Created by lto on 30/04/15. */
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})

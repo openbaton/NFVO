@@ -17,18 +17,17 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
+import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import java.io.Serializable;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class CostituentVDU implements Serializable {
@@ -37,16 +36,14 @@ public class CostituentVDU implements Serializable {
   /**
    * References a VDU which should be used for this deployment flavour by vnfd:vdu:id, see clause
    * 6.3.1.2.1.
-   * */
+   */
   private String vdu_reference;
-  /**
-   * Number of VDU instances required
-   * */
+  /** Number of VDU instances required */
   private int number_of_instances;
   /**
    * References VNFCs which should be used for this deployment flavour by vnfd:vdu:vnfc:id TODO
    * understand what is a VNF component
-   * */
+   */
   private String constituent_vnfc;
 
   public CostituentVDU() {}

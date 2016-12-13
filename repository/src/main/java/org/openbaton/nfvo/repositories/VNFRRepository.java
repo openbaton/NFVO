@@ -17,14 +17,11 @@
 
 package org.openbaton.nfvo.repositories;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-/**
- * Created by lto on 06/05/15.
- */
+/** Created by lto on 06/05/15. */
 public interface VNFRRepository extends CrudRepository<VirtualNetworkFunctionRecord, String> {
   VirtualNetworkFunctionRecord findFirstById(String id);
 

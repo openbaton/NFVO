@@ -17,28 +17,19 @@
 
 package org.openbaton.nfvo.vim_interfaces.policy_management;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.descriptor.Policy;
 
-import java.util.List;
-
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface PolicyManagement {
 
-  /**
-   * This operation allows defining policy rules include conditions and actions.
-   */
+  /** This operation allows defining policy rules include conditions and actions. */
   Policy create();
 
-  /**
-   * This operation allows updating an existing policy.
-   */
+  /** This operation allows updating an existing policy. */
   Policy update();
 
-  /**
-   * This operation allows delete policy after being created.
-   */
+  /** This operation allows delete policy after being created. */
   void delete();
 
   /**
@@ -47,13 +38,9 @@ public interface PolicyManagement {
    */
   List<Policy> query();
 
-  /**
-   * This operation enables activating an available policy.
-   */
+  /** This operation enables activating an available policy. */
   void activate();
 
-  /**
-   * This operation enables de-activating an active policy.
-   */
+  /** This operation enables de-activating an active policy. */
   void deactivate();
 }

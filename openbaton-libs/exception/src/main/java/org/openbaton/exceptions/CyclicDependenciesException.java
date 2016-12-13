@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 15/01/16.
- */
+/** Created by lto on 15/01/16. */
 public class CyclicDependenciesException extends Exception {
   public CyclicDependenciesException(Throwable cause) {
     super(cause);

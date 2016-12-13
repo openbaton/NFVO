@@ -17,14 +17,11 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
+import java.util.Map;
 import org.openbaton.tosca.exceptions.NotFoundException;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-import java.util.Map;
-
-/**
- * Created by rvl on 19.08.16.
- */
+/** Created by rvl on 19.08.16. */
 public class VNFNodeTemplate {
 
   private String type = "";

@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.api;
 
+import java.util.Collection;
+import java.util.Map;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.security.Key;
 
-import java.util.Collection;
-import java.util.Map;
-
-/**
- * Created by lto on 10/08/16.
- */
+/** Created by lto on 10/08/16. */
 public class DeployNSRBody {
   private Map<String, Collection<String>> vduVimInstances;
   private Collection<Key> keys;

@@ -32,9 +32,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by mpa on 01.10.15.
- */
+/** Created by mpa on 01.10.15. */
 @Service
 @Scope
 @ConfigurationProperties

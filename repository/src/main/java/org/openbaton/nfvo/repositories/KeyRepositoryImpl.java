@@ -17,17 +17,11 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.security.Key;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Created by mpa on 09/08/16.
- */
+/** Created by mpa on 09/08/16. */
 @Transactional(readOnly = true)
 public class KeyRepositoryImpl implements KeyRepositoryCustom {
 

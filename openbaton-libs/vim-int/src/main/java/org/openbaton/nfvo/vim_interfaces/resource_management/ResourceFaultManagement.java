@@ -17,13 +17,10 @@
 
 package org.openbaton.nfvo.vim_interfaces.resource_management;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 
-import java.util.List;
-
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface ResourceFaultManagement {
 
   /**
@@ -41,8 +38,6 @@ public interface ResourceFaultManagement {
    */
   void notifyInformation();
 
-  /**
-   * This operation enables the NFVOs to query for active alarms from the VIM.
-   */
+  /** This operation enables the NFVOs to query for active alarms from the VIM. */
   List<Alarm> getAlarmList();
 }

@@ -17,15 +17,12 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
-import org.openbaton.catalogue.mano.common.*;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.openbaton.catalogue.mano.common.*;
 
-/**
- * Created by rvl on 15.09.16.
- */
+/** Created by rvl on 15.09.16. */
 public class VNFAutoscaling {
 
   private Set<AutoScalePolicy> autoScalePolicySet;

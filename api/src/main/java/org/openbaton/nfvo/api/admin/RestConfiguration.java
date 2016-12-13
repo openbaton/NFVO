@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
@@ -25,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/configurations")

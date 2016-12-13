@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
@@ -37,13 +40,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-/**
- * Created by lto on 13/05/15.
- */
+/** Created by lto on 13/05/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.start")
@@ -95,12 +92,7 @@ public class NSDUtils {
     }
   }
 
-  /**
-   * Fetching vnfd already existing in thr DB based on the id
-   *
-   * @param networkServiceDescriptor
-   * @throws NotFoundException
-   */
+  /** Fetching vnfd already existing in thr DB based on the id */
   public void fetchExistingVnfd(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException {
     Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
@@ -130,9 +122,7 @@ public class NSDUtils {
 
   public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException {
-    /**
-     * Fetching VimInstances
-     */
+    /** Fetching VimInstances */
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       fetchVimInstances(vnfd, projectId);
     }
@@ -177,9 +167,7 @@ public class NSDUtils {
 
   public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException, BadFormatException, CyclicDependenciesException {
-    /**
-     * Fetching dependencies
-     */
+    /** Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
     //Add a vertex to the graph for each vnfd
@@ -252,9 +240,6 @@ public class NSDUtils {
   /**
    * If the requires field in the VNFD is used, this method will transform the values from requires
    * to VNFDependencies.
-   *
-   * @param networkServiceDescriptor
-   * @throws NotFoundException
    */
   private void createDependenciesFromRequires(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException {
@@ -306,8 +291,8 @@ public class NSDUtils {
 
   /**
    * MergeMultipleDependency
-   * <p/>
-   * Merge two VNFDependency (A and B), where source and target are equals, in only one (C). C
+   *
+   * <p>Merge two VNFDependency (A and B), where source and target are equals, in only one (C). C
    * contains the parameters of A and B. *
    */
   private void mergeMultipleDependency(NetworkServiceDescriptor networkServiceDescriptor) {
@@ -348,9 +333,7 @@ public class NSDUtils {
 
   public void checkIntegrity(NetworkServiceDescriptor networkServiceDescriptor)
       throws NetworkServiceIntegrityException {
-    /**
-     * check names
-     */
+    /** check names */
     Set<String> names = new HashSet<>();
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
@@ -362,9 +345,7 @@ public class NSDUtils {
           "All VirtualNetworkFunctionDescriptors in the same NetworkServiceDescriptor must have different names");
     }
 
-    /**
-     * check flavours and images
-     */
+    /** check flavours and images */
     Set<String> flavors = new HashSet<>();
     Set<String> imageNames = new HashSet<>();
     Set<String> imageIds = new HashSet<>();

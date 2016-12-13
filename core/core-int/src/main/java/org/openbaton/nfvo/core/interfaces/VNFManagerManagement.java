@@ -36,7 +36,6 @@ public interface VNFManagerManagement {
   VnfmManagerEndpoint query(String id);
 
   /**
-   *
    * Delete the Vnfm selected by id
    *
    * @param id of the Vnfm

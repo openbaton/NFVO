@@ -17,15 +17,14 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class CostituentVNF implements Serializable {
@@ -36,33 +35,31 @@ public class CostituentVNF implements Serializable {
   /**
    * Reference to a VNFD declared as vnfd in the Network Service via vnf:id. TODO this must be an
    * id. So a String. For doing that we must do manually
-   * */
+   */
   private String vnf_reference;
   /**
    * References a VNF flavour (vnfd:deployment_flavour:id) to be used for this service flavour, see
    * clause 6.2.1.3.1 TODO this must be an id. So a String. For doing that we must do manually
-   * */
+   */
   private String vnf_flavour_id_reference;
-  /**
-   * Represents the redundancy of instances, for example,"active" or "standby".
-   * */
+  /** Represents the redundancy of instances, for example,"active" or "standby". */
   @Enumerated(EnumType.STRING)
   private RedundancyModel redundancy_model;
   /**
    * Specifies the placemen policy between this instance and other instances, if any. TODO: think to
    * a more appropriate type
-   * */
+   */
   private String affinity;
   /**
    * Represents the capabilities of the VNF instances. An example of capability is instance capacity
    * (e.g. capability = 50 %* NS capacity).
-   * */
+   */
   private String capability;
   /**
    * Number of VNF instances satisfying this service assurance. For a Gold flavour of the vEPC
    * Network Service that needs to satisfy an assurance of 96K cps, 2 instances of the vMME VNFs
    * will be required.
-   * */
+   */
   private int number_of_instances;
 
   public CostituentVNF() {}

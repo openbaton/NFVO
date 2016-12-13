@@ -17,18 +17,15 @@
 
 package org.openbaton.vim.drivers.interfaces;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by lto on 15/10/15.
- */
+/** Created by lto on 15/10/15. */
 public abstract class VimDriver implements ClientInterfaces {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());

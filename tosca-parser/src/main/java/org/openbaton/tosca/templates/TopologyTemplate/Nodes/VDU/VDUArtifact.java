@@ -19,9 +19,7 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
 import java.util.Map;
 
-/**
- * Created by rvl on 18.08.16.
- */
+/** Created by rvl on 18.08.16. */
 public class VDUArtifact {
 
   private String type;

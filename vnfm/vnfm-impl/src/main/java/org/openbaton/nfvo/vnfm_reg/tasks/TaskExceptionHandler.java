@@ -17,14 +17,11 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-/**
- * Created by lto on 12/04/16.
- */
+/** Created by lto on 12/04/16. */
+import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-
-import java.lang.reflect.Method;
 
 public class TaskExceptionHandler implements AsyncUncaughtExceptionHandler {
 

@@ -17,16 +17,13 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.NotFoundException;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.NotFoundException;
 
-/**
- * Created by lto on 10/03/16.
- */
+/** Created by lto on 10/03/16. */
 public interface KeyManagement {
 
   Iterable<Key> query(String projectId);

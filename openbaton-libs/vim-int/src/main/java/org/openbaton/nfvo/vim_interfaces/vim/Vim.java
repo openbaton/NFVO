@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.vim_interfaces.vim;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.vim_interfaces.flavor_management.DeploymentFlavorManagement;
@@ -33,12 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-
-/**
- * Created by mpa on 12.06.15.
- */
+/** Created by mpa on 12.06.15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties

@@ -30,9 +30,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by lto on 26/05/15.
- */
+/** Created by lto on 26/05/15. */
 @Service
 @Scope
 public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.VnfmRegister {

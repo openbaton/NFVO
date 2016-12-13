@@ -19,34 +19,22 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 
-/**
- * Created by mpa on 05/05/15.
- */
+/** Created by mpa on 05/05/15. */
 public interface VNFLifecycleManagement {
 
-  /**
-   * This operation allows creating a VNF instance.
-   */
+  /** This operation allows creating a VNF instance. */
   void instantiate(VirtualNetworkFunctionDescriptor vndf);
 
-  /**
-   * This operation allows retrieving VNF instance state and attributes.
-   */
+  /** This operation allows retrieving VNF instance state and attributes. */
   void query();
 
-  /**
-   * This operation allows scaling (out/in, up/down) a VNF instance.
-   */
+  /** This operation allows scaling (out/in, up/down) a VNF instance. */
   void scale();
 
-  /**
-   * This operation allows verifying if the VNF instantiation is possible.
-   */
+  /** This operation allows verifying if the VNF instantiation is possible. */
   void checkInstantiationFeasibility();
 
-  /**
-   * This operation allows verifying if the VNF instantiation is possible.
-   */
+  /** This operation allows verifying if the VNF instantiation is possible. */
   void heal();
 
   /**
@@ -60,9 +48,7 @@ public interface VNFLifecycleManagement {
    */
   void modify();
 
-  /**
-   * This operation allows deploying a new software release to a VNF instance.
-   */
+  /** This operation allows deploying a new software release to a VNF instance. */
   void upgradeSoftware();
 
   /**

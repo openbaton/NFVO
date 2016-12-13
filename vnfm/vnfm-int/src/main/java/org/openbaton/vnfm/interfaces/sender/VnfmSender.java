@@ -20,9 +20,7 @@ package org.openbaton.vnfm.interfaces.sender;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 
-/**
- * Created by lto on 03/06/15.
- */
+/** Created by lto on 03/06/15. */
 public interface VnfmSender {
   void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint);
 

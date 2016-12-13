@@ -18,6 +18,14 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.NoResultException;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
@@ -38,18 +46,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -134,8 +131,6 @@ public class NetworkServiceDescriptorManagement
           vnfPackage.setProjectId(projectId);
           vnfPackage = vnfPackageRepository.save(vnfPackage);
           vnfd.setVnfPackageLocation(vnfPackage.getId());
-        } else { // this is an id pointing to a package already existing
-          // nothing to do here i think...
         }
       } else log.warn("vnfPackageLocation is null. Are you sure?");
     }
@@ -275,7 +270,6 @@ public class NetworkServiceDescriptorManagement
    * and VLD.This update might include creating/deleting new VNFFGDs and/or new VLDs.
    *
    * @param newNsd : the new values to be updated
-   * @param projectId
    */
   @Override
   public NetworkServiceDescriptor update(NetworkServiceDescriptor newNsd, String projectId) {
@@ -290,7 +284,6 @@ public class NetworkServiceDescriptorManagement
    *
    * @param vnfd VirtualNetworkFunctionDescriptor to be persisted
    * @param id of NetworkServiceDescriptor
-   * @param projectId
    * @return the persisted VirtualNetworkFunctionDescriptor
    */
   public VirtualNetworkFunctionDescriptor addVnfd(
@@ -326,14 +319,10 @@ public class NetworkServiceDescriptorManagement
   }
 
   /**
-   *
    * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd
    *
    * @param idNsd of NSD
    * @param idVnfd of VirtualNetworkFunctionDescriptor
-   * @param projectId
-   * @return
-   * @throws NotFoundException
    */
   @Override
   public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
@@ -356,10 +345,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Updates the VNFDescriptor into NSD with idNsd
    *
-   * @param idNsd
-   * @param idVfn
-   * @param vnfDescriptor
-   * @param projectId
    * @return VirtualNetworkFunctionDescriptor
    */
   @Override
@@ -379,9 +364,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Returns the VNFDependency selected by idVnfd into NSD with idNsd
    *
-   * @param idNsd
-   * @param idVnfd
-   * @param projectId
    * @return VNFDependency
    */
   @Override
@@ -397,7 +379,6 @@ public class NetworkServiceDescriptorManagement
    *
    * @param idNsd of NSD
    * @param idVnfd of VNFD
-   * @param projectId
    */
   @Override
   public void deleteVNFDependency(String idNsd, String idVnfd, String projectId) {
@@ -413,9 +394,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Save or Update the VNFDependency into NSD with idNsd
    *
-   * @param idNsd
-   * @param vnfDependency
-   * @param projectId
    * @return VNFDependency
    */
   @Override
@@ -434,7 +412,6 @@ public class NetworkServiceDescriptorManagement
    *
    * @param idNsd of NSD
    * @param idPnf of PhysicalNetworkFunctionDescriptor
-   * @param projectId
    */
   @Override
   public void deletePhysicalNetworkFunctionDescriptor(
@@ -448,9 +425,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Returns the PhysicalNetworkFunctionDescriptor with idPnf into NSD with idNsd
    *
-   * @param idNsd
-   * @param idPnf
-   * @param projectId
    * @return PhysicalNetworkFunctionDescriptor selected
    */
   @Override
@@ -471,9 +445,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Add or Update the PhysicalNetworkFunctionDescriptor into NSD
    *
-   * @param pDescriptor
-   * @param idNsd
-   * @param projectId
    * @return PhysicalNetworkFunctionDescriptor
    */
   @Override
@@ -489,9 +460,6 @@ public class NetworkServiceDescriptorManagement
   /**
    * Adds or Updates the Security into NSD
    *
-   * @param id
-   * @param security
-   * @param projectId
    * @return Security
    */
   @Override
@@ -503,13 +471,7 @@ public class NetworkServiceDescriptorManagement
         "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
   }
 
-  /**
-   * Removes the Secuty with idS from NSD with id
-   *
-   * @param idNsd
-   * @param idS
-   * @param projectId
-   */
+  /** Removes the Secuty with idS from NSD with id */
   @Override
   public void deleteSecurty(String idNsd, String idS, String projectId) {
     if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
@@ -545,11 +507,7 @@ public class NetworkServiceDescriptorManagement
         "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
   }
 
-  /**
-   * This operation is used to remove a disabled Network Service Descriptor.
-   *
-   * @param id
-   */
+  /** This operation is used to remove a disabled Network Service Descriptor. */
   @Override
   public void delete(String id, String projectId)
       throws WrongStatusException, EntityInUseException {

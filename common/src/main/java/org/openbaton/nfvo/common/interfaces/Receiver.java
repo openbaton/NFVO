@@ -17,11 +17,7 @@
 
 package org.openbaton.nfvo.common.interfaces;
 
-import javax.jms.JMSException;
-
-/**
- * Created by tce on 14.08.15.
- */
+/** Created by tce on 14.08.15. */
 public interface Receiver {
   Object receive(String destination);
 }

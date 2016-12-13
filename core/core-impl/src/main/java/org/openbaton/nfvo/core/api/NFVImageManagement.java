@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.util.Date;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.nfvo.repositories.ImageRepository;
 import org.slf4j.Logger;
@@ -25,11 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 @Service
 @Scope
 public class NFVImageManagement implements org.openbaton.nfvo.core.interfaces.NFVImageManagement {

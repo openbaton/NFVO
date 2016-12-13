@@ -19,29 +19,16 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.NFVImage;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NFVImageManagement {
 
-  /**
-   * This operation allows adding new VNF software images to the image repository.
-   */
+  /** This operation allows adding new VNF software images to the image repository. */
   NFVImage add(NFVImage NFVImage);
 
-  /**
-   * This operation allows deleting in the VNF software images from the image repository.
-   *
-   * @param id
-   */
+  /** This operation allows deleting in the VNF software images from the image repository. */
   void delete(String id);
 
-  /**
-   * This operation allows updating the VNF software images in the image repository.
-   *
-   * @param new_NFV_image
-   * @param id
-   */
+  /** This operation allows updating the VNF software images in the image repository. */
   NFVImage update(NFVImage new_NFV_image, String id);
 
   /**
@@ -56,8 +43,6 @@ public interface NFVImageManagement {
    */
   NFVImage query(String id);
 
-  /**
-   * This operation allows copying images from a VIM to another.
-   */
+  /** This operation allows copying images from a VIM to another. */
   void copy();
 }

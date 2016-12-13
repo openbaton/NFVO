@@ -17,6 +17,10 @@
 
 package org.openbaton.nfvo.security.authentication;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
@@ -40,11 +44,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 @Component
 public class CustomUserDetailsService implements CommandLineRunner, UserDetailsManager {

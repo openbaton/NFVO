@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 13/06/16.
- */
+/** Created by lto on 13/06/16. */
 public class EntityInUseException extends Exception {
   public EntityInUseException(String message) {
     super(message);

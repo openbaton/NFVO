@@ -18,6 +18,11 @@ package org.openbaton.nfvo.api.tosca;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.*;
@@ -31,15 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-/**
- * Created by rvl on 29.08.16.
- */
+/** Created by rvl on 29.08.16. */
 @RestController
 public class RestCSAR {
 

@@ -17,18 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.KeyRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
-import org.springframework.stereotype.Service;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -45,12 +34,20 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.KeyRepository;
+import org.openbaton.nfvo.security.interfaces.ProjectManagement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
+import org.springframework.stereotype.Service;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
-
-/**
- * Created by lto on 13/05/15.
- */
+/** Created by lto on 13/05/15. */
 @Service
 @Scope
 public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyManagement {

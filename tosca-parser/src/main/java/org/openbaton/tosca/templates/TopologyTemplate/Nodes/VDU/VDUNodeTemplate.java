@@ -17,14 +17,11 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
-import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
-
 import java.util.HashSet;
 import java.util.Map;
+import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class VDUNodeTemplate {
 
   private String type;

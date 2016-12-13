@@ -17,6 +17,11 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
@@ -41,9 +46,9 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -71,16 +76,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties
@@ -232,7 +228,6 @@ public class NetworkServiceRecordManagement
    *
    * @param idNsr of Nsr
    * @param idVnf of VirtualNetworkFunctionRecord
-   * @param projectId
    * @return VirtualNetworkFunctionRecord selected
    */
   @Override
@@ -260,7 +255,6 @@ public class NetworkServiceRecordManagement
    *
    * @param idNsr of NSR
    * @param idVnfd of VNFDependency
-   * @param projectId
    */
   @Override
   public void deleteVNFDependency(String idNsr, String idVnfd, String projectId) {

@@ -17,6 +17,7 @@
 
 package org.openbaton.utils;
 
+import java.io.*;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
@@ -24,11 +25,7 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.*;
-
-/**
- * Created by dbo on 31/01/16.
- */
+/** Created by dbo on 31/01/16. */
 public final class Utils {
 
   public static void copy(InputStream in, OutputStream out) throws IOException {

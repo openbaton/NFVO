@@ -20,9 +20,7 @@ package org.openbaton.exceptions;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 
-/**
- * Created by lto on 20/05/15.
- */
+/** Created by lto on 20/05/15. */
 public class VimException extends Exception {
   private VNFCInstance vnfcInstance;
 

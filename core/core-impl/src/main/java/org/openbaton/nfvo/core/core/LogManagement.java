@@ -20,7 +20,9 @@ package org.openbaton.nfvo.core.core;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.LinkedList;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
@@ -32,13 +34,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.LinkedList;
-
-/**
- * Created by lto on 17/05/16.
- */
+/** Created by lto on 17/05/16. */
 @Service
 public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogManagement {
 

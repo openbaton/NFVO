@@ -20,9 +20,7 @@ package org.openbaton.nfvo.common.internal.model;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.springframework.context.ApplicationEvent;
 
-/**
- * Created by lto on 30/09/15.
- */
+/** Created by lto on 30/09/15. */
 public class EventNFVO extends ApplicationEvent {
   private ApplicationEventNFVO eventNFVO;
 
