@@ -446,10 +446,22 @@ public class VnfmManager
   //As a default operation of the NFVO, it get always the first DeploymentFlavour!
   private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd)
       throws NotFoundException {
+    VNFDeploymentFlavour flavor = null;
     if (!vnfd.getDeployment_flavour().iterator().hasNext()) {
-      throw new NotFoundException("There are no DeploymentFlavour in vnfd: " + vnfd.getName());
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        if (vdu.getComputation_requirement() == null
+            || vdu.getComputation_requirement().isEmpty()) {
+          throw new NotFoundException(
+              "There is no DeploymentFlavour in vnfd or in all VDUs: " + vnfd.getName());
+        } else {
+          flavor = new VNFDeploymentFlavour();
+          flavor.setFlavour_key(vdu.getComputation_requirement());
+        }
+      }
+    } else {
+      flavor = vnfd.getDeployment_flavour().iterator().next();
     }
-    return vnfd.getDeployment_flavour().iterator().next();
+    return flavor;
   }
 
   @Override

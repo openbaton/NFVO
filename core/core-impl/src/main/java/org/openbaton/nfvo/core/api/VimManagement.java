@@ -189,10 +189,11 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           Set<Subnet> subnets_refreshed = new HashSet<>();
           Set<Subnet> subnets_new = new HashSet<>();
           Set<Subnet> subnets_old = new HashSet<>();
-          if (network_new.getSubnets() == null) {
+          if (network_new.getSubnets() == null && !vimInstance.getType().equals("test")) {
             throw new BadRequestException(
                 "New network: " + network_new.getName() + " has no subnets");
-          }
+          } else if (network_new.getSubnets() == null)
+            network_new.setSubnets(new HashSet<Subnet>());
           subnets_refreshed.addAll(network_new.getSubnets());
           if (network_nfvo.getSubnets() == null) {
             network_nfvo.setSubnets(new HashSet<Subnet>());

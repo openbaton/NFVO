@@ -86,10 +86,17 @@ public class VirtualNetworkFunctionManagement
     log.info("Removing VNFD: " + virtualNetworkFunctionDescriptor.getName());
     vnfdRepository.delete(virtualNetworkFunctionDescriptor);
     if (cascadeDelete) {
-      log.info(
-          "Removing vnfPackage with id: "
-              + virtualNetworkFunctionDescriptor.getVnfPackageLocation());
-      vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
+      log.debug(
+          "Removing VNF Package referenced by VNFD " + virtualNetworkFunctionDescriptor.getId());
+      if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
+        log.info(
+            "Removing VNF Package with id: "
+                + virtualNetworkFunctionDescriptor.getVnfPackageLocation());
+        vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
+      } else {
+        log.debug(
+            "No VNFPackage is referenced by VNFD " + virtualNetworkFunctionDescriptor.getId());
+      }
     }
   }
 
