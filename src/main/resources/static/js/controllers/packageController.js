@@ -98,8 +98,8 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     };
     $scope.$watch('mainCheckbox', function (newValue, oldValue) {
-        console.log(newValue);
-        console.log($scope.selection.ids);
+        //console.log(newValue);
+        //console.log($scope.selection.ids);
 
 
         angular.forEach($scope.selection.ids, function (value, k) {
@@ -108,7 +108,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
             $scope.selection.ids[k] = newValue;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
 
     });
     $scope.$watch('selection', function (newValue, oldValue) {
@@ -169,10 +169,17 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }
 
     function showError(data, status) {
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        });
+        } else {
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
+            msg: data.message + 'error code: ' + status
         });
+        }
         $('.modal').modal('hide');
         if (status === 401) {
             console.log(status + ' Status unauthorized')
@@ -225,7 +232,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                             loadTable();
                         });
                     });
-                    this.on("queuecomplete", function (file, responseText) {
+                    this.on("success", function (file, responseText) {
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the VNF Package");
                             loadTable();
