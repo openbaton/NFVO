@@ -18,11 +18,13 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by mpa on 05/05/15.
@@ -38,6 +40,43 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException;
+
+  /**
+   * This operation handles reading the Metadata of the VNF Package
+   *
+   * @param metadata
+   * @param vnfPackage
+   * @param imageDetails
+   * @param image
+   *
+   */
+  Map<String, Object> handleMetadata(
+      Map<String, Object> metadata,
+      VNFPackage vnfPackage,
+      Map<String, Object> imageDetails,
+      NFVImage image)
+      throws IncompatibleVNFPackage, NotFoundException;
+
+  /**
+   * This operation handles the data about the image of the vnf package
+   *
+   * @param vnfPackage
+   * @param imageFile
+   * @param virtualNetworkFunctionDescriptor
+   * @param metadata
+   * @param image
+   * @param imageDetails
+   * @param projectId
+   */
+  void handleImage(
+      VNFPackage vnfPackage,
+      byte[] imageFile,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      Map<String, Object> metadata,
+      NFVImage image,
+      Map<String, Object> imageDetails,
+      String projectId)
+      throws NotFoundException, PluginException, VimException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.

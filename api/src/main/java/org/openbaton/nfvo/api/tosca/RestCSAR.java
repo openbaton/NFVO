@@ -135,14 +135,13 @@ public class RestCSAR {
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
-    int n = in.read(bytes);
-    while (-1 != n) {
+    int n;
+    while (-1 != (n = in.read(bytes))) {
       out.write(bytes, 0, n);
     }
-
-    byte[] csarOnboard = out.toByteArray();
     out.close();
     in.close();
+    byte[] csarOnboard = out.toByteArray();
 
     log.debug(String.valueOf(csarOnboard.length));
 
