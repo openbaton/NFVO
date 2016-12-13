@@ -17,75 +17,60 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
-import org.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VNFForwardingGraphRecord implements Serializable {
   @Id private String id;
-  /**
-   * Record of the VNFFGD (vnffgd:id) used to instantiate this VNFFG
-   * */
+  /** Record of the VNFFGD (vnffgd:id) used to instantiate this VNFFG */
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private VNFForwardingGraphDescriptor descriptor_reference;
   /**
    * Reference to the record (nsr:id) for Network Service instance that this VNFFG instance is part
    * of
-   * */
+   */
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private NetworkServiceRecord parent_ns;
-  /**
-   * Reference to record for Virtual Link instance (vlr:id) used to instantiate this VNFFG
-   * */
+  /** Reference to record for Virtual Link instance (vlr:id) used to instantiate this VNFFG */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VirtualLinkRecord> dependent_virtual_link;
   /**
    * Flag to report status of the VNFFG (e.g. 0=Failed, 1= normal operation, 2= degraded operation,
    * 3= Offline through management action)
-   * */
+   */
   @Enumerated(EnumType.STRING)
   private Status status;
-  /**
-   * Listing of systems that have registered to received notifications of status changes
-   * */
+  /** Listing of systems that have registered to received notifications of status changes */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> notification;
-  /**
-   * Record of significant VNFFG lifecycle events (e.g. creation, configuration changes)
-   * */
+  /** Record of significant VNFFG lifecycle events (e.g. creation, configuration changes) */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event_history;
-  /**
-   * Record of detailed operational events, (e.g. graph up/down, alarms sent)
-   * */
+  /** Record of detailed operational events, (e.g. graph up/down, alarms sent) */
   private String audit_log;
   /**
    * Set of Connection Points which form a Network Forwarding Path and description of policies to
    * establish and rules to choose the path
-   * */
+   */
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private NetworkForwardingPath network_forwarding_path;
-  /**
-   * Reference to Connection Points (nsr/vnfr/pnfr:connection_point:id) forming the VNFFG
-   * */
+  /** Reference to Connection Points (nsr/vnfr/pnfr:connection_point:id) forming the VNFFG */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VNFDConnectionPoint> connection_point;
 
-  /**
-   * VNF instance used to instantiate this VNFFG
-   * */
+  /** VNF instance used to instantiate this VNFFG */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VirtualNetworkFunctionRecord> member_vnfs;
 

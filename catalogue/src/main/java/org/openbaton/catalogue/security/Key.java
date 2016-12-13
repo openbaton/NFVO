@@ -17,20 +17,16 @@
 
 package org.openbaton.catalogue.security;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by mpa on 09.08.16.
- */
+/** Created by mpa on 09.08.16. */
 @Entity
 @Table(
   name = "PublicKeys",

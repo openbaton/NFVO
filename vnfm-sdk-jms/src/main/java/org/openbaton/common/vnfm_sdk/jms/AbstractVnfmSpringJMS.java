@@ -17,6 +17,7 @@
 
 package org.openbaton.common.vnfm_sdk.amqp;
 
+import javax.jms.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -33,11 +34,7 @@ import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
-import javax.jms.*;
-
-/**
- * Created by lto on 28/05/15.
- */
+/** Created by lto on 28/05/15. */
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
 public abstract class AbstractVnfmSpringJMS extends AbstractVnfm

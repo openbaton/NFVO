@@ -17,17 +17,16 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
-
+import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import java.util.Set;
+import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class InternalVirtualLink extends AbstractVirtualLink {

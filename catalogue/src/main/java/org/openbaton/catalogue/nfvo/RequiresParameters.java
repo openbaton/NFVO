@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.util.Iterator;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by tbr on 07.07.16.
- */
+/** Created by tbr on 07.07.16. */
 @Entity(name = "requiresParameters")
 public class RequiresParameters {
 

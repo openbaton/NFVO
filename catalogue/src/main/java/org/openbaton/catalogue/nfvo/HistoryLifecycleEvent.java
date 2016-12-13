@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 18/10/16.
- */
+/** Created by lto on 18/10/16. */
 @Entity
 public class HistoryLifecycleEvent {
 

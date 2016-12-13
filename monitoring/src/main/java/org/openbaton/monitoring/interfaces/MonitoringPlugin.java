@@ -19,9 +19,7 @@ package org.openbaton.monitoring.interfaces;
 
 import org.openbaton.plugin.interfaces.Plugin;
 
-/**
- * Created by lto on 15/10/15.
- */
+/** Created by lto on 15/10/15. */
 public abstract class MonitoringPlugin extends Plugin
     implements VirtualisedResourceFaultManagement, VirtualisedResourcesPerformanceManagement {
 

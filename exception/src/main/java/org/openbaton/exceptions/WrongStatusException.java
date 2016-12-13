@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 04/08/15.
- */
+/** Created by lto on 04/08/15. */
 public class WrongStatusException extends Exception {
   public WrongStatusException(String s) {
     super(s);

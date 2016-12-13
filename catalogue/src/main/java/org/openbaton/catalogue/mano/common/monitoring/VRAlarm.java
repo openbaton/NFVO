@@ -19,9 +19,7 @@ package org.openbaton.catalogue.mano.common.monitoring;
 
 import javax.persistence.Entity;
 
-/**
- * Created by mob on 21.01.16.
- */
+/** Created by mob on 21.01.16. */
 @Entity
 public class VRAlarm extends Alarm {
 

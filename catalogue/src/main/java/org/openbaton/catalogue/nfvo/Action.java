@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.nfvo;
 
-/**
- * Created by lorenzo on 5/30/15.
- */
+/** Created by lorenzo on 5/30/15. */
 public enum Action {
   GRANT_OPERATION,
   ALLOCATE_RESOURCES,

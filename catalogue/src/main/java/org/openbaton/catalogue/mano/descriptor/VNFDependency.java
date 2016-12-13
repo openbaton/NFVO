@@ -20,16 +20,14 @@ package org.openbaton.catalogue.mano.descriptor;
 /**
  * Created by lto on 05/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
- *
  * Describe dependencies between VNF. Defined in terms of source and target VNF i.e. target VNF
  * "depends on" source VNF. In other words a source VNF shall exist and connect to the service
  * before target VNF can be initiated/deployed and connected. This element would be used, for

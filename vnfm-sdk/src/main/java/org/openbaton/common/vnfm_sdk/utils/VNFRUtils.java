@@ -17,6 +17,7 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
+import java.util.*;
 import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.descriptor.*;
@@ -33,11 +34,7 @@ import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-/**
- * Created by mob on 31.08.15.
- */
+/** Created by mob on 31.08.15. */
 public class VNFRUtils {
 
   private static Logger log = LoggerFactory.getLogger(VNFRUtils.class);

@@ -19,9 +19,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import javax.persistence.Entity;
 
-/**
- * Created by mob on 29.10.15.
- */
+/** Created by mob on 29.10.15. */
 @Entity
 public class NSFaultManagementPolicy extends FaultManagementPolicy {
   private String vnfSelector;

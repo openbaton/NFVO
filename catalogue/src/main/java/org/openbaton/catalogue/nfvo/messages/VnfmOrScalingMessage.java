@@ -21,9 +21,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-/**
- * Created by lto on 13/04/16.
- */
+/** Created by lto on 13/04/16. */
 public class VnfmOrScalingMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private String userData;

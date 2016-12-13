@@ -17,14 +17,11 @@
 
 package org.openbaton.catalogue.security;
 
+import java.io.Serializable;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-/**
- * Created by lto on 24/05/16.
- */
+/** Created by lto on 24/05/16. */
 @Entity
 public class Role implements Serializable {
   @Id private String id;

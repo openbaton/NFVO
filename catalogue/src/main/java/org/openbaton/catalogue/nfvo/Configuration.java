@@ -17,14 +17,11 @@
 
 package org.openbaton.catalogue.nfvo;
 
-/**
- * Created by lto on 18/05/15.
- */
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
+/** Created by lto on 18/05/15. */
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 public class Configuration implements Serializable {

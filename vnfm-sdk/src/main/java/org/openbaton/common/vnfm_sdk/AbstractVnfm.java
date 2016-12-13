@@ -17,6 +17,19 @@
 
 package org.openbaton.common.vnfm_sdk;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -43,24 +56,7 @@ import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-/**
- * Created by lto on 08/07/15.
- */
+/** Created by lto on 08/07/15. */
 public abstract class AbstractVnfm
     implements VNFLifecycleManagement, VNFLifecycleChangeNotification {
 
@@ -640,14 +636,10 @@ public abstract class AbstractVnfm
     return null;
   }
 
-  /**
-   * This method unsubscribe the VNFM in the NFVO
-   */
+  /** This method unsubscribe the VNFM in the NFVO */
   protected abstract void unregister();
 
-  /**
-   * This method subscribe the VNFM to the NFVO sending the right endpoint
-   */
+  /** This method subscribe the VNFM to the NFVO sending the right endpoint */
   protected abstract void register();
 
   /**

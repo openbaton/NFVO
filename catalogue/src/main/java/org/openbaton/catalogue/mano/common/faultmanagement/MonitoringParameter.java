@@ -17,15 +17,11 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
+import java.util.Map;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-
-import java.util.Map;
-
-/**
- * Created by mob on 29.10.15.
- */
+/** Created by mob on 29.10.15. */
 @Entity
 public class MonitoringParameter {
 

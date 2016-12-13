@@ -17,17 +17,16 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class PhysicalNetworkFunctionRecord implements Serializable {
@@ -48,33 +47,25 @@ public class PhysicalNetworkFunctionRecord implements Serializable {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ConnectionPoint> connection_point;
-  /**
-   * The reference for the record of the NS instance (nsr:id) that this PNF instance is part of
-   * */
+  /** The reference for the record of the NS instance (nsr:id) that this PNF instance is part of */
   private String parent_ns_id;
-  /**
-   * The reference to the version of PNFD (pnfd:version) used to instantiate this PNF
-   * */
+  /** The reference to the version of PNFD (pnfd:version) used to instantiate this PNF */
   private String descriptor_reference;
-  /**
-   * References to the records of VNFFG instances to which this PNF is participating
-   * */
+  /** References to the records of VNFFG instances to which this PNF is participating */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VNFForwardingGraphRecord> vnffgr;
-  /**
-   * The reference to the system managing this PNF
-   * */
+  /** The reference to the system managing this PNF */
   private String oam_reference;
   /**
    * References to the VLRs (vlr:id) used to for the management access path and all other external
    * connection interfaces configured for use by this PNF instance
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VirtualLinkRecord> connected_virtual_link;
   /**
    * The network addresses (e.g. VLAN, IP) configured for the management access and all other
    * external connection interfaces on this PNF
-   * */
+   */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> pnf_address;
 

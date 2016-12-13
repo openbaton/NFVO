@@ -17,17 +17,14 @@
 
 package org.openbaton.catalogue.mano.record;
 
+import java.io.Serializable;
+import java.util.Map;
+import javax.persistence.*;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Map;
-
-/**
- * Created by lto on 08/06/15.
- */
+/** Created by lto on 08/06/15. */
 @Entity
 public class VNFRecordDependency implements Serializable {
 

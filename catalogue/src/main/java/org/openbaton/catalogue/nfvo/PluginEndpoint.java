@@ -19,9 +19,7 @@ package org.openbaton.catalogue.nfvo;
 
 import javax.persistence.Entity;
 
-/**
- * Created by lto on 13/08/15.
- */
+/** Created by lto on 13/08/15. */
 @Entity
 public class PluginEndpoint extends Endpoint {
 

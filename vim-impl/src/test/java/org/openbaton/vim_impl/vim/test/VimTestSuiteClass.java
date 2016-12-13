@@ -17,6 +17,13 @@
 
 package org.openbaton.vim_impl.vim.test;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
+
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -36,12 +43,12 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.plugin.utils.RabbitPluginBroker;
 import org.openbaton.vim.drivers.VimDriverCaller;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.GenericVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
@@ -61,19 +68,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.rmi.RemoteException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
-
 //import org.openbaton.nfvo.common.exceptions.VimException;
 
-/**
- * Created by lto on 21/05/15.
- */
+/** Created by lto on 21/05/15. */
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -96,9 +93,7 @@ public class VimTestSuiteClass {
   //@Qualifier("OpenstackVim")
   private OpenstackVIM openstackVIM;
 
-  /**
-   * TODO add all other tests
-   */
+  /** TODO add all other tests */
   @Autowired private Environment environment;
 
   @Autowired private VimBroker vimBroker;
@@ -142,18 +137,17 @@ public class VimTestSuiteClass {
     server.setIps(new HashMap<String, List<String>>());
     server.setFloatingIps(new HashMap<String, String>());
     //TODO use the method launchInstanceAndWait properly
-    when(
-            vimDriverCaller.launchInstanceAndWait(
-                any(VimInstance.class),
-                anyString(),
-                anyString(),
-                anyString(),
-                anyString(),
-                anySet(),
-                anySet(),
-                anyString(),
-                anyMap(),
-                anySet()))
+    when(vimDriverCaller.launchInstanceAndWait(
+            any(VimInstance.class),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anySet(),
+            anySet(),
+            anyString(),
+            anyMap(),
+            anySet()))
         .thenReturn(server);
     VimInstance vimInstance = createVIM();
     try {

@@ -17,17 +17,14 @@
 
 package org.openbaton.monitoring.interfaces;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.common.monitoring.ObjectSelection;
 import org.openbaton.catalogue.mano.common.monitoring.ThresholdDetails;
 import org.openbaton.catalogue.mano.common.monitoring.ThresholdType;
 import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
 
-import java.util.List;
-
-/**
- * Created by mob on 17.11.15.
- */
+/** Created by mob on 17.11.15. */
 public interface VirtualisedResourcesPerformanceManagement {
 
   /*
