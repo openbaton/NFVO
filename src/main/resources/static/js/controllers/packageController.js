@@ -177,7 +177,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
         } else {
         $scope.alerts.push({
             type: 'danger',
-            msg: data.message + 'error code: ' + status
+            msg: data.message + '. Error code: ' + status
         });
         }
         $('.modal').modal('hide');
