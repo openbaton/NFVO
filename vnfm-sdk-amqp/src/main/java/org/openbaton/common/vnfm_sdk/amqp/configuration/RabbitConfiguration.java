@@ -218,7 +218,7 @@ public class RabbitConfiguration {
 
   @Bean
   MessageListenerAdapter listenerAdapter_emsRegistrator() {
-    if (registrator != null) return new MessageListenerAdapter(registrator, "register");
+    if (registrator != null) return new MessageListenerAdapter(registrator, "unregisterFromMsg");
     else return null;
   }
 
