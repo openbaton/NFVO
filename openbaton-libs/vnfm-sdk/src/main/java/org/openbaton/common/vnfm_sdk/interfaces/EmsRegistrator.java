@@ -19,14 +19,14 @@ package org.openbaton.common.vnfm_sdk.interfaces;
 
 import java.util.Set;
 
-/**
- * Created by lto on 10/11/15.
- */
+/** Created by lto on 10/11/15. */
 public interface EmsRegistrator {
 
-  void register(String json);
+  Set<String> getExpectedHostnames();
 
-  Set<String> getHostnames();
+  void register(String hostname);
 
-  void unregister(String s);
+  void unregister(String hostname);
+
+  void unregisterFromMsg(String json);
 }

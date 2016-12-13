@@ -19,9 +19,7 @@ package org.openbaton.common.vnfm_sdk.exception;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 
-/**
- * Created by mob on 11.08.15.
- */
+/** Created by mob on 11.08.15. */
 public class VnfmSdkException extends Exception {
   private VirtualNetworkFunctionRecord vnfr;
 

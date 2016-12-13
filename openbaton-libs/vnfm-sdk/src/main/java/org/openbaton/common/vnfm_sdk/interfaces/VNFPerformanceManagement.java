@@ -17,14 +17,10 @@
 
 package org.openbaton.common.vnfm_sdk.interfaces;
 
-/**
- * Created by mpa on 05/05/15.
- */
+/** Created by mpa on 05/05/15. */
 public interface VNFPerformanceManagement {
 
-  /**
-   * This operation allows collecting performance measurement results generated on resources.
-   */
+  /** This operation allows collecting performance measurement results generated on resources. */
   void getPerformanceMeasurementResults();
 
   /**

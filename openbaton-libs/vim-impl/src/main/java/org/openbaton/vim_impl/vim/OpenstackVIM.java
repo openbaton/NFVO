@@ -364,8 +364,13 @@ public class OpenstackVIM extends GenericVIM {
           networks.add(net.getExtId());
     }
     log.debug("Found Networks with ExtIds: " + networks);
-
-    String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
+    String flavorKey = null;
+    if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
+      flavorKey = vdu.getComputation_requirement();
+    } else {
+      flavorKey = vnfr.getDeployment_flavour_key();
+    }
+    String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
@@ -400,7 +405,8 @@ public class OpenstackVIM extends GenericVIM {
         log.debug("vimInstance.getKeyPair() is null");
         vimInstance.setKeyPair("");
       }
-      if (networks == null) throw new NullPointerException("networks is null");
+      if (networks == null || networks.isEmpty())
+        throw new NullPointerException("networks is null");
       if (vimInstance.getSecurityGroups() == null)
         throw new NullPointerException("vimInstance.getSecurityGroups() is null");
 
