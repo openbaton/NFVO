@@ -152,16 +152,17 @@ public class CSARParser {
     while ((strLine = br.readLine()) != null) {
 
       if (strLine.contains(entryDefinition)) {
-        strLine.substring(entryDefinition.length(), strLine.length()).trim();
+        strLine.substring(entryDefinition.length(), strLine.length());
       }
       if (strLine.contains(image)) {
-        this.imageNames.add(strLine.substring(image.length(), strLine.length()).trim());
+        this.imageNames.add(strLine.substring(image.length(), strLine.length()));
       }
     }
 
     br.close();
   }
 
+  //TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
     InputStream csar = new FileInputStream(vnfd_csar);
@@ -170,7 +171,7 @@ public class CSARParser {
     readMetaData();
 
     VNFDTemplate VNFDTemplate = Utils.bytesToVNFDTemplate(this.template);
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
+    toscaParser.parseVNFDTemplate(VNFDTemplate);
   }
 
   public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
@@ -192,7 +193,6 @@ public class CSARParser {
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
     Map<String, Object> imageDetails = new HashMap<>();
-    List<String> vimInstances = new ArrayList<>();
     byte[] imageFile = null;
 
     YamlJsonParser yaml = new YamlJsonParser();
