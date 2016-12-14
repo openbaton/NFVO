@@ -17,77 +17,65 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.CostituentVNF;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
-
 /**
  * Created by lto on 05/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VNFForwardingGraphDescriptor implements Serializable {
 
-  /**
-   * ID of the VNFFG Descriptor
-   * */
+  /** ID of the VNFFG Descriptor */
   @Id private String id;
+
   @Version private int hb_version = 0;
-  /**
-   * Specify the vendor generating this VNFFG
-   * */
+  /** Specify the vendor generating this VNFFG */
   private String vendor;
   /**
    * Specify the identifier (e.g. name), version, and description of service this VNFFG is
    * describing
-   * */
+   */
   private String version;
   /**
    * Count of the external endpoints (connection_point elements) included in this VNFFG, to form an
    * index
-   * */
+   */
   private int number_of_endpoints;
-  /**
-   * Count of the VLs (dependent_virtual_link elements) used by this VNFFG, to form an index
-   * */
+  /** Count of the VLs (dependent_virtual_link elements) used by this VNFFG, to form an index */
   private int number_of_virtual_links;
-  /**
-   * Reference to a VLD (vld:id) used to instantiate this Forwarding Graph
-   * */
+  /** Reference to a VLD (vld:id) used to instantiate this Forwarding Graph */
   @OneToMany(cascade = CascadeType.ALL)
   private Set<VirtualLinkDescriptor> dependent_virtual_link;
-  /**
-   * This element describes a Network Forwarding Path within the VNFFG
-   * */
+  /** This element describes a Network Forwarding Path within the VNFFG */
   @OneToMany(cascade = CascadeType.ALL)
   private Set<NetworkForwardingPath> network_forwarding_path;
   /**
    * Reference to Connection Points (nsd/vnfd/pnfd:connection_point:id) forming the VNFFG including
    * Connection Points attached to PNFs
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL)
   private Set<ConnectionPoint> connection_point;
-  /**
-   * Version of this VNFFGD
-   * */
+  /** Version of this VNFFGD */
   private String descriptor_version;
   /**
    * Reference to a VNFD (nsd:deployment_flavours:constituent_vnf:id) used to instantiate this VNF
    * Forwarding Graph
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL)
   private Set<CostituentVNF> constituent_vnfs;
   /**
    * This is a signature of vnffgd to prevent tampering. The particular hash algorithm used to
    * compute the signature, together with the corresponding cryptographic certificate to validate
    * the signature should also be included
-   * */
+   */
   @OneToOne(cascade = CascadeType.ALL)
   private Security vnffgd_security;
 

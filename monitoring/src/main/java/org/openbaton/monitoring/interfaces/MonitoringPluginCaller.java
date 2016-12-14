@@ -18,6 +18,13 @@
 package org.openbaton.monitoring.interfaces;
 
 import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.*;
 import org.openbaton.catalogue.mano.common.monitoring.*;
 import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
@@ -29,17 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.*;
-
-/**
- * Created by lto on 25/11/15.
- */
+/** Created by lto on 25/11/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.rabbit")

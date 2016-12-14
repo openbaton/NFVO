@@ -24,9 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by lto on 30/04/15.
- */
+/** Created by lto on 30/04/15. */
 @Configuration
 @ComponentScan(
   basePackages = {"org.openbaton.vim_impl"},

@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.mano.common.monitoring;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by mob on 26.10.15.
- */
+/** Created by mob on 26.10.15. */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Alarm implements Serializable {

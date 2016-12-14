@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-/**
- * Created by mob on 27.10.15.
- */
+/** Created by mob on 27.10.15. */
 public abstract class AbstractVNFAlarm {
   private String resourceId, fmPolicyId;
 

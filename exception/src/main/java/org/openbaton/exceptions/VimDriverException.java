@@ -19,9 +19,7 @@ package org.openbaton.exceptions;
 
 import org.openbaton.catalogue.nfvo.Server;
 
-/**
- * Created by lto on 13/07/15.
- */
+/** Created by lto on 13/07/15. */
 public class VimDriverException extends Exception {
 
   public Server getServer() {

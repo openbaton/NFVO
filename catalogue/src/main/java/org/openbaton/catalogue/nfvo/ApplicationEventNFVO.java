@@ -19,13 +19,9 @@ package org.openbaton.catalogue.nfvo;
 
 import java.io.Serializable;
 
-/**
- * Created by lto on 03/06/15.
- */
+/** Created by lto on 03/06/15. */
 
-/**
- * The internal Event containing the action that triggered this and the payload of the event
- */
+/** The internal Event containing the action that triggered this and the payload of the event */
 public class ApplicationEventNFVO {
   private Action action;
   private Serializable payload;

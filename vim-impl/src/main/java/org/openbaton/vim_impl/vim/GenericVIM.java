@@ -17,6 +17,14 @@
 
 package org.openbaton.vim_impl.vim;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -42,18 +50,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 06/04/16.
- */
+/** Created by lto on 06/04/16. */
 @Service
 @Scope(value = "prototype")
 public class GenericVIM extends Vim {
@@ -1080,9 +1077,7 @@ public class GenericVIM extends Vim {
     log.trace("VDU is : " + vdu.toString());
     log.trace("VNFR is : " + vnfr.toString());
     log.trace("VNFC is : " + vnfComponent.toString());
-    /**
-     * *) choose image *) ...?
-     */
+    /** *) choose image *) ...? */
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.info("Finding Networks...");

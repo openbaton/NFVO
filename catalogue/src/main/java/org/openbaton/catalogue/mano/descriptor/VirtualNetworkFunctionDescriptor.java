@@ -19,35 +19,30 @@ package org.openbaton.catalogue.mano.descriptor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.persistence.*;
+import javax.xml.bind.TypeConstraintException;
 import org.openbaton.catalogue.mano.common.*;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.RequiresParameters;
 
-import javax.persistence.*;
-import javax.xml.bind.TypeConstraintException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Created by lto on 05/02/15.
- * <p>
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ *
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
-  /**
-   * Version of the VNF Descriptor.
-   */
+  /** Version of the VNF Descriptor. */
   //private String descriptor_version;
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private Configuration configurations;
-  /**
-   * This describes a set of elements related to a particular VDU
-   */
+  /** This describes a set of elements related to a particular VDU */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VirtualDeploymentUnit> vdu;
   /**

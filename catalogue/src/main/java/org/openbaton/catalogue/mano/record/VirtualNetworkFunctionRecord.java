@@ -18,21 +18,10 @@
 package org.openbaton.catalogue.mano.record;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -44,17 +33,22 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 06/02/15. Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+/** Created by lto on 06/02/15. Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
 public class VirtualNetworkFunctionRecord implements Serializable {
 
-  /**
-   * ID of the VNF instance
-   */
+  /** ID of the VNF instance */
   @Id private String id;
+
   @Version private int hb_version = 0;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -64,9 +58,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
   private Set<ConnectionPoint> connection_point;
 
   private String projectId;
-  /**
-   * Reference to selected deployment flavour (vnfd:deployment_flavour_key:id)
-   */
+  /** Reference to selected deployment flavour (vnfd:deployment_flavour_key:id) */
   private String deployment_flavour_key;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -86,35 +78,26 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     fetch = FetchType.EAGER
   )
   private List<HistoryLifecycleEvent> lifecycle_event_history;
-  /**
-   * A language attribute may be specified to identify default localisation/language
-   */
+  /** A language attribute may be specified to identify default localisation/language */
   private String localization;
-  /**
-   * Active monitoring parameters
-   */
+  /** Active monitoring parameters */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> monitoring_parameter;
   /**
-   * VDU elements describing the VNFC-related relevant information, see clause @VirtualDeploymentUnit
+   * VDU elements describing the VNFC-related relevant information, see
+   * clause @VirtualDeploymentUnit
    */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<VirtualDeploymentUnit> vdu;
 
   private String vendor;
   private String version;
-  /**
-   * Internal Virtual Links instances used in this VNF
-   */
+  /** Internal Virtual Links instances used in this VNF */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<InternalVirtualLink> virtual_link;
-  /**
-   * The nsr id
-   */
+  /** The nsr id */
   private String parent_ns_id;
-  /**
-   * The reference to the VNFD used to instantiate this VNF
-   */
+  /** The reference to the VNFD used to instantiate this VNF */
   private String descriptor_reference;
   /**
    * The identification of the VNFM entity managing this VNF TODO probably it is better to have a
@@ -137,12 +120,11 @@ public class VirtualNetworkFunctionRecord implements Serializable {
    * Flag to report status of the VNF (e.g. 0=Failed, 1= normal operation, 2= degraded operation, 3=
    * offline through management action)
    *
-   *
-   * Implementation thoughts: the states are defined in
+   * <p>Implementation thoughts: the states are defined in
    * http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
    * so for what concerns the VNFR, the state are:
    *
-   * * Null) A VNF Instance does not exist and is about to be created. * Instantiated Not
+   * <p>* Null) A VNF Instance does not exist and is about to be created. * Instantiated Not
    * Configured) VNF Instance does exist but is not configured for service. * Instantiated
    * Configured - Inactive) A VNF Instance is configured for service. * Instantiated Configured -
    * Active) A VNF Instance that participates in service. * Terminated) A VNF Instance has ceased to
@@ -156,9 +138,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
    */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> notification;
-  /**
-   * Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent)
-   */
+  /** Record of detailed operational event, (e.g. VNF boot, operator logins, alarms sent) */
   private String audit_log;
   /**
    * Generic placeholder for input information related to VNF orchestration and management policies

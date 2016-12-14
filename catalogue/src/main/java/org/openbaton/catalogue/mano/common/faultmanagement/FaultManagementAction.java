@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-/**
- * Created by mob on 29.10.15.
- */
+/** Created by mob on 29.10.15. */
 public enum FaultManagementAction {
   RESTART,
   REINSTANTIATE_SERVICE,

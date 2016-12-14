@@ -17,55 +17,43 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
-
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- *
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class PhysicalNetworkFunctionDescriptor implements Serializable {
 
-  /**
-   * The ID (e.g. name) of this PNFD.
-   * */
+  /** The ID (e.g. name) of this PNFD. */
   @Id private String id;
+
   @Version private int hb_version = 0;
-  /**
-   * The vendor generating this PNFD.
-   * */
+  /** The vendor generating this PNFD. */
   private String vendor;
-  /**
-   *
-   * The version of PNF this PNFD is describing.
-   * */
+  /** The version of PNF this PNFD is describing. */
   private String version;
-  /**
-   * Description of physical device functionality.
-   * */
+  /** Description of physical device functionality. */
   private String description;
   /**
    * This element describes an external interface exposed by this PNF enabling connection with a VL.
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL)
   private Set<ConnectionPoint> connection_point;
-  /**
-   * Version of the PNF descriptor.
-   * */
+  /** Version of the PNF descriptor. */
   private String descriptor_version;
   /**
    * This is a signature of pnfd to prevent tampering. The particular hash algorithm used to compute
    * the signature, together with the corresponding cryptographic certificate to validate the
    * signature should also be included.
-   * */
+   */
   @OneToOne(cascade = CascadeType.ALL)
   private Security pnfd_security;
 

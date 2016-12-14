@@ -17,11 +17,8 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.Set;
-
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,60 +27,52 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 05/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  *
- * The VLD describes the basic topology of the connectivity (e.g. E-LAN, E-Line, E-Tree) between one
- * or more VNFs connected to this VL and other required parameters (e.g. bandwidth and QoS class).
- * The VLD connection parameters are expected to have similar attributes to those used on the ports
- * on VNFs in ETSI GS NFV-SWA 001 [i.8]. Therefore a set of VLs in a Network Service can be mapped
- * to a Network Connectivity Topology (NCT) as defined in ETSI GS NFV-SWA 001 [i.8].
+ * <p>The VLD describes the basic topology of the connectivity (e.g. E-LAN, E-Line, E-Tree) between
+ * one or more VNFs connected to this VL and other required parameters (e.g. bandwidth and QoS
+ * class). The VLD connection parameters are expected to have similar attributes to those used on
+ * the ports on VNFs in ETSI GS NFV-SWA 001 [i.8]. Therefore a set of VLs in a Network Service can
+ * be mapped to a Network Connectivity Topology (NCT) as defined in ETSI GS NFV-SWA 001 [i.8].
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractVirtualLink implements Serializable {
 
-  /**
-   * ID of the VLD
-   * */
+  /** ID of the VLD */
   @Id protected String id;
+
   @Version protected int hb_version = 0;
 
-  /**
-   * extId of the network to attach
-   */
+  /** extId of the network to attach */
   protected String extId;
 
   /**
    * Throughput of the link (e.g. bandwidth of E-Line, root bandwidth of E-Tree, and aggregate
    * capacity of E-LAN)
-   * */
+   */
   protected String root_requirement;
-  /**
-   * Throughput of leaf connections to the link (for E-Tree and E-LAN branches)
-   * */
+  /** Throughput of leaf connections to the link (for E-Tree and E-LAN branches) */
   protected String leaf_requirement;
-  /**
-   * QoS options available on the VL, e.g. latency, jitter, etc.
-   * */
+  /** QoS options available on the VL, e.g. latency, jitter, etc. */
   @ElementCollection(fetch = FetchType.EAGER)
   protected Set<String> qos;
   /**
    * Test access facilities available on the VL (e.g. none, passive monitoring, or active
    * (intrusive) loopbacks at endpoints TODO think of using Enum instead of String
-   * */
+   */
   @ElementCollection(fetch = FetchType.EAGER)
   protected Set<String> test_access;
   /**
    * Connectivity types, e.g. E-Line, E-LAN, or E-Tree. TODO: think of using Enum instead of String
-   * */
-  protected String connectivity_type;
-  /**
-   * Name referenced by VNFCs
    */
+  protected String connectivity_type;
+  /** Name referenced by VNFCs */
   protected String name;
 
   @PrePersist
@@ -163,5 +152,35 @@ public abstract class AbstractVirtualLink implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "AbstractVirtualLink{"
+        + "id='"
+        + id
+        + '\''
+        + ", hb_version="
+        + hb_version
+        + ", extId='"
+        + extId
+        + '\''
+        + ", root_requirement='"
+        + root_requirement
+        + '\''
+        + ", leaf_requirement='"
+        + leaf_requirement
+        + '\''
+        + ", qos="
+        + qos
+        + ", test_access="
+        + test_access
+        + ", connectivity_type='"
+        + connectivity_type
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + '}';
   }
 }

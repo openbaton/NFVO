@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 25/05/16.
- */
+/** Created by lto on 25/05/16. */
 public class NotAllowedException extends Exception {
   public NotAllowedException(String message) {
     super(message);

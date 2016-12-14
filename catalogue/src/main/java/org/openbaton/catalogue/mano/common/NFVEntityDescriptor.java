@@ -17,22 +17,20 @@
 
 package org.openbaton.catalogue.mano.common;
 
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class NFVEntityDescriptor implements Serializable {
 
-  /**
-   * ID of this Network Service Descriptor
-   * */
+  /** ID of this Network Service Descriptor */
   @Id protected String id;
+
   @Version protected Integer hb_version = 0;
 
   @Column protected String name;
@@ -47,21 +45,16 @@ public abstract class NFVEntityDescriptor implements Serializable {
     this.projectId = projectId;
   }
 
-  /**
-   * Provider or vendor of the Network Service.
-   * */
+  /** Provider or vendor of the Network Service. */
   protected String vendor;
-  /**
-   * Version of the Network Service Descriptor.
-   * */
+  /** Version of the Network Service Descriptor. */
   protected String version;
   /**
    * VNFFG which is part of the Network Service, see clause 6.5.1. A Network Service might have
    * multiple graphs, for example, for: 1. Control plane traffic. 2. Management-plane traffic. 3.
    * User plane traffic itself could have multiple NFPs based on the QOS etc. The traffic is steered
    * amongst 1 of these NFPs based on the policy decisions.
-   *
-   **/
+   */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   protected Set<VNFForwardingGraphDescriptor> vnffgd;
 
@@ -69,7 +62,6 @@ public abstract class NFVEntityDescriptor implements Serializable {
   protected Set<VirtualLinkDescriptor> vld;
 
   /**
-   *
    * Represents a monitoring parameter which can be tracked for this NS. These can be network
    * service metrics that are tracked for the purpose of meeting the network service availability
    * contributing to SLAs (e.g. NS downtime). These can also be used for specifying different
@@ -78,19 +70,16 @@ public abstract class NFVEntityDescriptor implements Serializable {
    * calls-per-second (cps), number-of-subscribers, no-of-rules, flows-per-second, etc. 1 or more of
    * these parameters could be influential in determining the need to scale-out.
    *
-   * TODO: check if the String is the appropriate type for this field
-   *
-   * */
+   * <p>TODO: check if the String is the appropriate type for this field
+   */
   @ElementCollection(fetch = FetchType.EAGER)
   protected Set<String> monitoring_parameter;
   /**
-   *
    * Represents the service KPI parameters and its requirement for each deployment flavour of the NS
    * being described, see clause 6.2.1.3. For example, there could be a flavour describing the
    * requirements to support a vEPC with 300k calls per second. There could be another flavour
    * describing the requirements to support a vEPC with 500k calls per second.
-   *
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   protected Set<DeploymentFlavour> service_deployment_flavour;
 
@@ -100,7 +89,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
   /**
    * This element describes a Connection Point which acts as an endpoint of the Network Service, see
    * clause 6.2.1.2. This can, for example, be referenced by other elements as an endpoint.
-   * */
+   */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   protected Set<ConnectionPoint> connection_point;
 

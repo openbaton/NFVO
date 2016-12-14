@@ -17,6 +17,9 @@
 
 package org.openbaton.common.vnfm_sdk.amqp.configuration;
 
+import java.io.IOException;
+import java.util.Properties;
+import javax.annotation.PostConstruct;
 import org.openbaton.common.vnfm_sdk.amqp.AbstractVnfmSpringAmqp;
 import org.openbaton.common.vnfm_sdk.interfaces.EmsRegistrator;
 import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
@@ -39,25 +42,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Properties;
-
-/**
- * Created by lto on 09/11/15.
- */
+/** Created by lto on 09/11/15. */
 @Configuration
 @EnableRabbit
 @ConfigurationProperties(prefix = "vnfm.rabbitmq")
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 public class RabbitConfiguration {
-  public final static String queueName_vnfmRegister = "nfvo.vnfm.register";
-  public final static String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
-  public final static String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
-  public final static String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
+  public static final String queueName_vnfmRegister = "nfvo.vnfm.register";
+  public static final String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
+  public static final String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
+  public static final String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
   public static String queueName_nfvoGenericActions = "nfvo.type.actions";
   public static String queueName_emsRegistrator = "ems.generic.register";
-  private final static String queueName_logDispatch = "nfvo.vnfm.logs";
+  private static final String queueName_logDispatch = "nfvo.vnfm.logs";
 
   private RabbitAdmin rabbitAdmin;
 

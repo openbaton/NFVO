@@ -17,13 +17,10 @@
 
 package org.openbaton.catalogue.nfvo.messages.Interfaces;
 
+import java.io.Serializable;
 import org.openbaton.catalogue.nfvo.Action;
 
-import java.io.Serializable;
-
-/**
- * Created by mob on 14.09.15.
- */
+/** Created by mob on 14.09.15. */
 public abstract class NFVMessage implements Serializable {
   public Action getAction() {
     return action;

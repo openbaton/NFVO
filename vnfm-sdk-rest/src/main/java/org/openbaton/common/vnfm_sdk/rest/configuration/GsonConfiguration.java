@@ -23,9 +23,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by tbr on 21.10.16.
- */
+/** Created by tbr on 21.10.16. */
 @Configuration
 public class GsonConfiguration {
 

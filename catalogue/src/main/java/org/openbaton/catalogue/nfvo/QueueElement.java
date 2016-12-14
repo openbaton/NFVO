@@ -17,13 +17,10 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 
-import java.util.List;
-
-/**
- * Created by lto on 19/08/15.
- */
+/** Created by lto on 19/08/15. */
 public class QueueElement {
 
   private String vnfrTargetId;

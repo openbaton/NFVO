@@ -17,13 +17,11 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
-import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-/**
- * Created by mob on 14.09.15.
- */
+/** Created by mob on 14.09.15. */
 public class VnfmOrInstantiateMessage extends VnfmOrMessage {
 
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
