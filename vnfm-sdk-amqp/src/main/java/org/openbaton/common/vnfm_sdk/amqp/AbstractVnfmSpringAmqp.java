@@ -67,8 +67,6 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
     super.setup();
   }
 
-  protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
-
   @Override
   protected void unregister() {
     try {

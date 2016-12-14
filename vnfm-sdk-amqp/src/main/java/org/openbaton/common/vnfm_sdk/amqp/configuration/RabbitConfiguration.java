@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import org.openbaton.common.vnfm_sdk.amqp.AbstractVnfmSpringAmqp;
-import org.openbaton.common.vnfm_sdk.interfaces.EmsRegistrator;
+import org.openbaton.common.vnfm_sdk.interfaces.EmsInterface;
 import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class RabbitConfiguration {
   private int maxConcurrency;
 
   @Autowired(required = false)
-  private EmsRegistrator registrator;
+  private EmsInterface registrator;
 
   @Autowired private ConnectionFactory connectionFactory;
 
