@@ -136,6 +136,17 @@ public class VNFPackageManagement
           } catch (Exception e) {
             e.printStackTrace();
           }
+          int i = 1;
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+            if (vdu.getName() == null) {
+              vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
+              i++;
+            }
+          }
+          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+            log.debug("vdu name: " + vdu.getName());
+          }
+          log.debug("Created VNFD: " + virtualNetworkFunctionDescriptor.getName());
           log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
           nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
         } else if (entry.getName().endsWith(".img")) {

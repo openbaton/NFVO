@@ -111,7 +111,12 @@ public class NetworkServiceDescriptorManagement
       if (vnfd.getVdu().size() == 0)
         throw new NotFoundException("You should specify at least one VDU in each VNFD!");
 
+      int i = 1;
       for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
+        if (virtualDeploymentUnit.getName() == null) {
+          virtualDeploymentUnit.setName(vnfd.getName() + "-" + i);
+          i++;
+        }
         virtualDeploymentUnit.setProjectId(projectId);
       }
       if (vnfd.getLifecycle_event() != null)
@@ -471,7 +476,7 @@ public class NetworkServiceDescriptorManagement
         "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
   }
 
-  /** Removes the Secuty with idS from NSD with id */
+  /** Removes the Security with idS from NSD with id */
   @Override
   public void deleteSecurty(String idNsd, String idS, String projectId) {
     if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
