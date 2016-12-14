@@ -60,7 +60,7 @@ public class RepositoriesClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
   private JdbcTemplate jdbcTemplate;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private ConfigurableApplicationContext ctx;
 
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
@@ -110,8 +110,7 @@ public class RepositoriesClassSuiteTest {
       log.debug(n.toString());
     }
 
-    NetworkServiceDescriptor new_nsd = null;
-    new_nsd = nsdRepository.findFirstById(nsd.getId());
+    NetworkServiceDescriptor new_nsd = nsdRepository.findFirstById(nsd.getId());
 
     Assert.assertNotNull(new_nsd);
     Assert.assertNotNull(new_nsd.getId());
@@ -159,8 +158,7 @@ public class RepositoriesClassSuiteTest {
 
     Assert.assertNotNull(id);
 
-    NetworkServiceDescriptor nsd_new = null;
-    nsd_new = nsdRepository.findOne(id);
+    NetworkServiceDescriptor nsd_new = nsdRepository.findOne(id);
 
     Assert.assertEquals(nsd.getId(), nsd_new.getId());
     Assert.assertEquals(nsd.getVersion(), nsd_new.getVersion());
@@ -270,9 +268,7 @@ public class RepositoriesClassSuiteTest {
     // Clean
     nsdRepository.delete(nsd);
 
-    NetworkServiceDescriptor nsd_null = null;
-
-    nsd_null = nsdRepository.findFirstById(id);
+    NetworkServiceDescriptor nsd_null = nsdRepository.findFirstById(id);
     Assert.assertNull(nsd_null);
   }
 

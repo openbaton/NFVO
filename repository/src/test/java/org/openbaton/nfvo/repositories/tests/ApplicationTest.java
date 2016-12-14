@@ -37,9 +37,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 public class ApplicationTest {
 
   /**
-   * Testing if the context contains all the needed beans
+   * Main method for testing if the context contains all the needed beans
    *
-   * @param argv
    */
   public static void main(String[] argv) {
     ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
