@@ -25,14 +25,20 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.LinkStatus;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -41,15 +47,18 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
-import org.openbaton.nfvo.core.interfaces.*;
+import org.openbaton.nfvo.core.interfaces.DependencyManagement;
+import org.openbaton.nfvo.core.interfaces.EventDispatcher;
+import org.openbaton.nfvo.core.interfaces.NetworkManagement;
+import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.KeyRepository;
@@ -69,15 +78,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import org.springframework.dao.OptimisticLockingFailureException;
 
 import javax.annotation.PostConstruct;
 
@@ -892,11 +907,22 @@ public class NetworkServiceRecordManagement
         } else {
           instanceNames = body.getVduVimInstances().get(vdu.getName());
         }
+        VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
         if (instanceNames.size() == 0) {
           log.debug("ProjectID: " + projectID);
           for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-            instanceNames.add(vimInstance.getName());
+            if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+              instanceNames.add(vimInstance.getName());
+            }
           }
+        }
+        if (instanceNames.size() == 0) {
+          throw new org.openbaton.exceptions.BadRequestException(
+              "No Vim Instance found for supporting the VNFD "
+                  + vnfd.getName()
+                  + " (looking for vim type: "
+                  + vnfPackage.getVimTypes()
+                  + ")");
         }
         log.debug("Vim Instances chosen are: " + instanceNames);
         for (String vimInstanceName : instanceNames) {
@@ -905,8 +931,7 @@ public class NetworkServiceRecordManagement
             if (vimInstanceName.equals(vi.getName())) {
               vimInstance = vi;
               log.debug("Found vim instance " + vimInstance.getName());
-              VNFPackage vnfPackage =
-                  vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+
               if (vnfPackage == null
                   || vnfPackage.getVimTypes() == null
                   || vnfPackage.getVimTypes().size() == 0) {

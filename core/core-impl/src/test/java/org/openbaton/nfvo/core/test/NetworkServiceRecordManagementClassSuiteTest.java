@@ -54,6 +54,7 @@ import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
@@ -75,6 +76,7 @@ import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
@@ -114,6 +116,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   private static final String projectId = "project-id";
 
   @Mock private ConfigurationManagement configurationManagement;
+  @Mock private VnfPackageRepository vnfPackageRepository;
   @InjectMocks private NetworkServiceRecordManagement nsrManagement;
 
   @Rule public ExpectedException exception = ExpectedException.none();
@@ -184,7 +187,16 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
 
+    when(vnfPackageRepository.findFirstById(anyString())).thenReturn(createVNFPackage());
     log.info("Starting test");
+  }
+
+  private VNFPackage createVNFPackage() {
+    VNFPackage vnfPackage = new VNFPackage();
+    ArrayList<String> vimTypes = new ArrayList<>();
+    vimTypes.add("test");
+    vnfPackage.setVimTypes(vimTypes);
+    return vnfPackage;
   }
 
   @Test
