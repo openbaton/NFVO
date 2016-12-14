@@ -34,11 +34,11 @@ public class CPRequirements {
     for (LinkedHashMap<String, String> pair : resMap) {
 
       if (pair.keySet().toArray()[0].equals("virtualLink")) {
-        virtualLink.add(pair.get("virtualLink").toString());
+        virtualLink.add(pair.get("virtualLink"));
       }
 
       if (pair.keySet().toArray()[0].equals("virtualBinding")) {
-        virtualBinding.add(pair.get("virtualBinding").toString());
+        virtualBinding.add(pair.get("virtualBinding"));
       }
     }
   }

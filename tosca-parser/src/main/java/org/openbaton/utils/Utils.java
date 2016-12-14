@@ -39,36 +39,6 @@ public final class Utils {
     }
   }
 
-  public static void copy(File file, OutputStream out) throws IOException {
-    InputStream in = new FileInputStream(file);
-    try {
-      copy(in, out);
-    } finally {
-      in.close();
-    }
-  }
-
-  public static void copy(InputStream in, File file) throws IOException {
-    OutputStream out = new FileOutputStream(file);
-    try {
-      copy(in, out);
-    } finally {
-      out.close();
-    }
-  }
-
-  public static NSDTemplate fileToNSDTemplate(String fileName) throws FileNotFoundException {
-
-    InputStream tosca = new FileInputStream(new File(fileName));
-    Constructor constructor = new Constructor(NSDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    return yaml.loadAs(tosca, NSDTemplate.class);
-  }
-
   public static VNFDTemplate fileToVNFDTemplate(String fileName) throws FileNotFoundException {
 
     InputStream tosca = new FileInputStream(new File(fileName));
@@ -90,17 +60,6 @@ public final class Utils {
 
     Yaml yaml = new Yaml(constructor);
     return yaml.loadAs(someYaml, NSDTemplate.class);
-  }
-
-  public static VNFDTemplate stringToVNFDTemplate(String someYaml) {
-
-    Constructor constructor = new Constructor(VNFDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    return yaml.loadAs(someYaml, VNFDTemplate.class);
   }
 
   public static VNFDTemplate bytesToVNFDTemplate(ByteArrayOutputStream b) {

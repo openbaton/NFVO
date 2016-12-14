@@ -131,7 +131,7 @@ public class TOSCAParser {
 
       vnfDependency.setSource(vnfdSouce);
       vnfDependency.setTarget(vnfdTarget);
-      vnfDependency.setParameters(new HashSet<String>(relationshipsTemplate.getParameters()));
+      vnfDependency.setParameters(new HashSet<>(relationshipsTemplate.getParameters()));
 
       nsd.getVnf_dependency().add(vnfDependency);
     }
@@ -178,7 +178,7 @@ public class TOSCAParser {
     }
     vnfd.setVdu(vdus);
 
-    Set<String> virtualLinkReferences = new HashSet<String>();
+    Set<String> virtualLinkReferences = new HashSet<>();
 
     for (VirtualDeploymentUnit vdu : vdus) {
       for (VNFComponent vnfComponent : vdu.getVnfc()) {

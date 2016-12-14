@@ -34,11 +34,11 @@ public class VNFRequirements {
     for (LinkedHashMap<String, String> pair : resMap) {
 
       if (pair.keySet().toArray()[0].equals("virtualLink")) {
-        virtualLinks.add(pair.get("virtualLink").toString());
+        virtualLinks.add(pair.get("virtualLink"));
       }
 
       if (pair.keySet().toArray()[0].equals("vdu")) {
-        vdus.add(pair.get("vdu").toString());
+        vdus.add(pair.get("vdu"));
       }
     }
   }

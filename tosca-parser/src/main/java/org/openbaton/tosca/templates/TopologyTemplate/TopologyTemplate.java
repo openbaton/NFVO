@@ -61,14 +61,14 @@ public class TopologyTemplate {
 
   public List<CPNodeTemplate> getCPNodes() {
 
-    List<CPNodeTemplate> cpNodes = new ArrayList<CPNodeTemplate>();
+    List<CPNodeTemplate> cpNodes = new ArrayList<>();
 
     for (String nodeName : node_templates.keySet()) {
 
       NodeTemplate n = node_templates.get(nodeName);
       if (Objects.equals(n.getType(), "tosca.nodes.nfv.CP")) {
 
-        CPNodeTemplate cpNode = new CPNodeTemplate(n, nodeName);
+        CPNodeTemplate cpNode = new CPNodeTemplate(n);
         cpNodes.add(cpNode);
       }
     }

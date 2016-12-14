@@ -36,10 +36,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 @EnableJpaRepositories(basePackages = "org.openbaton")
 public class ApplicationTest {
 
-  /**
-   * Main method for testing if the context contains all the needed beans
-   *
-   */
+  /** Main method for testing if the context contains all the needed beans */
   public static void main(String[] argv) {
     ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
     for (String s : context.getBeanDefinitionNames()) System.out.println(s);

@@ -57,7 +57,7 @@ public class CSARParser {
   @Autowired private VimBroker vimBroker;
   @Autowired private NSDUtils nsdUtils;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   private TOSCAParser toscaParser;
 
@@ -67,8 +67,6 @@ public class CSARParser {
   private ArrayList<String> imageNames = new ArrayList<>();
   private ByteArrayOutputStream vnfMetadata;
   private ArrayList<String> folderNames = new ArrayList<>();
-
-  private String entryDefinitions = null;
 
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
@@ -154,8 +152,7 @@ public class CSARParser {
     while ((strLine = br.readLine()) != null) {
 
       if (strLine.contains(entryDefinition)) {
-        this.entryDefinitions =
-            strLine.substring(entryDefinition.length(), strLine.length()).trim();
+        strLine.substring(entryDefinition.length(), strLine.length()).trim();
       }
       if (strLine.contains(image)) {
         this.imageNames.add(strLine.substring(image.length(), strLine.length()).trim());
@@ -183,9 +180,7 @@ public class CSARParser {
 
     readMetaData();
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
-    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-
-    return nsd;
+    return toscaParser.parseNSDTemplate(nsdTemplate);
   }
 
   private NFVImage getImage(
@@ -219,7 +214,7 @@ public class CSARParser {
 
   private String saveVNFD(
       VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
-      throws PluginException, VimException, NotFoundException, IOException, IncompatibleVNFPackage {
+      throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
 
     VNFPackage vnfPackage = new VNFPackage();
 

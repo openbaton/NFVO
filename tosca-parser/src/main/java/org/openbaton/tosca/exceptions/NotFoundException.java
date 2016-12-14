@@ -22,8 +22,4 @@ public class NotFoundException extends Exception {
   public NotFoundException(String exc) {
     super(exc);
   }
-
-  public NotFoundException(Throwable e) {
-    super(e);
-  }
 }

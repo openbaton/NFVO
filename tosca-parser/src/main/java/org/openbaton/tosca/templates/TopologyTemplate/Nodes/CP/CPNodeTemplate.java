@@ -27,7 +27,7 @@ public class CPNodeTemplate {
   private CPProperties properties = null;
   private CPRequirements requirements = null;
 
-  public CPNodeTemplate(NodeTemplate nodeTemplate, String name) {
+  public CPNodeTemplate(NodeTemplate nodeTemplate) {
     this.type = nodeTemplate.getType();
 
     if (nodeTemplate.getProperties() != null) {
