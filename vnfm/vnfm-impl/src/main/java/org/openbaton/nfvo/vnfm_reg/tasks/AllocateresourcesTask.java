@@ -76,6 +76,7 @@ public class AllocateresourcesTask extends AbstractTask {
         throw new NullPointerException(
             "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
       }
+      log.debug("Allocating VDU: " + vdu.getName() + " to vim instance: " + vimInstance.getName());
       ids.add(
           resourceManagement.allocate(
               vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
@@ -89,7 +90,7 @@ public class AllocateresourcesTask extends AbstractTask {
 
     OrVnfmGenericMessage orVnfmGenericMessage =
         new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ALLOCATE_RESOURCES);
-    log.debug(
+    log.trace(
         "Answering the AllocateResources call via RPC with the following message: "
             + orVnfmGenericMessage);
     log.info(
