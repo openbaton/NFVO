@@ -17,21 +17,20 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VirtualDeploymentUnit implements Serializable {
@@ -59,9 +58,7 @@ public class VirtualDeploymentUnit implements Serializable {
    */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> vm_image;
-  /**
-   * Reference to the VDU (vnfd:vdu:id) used to instantiate this element.
-   */
+  /** Reference to the VDU (vnfd:vdu:id) used to instantiate this element. */
   private String parent_vdu;
   /**
    * Describe the required computation resources characteristics (e.g. processing power, number of
@@ -69,9 +66,7 @@ public class VirtualDeploymentUnit implements Serializable {
    * reliability/availability.
    */
   private String computation_requirement;
-  /**
-   * This represents the virtual memory needed for the VDU.
-   */
+  /** This represents the virtual memory needed for the VDU. */
   private String virtual_memory_resource_element;
   /**
    * This represents the requirements in terms of the virtual network bandwidth needed for the VDU.
@@ -86,9 +81,7 @@ public class VirtualDeploymentUnit implements Serializable {
     fetch = FetchType.EAGER
   )
   private Set<LifecycleEvent> lifecycle_event;
-  /**
-   * Placeholder for other constraints.
-   */
+  /** Placeholder for other constraints. */
   private String vdu_constraint;
   /**
    * Defines redundancy model to ensure high availability examples include: ActiveActive: Implies
@@ -108,9 +101,7 @@ public class VirtualDeploymentUnit implements Serializable {
    * Defines minimum and maximum number of instances which can be created to support scale out/in.
    */
   private int scale_in_out;
-  /**
-   * Contains information that is distinct for each VNFC created based on this VDU.
-   */
+  /** Contains information that is distinct for each VNFC created based on this VDU. */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<VNFComponent> vnfc;
 

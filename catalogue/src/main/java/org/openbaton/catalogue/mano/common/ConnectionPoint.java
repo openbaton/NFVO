@@ -17,16 +17,14 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -37,12 +35,10 @@ public class ConnectionPoint implements Serializable {
   @Version protected int version = 0;
 
   /**
-   *
    * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC
    * address or the endpoint of an IP VPN enabling network connectivity. TODO think about what type
    * must be
-   *
-   * */
+   */
   protected String type;
 
   public ConnectionPoint() {}

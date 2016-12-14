@@ -18,6 +18,10 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;

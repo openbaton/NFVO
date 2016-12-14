@@ -17,10 +17,6 @@
 
 package org.openbaton.plugin.utils;
 
-import org.openbaton.utils.rabbit.RabbitManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
@@ -29,10 +25,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openbaton.utils.rabbit.RabbitManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by lto on 10/09/15.
- */
+/** Created by lto on 10/09/15. */
 public class PluginStartup {
 
   private static Logger log = LoggerFactory.getLogger(PluginStartup.class);
@@ -111,7 +108,7 @@ public class PluginStartup {
     }
   }
 
-  private synchronized static void installPlugin(
+  private static synchronized void installPlugin(
       String path,
       boolean waitForPlugin,
       String brokerIp,

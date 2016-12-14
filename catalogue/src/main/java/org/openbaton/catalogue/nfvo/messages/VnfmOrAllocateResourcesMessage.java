@@ -17,18 +17,15 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 import org.openbaton.catalogue.security.Key;
 
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by mob on 15.09.15.
- */
+/** Created by mob on 15.09.15. */
 public class VnfmOrAllocateResourcesMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private Map<String, VimInstance> vimInstances;

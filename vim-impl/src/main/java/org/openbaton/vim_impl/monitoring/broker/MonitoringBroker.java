@@ -17,18 +17,15 @@
 
 package org.openbaton.vim_impl.monitoring.broker;
 
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
 import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-
-/**
- * Created by lto on 05/08/15.
- */
+/** Created by lto on 05/08/15. */
 @Service
 @Scope
 public class MonitoringBroker

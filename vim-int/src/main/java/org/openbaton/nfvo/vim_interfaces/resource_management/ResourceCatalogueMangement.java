@@ -17,9 +17,7 @@
 
 package org.openbaton.nfvo.vim_interfaces.resource_management;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface ResourceCatalogueMangement {
 
   /**

@@ -17,6 +17,7 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Map;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -25,11 +26,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-import java.util.Map;
-
-/**
- * Created by lto on 13/10/15.
- */
+/** Created by lto on 13/10/15. */
 public class OrVnfmScalingMessage extends OrVnfmMessage {
 
   private VNFComponent component;

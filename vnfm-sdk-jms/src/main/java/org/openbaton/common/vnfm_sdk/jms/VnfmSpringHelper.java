@@ -17,6 +17,14 @@
 
 package org.openbaton.common.vnfm_sdk.amqp;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.annotation.PostConstruct;
+import javax.jms.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
@@ -26,18 +34,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.jms.*;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-/**
- * Created by lto on 23/09/15.
- */
+/** Created by lto on 23/09/15. */
 @Service
 @Scope
 public class VnfmSpringHelper extends VnfmHelper {
@@ -102,7 +99,7 @@ public class VnfmSpringHelper extends VnfmHelper {
   /**
    * This method should be used for receiving text message from EMS
    *
-   * resp = { 'output': out, // the output of the command 'err': err, // the error outputs of the
+   * <p>resp = { 'output': out, // the output of the command 'err': err, // the error outputs of the
    * commands 'status': status // the exit status of the command }
    *
    * @param queueName

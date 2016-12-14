@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by lto on 26/11/15.
- */
+/** Created by lto on 26/11/15. */
 @Service
 public class RabbitPluginBroker {
 

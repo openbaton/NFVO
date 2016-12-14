@@ -19,9 +19,7 @@ package org.openbaton.catalogue.nfvo;
 
 import java.io.Serializable;
 
-/**
- * Created by lto on 13/08/15.
- */
+/** Created by lto on 13/08/15. */
 public class PluginAnswer implements Serializable {
   private Serializable answer;
   private Throwable exception;

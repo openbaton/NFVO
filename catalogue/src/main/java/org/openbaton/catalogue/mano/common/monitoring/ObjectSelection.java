@@ -21,9 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mob on 18.11.15.
- */
+/** Created by mob on 18.11.15. */
 public class ObjectSelection implements Serializable {
 
   /*

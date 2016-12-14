@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.mano.common;
 
-/**
- * Created by lto on 06/02/15.
- */
+/** Created by lto on 06/02/15. */
 public enum Event {
   GRANTED,
   ALLOCATE,

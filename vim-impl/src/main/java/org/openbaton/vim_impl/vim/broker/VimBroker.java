@@ -17,6 +17,9 @@
 
 package org.openbaton.vim_impl.vim.broker;
 
+import java.util.HashMap;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
@@ -38,14 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 20/05/15.
- */
+/** Created by lto on 20/05/15. */
 @Service
 @Scope
 @ConfigurationProperties

@@ -17,6 +17,9 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
@@ -26,13 +29,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 import org.openbaton.catalogue.security.Key;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by mob on 14.09.15.
- */
+/** Created by mob on 14.09.15. */
 public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private VirtualNetworkFunctionDescriptor vnfd;
   private VNFDeploymentFlavour vnfdf;

@@ -17,6 +17,8 @@
 
 package org.openbaton.common.vnfm_sdk.interfaces;
 
+import java.util.Collection;
+import java.util.Map;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -25,12 +27,7 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 
-import java.util.Collection;
-import java.util.Map;
-
-/**
- * Created by mpa on 05/05/15.
- */
+/** Created by mpa on 05/05/15. */
 public interface VNFLifecycleManagement {
 
   /**
@@ -45,9 +42,7 @@ public interface VNFLifecycleManagement {
       Object scripts,
       Map<String, Collection<VimInstance>> vimInstances)
       throws Exception;
-  /**
-   * This operation allows retrieving VNF instance state and attributes.
-   */
+  /** This operation allows retrieving VNF instance state and attributes. */
   void query();
 
   /**
@@ -67,14 +62,10 @@ public interface VNFLifecycleManagement {
       VNFRecordDependency dependency)
       throws Exception;
 
-  /**
-   * This operation allows verifying if the VNF instantiation is possible.
-   */
+  /** This operation allows verifying if the VNF instantiation is possible. */
   void checkInstantiationFeasibility();
 
-  /**
-   * This operation allows verifying if the VNF instantiation is possible.
-   */
+  /** This operation allows verifying if the VNF instantiation is possible. */
   VirtualNetworkFunctionRecord heal(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFCInstance component,
@@ -101,9 +92,7 @@ public interface VNFLifecycleManagement {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFRecordDependency dependency)
       throws Exception;
 
-  /**
-   * This operation allows deploying a new software release to a VNF instance.
-   */
+  /** This operation allows deploying a new software release to a VNF instance. */
   void upgradeSoftware();
 
   /**

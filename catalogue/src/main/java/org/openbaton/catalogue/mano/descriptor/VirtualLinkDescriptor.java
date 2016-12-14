@@ -17,16 +17,15 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.Security;
-
-import javax.persistence.*;
-import java.util.Set;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
@@ -40,21 +39,13 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   public void setProjectId(String projectId) {
     this.projectId = projectId;
   }
-  /**
-   * /** Vendor generating this VLD
-   */
+  /** /** Vendor generating this VLD */
   private String vendor;
-  /**
-   * Version of this VLD
-   */
+  /** Version of this VLD */
   private String descriptor_version;
-  /**
-   * Number of endpoints available on this VL (e.g. E-Line=2)
-   */
+  /** Number of endpoints available on this VL (e.g. E-Line=2) */
   private int number_of_endpoints;
-  /**
-   * A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id)
-   */
+  /** A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id) */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> connection;
   /**
@@ -113,5 +104,26 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
   public void setVld_security(Security vld_security) {
     this.vld_security = vld_security;
+  }
+
+  @Override
+  public String toString() {
+    return "VirtualLinkDescriptor{"
+        + "projectId='"
+        + projectId
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", connection="
+        + connection
+        + ", vld_security="
+        + vld_security
+        + '}';
   }
 }

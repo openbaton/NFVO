@@ -21,9 +21,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-/**
- * Created by moritz on 02.12.15.
- */
+/** Created by moritz on 02.12.15. */
 public class OrVnfmHealVNFRequestMessage extends OrVnfmMessage {
   private VNFCInstance vnfcInstance;
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;

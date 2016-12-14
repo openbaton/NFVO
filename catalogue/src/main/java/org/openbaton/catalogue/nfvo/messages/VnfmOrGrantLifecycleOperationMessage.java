@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.nfvo.messages;
 
+import java.util.Set;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-import java.util.Set;
-
-/**
- * Created by mob on 15.09.15.
- */
+/** Created by mob on 15.09.15. */
 public class VnfmOrGrantLifecycleOperationMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
   private Set<VirtualDeploymentUnit> vduSet;

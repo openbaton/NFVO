@@ -17,6 +17,13 @@
 
 package org.openbaton.vim_impl.vim.test;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
+
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -25,21 +32,23 @@ import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.plugin.utils.RabbitPluginBroker;
 import org.openbaton.vim.drivers.VimDriverCaller;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.GenericVIM;
 import org.openbaton.vim_impl.vim.OpenstackVIM;
@@ -59,19 +68,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.rmi.RemoteException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
-
 //import org.openbaton.nfvo.common.exceptions.VimException;
 
-/**
- * Created by lto on 21/05/15.
- */
+/** Created by lto on 21/05/15. */
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -94,9 +93,7 @@ public class VimTestSuiteClass {
   //@Qualifier("OpenstackVim")
   private OpenstackVIM openstackVIM;
 
-  /**
-   * TODO add all other tests
-   */
+  /** TODO add all other tests */
   @Autowired private Environment environment;
 
   @Autowired private VimBroker vimBroker;
@@ -138,19 +135,19 @@ public class VimTestSuiteClass {
     Server server = new Server();
     server.setExtId(environment.getProperty("mocked_id"));
     server.setIps(new HashMap<String, List<String>>());
+    server.setFloatingIps(new HashMap<String, String>());
     //TODO use the method launchInstanceAndWait properly
-    when(
-            vimDriverCaller.launchInstanceAndWait(
-                any(VimInstance.class),
-                anyString(),
-                anyString(),
-                anyString(),
-                anyString(),
-                anySet(),
-                anySet(),
-                anyString(),
-                anyMap(),
-                anySet()))
+    when(vimDriverCaller.launchInstanceAndWait(
+            any(VimInstance.class),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anySet(),
+            anySet(),
+            anyString(),
+            anyMap(),
+            anySet()))
         .thenReturn(server);
     VimInstance vimInstance = createVIM();
     try {
@@ -212,15 +209,21 @@ public class VimTestSuiteClass {
   private VirtualDeploymentUnit createVDU() {
     VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
     VimInstance vimInstance = createVIM();
-    HashSet<VNFComponent> vnfc = new HashSet<>();
-    vnfc.add(new VNFComponent());
-    vdu.setVnfc(vnfc);
+    HashSet<VNFComponent> vnfcs = new HashSet<>();
+    VNFComponent vnfc = new VNFComponent();
+    Set<VNFDConnectionPoint> vnfdCps = new HashSet<>();
+    VNFDConnectionPoint vnfcCp = new VNFDConnectionPoint();
+    vnfcCp.setVirtual_link_reference("network1");
+    vnfdCps.add(vnfcCp);
+    vnfc.setConnection_point(vnfdCps);
+    vnfcs.add(vnfc);
+    vdu.setVnfc(vnfcs);
     Set<String> monitoring_parameter = new HashSet<>();
     monitoring_parameter.add("parameter_1");
     monitoring_parameter.add("parameter_2");
     monitoring_parameter.add("parameter_3");
     vdu.setMonitoring_parameter(monitoring_parameter);
-    vdu.setComputation_requirement("computation_requirement");
+    vdu.setComputation_requirement("m1.small");
     Set<String> vm_images = new HashSet<>();
     vm_images.add("image_1234");
     vdu.setVm_image(vm_images);
@@ -257,6 +260,12 @@ public class VimTestSuiteClass {
             add(nfvImage);
           }
         });
+    Network network = new Network();
+    network.setName("network1");
+    network.setExtId("mocked_ext_id");
+    Set<Network> networks = new HashSet<>();
+    networks.add(network);
+    vimInstance.setNetworks(networks);
     return vimInstance;
   }
 }
