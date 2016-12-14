@@ -28,6 +28,7 @@ import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
+import org.openbaton.nfvo.security.authorization.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
     checkIntegrity(user);
 
-    checkPasswordIntegrity(user.getPassword());
+    if (checkStrength) Utils.checkPasswordIntegrity(user.getPassword());
 
     String[] roles = new String[user.getRoles().size()];
 
@@ -163,22 +164,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public void changePassword(String oldPwd, String newPwd)
       throws UnauthorizedUserException, PasswordWeakException {
     log.debug("Got old password: " + oldPwd);
-    checkPasswordIntegrity(newPwd);
+    if (checkStrength) Utils.checkPasswordIntegrity(newPwd);
     userDetailsManager.changePassword(oldPwd, newPwd);
-  }
-
-  public void checkPasswordIntegrity(String password) throws PasswordWeakException {
-    if (checkStrength) {
-      if (password.length() < 8
-          || !(password.matches("(?=.*[A-Z]).*")
-              && password.matches("(?=.*[a-z]).*")
-              && password.matches("(?=.*[0-9]).*"))) {
-        throw new PasswordWeakException(
-            "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, "
-                + "one "
-                + "upper case letter and one digit");
-      }
-    }
   }
 
   public void checkIntegrity(User user)
