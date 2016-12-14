@@ -206,6 +206,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
     $scope.addLaunchKey = function (key) {
         $scope.launchKeys.push(key);
+        console.log($scope.launchKeys);
         remove($scope.keys, key);
         $scope.tableParamsFilteredKeys.reload();
         $scope.tableParamsFilteredLaunchKeys.reload();
@@ -219,14 +220,14 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     }
 
     function remove(arr, item) {
-        console.log(arr);
-        console.log(item);
+        //console.log(arr);
+        //console.log(item);
         for (var i = arr.length; i--;) {
             if (arr[i].name === item.name) {
                 arr.splice(i, 1);
             }
         }
-        console.log(arr);
+        //console.log(arr);
     }
 
     // http.get(urlVim)
@@ -599,6 +600,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
     $scope.launchOption = function (data) {
         $scope.nsdToSend = data;
+        //loadKeys();
         $scope.launchPops = {};
         $scope.vnfdToVIM.splice(0);
         $scope.vimForLaunch = {};
@@ -659,7 +661,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vimForLaunch = {};
     $scope.launch = function () {
         prepareVIMs();
-        //console.log(JSON.stringify($scope.vimForLaunch));
+        console.log(JSON.stringify($scope.vimForLaunch));
 
         //console.log($scope.nsdToSend);
         $scope.launchObj.keys = [];
@@ -680,12 +682,13 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             .error(function (data, status) {
                 showError(status, data);
             });
-        $scope.launchKeys = [];
+     
+        //$scope.launchKeys = [];
         $scope.launchObj = {};
         $scope.launchPops = {};
         $scope.vnfdToVIM.splice(0);
         $scope.vimForLaunch = {};
-
+       
 
     };
 
@@ -697,20 +700,20 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     function prepareVIMs() {
         $scope.vimForLaunch = {};
         for (var vnfdName in $scope.launchPops) {
-            for (var vduName in $scope.launchPops[vnfdName]) {
+            for (var vduName in $scope.launchPops) {
                 if (vduName != "pops" && vduName != "undefined") {
                     $scope.vimForLaunch[vduName] = [];
                     $scope.launchPops[vnfdName].pops.forEach(
                         function (pop) {
-                            $scope.vimForLaunch[vduName].push(pop.name);
+                            
+                            $scope.vimForLaunch[vduName] = pop.name;
                         }
                     );
                     // $scope.vimForLaunch[vduName].push($scope.launchPops[vnfdName].pops);
                 }
             }
         }
-        console.log("Pops to launch")
-        console.log($scope.vimForLaunch)
+
 
         // if (!$scope.vnfdLevelVim && $scope.launchNsdVim.length === 0) {
         //     return;
@@ -903,9 +906,11 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
     $scope.addPopToVnfd = function (vnfd, pop) {
         $scope.launchPops[vnfd.name].pops.push(pop);
+        console.log($scope.launchPops);
         for (j = 0; j < vnfd.vdu.length; j++) {
             //console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
             vduName = vnfd.vdu[j].name;
+            
             // $scope.launchPops[vnfd.name][vduName].push(pop);
         }
         remove($scope.launchPopsAvailable[vnfd.name].pops, pop);
