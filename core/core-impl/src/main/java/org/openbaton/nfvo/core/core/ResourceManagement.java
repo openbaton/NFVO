@@ -58,102 +58,13 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties
 public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.ResourceManagement {
 
-  //TODO get from RabbitConfiguration
-  private static final String exchangeName = "openbaton-exchange";
-  private static final Pattern PATTERN =
-      Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-
-  @Value("${nfvo.rabbit.brokerIp:127.0.0.1}")
-  private String brokerIp;
-
-  @Value("${spring.rabbitmq.username:admin}")
-  private String username;
-
-  @Value("${spring.rabbitmq.password:openbaton}")
-  private String password;
-
-  @Value("${nfvo.ems.queue.autodelete:true}")
-  private boolean emsAutodelete;
-
-  @Value("${nfvo.monitoring.ip:}")
-  private String monitoringIp;
-
-  @Value("${nfvo.ems.queue.heartbeat:60}")
-  private int emsHeartbeat;
-
-  @Value("${nfvo.ems.version:0.15}")
-  private String emsVersion;
-
-  @Value("${nfvo.timezone:UTC}") // set timezone=UTC if the timezone property is not set
-  private String timezone;
-
-  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
   @Autowired private KeyRepository keyRepository;
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public int getEmsHeartbeat() {
-    return emsHeartbeat;
-  }
-
-  public void setEmsHeartbeat(int emsHeartbeat) {
-    this.emsHeartbeat = emsHeartbeat;
-  }
-
-  public boolean isEmsAutodelete() {
-    return emsAutodelete;
-  }
-
-  public void setEmsAutodelete(boolean emsAutodelete) {
-    this.emsAutodelete = emsAutodelete;
-  }
-
-  public String getEmsVersion() {
-    return emsVersion;
-  }
-
-  public void setEmsVersion(String emsVersion) {
-    this.emsVersion = emsVersion;
-  }
-
-  public String getMonitoringIp() {
-    return monitoringIp;
-  }
-
-  public void setMonitoringIp(String monitoringIp) {
-    this.monitoringIp = monitoringIp;
-  }
-
-  public String getTimezone() {
-    return timezone;
-  }
-
-  public void setTimezone(String timezone) {
-    this.timezone = timezone;
-  }
-
-  public String getBrokerIp() {
-    return brokerIp;
-  }
-
-  public void setBrokerIp(String brokerIp) {
-    this.brokerIp = brokerIp;
-  }
 
   @Override
   @Async
@@ -245,78 +156,6 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     if (!floatinIps.isEmpty() && added.getFloatingIps().isEmpty())
       log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
     return added.getVim_id();
-  }
-
-  private String getUserData(String endpoint) throws VimException {
-    log.debug("Broker ip is: " + brokerIp);
-    log.debug("Monitoring ip is: " + monitoringIp);
-    brokerIp = brokerIp.trim();
-    if (brokerIp == null || brokerIp.equals("") || !PATTERN.matcher(brokerIp).matches()) {
-      throw new VimException(
-          "nfvo.rabbit.brokerIp is null, empty or not a valid ip please set a correct ip");
-    }
-
-    String result =
-        "#!/bin/bash\n"
-            + "adduser user\n"
-            + "echo -e \"password\\npassword\" | (passwd user)\n"
-            + "echo \"deb http://get.openbaton.org/repos/apt/debian/ ems main\" >> /etc/apt/sources.list\n"
-            + "wget -O - http://get.openbaton.org/public.gpg.key | apt-key add -\n"
-            + "apt-get update\n"
-            + "cp /usr/share/zoneinfo/"
-            + timezone
-            + " /etc/localtime\n"
-            + //synchronize the time with the timezone of the NFVO
-            "apt-get install git -y\n";
-
-    if (monitoringIp != null && !monitoringIp.equals("")) {
-      result +=
-          " echo \"Installing zabbix-agent for server at _address\"\n"
-              + "sudo apt-get install -y zabbix-agent\n"
-              + "sudo sed -i -e 's/ServerActive=127.0.0.1/ServerActive="
-              + monitoringIp
-              + ":10051/g' -e 's/Server=127.0.0.1/Server="
-              + monitoringIp
-              + "/g' -e 's/Hostname=Zabbix server/#Hostname=/g' /etc/zabbix/zabbix_agentd.conf\n"
-              + "sudo service zabbix-agent restart\n"
-              + "sudo rm zabbix-release_2.2-1+precise_all.deb\n"
-              + "echo \"finished installing zabbix-agent!\"\n";
-    }
-
-    result +=
-        //                "apt-get install -y python-pip\n" +
-        "apt-get install -y ems-"
-            + emsVersion
-            + "\n"
-            + "mkdir -p /etc/openbaton/ems\n"
-            + "echo [ems] > /etc/openbaton/ems/conf.ini\n"
-            + "echo orch_ip="
-            + brokerIp
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "echo username="
-            + username
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "echo password="
-            + password
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "echo exchange="
-            + exchangeName
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "echo heartbeat="
-            + emsHeartbeat
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "echo autodelete="
-            + emsAutodelete
-            + " >> /etc/openbaton/ems/conf.ini\n"
-            + "export hn=`hostname`\n"
-            + "echo \"type="
-            + endpoint
-            + "\" >> /etc/openbaton/ems/conf.ini\n"
-            + "echo \"hostname=$hn\" >> /etc/openbaton/ems/conf.ini\n"
-            + "echo orch_port=61613 >> /etc/openbaton/ems/conf.ini\n"
-            + "service ems restart\n";
-
-    return result;
   }
 
   @Override
