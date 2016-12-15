@@ -72,12 +72,9 @@ public abstract class AbstractVnfm
   protected static String brokerPort;
   protected static String monitoringIp;
   protected static String timezone;
-  protected static String emsVersion;
   protected static String username;
   protected static String password;
   protected static String exchangeName;
-  protected static String emsHeartbeat;
-  protected static String emsAutodelete;
   protected static String nsrId;
 
   public boolean isEnabled() {
@@ -248,8 +245,6 @@ public abstract class AbstractVnfm
             if (mode != null && mode.equalsIgnoreCase("standby")) {
               vnfcInstance_new.setState("STANDBY");
             }
-
-            checkEMS(vnfcInstance_new.getHostname());
           }
 
           Object scripts;
@@ -355,12 +350,6 @@ public abstract class AbstractVnfm
           }
           setupProvides(virtualNetworkFunctionRecord);
 
-          for (VirtualDeploymentUnit virtualDeploymentUnit :
-              virtualNetworkFunctionRecord.getVdu()) {
-            for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-              checkEMS(vnfcInstance.getHostname());
-            }
-          }
           if (orVnfmInstantiateMessage.getVnfPackage() != null) {
             if (orVnfmInstantiateMessage.getVnfPackage().getScriptsLink() != null) {
               virtualNetworkFunctionRecord =
@@ -528,8 +517,6 @@ public abstract class AbstractVnfm
     return vnfcInstance_new;
   }
 
-  protected abstract void checkEMS(String hostname);
-
   private void getExtension(Map<String, String> extension) {
     log.debug("Extensions are: " + extension);
 
@@ -537,16 +524,11 @@ public abstract class AbstractVnfm
     brokerPort = extension.get("brokerPort");
     monitoringIp = extension.get("monitoringIp");
     timezone = extension.get("timezone");
-    emsVersion = extension.get("emsVersion");
     username = extension.get("username");
     password = extension.get("password");
     exchangeName = extension.get("exchangeName");
-    emsHeartbeat = extension.get("emsHeartbeat");
-    emsAutodelete = extension.get("emsAutodelete");
     nsrId = extension.get("nsr-id");
   }
-
-  protected abstract void checkEmsStarted(String vduHostname);
 
   private void setupProvides(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {}
 
