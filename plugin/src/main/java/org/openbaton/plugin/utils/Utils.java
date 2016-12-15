@@ -44,7 +44,6 @@ public class Utils {
     File file = new File(pluginLogPath + "/plugin-" + name + "_" + ft.format(dNow) + ".log");
     processBuilder.redirectErrorStream(true);
     processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
-    Process p = processBuilder.start();
-    return p;
+    return processBuilder.start();
   }
 }
