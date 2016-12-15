@@ -88,8 +88,12 @@ public class GrantoperationTask extends AbstractTask {
       //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
       setHistoryLifecycleEvent(new Date());
       saveVirtualNetworkFunctionRecord();
-      for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()){
-        log.debug("For vdu " + virtualDeploymentUnit.getName() + " possible vim instances are: " + virtualDeploymentUnit.getVimInstanceName());
+      for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+        log.debug(
+            "For vdu "
+                + virtualDeploymentUnit.getName()
+                + " possible vim instances are: "
+                + virtualDeploymentUnit.getVimInstanceName());
       }
       Map<String, VimInstance> vimInstancesChosen =
           lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);

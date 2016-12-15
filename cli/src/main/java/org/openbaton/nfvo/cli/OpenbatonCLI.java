@@ -45,7 +45,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -473,7 +473,8 @@ public class OpenbatonCLI implements CommandLineRunner {
         username,
         password,
         "" + managementPort,
-        pluginLogPath);
+        pluginLogPath,
+        true);
     return true;
   }
 }

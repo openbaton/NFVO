@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +126,8 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         username,
         password,
         "" + managementPort,
-        pluginLogPath);
+        pluginLogPath,
+        waitForPlugin);
   }
 
   @Override
