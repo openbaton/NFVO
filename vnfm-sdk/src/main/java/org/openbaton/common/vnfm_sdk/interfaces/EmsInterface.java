@@ -20,6 +20,7 @@ package org.openbaton.common.vnfm_sdk.interfaces;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
+import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 
 import java.util.Set;
 
@@ -42,9 +43,9 @@ public interface EmsInterface {
 
   String getEmsVersion();
 
-  void checkEmsStarted(String hostname);
+  void checkEmsStarted(String hostname) throws BadFormatException;
 
-  void checkEms(String hostname);
+  void checkEms(String hostname) throws BadFormatException;
 
   void saveScriptOnEms(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, Object scripts)
       throws Exception;
