@@ -37,7 +37,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 23/09/15. */
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * Created by lto on 23/09/15.
+ */
 @Service
 @Scope
 @ConfigurationProperties
@@ -140,9 +147,11 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     rabbitTemplate.setReplyTimeout(timeout * 1000);
     rabbitTemplate.afterPropertiesSet();
 
-    log.debug("Sending to: " + queueName);
+    log.debug("Sending to: " + queueName.toLowerCase().replace("_", "-"));
     String res =
-        (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
+        (String)
+            rabbitTemplate.convertSendAndReceive(
+                "openbaton-exchange", queueName.toLowerCase().replace("_", "-"), message);
     log.trace("Received from EMS: " + res);
     if (res == null) {
       log.error("After " + timeout + " seconds the ems did not answer.");

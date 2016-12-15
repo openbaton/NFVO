@@ -374,7 +374,7 @@ public class OpenstackVIM extends GenericVIM {
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
-    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 1000));
+    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 10000000));
     log.debug("Generated Hostname: " + hostname);
 
     userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);
