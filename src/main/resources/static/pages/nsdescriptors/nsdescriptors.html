@@ -624,12 +624,17 @@
       
             
         <div class="modal-content">
+             <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Add a Network Service Descriptor</h4>
+            </div>
+           
               <tabset>
             <tab heading="Create NSD">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="serviceFormLabel">Create a Network Service Descriptor</h4>
+                Here you can create an NSD via choosing the VNFDs that you have in your database. Choose the name of the VNFD from the catalogue and click plus to add to it to the new NSD. All virtual links referenced in the VNFDs must be present in the VLDs.
             </div>
             <div class="modal-body">
                 <button ng-if="data.serviceContainers.length == 0" class="btn btn-default" data-toggle="modal"
@@ -921,19 +926,18 @@
                         data-dismiss="modal">Close
                 </button>
                 <button type="button" id="addService"
-                        class="btn btn-primary" ng-click="sendNSDCreate()">Add
-                    Save NSD
+                        class="btn btn-primary" ng-click="sendNSDCreate()">Create
+                    NSD
                 </button>
             </div><!--footer-->
             </tab>
             <tab heading="Upload NSD">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Save a Network Service Descriptor</h4>
 
             </div>
             <div class="modal-body">
-                Here you can add an NSD via pasting the json or choosing a file
+                Here you can add an NSD via pasting the json or choosing a file. The NSD can contain either the whole VNFDs or their ids.
                 <form role="form" id="formJson">
                     <div class="form-group">
                      
@@ -963,12 +967,11 @@
             </tab>
             <tab heading="Upload CSAR">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Upload a CSAR NSD</h4>
 
             </div>
             <div class="modal-body">
-                Here you can upload TOSCA complient packages
+                Here you can upload TOSCA complient package
                 <form role="form" id="my-dropzone" class="">
                     <h4>Drag and drop files below</h4>
 
@@ -1574,7 +1577,11 @@
                                 </textarea></td></tr>
                             </tbody>
                             </table>
+                            <button type="button" class="btn btn-danger" ng-click="removeConf($index)">Remove Parameter</button>
+                            </br>
+                            </br>
                         </div>
+                        
                         <button type="button" class="btn btn-primary" ng-click="addConftoLaunch()">Add Parameter</button>        
                                 
                    

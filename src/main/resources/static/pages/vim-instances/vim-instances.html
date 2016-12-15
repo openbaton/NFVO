@@ -101,8 +101,13 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="serviceLabel">Create a new VIM Instance</h4>
 			</div>
+			<tabset>
+				<tab heading="Form Input" ng-click="setFormInput()">
+
 			<div class="modal-body">
-               <label> Form Input </label>
+             Here you can fill in the form in order to add the PoP to the database. The available types depend on the installed plugins. If you do not have any installed plugins, you cannot add the PoP information. 
+			 </br>
+			 </br>
 				<form role="form" class="form-horizontal">
                     	<label class="col-sm-4 control-label">Name</label>
                         <div class="col-sm-6">
@@ -124,6 +129,14 @@
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.password" />
 						</div>
+						<label class="col-sm-4 control-label">Type</label>
+						<div class="col-sm-6">
+							<select name="typeSelect" class="form-control modal-select"
+                                    ng-model="newvim.type"
+
+                                    ng-options="plugin.type as plugin.type for plugin in installed | orderBy:'name':false">
+                            </select>
+						</div>	
                         <label class="col-sm-4 control-label">Key Pair</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.keypair" />
@@ -159,12 +172,17 @@
                        
                         
 				</form>
-                
+				</div>
+				</tab>
+				<tab heading="File Input" ng-click="setFileInput()">
+					<div class="modal-body">
+					Here you can either point to a file or simply paste the PoP information in json format
+					
 				<form role="form" id="formJson">
 					<div class="form-group">
 						<br> <label for="jsonInputArea">Plain text input</label>
 						<textarea name="textTopologyJson" ng-model="textTopologyJson" ng-change="changeText(textTopologyJson)" id="jsonInputArea"
-							class="form-control" rows="2" placeholder=""></textarea>
+							class="form-control" rows="10" placeholder=""></textarea>
 					</div>
 
 					<div class="form-group">
@@ -173,7 +191,9 @@
 						<p class="help-block">Example: VimInstance.json </p>
 					</div>
 				</form>
-			</div>
+				</div>
+				</tab>
+			</tabset>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				<button type="button" class="btn btn-primary" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>

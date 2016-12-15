@@ -297,7 +297,12 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.dependency.parameters = [];
 
     $scope.addParam = function (par) {
-        $scope.dependency.parameters.push(par);
+        if (angular.isUndefined(par)) {
+            return;
+        }
+        if (par.length > 0) {
+          $scope.dependency.parameters.push(par);
+        }
     };
 
     $scope.removeParam = function (index) {
@@ -849,18 +854,24 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     /* -- multiple delete functions END -- */
 
     function showError(status, data) {
-        if (status === 400)
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        }); }
+        else if (status === 400) {
             $scope.alerts.push({
                 type: 'danger',
-                msg: 'Something is wrong with your NSD. Common error: you have specified your vim as a string and not as an array'
+                msg: 'Something is wrong with your NSD. Common error: you have specified your vim as a string and not as an array in VNFD'
             });
+        }
 
-        else
+        else {
             $scope.alerts.push({
                 type: 'danger',
                 msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
             });
-
+        }
         $('.modal').modal('hide');
         if (status === 401) {
             //console.log(status + ' Status unauthorized')
@@ -979,7 +990,9 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.addConftoLaunch = function() {
         
         $scope.basicConfiguration.config.configurationParameters.push({description:"", confKey:"", value:""});
-        console.log($scope.basicConfiguration);
+    };
+    $scope.removeConf = function(index) {
+         $scope.basicConfiguration.config.configurationParameters.splice(index, 1);
     };
     
     angular.element(document).ready(function () {
