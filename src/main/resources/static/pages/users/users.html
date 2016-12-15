@@ -92,22 +92,26 @@
                 <h4 class="modal-title">Create a new User</h4>
             </div>
             <div class="modal-body">
+                All fields in this form are mandatory. You can hover over the input forms to see the requirments if there are any. The user should be assigned minimum 1 role.
+                If you want the user to have the admin privileges(being able to manage all users and project), check the "Make Admin". You do not need to specify any roles in this case. 
+                <br/>
+                <br/>
                 <form role="form" class="form-horizontal">
 
                     <div class="form-group">
                           <td><input type="checkbox" ng-model="makeAdmin"/>Make Admin</td>
-                        <label for="username" class="col-sm-4 control-label">Username</label>
+                        <label  required for="username" class="col-sm-4 control-label">Username</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="username" name="username"
-                                   ng-model="userObj.username"/>
+                            <input ng-style="namestyle" title="The username can contain only latin characters, digits and symbols" type="text" class="form-control" id="username" name="username"
+                                   ng-model="userObj.username" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="pass" class="col-sm-4 control-label">Password</label>
 
                         <div class="col-sm-6">
-                            <input type="password" class="form-control" id="pass" name="pass"
+                            <input ng-style="passstyle" title="Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit" type="password" class="form-control" id="pass" name="pass"
                                    ng-model="userObj.password"/>
                         </div>
                     </div>
@@ -115,23 +119,31 @@
                         <label for="pass" class="col-sm-4 control-label">Reenter Password</label>
 
                         <div class="col-sm-6">
-                            <input type="password" class="form-control" id="pass" name="pass"
+                            <input ng-style="checkstyle" type="password" title="Passwords must be the same" class="form-control" id="pass" name="pass"
                                    ng-model="newpassword"/>
                         </div>
                     </div>
-                    <div class="form-group" ng-repeat="(key,value) in userObj" ng-if="key!=='username' && key!=='password' && key!=='roles'">
+                      <div class="form-group">
+                        <label for="pass" class="col-sm-4 control-label">Email</label>
+
+                        <div class="col-sm-6">
+                            <input ng-style="emailstyle" type="email" title="Passwords must be valid" class="form-control" id="email" name="email"
+                                   ng-model="userObj.email"/>
+                        </div>
+                    </div>
+                    <!--div class="form-group" ng-repeat="(key,value) in userObj" ng-if="key!=='username' && key!=='password' && key!=='roles'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="{{key}}" name="{{key}}"
                                    ng-model="userObj[key]"/>
                         </div>
-                    </div>
+                    </div-->
                     <hr>
                     <h3>Role <a title="Add a new Role to this user" href="" ng-click="addRole()"><li class="fa fa-plus-square"></li></a></h3>
                     <div class="form-group" ng-repeat="role in userObj.roles track by $index">
 
-                            <label for="action" class="col-sm-2 control-label">project</label>
+                            <label for="action" class="col-sm-2 control-label">Project</label>
                             <div class="col-sm-3">
                                 <select name="typeSelect" class="form-control modal-select" id="action"
                                         ng-model="userObj.roles[$index].project"
@@ -140,7 +152,7 @@
                                 </select>
                             </div>
 
-                        <label for="action" class="col-sm-1 control-label">role</label>
+                        <label for="action" class="col-sm-1 control-label">Role</label>
                         <div class="col-sm-3">
                             <select name="typeSelect" class="form-control modal-select" id="action"
                                     ng-model="userObj.roles[$index].role"
@@ -158,7 +170,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+                <button type="button" class="btn btn-primary" ng-disabled="!(userObj.roles.length > 0 || makeAdmin) || !(userObj.username.length > 0) || !emailValid || !passwordSame || !passwordStrong" data-dismiss="modal" ng-click="save()">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
