@@ -31,11 +31,6 @@ public abstract class Plugin {
 
   protected Properties properties;
 
-  protected Plugin() {
-    super();
-    //        loadProperties();
-  }
-
   public void loadProperties() {
     properties = new Properties();
     log.trace("Loading properties");
