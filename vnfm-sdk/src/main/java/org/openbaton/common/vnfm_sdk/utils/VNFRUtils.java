@@ -17,10 +17,26 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
-import java.util.*;
-import org.openbaton.catalogue.mano.common.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.ScalingAction;
+import org.openbaton.catalogue.mano.common.ScalingAlarm;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
@@ -175,7 +191,7 @@ public class VNFRUtils {
     for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
       VirtualDeploymentUnit vdu_new = new VirtualDeploymentUnit();
       vdu_new.setParent_vdu(virtualDeploymentUnit.getId());
-
+      vdu_new.setName(virtualDeploymentUnit.getName());
       HashSet<VNFComponent> vnfComponents = new HashSet<>();
       for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
         VNFComponent component_new = new VNFComponent();
@@ -232,6 +248,17 @@ public class VNFRUtils {
           virtualDeploymentUnit.getVirtual_network_bandwidth_resource());
       vdu_new.setVirtual_memory_resource_element(
           virtualDeploymentUnit.getVirtual_memory_resource_element());
+
+      Collection<VimInstance> vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
+      if (vimInstancesTmp == null) {
+        vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName());
+      }
+
+      List<String> names = new ArrayList<>();
+      for (VimInstance vi : vimInstancesTmp) {
+        names.add(vi.getName());
+      }
+      vdu_new.setVimInstanceName(names);
       virtualNetworkFunctionRecord.getVdu().add(vdu_new);
     }
     virtualNetworkFunctionRecord.setVersion(vnfd.getVersion());
@@ -242,8 +269,12 @@ public class VNFRUtils {
     virtualNetworkFunctionRecord.setDeployment_flavour_key(flavourKey);
     for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
       Collection<VimInstance> vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
+
       if (vimInstancesTmp == null) {
         vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getName());
+      }
+      if (vimInstancesTmp == null) {
+        vimInstancesTmp = vimInstances.get(virtualDeploymentUnit.getId());
       }
       for (VimInstance vi : vimInstancesTmp) {
         for (String name : virtualDeploymentUnit.getVimInstanceName()) {
