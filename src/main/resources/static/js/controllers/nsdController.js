@@ -996,10 +996,11 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
     
     angular.element(document).ready(function () {
-        if (angular.isUndefined($routeParams.packageid)) {
+       
+        
             var previewNode = document.querySelector("#template");
             if (previewNode === null) {
-                //console.log("no template");
+                console.log("no template");
                 return;
             }
             previewNode.id = "";
@@ -1072,6 +1073,6 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $(".cancel").onclick = function () {
                 myDropzone.removeAllFiles(true);
             };
-        }
+        
     });
 });
