@@ -705,13 +705,13 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     function prepareVIMs() {
         $scope.vimForLaunch = {};
         for (var vnfdName in $scope.launchPops) {
-            for (var vduName in $scope.launchPops) {
+            for (var vduName in $scope.launchPops[vnfdName]) {
                 if (vduName != "pops" && vduName != "undefined") {
                     $scope.vimForLaunch[vduName] = [];
                     $scope.launchPops[vnfdName].pops.forEach(
                         function (pop) {
                             
-                            $scope.vimForLaunch[vduName] = pop.name;
+                            $scope.vimForLaunch[vduName].push(pop.name);
                         }
                     );
                     // $scope.vimForLaunch[vduName].push($scope.launchPops[vnfdName].pops);
