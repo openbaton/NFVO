@@ -136,8 +136,8 @@ public class RabbitConfiguration {
 
   @Bean
   SimpleMessageListenerContainer container_logDispatcher(
-          ConnectionFactory connectionFactory,
-          @Qualifier("listenerAdapter_logDispatch") MessageListenerAdapter listenerAdapter) {
+      ConnectionFactory connectionFactory,
+      @Qualifier("listenerAdapter_logDispatch") MessageListenerAdapter listenerAdapter) {
     if (listenerAdapter != null) {
       SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
       container.setConnectionFactory(connectionFactory);
@@ -176,8 +176,8 @@ public class RabbitConfiguration {
   @Bean
   Binding binding_nfvoGenericAction(TopicExchange exchange) {
     return BindingBuilder.bind(queue_genericVnfmActions())
-            .to(exchange)
-            .with(queueName_nfvoGenericActions);
+        .to(exchange)
+        .with(queueName_nfvoGenericActions);
   }
 
   @Bean
@@ -187,8 +187,8 @@ public class RabbitConfiguration {
 
   @Bean
   SimpleMessageListenerContainer container_eventRegister(
-          ConnectionFactory connectionFactory,
-          @Qualifier("listenerAdapter_nfvoGenericActions") MessageListenerAdapter listenerAdapter) {
+      ConnectionFactory connectionFactory,
+      @Qualifier("listenerAdapter_nfvoGenericActions") MessageListenerAdapter listenerAdapter) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.setQueueNames(queueName_nfvoGenericActions);

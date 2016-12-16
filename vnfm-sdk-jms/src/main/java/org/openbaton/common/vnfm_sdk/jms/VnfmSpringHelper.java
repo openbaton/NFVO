@@ -99,8 +99,7 @@ public class VnfmSpringHelper extends VnfmHelper {
   /**
    * This method should be used for receiving text message from EMS
    *
-   * <p>
-   * resp = { 'output': out, // the output of the command 'err': err, // the error outputs of the
+   * <p>resp = { 'output': out, // the output of the command 'err': err, // the error outputs of the
    * commands 'status': status // the exit status of the command }
    *
    * @param queueName
