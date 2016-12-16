@@ -18,6 +18,10 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
@@ -97,14 +101,14 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     rabbitAdmin = new RabbitAdmin(connectionFactory);
     rabbitAdmin.declareExchange(new TopicExchange("openbaton-exchange"));
     rabbitAdmin.declareQueue(
-        new Queue(RabbitConfiguration.queueName_vnfmRegister, true, exclusive, autodelete));
+            new Queue(RabbitConfiguration.queueName_vnfmRegister, true, exclusive, autodelete));
     rabbitAdmin.declareBinding(
-        new Binding(
-            RabbitConfiguration.queueName_vnfmRegister,
-            Binding.DestinationType.QUEUE,
-            "openbaton-exchange",
-            RabbitConfiguration.queueName_vnfmRegister,
-            null));
+            new Binding(
+                    RabbitConfiguration.queueName_vnfmRegister,
+                    Binding.DestinationType.QUEUE,
+                    "openbaton-exchange",
+                    RabbitConfiguration.queueName_vnfmRegister,
+                    null));
   }
 
   public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
@@ -123,9 +127,9 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     rabbitTemplate.setReplyTimeout(timeout * 1000);
     rabbitTemplate.afterPropertiesSet();
     String response =
-        (String)
-            this.rabbitTemplate.convertSendAndReceive(
-                RabbitConfiguration.queueName_vnfmCoreActionsReply, gson.toJson(message));
+            (String)
+                    this.rabbitTemplate.convertSendAndReceive(
+                            RabbitConfiguration.queueName_vnfmCoreActionsReply, gson.toJson(message));
 
     return gson.fromJson(response, NFVMessage.class);
   }
@@ -138,16 +142,16 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
 
     log.debug("Sending to: " + queueName.toLowerCase().replace("_", "-"));
     String res =
-        (String)
-            rabbitTemplate.convertSendAndReceive(
-                "openbaton-exchange", queueName.toLowerCase().replace("_", "-"), message);
+            (String)
+                    rabbitTemplate.convertSendAndReceive(
+                            "openbaton-exchange", queueName.toLowerCase().replace("_", "-"), message);
     log.trace("Received from EMS: " + res);
     if (res == null) {
       log.error("After " + timeout + " seconds the ems did not answer.");
       throw new TimeoutException(
-          "After "
-              + timeout
-              + " seconds the ems did not answer. You can change this value by editing the application.properties propery \"vnfm.rabbitmq.sar.timeout\"");
+              "After "
+                      + timeout
+                      + " seconds the ems did not answer. You can change this value by editing the application.properties propery \"vnfm.rabbitmq.sar.timeout\"");
     }
     return res;
   }
