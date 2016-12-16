@@ -897,7 +897,9 @@ public class NetworkServiceRecordManagement
         if (instanceNames.size() == 0) {
           log.debug("ProjectID: " + projectID);
           for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-            if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+            if (vnfPackage.getVimTypes() == null || vnfPackage.getVimTypes().isEmpty()) {
+              instanceNames.add(vimInstance.getName());
+            } else if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
               instanceNames.add(vimInstance.getName());
             }
           }
