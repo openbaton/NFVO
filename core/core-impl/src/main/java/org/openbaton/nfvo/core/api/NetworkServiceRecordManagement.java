@@ -992,6 +992,10 @@ public class NetworkServiceRecordManagement
               }
             }
 
+            if (vimInstance == null) {
+              throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
+
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {
               for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
