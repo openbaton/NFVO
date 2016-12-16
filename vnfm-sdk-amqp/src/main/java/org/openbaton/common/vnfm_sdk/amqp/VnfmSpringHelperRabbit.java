@@ -33,14 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.concurrent.TimeoutException;
-
-/**
- * Created by lto on 23/09/15.
- */
+/** Created by lto on 23/09/15. */
 @Service
 @Scope
 @ConfigurationProperties
