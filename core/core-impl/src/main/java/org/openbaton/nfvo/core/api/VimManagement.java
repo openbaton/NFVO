@@ -23,14 +23,15 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.*;
-import org.openbaton.nfvo.repositories.ImageRepository;
-import org.openbaton.nfvo.repositories.NetworkRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Autowired private NetworkRepository networkRepository;
 
+  @Autowired private VNFDRepository vnfdRepository;
+
+  @Autowired private VNFRRepository vnfrRepository;
+
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.vim.active.check:false}")
@@ -70,7 +75,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public void delete(String id, String projectId) throws NotFoundException {
+  public void delete(String id, String projectId) throws NotFoundException, BadRequestException {
 
     VimInstance vimInstance = vimRepository.findFirstById(id);
     if (vimInstance == null)
@@ -78,6 +83,21 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     if (!vimInstance.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    for (VirtualNetworkFunctionRecord vnfr : vnfrRepository.findByProjectId(projectId)) {
+      for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+        if (vdu.getVimInstanceName().contains(vimInstance.getName())) {
+          throw new BadRequestException(
+              "Cannot delete VIM Instance " + vimInstance.getName() + " while it is in use.");
+        }
+      }
+    }
+    for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        if (vdu.getVimInstanceName().contains(vimInstance.getName())) {
+          vdu.getVimInstanceName().remove(vimInstance.getName());
+        }
+      }
+    }
     vimRepository.delete(vimInstance);
   }
 
@@ -89,6 +109,28 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     //    vimInstance = vimRepository.save(vimInstance);
+    VimInstance vimInstanceOld = vimRepository.findFirstById(vimInstance.getId());
+    if (!vimInstanceOld.getName().equals(vimInstance.getName())) {
+      for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
+        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+          if (vdu.getVimInstanceName().contains(vimInstanceOld.getName())) {
+            vdu.getVimInstanceName().remove(vimInstanceOld.getName());
+            vdu.getVimInstanceName().add(vimInstance.getName());
+          }
+        }
+      }
+      for (VirtualNetworkFunctionRecord vnfr : vnfrRepository.findByProjectId(projectId)) {
+        for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+          if (vdu.getVimInstanceName().contains(vimInstanceOld.getName())) {
+            vdu.getVimInstanceName().remove(vimInstanceOld.getName());
+            vdu.getVimInstanceName().add(vimInstance.getName());
+          }
+        }
+      }
+    }
+    if (vimInstance.getPassword().equals("**********")) {
+      vimInstance.setPassword(vimInstanceOld.getPassword());
+    }
     return refresh(vimInstance);
     //    return vimInstance;
   }

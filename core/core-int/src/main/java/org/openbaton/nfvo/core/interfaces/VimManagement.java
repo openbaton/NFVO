@@ -31,7 +31,7 @@ public interface VimManagement {
           AlreadyExistingException;
 
   /** This operation allows deleting the datacenter from the datacenter repository. */
-  void delete(String id, String projectId) throws NotFoundException;
+  void delete(String id, String projectId) throws NotFoundException, BadRequestException;
 
   /** This operation allows updating the datacenter in the datacenter repository. */
   VimInstance update(VimInstance new_vimInstance, String id, String projectId)

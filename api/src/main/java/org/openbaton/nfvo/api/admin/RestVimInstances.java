@@ -77,7 +77,7 @@ public class RestVimInstances {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, BadRequestException {
     vimManagement.delete(id, projectId);
   }
 
