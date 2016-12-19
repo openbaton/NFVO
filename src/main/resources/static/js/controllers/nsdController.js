@@ -869,7 +869,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         else {
             $scope.alerts.push({
                 type: 'danger',
-                msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
+                msg: data.message + '. Error code: ' + status
             });
         }
         $('.modal').modal('hide');
