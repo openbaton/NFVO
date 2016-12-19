@@ -28,6 +28,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Location;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
@@ -39,9 +41,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.api.VimManagement;
-import org.openbaton.nfvo.repositories.ImageRepository;
-import org.openbaton.nfvo.repositories.NetworkRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -61,6 +61,10 @@ public class VimManagementClassSuiteTest {
   @Mock private ImageRepository imageRepository;
 
   @Mock private NetworkRepository networkRepository;
+
+  @Mock private VNFDRepository vnfdRepository;
+
+  @Mock private VNFRRepository vnfrRepository;
 
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
@@ -103,6 +107,11 @@ public class VimManagementClassSuiteTest {
     vimInstance_new.setTenant("UpdatedTenant");
     vimInstance_new.setUsername("UpdatedUsername");
     when(vimRepository.save(vimInstance_new)).thenReturn(vimInstance_new);
+    when(vnfdRepository.findByProjectId(anyString()))
+        .thenReturn(new ArrayList<VirtualNetworkFunctionDescriptor>());
+    when(vnfrRepository.findByProjectId(anyString()))
+        .thenReturn(new ArrayList<VirtualNetworkFunctionRecord>());
+
     vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId(), projectId);
 
     Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
@@ -189,6 +198,7 @@ public class VimManagementClassSuiteTest {
     vimInstance.setActive(true);
     vimInstance.setProjectId(projectId);
     vimInstance.setName("vim_instance");
+    vimInstance.setPassword("password");
     Location location = new Location();
     location.setName("LocationName");
     location.setLatitude("Latitude");

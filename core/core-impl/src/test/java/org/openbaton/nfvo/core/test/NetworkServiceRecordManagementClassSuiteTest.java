@@ -327,7 +327,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vimInstance);
               }
             });
-
+    when(vimRepository.findByProjectId(anyString()))
+        .thenReturn(
+            new ArrayList<VimInstance>() {
+              {
+                add(createVimInstance());
+              }
+            });
     /** Real Method */
     nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null);
   }
@@ -498,7 +504,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
             ArrayList<String> vimInstanceNames = new ArrayList<>();
-            vimInstanceNames.add("test");
+            vimInstanceNames.add("vim_instance");
             vdu.setVimInstanceName(vimInstanceNames);
             add(vdu);
           }
