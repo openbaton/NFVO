@@ -51,5 +51,12 @@ public interface UserManagement {
    */
   void changePassword(String oldPwd, String newPwd) throws PasswordWeakException;
 
+  /**
+   * @param userName
+   * @param newPwd
+   */
+  User changePasswordOf(String userName, String newPwd)
+      throws PasswordWeakException, NotFoundException;
+
   User getCurrentUser() throws NotFoundException;
 }

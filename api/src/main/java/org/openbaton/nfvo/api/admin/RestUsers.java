@@ -175,6 +175,26 @@ public class RestUsers {
         jsonObject.get("old_pwd").getAsString(), jsonObject.get("new_pwd").getAsString());
   }
 
+  @RequestMapping(
+    value = "changepwd/{username}",
+    method = RequestMethod.PUT,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void changePasswordOf(
+      @PathVariable("username") String username, @RequestBody /*@Valid*/ JsonObject newPwd)
+      throws UnauthorizedUserException, PasswordWeakException, NotFoundException,
+          NotAllowedException {
+    log.debug("Changing password of user " + username);
+    if (isAdmin()) {
+      JsonObject jsonObject = gson.fromJson(newPwd, JsonObject.class);
+      userManagement.changePasswordOf(username, jsonObject.get("new_pwd").getAsString());
+    } else {
+      throw new NotAllowedException(
+          "Forbidden to change password of other users. Only admins can do this.");
+    }
+  }
+
   public boolean isAdmin() throws NotAllowedException, NotFoundException {
     User currentUser = userManagement.getCurrentUser();
     log.trace("Check user if admin: " + currentUser.getUsername());
