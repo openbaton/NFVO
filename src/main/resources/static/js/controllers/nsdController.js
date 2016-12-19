@@ -1031,7 +1031,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                             loadTable();
                         });
                     });
-                    this.on("queuecomplete", function (file, responseText) {
+                    this.on("success", function (file, responseText) {
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the CSAR NSD");
                             loadTable();
@@ -1063,7 +1063,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             });
 
 // Hide the total progress bar when nothing's uploading anymore
-            myDropzone.on("success", function (progress) {
+            myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
 
             });
