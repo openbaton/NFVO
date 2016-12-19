@@ -173,7 +173,7 @@ public class VimManagementClassSuiteTest {
   }
 
   @Test
-  public void nfvImageManagementDeleteTest() throws NotFoundException {
+  public void nfvImageManagementDeleteTest() throws NotFoundException, BadRequestException {
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
     when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);

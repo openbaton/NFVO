@@ -98,7 +98,7 @@ public class ApiRestVimInstancesTest {
   }
 
   @Test
-  public void deleteVimInstance() throws NotFoundException {
+  public void deleteVimInstance() throws NotFoundException, BadRequestException {
     mock.delete("123", "pi");
     restVimInstances.delete("123", "pi");
   }
