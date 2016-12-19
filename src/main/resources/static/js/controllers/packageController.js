@@ -242,7 +242,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                     this.on("error", function (file, responseText) {
                         console.log(responseText);
                         $scope.$apply(function ($scope) {
-                            showError(responseText.message, "422");
+                            showError(responseText, responseText.code);
                         });
                     });
                 }

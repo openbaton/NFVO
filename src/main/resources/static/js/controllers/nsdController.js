@@ -1041,7 +1041,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                     this.on("error", function (file, responseText) {
                         console.log(responseText);
                         $scope.$apply(function ($scope) {
-                            showError(responseText.message, "422");
+                            showError(responseText, responseText.code);
                         });
                     });
                 }
