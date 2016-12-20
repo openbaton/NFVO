@@ -874,7 +874,7 @@
                     <div class="modal-footer">
                         <button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
                 </button>
-                        <button type="button" id="addService" class="btn btn-primary" ng-click="sendNSDCreate()">Create
+                        <button type="button" id="addService" class="btn btn-primary" ng-disabled="nsdCreateTmp.name.length < 1 || nsdCreateTmp.vendor.length < 1 || nsdCreateTmp.vnfd.length < 1" ng-click="sendNSDCreate()">Create
                     NSD
                 </button>
                     </div>

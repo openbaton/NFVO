@@ -26,8 +26,8 @@ var app = angular.module('app');
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://lore:8080';
-    $scope.URL = '';
+    $scope.URL = 'http://lore:8080';
+    //$scope.URL = '';
     $scope.NFVOVersion = "";
     $scope.credential = {
         "username": '',
@@ -81,7 +81,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        setTimeout(showLoginError, 2000);
+        setTimeout(showLoginError, 10000);
     };
 
 

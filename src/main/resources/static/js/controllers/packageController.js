@@ -95,6 +95,9 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
     $scope.$watch('mainCheckbox', function (newValue, oldValue) {
@@ -109,7 +112,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             $scope.selection.ids[k] = newValue;
         });
         //console.log($scope.selection.ids);
-
+        
     });
     $scope.$watch('selection', function (newValue, oldValue) {
         console.log(newValue);

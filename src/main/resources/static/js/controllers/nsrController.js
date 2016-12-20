@@ -381,6 +381,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
     $scope.main = {checkbox: false};

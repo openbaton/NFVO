@@ -49,6 +49,9 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 
@@ -143,7 +146,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 });
     }
 
-   function showError(status, data) {
+   function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',

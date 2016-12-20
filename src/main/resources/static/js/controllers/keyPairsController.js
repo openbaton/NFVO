@@ -33,7 +33,7 @@ var app = angular.module('app').controller('keyPairsCtrl', function ($scope, ser
                 //console.log($scope.keypairs);
             })
             .error(function (data, status) {
-                showError(data, status);
+                showError(status, data);
             });
 
 
@@ -58,7 +58,7 @@ var app = angular.module('app').controller('keyPairsCtrl', function ($scope, ser
                 //location.reload();
             })
             .error(function (response, status) {
-                showError(response, status);
+                showError(status, response);
             });
     };
     $scope.delete = function (data) {
@@ -69,7 +69,7 @@ var app = angular.module('app').controller('keyPairsCtrl', function ($scope, ser
 
             })
             .error(function (response, status) {
-                showError(response, status);
+                showError(status, response);
             });
     };
     $scope.generateKey = function (generateKeyName) {
@@ -91,7 +91,7 @@ var app = angular.module('app').controller('keyPairsCtrl', function ($scope, ser
                 //location.reload();
             })
             .error(function (response, status) {
-                showError(response, status);
+                showError(status, response);
             });
     };
 

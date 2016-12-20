@@ -236,7 +236,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     //         //console.log(response);
     //     })
     //     .error(function (data, status) {
-    //         showError(status, data);
+    //         showError(data, status);
     //
     //     });
 
@@ -341,7 +341,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
-                showError(status, JSON.stringify(data));
+                showError(data, status);
             });
     };
 
@@ -353,7 +353,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
-                showError(status, JSON.stringify(data));
+                showError(data, status);
             });
     };
 
@@ -391,7 +391,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 $scope.selectedVNFD = $scope.vnfdList[0];
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
         
             
@@ -465,7 +465,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
-                showError(status, JSON.stringify(data));
+                showError(data, status);
             });
     };
 
@@ -536,7 +536,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             }
 
@@ -548,7 +548,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             }
         }
@@ -574,7 +574,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
     $scope.addPoPtoNSD = function () {
@@ -685,7 +685,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
      
         //$scope.launchKeys = [];
@@ -764,7 +764,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
         $scope.launchKeys = [];
         $scope.launchObj = {"keys": []};
@@ -777,7 +777,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 //console.log(response);
 
             }).error(function (data, status) {
-            showError(status, data);
+            showError(data, status);
         });
 
     };
@@ -815,7 +815,10 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             .error(function (response, status) {
                 showError(response, status);
             });
-
+            //$scope.selection.ids = [];
+            $scope.multipleDelete = false;
+            $scope.selection.ids = {};
+            $scope.selection = {};
     };
     
     $scope.main = {checkbox: false};
@@ -853,7 +856,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.selection.ids = {};
     /* -- multiple delete functions END -- */
 
-    function showError(status, data) {
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',
@@ -900,7 +903,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                     //console.log(response);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
 
                 });
         else
@@ -911,7 +914,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                     console.log("here" + $scope.nsdinfo);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
                 });
     }
 

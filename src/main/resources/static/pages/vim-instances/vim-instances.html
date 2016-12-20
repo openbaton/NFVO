@@ -196,7 +196,7 @@
 			</tabset>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+				<button type="button" class="btn btn-primary" ng-disabled="!newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password || !newvim.securityGroups.length" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
 			</div>
 		</div>
 	</div>

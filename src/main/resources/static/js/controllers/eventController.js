@@ -53,6 +53,9 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 

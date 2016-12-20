@@ -220,19 +220,19 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
     };
 
 
-    function showError(data, status) {
-        $scope.alerts.push({
-            type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
-        });
-        $('.modal').modal('hide');
-        if (status === 401) {
-            //console.log(status + ' Status unauthorized')
-            AuthService.logout();
+   function showOk(msg) {
+        $scope.alerts.push({type: 'success', msg: msg});
+         window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
         }
     }
+    }, 5000);
+        $('.modal').modal('hide');
+    }
 
-     function showError(status, data) {
+     function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',

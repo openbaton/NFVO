@@ -277,8 +277,11 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (response, status) {
-                showError(response, status);
+                showError(status, response);
             });
+             $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 

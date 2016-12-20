@@ -107,6 +107,9 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 
@@ -267,7 +270,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     }
 
-  function showError(status, data) {
+  function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',
