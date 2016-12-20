@@ -364,7 +364,8 @@ public class NSDUtils {
       names.clear();
       internalVirtualLink.clear();
 
-      if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null) {
+      if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null
+          && !virtualNetworkFunctionDescriptor.getDeployment_flavour().isEmpty()) {
         for (DeploymentFlavour deploymentFlavour :
             virtualNetworkFunctionDescriptor.getDeployment_flavour()) {
           names.add(deploymentFlavour.getFlavour_key());
