@@ -108,8 +108,12 @@ public class NetworkServiceDescriptorManagement
       if (vnfd.getType().equals("") || vnfd.getType() == null)
         throw new NotFoundException(
             "The type of the VNFD should be specified and not be an empty String!");
-      if (vnfd.getVdu().size() == 0)
+      if (vnfd.getVdu() == null || vnfd.getVdu().size() == 0)
         throw new NotFoundException("You should specify at least one VDU in each VNFD!");
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
+          throw new NotFoundException("You should specify at least one VNFC in each VDU!");
+      }
 
       int i = 1;
       for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {

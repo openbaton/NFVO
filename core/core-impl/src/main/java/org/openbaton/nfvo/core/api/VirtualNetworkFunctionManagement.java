@@ -18,8 +18,10 @@
 package org.openbaton.nfvo.core.api;
 
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -58,8 +60,16 @@ public class VirtualNetworkFunctionManagement
 
   @Override
   public VirtualNetworkFunctionDescriptor add(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String projectId) {
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String projectId)
+      throws NotFoundException {
     // TODO check integrity of VNFD
+    if (virtualNetworkFunctionDescriptor.getVdu() == null
+        || virtualNetworkFunctionDescriptor.getVdu().size() == 0)
+      throw new NotFoundException("You should specify at least one VDU in each VNFD!");
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+      if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
+        throw new NotFoundException("You should specify at least one VNFC in each VDU!");
+    }
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
     return vnfdRepository.save(virtualNetworkFunctionDescriptor);
   }

@@ -34,10 +34,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.*;
@@ -311,6 +308,15 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             VimInstance vimInstance = new VimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
+            Set<VNFComponent> vnfcs = new HashSet<VNFComponent>();
+            VNFComponent vnfc = new VNFComponent();
+            VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
+            vnfdConnectionPoint.setFloatingIp("random");
+            Set<VNFDConnectionPoint> cps = new HashSet<VNFDConnectionPoint>();
+            cps.add(vnfdConnectionPoint);
+            vnfc.setConnection_point(cps);
+            vnfcs.add(vnfc);
+            vdu.setVnfc(vnfcs);
             add(vdu);
           }
         });
