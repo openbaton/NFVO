@@ -112,6 +112,9 @@ public class NetworkServiceDescriptorManagement
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       vnfd.setProjectId(projectId);
 
+      if (vnfd.getEndpoint() == null) {
+        throw new NotFoundException("VNFD should specify an endpoint!");
+      }
       if (vnfd.getVdu() == null || vnfd.getVdu().size() == 0)
         throw new NotFoundException("You should specify at least one VDU in each VNFD!");
       for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
