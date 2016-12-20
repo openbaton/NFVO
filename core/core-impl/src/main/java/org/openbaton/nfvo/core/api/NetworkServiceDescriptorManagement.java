@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.NoResultException;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -101,18 +102,28 @@ public class NetworkServiceDescriptorManagement
     if (networkServiceDescriptor.getVnfd().size() == 0)
       throw new NotFoundException("You should specify at least one VNFD in the NSD!");
 
+    if (networkServiceDescriptor.getVld() != null) {
+      for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+        if (vld.getName() == null || vld.getName().equals(""))
+          throw new NotFoundException("A VLD in the NSD has no name specified!");
+      }
+    }
+
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       vnfd.setProjectId(projectId);
-      if (vnfd.getName().equals("") || vnfd.getName() == null)
-        throw new NotFoundException("The name of the VNFD should not be an empty String!");
-      if (vnfd.getType().equals("") || vnfd.getType() == null)
-        throw new NotFoundException(
-            "The type of the VNFD should be specified and not be an empty String!");
+
       if (vnfd.getVdu() == null || vnfd.getVdu().size() == 0)
         throw new NotFoundException("You should specify at least one VDU in each VNFD!");
       for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
         if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
           throw new NotFoundException("You should specify at least one VNFC in each VDU!");
+      }
+      if (vnfd.getVirtual_link() != null) {
+        for (InternalVirtualLink vl : vnfd.getVirtual_link()) {
+          if (vl.getName() == null || Objects.equals(vl.getName(), ""))
+            throw new NotFoundException(
+                "The vnfd: " + vnfd.getName() + " has a virtual link with no name specified");
+        }
       }
 
       int i = 1;
