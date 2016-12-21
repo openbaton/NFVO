@@ -17,14 +17,11 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.io.Serializable;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-/**
- * Created by lto on 13/08/15.
- */
+/** Created by lto on 13/08/15. */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Endpoint implements Serializable {

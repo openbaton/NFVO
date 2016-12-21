@@ -19,9 +19,7 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP;
 
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class CPNodeTemplate {
 
   private String name = null;
@@ -29,7 +27,7 @@ public class CPNodeTemplate {
   private CPProperties properties = null;
   private CPRequirements requirements = null;
 
-  public CPNodeTemplate(NodeTemplate nodeTemplate, String name) {
+  public CPNodeTemplate(NodeTemplate nodeTemplate) {
     this.type = nodeTemplate.getType();
 
     if (nodeTemplate.getProperties() != null) {

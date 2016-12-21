@@ -17,6 +17,9 @@
 
 package org.openbaton.vim.drivers.interfaces;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
@@ -27,18 +30,10 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimDriverException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by lto on 12/05/15.
- */
+/** Created by lto on 12/05/15. */
 public interface ClientInterfaces {
 
-  /**
-   * This version must match the version of the plugin...
-   */
+  /** This version must match the version of the plugin... */
   String interfaceVersion = "1.0";
 
   Server launchInstance(

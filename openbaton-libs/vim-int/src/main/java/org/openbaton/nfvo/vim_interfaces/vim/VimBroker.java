@@ -20,12 +20,10 @@ package org.openbaton.nfvo.vim_interfaces.vim;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
 
-/**
- * Created by lto on 20/05/15.
- */
+/** Created by lto on 20/05/15. */
 public interface VimBroker {
   void addClient(ClientInterfaces client, String type);
 

@@ -19,6 +19,7 @@ package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.*;
+import java.io.IOException;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -34,12 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 
-import java.io.IOException;
-import java.util.Properties;
-
-/**
- * Created by lto on 28/05/15.
- */
+/** Created by lto on 28/05/15. */
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
 @ConfigurationProperties
@@ -70,8 +66,6 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
     vnfmHelper = (VnfmHelper) context.getBean("vnfmSpringHelperRabbit");
     super.setup();
   }
-
-  protected abstract void checkEmsStarted(String hostname) throws RuntimeException;
 
   @Override
   protected void unregister() {

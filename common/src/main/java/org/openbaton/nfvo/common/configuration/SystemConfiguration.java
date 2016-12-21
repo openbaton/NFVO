@@ -32,9 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-/**
- * Created by lto on 10/11/15.
- */
+/** Created by lto on 10/11/15. */
 @Configuration
 @ConfigurationProperties
 public class SystemConfiguration {

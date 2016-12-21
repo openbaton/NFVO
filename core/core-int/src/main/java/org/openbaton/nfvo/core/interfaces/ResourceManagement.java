@@ -17,6 +17,10 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -25,17 +29,10 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface ResourceManagement {
   /**
    * This operation allows requesting the instantiation and assignment of a virtualised resource to
@@ -47,14 +44,11 @@ public interface ResourceManagement {
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimDriverException, ExecutionException, InterruptedException, VimException,
-          PluginException;
+      throws ExecutionException, InterruptedException, VimException, PluginException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
    * instantiated virtualised resource.
-   *
-   * @param vimInstance
    */
   List<Server> query(VimInstance vimInstance) throws VimException, PluginException;
 
@@ -122,6 +116,6 @@ public interface ResourceManagement {
       VNFComponent componentToAdd,
       VimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, VimException, VimDriverException,
-          PluginException;
+      throws InterruptedException, ExecutionException, PluginException, VimException,
+          VimDriverException;
 }

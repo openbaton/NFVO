@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by lto on 16/06/15.
- */
+/** Created by lto on 16/06/15. */
 @Service
 @Scope
 public class VNFFGManagement implements org.openbaton.nfvo.core.interfaces.VNFFGManagement {

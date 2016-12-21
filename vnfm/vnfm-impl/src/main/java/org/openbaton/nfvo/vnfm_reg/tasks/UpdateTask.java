@@ -17,17 +17,14 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import java.util.Date;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
-/**
- * Created by lto on 06/08/15.
- */
+/** Created by lto on 06/08/15. */
 @Service
 @Scope("prototype")
 public class UpdateTask extends AbstractTask {

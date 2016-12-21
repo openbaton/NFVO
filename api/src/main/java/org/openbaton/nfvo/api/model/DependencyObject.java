@@ -16,9 +16,7 @@
 
 package org.openbaton.nfvo.api.model;
 
-/**
- * Created by mob on 12.04.16.
- */
+/** Created by mob on 12.04.16. */
 public class DependencyObject {
   private String source;
   private String target;

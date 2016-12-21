@@ -18,7 +18,21 @@
 package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
-
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -91,32 +105,14 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 08/07/15.
- */
+/** Created by lto on 08/07/15. */
 @Service
 @Scope
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 @ConfigurationProperties
 public class VnfmManager
-    implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware,
+    implements org.openbaton.vnfm.interfaces.manager.VnfmManager,
+        ApplicationEventPublisherAware,
         ApplicationListener<EventFinishNFVO> {
 
   private static Map<String, Map<String, Integer>> vnfrNames;
@@ -245,9 +241,7 @@ public class VnfmManager
     log.debug("Running VnfmManager init");
 
     vnfrNames = new LinkedHashMap<>();
-    /**
-     * Asynchronous thread executor configuration
-     */
+    /** Asynchronous thread executor configuration */
     this.asyncExecutor = new ThreadPoolTaskExecutor();
 
     this.asyncExecutor.setThreadNamePrefix("OpenbatonTask-");

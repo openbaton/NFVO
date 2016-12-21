@@ -17,15 +17,11 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 
-import java.io.IOException;
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 01/07/15.
- */
+/** Created by lto on 01/07/15. */
 public interface EventSender {
   Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event);
 }

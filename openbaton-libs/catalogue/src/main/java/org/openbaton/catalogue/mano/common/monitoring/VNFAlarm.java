@@ -17,15 +17,13 @@
 
 package org.openbaton.catalogue.mano.common.monitoring;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by mob on 21.01.16.
- */
+/** Created by mob on 21.01.16. */
 @Entity
 public class VNFAlarm extends Alarm {
 

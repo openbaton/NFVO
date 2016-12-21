@@ -19,18 +19,15 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 
-/**
- * Created by lto on 01/07/15.
- */
+/** Created by lto on 01/07/15. */
 
 /**
  * This class is in charge of registering and deregistering endpoint for event dispatching.
- * <p/>
- * An external application can register to a specific event sending an EndpointEvent through JMS or
- * Rest.
+ *
+ * <p>An external application can register to a specific event sending an EndpointEvent through JMS
+ * or Rest.
  */
 public interface EventDispatcher {
   EventEndpoint register(String endpoint_json) throws MissingParameterException;

@@ -17,6 +17,10 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -41,14 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-/**
- * Created by mob on 03.12.15.
- */
+/** Created by mob on 03.12.15. */
 @Service
 @Scope("prototype")
 public class HealTask extends AbstractTask {
@@ -207,9 +204,7 @@ public class HealTask extends AbstractTask {
       log.debug("Dependency updated: " + dependency);
       //----
 
-      /**
-       * Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH
-       */
+      /** Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH */
       vnfrToNotify.setStatus(Status.INITIALIZED);
       vnfrToNotify = vnfrRepository.save(vnfrToNotify);
       VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());

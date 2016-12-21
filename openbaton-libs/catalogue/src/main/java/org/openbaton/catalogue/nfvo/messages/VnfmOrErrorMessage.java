@@ -20,9 +20,7 @@ package org.openbaton.catalogue.nfvo.messages;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
-/**
- * Created by lto on 26/01/16.
- */
+/** Created by lto on 26/01/16. */
 public class VnfmOrErrorMessage extends VnfmOrMessage {
   private String nsrId;
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;

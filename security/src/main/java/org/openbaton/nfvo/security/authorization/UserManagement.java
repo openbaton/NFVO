@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.security.authorization;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -25,6 +28,7 @@ import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 import org.openbaton.nfvo.repositories.UserRepository;
+import org.openbaton.nfvo.security.authorization.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +43,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-/**
- * Created by lto on 25/02/16.
- */
+/** Created by lto on 25/02/16. */
 @Service
 @ConfigurationProperties
 public class UserManagement implements org.openbaton.nfvo.security.interfaces.UserManagement {
@@ -74,7 +72,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
     checkIntegrity(user);
 
-    checkPasswordIntegrity(user.getPassword());
+    if (checkStrength) Utils.checkPasswordIntegrity(user.getPassword());
 
     String[] roles = new String[user.getRoles().size()];
 
@@ -166,22 +164,35 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public void changePassword(String oldPwd, String newPwd)
       throws UnauthorizedUserException, PasswordWeakException {
     log.debug("Got old password: " + oldPwd);
-    checkPasswordIntegrity(newPwd);
+    if (checkStrength) Utils.checkPasswordIntegrity(newPwd);
     userDetailsManager.changePassword(oldPwd, newPwd);
   }
 
-  public void checkPasswordIntegrity(String password) throws PasswordWeakException {
-    if (checkStrength) {
-      if (password.length() < 8
-          || !(password.matches("(?=.*[A-Z]).*")
-              && password.matches("(?=.*[a-z]).*")
-              && password.matches("(?=.*[0-9]).*"))) {
-        throw new PasswordWeakException(
-            "The chosen password is too weak. Password must be at least 8 chars and contain one lower case letter, "
-                + "one "
-                + "upper case letter and one digit");
-      }
+  @Override
+  public User changePasswordOf(String userName, String newPwd)
+      throws PasswordWeakException, NotFoundException {
+    User user = userRepository.findFirstByUsername(userName);
+    if (user == null) throw new NotFoundException("Not found user " + userName);
+    if (checkStrength) Utils.checkPasswordIntegrity(newPwd);
+    user.setPassword(BCrypt.hashpw(newPwd, BCrypt.gensalt(12)));
+
+    String[] roles = new String[user.getRoles().size()];
+
+    Role[] objects = user.getRoles().toArray(new Role[0]);
+    for (int i = 0; i < user.getRoles().size(); i++) {
+      roles[i] = objects[i].getRole() + ":" + objects[i].getProject();
     }
+    org.springframework.security.core.userdetails.User userToUpdate =
+        new org.springframework.security.core.userdetails.User(
+            userName,
+            user.getPassword(),
+            user.isEnabled(),
+            true,
+            true,
+            true,
+            AuthorityUtils.createAuthorityList(roles));
+    userDetailsManager.updateUser(userToUpdate);
+    return userRepository.save(user);
   }
 
   public void checkIntegrity(User user)

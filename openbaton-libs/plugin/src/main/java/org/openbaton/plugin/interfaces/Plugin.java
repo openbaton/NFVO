@@ -17,28 +17,19 @@
 
 package org.openbaton.plugin.interfaces;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-/**
- * Created by mpa on 26.10.15.
- */
+/** Created by mpa on 26.10.15. */
 public abstract class Plugin {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   protected Properties properties;
-
-  protected Plugin() {
-    super();
-    //        loadProperties();
-  }
 
   public void loadProperties() {
     properties = new Properties();

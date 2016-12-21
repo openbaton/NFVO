@@ -17,26 +17,23 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.*;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Created by rvl on 19.10.16.
- */
+/** Created by rvl on 19.10.16. */
 @Service
 public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginManager {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.plugin.active.consumers:10}")
   private String numConsumers;
@@ -111,9 +108,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         }
       }
     } finally {
-      if (out != null) {
-        out.flush();
-      }
+      out.flush();
     }
 
     startPlugin(path, name);
@@ -131,7 +126,8 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         username,
         password,
         "" + managementPort,
-        pluginLogPath);
+        pluginLogPath,
+        waitForPlugin);
   }
 
   @Override

@@ -17,14 +17,10 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NetworkServiceLifecycleManagement {
 
-  /**
-   * This operation allows instantiating a Network Service.
-   */
+  /** This operation allows instantiating a Network Service. */
   void instantiate();
 
   /**
@@ -33,19 +29,13 @@ public interface NetworkServiceLifecycleManagement {
    */
   void terminate();
 
-  /**
-   * This operation allows retrieving Network Service instance attributes.
-   */
+  /** This operation allows retrieving Network Service instance attributes. */
   void query();
 
-  /**
-   * This operation allows scaling a Network Service instance.
-   */
+  /** This operation allows scaling a Network Service instance. */
   void scale();
 
-  /**
-   * This operation allows updating a Network Service instance.
-   */
+  /** This operation allows updating a Network Service instance. */
   void update();
 
   /**
@@ -60,9 +50,7 @@ public interface NetworkServiceLifecycleManagement {
    */
   void deleteVNFFG();
 
-  /**
-   * This operation allows retrieving VNFFG instance attributes.
-   */
+  /** This operation allows retrieving VNFFG instance attributes. */
   void queryVNFFG();
 
   /**
@@ -71,23 +59,15 @@ public interface NetworkServiceLifecycleManagement {
    */
   void updateVNFFG();
 
-  /**
-   * This operation allows creating a new VL for a given Network Service instance.
-   */
+  /** This operation allows creating a new VL for a given Network Service instance. */
   void createVL();
 
-  /**
-   * This operation allows deleting an existing VL within a Network Service instance.
-   */
+  /** This operation allows deleting an existing VL within a Network Service instance. */
   void deleteVL();
 
-  /**
-   * This operation allows updating an existing VL for a given Network Service instance.
-   */
+  /** This operation allows updating an existing VL for a given Network Service instance. */
   void updateVL();
 
-  /**
-   * This operation allows retrieving VL instance attributes.
-   */
+  /** This operation allows retrieving VL instance attributes. */
   void queryVL();
 }

@@ -17,9 +17,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NetworkServicePerformanceManagement {
 
   /**
@@ -27,8 +25,6 @@ public interface NetworkServicePerformanceManagement {
    */
   void getPerformanceMeasurementResults();
 
-  /**
-   * This operation allows providing performance notifications on Network Services.
-   */
+  /** This operation allows providing performance notifications on Network Services. */
   void notifyPerformance();
 }

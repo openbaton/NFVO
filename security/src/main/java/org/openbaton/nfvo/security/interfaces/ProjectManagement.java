@@ -24,48 +24,31 @@ import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 
-/**
- * Created by lto on 24/05/16.
- */
+/** Created by lto on 24/05/16. */
 public interface ProjectManagement {
-  /**
-   *
-   * @param project
-   */
+  /** @param project */
   Project add(Project project);
 
-  /**
-   *
-   * @param project
-   */
+  /** @param project */
   void delete(Project project)
       throws EntityInUseException, NotAllowedException, BadRequestException, NotFoundException;
 
-  /**
-   *
-   * @param new_project
-   */
+  /** @param new_project */
   Project update(Project new_project) throws NotAllowedException, NotFoundException;
 
-  /**
-   */
+  /** */
   Iterable<Project> query();
 
-  /**
-   *
-   * @param id
-   */
+  /** @param id */
   Project query(String id) throws NotFoundException;
 
   /**
-   *
    * @param name
    * @return
    */
   Project queryByName(String name);
 
   /**
-   *
    * @param user
    * @return all Projects assigned to the User
    */

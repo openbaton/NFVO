@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.io.Serializable;
+import java.util.Map;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 
-import java.io.Serializable;
-import java.util.Map;
-
-/**
- * Created by lorenzo on 5/30/15.
- */
+/** Created by lorenzo on 5/30/15. */
 public class CoreMessage implements Serializable {
 
   private Action action;

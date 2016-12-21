@@ -17,9 +17,7 @@
 
 package org.openbaton.tosca.templates;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class TOSCAMetadata {
 
   private String ID;

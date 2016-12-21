@@ -17,30 +17,24 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.WrongStatusException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NetworkServiceRecordManagement {
 
   /**
@@ -49,9 +43,8 @@ public interface NetworkServiceRecordManagement {
    */
   NetworkServiceRecord onboard(
       String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException;
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -63,17 +56,12 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException;
+      throws VimException, PluginException, NotFoundException, MissingParameterException,
+          BadRequestException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
    * and VLD.This update might include creating/deleting new VNFFGDs and/or new VLDs.
-   *
-   * @param new_nsd
-   * @param old_id
-   * @param projectId
    */
   NetworkServiceRecord update(NetworkServiceRecord new_nsd, String old_id, String projectId)
       throws NotFoundException;
@@ -95,22 +83,11 @@ public interface NetworkServiceRecordManagement {
 
   NetworkServiceRecord query(String id, String projectId);
 
-  /**
-   * This operation is used to remove a Network Service Record.
-   *
-   * @param id
-   * @param projectId
-   */
+  /** This operation is used to remove a Network Service Record. */
   void delete(String id, String projectId) throws NotFoundException, WrongStatusException;
 
-  /**
-   * This operation is used to resume a failed Network Service Record.
-   *
-   * @param id
-   * @param projectId
-   */
-  void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException;
+  /** This operation is used to resume a failed Network Service Record. */
+  void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId);
 
@@ -119,7 +96,6 @@ public interface NetworkServiceRecordManagement {
    *
    * @param idNsr of Nsr
    * @param idVnf of VirtualNetworkFunctionRecord
-   * @param projectId
    * @return VirtualNetworkFunctionRecord selected
    */
   VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
@@ -130,7 +106,6 @@ public interface NetworkServiceRecordManagement {
    *
    * @param idNsr of NSR
    * @param idVnfd of VNFDependency
-   * @param projectId
    */
   void deleteVNFDependency(String idNsr, String idVnfd, String projectId);
 
@@ -141,8 +116,6 @@ public interface NetworkServiceRecordManagement {
    * @param id of the NetworkServiceRecord
    * @param idVnf of the VirtualNetworkFunctionRecord
    * @param idVdu of the VirtualDeploymentUnit chosen
-   * @param component
-   * @param projectId
    * @return the new VNFCInstance
    */
   void addVNFCInstance(
@@ -152,14 +125,6 @@ public interface NetworkServiceRecordManagement {
   /**
    * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
    * VirtualNetworkFunctionRecord. The VirtualDeploymentUnit is randomly chosen
-   *
-   * @param id
-   * @param idVnf
-   * @param component
-   * @param projectId
-   * @throws NotFoundException
-   * @throws BadFormatException
-   * @throws WrongStatusException
    */
   void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException;
@@ -167,10 +132,6 @@ public interface NetworkServiceRecordManagement {
   /**
    * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualNetworkFunctionRecord. VirtualDeploymentUnit will be randomly chosen.
-   *
-   * @param id
-   * @param idVnf
-   * @param projectId
    */
   void deleteVNFCInstance(String id, String idVnf, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
@@ -179,12 +140,6 @@ public interface NetworkServiceRecordManagement {
   /**
    * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
-   *
-   * @param id
-   * @param idVnf
-   * @param idVdu
-   * @param idVNFCI
-   * @param projectId
    */
   void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
@@ -193,14 +148,6 @@ public interface NetworkServiceRecordManagement {
   /**
    * This method will start a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
-   *
-   * @param id
-   * @param idVnf
-   * @param idVdu
-   * @param idVNFCI
-   * @param projectId
-   * @throws NotFoundException
-   * @throws WrongStatusException
    */
   void startVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
       throws NotFoundException, WrongStatusException;
@@ -208,14 +155,6 @@ public interface NetworkServiceRecordManagement {
   /**
    * This method will stop a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
-   *
-   * @param id
-   * @param idVnf
-   * @param idVdu
-   * @param idVNFCI
-   * @param projectId
-   * @throws NotFoundException
-   * @throws WrongStatusException
    */
   void stopVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
       throws NotFoundException, WrongStatusException;

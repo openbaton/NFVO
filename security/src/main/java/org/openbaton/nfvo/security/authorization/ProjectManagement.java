@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.security.authorization;
 
+import java.util.*;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
@@ -28,23 +29,15 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
-import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
-/**
- * Created by lto on 24/05/16.
- */
+/** Created by lto on 24/05/16. */
 @Service
 public class ProjectManagement implements org.openbaton.nfvo.security.interfaces.ProjectManagement {
 
@@ -134,7 +127,6 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
   }
 
   /**
-   *
    * @param user
    * @return all Projects assigned to the User
    */

@@ -17,9 +17,11 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.util.Arrays;
+import java.util.Date;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.catalogue.security.User;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.HistoryEntityRepository;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -29,14 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 17/10/16.
- */
+/** Created by lto on 17/10/16. */
 @Service
 public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.HistoryManagement {
 
@@ -49,7 +44,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
   @Value("${nfvo.history.level:1}")
   private int historyLevel;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Value("${nfvo.history.clear:false}")
   private boolean clearHistory;
@@ -63,7 +58,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
   }
 
   @Override
-  public void addAction(String method, String path, String result) throws NotFoundException {
+  public void addAction(String method, String path, String result) {
 
     if (historyLevel > 0) {
       if ((historyLevel == 1 && (method.equalsIgnoreCase("get") || method.equalsIgnoreCase("put")))

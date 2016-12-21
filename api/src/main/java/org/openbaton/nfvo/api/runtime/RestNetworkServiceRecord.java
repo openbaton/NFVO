@@ -18,8 +18,12 @@ package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -35,9 +39,9 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -59,13 +63,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/api/v1/ns-records")
 public class RestNetworkServiceRecord {
@@ -81,7 +78,7 @@ public class RestNetworkServiceRecord {
    *
    * @param networkServiceDescriptor : the Network Service Descriptor to be created
    * @return NetworkServiceRecord: the Network Service Descriptor filled with id and values from
-   * core
+   *     core
    */
   @RequestMapping(
     method = RequestMethod.POST,
@@ -110,12 +107,13 @@ public class RestNetworkServiceRecord {
    * @param id of the NSR
    * @param projectId if of the project
    * @param jsonObject the body json is: { "vduVimInstances":{ "vduName1":["viminstancename"],
-   * "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
-   * "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1", "value":"value1",
-   * "description":"description1"}, {"confKey":"key2", "value":"value2",
-   * "description":"description2"}]}, "vnfrName2":{"name":"conf2",
-   * "configurationParameters":[{"confKey":"key1", "value":"value1", "description":"description1"},
-   * {"confKey":"key2", "value":"value2", "description":"description2"}]} } }
+   *     "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
+   *     "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1",
+   *     "value":"value1", "description":"description1"}, {"confKey":"key2", "value":"value2",
+   *     "description":"description2"}]}, "vnfrName2":{"name":"conf2",
+   *     "configurationParameters":[{"confKey":"key1", "value":"value1",
+   *     "description":"description1"}, {"confKey":"key2", "value":"value2",
+   *     "description":"description2"}]} } }
    * @return the created NSR
    * @throws InterruptedException
    * @throws ExecutionException
@@ -261,7 +259,7 @@ public class RestNetworkServiceRecord {
    *
    * @param id of NSD
    * @return Set<VirtualNetworkFunctionDescriptor>: List of VirtualNetworkFunctionDescriptor into
-   * NSD
+   *     NSD
    */
   @RequestMapping(
     value = "{id}/vnfrecords",

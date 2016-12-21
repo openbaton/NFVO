@@ -18,11 +18,15 @@
 package org.openbaton.tosca.tests;
 
 import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
 import org.junit.Test;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.tosca.exceptions.NotFoundException;
-import org.openbaton.tosca.exceptions.NotSupportedType;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.CP.CPNodeTemplate;
@@ -34,19 +38,11 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-
-/**
- * Created by rvl on 16.08.16.
- */
+/** Created by rvl on 16.08.16. */
 public class ToscaTest {
 
   @Test
-  public void testVNFDTemplate() throws FileNotFoundException, NotSupportedType {
+  public void testVNFDTemplate() throws FileNotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -62,8 +58,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testGetNodesFromVNFDTemplate()
-      throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testGetNodesFromVNFDTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -81,7 +76,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testGettingVDUNodes() throws FileNotFoundException, NotSupportedType {
+  public void testGettingVDUNodes() throws FileNotFoundException {
 
     InputStream cpFile =
         new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
@@ -101,7 +96,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testGettingVLNodes() throws FileNotFoundException, NotSupportedType {
+  public void testGettingVLNodes() throws FileNotFoundException {
 
     InputStream cpFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -121,7 +116,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testTopologyTemplate() throws NotSupportedType, FileNotFoundException {
+  public void testTopologyTemplate() throws FileNotFoundException {
 
     InputStream cpFile =
         new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
@@ -137,7 +132,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testGettingCPNodes() throws NotSupportedType, FileNotFoundException {
+  public void testGettingCPNodes() throws FileNotFoundException {
 
     InputStream cpFile =
         new FileInputStream(new File("src/main/resources/Testing/testTopologyTemplate.yaml"));
@@ -157,8 +152,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testCreatingVNFDInstance()
-      throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testCreatingVNFDInstance() throws FileNotFoundException, NotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/testVNFDTemplate.yaml"));
@@ -179,8 +173,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testVNFDServerIperf()
-      throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testVNFDServerIperf() throws NotFoundException, FileNotFoundException {
 
     InputStream vnfdFile =
         new FileInputStream(new File("src/main/resources/Testing/vnfd_server_iperf.yaml"));
@@ -200,8 +193,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testNSDIperfTemplate()
-      throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testNSDIperfTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/testNSDIperf.yaml"));
@@ -222,7 +214,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testMultipleVLs() throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testMultipleVLs() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/tosca-ns-example.yaml"));
@@ -243,8 +235,7 @@ public class ToscaTest {
   }
 
   @Test
-  public void testNSDIperfASTemplate()
-      throws FileNotFoundException, NotSupportedType, NotFoundException {
+  public void testNSDIperfASTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =
         new FileInputStream(new File("src/main/resources/Testing/testNSDIperfAutoscaling.yaml"));

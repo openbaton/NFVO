@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.common.utils.jms;
 
+import java.io.Serializable;
 import org.openbaton.nfvo.common.interfaces.Sender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import java.io.Serializable;
-
-/**
- * Created by tce on 13.08.15.
- */
+/** Created by tce on 13.08.15. */
 @Service
 @Scope
 public class RabbitSender implements Sender {

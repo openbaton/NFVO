@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.api.interceptors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openbaton.nfvo.core.interfaces.HistoryManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-/**
- * Created by lto on 17/10/16.
- */
+/** Created by lto on 17/10/16. */
 @Service
 public class HistoryInterceptor extends HandlerInterceptorAdapter {
 

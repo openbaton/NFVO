@@ -17,6 +17,14 @@
 
 package org.openbaton.nfvo.core.test;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.NoResultException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
@@ -26,10 +34,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.*;
@@ -39,18 +44,7 @@ import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.NoResultException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 public class NetworkServiceDescriptorManagementClassSuiteTest {
 
   private static final String projectId = "project-id";
@@ -314,6 +308,15 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             VimInstance vimInstance = new VimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
+            Set<VNFComponent> vnfcs = new HashSet<VNFComponent>();
+            VNFComponent vnfc = new VNFComponent();
+            VNFDConnectionPoint vnfdConnectionPoint = new VNFDConnectionPoint();
+            vnfdConnectionPoint.setFloatingIp("random");
+            Set<VNFDConnectionPoint> cps = new HashSet<VNFDConnectionPoint>();
+            cps.add(vnfdConnectionPoint);
+            vnfc.setConnection_point(cps);
+            vnfcs.add(vnfc);
+            vdu.setVnfc(vnfcs);
             add(vdu);
           }
         });

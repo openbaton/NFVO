@@ -23,52 +23,40 @@ import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
 
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface UserManagement {
 
-  /**
-   *
-   * @param user
-   */
+  /** @param user */
   User add(User user)
       throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException;
 
-  /**
-   *
-   * @param user
-   */
+  /** @param user */
   void delete(User user) throws NotAllowedException;
 
-  /**
-   *
-   * @param new_user
-   */
+  /** @param new_user */
   User update(User new_user) throws NotAllowedException, BadRequestException, NotFoundException;
 
-  /**
-   */
+  /** */
   Iterable<User> query();
 
-  /**
-   *
-   * @param username
-   */
+  /** @param username */
   User queryByName(String username) throws NotFoundException;
 
-  /**
-   *
-   * @param id
-   */
+  /** @param id */
   User query(String id) throws NotFoundException;
 
   /**
-   *
    * @param oldPwd
    * @param newPwd
    */
   void changePassword(String oldPwd, String newPwd) throws PasswordWeakException;
+
+  /**
+   * @param userName
+   * @param newPwd
+   */
+  User changePasswordOf(String userName, String newPwd)
+      throws PasswordWeakException, NotFoundException;
 
   User getCurrentUser() throws NotFoundException;
 }

@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.events.senders;
 
 import com.google.gson.Gson;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.nfvo.core.interfaces.EventSender;
@@ -30,17 +31,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 01/07/15.
- */
+/** Created by lto on 01/07/15. */
 @Service
 @Scope
 public class RabbitEventSender implements EventSender {
 
   @Autowired private RabbitTemplate rabbitTemplate;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   @Async

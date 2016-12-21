@@ -17,7 +17,11 @@
 package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -48,13 +52,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/api/v1/ns-descriptors")
 public class RestNetworkServiceDescriptor {
@@ -69,7 +66,7 @@ public class RestNetworkServiceDescriptor {
    *
    * @param networkServiceDescriptor : the Network Service Descriptor to be created
    * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
-   * core
+   *     core
    */
   @RequestMapping(
     method = RequestMethod.POST,
@@ -93,7 +90,7 @@ public class RestNetworkServiceDescriptor {
    *
    * @param link : link to the Network Service Descriptor to be created
    * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
-   * core
+   *     core
    */
   @RequestMapping(
     value = "/marketdownload",
@@ -197,7 +194,7 @@ public class RestNetworkServiceDescriptor {
    *
    * @param id : The id of NSD
    * @return List<VirtualNetworkFunctionDescriptor>: The List of VirtualNetworkFunctionDescriptor
-   * into NSD @
+   *     into NSD @
    */
   @RequestMapping(
     value = "{id}/vnfdescriptors",
@@ -343,7 +340,7 @@ public class RestNetworkServiceDescriptor {
    *
    * @param id : The id of NSD
    * @return List<PhysicalNetworkFunctionDescriptor>: The List of PhysicalNetworkFunctionDescriptor
-   * into NSD @
+   *     into NSD @
    */
   @RequestMapping(
     value = "{id}/pnfdescriptors",

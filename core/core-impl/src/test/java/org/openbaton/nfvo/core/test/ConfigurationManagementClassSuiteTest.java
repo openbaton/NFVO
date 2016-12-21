@@ -17,41 +17,38 @@
 
 package org.openbaton.nfvo.core.test;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.catalogue.mano.common.ResiliencyLevel;
-import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 public class ConfigurationManagementClassSuiteTest {
 
   private static final String projectId = "project-id";
 
   @Rule public ExpectedException exception = ExpectedException.none();
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private ConfigurationManagement configurationManagement;
 

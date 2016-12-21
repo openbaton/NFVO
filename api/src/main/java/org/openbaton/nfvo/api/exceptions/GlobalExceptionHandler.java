@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.api.exceptions;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
+import javax.persistence.NoResultException;
 import org.openbaton.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +33,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.persistence.NoResultException;
-
-/**
- * Created by gca on 27/08/15.
- */
+/** Created by gca on 27/08/15. */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 

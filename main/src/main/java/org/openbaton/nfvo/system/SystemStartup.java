@@ -17,10 +17,17 @@
 
 package org.openbaton.nfvo.system;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.*;
+import java.util.Map.Entry;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +38,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.*;
-import java.util.Map.Entry;
-
-/**
- * Created by lto on 12/05/15.
- */
+/** Created by lto on 12/05/15. */
 @Service
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @ConfigurationProperties
@@ -98,9 +95,7 @@ class SystemStartup implements CommandLineRunner {
     c.setName("system");
     c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
 
-    /**
-     * Adding properties from file
-     */
+    /** Adding properties from file */
     for (Entry<Object, Object> entry : properties.entrySet()) {
       ConfigurationParameter cp = new ConfigurationParameter();
       cp.setConfKey((String) entry.getKey());
@@ -108,9 +103,7 @@ class SystemStartup implements CommandLineRunner {
       c.getConfigurationParameters().add(cp);
     }
 
-    /**
-     * Adding system properties
-     */
+    /** Adding system properties */
     Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
     for (NetworkInterface netint : Collections.list(nets)) {
       ConfigurationParameter cp = new ConfigurationParameter();

@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Created by lto on 19/10/15.
- */
+/** Created by lto on 19/10/15. */
 @RestController
 @RequestMapping("/api/v1/security")
 @ConfigurationProperties(prefix = "nfvo.security")

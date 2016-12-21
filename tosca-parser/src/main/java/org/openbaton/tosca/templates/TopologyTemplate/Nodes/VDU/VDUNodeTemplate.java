@@ -17,21 +17,18 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
-import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
-
 import java.util.HashSet;
 import java.util.Map;
+import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class VDUNodeTemplate {
 
   private String type;
   private String name;
   private HashSet<String> artifacts = new HashSet<>();
-  private Object interfaces = null;
-  private VDUProperties properties = null;
+  private Object interfaces;
+  private VDUProperties properties;
 
   public VDUNodeTemplate(NodeTemplate nodeTemplate, String name) {
 
@@ -70,7 +67,7 @@ public class VDUNodeTemplate {
   }
 
   public void setArtifacts(HashSet<String> vduArtifact) {
-    this.artifacts = artifacts;
+    this.artifacts = vduArtifact;
   }
 
   public String getName() {
@@ -87,6 +84,14 @@ public class VDUNodeTemplate {
 
   public void setProperties(VDUProperties properties) {
     this.properties = properties;
+  }
+
+  public Object getInterfaces() {
+    return interfaces;
+  }
+
+  public void setInterfaces(Object interfaces) {
+    this.interfaces = interfaces;
   }
 
   @Override

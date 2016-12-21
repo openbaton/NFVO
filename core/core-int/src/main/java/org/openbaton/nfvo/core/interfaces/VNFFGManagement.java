@@ -19,9 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 
-/**
- * Created by lto on 16/06/15.
- */
+/** Created by lto on 16/06/15. */
 public interface VNFFGManagement {
   VNFForwardingGraphDescriptor add(VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor);
 

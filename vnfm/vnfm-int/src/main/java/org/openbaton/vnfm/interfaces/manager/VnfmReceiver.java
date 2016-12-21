@@ -17,14 +17,11 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import java.util.concurrent.ExecutionException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by lto on 08/07/15.
- */
+/** Created by lto on 08/07/15. */
 public interface VnfmReceiver {
 
   String actionFinished(String nfvMessage)

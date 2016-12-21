@@ -26,9 +26,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by lto on 19/09/16.
- */
+/** Created by lto on 19/09/16. */
 @Service
 public class QuotaManagement implements org.openbaton.nfvo.core.interfaces.QuotaManagement {
   @Autowired private VimBroker vimBroker;

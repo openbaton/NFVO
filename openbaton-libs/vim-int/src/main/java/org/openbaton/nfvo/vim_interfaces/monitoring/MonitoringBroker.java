@@ -19,9 +19,7 @@ package org.openbaton.nfvo.vim_interfaces.monitoring;
 
 import org.openbaton.monitoring.interfaces.VirtualisedResourcesPerformanceManagement;
 
-/**
- * Created by lto on 05/08/15.
- */
+/** Created by lto on 05/08/15. */
 public interface MonitoringBroker {
   void addAgent(
       VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement,

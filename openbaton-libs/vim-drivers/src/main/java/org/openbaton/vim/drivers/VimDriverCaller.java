@@ -18,7 +18,16 @@
 package org.openbaton.vim.drivers;
 
 import com.google.gson.reflect.TypeToken;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
@@ -37,21 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.PreDestroy;
-
-/**
- * Created by lto on 26/11/15.
- */
+/** Created by lto on 26/11/15. */
 @Service
 @Scope("prototype")
 public class VimDriverCaller extends VimDriver {

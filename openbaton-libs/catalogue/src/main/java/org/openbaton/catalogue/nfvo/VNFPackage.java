@@ -17,12 +17,9 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -32,10 +29,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 22/07/15.
- */
+/** Created by lto on 22/07/15. */
 @Entity
 public class VNFPackage implements Serializable {
 

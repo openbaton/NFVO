@@ -20,13 +20,13 @@ package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
-import org.openbaton.nfvo.common.configuration.GsonDeserializerNFVMessage;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -40,11 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by lto on 26/05/15.
- */
+/** Created by lto on 26/05/15. */
 @RestController
 @RequestMapping("/admin/v1/")
 public class VnfmReceiverRest implements VnfmReceiver {

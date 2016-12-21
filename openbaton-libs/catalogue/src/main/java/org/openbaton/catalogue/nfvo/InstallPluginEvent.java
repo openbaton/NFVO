@@ -19,9 +19,7 @@ package org.openbaton.catalogue.nfvo;
 
 import java.util.List;
 
-/**
- * Created by lto on 21/07/15.
- */
+/** Created by lto on 21/07/15. */
 public class InstallPluginEvent {
   private String path;
   private String type;

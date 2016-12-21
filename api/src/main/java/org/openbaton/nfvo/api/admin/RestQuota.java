@@ -18,7 +18,6 @@ package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.QuotaManagement;
@@ -28,9 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Created by lto on 19/09/16.
- */
+/** Created by lto on 19/09/16. */
 @RestController
 @RequestMapping("/api/v1/quotas")
 public class RestQuota {
@@ -39,7 +36,6 @@ public class RestQuota {
   @Autowired private QuotaManagement quotaManagement;
 
   /**
-   *
    * @param projectId
    * @return { "total":{quota object}, "left":{quota object} }
    */

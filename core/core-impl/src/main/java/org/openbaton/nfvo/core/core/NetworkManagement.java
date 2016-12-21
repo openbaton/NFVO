@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
@@ -31,17 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Created by mpa on 24.06.15.
- */
+/** Created by mpa on 24.06.15. */
 @Service
 @Scope
 public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.NetworkManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VimBroker vimBroker;
 

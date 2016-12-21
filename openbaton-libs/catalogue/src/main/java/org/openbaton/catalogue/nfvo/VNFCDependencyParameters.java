@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Map;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 21/08/15.
- */
+/** Created by lto on 21/08/15. */
 @Entity
 public class VNFCDependencyParameters implements Serializable {
   private String vnfcId;

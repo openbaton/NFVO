@@ -17,11 +17,8 @@
 
 package org.openbaton.catalogue.security;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import org.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 @Table(name = "USERS")

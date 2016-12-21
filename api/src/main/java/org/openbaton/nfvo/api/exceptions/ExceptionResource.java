@@ -18,9 +18,7 @@ package org.openbaton.nfvo.api.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * Created by gca on 28/08/15.
- */
+/** Created by gca on 28/08/15. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExceptionResource {
 

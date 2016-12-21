@@ -17,6 +17,8 @@
 
 package org.openbaton.vim_impl.vim;
 
+import java.util.*;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -33,12 +35,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 12/05/15.
- */
+/** Created by lto on 12/05/15. */
 @Service
 @Scope("prototype")
 public class OpenstackVIM extends GenericVIM {
@@ -356,9 +353,7 @@ public class OpenstackVIM extends GenericVIM {
     log.debug("VDU is : " + vdu.toString());
     log.debug("VNFR is : " + vnfr.toString());
     log.debug("VNFC is : " + vnfComponent.toString());
-    /**
-     * *) choose image *) ...?
-     */
+    /** *) choose image *) ...? */
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
@@ -379,7 +374,7 @@ public class OpenstackVIM extends GenericVIM {
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
-    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 1000));
+    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 10000000));
     log.debug("Generated Hostname: " + hostname);
 
     userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);

@@ -18,7 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
-
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -30,11 +30,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 03/06/15.
- */
+/** Created by lto on 03/06/15. */
 @Service
 @Scope
 public class RestVnfmSender implements VnfmSender {
