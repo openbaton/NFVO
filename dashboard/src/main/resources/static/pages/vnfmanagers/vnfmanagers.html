@@ -42,9 +42,10 @@
                 <tr>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'type'; reverse = !reverse">type <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'endpointType'; reverse = !reverse">endpointType <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'endpoint'; reverse = !reverse">endpoint <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'endpointType'; reverse = !reverse">Endpoint Type <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'endpoint'; reverse = !reverse">Endpoint <i class="fa fa-sort"></i></th>
+                    <th>Enabled</th>
 
                 </tr>
                 </thead>
@@ -55,6 +56,7 @@
                     <td>{{data.type}}</td>
                     <td>{{data.endpointType}}</td>
                     <td>{{data.endpoint}}</td>
+                    <td>{{data.enabled}}</td>
                 </tr>
                 </tbody>
             </table>

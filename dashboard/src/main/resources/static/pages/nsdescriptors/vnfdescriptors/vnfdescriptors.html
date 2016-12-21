@@ -33,8 +33,8 @@
 		<button id="deleteMultiple" href="#" ng-disabled="multipleDelete" class="btn btn-danger pull-right" ng-style="{'margin-left':'25px'}"
 			title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
         </button>
-		<button id="btn_create_nsd" href="#" class="btn btn-primary pull-right" title="Add a new Virtuan Networck Function Descriptor"
-			data-toggle="modal" ng-click="addVNFD()">Add a new VNFD
+		<button id="btn_create_vnfd" href="#" class="btn btn-primary pull-right" title="Add a new Virtuan Networck Function Descriptor"
+			data-toggle="modal" ng-click="addVNFD()">Create a new VNFD
         </button>
 	</div>
 </div>
@@ -90,7 +90,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Add/Edit a Virtual Network Function Descriptor</h4>
+				<h4 class="modal-title">Create a Virtual Network Function Descriptor</h4>
 
 			</div>
 			<div class="modal-body">
@@ -107,7 +107,7 @@
 
 					</div-->
 					<div class="form-group">
-						<label for="dendor" class="col-sm-4 control-label">Vendor</label>
+						<label for="Vendor" class="col-sm-4 control-label">Vendor</label>
 
 						<div class="col-sm-6">
 							<input type="text" class="form-control" id="vendor" ng-model="vnfdCreate.vendor" />
