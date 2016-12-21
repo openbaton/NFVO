@@ -25,10 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.NoResultException;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -96,7 +93,6 @@ public class NetworkServiceDescriptorManagement
           CyclicDependenciesException, EntityInUseException {
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
-    UrlValidator urlValidator = new UrlValidator();
 
     nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
     if (networkServiceDescriptor.getVnfd().size() == 0)
@@ -109,55 +105,6 @@ public class NetworkServiceDescriptorManagement
       }
     }
 
-    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      vnfd.setProjectId(projectId);
-
-      if (vnfd.getEndpoint() == null) {
-        throw new NotFoundException("VNFD should specify an endpoint!");
-      }
-      if (vnfd.getVdu() == null || vnfd.getVdu().size() == 0)
-        throw new NotFoundException("You should specify at least one VDU in each VNFD!");
-      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
-          throw new NotFoundException("You should specify at least one VNFC in each VDU!");
-      }
-      if (vnfd.getVirtual_link() != null) {
-        for (InternalVirtualLink vl : vnfd.getVirtual_link()) {
-          if (vl.getName() == null || Objects.equals(vl.getName(), ""))
-            throw new NotFoundException(
-                "The vnfd: " + vnfd.getName() + " has a virtual link with no name specified");
-        }
-      }
-
-      int i = 1;
-      for (VirtualDeploymentUnit virtualDeploymentUnit : vnfd.getVdu()) {
-        if (virtualDeploymentUnit.getName() == null) {
-          virtualDeploymentUnit.setName(vnfd.getName() + "-" + i);
-          i++;
-        }
-        virtualDeploymentUnit.setProjectId(projectId);
-      }
-      if (vnfd.getLifecycle_event() != null)
-        for (LifecycleEvent event : vnfd.getLifecycle_event()) {
-          if (event == null) {
-            throw new NotFoundException("LifecycleEvent is null");
-          } else if (event.getEvent() == null) {
-            throw new NotFoundException("Event in one LifecycleEvent does not exist");
-          }
-        }
-      if (vnfd.getEndpoint() == null) vnfd.setEndpoint(vnfd.getType());
-      if (vnfd.getVnfPackageLocation() != null) {
-        if (urlValidator.isValid(vnfd.getVnfPackageLocation())) { // this is a script link
-          VNFPackage vnfPackage = new VNFPackage();
-          vnfPackage.setScriptsLink(vnfd.getVnfPackageLocation());
-          vnfPackage.setName(vnfd.getName());
-          vnfPackage.setProjectId(projectId);
-          vnfPackage = vnfPackageRepository.save(vnfPackage);
-          vnfd.setVnfPackageLocation(vnfPackage.getId());
-        }
-      } else log.warn("vnfPackageLocation is null. Are you sure?");
-    }
-
     log.info("Checking if Vnfm is running...");
 
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
@@ -165,9 +112,13 @@ public class NetworkServiceDescriptorManagement
     nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Creating " + networkServiceDescriptor);
-    log.trace("Fetching Data");
-    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
-    log.trace("Fetched Data");
+    //    log.trace("Fetching Data");
+    //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
+    //    log.trace("Fetched Data");
+
+    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+      vnfd.setProjectId(projectId);
+    }
 
     log.debug("Checking integrity of NetworkServiceDescriptor");
     nsdUtils.checkIntegrity(networkServiceDescriptor);
@@ -225,7 +176,7 @@ public class NetworkServiceDescriptorManagement
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, NetworkServiceIntegrityException {
     List<String> not_found_ids = new ArrayList<>();
     List<String> vnfdIds = new ArrayList<>();
 

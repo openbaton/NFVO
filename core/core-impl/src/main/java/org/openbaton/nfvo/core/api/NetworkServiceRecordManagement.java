@@ -201,7 +201,7 @@ public class NetworkServiceRecordManagement
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
-    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
+    //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
     if (configurations == null) {
