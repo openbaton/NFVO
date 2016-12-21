@@ -31,7 +31,7 @@ public interface VNFPackageManagement {
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException;
+          AlreadyExistingException, NetworkServiceIntegrityException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -78,7 +78,7 @@ public interface VNFPackageManagement {
    */
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException;
+          NotFoundException, PluginException, NetworkServiceIntegrityException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any

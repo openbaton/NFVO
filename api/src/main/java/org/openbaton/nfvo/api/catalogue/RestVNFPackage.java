@@ -25,12 +25,7 @@ import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +68,7 @@ public class RestVNFPackage {
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          IncompatibleVNFPackage, AlreadyExistingException {
+          IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -92,7 +87,7 @@ public class RestVNFPackage {
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, NetworkServiceIntegrityException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();

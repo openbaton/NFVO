@@ -94,7 +94,7 @@ public class VNFPackageManagement
   @Override
   public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, NetworkServiceIntegrityException {
     log.info("Onboarding VNF Package...");
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
@@ -177,6 +177,7 @@ public class VNFPackageManagement
 
     vnfPackage.setImage(image);
     myTarFile.close();
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     vnfPackage.setProjectId(projectId);
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
       if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
@@ -186,9 +187,11 @@ public class VNFPackageManagement
             "A VNF with this vendor, name and version is already existing");
       }
     }
+
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
     log.trace(
@@ -552,7 +555,7 @@ public class VNFPackageManagement
 
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException {
+          NotFoundException, PluginException, NetworkServiceIntegrityException {
     log.debug("This is download link" + link);
     URL packageLink = new URL(link);
 
