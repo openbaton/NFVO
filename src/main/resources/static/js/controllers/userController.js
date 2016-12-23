@@ -306,6 +306,50 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             $scope.passwordStrong = true;
         }
     }, true);
+    $scope.newUserPassword1 = '';
+    $scope.newUserPassword2 = '';
+    $scope.newPasswordStrong = false;
+    $scope.newPasswordSame = false;
+    $scope.newPasswordStyle = {'background-color':'pink'};
+    $scope.newPasswordRepeat = {'background-color':'pink'};
+    $scope.$watchGroup(["newUserPassword1", "newUserPassword2"], function(newValue, oldValue) {
+        if ($scope.newUserPassword1.length < 8 || !(/[a-z]/.test($scope.newUserPassword1)) || !(/[A-Z]/.test($scope.newUserPassword1)) || !(/[0-9]/.test($scope.newUserPassword1))) {
+            $scope.newPasswordStyle = {'background-color':'pink'};
+            $scope.newPasswordStrong = false;
+        } else {
+            $scope.newPasswordStyle = {'background-color':'white'};
+            $scope.newPasswordStrong = true;
+        }
+      
+        if ($scope.newUserPassword1 !== $scope.newUserPassword2) {
+            $scope.newPasswordRepeat = {'background-color':'pink'};
+             $scope.newPasswordSame = false;
+        } else {
+            $scope.newPasswordRepeat = {'background-color':'white'};
+             $scope.newPasswordSame = true;
+        }
+    }, true);
+    var changingPasswordData = {};
+    $scope.changeUserPassword = function(data) {
+      changingPasswordData = data;
+   
+    };
+
+    $scope.postNewPassword = function() {
+        var newPass = {"new_pwd":$scope.newUserPassword1};
+        http.put(url + "changepwd/" + changingPasswordData.username, newPass)
+            .success(function (response) {
+                showOk('User: ' + changingPasswordData.username + ' updated.');
+                loadTable();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
+
+    };
+
+
 
 
      $scope.$watch("userObj.email", function(newValue, oldValue) {
