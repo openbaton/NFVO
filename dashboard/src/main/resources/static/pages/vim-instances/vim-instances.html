@@ -163,7 +163,7 @@
                             
                             <div class="col-sm-6">
                                 
-							<input type="text" class="form-control" ng-model="secG" />
+							<input type="text" class="form-control" ng-model="newvim.securityGroups[$index]" />
 						    </div>  
 							 <i class="fa fa-trash-o col-sm-2" style="wdith:10px; padding-top:10px" href="" ng-click="removeSecurityGroup($index)"></i>
                             
@@ -173,6 +173,10 @@
                         
 				</form>
 				</div>
+				<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" ng-disabled="!newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+			</div>
 				</tab>
 				<tab heading="File Input" ng-click="setFileInput()">
 					<div class="modal-body">
@@ -192,12 +196,14 @@
 					</div>
 				</form>
 				</div>
-				</tab>
-			</tabset>
-			<div class="modal-footer">
+				<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" ng-disabled="!newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password || !newvim.securityGroups.length" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+				<button type="button" class="btn btn-primary" ng-disabled="!file && !textTopologyJson" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
 			</div>
+				</tab>
+				
+			</tabset>
+			
 		</div>
 	</div>
 </div>
