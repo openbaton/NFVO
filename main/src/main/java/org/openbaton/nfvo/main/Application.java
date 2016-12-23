@@ -17,7 +17,7 @@
 
 package org.openbaton.nfvo.main;
 
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -30,9 +30,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-/**
- * Created by lto on 16/04/15.
- */
+/** Created by lto on 16/04/15. */
 @SpringBootApplication
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")

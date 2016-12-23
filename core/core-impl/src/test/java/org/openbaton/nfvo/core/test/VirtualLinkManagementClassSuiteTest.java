@@ -17,6 +17,13 @@
 
 package org.openbaton.nfvo.core.test;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.NoResultException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,23 +55,12 @@ import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.NoResultException;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 public class VirtualLinkManagementClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
 
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VirtualLinkManagement virtualLinkManagement;
 

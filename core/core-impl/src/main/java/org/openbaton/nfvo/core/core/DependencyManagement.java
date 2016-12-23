@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.*;
+import java.util.Map.Entry;
+import javax.persistence.NoResultException;
 import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -42,14 +45,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.persistence.NoResultException;
-
-/**
- * Created by lto on 30/06/15.
- */
+/** Created by lto on 30/06/15. */
 @Service
 @Scope
 public class DependencyManagement
@@ -61,7 +57,7 @@ public class DependencyManagement
 
   @Autowired private org.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private NetworkServiceRecordRepository nsrRepository;
 
@@ -72,16 +68,10 @@ public class DependencyManagement
    * if there are sources that are not yet initialized for this dependency. If that is the case then
    * add the dependency to the map of waiting dependencies in the DependencyQueuer. Otherwise send a
    * modify message for this vnfr to the vnfm.
-   *
-   * @param virtualNetworkFunctionRecord
-   * @return
-   * @throws NoResultException
-   * @throws NotFoundException
-   * @throws InterruptedException
    */
   @Override
   public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NoResultException, NotFoundException, InterruptedException {
+      throws NoResultException, NotFoundException {
     log.debug("Provision dependencies for " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());

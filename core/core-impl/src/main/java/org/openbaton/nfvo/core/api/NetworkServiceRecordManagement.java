@@ -17,6 +17,11 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
@@ -50,8 +55,6 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -83,29 +86,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties
 public class NetworkServiceRecordManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private EventDispatcher publisher;
 
@@ -167,9 +155,8 @@ public class NetworkServiceRecordManagement
   @Override
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (!networkServiceDescriptor.getProjectId().equals(projectID)) {
@@ -211,11 +198,10 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws ExecutionException, InterruptedException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
-    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
+    //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
     if (configurations == null) {
@@ -568,7 +554,7 @@ public class NetworkServiceRecordManagement
 
   private void startStopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
-      throws NotFoundException, WrongStatusException {
+      throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
@@ -857,7 +843,7 @@ public class NetworkServiceRecordManagement
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInAnyState(String id)
-      throws NotFoundException, WrongStatusException {
+      throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
       throw new NotFoundException("No NetworkServiceRecord found with id " + id);
@@ -882,8 +868,8 @@ public class NetworkServiceRecordManagement
 
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
-      throws NotFoundException, BadFormatException, VimException, PluginException,
-          MissingParameterException, BadRequestException {
+      throws NotFoundException, VimException, PluginException, MissingParameterException,
+          BadRequestException {
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -911,7 +897,9 @@ public class NetworkServiceRecordManagement
         if (instanceNames.size() == 0) {
           log.debug("ProjectID: " + projectID);
           for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-            if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+            if (vnfPackage.getVimTypes() == null || vnfPackage.getVimTypes().isEmpty()) {
+              instanceNames.add(vimInstance.getName());
+            } else if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
               instanceNames.add(vimInstance.getName());
             }
           }
@@ -1004,11 +992,18 @@ public class NetworkServiceRecordManagement
               }
             }
 
+            if (vimInstance == null) {
+              throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
+
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {
               for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
                 //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
                 boolean networkExists = false;
+                if (vimInstance.getNetworks() == null)
+                  throw new VimException(
+                      "VIM instance " + vimInstance.getName() + "does not have networks ");
                 for (Network network : vimInstance.getNetworks()) {
                   //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
                   if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
@@ -1033,7 +1028,7 @@ public class NetworkServiceRecordManagement
                   //                    vlr.setExtId(network.getExtId());
                   //                    vlr.getConnection().add(vnfdConnectionPoint.getId());
                 }
-                //                }
+                //       }
               }
             }
           }
@@ -1246,8 +1241,7 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException {
+  public void resume(String id, String projectId) throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(

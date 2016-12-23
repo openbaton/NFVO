@@ -17,15 +17,9 @@
 
 package org.openbaton.tosca.exceptions;
 
-/**
- * Created by dbo on 01/02/16.
- */
+/** Created by dbo on 01/02/16. */
 public class NotFoundException extends Exception {
   public NotFoundException(String exc) {
     super(exc);
-  }
-
-  public NotFoundException(Throwable e) {
-    super(e);
   }
 }

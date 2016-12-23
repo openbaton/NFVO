@@ -17,16 +17,13 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.*;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
-
-/**
- * Created by lto on 12/05/15.
- */
+/** Created by lto on 12/05/15. */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
 public class VimInstance implements Serializable {

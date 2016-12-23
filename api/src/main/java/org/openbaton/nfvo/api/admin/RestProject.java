@@ -16,6 +16,10 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -40,15 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.validation.Valid;
-
-/**
- * Created by lto on 25/05/16.
- */
+/** Created by lto on 25/05/16. */
 @RestController
 @RequestMapping("/api/v1/projects")
 public class RestProject {

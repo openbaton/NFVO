@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 22/02/16.
- */
+/** Created by lto on 22/02/16. */
 public class WrongAction extends Exception {
   public WrongAction(Throwable cause) {
     super(cause);

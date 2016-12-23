@@ -20,9 +20,7 @@ package org.openbaton.tosca.templates;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFProperties;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 
-/**
- * Created by rvl on 17.08.16.
- */
+/** Created by rvl on 17.08.16. */
 public class VNFDTemplate {
 
   private String tosca_definitions_version;

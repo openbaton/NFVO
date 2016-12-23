@@ -18,7 +18,10 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
@@ -34,15 +37,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 23/09/15.
- */
+/** Created by lto on 23/09/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -145,9 +140,11 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     rabbitTemplate.setReplyTimeout(timeout * 1000);
     rabbitTemplate.afterPropertiesSet();
 
-    log.debug("Sending to: " + queueName);
+    log.debug("Sending to: " + queueName.toLowerCase().replace("_", "-"));
     String res =
-        (String) rabbitTemplate.convertSendAndReceive("openbaton-exchange", queueName, message);
+        (String)
+            rabbitTemplate.convertSendAndReceive(
+                "openbaton-exchange", queueName.toLowerCase().replace("_", "-"), message);
     log.trace("Received from EMS: " + res);
     if (res == null) {
       log.error("After " + timeout + " seconds the ems did not answer.");

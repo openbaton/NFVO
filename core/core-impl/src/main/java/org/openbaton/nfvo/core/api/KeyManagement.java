@@ -17,18 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.KeyRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
-import org.springframework.stereotype.Service;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -45,17 +34,25 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.KeyRepository;
+import org.openbaton.nfvo.security.interfaces.ProjectManagement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
+import org.springframework.stereotype.Service;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
-
-/**
- * Created by lto on 13/05/15.
- */
+/** Created by lto on 13/05/15. */
 @Service
 @Scope
 public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ProjectManagement projectManagement;
 
@@ -97,8 +94,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public String generateKey(String projectId, String name)
-      throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException,
-          IOException {
+      throws IOException, NoSuchAlgorithmException {
     log.debug("Generating keypair");
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
@@ -119,7 +115,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException {
     Key keyToAdd = new Key();
     keyToAdd.setName(name);
     keyToAdd.setProjectId(projectId);
@@ -140,15 +136,13 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
       }
       res += start.charAt(i);
     }
-    System.out.println(res);
+    log.debug(res);
     return res;
   }
 
-  private byte[] parsePublicKey(String decodedKey)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+  private byte[] parsePublicKey(String decodedKey) throws UnsupportedEncodingException {
     decodedKey = decodedKey.split(" ")[1];
-    byte[] keyBytes = Base64.decodeBase64(decodedKey.getBytes("utf-8"));
-    return keyBytes;
+    return Base64.decodeBase64(decodedKey.getBytes("utf-8"));
   }
 
   private String parsePrivateKey(byte[] encodedKey) {
@@ -160,7 +154,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return sb.toString();
   }
 
-  public String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
+  private String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     /* encode the "ssh-rsa" string */
     byte[] sshrsa = new byte[] {0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a'};
@@ -178,7 +172,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     return "ssh-rsa " + Base64.encodeBase64String(out.toByteArray()) + " " + keyname;
   }
 
-  public void encodeUInt32(int value, OutputStream out) throws IOException {
+  private void encodeUInt32(int value, OutputStream out) throws IOException {
     byte[] tmp = new byte[4];
     tmp[0] = (byte) ((value >>> 24) & 0xff);
     tmp[1] = (byte) ((value >>> 16) & 0xff);

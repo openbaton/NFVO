@@ -19,9 +19,7 @@ package org.openbaton.nfvo.repositories;
 
 import org.openbaton.catalogue.security.Key;
 
-/**
- * Created by mpa on 09/08/16.
- */
+/** Created by mpa on 09/08/16. */
 public interface KeyRepositoryCustom {
   Key findKey(String projectId, String name);
 }

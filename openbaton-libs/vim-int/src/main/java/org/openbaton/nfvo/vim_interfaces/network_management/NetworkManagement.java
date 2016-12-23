@@ -17,15 +17,12 @@
 
 package org.openbaton.nfvo.vim_interfaces.network_management;
 
+import java.util.List;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
-import java.util.List;
-
-/**
- * Created by mpa on 30/04/15.
- */
+/** Created by mpa on 30/04/15. */
 public interface NetworkManagement {
 
   /**

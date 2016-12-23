@@ -17,9 +17,7 @@
 
 package org.openbaton.catalogue.mano.common;
 
-/**
- * Created by mpa on 15/12/15.
- */
+/** Created by mpa on 15/12/15. */
 public enum ScalingType {
   SINGLE,
   VOTED,

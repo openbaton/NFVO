@@ -18,12 +18,20 @@
 package org.openbaton.nfvo.cli;
 
 import ch.qos.logback.classic.Level;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.StringTokenizer;
 import jline.console.ConsoleReader;
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -37,7 +45,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.UserRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
-import org.openbaton.plugin.utils.PluginStartup;
+import org.openbaton.plugin.mgmt.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,16 +58,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.StringTokenizer;
-
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing spring boot
  * environment that either leads to calls of the main() or the run() method.
@@ -69,7 +67,7 @@ import java.util.StringTokenizer;
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class OpenbatonCLI implements CommandLineRunner {
 
-  private final static Map<String, String> helpCommandList =
+  private static final Map<String, String> helpCommandList =
       new HashMap<String, String>() {
         {
           //mgmt
@@ -389,17 +387,13 @@ public class OpenbatonCLI implements CommandLineRunner {
     result +=
         String.format(
                 "+%20s+%20s+%20s+",
-                "--------------------",
-                "--------------------",
-                "--------------------")
+                "--------------------", "--------------------", "--------------------")
             + "\n";
     result += String.format("|%20s|%20s|%20s|", "plugin type", "tool type", "plugin name") + "\n";
     result +=
         String.format(
                 "+%20s+%20s+%20s+",
-                "====================",
-                "====================",
-                "====================")
+                "====================", "====================", "====================")
             + "\n";
     System.out.println();
     //    for (Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
@@ -420,9 +414,7 @@ public class OpenbatonCLI implements CommandLineRunner {
         result +=
             String.format(
                     "+%20s+%20s+%20s+",
-                    "--------------------",
-                    "--------------------",
-                    "--------------------")
+                    "--------------------", "--------------------", "--------------------")
                 + "\n";
       }
     }
@@ -481,7 +473,8 @@ public class OpenbatonCLI implements CommandLineRunner {
         username,
         password,
         "" + managementPort,
-        pluginLogPath);
+        pluginLogPath,
+        true);
     return true;
   }
 }

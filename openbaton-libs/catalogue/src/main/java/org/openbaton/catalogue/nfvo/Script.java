@@ -18,14 +18,11 @@
 package org.openbaton.catalogue.nfvo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-/**
- * Created by lto on 23/07/15.
- */
+/** Created by lto on 23/07/15. */
 @Entity
 public class Script implements Serializable {
   @Id private String id;

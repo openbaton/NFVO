@@ -17,16 +17,8 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.NetworkServiceDeploymentFlavour;
-import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -37,11 +29,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+import org.openbaton.catalogue.mano.common.LifecycleEvent;
+import org.openbaton.catalogue.mano.common.NetworkServiceDeploymentFlavour;
+import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class NetworkServiceRecord implements Serializable {
@@ -52,15 +50,13 @@ public class NetworkServiceRecord implements Serializable {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ConnectionPoint> connection_point;
-  /**
-   * Monitoring parameter used in this instance.
-   * */
+  /** Monitoring parameter used in this instance. */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> monitoring_parameter;
   /**
    * References the nsd:service_deployment_flavour used to instantiate this Network Service
    * instance.
-   * */
+   */
   @OneToOne(cascade = CascadeType.REFRESH)
   private NetworkServiceDeploymentFlavour service_deployment_flavour;
 
@@ -104,57 +100,48 @@ public class NetworkServiceRecord implements Serializable {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VNFForwardingGraphRecord> vnffgr;
-  /**
-   * At least one
-   * */
+  /** At least one */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<PhysicalNetworkFunctionRecord> pnfr;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<FaultManagementPolicy> faultManagementPolicy;
 
-  /**
-   * The reference to the Network Service Descriptor used to instantiate this Network Service.
-   * */
+  /** The reference to the Network Service Descriptor used to instantiate this Network Service. */
   private String descriptor_reference;
   /**
    * Resource reservation information identification (potentially per individual VIM) for NFVI
    * resources reserved for this NS instance. TODO: find an appropriate type for this field
-   * */
+   */
   private String resource_reservation;
   /**
    * Generic placeholder for input information related to NS orchestration and management policies
    * to be applied during runtime of a specific NS instance (e.g. for NS prioritization, etc.).
    * TODO: find an appropriate type for this field
-   * */
+   */
   private String runtime_policy_info;
   /**
    * Flag to report status of the Network Service.
    *
-   * Implementation thoughts: the states are defined in
+   * <p>Implementation thoughts: the states are defined in
    * http://www.etsi.org/deliver/etsi_gs/NFV-SWA/001_099/001/01.01.01_60/gs_NFV-SWA001v010101p.pdf
    * so for what concerns the NSR, the state are:
    *
-   * * Instantiated Configured - Inactive) A NSR Instance is created not ready for service. *
+   * <p>* Instantiated Configured - Inactive) A NSR Instance is created not ready for service. *
    * Instantiated Configured - Active) A NSR Instance is ready to serve. * Terminated) A NSR has
    * ceased to exist.
    *
-   * the Null doesn't exist since when the NSR is created will be already in configuration process.
-   * */
+   * <p>the Null doesn't exist since when the NSR is created will be already in configuration
+   * process.
+   */
   @Enumerated(EnumType.STRING)
   private Status status;
-  /**
-   * System that has registered to received notifications of status changes
-   * */
+  /** System that has registered to received notifications of status changes */
   private String notification;
-  /**
-   * Record of significant Network Service lifecycle events.
-   * */
+  /** Record of significant Network Service lifecycle events. */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event_history;
-  /**
-   * Record of detailed operational events. TODO: maybe a pointer to a file?
-   * */
+  /** Record of detailed operational events. TODO: maybe a pointer to a file? */
   private String audit_log;
 
   public String getCreatedAt() {

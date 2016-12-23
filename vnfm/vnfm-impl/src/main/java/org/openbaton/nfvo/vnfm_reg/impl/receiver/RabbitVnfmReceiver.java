@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 
 import com.google.gson.Gson;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
@@ -28,11 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by lto on 26/05/15.
- */
+/** Created by lto on 26/05/15. */
 @Service
 public class RabbitVnfmReceiver implements VnfmReceiver {
 

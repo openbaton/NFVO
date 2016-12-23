@@ -23,9 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 @Configuration
 @ComponentScan(basePackages = "org.project.openbaton.nfvo")
 @EnableJms

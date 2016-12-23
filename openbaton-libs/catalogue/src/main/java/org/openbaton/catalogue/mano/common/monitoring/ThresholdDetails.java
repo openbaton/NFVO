@@ -19,9 +19,7 @@ package org.openbaton.catalogue.mano.common.monitoring;
 
 import java.io.Serializable;
 
-/**
- * Created by mob on 18.11.15.
- */
+/** Created by mob on 18.11.15. */
 public class ThresholdDetails implements Serializable {
   private String function;
   private String triggerOperator;

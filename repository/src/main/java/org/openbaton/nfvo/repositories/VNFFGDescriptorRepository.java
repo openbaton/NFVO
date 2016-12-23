@@ -20,8 +20,6 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Created by lto on 06/05/15.
- */
+/** Created by lto on 06/05/15. */
 public interface VNFFGDescriptorRepository
     extends CrudRepository<VNFForwardingGraphDescriptor, String> {}

@@ -19,9 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 
-/**
- * Created by dbo on 26/10/15.
- */
+/** Created by dbo on 26/10/15. */
 public interface VNFComponentManagment {
 
   /**

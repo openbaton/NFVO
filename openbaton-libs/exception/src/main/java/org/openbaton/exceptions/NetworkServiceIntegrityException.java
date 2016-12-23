@@ -17,9 +17,7 @@
 
 package org.openbaton.exceptions;
 
-/**
- * Created by lto on 25/09/15.
- */
+/** Created by lto on 25/09/15. */
 public class NetworkServiceIntegrityException extends Exception {
   public NetworkServiceIntegrityException() {}
 

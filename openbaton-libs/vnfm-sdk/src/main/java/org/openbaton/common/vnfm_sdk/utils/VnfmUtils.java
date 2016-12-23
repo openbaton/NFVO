@@ -17,23 +17,20 @@
 
 package org.openbaton.common.vnfm_sdk.utils;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.*;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.security.Key;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by lto on 23/09/15.
- */
+/** Created by lto on 23/09/15. */
 public class VnfmUtils {
 
   public static NFVMessage getNfvInstantiateMessage(

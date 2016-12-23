@@ -17,7 +17,8 @@
 package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.JsonObject;
-
+import java.util.HashMap;
+import java.util.List;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.LogManagement;
 import org.slf4j.Logger;
@@ -26,12 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-
-/**
- * Created by lto on 17/05/16.
- */
+/** Created by lto on 17/05/16. */
 @RestController
 @RequestMapping("/api/v1/logs")
 public class RestLogs {

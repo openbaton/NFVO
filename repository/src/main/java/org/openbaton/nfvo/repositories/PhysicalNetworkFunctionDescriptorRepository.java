@@ -20,9 +20,7 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Created by dbo on 14.09.15.
- */
+/** Created by dbo on 14.09.15. */
 public interface PhysicalNetworkFunctionDescriptorRepository
     extends CrudRepository<PhysicalNetworkFunctionDescriptor, String> {
   //    List<PhysicalNetworkFunctionDescriptor> findByProjectId(String projectId);

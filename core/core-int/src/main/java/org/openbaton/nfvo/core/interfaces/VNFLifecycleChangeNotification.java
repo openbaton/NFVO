@@ -17,9 +17,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-/**
- * Created by mpa on 05/05/15.
- */
+/** Created by mpa on 05/05/15. */
 public interface VNFLifecycleChangeNotification {
 
   /**

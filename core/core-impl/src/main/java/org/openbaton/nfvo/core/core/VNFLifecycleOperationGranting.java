@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -33,18 +36,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by lto on 11/06/15.
- */
+/** Created by lto on 11/06/15. */
 @Service
 @Scope
 public class VNFLifecycleOperationGranting
     implements org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting {
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 
@@ -128,7 +125,9 @@ public class VNFLifecycleOperationGranting
             break;
           }
         }
-
+        if (flavor == null)
+          throw new VimException(
+              "deployment flavor object is null, it means that there is no PoP supporting the deployment flavour selected");
         //Subtract needed resources from the left resources
         int nc = 0;
 

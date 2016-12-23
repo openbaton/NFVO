@@ -19,6 +19,20 @@ package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -46,14 +60,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.URL;
-import java.util.*;
-import java.util.regex.Pattern;
-
-/**
- * Created by lto on 22/07/15.
- */
+/** Created by lto on 22/07/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -63,8 +70,8 @@ public class VNFPackageManagement
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
-  private Gson mapper = new GsonBuilder().create();
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Gson mapper = new GsonBuilder().create();
   @Autowired private NSDUtils nsdUtils;
   @Autowired private VnfPackageRepository vnfPackageRepository;
   @Autowired private VNFDRepository vnfdRepository;
@@ -87,7 +94,7 @@ public class VNFPackageManagement
   @Override
   public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException {
+          AlreadyExistingException, NetworkServiceIntegrityException {
     log.info("Onboarding VNF Package...");
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
@@ -114,7 +121,6 @@ public class VNFPackageManagement
         byte[] content = new byte[(int) entry.getSize()];
         myTarFile.read(content, 0, content.length);
         if (entry.getName().equals("Metadata.yaml")) {
-
           YamlJsonParser yaml = new YamlJsonParser();
           metadata = yaml.parseMap(new String(content));
           imageDetails = handleMetadata(metadata, vnfPackage, imageDetails, image);
@@ -171,6 +177,7 @@ public class VNFPackageManagement
 
     vnfPackage.setImage(image);
     myTarFile.close();
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     vnfPackage.setProjectId(projectId);
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
       if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
@@ -180,9 +187,11 @@ public class VNFPackageManagement
             "A VNF with this vendor, name and version is already existing");
       }
     }
+
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
     log.trace(
@@ -545,11 +554,10 @@ public class VNFPackageManagement
   }
 
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException {
-    String downloadlink = link;
-    log.debug("This is download link" + downloadlink);
-    URL packageLink = new URL(downloadlink);
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException, NetworkServiceIntegrityException {
+    log.debug("This is download link" + link);
+    URL packageLink = new URL(link);
 
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -562,9 +570,7 @@ public class VNFPackageManagement
     in.close();
     byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        onboard(packageOnboard, projectId);
-    return virtualNetworkFunctionDescriptor;
+    return onboard(packageOnboard, projectId);
   }
 
   private String[] getNfvoVersion() throws NotFoundException {

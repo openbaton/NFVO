@@ -22,9 +22,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Created by mob on 03.09.15.
- */
+/** Created by mob on 03.09.15. */
 @Transactional(readOnly = true)
 public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordRepositoryCustom {
 

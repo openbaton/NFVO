@@ -20,32 +20,16 @@ package org.openbaton.nfvo.core.interfaces;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.exceptions.NotFoundException;
 
-/**
- * Created by lto on 13/05/15.
- */
+/** Created by lto on 13/05/15. */
 public interface ConfigurationManagement {
 
-  /**
-   * This operation allows adding a datacenter into the datacenter repository.
-   *
-   * @param datacenter
-   */
+  /** This operation allows adding a datacenter into the datacenter repository. */
   Configuration add(Configuration datacenter);
 
-  /**
-   * This operation allows deleting the datacenter from the datacenter repository.
-   *
-   * @param id
-   */
+  /** This operation allows deleting the datacenter from the datacenter repository. */
   void delete(String id);
 
-  /**
-   * This operation allows updating the datacenter in the datacenter repository.
-   *
-   * @param new_datacenter
-   * @param id
-   * @param projectId
-   */
+  /** This operation allows updating the datacenter in the datacenter repository. */
   Configuration update(Configuration new_datacenter, String id, String projectId);
 
   /**
@@ -60,5 +44,10 @@ public interface ConfigurationManagement {
    */
   Configuration query(String id, String projectId);
 
+  /**
+   * @param system
+   * @return
+   * @throws NotFoundException
+   */
   Configuration queryByName(String system) throws NotFoundException;
 }

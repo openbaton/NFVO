@@ -32,9 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Created by rvl on 25.08.16.
- */
+/** Created by rvl on 25.08.16. */
 @RestController
 @RequestMapping("/api/v1/nsd-tosca")
 public class RestToscaNetworkServiceDescriptor {

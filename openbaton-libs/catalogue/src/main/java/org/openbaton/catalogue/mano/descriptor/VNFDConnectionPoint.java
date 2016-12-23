@@ -17,14 +17,13 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-
 import javax.persistence.Entity;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
  * Created by lto on 06/02/15.
  *
- * Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
+ * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
 public class VNFDConnectionPoint extends ConnectionPoint {
@@ -33,6 +32,7 @@ public class VNFDConnectionPoint extends ConnectionPoint {
    * VDUs, NFs, and other types of endpoints can connect.
    */
   private String virtual_link_reference;
+
   private String floatingIp;
 
   public VNFDConnectionPoint() {}

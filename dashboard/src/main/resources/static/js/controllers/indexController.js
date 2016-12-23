@@ -82,7 +82,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        setTimeout(showLoginError, 2000);
+        setTimeout(showLoginError, 10000);
     };
 
 

@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.repositories.tests;
 
+import javax.sql.DataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -27,11 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
-import javax.sql.DataSource;
-
-/**
- * Created by lto on 30/04/15.
- */
+/** Created by lto on 30/04/15. */
 @Configuration
 @EnableAutoConfiguration
 @EntityScan(basePackages = "org.openbaton")
@@ -39,11 +36,7 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(basePackages = "org.openbaton")
 public class ApplicationTest {
 
-  /**
-   * Testing if the context contains all the needed beans
-   *
-   * @param argv
-   */
+  /** Main method for testing if the context contains all the needed beans */
   public static void main(String[] argv) {
     ConfigurableApplicationContext context = SpringApplication.run(ApplicationTest.class);
     for (String s : context.getBeanDefinitionNames()) System.out.println(s);

@@ -17,12 +17,19 @@
 
 package org.openbaton.nfvo.core.test;
 
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Location;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
@@ -34,23 +41,13 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.api.VimManagement;
-import org.openbaton.nfvo.repositories.ImageRepository;
-import org.openbaton.nfvo.repositories.NetworkRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import static org.mockito.Mockito.*;
-
-/**
- * Created by lto on 20/04/15.
- */
+/** Created by lto on 20/04/15. */
 public class VimManagementClassSuiteTest {
 
   private static final String projectId = "project-id";
@@ -65,7 +62,11 @@ public class VimManagementClassSuiteTest {
 
   @Mock private NetworkRepository networkRepository;
 
-  private Logger log = LoggerFactory.getLogger(ApplicationTest.class);
+  @Mock private VNFDRepository vnfdRepository;
+
+  @Mock private VNFRRepository vnfrRepository;
+
+  private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VimManagement vimManagement;
 
@@ -106,6 +107,11 @@ public class VimManagementClassSuiteTest {
     vimInstance_new.setTenant("UpdatedTenant");
     vimInstance_new.setUsername("UpdatedUsername");
     when(vimRepository.save(vimInstance_new)).thenReturn(vimInstance_new);
+    when(vnfdRepository.findByProjectId(anyString()))
+        .thenReturn(new ArrayList<VirtualNetworkFunctionDescriptor>());
+    when(vnfrRepository.findByProjectId(anyString()))
+        .thenReturn(new ArrayList<VirtualNetworkFunctionRecord>());
+
     vimInstance_exp = vimManagement.update(vimInstance_new, vimInstance_exp.getId(), projectId);
 
     Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
@@ -176,7 +182,7 @@ public class VimManagementClassSuiteTest {
   }
 
   @Test
-  public void nfvImageManagementDeleteTest() throws NotFoundException {
+  public void nfvImageManagementDeleteTest() throws NotFoundException, BadRequestException {
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
     when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -192,6 +198,7 @@ public class VimManagementClassSuiteTest {
     vimInstance.setActive(true);
     vimInstance.setProjectId(projectId);
     vimInstance.setName("vim_instance");
+    vimInstance.setPassword("password");
     Location location = new Location();
     location.setName("LocationName");
     location.setLatitude("Latitude");

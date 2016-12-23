@@ -17,17 +17,14 @@
 
 package org.openbaton.catalogue.mano.common.monitoring;
 
-/**
- * Created by mob on 27.10.15.
- */
-import org.openbaton.catalogue.nfvo.EndpointType;
-import org.openbaton.catalogue.util.IdGenerator;
-
+/** Created by mob on 27.10.15. */
+import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import java.io.Serializable;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 public class AlarmEndpoint implements Serializable {

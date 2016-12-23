@@ -19,7 +19,7 @@ package org.openbaton.nfvo.core.events.senders;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import java.util.concurrent.Future;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -35,16 +35,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.Future;
-
-/**
- * Created by lto on 01/07/15.
- */
+/** Created by lto on 01/07/15. */
 @Service
 @Scope
 public class RestEventSender implements EventSender {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   @Async

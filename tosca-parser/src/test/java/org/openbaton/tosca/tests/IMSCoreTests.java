@@ -18,6 +18,7 @@
 package org.openbaton.tosca.tests;
 
 import com.google.gson.Gson;
+import java.io.FileNotFoundException;
 import org.junit.Test;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.tosca.exceptions.NotFoundException;
@@ -26,11 +27,7 @@ import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.openbaton.utils.Utils;
 
-import java.io.FileNotFoundException;
-
-/**
- * Created by rvl on 31.08.16.
- */
+/** Created by rvl on 31.08.16. */
 public class IMSCoreTests {
 
   @Test

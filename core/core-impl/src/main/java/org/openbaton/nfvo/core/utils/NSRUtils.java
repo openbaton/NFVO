@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -37,16 +40,10 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 public class NSRUtils {
 
-  private static Logger log = LoggerFactory.getLogger(NSRUtils.class);
+  private static final Logger log = LoggerFactory.getLogger(NSRUtils.class);
 
   public static NetworkServiceRecord createNetworkServiceRecord(
       NetworkServiceDescriptor networkServiceDescriptor) {

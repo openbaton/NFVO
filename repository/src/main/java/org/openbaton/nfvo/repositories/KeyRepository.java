@@ -20,9 +20,7 @@ package org.openbaton.nfvo.repositories;
 import org.openbaton.catalogue.security.Key;
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Created by mpa on 09/08/16.
- */
+/** Created by mpa on 09/08/16. */
 public interface KeyRepository extends CrudRepository<Key, String>, KeyRepositoryCustom {
   Iterable<Key> findByProjectId(String projectId);
 

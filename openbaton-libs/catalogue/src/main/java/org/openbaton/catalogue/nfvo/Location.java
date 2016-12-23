@@ -17,14 +17,11 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import java.io.Serializable;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-/**
- * Created by lto on 18/05/15.
- */
+/** Created by lto on 18/05/15. */
 @Entity
 public class Location implements Serializable {
   @Id private String id;

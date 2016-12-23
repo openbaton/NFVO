@@ -17,13 +17,10 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VL;
 
+import java.util.Map;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-import java.util.Map;
-
-/**
- * Created by rvl on 19.08.16.
- */
+/** Created by rvl on 19.08.16. */
 public class VLNodeTemplate {
 
   private String type = "";

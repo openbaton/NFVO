@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 20/05/15.
- */
+/** Created by lto on 20/05/15. */
 @Entity
 public class Network implements Serializable {
   @Id private String id;

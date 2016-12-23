@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.common.interfaces;
 
-import javax.jms.JMSException;
 import java.io.Serializable;
 
 public interface Sender {

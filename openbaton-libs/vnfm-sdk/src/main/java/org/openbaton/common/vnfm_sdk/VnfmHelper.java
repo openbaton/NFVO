@@ -21,9 +21,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by lto on 23/09/15.
- */
+/** Created by lto on 23/09/15. */
 public abstract class VnfmHelper {
 
   protected Logger log = LoggerFactory.getLogger(this.getClass());

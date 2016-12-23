@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.nfvo.repositories.VirtualLinkDescriptorRepository;
@@ -27,17 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
-
-/**
- * Created by lto on 11/06/15.
- */
+/** Created by lto on 11/06/15. */
 @Service
 @Scope
 public class VirtualLinkManagement
     implements org.openbaton.nfvo.core.interfaces.VirtualLinkManagement {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VirtualLinkDescriptorRepository virtualLinkDescriptorRepository;
 

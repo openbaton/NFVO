@@ -17,6 +17,7 @@
 
 package org.openbaton.utils;
 
+import java.io.*;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
@@ -24,11 +25,7 @@ import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.*;
-
-/**
- * Created by dbo on 31/01/16.
- */
+/** Created by dbo on 31/01/16. */
 public final class Utils {
 
   public static void copy(InputStream in, OutputStream out) throws IOException {
@@ -40,36 +37,6 @@ public final class Utils {
       }
       out.write(buffer, 0, readCount);
     }
-  }
-
-  public static void copy(File file, OutputStream out) throws IOException {
-    InputStream in = new FileInputStream(file);
-    try {
-      copy(in, out);
-    } finally {
-      in.close();
-    }
-  }
-
-  public static void copy(InputStream in, File file) throws IOException {
-    OutputStream out = new FileOutputStream(file);
-    try {
-      copy(in, out);
-    } finally {
-      out.close();
-    }
-  }
-
-  public static NSDTemplate fileToNSDTemplate(String fileName) throws FileNotFoundException {
-
-    InputStream tosca = new FileInputStream(new File(fileName));
-    Constructor constructor = new Constructor(NSDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    return yaml.loadAs(tosca, NSDTemplate.class);
   }
 
   public static VNFDTemplate fileToVNFDTemplate(String fileName) throws FileNotFoundException {
@@ -93,17 +60,6 @@ public final class Utils {
 
     Yaml yaml = new Yaml(constructor);
     return yaml.loadAs(someYaml, NSDTemplate.class);
-  }
-
-  public static VNFDTemplate stringToVNFDTemplate(String someYaml) {
-
-    Constructor constructor = new Constructor(VNFDTemplate.class);
-    TypeDescription projectDesc = new TypeDescription(VNFDTemplate.class);
-
-    constructor.addTypeDescription(projectDesc);
-
-    Yaml yaml = new Yaml(constructor);
-    return yaml.loadAs(someYaml, VNFDTemplate.class);
   }
 
   public static VNFDTemplate bytesToVNFDTemplate(ByteArrayOutputStream b) {

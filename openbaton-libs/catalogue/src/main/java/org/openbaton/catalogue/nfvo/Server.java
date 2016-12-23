@@ -17,17 +17,14 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 20/05/15.
- */
+/** Created by lto on 20/05/15. */
 //@Entity
 public class Server implements Serializable {
   //    @Id

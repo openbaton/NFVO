@@ -17,12 +17,9 @@
 
 package org.openbaton.nfvo.core.events;
 
-/**
- * Created by lto on 03/06/15.
- */
+/** Created by lto on 03/06/15. */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
@@ -42,10 +39,10 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 /**
- * This class implements the interface {@Link EventDispatcher} so is in charge of handling
- * the de/registration of a EventEndpoint.
- * <p/>
- * Moreover receives also internal events and dispatches them to the external applications.
+ * This class implements the interface {@Link EventDispatcher} so is in charge of handling the
+ * de/registration of a EventEndpoint.
+ *
+ * <p>Moreover receives also internal events and dispatches them to the external applications.
  */
 @Service
 @Scope
@@ -53,8 +50,8 @@ import org.springframework.stereotype.Service;
 class EventDispatcher
     implements ApplicationListener<EventNFVO>, org.openbaton.nfvo.core.interfaces.EventDispatcher {
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @Autowired private EventEndpointRepository eventEndpointRepository;
   @Autowired private ConfigurableApplicationContext context;
   @Autowired private org.openbaton.nfvo.core.interfaces.EventManagement eventManagement;

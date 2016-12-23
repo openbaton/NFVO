@@ -22,9 +22,7 @@ import org.junit.Test;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.tosca.parser.CSARParser;
 
-/**
- * Created by rvl on 26.08.16.
- */
+/** Created by rvl on 26.08.16. */
 public class CSARTest {
 
   @Test

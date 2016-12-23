@@ -20,9 +20,7 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 import org.openbaton.catalogue.mano.common.monitoring.VNFAlarm;
 
-/**
- * Created by mob on 27.10.15.
- */
+/** Created by mob on 27.10.15. */
 public class VNFAlarmNotification extends AbstractVNFAlarm {
   private VNFAlarm vnfAlarm;
 

@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.vnfm_reg.impl.register;
 
+import java.io.IOException;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -29,11 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
-/**
- * Created by lto on 27/05/15.
- */
+/** Created by lto on 27/05/15. */
 @Service
 @ConfigurationProperties
 public class RabbitRegister extends VnfmRegister {

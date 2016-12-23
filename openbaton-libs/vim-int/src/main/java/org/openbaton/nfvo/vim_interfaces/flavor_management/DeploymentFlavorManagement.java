@@ -17,15 +17,12 @@
 
 package org.openbaton.nfvo.vim_interfaces.flavor_management;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
-import java.util.List;
-
-/**
- * Created by lto on 03/06/15.
- */
+/** Created by lto on 03/06/15. */
 public interface DeploymentFlavorManagement {
   /**
    * This operation allows adding new DeploymentFlavor to the repository.

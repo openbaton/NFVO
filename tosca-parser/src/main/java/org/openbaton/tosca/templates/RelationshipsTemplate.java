@@ -19,9 +19,7 @@ package org.openbaton.tosca.templates;
 
 import java.util.ArrayList;
 
-/**
- * Created by rvl on 22.08.16.
- */
+/** Created by rvl on 22.08.16. */
 public class RelationshipsTemplate {
 
   private String type;

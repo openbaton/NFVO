@@ -17,15 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 11/05/15.
- */
+/** Created by lto on 11/05/15. */
 @Entity
 public class NFVImage implements Serializable {
   @Id private String id;

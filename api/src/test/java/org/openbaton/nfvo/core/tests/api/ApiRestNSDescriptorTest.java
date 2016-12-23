@@ -17,6 +17,13 @@
 
 package org.openbaton.nfvo.core.tests.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,14 +41,6 @@ import org.openbaton.nfvo.api.catalogue.RestNetworkServiceDescriptor;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class ApiRestNSDescriptorTest {
 

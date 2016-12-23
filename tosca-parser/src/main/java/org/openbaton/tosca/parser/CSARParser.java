@@ -17,6 +17,10 @@
 
 package org.openbaton.tosca.parser;
 
+import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -42,14 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-/**
- * Created by rvl on 12.09.16.
- */
+/** Created by rvl on 12.09.16. */
 @Service
 public class CSARParser {
 
@@ -60,7 +57,7 @@ public class CSARParser {
   @Autowired private VimBroker vimBroker;
   @Autowired private NSDUtils nsdUtils;
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   private TOSCAParser toscaParser;
 
@@ -70,8 +67,6 @@ public class CSARParser {
   private ArrayList<String> imageNames = new ArrayList<>();
   private ByteArrayOutputStream vnfMetadata;
   private ArrayList<String> folderNames = new ArrayList<>();
-
-  private String entryDefinitions = null;
 
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
@@ -157,17 +152,17 @@ public class CSARParser {
     while ((strLine = br.readLine()) != null) {
 
       if (strLine.contains(entryDefinition)) {
-        this.entryDefinitions =
-            strLine.substring(entryDefinition.length(), strLine.length()).trim();
+        strLine.substring(entryDefinition.length(), strLine.length());
       }
       if (strLine.contains(image)) {
-        this.imageNames.add(strLine.substring(image.length(), strLine.length()).trim());
+        this.imageNames.add(strLine.substring(image.length(), strLine.length()));
       }
     }
 
     br.close();
   }
 
+  //TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
     InputStream csar = new FileInputStream(vnfd_csar);
@@ -176,7 +171,7 @@ public class CSARParser {
     readMetaData();
 
     VNFDTemplate VNFDTemplate = Utils.bytesToVNFDTemplate(this.template);
-    VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(VNFDTemplate);
+    toscaParser.parseVNFDTemplate(VNFDTemplate);
   }
 
   public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
@@ -186,9 +181,7 @@ public class CSARParser {
 
     readMetaData();
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
-    NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
-
-    return nsd;
+    return toscaParser.parseNSDTemplate(nsdTemplate);
   }
 
   private NFVImage getImage(
@@ -200,7 +193,6 @@ public class CSARParser {
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
     Map<String, Object> imageDetails = new HashMap<>();
-    List<String> vimInstances = new ArrayList<>();
     byte[] imageFile = null;
 
     YamlJsonParser yaml = new YamlJsonParser();
@@ -222,7 +214,7 @@ public class CSARParser {
 
   private String saveVNFD(
       VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
-      throws PluginException, VimException, NotFoundException, IOException, IncompatibleVNFPackage {
+      throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
 
     VNFPackage vnfPackage = new VNFPackage();
 
