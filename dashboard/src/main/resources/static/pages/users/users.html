@@ -73,6 +73,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="" data-toggle="modal" ng-click="update(data)" data-target="#updateUser">Update</a></li>
                                 <li><a href="" ng-click="deleteUser(data)">Delete</a></li>
+                                <li><a href="" data-toggle="modal" data-target="#newUserPassword" ng-click="changeUserPassword(data)">Change Password</a></li>
                             </ul>
                         </div>
                     </td>
@@ -289,4 +290,43 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+
+ <div class="modal" id="newUserPassword" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                      aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
+            </div>
+            <form class="form-horizontal" role="form" id="formChangePassword">
+              <div class="form-group">
+                <label for="name" class="col-sm-4 control-label">New Password</label>
+
+                <div class="col-sm-6">
+                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
+                          ng-model="newUserPassword1"/>
+                </div>
+              </div>
+                <div class="form-group">
+                  <label for="name" class="col-sm-4 control-label">New Password</label>
+
+                  <div class="col-sm-6">
+                      <input type="password" ng-style="newPasswordRepeat" title="Passwords must be the same" class="form-control" id="newPassword1" name="newPassword1"
+                            ng-model="newUserPassword2"/>
+                  </div>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <button type="button" id="closeModal" class="btn btn-default"
+                      data-dismiss="modal">Close
+              </button>
+              <button type="button" id="changePassword"
+                     class="btn btn-primary" ng-disabled="!newPasswordSame || !newPasswordStrong"ng-click="postNewPassword()">Change Password
+             </button>
+            </div><!--footer-->
+         </div>
+      </div>
+   </div>
 </div>
