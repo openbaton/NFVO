@@ -106,7 +106,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.sendInfrastructure = function () {
         if (formInput) {
             console.log("Using formInput")
-            console.log($scope.newvim);
+            //console.log($scope.newvim);
             http.post(url, $scope.newvim)
                 .success(function (response) {
                     showOk('VIM Instance created.');
@@ -115,15 +115,15 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                 })
                 .error(function (data, status) {
                     if (status === 400)
-                        showError(status, "Something went wrong");
+                        showError(status, {message:"Something went wrong"});
                     else
                         showError(status, data);
 
                 });
         } else if (fileInput) {
             if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
-                 console.log("Using fileInput")
-                console.log($scope.file);
+                console.log("Using fileInput")
+                //console.log($scope.file);
                 http.post(url, $scope.file)
                     .success(function (response) {
                         showOk('Vim Instance created.');
@@ -131,7 +131,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                     })
                     .error(function (data, status) {
                         if (status === 400)
-                            showError(status, "Bad request: your json is not well formatted");
+                            showError(status, {message:"Bad request: your json is not well formatted"});
                         else
                             showError(status, data);
 
@@ -146,9 +146,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                     })
                     .error(function (data, status) {
                         if (status === 400)
-                            showError(status, "Bad request: your json is not well formatted");
-                        else
-                            showError(status, data);
+                            showError(status, {message:"Bad request: your json is not well formatted"});
 
                     });
             }
@@ -284,7 +282,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
 
         })
             .error(function (data, status) {
-                showError(data, status);
+                showError(status, data);
             });
 
     }
