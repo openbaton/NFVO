@@ -96,7 +96,7 @@
             </div>
             <div class="modal-body">
                 All fields in this form are mandatory. You can hover over the input forms to see the requirments if there are any. The user should be assigned minimum 1 role.
-                If you want the user to have the admin privileges(being able to manage all users and project), check the "Make Admin". You do not need to specify any roles in this case. 
+                If you want the user to have the admin privileges(being able to manage all users and projects), check the "Make Admin". You do not need to specify any roles in this case. 
                 <br/>
                 <br/>
                 <form role="form" class="form-horizontal">
@@ -305,12 +305,12 @@
                 <label for="name" class="col-sm-4 control-label">New Password</label>
 
                 <div class="col-sm-6">
-                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
+                    <input type="password" title="Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
                           ng-model="newUserPassword1"/>
                 </div>
               </div>
                 <div class="form-group">
-                  <label for="name" class="col-sm-4 control-label">New Password</label>
+                  <label for="name" class="col-sm-4 control-label">Reenter Password</label>
 
                   <div class="col-sm-6">
                       <input type="password" ng-style="newPasswordRepeat" title="Passwords must be the same" class="form-control" id="newPassword1" name="newPassword1"
