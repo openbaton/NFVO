@@ -903,7 +903,8 @@ public class VnfmManager
   public void updateScript(Script script, String vnfPackageId) throws NotFoundException {
 
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
-      if (vnfd.getVnfPackageLocation().equals(vnfPackageId)) {
+      if (vnfd.getVnfPackageLocation() != null
+          && vnfd.getVnfPackageLocation().equals(vnfPackageId)) {
         for (VirtualNetworkFunctionRecord vnfr : vnfrRepository.findAll()) {
           OrVnfmUpdateMessage orVnfmUpdateMessage = new OrVnfmUpdateMessage();
           orVnfmUpdateMessage.setScript(script);
