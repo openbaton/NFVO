@@ -58,7 +58,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
         });
 
-
+     $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
+    
     $scope.copyToClipboard = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {

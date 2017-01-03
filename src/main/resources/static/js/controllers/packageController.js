@@ -139,7 +139,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             } else {
                 myDropzone.options.url = url;
             }
-            console.log(myDropzone.options.url);
+            //console.log(myDropzone.options.url);
     });
 
     $scope.multipleDelete = true;
