@@ -200,8 +200,11 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   private void genericExceptionHandling(Exception e) {
     e.printStackTrace();
     log.debug("The exception is: " + e.getClass().getName());
-    log.debug("The cause is: " + e.getCause().getClass().getName());
-    e.printStackTrace();
+
+    if (e.getCause() != null) {
+      log.debug("The cause is: " + e.getCause().getClass().getName());
+    }
+
     VnfmSender vnfmSender;
     try {
       vnfmSender =
