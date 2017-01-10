@@ -190,46 +190,32 @@
 							{{vnfdCreate.connection_point}}
 						</tab>
 						<tab class="" heading="Monitoring Parameters">
-							<div class="">
-								<div class="">
-									<h4 class="">
-										<div class="col-lg-12">
-											<a class="pull-right" title="Add a New Monitoring Prameter" href="" ng-click="toggle = !toggle">
-												<i class="fa fa-plus-square"> Add </i></a>
-										</div>
-									</h4>
+							<h4 class="">
+								<div class="col-lg-12">
+									<a class="pull-right" title="Add a New Monitoring Parameter" href="" ng-click="addMonitoringParameter()">
+										<i class="fa fa-plus-square"> Add </i></a>
 								</div>
-								<div ng-init="toggle = false" ng-if="toggle" id="">
-									<br/>
-									<br/>
-									<br/>
-
+							</h4>
+							<br/>
+							<br/>
+							<div class="row">
+								<div class="" ng-style="{'padding-left':'40px','padding-right':'40px'}" ng-repeat="parameter in vnfdCreate.monitoring_parameter track by $index">
 									<div class="form-group">
-										<label for="newValue" class="col-sm-4 control-label">Parameter</label>
+										<a href="" title="Delete this Monitoring Parameter" ng-click="removeMonitoringParameter($index)">
+											<i style="width:10px; padding-top:10px" class="fa fa-trash-o"> </i></a>
+										<label for="type" class="col-sm-4 control-label">Monitoring Parameter</label>
 
 										<div class="col-sm-6">
-											<div class="form-group input-group">
-												<input class="form-control" type="text" ng-model="newValue">
-												<span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"
-                                                        ng-click="saveValueMPfromVNFD(newValue)"
-                                                        ><i class="fa fa-floppy-o"></i>
-                                                </button>
-                                            </span>
-											</div>
+											<input type="text" class="form-control" ng-model="vnfdCreate.monitoring_parameter[$index]" />
 										</div>
-
 									</div>
-
+									
+									<hr class="hr_title" />
 								</div>
 							</div>
-							<br/>
 
-							<ul class="col-lg-offset-3" ng-repeat="mp in vnfdCreate.monitoring_parameter track by $index">
-								<li>{{mp}} <a href="" ng-click="deleteMPfromVNFD($index)"><i class="fa fa-trash-o"></i></a>
-								</li>
-							</ul>
-							<!--{{vnfdCreate.monitoring_parameter}}-->
+							
+							
 						</tab>
 						<!---->
 						<tab class="" heading="VDU">
@@ -342,6 +328,7 @@
 									<hr class="hr_title" />
 								</div>
 							</div>
+							
 						</tab>
 						<tab class="" heading="Lifecycle events">
 							<!--   {{vnfdCreate.lifecycle_event}}-->

@@ -243,6 +243,13 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.vnfdCreate.configurations.configurationParameters.splice(index, 1);
     };
 
+    $scope.addMonitoringParameter = function() {
+        $scope.vnfdCreate.monitoring_parameter.push("");
+    };
+    $scope.removeMonitoringParameter = function(index) {
+        $scope.vnfdCreate.monitoring_parameter.splice(index, 1);
+    };
+
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
