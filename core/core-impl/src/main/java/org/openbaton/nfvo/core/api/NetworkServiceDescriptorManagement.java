@@ -95,8 +95,6 @@ public class NetworkServiceDescriptorManagement
     log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
 
     nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
-    if (networkServiceDescriptor.getVnfd().size() == 0)
-      throw new NotFoundException("You should specify at least one VNFD in the NSD!");
 
     if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
