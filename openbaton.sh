@@ -171,7 +171,8 @@ function restart {
 
 
 function kill {
-    pkill -f openbaton-${_version}.jar
+    pkill -9 -f openbaton-${_version}.jar
+    screen -wipe > /dev/null
 }
 
 
