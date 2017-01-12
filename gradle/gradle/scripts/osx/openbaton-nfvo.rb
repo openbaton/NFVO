@@ -1,8 +1,8 @@
 class OpenbatonNfvo < Formula
   desc "Formula of Open Baton NFVO"
   homepage "http://www.openbaton.org"
-  url "https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/3.1.0"
-  version "3.1.0"
+  url "https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/develop"
+  version "3.1.1-SNAPSHOT"
   # sha256 "9dcedc2035905eab7a787c887ba2040f0f1153d51b14622d1844b6af5dbcb71a"
 
   depends_on :java => "1.7+"
