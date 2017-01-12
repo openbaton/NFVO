@@ -477,51 +477,51 @@ public class OpenstackVIM extends GenericVIM {
     return new AsyncResult<>(vnfcInstance);
   }
 
-  @Override
-  public Quota getQuota(VimInstance vimInstance) throws VimException {
-    log.debug(
-        "Listing Quota for Tenant "
-            + vimInstance.getTenant()
-            + " of VimInstance "
-            + vimInstance.getName());
-    Quota quota = null;
-    try {
-      quota = client.getQuota(vimInstance);
-      log.info(
-          "Listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + " -> Quota: "
-              + quota);
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    return quota;
-  }
+  //  @Override
+  //  public Quota getQuota(VimInstance vimInstance) throws VimException {
+  //    log.debug(
+  //        "Listing Quota for Tenant "
+  //            + vimInstance.getTenant()
+  //            + " of VimInstance "
+  //            + vimInstance.getName());
+  //    Quota quota = null;
+  //    try {
+  //      quota = client.getQuota(vimInstance);
+  //      log.info(
+  //          "Listed Quota successfully for Tenant "
+  //              + vimInstance.getTenant()
+  //              + " of VimInstance "
+  //              + vimInstance.getName()
+  //              + " -> Quota: "
+  //              + quota);
+  //    } catch (Exception e) {
+  //      if (log.isDebugEnabled()) {
+  //        log.error(
+  //            "Not listed Quota successfully for Tenant "
+  //                + vimInstance.getTenant()
+  //                + " of VimInstance "
+  //                + vimInstance.getName()
+  //                + ". Caused by: "
+  //                + e.getMessage(),
+  //            e);
+  //      } else {
+  //        log.error(
+  //            "Not listed Quota successfully for Tenant "
+  //                + vimInstance.getTenant()
+  //                + " of VimInstance "
+  //                + vimInstance.getName()
+  //                + ". Caused by: "
+  //                + e.getMessage());
+  //      }
+  //      throw new VimException(
+  //          "Not listed Quota successfully for Tenant "
+  //              + vimInstance.getTenant()
+  //              + " of VimInstance "
+  //              + vimInstance.getName()
+  //              + ". Caused by: "
+  //              + e.getMessage(),
+  //          e);
+  //    }
+  //    return quota;
+  //  }
 }
