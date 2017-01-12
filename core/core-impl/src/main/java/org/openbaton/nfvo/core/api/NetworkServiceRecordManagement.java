@@ -1015,6 +1015,12 @@ public class NetworkServiceRecordManagement
 
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+          int floatingIpCount = 0;
+          for (VNFComponent vnfComponent : vdu.getVnfc()) {
+            for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+              if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
+            }
+          }
           for (String vimInstanceName : vdu.getVimInstanceName()) {
             VimInstance vimInstance = null;
             for (VimInstance vim : vimInstanceRepository.findByProjectId(projectID)) {
@@ -1038,6 +1044,7 @@ public class NetworkServiceRecordManagement
                 quota.setCores(df.getVcpus());
                 quota.setInstances(1);
                 quota.setRam(df.getRam());
+                quota.setFloatingIps(floatingIpCount);
                 requirements.put(vimInstance, quota);
               } else {
                 requirements
@@ -1049,6 +1056,10 @@ public class NetworkServiceRecordManagement
                 requirements
                     .get(vimInstance)
                     .setRam(requirements.get(vimInstance).getRam() + df.getRam());
+                requirements
+                    .get(vimInstance)
+                    .setFloatingIps(
+                        requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
               }
             }
           }
@@ -1058,9 +1069,11 @@ public class NetworkServiceRecordManagement
       for (VimInstance vimInstance : requirements.keySet()) {
         Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
         Quota neededQuota = requirements.get(vimInstance);
+        log.info("Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
         if (leftQuota.getRam() < neededQuota.getRam()
             || leftQuota.getCores() < neededQuota.getCores()
-            || leftQuota.getInstances() < neededQuota.getInstances())
+            || leftQuota.getInstances() < neededQuota.getInstances()
+            || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
           throw new VimException(
               "The VIM "
                   + vimInstance.getName()
