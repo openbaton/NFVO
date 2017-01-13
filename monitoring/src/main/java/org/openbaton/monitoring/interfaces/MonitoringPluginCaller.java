@@ -18,18 +18,7 @@
 package org.openbaton.monitoring.interfaces;
 
 import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
+
 import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;
@@ -47,13 +36,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
+
 /** Created by lto on 25/11/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class MonitoringPluginCaller extends MonitoringPlugin {
 
-  @Value("plugin.timeout:120000")
+  @Value("${nfvo.plugin.timeout:120000}")
   private long pluginTimeout;
 
   public String getManagementPort() {

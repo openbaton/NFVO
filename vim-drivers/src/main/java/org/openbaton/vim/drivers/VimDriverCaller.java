@@ -55,8 +55,8 @@ import javax.annotation.PreDestroy;
 @Scope("prototype")
 public class VimDriverCaller extends VimDriver {
 
-  @Value("plugin.timeout:120000")
-  private long pluginTimeout;
+  @Value("${nfvo.plugin.timeout:120000}")
+  private String pluginTimeout;
 
   private PluginCaller pluginCaller;
   private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -64,7 +64,13 @@ public class VimDriverCaller extends VimDriver {
   public VimDriverCaller(String type) throws IOException, TimeoutException, NotFoundException {
     pluginCaller =
         new PluginCaller(
-            "vim-drivers." + type, "localhost", "admin", "openbaton", 5672, 15672, pluginTimeout);
+            "vim-drivers." + type,
+            "localhost",
+            "admin",
+            "openbaton",
+            5672,
+            15672,
+            Long.parseLong(pluginTimeout));
   }
 
   public VimDriverCaller(String name, String type)
@@ -77,14 +83,14 @@ public class VimDriverCaller extends VimDriver {
             "openbaton",
             5672,
             15672,
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
-  public long getPluginTimeout() {
+  public String getPluginTimeout() {
     return pluginTimeout;
   }
 
-  public void setPluginTimeout(long pluginTimeout) {
+  public void setPluginTimeout(String pluginTimeout) {
     this.pluginTimeout = pluginTimeout;
   }
 
@@ -99,7 +105,7 @@ public class VimDriverCaller extends VimDriver {
               "openbaton",
               5672,
               Integer.parseInt(managementPort),
-              pluginTimeout);
+              Long.parseLong(pluginTimeout));
     } else {
       pluginCaller =
           new PluginCaller(
@@ -109,7 +115,7 @@ public class VimDriverCaller extends VimDriver {
               "openbaton",
               5672,
               Integer.parseInt(managementPort),
-              pluginTimeout);
+              Long.parseLong(pluginTimeout));
     }
   }
 
@@ -129,7 +135,7 @@ public class VimDriverCaller extends VimDriver {
             password,
             port,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public VimDriverCaller(
@@ -149,7 +155,7 @@ public class VimDriverCaller extends VimDriver {
             password,
             port,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public VimDriverCaller(
@@ -163,7 +169,7 @@ public class VimDriverCaller extends VimDriver {
             password,
             5672,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   @PreDestroy

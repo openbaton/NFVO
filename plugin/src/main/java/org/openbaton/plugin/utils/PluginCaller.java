@@ -34,7 +34,13 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.QueueingConsumer.Delivery;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
@@ -43,14 +49,6 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 /** Created by lto on 25/11/15. */
 public class PluginCaller {
