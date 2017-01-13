@@ -56,7 +56,9 @@ import java.util.concurrent.TimeoutException;
 public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Value("${nfvo.plugin.timeout:120000}")
-  private long pluginTimeout;
+  private String pluginTimeout;
+
+  private PluginCaller pluginCaller;
 
   public String getManagementPort() {
     return managementPort;
@@ -75,7 +77,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       throws IOException, TimeoutException, NotFoundException {
     pluginCaller =
         new PluginCaller(
-            "monitor." + type, "localhost", "admin", "openbaton", 5672, 15672, pluginTimeout);
+            "monitor." + type, "localhost", "admin", "openbaton", 5672, 15672, Long.parseLong(pluginTimeout));
   }
 
   public MonitoringPluginCaller(String name, String type)
@@ -88,7 +90,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             "openbaton",
             5672,
             15672,
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public MonitoringPluginCaller(String name, String type, String managementPort)
@@ -101,7 +103,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             "openbaton",
             5672,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public MonitoringPluginCaller(
@@ -120,7 +122,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             password,
             port,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public MonitoringPluginCaller(
@@ -140,7 +142,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             password,
             port,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
 
   public MonitoringPluginCaller(
@@ -154,13 +156,19 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             password,
             5672,
             Integer.parseInt(managementPort),
-            pluginTimeout);
+            Long.parseLong(pluginTimeout));
   }
-
-  private PluginCaller pluginCaller;
 
   public void stop() throws Exception {
     pluginCaller.close();
+  }
+
+  public String getPluginTimeout() {
+    return pluginTimeout;
+  }
+
+  public void setPluginTimeout(String pluginTimeout) {
+    this.pluginTimeout = pluginTimeout;
   }
 
   public static void main(String[] args)
