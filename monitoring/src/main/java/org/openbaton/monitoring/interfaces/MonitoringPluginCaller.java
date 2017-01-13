@@ -24,8 +24,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.*;
-import org.openbaton.catalogue.mano.common.monitoring.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
+import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
+import org.openbaton.catalogue.mano.common.monitoring.Alarm;
+import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;
+import org.openbaton.catalogue.mano.common.monitoring.ObjectSelection;
+import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
+import org.openbaton.catalogue.mano.common.monitoring.ThresholdDetails;
+import org.openbaton.catalogue.mano.common.monitoring.ThresholdType;
 import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
@@ -41,6 +52,9 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class MonitoringPluginCaller extends MonitoringPlugin {
+
+  @Value("plugin.timeout:120000")
+  private long pluginTimeout;
 
   public String getManagementPort() {
     return managementPort;
@@ -58,14 +72,21 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   public MonitoringPluginCaller(String type)
       throws IOException, TimeoutException, NotFoundException {
     pluginCaller =
-        new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672, 15672);
+        new PluginCaller(
+            "monitor." + type, "localhost", "admin", "openbaton", 5672, 15672, pluginTimeout);
   }
 
   public MonitoringPluginCaller(String name, String type)
       throws IOException, TimeoutException, NotFoundException {
     pluginCaller =
         new PluginCaller(
-            "monitor." + type + "." + name, "localhost", "admin", "openbaton", 5672, 15672);
+            "monitor." + type + "." + name,
+            "localhost",
+            "admin",
+            "openbaton",
+            5672,
+            15672,
+            pluginTimeout);
   }
 
   public MonitoringPluginCaller(String name, String type, String managementPort)
@@ -77,7 +98,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             "admin",
             "openbaton",
             5672,
-            Integer.parseInt(managementPort));
+            Integer.parseInt(managementPort),
+            pluginTimeout);
   }
 
   public MonitoringPluginCaller(
@@ -95,7 +117,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             username,
             password,
             port,
-            Integer.parseInt(managementPort));
+            Integer.parseInt(managementPort),
+            pluginTimeout);
   }
 
   public MonitoringPluginCaller(
@@ -114,7 +137,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             username,
             password,
             port,
-            Integer.parseInt(managementPort));
+            Integer.parseInt(managementPort),
+            pluginTimeout);
   }
 
   public MonitoringPluginCaller(
@@ -127,7 +151,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             username,
             password,
             5672,
-            Integer.parseInt(managementPort));
+            Integer.parseInt(managementPort),
+            pluginTimeout);
   }
 
   private PluginCaller pluginCaller;
