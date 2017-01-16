@@ -17,14 +17,21 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -41,31 +48,53 @@ import org.springframework.stereotype.Service;
 public class OpenstackVIM extends GenericVIM {
 
   public OpenstackVIM(
-      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
+      String username,
+      String password,
+      String brokerIp,
+      int port,
+      String managementPort,
+      ApplicationContext context,
+      String pluginName,
+      int pluginTimeout)
       throws PluginException {
-    super("openstack." + name, brokerIp, port, managementPort, context);
+    super(
+        "openstack",
+        username,
+        password,
+        brokerIp,
+        port,
+        managementPort,
+        context,
+        pluginName,
+        pluginTimeout);
   }
 
-  public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-    super("openstack", "", managementPort, context);
-  }
-
-  public OpenstackVIM(int port, String managementPort, ApplicationContext context)
-      throws PluginException {
-    super("openstack", managementPort, context);
-  }
-
-  public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-    super("openstack", name, port, managementPort, null);
-  }
-
-  public OpenstackVIM(String managementPort) throws PluginException {
-    super("openstack", managementPort, null);
-  }
-
-  public OpenstackVIM(int port, String managementPort) throws PluginException {
-    super("openstack", managementPort, null);
-  }
+  //  public OpenstackVIM(
+  //      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
+  //      throws PluginException {
+  //    super("openstack." + name, brokerIp, port, managementPort, context);
+  //  }
+  //
+  //  public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
+  //    super("openstack", "", managementPort, context);
+  //  }
+  //
+  //  public OpenstackVIM(int port, String managementPort, ApplicationContext context)
+  //      throws PluginException {
+  //    super("openstack", managementPort, context);
+  //  }
+  //
+  //  public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
+  //    super("openstack", name, port, managementPort, null);
+  //  }
+  //
+  //  public OpenstackVIM(String managementPort) throws PluginException {
+  //    super("openstack", managementPort, null);
+  //  }
+  //
+  //  public OpenstackVIM(int port, String managementPort) throws PluginException {
+  //    super("openstack", managementPort, null);
+  //  }
 
   public OpenstackVIM() {}
 
@@ -477,51 +506,51 @@ public class OpenstackVIM extends GenericVIM {
     return new AsyncResult<>(vnfcInstance);
   }
 
-  @Override
-  public Quota getQuota(VimInstance vimInstance) throws VimException {
-    log.debug(
-        "Listing Quota for Tenant "
-            + vimInstance.getTenant()
-            + " of VimInstance "
-            + vimInstance.getName());
-    Quota quota = null;
-    try {
-      quota = client.getQuota(vimInstance);
-      log.info(
-          "Listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + " -> Quota: "
-              + quota);
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    return quota;
-  }
+  //  @Override
+  //  public Quota getQuota(VimInstance vimInstance) throws VimException {
+  //    log.debug(
+  //        "Listing Quota for Tenant "
+  //            + vimInstance.getTenant()
+  //            + " of VimInstance "
+  //            + vimInstance.getName());
+  //    Quota quota = null;
+  //    try {
+  //      quota = client.getQuota(vimInstance);
+  //      log.info(
+  //          "Listed Quota successfully for Tenant "
+  //              + vimInstance.getTenant()
+  //              + " of VimInstance "
+  //              + vimInstance.getName()
+  //              + " -> Quota: "
+  //              + quota);
+  //    } catch (Exception e) {
+  //      if (log.isDebugEnabled()) {
+  //        log.error(
+  //            "Not listed Quota successfully for Tenant "
+  //                + vimInstance.getTenant()
+  //                + " of VimInstance "
+  //                + vimInstance.getName()
+  //                + ". Caused by: "
+  //                + e.getMessage(),
+  //            e);
+  //      } else {
+  //        log.error(
+  //            "Not listed Quota successfully for Tenant "
+  //                + vimInstance.getTenant()
+  //                + " of VimInstance "
+  //                + vimInstance.getName()
+  //                + ". Caused by: "
+  //                + e.getMessage());
+  //      }
+  //      throw new VimException(
+  //          "Not listed Quota successfully for Tenant "
+  //              + vimInstance.getTenant()
+  //              + " of VimInstance "
+  //              + vimInstance.getName()
+  //              + ". Caused by: "
+  //              + e.getMessage(),
+  //          e);
+  //    }
+  //    return quota;
+  //  }
 }

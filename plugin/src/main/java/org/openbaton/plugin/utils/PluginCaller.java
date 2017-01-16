@@ -17,7 +17,16 @@
 
 package org.openbaton.plugin.utils;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import com.rabbitmq.client.Channel;
@@ -48,6 +57,7 @@ public class PluginCaller {
   private final String brokerIp;
   private final String username;
   private final String password;
+  private final long timeout;
   private Connection connection;
   private Gson gson =
       new GsonBuilder()
@@ -77,12 +87,25 @@ public class PluginCaller {
       String password,
       int port,
       int managementPort)
+      throws TimeoutException, IOException, NotFoundException {
+    this(pluginId, brokerIp, username, password, port, managementPort, 500000);
+  }
+
+  public PluginCaller(
+      String pluginId,
+      String brokerIp,
+      String username,
+      String password,
+      int port,
+      int managementPort,
+      long timeout)
       throws IOException, TimeoutException, NotFoundException {
     this.pluginId = getFullPluginId(pluginId, brokerIp, username, password, managementPort);
     this.managementPort = managementPort;
     this.brokerIp = brokerIp;
     this.username = username;
     this.password = password;
+    this.timeout = timeout;
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(brokerIp);
     if (username != null) factory.setUsername(username);
@@ -142,15 +165,26 @@ public class PluginCaller {
     if (returnType != null) {
 
       while (true) {
-        Delivery delivery = consumer.nextDelivery();
-        if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-          response = new String(delivery.getBody());
-          log.trace("received: " + response);
-          break;
+        Delivery delivery = consumer.nextDelivery(timeout);
+        if (delivery != null) {
+          if (delivery.getProperties().getCorrelationId().equals(corrId)) {
+            response = new String(delivery.getBody());
+            log.trace("received: " + response);
+            break;
+          } else {
+            log.error("Received Message with wrong correlation id");
+            throw new PluginException(
+                "Received Message with wrong correlation id. This should not happen, if it does please call us.");
+          }
         } else {
-          log.error("Received Message with wrong correlation id");
+          log.error(
+              "Timeout of "
+                  + timeout / 1000
+                  + " second is reached and no answer was received, supposing that the plugin crashed");
           throw new PluginException(
-              "Received Message with wrong correlation id. This should not happen, if it does please call us.");
+              "Timeout of "
+                  + timeout / 1000
+                  + " second is reached and no answer was received, supposing that the plugin crashed");
         }
       }
 
