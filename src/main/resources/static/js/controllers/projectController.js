@@ -49,6 +49,9 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 
@@ -95,9 +98,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Project: ' + data.name + ' deleted.');
+                showOk('Project: ' + data.name + ' is being deleted.');
                 loadTable();
-                location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
@@ -143,20 +145,35 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 });
     }
 
-    function showError(data, status) {
+   function showError(data, status) {
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        });
+        } else {
+        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
+            msg:  data.message + " Code: " + status
         });
+        }
+
         $('.modal').modal('hide');
         if (status === 401) {
-            console.error(status + ' Status unauthorized')
+            console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
-
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+        window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }

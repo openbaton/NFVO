@@ -19,7 +19,30 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
     var urlVim = baseUrl + '/datacenters';
-
+    var defaultvdu = {
+        version:0,
+        name: "",
+        vm_image:[],
+        vimInstanceName:[],
+        scale_in_out:2,
+        vnfc:[ {version:"0",connection_point:[]}]
+   };
+   var defaultVNFD = {
+      vendor:"",
+      version:"",
+      name:"",
+      type:"",
+      endpoint:"generic",
+      monitoring_parameter:[],
+      vdu:[],
+      virtual_link:[],
+      lifecycle_event:[],
+      deployment_flavour:[{"flavour_key":"m1.small"}],
+      auto_scale_policy:[],
+      configurations:{name:"", configurationParameters:[]} 
+   };
+   $scope.custom_images = [];
+   $scope.lifecycle_event_type = ["INSTANTIATE", "CONFIGURE","START", "TERMINATE", "SCALE_IN"];
     //$interval(loadTable, 2000);
     loadTable();
 
@@ -35,7 +58,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
         });
 
-
+     $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
+    
     $scope.copyToClipboard = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
@@ -73,18 +99,19 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $scope.vnfdCreate.deployment_flavour.push(angular.copy($scope.depFlavor));
     };
 
-    $scope.selection = [];
+    $scope.selectionImage = [];
 
     $scope.toggleSelection = function toggleSelection(image) {
-        var idx = $scope.selection.indexOf(image);
+        console.log(({}).toString.call($scope.selection).match(/\s([a-zA-Z]+)/)[1].toLowerCase())
+        var idx = $scope.selectionImage.indexOf(image);
         if (idx > -1) {
-            $scope.selection.splice(idx, 1);
+            $scope.selectionImage.splice(idx, 1);
         }
         else {
-            $scope.selection.push(image);
+            $scope.selectionImage.push(image);
         }
-        console.log($scope.selection);
-        $scope.vduCreate.vm_image = $scope.selection;
+        console.log($scope.selectionImage);
+        $scope.vduCreate.vm_image = $scope.selectionImage;
     };
 
     $scope.sendVNFD = function () {
@@ -114,6 +141,9 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
     $scope.saveValueMPfromVNFD = function (newValue) {
         console.log(newValue);
+        if (newValue.length <= 0) {
+            return;
+        };
         $scope.vnfdCreate.monitoring_parameter.push(newValue);
     };
     $scope.editVDU = function (vnfd, index) {
@@ -149,32 +179,82 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
 
     $scope.addDepFlavour = function () {
-        $http.get('descriptors/vnfd/deployment_flavour.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.depFlavor = angular.copy(res.data);
-            });
-        $('#modaladdDepFlavour').modal('show');
+        $scope.vnfdCreate.deployment_flavour.push({flavour_key:""});
     };
 
     $scope.addVDU = function () {
-        $http.get('descriptors/vnfd/vdu.json')
-            .then(function (res) {
-                console.log(res.data);
-                $scope.vduCreate = angular.copy(res.data);
-            });
+       
+                $scope.vduCreate = angular.copy(defaultvdu);
+                //$scope.vduCreate.vimInstanceName.push($scope.vimInstances[0].name);
         $('#addEditVDU').modal('show');
     };
 
     $scope.showTab = function (value) {
         return (value > 0);
     };
+    $scope.addVNFC = function() {   
+        var newVnfc = {version:"0",connection_point:[{floatingIp:"random",virtual_link_reference:"private"}]};
+        $scope.vduCreate.vnfc.push(newVnfc);
+    };
+    $scope.addConnection = function(data) {
+        data.connection_point.push({floatingIp:"random",virtual_link_reference:"private"});
+    };
+    $scope.removeVNFC = function(index) {
+        $scope.vduCreate.vnfc.splice(index,1);
+    };
+    $scope.removeConnection = function(data,index) {
+        data.connection_point.splice(index,1);
+    };
+    $scope.saveImageName = function(name){
+        $scope.custom_images.push(name);
+
+    };
+    $scope.clearVduVims = function() {
+        $scope.vduCreate.vimInstanceName = [];
+        $scope.vduCreate.vm_image = [];
+        $scope.selectionImage = [];
+        console.log($scope.selection);
+    };
+    $scope.deleteVL = function(index) {
+        $scope.vnfdCreate.virtual_link.splice(index, 1);
+    };
+    $scope.addVL = function() {
+        $scope.vnfdCreate.virtual_link.push({name:""});
+    };
+
+    $scope.addLifecycleEvent = function() {
+        $scope.vnfdCreate.lifecycle_event.push({event:"", lifecycle_events:[]});
+        console.log($scope.vnfdCreate.lifecycle_event);
+    };
+     $scope.removeLifecycleEvent = function(index) {
+        $scope.vnfdCreate.lifecycle_event.splice(index,1);
+    };
+    $scope.addScript = function(index) {
+        $scope.vnfdCreate.lifecycle_event[index].lifecycle_events.push("skript_name");
+    };
+    $scope.removeScript = function(event, index) {
+        event.lifecycle_events.splice(index,1);
+
+    };
+    $scope.addConfPar = function() {
+        $scope.vnfdCreate.configurations.configurationParameters.push({confKey:"",value:""});
+    };
+    $scope.removeConf = function(index) {
+        $scope.vnfdCreate.configurations.configurationParameters.splice(index, 1);
+    };
+
+    $scope.addMonitoringParameter = function() {
+        $scope.vnfdCreate.monitoring_parameter.push("");
+    };
+    $scope.removeMonitoringParameter = function(index) {
+        $scope.vnfdCreate.monitoring_parameter.splice(index, 1);
+    };
 
     $scope.addVNFD = function () {
         $http.get('descriptors/vnfd/vnfd.json')
             .then(function (res) {
                 console.log(res.data);
-                $scope.vnfdCreate = angular.copy(res.data);
+                $scope.vnfdCreate = angular.copy(defaultVNFD);
             });
         $('#addEditVNDF').modal('show');
     };
@@ -207,8 +287,11 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (response, status) {
-                showError(response, status);
+                showError(status, response);
             });
+             $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
 
@@ -273,16 +356,24 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         }
     }
 
-    function showError(status, data) {
+  function showError(status, data) {
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        });
+        } else {
+        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
+            msg:  data.message + " Code: " + status
         });
+        }
+
         $('.modal').modal('hide');
         if (status === 401) {
             console.log(status + ' Status unauthorized')
             AuthService.logout();
-            $window.location.reload();
         }
     }
 
@@ -299,5 +390,14 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
         $('.modal').modal('hide');
     }
 
+$('.modal-dialog').draggable();
 
+});
+
+
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
 });

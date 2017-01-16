@@ -381,6 +381,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             .error(function (response, status) {
                 showError(response, status);
             });
+            $scope.multipleDelete = false;
+            $scope.selection = {};
+            $scope.selection.ids = {};
 
     };
     $scope.main = {checkbox: false};
@@ -419,14 +422,22 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     /* -- multiple delete functions END -- */
 
     function showError(status, data) {
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        });
+        } else {
+        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong>: ' + JSON.stringify(data)
+            msg:  data.message + " Code: " + status
         });
+        }
 
         $('.modal').modal('hide');
         if (status === 401) {
-            //console.log(status + ' Status unauthorized')
+            console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
     }
@@ -434,6 +445,13 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+         window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
         $('.modal').modal('hide');
     }
 

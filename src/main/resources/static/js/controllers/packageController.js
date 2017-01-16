@@ -38,38 +38,38 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 loadTable();
             })
             .error(function (response, status) {
-                showError(response,status);
+                showError(response, status);
             });
     };
 
     $scope.deleteScript = function (data) {
-        http.delete(url +$routeParams.packageid+'/scripts/'+ data.id)
+        http.delete(url + $routeParams.packageid + '/scripts/' + data.id)
             .success(function (response) {
                 showOk('Script deleted.');
 
             })
             .error(function (response, status) {
-                showError(response,status);
+                showError(response, status);
             });
     };
     $scope.editScript = function (data) {
-        http.get(url +$routeParams.packageid+'/scripts/'+ data.id)
+        http.get(url + $routeParams.packageid + '/scripts/' + data.id)
             .success(function (response) {
                 $scope.scriptToEdit = response;
                 $scope.editingScript = data;
                 $("#modalEditScript").modal("show");
             })
             .error(function (response, status) {
-                showError(response,status);
+                showError(response, status);
             });
     };
     $scope.sendScript = function (scriptToEdit) {
-        http.put(url +$routeParams.packageid+'/scripts/'+ $scope.editingScript.id, scriptToEdit)
+        http.put(url + $routeParams.packageid + '/scripts/' + $scope.editingScript.id, scriptToEdit)
             .success(function (response) {
                 showOk('Script updated!');
             })
             .error(function (response, status) {
-                showError(response,status);
+                showError(response, status);
             });
     };
 
@@ -79,7 +79,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
     /* -- multiple delete functions Start -- */
 
-    $scope.multipleDeleteReq = function(){
+    $scope.multipleDeleteReq = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
             if (value) {
@@ -95,11 +95,14 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             .error(function (response, status) {
                 showError(response, status);
             });
+        $scope.multipleDelete = false;
+        $scope.selection = {};
+        $scope.selection.ids = {};
 
     };
     $scope.$watch('mainCheckbox', function (newValue, oldValue) {
-        console.log(newValue);
-        console.log($scope.selection.ids);
+        //console.log(newValue);
+        //console.log($scope.selection.ids);
 
 
         angular.forEach($scope.selection.ids, function (value, k) {
@@ -108,7 +111,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
             $scope.selection.ids[k] = newValue;
         });
-        console.log($scope.selection.ids);
+        //console.log($scope.selection.ids);
 
     });
     $scope.$watch('selection', function (newValue, oldValue) {
@@ -130,13 +133,13 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             $scope.mainCheckbox = false;
     }, true);
 
-    $scope.$watch('csarPackage', function(newValue, oldValue) {
+    $scope.$watch('csarPackage', function (newValue, oldValue) {
         if ($scope.csarPackage) {
-                myDropzone.options.url = urlTosca;
-            } else {
-                myDropzone.options.url = url;
-            }
-            console.log(myDropzone.options.url);
+            myDropzone.options.url = urlTosca;
+        } else {
+            myDropzone.options.url = url;
+        }
+        //console.log(myDropzone.options.url);
     });
 
     $scope.multipleDelete = true;
@@ -169,10 +172,17 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }
 
     function showError(data, status) {
-        $scope.alerts.push({
-            type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
-        });
+        if (status === 500) {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
+        } else {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + '. Error code: ' + status
+            });
+        }
         $('.modal').modal('hide');
         if (status === 401) {
             console.log(status + ' Status unauthorized')
@@ -181,14 +191,14 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
-         window.setTimeout(function() { 
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
             for (i = 0; i < $scope.alerts.length; i++) {
-             if ($scope.alerts[i].type == 'success') {
-             $scope.alerts.splice(i, 1);
-              }
-           }   
-          }, 5000);
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }
@@ -204,7 +214,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             var header = {};
 
             if ($cookieStore.get('token') !== '')
-                header = {'Authorization': 'Bearer ' + $cookieStore.get('token')};
+                header = { 'Authorization': 'Bearer ' + $cookieStore.get('token') };
 
             header['project-id'] = $cookieStore.get('project').id;
             myDropzone = new Dropzone('#my-dropzone', {
@@ -225,7 +235,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                             loadTable();
                         });
                     });
-                    this.on("queuecomplete", function (file, responseText) {
+                    this.on("success", function (file, responseText) {
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the VNF Package");
                             loadTable();
@@ -233,18 +243,24 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
                     });
                     this.on("error", function (file, responseText) {
-                        console.log(responseText);
-                        $scope.$apply(function ($scope) {
-                            showError(responseText.message, "422");
+                        if (responseText === "Server responded with 500 code.") {
+                            $scope.$apply(function ($scope) {
+                                showError({ message: "error" }, 500);
+                            });
+                        } else {
+                            console.log(responseText);
+                            $scope.$apply(function ($scope) {
+                                showError(responseText, responseText.code);
+                            });
+                        }
                         });
-                    });
                 }
             });
 
 
 
 
-// Update the total progress bar
+            // Update the total progress bar
             myDropzone.on("totaluploadprogress", function (progress) {
                 $('.progress .bar:first').width = progress + "%";
             });
@@ -256,7 +272,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
 
             });
 
-// Hide the total progress bar when nothing's uploading anymore
+            // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
 

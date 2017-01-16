@@ -17,16 +17,31 @@
 angular.module('app').controller('vimInstanceCtrl', function ($scope, $routeParams, http, $location, AuthService, $cookieStore, $interval) {
 
     var url = $cookieStore.get('URL') + "/api/v1/datacenters/";
-
+    var bareUrl = $cookieStore.get('URL');
     $scope.alerts = [];
     $scope.datacenter = {};
     $scope.file = '';
     $scope.showPass = false;
-
+    $scope.newvim = { type: "openstack", securityGroups: [] };
+    $scope.driversinstalled = [];
+    $scope.installed = [];
+    var formInput = true;
+    var fileInput = false;
     loadVIM();
+    loadInstalled();
 
 
     $scope.textTopologyJson = '';
+    $scope.setFormInput = function () {
+        formInput = true;
+        fileInput = false;
+        
+    };
+    $scope.setFileInput = function () {
+        formInput = false;
+        fileInput = true;    
+    };
+
     $scope.changeText = function (text) {
         $scope.textTopologyJson = text;
     };
@@ -41,13 +56,13 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             return true;
     };
     $scope.updateObj = function () {
-        if(!angular.isUndefined($routeParams.vimInstanceId))
+        if (!angular.isUndefined($routeParams.vimInstanceId))
             updateObject($routeParams.vimInstanceId);
         else
             updateObject($scope.editObj.id);
     };
 
-    function updateObject(id){
+    function updateObject(id) {
         console.log($scope.editObj);
         http.put(url + '/' + id, $scope.editObj)
             .success(function (response) {
@@ -63,11 +78,11 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.editField = function () {
         this.editValue = true;
     };
-    $scope.hoverIn = function(){
+    $scope.hoverIn = function () {
         this.hoverEdit = true;
     };
 
-    $scope.hoverOut = function(){
+    $scope.hoverOut = function () {
         this.hoverEdit = false;
     };
 
@@ -88,39 +103,59 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         });
     };
     $scope.sendInfrastructure = function () {
-        if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
-            console.log($scope.file);
-            http.post(url, $scope.file)
+        if (formInput) {
+            console.log("Using formInput")
+            //console.log($scope.newvim);
+            http.post(url, $scope.newvim)
                 .success(function (response) {
-                    showOk('Vim Instance created.');
+                    showOk('VIM Instance created.');
+                    $scope.file = '';
                     loadVIM();
                 })
                 .error(function (data, status) {
                     if (status === 400)
-                        showError(status, "Bad request: your json is not well formatted");
+                        showError(status, {message:"Something went wrong"});
                     else
                         showError(status, data);
 
                 });
-        } else if ($scope.textTopologyJson !== '') {
-            console.log($scope.textTopologyJson);
-            http.post(url, $scope.textTopologyJson)
-                .success(function (response) {
-                    showOk('VIM Instance created.');
-                    $scope.file = '';
-                })
-                .error(function (data, status) {
-                    if (status === 400)
-                        showError(status, "Bad request: your json is not well formatted");
-                    else
-                        showError(status, data);
+        } else if (fileInput) {
+            if ($scope.file !== '' && !angular.isUndefined($scope.file)) {
+                console.log("Using fileInput")
+                //console.log($scope.file);
+                http.post(url, $scope.file)
+                    .success(function (response) {
+                        showOk('Vim Instance created.');
+                        loadVIM();
+                    })
+                    .error(function (data, status) {
+                        if (status === 400)
+                            showError(status, {message:"Bad request: your json is not well formatted"});
+                        else
+                            showError(status, data);
 
-                });
+                    });
+            } else if ($scope.textTopologyJson !== '') {
+                console.log($scope.textTopologyJson);
+                http.post(url, $scope.textTopologyJson)
+                    .success(function (response) {
+                        showOk('VIM Instance created.');
+                        $scope.file = '';
+                        loadVIM();
+                    })
+                    .error(function (data, status) {
+                        if (status === 400)
+                            showError(status, {message:"Bad request: your json is not well formatted"});
+
+                    });
+            }
         }
         else {
-            showError('Problem with the VIM Instance');
+            showError('None of the inputs were correct');
 
         }
+        $scope.textTopologyJson = '';
+        $scope.file = '';
     };
 
 
@@ -135,7 +170,12 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         $scope.locationRadio = location;
     };
 
-
+    $scope.addSecurityGroup = function () {
+        $scope.newvim.securityGroups.push("");
+    };
+    $scope.removeSecurityGroup = function (index) {
+        $scope.newvim.securityGroups.splice(index, 1);
+    };
     $scope.saveDataCenter = function (vimInstanceJson) {
         if ($scope.file !== '') {
             vimInstanceJson = $scope.file;
@@ -214,8 +254,8 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                     $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
 
                 }).error(function (data, status) {
-                showError(status, data);
-            });
+                    showError(status, data);
+                });
         else {
             http.get(url)
                 .success(function (response) {
@@ -228,12 +268,38 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     }
 
 
+    function loadInstalled() {
+        http.get(bareUrl + "/api/v1/plugins").success(function (response) {
+            $scope.driversinstalled = response;
+            response.map(function (pl) {
+                l1 = pl.split(".");
+                $scope.installed.push({ name: l1[2], type: l1[1] });
+
+            })
+            console.log($scope.installed);
+
+
+        })
+            .error(function (data, status) {
+                showError(status, data);
+            });
+
+    }
+
+
     function showError(status, data) {
+        if (status === 500) {
+            $scope.alerts.push({
+            type: 'danger',
+            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+        });
+        } else {
         console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
         $scope.alerts.push({
             type: 'danger',
-            msg: 'ERROR: <strong>HTTP status</strong>: ' + status + ' response <strong>data</strong> : ' + JSON.stringify(data)
+            msg:  data.message + " Code: " + status
         });
+        }
 
         $('.modal').modal('hide');
         if (status === 401) {
@@ -243,8 +309,14 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
-
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         $('.modal').modal('hide');
     }
 

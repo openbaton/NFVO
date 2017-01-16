@@ -81,7 +81,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      */
     $scope.login = function (credential) {
         AuthService.login(credential, $scope.URL);
-        setTimeout(showLoginError, 2000);
+        setTimeout(showLoginError, 10000);
     };
 
 
@@ -218,23 +218,22 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         console.log(newValue);
         if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
-
             loadNumbers();
             loadQuota();
             getConfig();
             loadCurrentUser();
             getVersion();
+            
 
         }
-        if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
+        else if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
-
             loadNumbers();
             loadQuota();
             getConfig();
             loadCurrentUser();
             getVersion();
-        }
+        } 
 
 
     });
