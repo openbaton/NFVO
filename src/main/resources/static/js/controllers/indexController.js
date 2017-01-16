@@ -306,6 +306,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.logout = function () {
         AuthService.logout();
     };
+    //Functions for changing the password
+      $scope.oldPassword = '';
+      $scope.newPassword = '';
+      $scope.newPassword1 = '';
 
     $scope.changePassword = function () {
         $scope.oldPassword = '';
@@ -314,6 +318,26 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
         $('#modalChangePassword').modal('show');
     };
+
+$scope.$watchGroup(["newPassword", "newPassword1"], function(newValue, oldValue) {
+        if ($scope.newPassword.length < 8 || !(/[a-z]/.test($scope.newPassword)) || !(/[A-Z]/.test($scope.newPassword)) || !(/[0-9]/.test($scope.newPassword))) {
+            $scope.newPasswordStyle = {'background-color':'pink'};
+            $scope.newPasswordStrong = false;
+        } else {
+            $scope.newPasswordStyle = {'background-color':'white'};
+            $scope.newPasswordStrong = true;
+        }
+      
+        if ($scope.newPassword !== $scope.newPassword1) {
+            $scope.newPasswordRepeat = {'background-color':'pink'};
+             $scope.newPasswordSame = false;
+        } else {
+            $scope.newPasswordRepeat = {'background-color':'white'};
+             $scope.newPasswordSame = true;
+        }
+    }, true);
+
+
 
     $scope.postNew = function() {
       if ($scope.newPassword.localeCompare($scope.newPassword1) == 0) {

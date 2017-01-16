@@ -337,8 +337,11 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         }
     }, true);
     var changingPasswordData = {};
+    $scope.passChangeUsername = '';
     $scope.changeUserPassword = function(data) {
+      //console.log(data.username);
       changingPasswordData = data;
+      $scope.passChangeUsername = changingPasswordData.username;
    
     };
 
