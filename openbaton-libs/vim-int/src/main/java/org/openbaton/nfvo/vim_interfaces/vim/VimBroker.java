@@ -29,13 +29,13 @@ public interface VimBroker {
 
   ClientInterfaces getClient(String type);
 
-  Vim getVim(String type, String name) throws PluginException;
+  //  Vim getVim(String type, String name) throws PluginException;
 
   Vim getVim(String type) throws PluginException;
 
-  Vim getVim(String type, int port) throws PluginException;
+  //  Vim getVim(String type, int port) throws PluginException;
 
-  Vim getVim(String type, String name, String port);
+  //  Vim getVim(String type, String name, String port);
 
   Quota getLeftQuota(VimInstance vimInstance) throws VimException, PluginException;
 }

@@ -17,14 +17,26 @@
 
 package org.openbaton.vim_impl.vim.test;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -104,10 +116,28 @@ public class VimTestSuiteClass {
   public void init() throws Exception {
     MockitoAnnotations.initMocks(this);
     PowerMockito.whenNew(VimDriverCaller.class)
-        .withParameterTypes(String.class, String.class)
-        .withArguments("openstack", "15672")
+        .withParameterTypes(
+            String.class,
+            String.class,
+            String.class,
+            int.class,
+            String.class,
+            String.class,
+            String.class,
+            int.class)
+        .withArguments(
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyInt())
         .thenReturn(vimDriverCaller);
-    openstackVIM = new OpenstackVIM("15672");
+    openstackVIM =
+        new OpenstackVIM(
+            "admin", "openbaton", "localhost", 5672, "15672", null, "openstack", 120000);
     openstackVIM.setClient(vimDriverCaller);
   }
 
