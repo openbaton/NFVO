@@ -1089,7 +1089,13 @@ public class GenericVIM extends Vim {
     }
     log.info("Found Networks with ExtIds: " + networks);
 
-    String flavorExtId = getFlavorExtID(vnfr.getDeployment_flavour_key(), vimInstance);
+    String flavorKey = null;
+    if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
+      flavorKey = vdu.getComputation_requirement();
+    } else {
+      flavorKey = vnfr.getDeployment_flavour_key();
+    }
+    String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
 
     log.info("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
