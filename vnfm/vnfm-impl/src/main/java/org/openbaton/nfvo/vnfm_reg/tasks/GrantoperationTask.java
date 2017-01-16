@@ -78,7 +78,9 @@ public class GrantoperationTask extends AbstractTask {
             .getVduVim()
             .put(
                 virtualDeploymentUnit.getId(),
-                vnfPlacementManagement.choseRandom(virtualDeploymentUnit.getVimInstanceName()));
+                vnfPlacementManagement.choseRandom(
+                    virtualDeploymentUnit.getVimInstanceName(),
+                    virtualNetworkFunctionRecord.getProjectId()));
       }
       nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
       //                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,

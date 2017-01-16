@@ -17,10 +17,10 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import java.util.Collection;
+import java.util.List;
 import org.openbaton.catalogue.nfvo.VimInstance;
 
 /** Created by lto on 10/03/16. */
 public interface VnfPlacementManagement {
-  VimInstance choseRandom(Collection<String> vimInstanceName);
+  VimInstance choseRandom(List<String> vimInstanceName, String projectId);
 }

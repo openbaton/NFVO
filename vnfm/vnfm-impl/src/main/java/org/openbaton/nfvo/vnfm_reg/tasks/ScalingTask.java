@@ -185,7 +185,8 @@ public class ScalingTask extends AbstractTask {
                         vdu,
                         virtualNetworkFunctionRecord,
                         componentToAdd,
-                        vnfPlacementManagement.choseRandom(vdu.getVimInstanceName()),
+                        vnfPlacementManagement.choseRandom(
+                            vdu.getVimInstanceName(), virtualNetworkFunctionRecord.getProjectId()),
                         userdata)
                     .get());
       } catch (VimDriverException e) {

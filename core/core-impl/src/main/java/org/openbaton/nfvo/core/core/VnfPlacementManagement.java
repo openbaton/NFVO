@@ -17,8 +17,6 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -38,19 +36,16 @@ public class VnfPlacementManagement
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public VimInstance choseRandom(Collection<String> vimInstanceName) {
+  public VimInstance choseRandom(List<String> vimInstanceName, String projectId) {
     if (!vimInstanceName.isEmpty()) {
-      String name =
-          vimInstanceName.toArray(new String[0])[
-              ((int) (Math.random() * 1000)) % vimInstanceName.size()];
+      String name = vimInstanceName.get((int) (Math.random() * 1000) % vimInstanceName.size());
       VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
       log.info("Chosen VimInstance: " + vimInstance.getName());
       return vimInstance;
     } else {
-      Iterable<VimInstance> vimInstances = vimInstanceRepository.findAll();
-      List<Iterable<VimInstance>> iterableList = Collections.singletonList(vimInstances);
-      return iterableList.toArray(new VimInstance[0])[
-          ((int) (Math.random() * 1000)) % iterableList.size()];
+      List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
+
+      return vimInstances.get((int) (Math.random() * 1000) % vimInstances.size());
     }
   }
 }

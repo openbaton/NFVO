@@ -17,6 +17,17 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -83,19 +94,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.PostConstruct;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -916,7 +914,7 @@ public class NetworkServiceRecordManagement
               instanceNames.add(vimInstance.getName());
             } else {
               String type = vimInstance.getType();
-              if (type.contains(".")){
+              if (type.contains(".")) {
                 type = type.split("\\.")[0];
               }
               if (vnfPackage.getVimTypes().contains(type)) {
