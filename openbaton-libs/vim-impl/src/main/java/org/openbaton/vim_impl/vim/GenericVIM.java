@@ -1424,48 +1424,51 @@ public class GenericVIM extends Vim {
       Map<String, String> floatingIps,
       VirtualNetworkFunctionRecord vnfr) {
     VNFCInstance vnfcInstance = new VNFCInstance();
-    vnfcInstance.setHostname(hostname);
-    vnfcInstance.setVc_id(server.getExtId());
-    vnfcInstance.setVim_id(vimInstance.getId());
+    if (server != null) {
+      vnfcInstance.setHostname(hostname);
+      vnfcInstance.setVc_id(server.getExtId());
+      vnfcInstance.setVim_id(vimInstance.getId());
 
-    vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+      vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
 
-    for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-      VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
-      connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
-      connectionPoint_vnfci.setType(connectionPoint.getType());
-      for (Entry<String, String> entry : server.getFloatingIps().entrySet())
-        if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
-          connectionPoint_vnfci.setFloatingIp(entry.getValue());
-      vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
-    }
+      for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+        VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
+        connectionPoint_vnfci.setVirtual_link_reference(
+            connectionPoint.getVirtual_link_reference());
+        connectionPoint_vnfci.setType(connectionPoint.getType());
+        if (server.getFloatingIps() != null)
+          for (Entry<String, String> entry : server.getFloatingIps().entrySet())
+            if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
+              connectionPoint_vnfci.setFloatingIp(entry.getValue());
+        vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
+      }
 
-    if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+      if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
 
-    vnfcInstance.setVnfComponent(vnfComponent);
+      vnfcInstance.setVnfComponent(vnfComponent);
 
-    vnfcInstance.setIps(new HashSet<Ip>());
-    vnfcInstance.setFloatingIps(new HashSet<Ip>());
+      vnfcInstance.setIps(new HashSet<Ip>());
+      vnfcInstance.setFloatingIps(new HashSet<Ip>());
 
-    if (!floatingIps.isEmpty()) {
-      for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {
+      if (!floatingIps.isEmpty()) {
+        for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {
+          Ip ip = new Ip();
+          ip.setNetName(fip.getKey());
+          ip.setIp(fip.getValue());
+          vnfcInstance.getFloatingIps().add(ip);
+        }
+      }
+
+      for (Entry<String, List<String>> network : server.getIps().entrySet()) {
         Ip ip = new Ip();
-        ip.setNetName(fip.getKey());
-        ip.setIp(fip.getValue());
-        vnfcInstance.getFloatingIps().add(ip);
+        ip.setNetName(network.getKey());
+        ip.setIp(network.getValue().iterator().next());
+        vnfcInstance.getIps().add(ip);
+        for (String ip1 : server.getIps().get(network.getKey())) {
+          vnfr.getVnf_address().add(ip1);
+        }
       }
     }
-
-    for (Entry<String, List<String>> network : server.getIps().entrySet()) {
-      Ip ip = new Ip();
-      ip.setNetName(network.getKey());
-      ip.setIp(network.getValue().iterator().next());
-      vnfcInstance.getIps().add(ip);
-      for (String ip1 : server.getIps().get(network.getKey())) {
-        vnfr.getVnf_address().add(ip1);
-      }
-    }
-
     return vnfcInstance;
   }
 }
