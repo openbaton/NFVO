@@ -99,9 +99,8 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('Project: ' + data.name + ' deleted.');
+                showOk('Project: ' + data.name + ' is being deleted.');
                 loadTable();
-                location.reload();
             })
             .error(function (response, status) {
                 showError(response, status);
@@ -169,6 +168,13 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
+        window.setTimeout(function() { 
+        for (i = 0; i < $scope.alerts.length; i++) {
+        if ($scope.alerts[i].type == 'success') {
+            $scope.alerts.splice(i, 1);
+        }
+    }
+    }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }

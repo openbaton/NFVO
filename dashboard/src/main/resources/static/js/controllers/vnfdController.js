@@ -59,7 +59,10 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
         });
 
-
+     $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
+    
     $scope.copyToClipboard = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
@@ -239,6 +242,13 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     };
     $scope.removeConf = function(index) {
         $scope.vnfdCreate.configurations.configurationParameters.splice(index, 1);
+    };
+
+    $scope.addMonitoringParameter = function() {
+        $scope.vnfdCreate.monitoring_parameter.push("");
+    };
+    $scope.removeMonitoringParameter = function(index) {
+        $scope.vnfdCreate.monitoring_parameter.splice(index, 1);
     };
 
     $scope.addVNFD = function () {

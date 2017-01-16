@@ -24,7 +24,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-  
+
     loadTable();
 
     $scope.eventObj = {
@@ -38,12 +38,12 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
 
     /* -- multiple delete functions Start -- */
 
-    $scope.multipleDeleteReq = function(){
+    $scope.multipleDeleteReq = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
-                if (value) {
-                    ids.push(k);
-                }
+            if (value) {
+                ids.push(k);
+            }
         });
         //console.log(ids);
         http.post(url + 'multipledelete', ids)
@@ -54,13 +54,13 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
             .error(function (response, status) {
                 showError(response, status);
             });
-            $scope.multipleDelete = false;
-            $scope.selection = {};
-            $scope.selection.ids = {};
+        $scope.multipleDelete = false;
+        $scope.selection = {};
+        $scope.selection.ids = {};
 
     };
 
-    $scope.main = {checkbox: false};
+    $scope.main = { checkbox: false };
     $scope.$watch('main', function (newValue, oldValue) {
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
@@ -133,8 +133,8 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
                     $scope.eventJSON = JSON.stringify(response, undefined, 4);
 
                 }).error(function (data, status) {
-                showError(data, status);
-            });
+                    showError(data, status);
+                });
         else {
             http.get(url)
                 .success(function (response) {
@@ -156,18 +156,18 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
 
     }
 
-    function showError(status, data) {
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
-            type: 'danger',
-            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
-        });
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
         } else {
-        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
-        $scope.alerts.push({
-            type: 'danger',
-            msg:  data.message + " Code: " + status
-        });
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + " Code: " + status
+            });
         }
 
         $('.modal').modal('hide');
@@ -178,7 +178,14 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         loadTable();
         $('.modal').modal('hide');
     }

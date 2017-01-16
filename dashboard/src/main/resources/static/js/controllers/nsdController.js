@@ -1041,11 +1041,17 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                         });
 
                     });
-                    this.on("error", function (file, responseText) {
-                        console.log(responseText);
-                        $scope.$apply(function ($scope) {
-                            showError(responseText, responseText.code);
-                        });
+                     this.on("error", function (file, responseText) {
+                        if (responseText === "Server responded with 500 code.") {
+                            $scope.$apply(function ($scope) {
+                                showError({ message: "error" }, 500);
+                            });
+                        } else {
+                            console.log(responseText);
+                            $scope.$apply(function ($scope) {
+                                showError(responseText, responseText.code);
+                            });
+                        }
                     });
                 }
             });

@@ -157,7 +157,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     $scope.deleteUser = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
-                showOk('User: ' + data.name + ' deleted.');
+                showOk('User: ' + data.username + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {

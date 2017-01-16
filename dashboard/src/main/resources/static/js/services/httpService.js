@@ -177,6 +177,8 @@ angular.module('app')
 
         http.delete = function (url) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
+            customHeaders['Content-type'] = 'application/json';
+            customHeaders['Accept'] = 'application/json';
             //console.log(customHeaders);
             $('#modalSend').modal('show');
             return $http({
