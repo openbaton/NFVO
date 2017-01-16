@@ -17,24 +17,43 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
-import org.openbaton.catalogue.mano.descriptor.*;
-import org.openbaton.catalogue.mano.record.*;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
@@ -42,7 +61,16 @@ import org.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.KeyRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFCRepository;
+import org.openbaton.nfvo.repositories.VNFRRepository;
+import org.openbaton.nfvo.repositories.VNFRecordDependencyRepository;
+import org.openbaton.nfvo.repositories.VduRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
@@ -55,6 +83,19 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
+import javax.annotation.PostConstruct;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -873,8 +914,14 @@ public class NetworkServiceRecordManagement
                 || vnfPackage.getVimTypes() == null
                 || vnfPackage.getVimTypes().isEmpty()) {
               instanceNames.add(vimInstance.getName());
-            } else if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
-              instanceNames.add(vimInstance.getName());
+            } else {
+              String type = vimInstance.getType();
+              if (type.contains(".")){
+                type = type.split("\\.")[0];
+              }
+              if (vnfPackage.getVimTypes().contains(type)) {
+                instanceNames.add(vimInstance.getName());
+              }
             }
           }
         }
