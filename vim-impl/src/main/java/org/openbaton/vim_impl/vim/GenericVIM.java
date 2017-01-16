@@ -44,7 +44,6 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -55,37 +54,30 @@ import org.springframework.stereotype.Service;
 @Scope(value = "prototype")
 public class GenericVIM extends Vim {
 
-  public GenericVIM(String type, String name, ApplicationContext context) throws PluginException {
-    super(type, name, context);
-  }
-
   public GenericVIM(
       String type,
       String username,
       String password,
       String brokerIp,
+      int port,
       String managementPort,
-      ApplicationContext context)
+      ApplicationContext context,
+      String pluginName,
+      int pluginTimeout)
       throws PluginException {
-    super(type, username, password, brokerIp, managementPort, context);
-  }
-
-  public GenericVIM(
-      String type, String brokerIp, int port, String managementPort, ApplicationContext context)
-      throws PluginException {
-    super(type, brokerIp, port, managementPort, context);
+    super(
+        type,
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        context,
+        pluginName,
+        pluginTimeout,
+        port);
   }
 
   public GenericVIM() {}
-
-  public GenericVIM(String type, String name, String managementPort, ApplicationContext context)
-      throws PluginException {
-    super(type, name, managementPort, context);
-  }
-
-  public GenericVIM(String type, ConfigurableApplicationContext context) throws PluginException {
-    super(type, context);
-  }
 
   @Override
   public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)

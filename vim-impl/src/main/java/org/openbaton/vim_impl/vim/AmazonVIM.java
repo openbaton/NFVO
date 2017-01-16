@@ -34,6 +34,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -43,17 +44,39 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class AmazonVIM extends GenericVIM {
 
-  public AmazonVIM(String name, int port, String managementPort) throws PluginException {
-    super("amazon", name, port, managementPort, null);
+  public AmazonVIM(
+      String username,
+      String password,
+      String brokerIp,
+      int port,
+      String managementPort,
+      ApplicationContext context,
+      String pluginName,
+      int pluginTimeout)
+      throws PluginException {
+    super(
+        "amazon",
+        username,
+        password,
+        brokerIp,
+        port,
+        managementPort,
+        context,
+        pluginName,
+        pluginTimeout);
   }
 
-  public AmazonVIM(String managementPort) throws PluginException {
-    super("amazon", managementPort, null);
-  }
-
-  public AmazonVIM(int port, String managementPort) throws PluginException {
-    super("amazon", managementPort, null);
-  }
+  //  public AmazonVIM(String name, int port, String managementPort) throws PluginException {
+  //    super("amazon", name, port, managementPort, null);
+  //  }
+  //
+  //  public AmazonVIM(String managementPort) throws PluginException {
+  //    super("amazon", managementPort, null);
+  //  }
+  //
+  //  public AmazonVIM(int port, String managementPort) throws PluginException {
+  //    super("amazon", managementPort, null);
+  //  }
 
   public AmazonVIM() {}
 

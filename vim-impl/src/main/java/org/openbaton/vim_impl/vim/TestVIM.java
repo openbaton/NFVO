@@ -38,6 +38,7 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -48,16 +49,26 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class TestVIM extends Vim {
 
-  public TestVIM(String name, int port, String managementPort) throws PluginException {
-    super("test", name, port, managementPort, null);
-  }
-
-  public TestVIM(String managementPort) throws PluginException {
-    super("test", managementPort, null);
-  }
-
-  public TestVIM(int port, String managementPort) throws PluginException {
-    super("test", managementPort, null);
+  public TestVIM(
+      int port,
+      String managementPort,
+      String pluginName,
+      int pluginTimeout,
+      ApplicationContext context,
+      String brokerIp,
+      String rabbitPassword,
+      String rabbitUsername)
+      throws PluginException {
+    super(
+        "test",
+        rabbitUsername,
+        rabbitPassword,
+        brokerIp,
+        managementPort,
+        context,
+        pluginName,
+        pluginTimeout,
+        port);
   }
 
   public TestVIM() {}
@@ -160,8 +171,9 @@ public class TestVIM extends Vim {
       vnfcInstance.setVc_id(server.getExtId());
       vnfcInstance.setVim_id(vimInstance.getId());
 
-      if (vnfcInstance.getConnection_point() == null)
+      if (vnfcInstance.getConnection_point() == null) {
         vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+      }
 
       for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
         VNFDConnectionPoint connectionPoint_new = new VNFDConnectionPoint();
@@ -170,7 +182,9 @@ public class TestVIM extends Vim {
         vnfcInstance.getConnection_point().add(connectionPoint_new);
       }
 
-      if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+      if (vdu.getVnfc_instance() == null) {
+        vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+      }
 
       vnfcInstance.setVnfComponent(vnfComponent);
       vnfcInstance.setFloatingIps(new HashSet<Ip>());
