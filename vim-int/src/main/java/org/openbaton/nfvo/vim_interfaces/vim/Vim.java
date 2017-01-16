@@ -45,102 +45,102 @@ public abstract class Vim
 
   protected VimDriverCaller client;
 
-  //  public Vim(
-  //      String type, String brokerIp, int port, String managementPort, ApplicationContext context)
-  //      throws PluginException {
-  //    try {
-  //      if (managementPort == null) {
-  //        managementPort = "15672";
-  //      }
-  //
-  //      if (context == null) {
-  //        client = new VimDriverCaller(brokerIp, "admin", "openbaton", port, type, managementPort);
-  //      } else {
-  //        log.trace("Using context: " + context.getApplicationName());
-  //        try {
-  //          client =
-  //              (VimDriverCaller)
-  //                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
-  //                      .getVimDriverCaller(
-  //                          brokerIp, "admin", "openbaton", port, type, managementPort);
-  //        } catch (BeansException ignored) {
-  //          client = new VimDriverCaller(brokerIp, "admin", "openbaton", port, type, managementPort);
-  //        }
-  //      }
-  //    } catch (TimeoutException | NotFoundException | IOException e) {
-  //      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-  //    }
-  //  }
+  public Vim(
+      String type, String brokerIp, int port, String managementPort, ApplicationContext context)
+      throws PluginException {
+    try {
+      if (managementPort == null) {
+        managementPort = "15672";
+      }
+
+      if (context == null) {
+        client = new VimDriverCaller(brokerIp, "admin", "openbaton", port, type, managementPort);
+      } else {
+        log.trace("Using context: " + context.getApplicationName());
+        try {
+          client =
+              (VimDriverCaller)
+                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
+                      .getVimDriverCaller(
+                          brokerIp, "admin", "openbaton", port, type, managementPort);
+        } catch (BeansException ignored) {
+          client = new VimDriverCaller(brokerIp, "admin", "openbaton", port, type, managementPort);
+        }
+      }
+    } catch (TimeoutException | NotFoundException | IOException e) {
+      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+    }
+  }
 
   public Vim() {}
 
-  //  public Vim(String type, String managementPort, ApplicationContext context)
-  //      throws PluginException {
-  //    try {
-  //      if (managementPort == null || managementPort.isEmpty()) {
-  //        managementPort = "15672";
-  //      }
-  //      if (context == null) {
-  //        client = new VimDriverCaller("", type, managementPort);
-  //      } else {
-  //        log.trace("Using context: " + context.getApplicationName());
-  //        try {
-  //          client =
-  //              (VimDriverCaller)
-  //                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
-  //                      .getVimDriverCaller("", type, managementPort);
-  //        } catch (BeansException ignored) {
-  //          client = new VimDriverCaller("", type, managementPort);
-  //        }
-  //      }
-  //    } catch (TimeoutException | NotFoundException | IOException e) {
-  //      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-  //    }
-  //  }
-  //
-  //  public Vim(String type, String name, String managementPort, ApplicationContext context)
-  //      throws PluginException {
-  //    try {
-  //      if (managementPort == null) {
-  //        managementPort = "15672";
-  //      }
-  //      if (context == null) {
-  //        client = new VimDriverCaller(name, type, managementPort);
-  //      } else {
-  //        log.trace("Using context: " + context.getApplicationName());
-  //        try {
-  //          client =
-  //              (VimDriverCaller)
-  //                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
-  //                      .getVimDriverCaller(name, type, managementPort);
-  //        } catch (BeansException ignored) {
-  //          client = new VimDriverCaller(name, type, managementPort);
-  //        }
-  //      }
-  //    } catch (TimeoutException | NotFoundException | IOException e) {
-  //      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-  //    }
-  //  }
-  //
-  //  public Vim(String type, ApplicationContext context) throws PluginException {
-  //    try {
-  //      if (context == null) {
-  //        client = new VimDriverCaller("", type, "15672");
-  //      } else {
-  //        log.trace("Using context: " + context.getApplicationName());
-  //        try {
-  //          client =
-  //              (VimDriverCaller)
-  //                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
-  //                      .getVimDriverCaller("", type, "15672");
-  //        } catch (BeansException ignored) {
-  //          client = new VimDriverCaller("", type, "15672");
-  //        }
-  //      }
-  //    } catch (TimeoutException | NotFoundException | IOException e) {
-  //      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
-  //    }
-  //  }
+  public Vim(String type, String managementPort, ApplicationContext context)
+      throws PluginException {
+    try {
+      if (managementPort == null || managementPort.isEmpty()) {
+        managementPort = "15672";
+      }
+      if (context == null) {
+        client = new VimDriverCaller("", type, managementPort);
+      } else {
+        log.trace("Using context: " + context.getApplicationName());
+        try {
+          client =
+              (VimDriverCaller)
+                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
+                      .getVimDriverCaller("", type, managementPort);
+        } catch (BeansException ignored) {
+          client = new VimDriverCaller("", type, managementPort);
+        }
+      }
+    } catch (TimeoutException | NotFoundException | IOException e) {
+      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+    }
+  }
+
+  public Vim(String type, String name, String managementPort, ApplicationContext context)
+      throws PluginException {
+    try {
+      if (managementPort == null) {
+        managementPort = "15672";
+      }
+      if (context == null) {
+        client = new VimDriverCaller(name, type, managementPort);
+      } else {
+        log.trace("Using context: " + context.getApplicationName());
+        try {
+          client =
+              (VimDriverCaller)
+                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
+                      .getVimDriverCaller(name, type, managementPort);
+        } catch (BeansException ignored) {
+          client = new VimDriverCaller(name, type, managementPort);
+        }
+      }
+    } catch (TimeoutException | NotFoundException | IOException e) {
+      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+    }
+  }
+
+  public Vim(String type, ApplicationContext context) throws PluginException {
+    try {
+      if (context == null) {
+        client = new VimDriverCaller("", type, "15672");
+      } else {
+        log.trace("Using context: " + context.getApplicationName());
+        try {
+          client =
+              (VimDriverCaller)
+                  ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
+                      .getVimDriverCaller("", type, "15672");
+        } catch (BeansException ignored) {
+          client = new VimDriverCaller("", type, "15672");
+        }
+      }
+    } catch (TimeoutException | NotFoundException | IOException e) {
+      throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
+    }
+  }
 
   public Vim(
       String type,
@@ -148,10 +148,7 @@ public abstract class Vim
       String password,
       String brokerIp,
       String managementPort,
-      ApplicationContext context,
-      String pluginName,
-      int pluginTimeout,
-      int port)
+      ApplicationContext context)
       throws PluginException {
     try {
       //            client = (VimDriverCaller) RabbitPluginBroker.getVimDriverCaller(brokerIp,username,password,type);
@@ -159,16 +156,7 @@ public abstract class Vim
         managementPort = "15672";
       }
       if (context == null) {
-        client =
-            new VimDriverCaller(
-                brokerIp,
-                username,
-                password,
-                port,
-                type,
-                pluginName,
-                managementPort,
-                pluginTimeout);
+        client = new VimDriverCaller(brokerIp, username, password, type, managementPort);
       } else {
         log.trace("Using context: " + context.getApplicationName());
         try {
@@ -177,16 +165,7 @@ public abstract class Vim
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
                       .getVimDriverCaller(brokerIp, username, password, type, managementPort);
         } catch (BeansException ignored) {
-          client =
-              new VimDriverCaller(
-                  brokerIp,
-                  username,
-                  password,
-                  port,
-                  type,
-                  pluginName,
-                  managementPort,
-                  pluginTimeout);
+          client = new VimDriverCaller(brokerIp, username, password, type, managementPort);
         }
       }
     } catch (TimeoutException | NotFoundException | IOException e) {
