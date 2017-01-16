@@ -44,6 +44,7 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -54,30 +55,37 @@ import org.springframework.stereotype.Service;
 @Scope(value = "prototype")
 public class GenericVIM extends Vim {
 
+  public GenericVIM(String type, String name, ApplicationContext context) throws PluginException {
+    super(type, name, context);
+  }
+
   public GenericVIM(
       String type,
       String username,
       String password,
       String brokerIp,
-      int port,
       String managementPort,
-      ApplicationContext context,
-      String pluginName,
-      int pluginTimeout)
+      ApplicationContext context)
       throws PluginException {
-    super(
-        type,
-        username,
-        password,
-        brokerIp,
-        managementPort,
-        context,
-        pluginName,
-        pluginTimeout,
-        port);
+    super(type, username, password, brokerIp, managementPort, context);
+  }
+
+  public GenericVIM(
+      String type, String brokerIp, int port, String managementPort, ApplicationContext context)
+      throws PluginException {
+    super(type, brokerIp, port, managementPort, context);
   }
 
   public GenericVIM() {}
+
+  public GenericVIM(String type, String name, String managementPort, ApplicationContext context)
+      throws PluginException {
+    super(type, name, managementPort, context);
+  }
+
+  public GenericVIM(String type, ConfigurableApplicationContext context) throws PluginException {
+    super(type, context);
+  }
 
   @Override
   public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
@@ -1374,50 +1382,7 @@ public class GenericVIM extends Vim {
 
   @Override
   public Quota getQuota(VimInstance vimInstance) throws VimException {
-    log.debug(
-        "Listing Quota for Tenant "
-            + vimInstance.getTenant()
-            + " of VimInstance "
-            + vimInstance.getName());
-    Quota quota = null;
-    try {
-      quota = client.getQuota(vimInstance);
-      log.info(
-          "Listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + " -> Quota: "
-              + quota);
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    return quota;
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   protected VNFCInstance getVnfcInstanceFromServer(
