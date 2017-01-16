@@ -40,23 +40,22 @@ startScripts {
 
 // to be executed just before the new release so that it gets the right version
 task makeBrewFormula() {
+    doLast{
+        def brewFormula = new File("${rootProject.projectDir}/gradle/gradle/scripts/osx/openbaton-nfvo.rb")
+        String brewFormulaText = brewFormula.text
+        String brewFormulaTextNew = ""
+        String currentBranch = version.toString().contains("-SNAPSHOT") ? "develop" : version;
 
-    def brewFormula = new File("${rootProject.projectDir}/gradle/gradle/scripts/osx/openbaton-nfvo.rb")
-    String brewFormulaText = brewFormula.text
-    String brewFormulaTextNew = ""
-    String currentBranch = version.toString().contains("-SNAPSHOT") ? "develop" : version ;
-
-    brewFormulaText.readLines().each {
-        line ->
-            if (line.trim().startsWith("version")){
-                brewFormulaTextNew += "  version \""+version + "\"" + '\n'
-            }
-            else if(line.trim().startsWith("url")){
-                brewFormulaTextNew += "  url \"https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/"+currentBranch+"\"" + '\n'
-            }
-            else {
-                brewFormulaTextNew += line + '\n'
-            }
+        brewFormulaText.readLines().each {
+            line ->
+                if (line.trim().startsWith("version")) {
+                    brewFormulaTextNew += "  version \"" + version + "\"" + '\n'
+                } else if (line.trim().startsWith("url")) {
+                    brewFormulaTextNew += "  url \"https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/" + currentBranch + "\"" + '\n'
+                } else {
+                    brewFormulaTextNew += line + '\n'
+                }
+        }
+        brewFormula.text = brewFormulaTextNew
     }
-    brewFormula.text = brewFormulaTextNew
 }
