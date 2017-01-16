@@ -339,6 +339,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     var changingPasswordData = {};
     $scope.passChangeUsername = '';
     $scope.changeUserPassword = function(data) {
+          $scope.newUserPassword1 = '';
+    $scope.newUserPassword2 = '';
       //console.log(data.username);
       changingPasswordData = data;
       $scope.passChangeUsername = changingPasswordData.username;
