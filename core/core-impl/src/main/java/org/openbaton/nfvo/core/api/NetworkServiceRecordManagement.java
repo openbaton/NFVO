@@ -996,7 +996,8 @@ public class NetworkServiceRecordManagement
           Collection<String> instanceNames;
           if (body == null
               || body.getVduVimInstances() == null
-              || body.getVduVimInstances().get(vdu.getName()) == null) {
+              || body.getVduVimInstances().get(vdu.getName()) == null
+              || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
             if (vdu.getVimInstanceName() == null) {
               throw new MissingParameterException(
                   "No VimInstances specified for vdu: " + vdu.getName());
