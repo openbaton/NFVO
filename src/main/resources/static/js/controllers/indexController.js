@@ -219,7 +219,13 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-            loadQuota();
+            if (!$cookieStore.get('QUOTA')) {
+                console.log("No quota information stored");
+                loadQuota();
+            } else {
+                console.log("Quota information available");
+                $scope.quota = $cookieStore.get('QUOTA'); 
+            }
             getConfig();
             loadCurrentUser();
             getVersion();
@@ -229,7 +235,13 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         else if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-            loadQuota();
+           if (!$cookieStore.get('QUOTA')) {
+               console.log("No quota information stored");
+                loadQuota();
+            } else {
+                console.log("Quota information available");
+                $scope.quota = $cookieStore.get('QUOTA'); 
+            }
             getConfig();
             loadCurrentUser();
             getVersion();
@@ -373,11 +385,20 @@ $scope.$watchGroup(["newPassword", "newPassword1"], function(newValue, oldValue)
 
 
  $(document).ready(function() {});
+ $scope.refreshQuota = function() {
+     $scope.quota = null;
+     chartsHere = false;
+     loadQuota();
+    
+ };
+
+
 
  function loadQuota() {
      http.get(url +'/quotas')
          .success(function (response) {
              console.log(response);
+             $cookieStore.put('QUOTA', response);
              $scope.quota = response;
 
               //console.log($scope.quota.left.ram)
@@ -418,6 +439,7 @@ $scope.rcdownload = function() {
     return chartsHere;
   };
   function createCharts() {
+        console.log("Creating charts");
 
          $.getScript('asset/js/plugins/chart.min.js',function(){
            var ramData = [  {
