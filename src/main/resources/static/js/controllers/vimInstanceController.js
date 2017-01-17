@@ -129,9 +129,6 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        if (status === 400)
-                            showError(status, {message:"Bad request: your json is not well formatted"});
-                        else
                             showError(status, data);
 
                     });
@@ -144,8 +141,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        if (status === 400)
-                            showError(status, {message:"Bad request: your json is not well formatted"});
+                        showError(status, data);
 
                     });
             }
