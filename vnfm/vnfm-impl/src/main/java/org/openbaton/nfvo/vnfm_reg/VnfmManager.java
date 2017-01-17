@@ -301,7 +301,8 @@ public class VnfmManager
           Collection<String> instanceNames;
           if (body == null
               || body.getVduVimInstances() == null
-              || body.getVduVimInstances().get(vdu.getName()) == null) {
+              || body.getVduVimInstances().get(vdu.getName()) == null
+              || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
             instanceNames = vdu.getVimInstanceName();
           } else {
             instanceNames = body.getVduVimInstances().get(vdu.getName());
