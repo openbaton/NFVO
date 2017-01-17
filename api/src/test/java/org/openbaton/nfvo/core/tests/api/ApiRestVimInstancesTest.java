@@ -30,12 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.admin.RestVimInstances;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
@@ -61,12 +56,15 @@ public class ApiRestVimInstancesTest {
   @Test
   public void createVimInstance()
       throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");
-    datacenter.setName("datacenter_test");
+    datacenter.setUsername("datacenter_test");
+    datacenter.setTenant("tenant");
+    datacenter.setKeyPair("keypair");
+    datacenter.setPassword("");
     when(mock.add(any(datacenter.getClass()), anyString())).thenReturn(datacenter);
     log.info("" + restVimInstances.create(datacenter, "pi"));
     VimInstance datacenter2 = restVimInstances.create(datacenter, "pi");
