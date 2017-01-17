@@ -16,28 +16,19 @@
 
 package org.openbaton.nfvo.api.admin;
 
-import java.io.IOException;
-import java.util.Set;
-import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/datacenters")
@@ -64,7 +55,20 @@ public class RestVimInstances {
       @RequestBody @Valid VimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
+
+    if (Objects.equals(vimInstance.getName(), "") || vimInstance.getName() == null)
+      throw new NotFoundException("The VIM must have an non-empty/null name!");
+    if (Objects.equals(vimInstance.getTenant(), "") || vimInstance.getTenant() == null)
+      throw new NotFoundException("The VIM must have an non-empty/null tenant!");
+    if (Objects.equals(vimInstance.getKeyPair(), "") || vimInstance.getKeyPair() == null)
+      throw new NotFoundException("The VIM must have an non-empty/null key pair!");
+    if (Objects.equals(vimInstance.getUsername(), "") || vimInstance.getUsername() == null)
+      throw new NotFoundException("The VIM must have an non-empty/null username!");
+    if (vimInstance.getPassword() == null)
+      throw new NotFoundException("The VIM must have an non-null password!");
+    if (Objects.equals(vimInstance.getType(), "") || vimInstance.getType() == null)
+      throw new NotFoundException("The VIM must have an non-empty/null type!");
     return vimManagement.add(vimInstance, projectId);
   }
 
