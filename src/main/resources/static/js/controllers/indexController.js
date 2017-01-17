@@ -219,7 +219,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-            if (!$cookieStore.get('QUOTA')) {
+            if (!$cookieStore.get('QUOTA') && window.location.href.indexOf('main') > -1) {
                 console.log("No quota information stored");
                 loadQuota();
             } else {
@@ -235,7 +235,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         else if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-           if (!$cookieStore.get('QUOTA')) {
+           if (!$cookieStore.get('QUOTA') && window.location.href.indexOf('main') > -1) {
                console.log("No quota information stored");
                 loadQuota();
             } else {
