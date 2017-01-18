@@ -61,6 +61,11 @@ ext {
      */
     mainClass = 'org.openbaton.nfvo.main.Application'
     //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * Junit Version
+     */
+    junitVersion = "4.12"
 }
 
 apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
