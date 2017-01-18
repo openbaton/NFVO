@@ -26,14 +26,24 @@ import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
+import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.MissingParameterException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -54,6 +64,7 @@ public class NSDUtils {
   @Autowired private VimRepository vimRepository;
 
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VimRepository vimInstanceRepository;
 
   @Value("${nfvo.integrity.nsd.checks:in-all-vims}")
   private String inAllVims;
@@ -614,5 +625,82 @@ public class NSDUtils {
     //                + " are not contained in the VirtualLinkDescriptors "
     //                + virtualLinkDescriptors);
     //      }
+  }
+
+  public List<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
+      throws MissingParameterException {
+    List<String> instanceNames;
+
+    if (body == null
+        || body.getVduVimInstances() == null
+        || body.getVduVimInstances().get(vdu.getName()) == null
+        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
+      if (vdu.getVimInstanceName() == null) {
+        throw new MissingParameterException(
+            "No VimInstance specified for vdu with name: " + vdu.getName());
+      }
+      instanceNames = vdu.getVimInstanceName();
+    } else {
+      instanceNames = body.getVduVimInstances().get(vdu.getName());
+    }
+    return instanceNames;
+  }
+
+  public List<String> checkIfVimAreSupportedByPackage(
+      VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
+      throws BadRequestException {
+    VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+    if (vnfPackage == null
+        || vnfPackage.getVimTypes() == null
+        || vnfPackage.getVimTypes().size() == 0) {
+      log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
+    } else {
+      for (String vimInstanceName : instanceNames) {
+        VimInstance vimInstance;
+        for (VimInstance vi : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+          if (vimInstanceName.equals(vi.getName())) {
+            vimInstance = vi;
+            log.debug("Found vim instance " + vimInstance.getName());
+            log.debug(
+                "Checking if "
+                    + vimInstance.getType()
+                    + " is contained in "
+                    + vnfPackage.getVimTypes());
+            if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+              throw new org.openbaton.exceptions.BadRequestException(
+                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
+            }
+          }
+        }
+      }
+    }
+    if (instanceNames.size() == 0) {
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+        if (vnfPackage == null
+            || vnfPackage.getVimTypes() == null
+            || vnfPackage.getVimTypes().isEmpty()) {
+          instanceNames.add(vimInstance.getName());
+        } else {
+          String type = vimInstance.getType();
+          if (type.contains(".")) {
+            type = type.split("\\.")[0];
+          }
+          if (vnfPackage.getVimTypes().contains(type)) {
+            instanceNames.add(vimInstance.getName());
+          }
+        }
+      }
+    }
+
+    if (instanceNames.size() == 0) {
+      throw new org.openbaton.exceptions.BadRequestException(
+          "No Vim Instance found for supporting the VNFD "
+              + vnfd.getName()
+              + " (looking for vim type: "
+              + vnfPackage.getVimTypes()
+              + ")");
+    }
+    log.debug("Vim Instances chosen are: " + instanceNames);
+    return instanceNames;
   }
 }

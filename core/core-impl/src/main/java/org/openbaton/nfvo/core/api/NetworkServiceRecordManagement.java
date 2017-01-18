@@ -884,6 +884,7 @@ public class NetworkServiceRecordManagement
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
+    Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -921,6 +922,7 @@ public class NetworkServiceRecordManagement
           List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
           log.debug("Checking vim instance support");
           instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+          vduVimInstances.put(vdu.getId(), instanceNames);
           for (String vimInstanceName : instanceNames) {
 
             VimInstance vimInstance = null;
@@ -1003,7 +1005,7 @@ public class NetworkServiceRecordManagement
 
     checkConfigParameter(networkServiceDescriptor, body);
 
-    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body);
+    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
   }
