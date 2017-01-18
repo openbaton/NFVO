@@ -19,6 +19,7 @@ import groovy.json.JsonSlurper
 // configure the task dependencyUpdates in order to create a json report (default is xml)
 dependencyUpdates.outputFormatter = "json"
 
+// This task works with this Gradle Plugin: id 'com.github.ben-manes.versions' version '0.13.0'
 task updateDependencies{
     // first execute task dependencyUpdates (to create the json file)
     dependsOn dependencyUpdates
@@ -39,17 +40,18 @@ task updateDependencies{
                 // Iterate over all the outdated dependencies
                 parsedReport.outdated.dependencies.each { dep ->
                     if (line.contains("${dep.group}:${dep.name}:${dep.version}")) {
-                        println "found old dependency " + line
-                        println "in file: " + f.absolutePath
-                        println "new dependency is: " + "${dep.name}:${dep.group}:${dep.available.milestone}"
-                        println()
+                        if (!replace) {
+                            println "found old dependency " + line
+                            println "in file: " + f.absolutePath
+                            println "new dependency is: " + "${dep.group}:${dep.name}:${dep.available.milestone}"
+                            println()
+                        } else
+                            line.replaceAll("${dep.group}:${dep.name}:${dep.version}", "${dep.group}:${dep.name}:${dep.available.milestone}")
                     }
-
-                    //line.replaceAll("${dep.name}:${dep.group}:${dep.version}", "${dep.name}:${dep.group}:${dep.available.milestone}")
                 }
             }
+            if(!replace)
+                println "NOTE: If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
         }
-        if(!replace)
-            println "NOTE: If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
     }
 }
