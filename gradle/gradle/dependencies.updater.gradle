@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import groovy.json.JsonSlurper
+// configure the task dependencyUpdates in order to create a json report (default is xml)
+dependencyUpdates.outputFormatter = "json"
+
+task updateDependencies{
+    // first execute task dependencyUpdates (to create the json file)
+    dependsOn dependencyUpdates
+    doLast {
+        def jsonreport = file("${buildDir}/dependencyUpdates/report.json")
+        def parsedReport = new JsonSlurper().parseText(jsonreport.text)
+        def replace = project.hasProperty('replace') ? project.property('replace') : false
+        println "replace is "+replace
+        // get all the .gradle files, excluding the ones in openbaton-libs, and iterate over them
+        fileTree("${projectDir}").matching {
+            include "**/*.gradle"
+            exclude "openbaton-libs"
+        }.files.each { f ->
+            f.eachLine { line ->
+                // Iterate over all the outdated dependencies
+                parsedReport.outdated.dependencies.each { dep ->
+                    if (line.contains("${dep.group}:${dep.name}:${dep.version}")) {
+                        println "found old dependency " + line
+                        println "in file: " + f.absolutePath
+                        println "new dependency is: " + "${dep.name}:${dep.group}:${dep.available.milestone}"
+                        println()
+                    }
+
+                    //line.replaceAll("${dep.name}:${dep.group}:${dep.version}", "${dep.name}:${dep.group}:${dep.available.milestone}")
+                }
+            }
+        }
+        if(!replace)
+            println "If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
+    }
+}
