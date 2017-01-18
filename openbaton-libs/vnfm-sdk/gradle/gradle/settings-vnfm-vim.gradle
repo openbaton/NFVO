@@ -17,9 +17,4 @@
 
 //rootProject.name = 'openbaton-libs'
 
-include 'exception'
-include 'vim-impl'
-include 'vim-int'
-include 'monitoring'
-include 'vim-drivers'
-include 'plugin'
+include 'exception', 'vim-impl', 'vim-int', 'monitoring', 'vim-drivers', 'plugin'

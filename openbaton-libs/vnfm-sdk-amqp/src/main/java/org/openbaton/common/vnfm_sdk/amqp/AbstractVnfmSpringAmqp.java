@@ -20,6 +20,7 @@ package org.openbaton.common.vnfm_sdk.amqp;
 import com.google.gson.Gson;
 import com.rabbitmq.client.*;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -95,7 +96,7 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
 
         channel.close();
         connection.close();
-      } catch (IOException e1) {
+      } catch (IOException | TimeoutException e1) {
         e1.printStackTrace();
       }
     }
