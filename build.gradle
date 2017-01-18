@@ -20,6 +20,8 @@ plugins {
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
     id "com.github.hierynomus.license" version "0.13.1"
+    // For managing the dependencies' versions
+    id 'com.github.ben-manes.versions' version '0.13.0'
 }
 
 apply plugin: 'java'
@@ -32,7 +34,7 @@ apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
 /**
  * Project settings
  */
-project.ext {
+ext {
     //------------------------------------------------//
     /**
      * Spring Related Variables
