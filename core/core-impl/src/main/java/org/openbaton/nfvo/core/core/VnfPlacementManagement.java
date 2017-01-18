@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.util.List;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -25,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /** Created by lto on 10/03/16. */
 @Service
@@ -39,7 +40,12 @@ public class VnfPlacementManagement
   public VimInstance choseRandom(List<String> vimInstanceName, String projectId) {
     if (!vimInstanceName.isEmpty()) {
       String name = vimInstanceName.get((int) (Math.random() * 1000) % vimInstanceName.size());
-      VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
+      VimInstance vimInstance = null;
+      for (VimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
+        if (vimInstance1.getName().equals(name)) {
+          vimInstance = vimInstance1;
+          break;
+        }
       log.info("Chosen VimInstance: " + vimInstance.getName());
       return vimInstance;
     } else {
