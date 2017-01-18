@@ -30,28 +30,38 @@ task updateDependencies{
         def jsonreport = file("${buildDir}/dependencyUpdates/report.json")
         def parsedReport = new JsonSlurper().parseText(jsonreport.text)
         def replace = project.hasProperty('replace') ? project.property('replace') : false
-        println "replace is "+replace
         // get all the .gradle files, excluding the ones in openbaton-libs, and iterate over them
         fileTree("${projectDir}").matching {
             include "**/*.gradle"
             exclude "openbaton-libs"
         }.files.each { f ->
+            def newGradleFile = ""
+            def fileWithOldDependency = false
             f.eachLine { line ->
                 // Iterate over all the outdated dependencies
                 parsedReport.outdated.dependencies.each { dep ->
-                    if (line.contains("${dep.group}:${dep.name}:${dep.version}")) {
+                    def oldDependency = "${dep.group}:${dep.name}:${dep.version}"
+                    if (line.contains(oldDependency)) {
                         if (!replace) {
-                            println "found old dependency " + line
+                            println "found old dependency: " + oldDependency
                             println "in file: " + f.absolutePath
                             println "new dependency is: " + "${dep.group}:${dep.name}:${dep.available.milestone}"
                             println()
-                        } else
-                            line.replaceAll("${dep.group}:${dep.name}:${dep.version}", "${dep.group}:${dep.name}:${dep.available.milestone}")
+                        } else {
+                            fileWithOldDependency=true
+                            println "replacing "+oldDependency+" in file: "+f.absolutePath
+                            line = line.replace(oldDependency, "${dep.group}:${dep.name}:${dep.available.milestone}")
+                        }
                     }
                 }
+                newGradleFile += line + '\n'
             }
-            if(!replace)
-                println "NOTE: If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
+            if(fileWithOldDependency)
+                f.text=newGradleFile
         }
+        if(!replace)
+            println "NOTE: If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
+        else
+            println "dependencies replaced"
     }
 }
