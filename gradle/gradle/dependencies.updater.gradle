@@ -23,6 +23,9 @@ task updateDependencies{
     // first execute task dependencyUpdates (to create the json file)
     dependsOn dependencyUpdates
     doLast {
+        println()
+        println "############### updateDependencies task starting #################"
+        println()
         def jsonreport = file("${buildDir}/dependencyUpdates/report.json")
         def parsedReport = new JsonSlurper().parseText(jsonreport.text)
         def replace = project.hasProperty('replace') ? project.property('replace') : false
@@ -47,6 +50,6 @@ task updateDependencies{
             }
         }
         if(!replace)
-            println "If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
+            println "NOTE: If you want to replace the above dependencies run: ./gradlew updateDependencies -Preplace=true"
     }
 }
