@@ -150,13 +150,44 @@ configure_new_installation () {
 }
 
 configure_for_upgrade () {
-    if [ -f "/tmp/${OPENBATON_COMPONENT_CONFIG_FILE}" ]; then
-        log_success_msg "Configuring Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
-        mv /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
-        log_success_msg "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation completed"
-    else
-        configure_new_installation # fix for backward compatibility as there is no old file to copy from /tmp
-    fi
+    cp /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old
+    cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
+
+    # DEBUG
+    cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}.bckp
+
+    # Procedure to merge old and new properties files
+    awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+    sed -i s/#\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+
+    awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+    sed -i s/#\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+
+    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
+    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old      > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+
+    exec 3</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
+    exec 4</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+    while IFS='' read -r key <&3 && read -r line <&4; do
+        #echo "$key -> $line"
+        sed -i "s|.*${key}.*|${line}|" /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
+    done
+
+    # mv
+    cp /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
+
+    log_success_msg "Upgrading Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
+
+    # Clear tmp files used for upgrade
+
+
+    #if [ -f "/tmp/${OPENBATON_COMPONENT_CONFIG_FILE}" ]; then
+    #    log_success_msg "Configuring Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
+    #    mv /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
+    #    log_success_msg "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation completed"
+    #else
+    #    configure_new_installation # fix for backward compatibility as there is no old file to copy from /tmp
+    #fi
 }
 
 
@@ -180,9 +211,9 @@ start_component () {
 
 case "${1}" in
     configure)
-        if [ "${2}" = "" ]; then # new installation
+        if [ "${2}" = "" ]; then # new installation (during first installation the postinst file is invoked as: 'postinst configure')
             configure_new_installation
-        else # upgrade
+        else # upgrade (during upgrade the postinst file is invoked as: 'postinst configure <old_version_number>')
             configure_for_upgrade
         fi 
         ;;
