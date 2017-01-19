@@ -17,14 +17,6 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -48,6 +40,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /** Created by lto on 06/04/16. */
 @Service
@@ -1231,7 +1232,11 @@ public class GenericVIM extends Vim {
       throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vm_images);
-    log.debug("Available: " + vimInstance.getImages());
+    List<String> available = new ArrayList<>();
+    for (NFVImage image: vimInstance.getImages())
+      available.add(image.getName());
+    log.debug("Available: " + available);
+
     if (vm_images != null && !vm_images.isEmpty()) {
       for (String image : vm_images) {
         for (NFVImage nfvImage : vimInstance.getImages()) {

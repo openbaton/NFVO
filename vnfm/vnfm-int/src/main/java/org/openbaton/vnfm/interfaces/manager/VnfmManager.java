@@ -17,6 +17,7 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -43,7 +44,8 @@ public interface VnfmManager {
   Future<Void> deploy(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      Map<String, List<String>> vduVimInstances)
       throws NotFoundException;
 
   VnfmSender getVnfmSender(EndpointType endpointType);
