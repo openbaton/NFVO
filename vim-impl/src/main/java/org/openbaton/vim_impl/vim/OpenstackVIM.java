@@ -69,33 +69,6 @@ public class OpenstackVIM extends GenericVIM {
         pluginTimeout);
   }
 
-  //  public OpenstackVIM(
-  //      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
-  //      throws PluginException {
-  //    super("openstack." + name, brokerIp, port, managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-  //    super("openstack", "", managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(int port, String managementPort, ApplicationContext context)
-  //      throws PluginException {
-  //    super("openstack", managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-  //    super("openstack", name, port, managementPort, null);
-  //  }
-  //
-  //  public OpenstackVIM(String managementPort) throws PluginException {
-  //    super("openstack", managementPort, null);
-  //  }
-  //
-  //  public OpenstackVIM(int port, String managementPort) throws PluginException {
-  //    super("openstack", managementPort, null);
-  //  }
-
   public OpenstackVIM() {}
 
   @Override
@@ -446,7 +419,7 @@ public class OpenstackVIM extends GenericVIM {
               image,
               flavorExtId,
               vimInstance.getKeyPair(),
-              networks,
+              vnfComponent.getConnection_point(),
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,

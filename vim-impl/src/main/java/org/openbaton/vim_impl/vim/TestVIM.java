@@ -17,11 +17,6 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -43,6 +38,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /** Created by lto on 12/05/15. */
 @Service
@@ -163,7 +164,7 @@ public class TestVIM extends Vim {
               vimInstance.getImages().iterator().next().getExtId(),
               "flavor",
               "keypair",
-              networks,
+              vnfComponent.getConnection_point(),
               securityGroups,
               "#userdate");
 

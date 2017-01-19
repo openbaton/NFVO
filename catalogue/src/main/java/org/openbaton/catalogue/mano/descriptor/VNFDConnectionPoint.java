@@ -35,19 +35,32 @@ public class VNFDConnectionPoint extends ConnectionPoint {
 
   private String floatingIp;
 
-  public VNFDConnectionPoint() {}
+  public int getInterfaceId() {
+    return interfaceId;
+  }
+
+  public void setInterfaceId(int interfaceId) {
+    this.interfaceId = interfaceId;
+  }
+
+  private int interfaceId;
 
   @Override
   public String toString() {
     return "VNFDConnectionPoint{"
-        + "floatingIp='"
-        + floatingIp
-        + '\''
-        + ", virtual_link_reference='"
+        + "virtual_link_reference='"
         + virtual_link_reference
         + '\''
-        + '}';
+        + ", floatingIp='"
+        + floatingIp
+        + '\''
+        + ", interfaceId="
+        + interfaceId
+        + "} "
+        + super.toString();
   }
+
+  public VNFDConnectionPoint() {}
 
   public String getFloatingIp() {
     return floatingIp;
