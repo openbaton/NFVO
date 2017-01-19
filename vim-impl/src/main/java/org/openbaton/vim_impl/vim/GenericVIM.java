@@ -1110,7 +1110,7 @@ public class GenericVIM extends Vim {
             + " - "
             + vimInstance.getKeyPair()
             + " - "
-            + networks
+            + vnfComponent.getConnection_point()
             + " - "
             + vimInstance.getSecurityGroups());
 
@@ -1137,7 +1137,7 @@ public class GenericVIM extends Vim {
               image,
               flavorExtId,
               vimInstance.getKeyPair(),
-              networks,
+              vnfComponent.getConnection_point(),
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,
