@@ -36,5 +36,5 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
     testCompile("org.mockito:mockito-all:1.10.19")
-    testCompile("junit:junit:4.12")
+    testCompile("junit:junit:"+junitVersion)
 }
