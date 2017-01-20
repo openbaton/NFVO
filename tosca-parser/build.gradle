@@ -35,6 +35,6 @@ dependencies {
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
-    testCompile("org.mockito:mockito-all:1.10.19")
+    testCompile("org.mockito:mockito-all:2.0.2-beta")
     testCompile("junit:junit:"+junitVersion)
 }
