@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.List;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -24,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /** Created by lto on 10/03/16. */
 @Service

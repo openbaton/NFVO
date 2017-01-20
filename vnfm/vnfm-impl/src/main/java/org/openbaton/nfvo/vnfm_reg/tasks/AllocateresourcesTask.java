@@ -17,6 +17,12 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Action;
@@ -31,13 +37,6 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Future;
 
 /** Created by lto on 06/08/15. */
 @Service
@@ -78,8 +77,14 @@ public class AllocateresourcesTask extends AbstractTask {
             "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
       }
       vimInstance = vimRepository.findFirstById(vimInstance.getId());
-      log.debug("Allocating VDU: " + vdu.getName() + " to vim instance: " + vimInstance.getName() + " - id: " + vimInstance.getId());
-      for (NFVImage image : vimInstance.getImages()){
+      log.debug(
+          "Allocating VDU: "
+              + vdu.getName()
+              + " to vim instance: "
+              + vimInstance.getName()
+              + " - id: "
+              + vimInstance.getId());
+      for (NFVImage image : vimInstance.getImages()) {
         log.debug("Available image name: " + image.getName());
       }
       ids.add(
