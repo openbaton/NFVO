@@ -21,7 +21,7 @@ dependencies {
     compile 'org.hibernate:hibernate-entitymanager:4.3.10.Final'
 
     compile 'commons-dbcp:commons-dbcp:1.4'
-    compile 'mysql:mysql-connector-java:5.1.35'
+    compile 'mysql:mysql-connector-java:6.0.5'
 
     // CrudRepository
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
