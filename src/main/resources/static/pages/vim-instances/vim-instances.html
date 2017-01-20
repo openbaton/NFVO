@@ -106,30 +106,31 @@
 
 			<div class="modal-body">
              Here you can fill in the form in order to add the PoP to the database. The available types depend on the installed plugins. If you do not have any installed plugins, you cannot add the PoP information. 
+			 Mandatory fields are marked with *.
 			 </br>
 			 </br>
 				<form role="form" class="form-horizontal">
-                    	<label class="col-sm-4 control-label">Name</label>
+                    	<label class="col-sm-4 control-label">PoP Name*</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.name" />
 						</div>
-                        <label class="col-sm-4 control-label">URL</label>
+                        <label class="col-sm-4 control-label">URL*</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.authUrl" />
 						</div>
-                        <label class="col-sm-4 control-label">Tenant</label>
+                        <label class="col-sm-4 control-label">Tenant*</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.tenant" />
 						</div>
-                        <label class="col-sm-4 control-label">Username</label>
+                        <label class="col-sm-4 control-label">Username*</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.username" />
 						</div>
-                        <label class="col-sm-4 control-label">Password</label>
+                        <label class="col-sm-4 control-label">Password*</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.password" />
 						</div>
-						<label class="col-sm-4 control-label">Type</label>
+						<label class="col-sm-4 control-label">Type*</label>
 						<div class="col-sm-6">
 							<select name="typeSelect" class="form-control modal-select"
                                     ng-model="newvim.type"
@@ -137,9 +138,9 @@
                                     ng-options="plugin.type as plugin.type for plugin in installed | orderBy:'name':false">
                             </select>
 						</div>	
-                        <label class="col-sm-4 control-label">Key Pair</label>
+                        <label class="col-sm-4 control-label">Key Pair*</label>
                         <div class="col-sm-6">
-							<input type="text" class="form-control" ng-model="newvim.keypair" />
+							<input type="text" class="form-control" ng-model="newvim.keyPair" />
 						</div>
                         <label class="col-sm-4 control-label">Location Name </label>
                         <div class="col-sm-6">
@@ -175,7 +176,7 @@
 				</div>
 				<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" ng-disabled="!newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+				<button type="button" title="Mandatory fields are marked with *" class="btn btn-primary" ng-disabled="!newvim.keyPair || !newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
 			</div>
 				</tab>
 				<tab heading="File Input" ng-click="setFileInput()">
