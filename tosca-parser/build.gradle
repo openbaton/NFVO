@@ -28,7 +28,7 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     compile 'org.apache.commons:commons-compress:1.9'
 
-    compile 'commons-validator:commons-validator:1.4.0'
+    compile 'commons-validator:commons-validator:1.5.1'
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
     compile 'org.springframework:spring-jms:' + springVersion
