@@ -23,5 +23,5 @@ dependencies {
     compile "org.springframework.security:spring-security-core:4.2.1.RELEASE"
     compile 'org.springframework.data:spring-data-commons-core:1.4.1.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-security:' + springBootVersion
-    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.7.RELEASE'
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
 }
