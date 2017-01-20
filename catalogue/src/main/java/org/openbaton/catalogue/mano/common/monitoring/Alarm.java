@@ -18,8 +18,8 @@
 package org.openbaton.catalogue.mano.common.monitoring;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -41,7 +41,7 @@ public abstract class Alarm implements Serializable {
   private boolean isRootCause;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> correlatedAlarmId;
+  private Set<String> correlatedAlarmId;
 
   private String faultDetails;
 
@@ -161,15 +161,15 @@ public abstract class Alarm implements Serializable {
   }
 
   public void addCorrelatedAlarmId(String thresholdId) {
-    if (correlatedAlarmId == null) correlatedAlarmId = new ArrayList<>();
+    if (correlatedAlarmId == null) correlatedAlarmId = new HashSet<>();
     correlatedAlarmId.add(thresholdId);
   }
 
-  public List<String> getCorrelatedAlarmId() {
+  public Set<String> getCorrelatedAlarmId() {
     return correlatedAlarmId;
   }
 
-  public void setCorrelatedAlarmId(List<String> correlatedAlarmId) {
+  public void setCorrelatedAlarmId(Set<String> correlatedAlarmId) {
     this.correlatedAlarmId = correlatedAlarmId;
   }
 
