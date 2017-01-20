@@ -15,7 +15,7 @@
  *
  */
 plugins {
-    id 'net.researchgate.release' version '2.3.4'
+    id 'net.researchgate.release' version '2.5.0'
     id "nebula.ospackage-application" version "4.3.0"
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
