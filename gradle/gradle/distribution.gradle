@@ -1,6 +1,7 @@
 apply plugin: "application"
 
 startScripts {
+    mainClassName = rootProject.mainClass
     doLast {
         def unixFile = file getUnixScript()
 
