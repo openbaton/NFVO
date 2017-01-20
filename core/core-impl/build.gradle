@@ -39,7 +39,7 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.5.2'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.jgrapht:jgrapht-core:0.9.1'
+    compile 'org.jgrapht:jgrapht-core:0.9.2'
     compile 'commons-validator:commons-validator:1.5.1'
     compile 'org.mindrot:jbcrypt:0.3m'
 
