@@ -17,8 +17,8 @@
 
 package org.openbaton.catalogue.mano.common.monitoring;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,7 +30,7 @@ public class VNFAlarm extends Alarm {
   private String vnfrId;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> vnfcIds;
+  private Set<String> vnfcIds;
 
   private String vimName;
 
@@ -56,16 +56,16 @@ public class VNFAlarm extends Alarm {
     this.vnfrId = vnfrId;
   }
 
-  public List<String> getVnfcIds() {
+  public Set<String> getVnfcIds() {
     return vnfcIds;
   }
 
   public void addVnfcId(String vnfcId) {
-    if (vnfcIds == null) vnfcIds = new ArrayList<>();
+    if (vnfcIds == null) vnfcIds = new HashSet<>();
     vnfcIds.add(vnfcId);
   }
 
-  public void setVnfcIds(List<String> vnfcIds) {
+  public void setVnfcIds(Set<String> vnfcIds) {
     this.vnfcIds = vnfcIds;
   }
 
