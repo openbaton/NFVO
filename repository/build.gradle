@@ -18,7 +18,7 @@
 dependencies {
     compile project(':catalogue')
 
-    compile 'org.hibernate:hibernate-entitymanager:4.3.10.Final'
+    compile 'org.hibernate:hibernate-core:5.0.0.Final'
 
     compile 'commons-dbcp:commons-dbcp:1.4'
     compile 'mysql:mysql-connector-java:6.0.5'
