@@ -57,6 +57,9 @@
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
+                          <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
+                        <li>
+                        <li>
                           <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
                         <li>
                           <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
@@ -235,6 +238,7 @@
                       aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
             </div>
+            <div style="padding-left:10px; padding-top:10px; padding-bottom: 10px;">Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit</div>
             <form class="form-horizontal" role="form" id="formChangePassword">
               <div class="form-group">
                 <label for="name" class="col-sm-4 control-label">Old Password</label>
@@ -245,18 +249,18 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="name" class="col-sm-4 control-label">New Password</label>
+                <label for="name"  class="col-sm-4 control-label">New Password</label>
 
                 <div class="col-sm-6">
-                    <input type="password" class="form-control" id="newPassword" name="newPassword"
+                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
                           ng-model="newPassword"/>
                 </div>
               </div>
                 <div class="form-group">
-                  <label for="name" class="col-sm-4 control-label">New Password</label>
+                  <label class="col-sm-4 control-label">New Password</label>
 
                   <div class="col-sm-6">
-                      <input type="password" class="form-control" id="newPassword1" name="newPassword1"
+                      <input type="password" ng-style="newPasswordRepeat"  class="form-control" id="newPassword1" name="newPassword1"
                             ng-model="newPassword1"/>
                   </div>
               </div>
@@ -266,7 +270,7 @@
                       data-dismiss="modal">Close
               </button>
               <button type="button" id="changePassword"
-                     class="btn btn-primary" ng-click="postNew()">Change Password
+                     class="btn btn-primary" ng-disabled="!newPasswordStrong || !newPasswordSame" ng-click="postNew()">Change Password
              </button>
             </div><!--footer-->
          </div>

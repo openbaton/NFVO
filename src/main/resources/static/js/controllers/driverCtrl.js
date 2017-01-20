@@ -69,7 +69,7 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
 
     };
 
-  function showError(status, data) {
+  function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',

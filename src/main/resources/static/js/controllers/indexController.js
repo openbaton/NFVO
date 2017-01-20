@@ -126,26 +126,26 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $location.replace();
 
     //this is here for mozilla browser to redirect user to main overview after login, mozilla does not do it automatically
-    if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length -'login'.length) === 'login')) {
-      window.location.href = window.location.href.substring(0,window.location.href.length -'login'.length) + 'main';
+    if ($cookieStore.get('logged') && (window.location.href.substring(window.location.href.length - 'login'.length) === 'login')) {
+        window.location.href = window.location.href.substring(0, window.location.href.length - 'login'.length) + 'main';
 
     }
 
     function getVersion() {
-      http.get(url +'/main/version/')
-          .success(function (response) {
-              console.log("version is " + response);
-              $scope.NFVOversion = response
-          })
-          .error(function (response, status) {
-              showError(status, response);
-          });
+        http.get(url + '/main/version/')
+            .success(function (response) {
+                console.log("version is " + response);
+                $scope.NFVOversion = response
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
     }
 
 
 
     function loadCurrentUser() {
-        http.get(url +'/users/current')
+        http.get(url + '/users/current')
             .success(function (response) {
                 //console.log(response);
                 $scope.userLogged = response
@@ -179,7 +179,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
 
     function stop() {
-      $interval.cancel(promise);
+        $interval.cancel(promise);
     };
 
     function loadNumbers() {
@@ -219,21 +219,38 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         if (!angular.isUndefined(newValue) && !angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-            loadQuota();
+            if (window.location.href.indexOf('main') > -1) {
+                if (!$cookieStore.get('QUOTA')) {
+                    console.log("No quota information stored");
+                    loadQuota();
+                } else {
+                    console.log("Quota information available");
+                    $scope.quota = $cookieStore.get('QUOTA');
+                }
+            }
             getConfig();
             loadCurrentUser();
             getVersion();
-            
+
 
         }
         else if (!angular.isUndefined(newValue) && angular.isUndefined(oldValue)) {
             $cookieStore.put('project', newValue);
             loadNumbers();
-            loadQuota();
+            console
+            if (window.location.href.indexOf('main') > -1) {
+                if (!$cookieStore.get('QUOTA')) {
+                    console.log("No quota information stored");
+                    loadQuota();
+                } else {
+                    console.log("Quota information available");
+                    $scope.quota = $cookieStore.get('QUOTA');
+                }
+            }
             getConfig();
             loadCurrentUser();
             getVersion();
-        } 
+        }
 
 
     });
@@ -292,7 +309,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     };
 
     if ($scope.logged)
-    //console.log('Ok Logged');
+        //console.log('Ok Logged');
         $location.replace();
     $scope.username = $cookieStore.get('userName');
 
@@ -306,6 +323,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     $scope.logout = function () {
         AuthService.logout();
     };
+    //Functions for changing the password
+    $scope.oldPassword = '';
+    $scope.newPassword = '';
+    $scope.newPassword1 = '';
 
     $scope.changePassword = function () {
         $scope.oldPassword = '';
@@ -315,211 +336,242 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         $('#modalChangePassword').modal('show');
     };
 
-    $scope.postNew = function() {
-      if ($scope.newPassword.localeCompare($scope.newPassword1) == 0) {
-        $scope.passwordData = {};
-        $scope.passwordData.old_pwd = $scope.oldPassword;
-        $scope.passwordData.new_pwd = $scope.newPassword;
-        http.put(url + '/users/changepwd', JSON.stringify($scope.passwordData))
-        .success(function (response) {
-          alert("The password has been successfully changed")
-          AuthService.logout()})
-        .error(function (data, status) {
-            console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
-            alert('STATUS: ' + status + ' DATA: ' + JSON.stringify(data))
-            ? "" : location.reload();
-        });
-    } else {
-      alert("The new passwords are not the same");
-    }
+    $scope.$watchGroup(["newPassword", "newPassword1"], function (newValue, oldValue) {
+        if ($scope.newPassword.length < 8 || !(/[a-z]/.test($scope.newPassword)) || !(/[A-Z]/.test($scope.newPassword)) || !(/[0-9]/.test($scope.newPassword))) {
+            $scope.newPasswordStyle = { 'background-color': 'pink' };
+            $scope.newPasswordStrong = false;
+        } else {
+            $scope.newPasswordStyle = { 'background-color': 'white' };
+            $scope.newPasswordStrong = true;
+        }
+
+        if ($scope.newPassword !== $scope.newPassword1) {
+            $scope.newPasswordRepeat = { 'background-color': 'pink' };
+            $scope.newPasswordSame = false;
+        } else {
+            $scope.newPasswordRepeat = { 'background-color': 'white' };
+            $scope.newPasswordSame = true;
+        }
+    }, true);
+
+
+
+    $scope.postNew = function () {
+        if ($scope.newPassword.localeCompare($scope.newPassword1) == 0) {
+            $scope.passwordData = {};
+            $scope.passwordData.old_pwd = $scope.oldPassword;
+            $scope.passwordData.new_pwd = $scope.newPassword;
+            http.put(url + '/users/changepwd', JSON.stringify($scope.passwordData))
+                .success(function (response) {
+                    alert("The password has been successfully changed")
+                    AuthService.logout()
+                })
+                .error(function (data, status) {
+                    console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                    alert('STATUS: ' + status + ' DATA: ' + JSON.stringify(data))
+                        ? "" : location.reload();
+                });
+        } else {
+            alert("The new passwords are not the same");
+        }
 
     };
     $scope.test = 34;
-    $scope.admin = function() {
-      //console.log($scope.userLogged);
-      if (typeof $scope.userLogged != 'undefined') {
-        if($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
-         return true;
-        }  else {
-         return false;
+    $scope.admin = function () {
+        //console.log($scope.userLogged);
+        if (typeof $scope.userLogged != 'undefined') {
+            if ($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
+                return true;
+            } else {
+                return false;
+            }
         }
-      }
-      return false;
+        return false;
     };
 
 
- $(document).ready(function() {});
+    $(document).ready(function () { });
+    $scope.refreshQuota = function () {
+        $scope.quota = null;
+        chartsHere = false;
+        loadQuota();
 
- function loadQuota() {
-     http.get(url +'/quotas')
-         .success(function (response) {
-             console.log(response);
-             $scope.quota = response;
+    };
 
-              //console.log($scope.quota.left.ram)
-         })
-         .error(function (response, status) {
-             showError(status, response);
-         });
-}
 
-$scope.rcdownload = function() {
-    http.getRC(url +'/main/openbaton-rc/')
-         .success(function (response) {
-             console.log(response);
-             var rc = document.createElement("a");
-             rc.download = "openbaton" + '.rc';
-             rc.href = 'data:application/x-shellscript,' + encodeURIComponent(response);
-             document.body.appendChild(rc);
-             rc.click()
-             document.body.removeChild(rc);
-             delete key;
 
-            
-         })
-         .error(function (response, status) {
-             showError(status, response);
-         });
-}
+    function loadQuota() {
+        http.get(url + '/quotas')
+            .success(function (response) {
+                console.log(response);
+                $cookieStore.put('QUOTA', response);
+                $scope.quota = response;
 
-  function waitCharts() {
-  if (!chartsHere) {
-      if ($scope.quota !== null) {
-        chartsHere = true;
-        createCharts();
-      }
+                //console.log($scope.quota.left.ram)
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
     }
-  }
-  $scope.chartsLoaded = function() {
-    return chartsHere;
-  };
-  function createCharts() {
 
-         $.getScript('asset/js/plugins/chart.min.js',function(){
-           var ramData = [  {
-                 value: $scope.quota.left.ram,
-                 color:"#4ED18F",
-                 highlight: "#15BA67",
-                 label: "Availaible"
-             },
-             {
-                 value: $scope.quota.total.ram - $scope.quota.left.ram,
-                 color: "#B22222",
-                 highlight: "#15BA67",
-                 label: "Used"
-             }
+    $scope.rcdownload = function () {
+        http.getRC(url + '/main/openbaton-rc/')
+            .success(function (response) {
+                console.log(response);
+                var rc = document.createElement("a");
+                rc.download = "openbaton" + '.rc';
+                rc.href = 'data:application/x-shellscript,' + encodeURIComponent(response);
+                document.body.appendChild(rc);
+                rc.click()
+                document.body.removeChild(rc);
+                delete key;
 
-             ]
-             if ( $scope.quota.total.ram === 0) {
-               var ramData = [{
-                     value: 1,
-                     color:"#4ED18F",
-                     highlight: "#15BA67",
-                     label: "No resources available"
-                 }]
-             }
 
-             var instData = [  {
-                   value: $scope.quota.left.instances,
-                   color:"#4ED18F",
-                   highlight: "#15BA67",
-                   label:  "Availaible"
-               },
-               {
-                   value: $scope.quota.total.instances - $scope.quota.left.instances,
-                   color: "#B22222",
-                   highlight: "#15BA67",
-                   label: "Used"
-               }
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
+    }
 
-               ]
+    function waitCharts() {
+        if (!chartsHere) {
+            if ($scope.quota !== null) {
+                chartsHere = true;
+                createCharts();
+            }
+        }
+    }
+    $scope.chartsLoaded = function () {
+        return chartsHere;
+    };
+    function createCharts() {
+        console.log("Creating charts");
 
-               if ( $scope.quota.total.instances === 0) {
-                 var instData = [{
-                       value: 1,
-                       color:"#4ED18F",
-                       highlight: "#15BA67",
-                       label: "No resources available"
-                   }]
-               }
+        $.getScript('asset/js/plugins/chart.min.js', function () {
+            var ramData = [{
+                value: $scope.quota.left.ram,
+                color: "#4ED18F",
+                highlight: "#15BA67",
+                label: "Availaible"
+            },
+            {
+                value: $scope.quota.total.ram - $scope.quota.left.ram,
+                color: "#B22222",
+                highlight: "#15BA67",
+                label: "Used"
+            }
 
-               var cpuData = [  {
-                     value: $scope.quota.left.cores,
-                     color:"#4ED18F",
-                     highlight: "#15BA67",
-                     label:  "Availaible"
-                 },
-                 {
-                     value: $scope.quota.total.cores - $scope.quota.left.cores,
-                     color: "#B22222",
-                     highlight: "#15BA67",
-                     label: "Used"
-                 }
+            ]
+            if ($scope.quota.total.ram === 0) {
+                var ramData = [{
+                    value: 1,
+                    color: "#4ED18F",
+                    highlight: "#15BA67",
+                    label: "No resources available"
+                }]
+            }
 
-                 ]
+            var instData = [{
+                value: $scope.quota.left.instances,
+                color: "#4ED18F",
+                highlight: "#15BA67",
+                label: "Availaible"
+            },
+            {
+                value: $scope.quota.total.instances - $scope.quota.left.instances,
+                color: "#B22222",
+                highlight: "#15BA67",
+                label: "Used"
+            }
 
-                 if ( $scope.quota.total.cores === 0) {
-                   var cpuData = [{
-                         value: 1,
-                         color:"#4ED18F",
-                         highlight: "#15BA67",
-                         label: "No resources available"
-                     }]
-                 }
+            ]
 
-                 var ipData = [  {
-                       value: $scope.quota.left.floatingIps,
-                       color:"#4ED18F",
-                       highlight: "#15BA67",
-                       label:  "Availaible"
-                   },
-                   {
-                       value: $scope.quota.total.floatingIps - $scope.quota.left.floatingIps,
-                       color: "#B22222",
-                       highlight: "#15BA67",
-                       label: "Used"
-                   }
+            if ($scope.quota.total.instances === 0) {
+                var instData = [{
+                    value: 1,
+                    color: "#4ED18F",
+                    highlight: "#15BA67",
+                    label: "No resources available"
+                }]
+            }
 
-                   ]
+            var cpuData = [{
+                value: $scope.quota.left.cores,
+                color: "#4ED18F",
+                highlight: "#15BA67",
+                label: "Availaible"
+            },
+            {
+                value: $scope.quota.total.cores - $scope.quota.left.cores,
+                color: "#B22222",
+                highlight: "#15BA67",
+                label: "Used"
+            }
 
-                   if ( $scope.quota.total.floatingIps === 0) {
-                     var ipData = [{
-                           value: 1,
-                           color:"#4ED18F",
-                           highlight: "#15BA67",
-                           label: "No resources available"
-                       }]
-                   }
+            ]
 
-             var options = {
-               responsive : true,
-               showTooltips: true
-             };
+            if ($scope.quota.total.cores === 0) {
+                var cpuData = [{
+                    value: 1,
+                    color: "#4ED18F",
+                    highlight: "#15BA67",
+                    label: "No resources available"
+                }]
+            }
 
-             //Get the context of the canvas element we want to select
-             var c = $('#cpuChart');
-             var cp = c.get(0).getContext('2d');
+            var ipData = [{
+                value: $scope.quota.left.floatingIps,
+                color: "#4ED18F",
+                highlight: "#15BA67",
+                label: "Availaible"
+            },
+            {
+                value: $scope.quota.total.floatingIps - $scope.quota.left.floatingIps,
+                color: "#B22222",
+                highlight: "#15BA67",
+                label: "Used"
+            }
 
-             cpuChart = new Chart(cp).Doughnut(cpuData, options);
+            ]
 
-             var r = $('#ramChart');
-             var ra = r.get(0).getContext('2d');
+            if ($scope.quota.total.floatingIps === 0) {
+                var ipData = [{
+                    value: 1,
+                    color: "#4ED18F",
+                    highlight: "#15BA67",
+                    label: "No resources available"
+                }]
+            }
 
-             ramChart = new Chart(ra).Doughnut(ramData, options);
+            var options = {
+                responsive: true,
+                showTooltips: true
+            };
 
-             var i = $('#ipChart');
-             var ip = i.get(0).getContext('2d');
+            //Get the context of the canvas element we want to select
+            var c = $('#cpuChart');
+            var cp = c.get(0).getContext('2d');
 
-             ipChart = new Chart(ip).Doughnut(ipData, options);
+            cpuChart = new Chart(cp).Doughnut(cpuData, options);
 
-             var h = $('#instChart');
-             var hd = h.get(0).getContext('2d');
+            var r = $('#ramChart');
+            var ra = r.get(0).getContext('2d');
 
-             hddChart = new Chart(hd).Doughnut(instData, options);
+            ramChart = new Chart(ra).Doughnut(ramData, options);
 
-         })
+            var i = $('#ipChart');
+            var ip = i.get(0).getContext('2d');
 
- };
+            ipChart = new Chart(ip).Doughnut(ipData, options);
+
+            var h = $('#instChart');
+            var hd = h.get(0).getContext('2d');
+
+            hddChart = new Chart(hd).Doughnut(instData, options);
+
+        })
+
+    };
 
 
 
