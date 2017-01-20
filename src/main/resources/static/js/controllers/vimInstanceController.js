@@ -216,8 +216,8 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         http.get(url + $routeParams.vimInstanceId + '/refresh')
             .success(function (data) {
                 $('#refreshIco').removeClass('fa-spin');
-                $scope.datacenter = data;
-                $scope.datacenterJSON = JSON.stringify(data, undefined, 4);
+                $scope.vimInstance = data;
+                $scope.vimInstanceJSON = JSON.stringify(data, undefined, 4);
                 $scope.upDatacenter = data;
             })
             .error(function (data, status) {
