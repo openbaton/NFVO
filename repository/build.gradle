@@ -24,7 +24,7 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.35'
 
     // CrudRepository
-    compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+    compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'org.springframework:spring-test:' + springVersion

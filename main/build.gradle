@@ -35,7 +35,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
 
-    //compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
     compile 'org.springframework.data:spring-data-commons:1.12.6.RELEASE'
 
