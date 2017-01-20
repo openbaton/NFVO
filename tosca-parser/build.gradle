@@ -25,7 +25,7 @@ dependencies {
 
     compile 'org.yaml:snakeyaml:1.16'
     compile 'com.google.code.gson:gson:2.5'
-    compile 'commons-io:commons-io:2.4'
+    compile 'commons-io:commons-io:2.5'
     compile 'org.apache.commons:commons-compress:1.9'
 
     compile 'commons-validator:commons-validator:1.4.0'
