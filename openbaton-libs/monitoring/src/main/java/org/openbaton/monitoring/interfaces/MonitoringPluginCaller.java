@@ -24,19 +24,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
-import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
-import org.openbaton.catalogue.mano.common.monitoring.Alarm;
-import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;
-import org.openbaton.catalogue.mano.common.monitoring.ObjectSelection;
-import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
-import org.openbaton.catalogue.mano.common.monitoring.ThresholdDetails;
-import org.openbaton.catalogue.mano.common.monitoring.ThresholdType;
+import java.util.concurrent.*;
+import org.openbaton.catalogue.mano.common.monitoring.*;
 import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
@@ -53,11 +42,6 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class MonitoringPluginCaller extends MonitoringPlugin {
 
-  @Value("${nfvo.plugin.timeout:120000}")
-  private String pluginTimeout;
-
-  private PluginCaller pluginCaller;
-
   public String getManagementPort() {
     return managementPort;
   }
@@ -71,63 +55,48 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   public MonitoringPluginCaller() {}
 
-  //  public MonitoringPluginCaller(String type)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "monitor." + type,
-  //            "localhost",
-  //            "admin",
-  //            "openbaton",
-  //            5672,
-  //            15672,
-  //            Long.parseLong(pluginTimeout));
-  //  }
-  //
-  //  public MonitoringPluginCaller(String name, String type)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "monitor." + type + "." + name,
-  //            "localhost",
-  //            "admin",
-  //            "openbaton",
-  //            5672,
-  //            15672,
-  //            Long.parseLong(pluginTimeout));
-  //  }
-  //
-  //  public MonitoringPluginCaller(String name, String type, String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "monitor." + type + "." + name,
-  //            "localhost",
-  //            "admin",
-  //            "openbaton",
-  //            5672,
-  //            Integer.parseInt(managementPort),
-  //            Long.parseLong(pluginTimeout));
-  //  }
-  //
-  //  public MonitoringPluginCaller(
-  //      String brokerIp,
-  //      String username,
-  //      String password,
-  //      int port,
-  //      String type,
-  //      String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "monitor." + type,
-  //            brokerIp,
-  //            username,
-  //            password,
-  //            port,
-  //            Integer.parseInt(managementPort),
-  //            Long.parseLong(pluginTimeout));
-  //  }
+  public MonitoringPluginCaller(String type)
+      throws IOException, TimeoutException, NotFoundException {
+    pluginCaller =
+        new PluginCaller("monitor." + type, "localhost", "admin", "openbaton", 5672, 15672);
+  }
+
+  public MonitoringPluginCaller(String name, String type)
+      throws IOException, TimeoutException, NotFoundException {
+    pluginCaller =
+        new PluginCaller(
+            "monitor." + type + "." + name, "localhost", "admin", "openbaton", 5672, 15672);
+  }
+
+  public MonitoringPluginCaller(String name, String type, String managementPort)
+      throws IOException, TimeoutException, NotFoundException {
+    pluginCaller =
+        new PluginCaller(
+            "monitor." + type + "." + name,
+            "localhost",
+            "admin",
+            "openbaton",
+            5672,
+            Integer.parseInt(managementPort));
+  }
+
+  public MonitoringPluginCaller(
+      String brokerIp,
+      String username,
+      String password,
+      int port,
+      String type,
+      String managementPort)
+      throws IOException, TimeoutException, NotFoundException {
+    pluginCaller =
+        new PluginCaller(
+            "monitor." + type,
+            brokerIp,
+            username,
+            password,
+            port,
+            Integer.parseInt(managementPort));
+  }
 
   public MonitoringPluginCaller(
       String brokerIp,
@@ -145,34 +114,26 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             username,
             password,
             port,
-            Integer.parseInt(managementPort),
-            Long.parseLong(pluginTimeout));
+            Integer.parseInt(managementPort));
   }
 
-  //  public MonitoringPluginCaller(
-  //      String brokerIp, String username, String password, String type, String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "monitor." + type,
-  //            brokerIp,
-  //            username,
-  //            password,
-  //            5672,
-  //            Integer.parseInt(managementPort),
-  //            Long.parseLong(pluginTimeout));
-  //  }
+  public MonitoringPluginCaller(
+      String brokerIp, String username, String password, String type, String managementPort)
+      throws IOException, TimeoutException, NotFoundException {
+    pluginCaller =
+        new PluginCaller(
+            "monitor." + type,
+            brokerIp,
+            username,
+            password,
+            5672,
+            Integer.parseInt(managementPort));
+  }
+
+  private PluginCaller pluginCaller;
 
   public void stop() throws Exception {
     pluginCaller.close();
-  }
-
-  public String getPluginTimeout() {
-    return pluginTimeout;
-  }
-
-  public void setPluginTimeout(String pluginTimeout) {
-    this.pluginTimeout = pluginTimeout;
   }
 
   public static void main(String[] args)
