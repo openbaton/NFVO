@@ -18,13 +18,15 @@
 dependencies {
     compile project(':catalogue')
 
-    compile 'org.hibernate:hibernate-core:5.0.0.Final'
+
 
     compile 'commons-dbcp:commons-dbcp:1.4'
     compile 'mysql:mysql-connector-java:6.0.5'
 
     // CrudRepository
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
+
+    runtime 'org.hibernate:hibernate-entitymanager:5.0.0.Final'
 
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
