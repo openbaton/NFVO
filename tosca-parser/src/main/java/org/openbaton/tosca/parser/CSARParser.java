@@ -17,10 +17,6 @@
 
 package org.openbaton.tosca.parser;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -45,6 +41,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /** Created by rvl on 12.09.16. */
 @Service
@@ -71,12 +72,6 @@ public class CSARParser {
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
   }
-
-  /*
-   *
-   * Helper functions - Reading a csar and creating a proper vnf package
-   *
-   */
 
   private void readFiles(InputStream csar_file) throws IOException, NotFoundException {
 

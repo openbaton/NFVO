@@ -18,19 +18,10 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
@@ -43,6 +34,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.NoResultException;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -143,7 +143,6 @@ public class NetworkServiceDescriptorManagement
           AlreadyExistingException, EntityInUseException {
 
     InputStream in = new BufferedInputStream(new URL(link).openStream());
-
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
     int n = 0;
@@ -153,11 +152,9 @@ public class NetworkServiceDescriptorManagement
     out.close();
     in.close();
     String json = out.toString();
-
     NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
 
     List<String> market_ids = new ArrayList<>();
-
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
       market_ids.add(vnfd.getId());
     }
@@ -176,29 +173,22 @@ public class NetworkServiceDescriptorManagement
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException {
     List<String> not_found_ids = new ArrayList<>();
+    not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();
-
     for (String id : market_ids) {
-      for (VNFPackage vnfPackage : vnfPackageRepository.findByProjectId(project_id)) {
-        String localId = "";
-        String vnfdId = "";
-        for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
-          if (vnfd.getVnfPackageLocation().equals(vnfPackage.getId())) {
-            localId = vnfd.getVendor() + "/" + vnfPackage.getName() + "/" + vnfd.getVersion();
-            vnfdId = vnfd.getId();
-            break;
-          }
-        }
-        if (localId.equals(id)) {
-          throw new AlreadyExistingException(
-              "There is already a VNFD onboarded with id: " + localId);
+      for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
+        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getVersion();
+        String vnfdId = vnfd.getId();
+        log.debug(localId);
+        if (localId.toLowerCase().equals(id.toLowerCase())) {
+          log.info("The vnfd " + localId + " was found onboarded on the same project.");
+          vnfdIds.add(vnfdId);
+          not_found_ids.remove(id);
         }
       }
     }
     log.debug("VNFDs found on the catalogue: " + vnfdIds);
-
     for (String id : not_found_ids) {
-
       String link = "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + id + "/tar";
       VirtualNetworkFunctionDescriptor vnfd =
           vnfPackageManagement.onboardFromMarket(link, project_id);
@@ -206,7 +196,6 @@ public class NetworkServiceDescriptorManagement
           "Onboarded from marketplace VNFD " + vnfd.getName() + " local id is: " + vnfd.getId());
       vnfdIds.add(vnfd.getId());
     }
-
     return vnfdIds;
   }
 
