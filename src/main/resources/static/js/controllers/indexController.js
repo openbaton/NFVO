@@ -263,6 +263,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         if (arguments.length === 0) {
             http.syncGet(url + '/projects/')
                 .then(function (response) {
+                    if (response === 401) {
+                        console.log(status + ' Status unauthorized')
+                        AuthService.logout();
+                    }
                     if (angular.isUndefined($cookieStore.get('project')) || $cookieStore.get('project').id == '') {
                         $rootScope.projectSelected = response[0];
                         $cookieStore.put('project', response[0])
@@ -270,7 +274,8 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                         $rootScope.projectSelected = $cookieStore.get('project');
                     }
                     $rootScope.projects = response;
-                });
+                })
+               
         }
         else {
             $rootScope.projectSelected = project;
@@ -439,6 +444,13 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 chartsHere = true;
                 createCharts();
             }
+        }
+    }
+    function showError(data, status) {
+        $('.modal').modal('hide');
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
         }
     }
     $scope.chartsLoaded = function () {
