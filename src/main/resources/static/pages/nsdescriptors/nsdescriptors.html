@@ -1300,7 +1300,7 @@
                                             <div ng-init="popTable.expanded=false">
                                                 <p style="font-size:20px">
                                                     <a href="" ng-if="popTable.expanded" ng-click="popTable.expanded = false">-</a>
-                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>                                                    Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
+                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>                              launchForm                      Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
                                                 </p>
                                                 <div ng-if="popTable.expanded">
                                                     <table ng-table="tableParamsFilteredPops" class="table table-condensed table-bordered table-striped" show-filter="true">
@@ -1459,12 +1459,61 @@
                     <!--</div>-->
                 </tab>
 
-                <!--<tab heading="Configuration">-->
-                <!--</tab>-->
+               
                 <tab heading="Configuration parameters">
                     <div class="container-fluid">
-
                         <p>
+                            Configuration parameters are the dynamic parameters and would be used during lifecycle events
+                        </p>
+                        <tabset>
+                        
+                        <tab ng-repeat="vnfdname in vnfdnames track by $index" heading={{vnfdname}}>
+                             <div class="form-group">
+                            <div class="form row">
+                                <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
+
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
+                                </div>
+                            </div>
+                        </div>
+                         <div ng-repeat="conf in launchConfiguration.configurations[vnfdname].configurationParameters track by $index" class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
+                                <thead>
+                                    <tr>
+                                        <th> Configuration key </th>
+                                        <th> Configuration value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.confKey"
+                                            /></td>
+                                        <td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.value"
+                                            /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="vduTabletable">
+
+                                <tbody>
+                                    <tr>
+                                        <td><textarea style="width:100%;" name="Description" ng-model="conf.description" id="conf.description"
+                                                title="Here you can put a human readable description" class="form-control">
+                                </textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                             <button type="button" class="btn btn-danger" ng-click="removeConf($index, vnfdname)">Remove Parameter</button>
+                             </br>
+                             </br>
+                        </div>
+                            
+                            <button type="button" class="btn btn-primary" ng-click="addConftoLaunch(vnfdname)">Add Parameter</button>
+                        </tab>
+                        
+                        </tabset>
+                                                <!--p>
                             Configuration parameters are the dynamic parameters and would be used during lifecycle events
                         </p>
                         <div class="form-group">
@@ -1515,7 +1564,7 @@
                             </br>
                         </div>
 
-                        <button type="button" class="btn btn-primary" ng-click="addConftoLaunch()">Add Parameter</button>
+                        <button type="button" class="btn btn-primary" ng-click="addConftoLaunch()">Add Parameter</button-->
 
                     </div>
                 </tab>
