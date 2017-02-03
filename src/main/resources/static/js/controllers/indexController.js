@@ -28,6 +28,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.currentUser = null;
     //$scope.URL = 'http://lore:8080';
     $scope.URL = '';
+    $scope.alerts = [];
     $scope.NFVOVersion = "";
     $scope.credential = {
         "username": '',
@@ -452,6 +453,63 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             console.log(status + ' Status unauthorized')
             AuthService.logout();
         }
+    }
+    var urlPackages = $cookieStore.get('URL') + "/api/v1/projects/";
+    $scope.projectObj = {
+        'name': '',
+        'description': ''
+    };
+    $scope.createProject = function() {
+         $('#createProject').modal('show');
+    };
+     $scope.save = function () {
+        //console.log($scope.projectObj);
+        http.post(urlPackages, $scope.projectObj)
+            .success(function (response) {
+                showOk('Project: ' + $scope.projectObj.name + ' saved.');
+                loadTable();
+                $scope.projectObj = {
+                    'name': '',
+                    'description': ''
+                };
+                //location.reload();
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+    };
+
+    function showError(data, status) {
+        if (status === 500) {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
+        } else {
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + " Code: " + status
+            });
+        }
+
+        $('.modal').modal('hide');
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
+        }
+    }
+    function showOk(msg) {
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
+        $scope.changeProject();
+        $('.modal').modal('hide');
     }
     $scope.chartsLoaded = function () {
         return chartsHere;
