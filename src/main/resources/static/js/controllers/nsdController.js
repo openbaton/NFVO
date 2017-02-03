@@ -694,8 +694,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         //console.log($scope.basicConfiguration.name);
         $scope.launchObj.configurations={};
         $scope.launchObj.configurations = $scope.launchConfiguration.configurations;
-         console.log(JSON.stringify($scope.launchObj));
-       http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
+        console.log(JSON.stringify($scope.launchObj));
+        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -708,6 +708,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.launchPops = {};
         $scope.vnfdToVIM.splice(0);
         $scope.vimForLaunch = {};
+        $scope.launchConfiguration = {"configurations":{}};
+        $scope.vnfdnames = [];
        
 
     };
@@ -769,21 +771,6 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
 
     }
-
-    $scope.launchWithoutkey = function () {
-        console.log("Launching without key");
-
-
-        http.post(urlRecord + $scope.nsdToSend.id, empty = {})
-            .success(function (response) {
-                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-        $scope.launchKeys = [];
-        $scope.launchObj = {"keys": []};
-    };
 
     $scope.Jsplumb = function () {
         http.get(url + $routeParams.nsdescriptorId)
