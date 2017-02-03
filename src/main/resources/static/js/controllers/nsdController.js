@@ -614,6 +614,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
     
     $scope.launchOption = function (data) {
+        $scope.launchConfiguration = {"configurations":{}};
+        $scope.vnfdnames = [];
         $scope.nsdToSend = data;
         $scope.nsdToSend.vnfd.map(function (vnfd) {
             $scope.vnfdnames.push(vnfd.name);
