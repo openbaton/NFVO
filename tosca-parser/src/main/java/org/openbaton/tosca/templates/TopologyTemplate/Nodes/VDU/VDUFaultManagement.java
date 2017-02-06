@@ -1,14 +1,13 @@
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.faultmanagement.Criteria;
 import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementAction;
 import org.openbaton.catalogue.mano.common.faultmanagement.VNFCSelector;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /** Created by rvl on 06.02.17. */
 public class VDUFaultManagement {
