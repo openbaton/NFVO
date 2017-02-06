@@ -55,7 +55,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
-                showOk('Event: ' + ids.toString() + ' deleted.');
+                showOk('Project: ' + ids.toString() + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
@@ -188,6 +188,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         }, 5000);
         loadTable();
         $('.modal').modal('hide');
+        location.reload();
     }
 
     $scope.admin = function () {

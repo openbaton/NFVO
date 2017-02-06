@@ -238,7 +238,9 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                     this.on("success", function (file, responseText) {
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the VNF Package");
+                            myDropzone.removeAllFiles(true);
                             loadTable();
+                            
                         });
 
                     });
@@ -253,6 +255,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                                 showError(responseText, responseText.code);
                             });
                         }
+                        myDropzone.removeAllFiles(true);
                         });
                 }
             });
