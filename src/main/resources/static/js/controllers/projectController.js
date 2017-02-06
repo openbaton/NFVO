@@ -188,6 +188,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         }, 5000);
         loadTable();
         $('.modal').modal('hide');
+        location.reload();
     }
 
     $scope.admin = function () {
