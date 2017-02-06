@@ -72,12 +72,6 @@ public class CSARParser {
     this.toscaParser = new TOSCAParser();
   }
 
-  /*
-   *
-   * Helper functions - Reading a csar and creating a proper vnf package
-   *
-   */
-
   private void readFiles(InputStream csar_file) throws IOException, NotFoundException {
 
     ZipInputStream zipStream = new ZipInputStream(csar_file);

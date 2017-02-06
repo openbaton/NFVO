@@ -17,7 +17,6 @@
 
 package org.openbaton.tosca.parser;
 
-import java.util.*;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
@@ -32,6 +31,8 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 /** Created by rvl on 17.08.16. */
 @Service
@@ -89,6 +90,10 @@ public class TOSCAParser {
     // ADD Settings
     vdu.setScale_in_out(vduTemplate.getProperties().getScale_in_out());
     vdu.setVm_image(vduTemplate.getArtifacts());
+    if (vduTemplate.getProperties().getFault_management_policy() != null) {
+      vdu.setFault_management_policy(
+          vduTemplate.getProperties().getFault_management_policy().getFaultManagementPolicies());
+    }
 
     vdu.setVimInstanceName(vduTemplate.getProperties().getVim_instance_name());
 
@@ -332,6 +337,7 @@ public class TOSCAParser {
 
       VirtualLinkDescriptor vld = new VirtualLinkDescriptor();
       vld.setName(vlNode.getName());
+      if (vlNode.getQos() != null) vld.setQos(vlNode.getQos());
       nsd.getVld().add(vld);
     }
 
