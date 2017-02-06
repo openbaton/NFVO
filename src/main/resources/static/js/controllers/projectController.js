@@ -15,7 +15,7 @@
  */
 
 var app = angular.module('app');
-app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
+app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval, $rootScope) {
 
     var url = $cookieStore.get('URL') + "/api/v1/projects/";
     $scope.adminRole = "ADMIN";
@@ -150,12 +150,41 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
                         $scope.defaultID = $scope.projects[i].id;
                     }
                 }
+                changeProject();
                 //console.log($scope.defaultID);
             })
             .error(function (data, status) {
                 showError(data, status);
             });
     }
+
+    function changeProject() {
+        if (arguments.length === 0) {
+            http.syncGet(url)
+                .then(function (response) {
+                    if (response === 401) {
+                        console.log(status + ' Status unauthorized')
+                        AuthService.logout();
+                    }
+                    if (angular.isUndefined($cookieStore.get('project')) || $cookieStore.get('project').id == '') {
+                        $rootScope.projectSelected = response[0];
+                        $cookieStore.put('project', response[0])
+                    } else {
+                        $rootScope.projectSelected = $cookieStore.get('project');
+                    }
+                    $rootScope.projects = response;
+                })
+               
+        }
+        else {
+            $rootScope.projectSelected = project;
+            console.log(project);
+            $cookieStore.put('project', project);
+            $window.location.reload();
+        }
+
+
+    };
 
     function showError(data, status) {
         if (status === 500) {
@@ -188,7 +217,7 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         }, 5000);
         loadTable();
         $('.modal').modal('hide');
-        location.reload();
+        //location.reload();
     }
 
     $scope.admin = function () {
