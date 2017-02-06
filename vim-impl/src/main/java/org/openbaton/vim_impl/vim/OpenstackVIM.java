@@ -41,30 +41,25 @@ import org.springframework.stereotype.Service;
 public class OpenstackVIM extends GenericVIM {
 
   public OpenstackVIM(
-      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
+      String username,
+      String password,
+      String brokerIp,
+      int port,
+      String managementPort,
+      ApplicationContext context,
+      String pluginName,
+      int pluginTimeout)
       throws PluginException {
-    super("openstack." + name, brokerIp, port, managementPort, context);
-  }
-
-  public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-    super("openstack", "", managementPort, context);
-  }
-
-  public OpenstackVIM(int port, String managementPort, ApplicationContext context)
-      throws PluginException {
-    super("openstack", managementPort, context);
-  }
-
-  public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-    super("openstack", name, port, managementPort, null);
-  }
-
-  public OpenstackVIM(String managementPort) throws PluginException {
-    super("openstack", managementPort, null);
-  }
-
-  public OpenstackVIM(int port, String managementPort) throws PluginException {
-    super("openstack", managementPort, null);
+    super(
+        "openstack",
+        username,
+        password,
+        brokerIp,
+        port,
+        managementPort,
+        context,
+        pluginName,
+        pluginTimeout);
   }
 
   public OpenstackVIM() {}
@@ -417,7 +412,7 @@ public class OpenstackVIM extends GenericVIM {
               image,
               flavorExtId,
               vimInstance.getKeyPair(),
-              networks,
+              vnfComponent.getConnection_point(),
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,
@@ -475,53 +470,5 @@ public class OpenstackVIM extends GenericVIM {
 
     log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
     return new AsyncResult<>(vnfcInstance);
-  }
-
-  @Override
-  public Quota getQuota(VimInstance vimInstance) throws VimException {
-    log.debug(
-        "Listing Quota for Tenant "
-            + vimInstance.getTenant()
-            + " of VimInstance "
-            + vimInstance.getName());
-    Quota quota = null;
-    try {
-      quota = client.getQuota(vimInstance);
-      log.info(
-          "Listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + " -> Quota: "
-              + quota);
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    return quota;
   }
 }
