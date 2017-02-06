@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 public class VimDriverCaller extends VimDriver {
 
   private PluginCaller pluginCaller;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+private Logger log = LoggerFactory.getLogger(this.getClass());
 
   public VimDriverCaller(
       String brokerIp,
@@ -79,12 +79,10 @@ public class VimDriverCaller extends VimDriver {
             Integer.parseInt(managementPort),
             pluginTimeout);
   }
-
+  
   @PreDestroy
   public void stop() throws IOException, TimeoutException {
-    if (pluginCaller != null) {
-      pluginCaller.close();
-    }
+    if (pluginCaller != null) pluginCaller.close();
   }
 
   @Override
