@@ -26,6 +26,7 @@ public class VDUProperties {
   private ArrayList<String> vm_image;
   private int scale_in_out;
   private ArrayList<String> vim_instance_name;
+  private VDUFaultManagement fault_management_policy = null;
 
   public VDUProperties(Object vduProp) {
 
@@ -41,6 +42,10 @@ public class VDUProperties {
 
     if (vduPropMap.containsKey("vim_instance_name")) {
       vim_instance_name = (ArrayList<String>) vduPropMap.get("vim_instance_name");
+    }
+
+    if (vduPropMap.containsKey("fault_management_policy")) {
+      fault_management_policy = new VDUFaultManagement(vduPropMap.get("fault_management_policy"));
     }
   }
 
@@ -81,5 +86,13 @@ public class VDUProperties {
         + "vim instance name: "
         + vim_instance_name
         + "\n";
+  }
+
+  public VDUFaultManagement getFault_management_policy() {
+    return fault_management_policy;
+  }
+
+  public void setFault_management_policy(VDUFaultManagement fault_management_policy) {
+    this.fault_management_policy = fault_management_policy;
   }
 }
