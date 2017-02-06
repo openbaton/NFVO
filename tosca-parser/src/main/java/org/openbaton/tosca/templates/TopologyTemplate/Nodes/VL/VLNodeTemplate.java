@@ -17,12 +17,11 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VL;
 
-import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
 /** Created by rvl on 19.08.16. */
 public class VLNodeTemplate {

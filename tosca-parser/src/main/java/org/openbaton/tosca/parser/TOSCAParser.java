@@ -337,7 +337,7 @@ public class TOSCAParser {
 
       VirtualLinkDescriptor vld = new VirtualLinkDescriptor();
       vld.setName(vlNode.getName());
-      if(vlNode.getQos() != null) vld.setQos(vlNode.getQos());
+      if (vlNode.getQos() != null) vld.setQos(vlNode.getQos());
       nsd.getVld().add(vld);
     }
 
