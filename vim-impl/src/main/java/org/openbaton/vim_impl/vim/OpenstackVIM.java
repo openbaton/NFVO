@@ -61,7 +61,7 @@ public class OpenstackVIM extends GenericVIM {
         pluginName,
         pluginTimeout);
   }
-  
+
   public OpenstackVIM() {}
 
   @Override
