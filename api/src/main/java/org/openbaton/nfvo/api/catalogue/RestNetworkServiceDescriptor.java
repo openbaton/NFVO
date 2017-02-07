@@ -29,6 +29,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
@@ -102,7 +103,7 @@ public class RestNetworkServiceDescriptor {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException {
+          AlreadyExistingException, EntityInUseException, BadRequestException {
 
     log.debug("LINK: " + link);
     String downloadlink = link.get("link").getAsString();

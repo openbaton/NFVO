@@ -17,6 +17,7 @@
 
 package org.openbaton.tosca.parser;
 
+import java.util.*;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
@@ -31,8 +32,6 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 /** Created by rvl on 17.08.16. */
 @Service
