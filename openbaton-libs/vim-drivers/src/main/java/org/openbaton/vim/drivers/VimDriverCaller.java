@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
@@ -54,75 +55,6 @@ public class VimDriverCaller extends VimDriver {
   private PluginCaller pluginCaller;
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
-  //  public VimDriverCaller(String type) throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "vim-drivers." + type,
-  //            "localhost",
-  //            "admin",
-  //            "openbaton",
-  //            5672,
-  //            15672,
-  //            Long.parseLong(pluginTimeout));
-  //  }
-  //
-  //  public VimDriverCaller(String name, String type)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "vim-drivers." + type + "." + name,
-  //            "localhost",
-  //            "admin",
-  //            "openbaton",
-  //            5672,
-  //            15672,
-  //            Long.parseLong(pluginTimeout));
-  //  }
-
-  //  public VimDriverCaller(String name, String type, String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    if (name != null && !name.equals("")) {
-  //      pluginCaller =
-  //          new PluginCaller(
-  //              "vim-drivers." + type + "." + name,
-  //              "localhost",
-  //              "admin",
-  //              "openbaton",
-  //              5672,
-  //              Integer.parseInt(managementPort),
-  //              Long.parseLong(pluginTimeout));
-  //    } else {
-  //      pluginCaller =
-  //          new PluginCaller(
-  //              "vim-drivers." + type,
-  //              "localhost",
-  //              "admin",
-  //              "openbaton",
-  //              5672,
-  //              Integer.parseInt(managementPort),
-  //              Long.parseLong(pluginTimeout));
-  //    }
-  //  }
-
-  //  public VimDriverCaller(
-  //      String brokerIp,
-  //      String username,
-  //      String password,
-  //      int port,
-  //      String type,
-  //      String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "vim-drivers." + type,
-  //            brokerIp,
-  //            username,
-  //            password,
-  //            port,
-  //            Integer.parseInt(managementPort),
-  //            Long.parseLong(pluginTimeout));
-  //  }
-
   public VimDriverCaller(
       String brokerIp,
       String username,
@@ -147,26 +79,10 @@ public class VimDriverCaller extends VimDriver {
             Integer.parseInt(managementPort),
             pluginTimeout);
   }
-  //
-  //  public VimDriverCaller(
-  //      String brokerIp, String username, String password, String type, String managementPort)
-  //      throws IOException, TimeoutException, NotFoundException {
-  //    pluginCaller =
-  //        new PluginCaller(
-  //            "vim-drivers." + type,
-  //            brokerIp,
-  //            username,
-  //            password,
-  //            5672,
-  //            Integer.parseInt(managementPort),
-  //            Long.parseLong(pluginTimeout));
-  //  }
 
   @PreDestroy
   public void stop() throws IOException, TimeoutException {
-    if (pluginCaller != null) {
-      pluginCaller.close();
-    }
+    if (pluginCaller != null) pluginCaller.close();
   }
 
   @Override
@@ -176,7 +92,7 @@ public class VimDriverCaller extends VimDriver {
       String image,
       String flavor,
       String keypair,
-      Set<String> network,
+      Set<VNFDConnectionPoint> networks,
       Set<String> secGroup,
       String userData)
       throws VimDriverException {
@@ -186,7 +102,7 @@ public class VimDriverCaller extends VimDriver {
     params.add(image);
     params.add(flavor);
     params.add(keypair);
-    params.add((Serializable) network);
+    params.add((Serializable) networks);
     params.add((Serializable) secGroup);
     params.add(userData);
     Serializable res = null;
@@ -261,7 +177,7 @@ public class VimDriverCaller extends VimDriver {
       String image,
       String extId,
       String keyPair,
-      Set<String> networks,
+      Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s,
       Map<String, String> floatingIps,
@@ -296,7 +212,7 @@ public class VimDriverCaller extends VimDriver {
       String image,
       String extId,
       String keyPair,
-      Set<String> networks,
+      Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s)
       throws VimDriverException {

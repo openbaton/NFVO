@@ -17,21 +17,14 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -68,33 +61,6 @@ public class OpenstackVIM extends GenericVIM {
         pluginName,
         pluginTimeout);
   }
-
-  //  public OpenstackVIM(
-  //      String name, int port, String managementPort, ApplicationContext context, String brokerIp)
-  //      throws PluginException {
-  //    super("openstack." + name, brokerIp, port, managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(String managementPort, ApplicationContext context) throws PluginException {
-  //    super("openstack", "", managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(int port, String managementPort, ApplicationContext context)
-  //      throws PluginException {
-  //    super("openstack", managementPort, context);
-  //  }
-  //
-  //  public OpenstackVIM(String name, int port, String managementPort) throws PluginException {
-  //    super("openstack", name, port, managementPort, null);
-  //  }
-  //
-  //  public OpenstackVIM(String managementPort) throws PluginException {
-  //    super("openstack", managementPort, null);
-  //  }
-  //
-  //  public OpenstackVIM(int port, String managementPort) throws PluginException {
-  //    super("openstack", managementPort, null);
-  //  }
 
   public OpenstackVIM() {}
 
@@ -386,11 +352,11 @@ public class OpenstackVIM extends GenericVIM {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
-    Set<String> networks = new HashSet<>();
+    Set<VNFDConnectionPoint> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-      for (Network net : vimInstance.getNetworks())
-        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
-          networks.add(net.getExtId());
+      //      for (Network net : vimInstance.getNetworks())
+      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
+      networks.add(vnfdConnectionPoint);
     }
     log.debug("Found Networks with ExtIds: " + networks);
     String flavorKey = null;
@@ -446,7 +412,7 @@ public class OpenstackVIM extends GenericVIM {
               image,
               flavorExtId,
               vimInstance.getKeyPair(),
-              networks,
+              vnfComponent.getConnection_point(),
               vimInstance.getSecurityGroups(),
               userdata,
               floatingIps,
@@ -505,52 +471,4 @@ public class OpenstackVIM extends GenericVIM {
     log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
     return new AsyncResult<>(vnfcInstance);
   }
-
-  //  @Override
-  //  public Quota getQuota(VimInstance vimInstance) throws VimException {
-  //    log.debug(
-  //        "Listing Quota for Tenant "
-  //            + vimInstance.getTenant()
-  //            + " of VimInstance "
-  //            + vimInstance.getName());
-  //    Quota quota = null;
-  //    try {
-  //      quota = client.getQuota(vimInstance);
-  //      log.info(
-  //          "Listed Quota successfully for Tenant "
-  //              + vimInstance.getTenant()
-  //              + " of VimInstance "
-  //              + vimInstance.getName()
-  //              + " -> Quota: "
-  //              + quota);
-  //    } catch (Exception e) {
-  //      if (log.isDebugEnabled()) {
-  //        log.error(
-  //            "Not listed Quota successfully for Tenant "
-  //                + vimInstance.getTenant()
-  //                + " of VimInstance "
-  //                + vimInstance.getName()
-  //                + ". Caused by: "
-  //                + e.getMessage(),
-  //            e);
-  //      } else {
-  //        log.error(
-  //            "Not listed Quota successfully for Tenant "
-  //                + vimInstance.getTenant()
-  //                + " of VimInstance "
-  //                + vimInstance.getName()
-  //                + ". Caused by: "
-  //                + e.getMessage());
-  //      }
-  //      throw new VimException(
-  //          "Not listed Quota successfully for Tenant "
-  //              + vimInstance.getTenant()
-  //              + " of VimInstance "
-  //              + vimInstance.getName()
-  //              + ". Caused by: "
-  //              + e.getMessage(),
-  //          e);
-  //    }
-  //    return quota;
-  //  }
 }
