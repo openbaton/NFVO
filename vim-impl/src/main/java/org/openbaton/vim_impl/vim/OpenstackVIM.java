@@ -352,11 +352,11 @@ public class OpenstackVIM extends GenericVIM {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
-    Set<String> networks = new HashSet<>();
+    Set<VNFDConnectionPoint> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-      for (Network net : vimInstance.getNetworks())
-        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
-          networks.add(net.getExtId());
+      //      for (Network net : vimInstance.getNetworks())
+      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
+      networks.add(vnfdConnectionPoint);
     }
     log.debug("Found Networks with ExtIds: " + networks);
     String flavorKey = null;
