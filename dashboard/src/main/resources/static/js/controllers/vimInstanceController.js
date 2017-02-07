@@ -130,9 +130,6 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        if (status === 400)
-                            showError(status, {message:"Bad request: your json is not well formatted"});
-                        else
                             showError(status, data);
 
                     });
@@ -145,8 +142,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        if (status === 400)
-                            showError(status, {message:"Bad request: your json is not well formatted"});
+                        showError(status, data);
 
                     });
             }
@@ -221,8 +217,8 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
         http.get(url + $routeParams.vimInstanceId + '/refresh')
             .success(function (data) {
                 $('#refreshIco').removeClass('fa-spin');
-                $scope.datacenter = data;
-                $scope.datacenterJSON = JSON.stringify(data, undefined, 4);
+                $scope.vimInstance = data;
+                $scope.vimInstanceJSON = JSON.stringify(data, undefined, 4);
                 $scope.upDatacenter = data;
             })
             .error(function (data, status) {

@@ -23,7 +23,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     $scope.passwordSame = false;
     $scope.passwordStrong = false;
     $scope.emailValid = false;
-    
+
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -33,7 +33,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         'GUEST',
         'USER'
     ];
-    
+
     loadTable();
     $scope.newpassword = "";
 
@@ -47,35 +47,35 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             showError(response, status);
         });
 
-    $scope.addRole = function() {
+    $scope.addRole = function () {
         console.log($scope.projects[0]);
-      var newRole = {
-          "role": "USER",
-          "project": $scope.projects[0].name
-      };
-      $scope.userObj.roles.push(newRole);
+        var newRole = {
+            "role": "USER",
+            "project": $scope.projects[0].name
+        };
+        $scope.userObj.roles.push(newRole);
     };
-    $scope.addRoleUpdate = function() {
-      var newRole = {
-          "role": "USER",
-          "project":  $scope.projects[0].name
-      };
-      $scope.userUpdate.roles.push(newRole);
+    $scope.addRoleUpdate = function () {
+        var newRole = {
+            "role": "USER",
+            "project": $scope.projects[0].name
+        };
+        $scope.userUpdate.roles.push(newRole);
     };
     $scope.currentUser = {};
 
-    loadCurrentUser = function(){
-        http.get(url +'current')
+    loadCurrentUser = function () {
+        http.get(url + 'current')
             .success(function (response) {
                 //console.log(response);
-                $scope.currentUser= response
+                $scope.currentUser = response
             })
             .error(function (response, status) {
                 showError(status, response);
             });
     };
 
- 
+
 
     $scope.userObj = {
         "username": "",
@@ -87,8 +87,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         ]
     };
     $scope.adminRole = {
-      "role":"ADMIN",
-      "project":"*"
+        "role": "ADMIN",
+        "project": "*"
     };
     /* -- multiple delete functions Start -- */
 
@@ -108,19 +108,19 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             .error(function (response, status) {
                 showError(response, status);
             });
-            $scope.multipleDelete = false;
-            $scope.selection = {};
-            $scope.selection.ids = {};
+        $scope.multipleDelete = false;
+        $scope.selection = {};
+        $scope.selection.ids = {};
 
     };
 
-    $scope.main = {checkbox: false};
+    $scope.main = { checkbox: false };
     $scope.$watch('main', function (newValue, oldValue) {
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
             if (k === $scope.currentUser.id) {
-              return;
+                return;
             }
             $scope.selection.ids[k] = newValue.checkbox;
         });
@@ -170,31 +170,31 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     };
 
 
-    $scope.save = function() {
-      //console.log("Saving");
-      if ($scope.makeAdmin) {
-        $scope.saveAsAdmin();
-      } else {
-        $scope.saveAsUser();
-      }
-      $scope.makeAdmin = false;
+    $scope.save = function () {
+        //console.log("Saving");
+        if ($scope.makeAdmin) {
+            $scope.saveAsAdmin();
+        } else {
+            $scope.saveAsUser();
+        }
+        $scope.makeAdmin = false;
     };
 
-    $scope.updateSave = function() {
-      if ($scope.makeAdmin) {
-        updateAsAdmin();
-      } else {
-        updateAsUser();
-      }
-      $scope.makeAdmin = false;
+    $scope.updateSave = function () {
+        if ($scope.makeAdmin) {
+            updateAsAdmin();
+        } else {
+            updateAsUser();
+        }
+        $scope.makeAdmin = false;
     };
 
 
     $scope.saveAsUser = function () {
         //console.log($scope.userObj);
         if ($scope.userObj.password !== $scope.newpassword) {
-          alert("New passwords are not the same");
-          return;
+            alert("New passwords are not the same");
+            return;
         }
         http.post(url, $scope.userObj)
             .success(function (response) {
@@ -206,36 +206,36 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             });
     };
 
-    $scope.update = function(data) {
-      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
-      //console.log(data);
+    $scope.update = function (data) {
+        $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+        //console.log(data);
     };
 
     //Save as admin function
     $scope.adminObj = {};
-    $scope.saveAsAdmin = function() {
-      //console.log("Adding admin user");
-      if ($scope.userObj.password !== $scope.newpassword) {
-        alert("New passwords are not the same");
-        return;
-      }
-      $scope.adminObj.username = $scope.userObj.username;
-      $scope.adminObj.password = $scope.userObj.password;
-      $scope.adminObj.email = $scope.userObj.email;
-      $scope.adminObj.enabled = $scope.userObj.enabled;
-      $scope.adminObj.roles = [];
-      $scope.adminObj.roles.push($scope.adminRole);
+    $scope.saveAsAdmin = function () {
+        //console.log("Adding admin user");
+        if ($scope.userObj.password !== $scope.newpassword) {
+            alert("New passwords are not the same");
+            return;
+        }
+        $scope.adminObj.username = $scope.userObj.username;
+        $scope.adminObj.password = $scope.userObj.password;
+        $scope.adminObj.email = $scope.userObj.email;
+        $scope.adminObj.enabled = $scope.userObj.enabled;
+        $scope.adminObj.roles = [];
+        $scope.adminObj.roles.push($scope.adminRole);
 
-      http.post(url, $scope.adminObj)
-          .success(function (response) {
-              showOk('User: ' + $scope.adminObj.username + ' saved.');
-              loadTable();
-              $scope.adminObj = {};
-          })
-          .error(function (response, status) {
-              showError(response, status);
-          });
-            
+        http.post(url, $scope.adminObj)
+            .success(function (response) {
+                showOk('User: ' + $scope.adminObj.username + ' saved.');
+                loadTable();
+                $scope.adminObj = {};
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+
     };
 
     function loadTable() {
@@ -248,16 +248,16 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
                     $scope.userJSON = JSON.stringify(response, undefined, 4);
 
                 }).error(function (data, status) {
-                showError(data, status);
-            });
+                    showError(data, status);
+                });
         else {
             http.get(url)
                 .success(function (response) {
                     $scope.users = response;
                     for (i = 0; i < $scope.users.length; i++) {
-                      if ($scope.users[i].username === 'admin') {
-                        $scope.adminID = $scope.users[i].id;
-                      }
+                        if ($scope.users[i].username === 'admin') {
+                            $scope.adminID = $scope.users[i].id;
+                        }
                     }
                     loadCurrentUser();
                     //console.log($scope.currentUser);
@@ -271,18 +271,18 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     }
 
-  function showError(data, status) {
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
-            type: 'danger',
-            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
-        });
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
         } else {
-        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
-        $scope.alerts.push({
-            type: 'danger',
-            msg:  data.message + " Code: " + status
-        });
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + " Code: " + status
+            });
         }
 
         $('.modal').modal('hide');
@@ -293,7 +293,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }
 
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
+        $scope.alerts.push({ type: 'success', msg: msg });
         loadTable();
         window.setTimeout(function () {
             for (i = 0; i < $scope.alerts.length; i++) {
@@ -305,12 +305,12 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         $('.modal').modal('hide');
     }
 
-    $scope.$watch("userObj.password", function(newValue, oldValue) {
+    $scope.$watch("userObj.password", function (newValue, oldValue) {
         if ($scope.userObj.password.length < 8 || !(/[a-z]/.test($scope.userObj.password)) || !(/[A-Z]/.test($scope.userObj.password)) || !(/[0-9]/.test($scope.userObj.password))) {
-            $scope.passstyle = {'background-color':'pink'};
+            $scope.passstyle = { 'background-color': 'pink' };
             $scope.passwordStrong = false;
         } else {
-            $scope.passstyle = {'background-color':'white'};
+            $scope.passstyle = { 'background-color': 'white' };
             $scope.passwordStrong = true;
         }
     }, true);
@@ -318,33 +318,38 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     $scope.newUserPassword2 = '';
     $scope.newPasswordStrong = false;
     $scope.newPasswordSame = false;
-    $scope.newPasswordStyle = {'background-color':'pink'};
-    $scope.newPasswordRepeat = {'background-color':'pink'};
-    $scope.$watchGroup(["newUserPassword1", "newUserPassword2"], function(newValue, oldValue) {
+    $scope.newPasswordStyle = { 'background-color': 'pink' };
+    $scope.newPasswordRepeat = { 'background-color': 'pink' };
+    $scope.$watchGroup(["newUserPassword1", "newUserPassword2"], function (newValue, oldValue) {
         if ($scope.newUserPassword1.length < 8 || !(/[a-z]/.test($scope.newUserPassword1)) || !(/[A-Z]/.test($scope.newUserPassword1)) || !(/[0-9]/.test($scope.newUserPassword1))) {
-            $scope.newPasswordStyle = {'background-color':'pink'};
+            $scope.newPasswordStyle = { 'background-color': 'pink' };
             $scope.newPasswordStrong = false;
         } else {
-            $scope.newPasswordStyle = {'background-color':'white'};
+            $scope.newPasswordStyle = { 'background-color': 'white' };
             $scope.newPasswordStrong = true;
         }
-      
+
         if ($scope.newUserPassword1 !== $scope.newUserPassword2) {
-            $scope.newPasswordRepeat = {'background-color':'pink'};
-             $scope.newPasswordSame = false;
+            $scope.newPasswordRepeat = { 'background-color': 'pink' };
+            $scope.newPasswordSame = false;
         } else {
-            $scope.newPasswordRepeat = {'background-color':'white'};
-             $scope.newPasswordSame = true;
+            $scope.newPasswordRepeat = { 'background-color': 'white' };
+            $scope.newPasswordSame = true;
         }
     }, true);
     var changingPasswordData = {};
-    $scope.changeUserPassword = function(data) {
-      changingPasswordData = data;
-   
+    $scope.passChangeUsername = '';
+    $scope.changeUserPassword = function (data) {
+        $scope.newUserPassword1 = '';
+        $scope.newUserPassword2 = '';
+        //console.log(data.username);
+        changingPasswordData = data;
+        $scope.passChangeUsername = changingPasswordData.username;
+
     };
 
-    $scope.postNewPassword = function() {
-        var newPass = {"new_pwd":$scope.newUserPassword1};
+    $scope.postNewPassword = function () {
+        var newPass = { "new_pwd": $scope.newUserPassword1 };
         http.put(url + "changepwd/" + changingPasswordData.username, newPass)
             .success(function (response) {
                 showOk('User: ' + changingPasswordData.username + ' updated.');
@@ -360,32 +365,32 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
 
 
-     $scope.$watch("userObj.email", function(newValue, oldValue) {
-         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
+    $scope.$watch("userObj.email", function (newValue, oldValue) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
         if (re.test($scope.userObj.email)) {
-            $scope.emailstyle = {'background-color':'white'};
+            $scope.emailstyle = { 'background-color': 'white' };
             $scope.emailValid = true;
         } else {
-            $scope.emailstyle = {'background-color':'pink'};
+            $scope.emailstyle = { 'background-color': 'pink' };
             $scope.emailValid = false;
         }
     }, true);
 
-  
-    $scope.$watchGroup(["userObj.password", "newpassword", "userObj.username"], function(newValue, oldValue) {
+
+    $scope.$watchGroup(["userObj.password", "newpassword", "userObj.username"], function (newValue, oldValue) {
         if ($scope.userObj.password !== $scope.newpassword) {
             $scope.passwordSame = false;
-            $scope.checkstyle = {'background-color':'pink'};
+            $scope.checkstyle = { 'background-color': 'pink' };
         } else {
-            $scope.checkstyle = {'background-color':'white'};
+            $scope.checkstyle = { 'background-color': 'white' };
             $scope.passwordSame = true;
         }
         if ($scope.userObj.username.length > 0) {
-            $scope.namestyle = {'background-color':'white'};
+            $scope.namestyle = { 'background-color': 'white' };
 
         } else {
-            $scope.namestyle = {'background-color':'pink'};
+            $scope.namestyle = { 'background-color': 'pink' };
         }
     }, true);
 
@@ -403,14 +408,14 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj.id = $scope.userUpdate.id;
         updateObj.roles = [];
         for (i = 0; i < $scope.userUpdate.roles.length; i++) {
-          var newRole = {
-              "id": $scope.userUpdate.roles[i].id,
-              "role": $scope.userUpdate.roles[i].role,
-              "project": $scope.userUpdate.roles[i].project
-          };
-          updateObj.roles.push(newRole);
+            var newRole = {
+                "id": $scope.userUpdate.roles[i].id,
+                "role": $scope.userUpdate.roles[i].role,
+                "project": $scope.userUpdate.roles[i].project
+            };
+            updateObj.roles.push(newRole);
         }
-          //console.log("Copied");
+        //console.log("Copied");
         //console.log(updateObj);
         http.put(url + updateObj.username, updateObj)
             .success(function (response) {
@@ -420,8 +425,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             .error(function (response, status) {
                 showError(response, status);
             });
-          delete updateObj;
-          delete $scope.userUpdate;
+        delete updateObj;
+        delete $scope.userUpdate;
     };
     function updateAsAdmin() {
         //console.log($scope.userUpdate);
@@ -437,7 +442,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
         updateObj.enabled = $scope.userUpdate.enabled;
         updateObj.roles = [];
         updateObj.roles.push($scope.adminRole);
-          //console.log("Copied");
+        //console.log("Copied");
         //console.log(updateObj);
         http.put(url + updateObj.username, updateObj)
             .success(function (response) {
@@ -447,12 +452,12 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             .error(function (response, status) {
                 showError(response, status);
             });
-          delete updateObj;
-          delete $scope.userUpdate;
+        delete updateObj;
+        delete $scope.userUpdate;
     };
-    $scope.update = function(data) {
-      $scope.userUpdate = JSON.parse(JSON.stringify(data));;
-      //console.log(data);
+    $scope.update = function (data) {
+        $scope.userUpdate = JSON.parse(JSON.stringify(data));;
+        //console.log(data);
     };
 
 });

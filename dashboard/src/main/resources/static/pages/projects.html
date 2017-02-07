@@ -30,10 +30,10 @@
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-12">
-        <button id="deleteMultiple" href="#"   ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
+        <button ng-show="admin()" id="deleteMultiple" href="#"   ng-disabled="multipleDelete" class="btn btn-danger pull-right"  ng-style="{'margin-left':'25px'}"
                 title="Delete all the items selected" data-target="#deleteModal" data-toggle="modal">Delete
         </button>
-        <button id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
+        <button ng-show="admin()" id="btn_create_nsd" href="#" class="btn btn-primary pull-right"
                 title="" data-toggle="modal"
                 data-target="#createProject">Add a new Project
         </button>
@@ -53,9 +53,9 @@
                 <tr>
                     <td></td>
                     <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'description'; reverse = !reverse">description <i class="fa fa-sort"></i></th>
-                    <th>Actions <i class="fa"></i></th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
+                    <th ng-show="admin()">Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -65,9 +65,9 @@
                     <td>{{data.id}}</td>
                     <td>{{data.name}}</td>
                     <td>{{data.description}}</td>
-                    <td>
+                    <td ng-show="admin()">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger pull right" ng-disabled="data.name==projectSelected.name" ng-click="deleteEvent(data)"> Delete
+                            <button type="button" class="btn btn-danger pull right" ng-disabled="data.name==projectSelected.name"  ng-click="deleteEvent(data)"> Delete
                               </button>
                             <!--ul class="dropdown-menu" role="menu">
                                 <li ng-if="data.name!==projectSelected.name"><a href="" ng-click="deleteEvent(data)">Delete</a></li>

@@ -16,25 +16,37 @@
  */
 
 var app = angular.module('app');
-app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval) {
+app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $window, $interval, $rootScope) {
 
     var url = $cookieStore.get('URL') + "/api/v1/projects/";
-
+    $scope.adminRole = "ADMIN";
+    $scope.superProject = "*";
     $scope.alerts = [];
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
-  
+
     loadTable();
 
     $scope.projectObj = {
         'name': '',
         'description': ''
     };
-
+    console.log("")
     /* -- multiple delete functions Start -- */
+    $scope.admin = function () {
+        //console.log($scope.userLogged);
+        if (typeof $scope.userLogged != 'undefined') {
+            if ($scope.userLogged.roles[0].project === $scope.superProject && $scope.userLogged.roles[0].role === $scope.adminRole) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    };
 
-    $scope.multipleDeleteReq = function(){
+    $scope.multipleDeleteReq = function () {
         var ids = [];
         angular.forEach($scope.selection.ids, function (value, k) {
             if (value) {
@@ -44,26 +56,26 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         //console.log(ids);
         http.post(url + 'multipledelete', ids)
             .success(function (response) {
-                showOk('Event: ' + ids.toString() + ' deleted.');
+                showOk('Project: ' + ids.toString() + ' deleted.');
                 loadTable();
             })
             .error(function (response, status) {
                 showError(response, status);
             });
-            $scope.multipleDelete = false;
-            $scope.selection = {};
-            $scope.selection.ids = {};
+        $scope.multipleDelete = false;
+        $scope.selection = {};
+        $scope.selection.ids = {};
 
     };
 
-    $scope.main = {checkbox: false};
+    $scope.main = { checkbox: false };
     $scope.$watch('main', function (newValue, oldValue) {
         ////console.log(newValue.checkbox);
         ////console.log($scope.selection.ids);
         angular.forEach($scope.selection.ids, function (value, k) {
-          if (k === $scope.defaultID) {
-            return;
-          }
+            if (k === $scope.defaultID) {
+                return;
+            }
             $scope.selection.ids[k] = newValue.checkbox;
         });
         //console.log($scope.selection.ids);
@@ -130,34 +142,63 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
     };
     $scope.defaultID = "";
     function loadTable() {
-            http.get(url)
-                .success(function (response) {
-                    $scope.projects = response;
-                    //console.log(response);
-                    for (i = 0; i < $scope.projects.length; i++) {
-                      if ($scope.projects[i].name === 'default') {
+        http.get(url)
+            .success(function (response) {
+                $scope.projects = response;
+                //console.log(response);
+                for (i = 0; i < $scope.projects.length; i++) {
+                    if ($scope.projects[i].name === 'default') {
                         $scope.defaultID = $scope.projects[i].id;
-                      }
                     }
-                    //console.log($scope.defaultID);
-                })
-                .error(function (data, status) {
-                    showError(data, status);
-                });
+                }
+                changeProject();
+                //console.log($scope.defaultID);
+            })
+            .error(function (data, status) {
+                showError(data, status);
+            });
     }
 
-   function showError(data, status) {
+    function changeProject() {
+        if (arguments.length === 0) {
+            http.syncGet(url)
+                .then(function (response) {
+                    if (response === 401) {
+                        console.log(status + ' Status unauthorized')
+                        AuthService.logout();
+                    }
+                    if (angular.isUndefined($cookieStore.get('project')) || $cookieStore.get('project').id == '') {
+                        $rootScope.projectSelected = response[0];
+                        $cookieStore.put('project', response[0])
+                    } else {
+                        $rootScope.projectSelected = $cookieStore.get('project');
+                    }
+                    $rootScope.projects = response;
+                })
+               
+        }
+        else {
+            $rootScope.projectSelected = project;
+            console.log(project);
+            $cookieStore.put('project', project);
+            $window.location.reload();
+        }
+
+
+    };
+
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
-            type: 'danger',
-            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
-        });
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
         } else {
-        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
-        $scope.alerts.push({
-            type: 'danger',
-            msg:  data.message + " Code: " + status
-        });
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + " Code: " + status
+            });
         }
 
         $('.modal').modal('hide');
@@ -167,25 +208,26 @@ app.controller('ProjectCtrl', function ($scope, serviceAPI, $routeParams, http, 
         }
     }
     function showOk(msg) {
-        $scope.alerts.push({type: 'success', msg: msg});
-        window.setTimeout(function() { 
-        for (i = 0; i < $scope.alerts.length; i++) {
-        if ($scope.alerts[i].type == 'success') {
-            $scope.alerts.splice(i, 1);
-        }
-    }
-    }, 5000);
+        $scope.alerts.push({ type: 'success', msg: msg });
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         loadTable();
         $('.modal').modal('hide');
+        //location.reload();
     }
 
-    $scope.admin = function() {
-      //console.log($cookieStore.get('userName'));
-      if($cookieStore.get('userName') === 'admin') {
-        return true;
-      } else {
-        return false;
-      }
+    $scope.admin = function () {
+        //console.log($cookieStore.get('userName'));
+        if ($cookieStore.get('userName') === 'admin') {
+            return true;
+        } else {
+            return false;
+        }
     };
 
 });
