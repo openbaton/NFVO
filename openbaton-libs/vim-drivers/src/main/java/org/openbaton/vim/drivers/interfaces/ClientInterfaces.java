@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
@@ -42,7 +43,7 @@ public interface ClientInterfaces {
       String image,
       String flavor,
       String keypair,
-      Set<String> network,
+      Set<VNFDConnectionPoint> networks,
       Set<String> secGroup,
       String userData)
       throws VimDriverException;
@@ -61,7 +62,7 @@ public interface ClientInterfaces {
       String image,
       String extId,
       String keyPair,
-      Set<String> networks,
+      Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s,
       Map<String, String> floatingIps,
@@ -74,7 +75,7 @@ public interface ClientInterfaces {
       String image,
       String extId,
       String keyPair,
-      Set<String> networks,
+      Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s)
       throws VimDriverException;
