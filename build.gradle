@@ -22,7 +22,7 @@ plugins {
     id "com.github.hierynomus.license" version "0.13.1"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'org.springframework.boot' version '1.4.3.RELEASE'
+    //id 'org.springframework.boot' version '1.4.3.RELEASE'
 }
 
 apply plugin: 'java'
@@ -41,7 +41,7 @@ ext {
      * Spring Related Variables
      */
     springVersion = '4.3.5.RELEASE'
-    springBootVersion = '1.4.3.RELEASE'
+    springBootVersion = '1.2.5.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
@@ -70,7 +70,7 @@ ext {
 }
 
 apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
-//apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
+apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
 apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
@@ -79,15 +79,15 @@ apply from: 'gradle/gradle/distribution.gradle'
 apply from: 'gradle/gradle/dependencies.updater.gradle'
 
 
-jar {
-    from ('./src/main/resources') {
-        include 'META-INF/services'
-    }
-}
-
-bootRepackage {
-    mainClass = rootProject.mainClass
-}
+//jar {
+//    from ('./src/main/resources') {
+//        include 'META-INF/services'
+//    }
+//}
+//
+//bootRepackage {
+//    mainClass = rootProject.mainClass
+//}
 
 repositories {
     mavenCentral()

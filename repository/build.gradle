@@ -21,12 +21,12 @@ dependencies {
 
 
     compile 'commons-dbcp:commons-dbcp:1.4'
-    compile 'mysql:mysql-connector-java:6.0.5'
+    compile 'mysql:mysql-connector-java:5.1.40'
 
     // CrudRepository
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
 
-    runtime 'org.hibernate:hibernate-entitymanager:5.0.0.Final'
+    runtime 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
 
     testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
