@@ -52,7 +52,7 @@
 						<th>Download <i class="fa"></i></th>
 					</thead>
 					<tbody>
-						<tr ng-repeat="data in publicpackages| filter:search|orderBy:predicate:reverse">
+						<tr ng-show="data.nfvoVersion.substring(0,3) === NFVOversion.substring(0,3)" ng-repeat="data in publicpackages| filter:search|orderBy:predicate:reverse">
 							<td>{{data.id}}</td>
 							<td class="col-sm-1">{{data.name}}</td>
 							<td>{{data.description}}</td>
