@@ -45,10 +45,11 @@
 			<div class="table-responsive">
 				<table class="table table-bordered table-striped table-hover tablesorter" ng-show="publicpackages.length > 0">
 					<thead>
-						<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i></th>
-						<th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-						<th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-						<th ng-click="predicate = 'type'; reverse = !reverse">Type <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'id'; reverse = !reverse">Id </th>
+						<th ng-click="predicate = 'name'; reverse = !reverse">Name </th>
+						<th ng-click="predicate = 'description'; reverse = !reverse">Description </th>
+						<th ng-click="predicate = 'type'; reverse = !reverse">Type</th>
+						<th> VNFM Type </th>
 						<th>Download <i class="fa"></i></th>
 					</thead>
 					<tbody>
@@ -57,6 +58,7 @@
 							<td class="col-sm-1">{{data.name}}</td>
 							<td>{{data.description}}</td>
 							<td>{{data.type}}</td>
+							<td>{{data.vnfmType}}</td>
 							<td> <button type="button" class="btn btn-primary pull right" ng-click="download(data)"> Download
             </button></td>
 						</tr>
