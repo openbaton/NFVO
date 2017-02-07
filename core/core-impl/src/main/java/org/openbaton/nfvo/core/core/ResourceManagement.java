@@ -83,7 +83,6 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("Hostname is: " + hostname);
     virtualDeploymentUnit.setHostname(hostname);
     for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
-      //            String userData = getUserData(virtualNetworkFunctionRecord.getEndpoint());
       log.trace("UserData is: " + userdata);
       Map<String, String> floatingIps = new HashMap<>();
       for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
