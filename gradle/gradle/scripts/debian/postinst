@@ -39,7 +39,7 @@ OPENBATON_COMPONENT_NAME=nfvo
 
 OPENBATON_BASE_DIR=/usr
 OPENBATON_COMPONENT_EXE_DIR=${OPENBATON_BASE_DIR}/bin
-OPENBATON_PLUGINS_DIR=${OPENBATON_BASE_DIR}/lib/openbaton/plugins
+OPENBATON_PLUGINS_DIR=${OPENBATON_BASE_DIR}/lib/openbaton/plugins/vim-drivers
 
 OPENBATON_BASE_CONFIG_DIR=/etc/openbaton
 OPENBATON_COMPONENT_CONFIG_FILE=openbaton-${OPENBATON_COMPONENT_NAME}.properties
@@ -53,14 +53,19 @@ OPENBATON_COMPONENT_AUTOSTART=${OPENBATON_COMPONENT_AUTOSTART:-$OPENBATON_COMPON
 DEBIAN_FRONTEND_DEFAULT=interactive
 DEBIAN_FRONTEND=${DEBIAN_FRONTEND:-$DEBIAN_FRONTEND_DEFAULT}
 
+RABBITMQ_BROKER_IP_DEFAULT=localhost
+RABBITMQ_MANAGEMENT_PORT_DEFAULT=15672
+OPENBATON_ADMIN_PASSWORD_DEFAULT=openbaton
+
 
 ##################
 #### RabbitMQ ####
 ##################
 
 configure_rabbitmq () {
-    # TODO: check rabbitmq-server is started
-    #if rabbitmq is running
+    log_success_msg "Configuring RabbitMQ for Open Baton"
+    result=$(ps aux | grep -v 'grep' | grep 'rabbitmq' | wc -l)
+    if [ ${result} -gt 0 ]; then
         result=$(rabbitmqctl list_users | grep '^admin' | wc -l)
     	if [ ${result} -eq 0 ]; then
             rabbitmqctl add_user admin openbaton
@@ -84,24 +89,25 @@ configure_rabbitmq () {
             log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
             exit 1
         fi
-    #fi    
-
-    # In case of "noninteractive" FRONTEND the default value will remain valid (rabbit ip: localhost ; rabbit mgmt port: 15672)
-    if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
-    	read -p "Enter the rabbitmq broker ip [localhost]: " broker_ip
-    	export broker_ip=${broker_ip}
-    	if [ "${broker_ip}" != "" ]; then
-            log_success_msg "Setting new broker ip: ${broker_ip}"
-	        sed -i "s/nfvo.rabbit.brokerIp=localhost/nfvo.rabbit.brokerIp=${broker_ip}/g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
-        fi
-
-    	read -p "Enter the rabbitmq management port [15672]: " management_port
-    	export management_port=${management_port}
-    	if [ "${management_port}" != "" ]; then
-            log_success_msg "Setting new management port: ${management_port}"
-	        sed -i "s/nfvo.rabbit.management.port=15672/nfvo.rabbit.management.port=${management_port}/g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
-    	fi
     fi
+
+    # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: rabbitmq_broker_ip=localhost ; rabbitmq_management_port=15672)
+    if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
+        read -p "Enter the rabbitmq broker ip [localhost]: " rabbitmq_broker_ip
+        read -p "Enter the rabbitmq management port [15672]: " rabbitmq_management_port
+    fi
+
+    # Set the rabbitmq broker ip
+    rabbitmq_broker_ip=${rabbitmq_broker_ip:-$RABBITMQ_BROKER_IP_DEFAULT}
+    export rabbitmq_broker_ip=${rabbitmq_broker_ip}
+    log_success_msg "Setting new broker IP: ${rabbitmq_broker_ip}"
+    sed -i "s|nfvo.rabbit.brokerIp\s*=\s*localhost|nfvo.rabbit.brokerIp=${rabbitmq_broker_ip}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
+
+    # Set the rabbitmq management port
+    rabbitmq_management_port=${rabbitmq_management_port:-$RABBITMQ_MANAGEMENT_PORT_DEFAULT}
+    export rabbitmq_management_port=${rabbitmq_management_port}
+    log_success_msg "Setting new management port: ${rabbitmq_management_port}"
+    sed -i "s|nfvo.rabbit.management.port\s*=\s*15672|nfvo.rabbit.management.port=${rabbitmq_management_port}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties 
 }
 
 
@@ -111,30 +117,32 @@ configure_rabbitmq () {
 
 set_plugins_folder () {
     export OPENBATON_PLUGINS_DIR="${OPENBATON_PLUGINS_DIR}"
-    sed -i "s~nfvo.plugin.installation-dir=./plugins~nfvo.plugin.installation-dir="${OPENBATON_PLUGINS_DIR}"~" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
+    sed -i "s|nfvo.plugin.installation-dir\s*=\s*./plugins|nfvo.plugin.installation-dir=${OPENBATON_PLUGINS_DIR}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
 }
 
-set_password () {
-    # In case of "noninteractive" FRONTEND the default value will remain valid (user: admin ; password: openbaton)
+configure_nfvo_admin_credentials () {
+    # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: openbaton_admin_password=openbaton)
     if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
-        # Turning echo on and off between password reading
+        # Turning echo ON and OFF between password reading
         stty -echo
-        read -p "Provide the new password for 'admin' user of Open Baton: " openbatonpswd ; echo
+        read -p "Provide the new password for 'admin' user of Open Baton [openbaton]: " openbaton_admin_password ; echo
         stty echo
-        if [ "${openbatonpswd}" != "" ]; then
-            export openbatonpswd=${openbatonpswd}
+
+        if [ "${openbaton_admin_password}" != "" ]; then
+            # Turning echo ON and OFF between password reading
             stty -echo
-            read -p "Repeat the password: " openbatonpswd2 ; echo
+            read -p "Repeat the 'admin' password: " openbaton_admin_password_again ; echo
             stty echo
-            export openbatonpswd2=${openbatonpswd2}
-            if [ "${openbatonpswd}" = "${openbatonpswd2}" ]; then
-                sed -i "s/# nfvo.security.admin.password\ =\ openbaton/nfvo.security.admin.password\ =\ $openbatonpswd/g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
-                return
+            if [ "${openbaton_admin_password}" != "${openbaton_admin_password_again}" ]; then
+                configure_nfvo_admin_credentials
             fi
-        else
-            set_password
         fi
     fi
+
+    # Set the openbaton admin password
+    openbaton_admin_password=${openbaton_admin_password:-$OPENBATON_ADMIN_PASSWORD_DEFAULT}
+    export openbaton_admin_password=${openbaton_admin_password}
+    sed -i "s|nfvo.security.admin.password\s*=\s*openbaton|nfvo.security.admin.password=${openbaton_admin_password}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
 }
 
 configure_new_installation () {
@@ -144,19 +152,44 @@ configure_new_installation () {
         configure_rabbitmq
     fi
     set_plugins_folder
-    set_password
+    configure_nfvo_admin_credentials
     chmod a+x ${OPENBATON_COMPONENT_EXE_DIR}/openbaton-${OPENBATON_COMPONENT_NAME}
     log_success_msg "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation completed"
 }
 
 configure_for_upgrade () {
-    if [ -f "/tmp/${OPENBATON_COMPONENT_CONFIG_FILE}" ]; then
-        log_success_msg "Configuring Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
-        mv /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
-        log_success_msg "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation completed"
-    else
-        configure_new_installation # fix for backward compatibility as there is no old file to copy from /tmp
-    fi
+    cp /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old
+    cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
+
+    # Procedure to merge old and new properties files
+    awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+    sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+    sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+
+    awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+    sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+    sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+
+    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
+
+    sed -i s/=//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old      > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+
+    exec 3</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
+    exec 4</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+    while IFS='' read -r key <&3 && read -r line <&4; do
+        key=$(echo $key | awk -F'=' '{print $1}')
+        sed -i "s|.*${key}\s*=.*|${line}|" /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
+    done
+    exec 3<&-
+    exec 4<&-
+
+    mv /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
+
+    log_success_msg "Upgrading Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
+
+    # Clear tmp files used for upgrade
+    rm /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}*
 }
 
 
@@ -180,9 +213,9 @@ start_component () {
 
 case "${1}" in
     configure)
-        if [ "${2}" = "" ]; then # new installation
+        if [ "${2}" = "" ]; then # new installation (during first installation the postinst file is invoked as: 'postinst configure')
             configure_new_installation
-        else # upgrade
+        else # upgrade (during upgrade the postinst file is invoked as: 'postinst configure <old_version_number>')
             configure_for_upgrade
         fi 
         ;;
