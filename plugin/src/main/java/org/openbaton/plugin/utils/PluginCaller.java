@@ -173,6 +173,7 @@ public class PluginCaller {
             break;
           } else {
             log.error("Received Message with wrong correlation id");
+            channel.queueDelete(replyQueueName);
             throw new PluginException(
                 "Received Message with wrong correlation id. This should not happen, if it does please call us.");
           }
@@ -181,6 +182,7 @@ public class PluginCaller {
               "Timeout of "
                   + timeout / 1000
                   + " second is reached and no answer was received, supposing that the plugin crashed");
+          channel.queueDelete(replyQueueName);
           throw new PluginException(
               "Timeout of "
                   + timeout / 1000
@@ -220,11 +222,18 @@ public class PluginCaller {
               "Got Vim Driver Exception with server: "
                   + ((VimDriverException) pluginException.getCause()).getServer());
         } catch (Exception ignored) {
+          channel.queueDelete(replyQueueName);
           pluginException =
               new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
         }
         throw pluginException;
       }
-    } else return null;
+    } else {
+      try {
+        channel.queueDelete(replyQueueName);
+      } catch (Exception ignored) {
+      }
+      return null;
+    }
   }
 }

@@ -17,14 +17,6 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -48,6 +40,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /** Created by lto on 06/04/16. */
 @Service
@@ -1073,11 +1074,11 @@ public class GenericVIM extends Vim {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.info("Finding Networks...");
-    Set<String> networks = new HashSet<>();
+    Set<VNFDConnectionPoint> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-      for (Network net : vimInstance.getNetworks())
-        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
-          networks.add(net.getExtId());
+      //      for (Network net : vimInstance.getNetworks())
+      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
+      networks.add(vnfdConnectionPoint);
     }
     log.info("Found Networks with ExtIds: " + networks);
 

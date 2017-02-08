@@ -151,8 +151,8 @@ public class TestVIM extends Vim {
       throws VimException {
     log.trace("Initializing " + vimInstance);
     try {
-      HashSet<String> networks = new HashSet<>();
-      networks.add("network_id");
+      HashSet<VNFDConnectionPoint> networks = new HashSet<>();
+      networks.add(new VNFDConnectionPoint());
       HashSet<String> securityGroups = new HashSet<>();
       securityGroups.add("secGroup_id");
 
