@@ -45,3 +45,4 @@ out
 test-output
 atlassian-ide-plugin.xml
 .gradletasknamecache
+upload-archives.sh

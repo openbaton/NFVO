@@ -82,9 +82,7 @@ public class VimDriverCaller extends VimDriver {
 
   @PreDestroy
   public void stop() throws IOException, TimeoutException {
-    if (pluginCaller != null) {
-      pluginCaller.close();
-    }
+    if (pluginCaller != null) pluginCaller.close();
   }
 
   @Override
