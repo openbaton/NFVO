@@ -18,21 +18,22 @@
 package org.openbaton.catalogue.api;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.security.Key;
 
 /** Created by lto on 10/08/16. */
 public class DeployNSRBody {
-  private Map<String, Collection<String>> vduVimInstances;
+  private Map<String, List<String>> vduVimInstances;
   private Collection<Key> keys;
   private Map<String, Configuration> configurations;
 
-  public Map<String, Collection<String>> getVduVimInstances() {
+  public Map<String, List<String>> getVduVimInstances() {
     return vduVimInstances;
   }
 
-  public void setVduVimInstances(Map<String, Collection<String>> vduVimInstances) {
+  public void setVduVimInstances(Map<String, List<String>> vduVimInstances) {
     this.vduVimInstances = vduVimInstances;
   }
 

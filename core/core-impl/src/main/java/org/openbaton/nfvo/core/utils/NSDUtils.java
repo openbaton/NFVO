@@ -641,7 +641,7 @@ public class NSDUtils {
       }
       instanceNames = vdu.getVimInstanceName();
     } else {
-      instanceNames = (List<String>) body.getVduVimInstances().get(vdu.getName());
+      instanceNames = body.getVduVimInstances().get(vdu.getName());
     }
     return instanceNames;
   }
