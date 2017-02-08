@@ -330,9 +330,7 @@
                                     <th ng-click="predicate = 'event'; reverse = !reverse">event <i
                                             class="fa fa-sort"></i>
                                     </th>
-                                    <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle
-                                        events <i class="fa fa-sort"></i>
-                                    </th>
+                                
 
                                 </tr>
                                 </thead>
@@ -340,8 +338,7 @@
                                 <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:predicate:reverse">
                                     <td>{{le.id}}</td>
                                     <td>{{le.event}}</td>
-                                    <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
-                                    </td>
+                                    
                                 </tr>
                                 </tbody>
                             </table>
@@ -409,6 +406,23 @@
                           </table>
                         </div>
                     </tab>
+                    <tab heading="Configuration Parameters">
+                        <h3>{{vnfr.configurations.name}}</h3>
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                    <th>Parameter</th><th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="par in vnfr.configurations.configurationParameters">
+                                        <td>{{par.confKey}}</td><td>{{par.value}}</td>
+                                    </tr>
+                                </tbody>
+							</table>
+						</div>
+					</tab>
 
                 </tabset>
             </span>

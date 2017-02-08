@@ -17,8 +17,19 @@
 
 package org.openbaton.tosca.parser;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -27,6 +38,8 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -71,12 +84,6 @@ public class CSARParser {
   public CSARParser() {
     this.toscaParser = new TOSCAParser();
   }
-
-  /*
-   *
-   * Helper functions - Reading a csar and creating a proper vnf package
-   *
-   */
 
   private void readFiles(InputStream csar_file) throws IOException, NotFoundException {
 
@@ -188,7 +195,8 @@ public class CSARParser {
       VNFPackage vnfPackage,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String projectId)
-      throws NotFoundException, PluginException, VimException, IncompatibleVNFPackage {
+      throws NotFoundException, PluginException, VimException, IncompatibleVNFPackage,
+          BadRequestException, IOException, AlreadyExistingException {
 
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
@@ -214,7 +222,8 @@ public class CSARParser {
 
   private String saveVNFD(
       VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
-      throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage {
+      throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          BadRequestException, IOException, AlreadyExistingException {
 
     VNFPackage vnfPackage = new VNFPackage();
 
@@ -240,7 +249,8 @@ public class CSARParser {
 
   public VirtualNetworkFunctionDescriptor onboardVNFD(byte[] bytes, String projectId)
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
-          org.openbaton.tosca.exceptions.NotFoundException {
+          org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
+          AlreadyExistingException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
@@ -264,7 +274,8 @@ public class CSARParser {
 
   public NetworkServiceDescriptor onboardNSD(byte[] bytes, String projectId)
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
-          org.openbaton.tosca.exceptions.NotFoundException {
+          org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
+          AlreadyExistingException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);

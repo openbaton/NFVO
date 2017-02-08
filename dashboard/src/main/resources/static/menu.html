@@ -49,7 +49,10 @@
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a ng-click="" href="#projects"><i class=""></i> More projects</a>
+                            <a ng-click="" href="#projects"><i class=""></i> All projects</a>
+                        </li>
+                        <li ng-show="admin()">
+                            <a ng-click="createProject()"href=""  data-target="#createProject"><i class=""></i> Create Project </a>
                         </li>
                     </ul>
                 </li>
@@ -58,6 +61,9 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{username}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
+                        <li>
+                          <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
+                        <li>
                         <li>
                           <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
                         <li>
@@ -229,6 +235,41 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="createProject">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Create project</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="projectname" class="col-sm-4 control-label">Project Name</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="projectname" name="projectname"
+                                   ng-model="projectObj.name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Description" class="col-sm-4 control-label">Description:</label>
+                        <div class="col-sm-6">
+                        <textarea style="width:250px;" name="Description" ng-model="projectObj.description" id="Description" class="form-control" rows="5" cols="50">
+                        </textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
     <div class="modal" id="modalChangePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -237,6 +278,7 @@
                       aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
             </div>
+            <div style="padding-left:10px; padding-top:10px; padding-bottom: 10px;">Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit</div>
             <form class="form-horizontal" role="form" id="formChangePassword">
               <div class="form-group">
                 <label for="name" class="col-sm-4 control-label">Old Password</label>
@@ -247,18 +289,18 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="name" class="col-sm-4 control-label">New Password</label>
+                <label for="name"  class="col-sm-4 control-label">New Password</label>
 
                 <div class="col-sm-6">
-                    <input type="password" class="form-control" id="newPassword" name="newPassword"
+                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
                           ng-model="newPassword"/>
                 </div>
               </div>
                 <div class="form-group">
-                  <label for="name" class="col-sm-4 control-label">New Password</label>
+                  <label class="col-sm-4 control-label">New Password</label>
 
                   <div class="col-sm-6">
-                      <input type="password" class="form-control" id="newPassword1" name="newPassword1"
+                      <input type="password" ng-style="newPasswordRepeat"  class="form-control" id="newPassword1" name="newPassword1"
                             ng-model="newPassword1"/>
                   </div>
               </div>
@@ -268,7 +310,7 @@
                       data-dismiss="modal">Close
               </button>
               <button type="button" id="changePassword"
-                     class="btn btn-primary" ng-click="postNew()">Change Password
+                     class="btn btn-primary" ng-disabled="!newPasswordStrong || !newPasswordSame" ng-click="postNew()">Change Password
              </button>
             </div><!--footer-->
          </div>

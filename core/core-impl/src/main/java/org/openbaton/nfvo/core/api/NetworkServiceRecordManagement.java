@@ -19,7 +19,6 @@ package org.openbaton.nfvo.core.api;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -170,12 +169,12 @@ public class NetworkServiceRecordManagement
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
+    if (networkServiceDescriptor == null) {
+      throw new NotFoundException("NSD with id " + idNsd + " was not found");
+    }
     if (!networkServiceDescriptor.getProjectId().equals(projectID)) {
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
-    if (networkServiceDescriptor == null) {
-      throw new NotFoundException("NSD with id " + idNsd + " was not found");
     }
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
@@ -215,7 +214,7 @@ public class NetworkServiceRecordManagement
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     if (vduVimInstances == null) {
-      body.setVduVimInstances(new HashMap<String, Collection<String>>());
+      body.setVduVimInstances(new HashMap<String, List<String>>());
     } else {
       body.setVduVimInstances(vduVimInstances);
     }
@@ -885,85 +884,12 @@ public class NetworkServiceRecordManagement
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
+    Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
       log.debug("\t" + virtualNetworkFunctionDescriptor.getName());
-    }
-
-    log.debug("Checking vim instance support");
-    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        Collection<String> instanceNames;
-
-        if (body == null
-            || body.getVduVimInstances() == null
-            || body.getVduVimInstances().get(vdu.getName()) == null
-            || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
-          if (vdu.getVimInstanceName() == null) {
-            throw new MissingParameterException(
-                "No VimInstances specified for vdu: " + vdu.getName());
-          }
-          instanceNames = vdu.getVimInstanceName();
-        } else {
-          instanceNames = body.getVduVimInstances().get(vdu.getName());
-        }
-        VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
-        if (instanceNames.size() == 0) {
-          log.debug("ProjectID: " + projectID);
-          for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-            if (vnfPackage == null
-                || vnfPackage.getVimTypes() == null
-                || vnfPackage.getVimTypes().isEmpty()) {
-              instanceNames.add(vimInstance.getName());
-            } else {
-              String type = vimInstance.getType();
-              if (type.contains(".")) {
-                type = type.split("\\.")[0];
-              }
-              if (vnfPackage.getVimTypes().contains(type)) {
-                instanceNames.add(vimInstance.getName());
-              }
-            }
-          }
-        }
-        if (instanceNames.size() == 0) {
-          throw new org.openbaton.exceptions.BadRequestException(
-              "No Vim Instance found for supporting the VNFD "
-                  + vnfd.getName()
-                  + " (looking for vim type: "
-                  + vnfPackage.getVimTypes()
-                  + ")");
-        }
-        log.debug("Vim Instances chosen are: " + instanceNames);
-        for (String vimInstanceName : instanceNames) {
-          VimInstance vimInstance = null;
-          for (VimInstance vi : vimInstanceRepository.findByProjectId(projectID)) {
-            if (vimInstanceName.equals(vi.getName())) {
-              vimInstance = vi;
-              log.debug("Found vim instance " + vimInstance.getName());
-
-              if (vnfPackage == null
-                  || vnfPackage.getVimTypes() == null
-                  || vnfPackage.getVimTypes().size() == 0) {
-                log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
-                break;
-              }
-              log.debug(
-                  "Checking if "
-                      + vimInstance.getType()
-                      + " is contained in "
-                      + vnfPackage.getVimTypes());
-
-              if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
-                throw new org.openbaton.exceptions.BadRequestException(
-                    "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
-              }
-            }
-          }
-        }
-      }
     }
 
     log.info("Checking if all vnfm are registered and active");
@@ -993,19 +919,10 @@ public class NetworkServiceRecordManagement
       //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-          Collection<String> instanceNames;
-          if (body == null
-              || body.getVduVimInstances() == null
-              || body.getVduVimInstances().get(vdu.getName()) == null
-              || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
-            if (vdu.getVimInstanceName() == null) {
-              throw new MissingParameterException(
-                  "No VimInstances specified for vdu: " + vdu.getName());
-            }
-            instanceNames = vdu.getVimInstanceName();
-          } else {
-            instanceNames = body.getVduVimInstances().get(vdu.getName());
-          }
+          List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
+          log.debug("Checking vim instance support");
+          instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+          vduVimInstances.put(vdu.getId(), instanceNames);
           for (String vimInstanceName : instanceNames) {
 
             VimInstance vimInstance = null;
@@ -1060,82 +977,8 @@ public class NetworkServiceRecordManagement
         }
       }
 
-      // Check if the chosen VIM has ENOUGH Resources for deployment
-
-      Map<VimInstance, Quota> requirements = new HashMap<>();
-
-      for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-          int floatingIpCount = 0;
-          for (VNFComponent vnfComponent : vdu.getVnfc()) {
-            for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-              if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
-            }
-          }
-          for (String vimInstanceName : vdu.getVimInstanceName()) {
-            VimInstance vimInstance = null;
-            for (VimInstance vim : vimInstanceRepository.findByProjectId(projectID)) {
-              if (vim.getName().equals(vimInstanceName)) vimInstance = vim;
-            }
-            DeploymentFlavour df = null;
-            String df_key = vnfd.getDeployment_flavour().iterator().next().getFlavour_key();
-            if (vimInstance != null) {
-              for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
-                // TODO: Should find a better solution for here and generic
-                if (deploymentFlavour.getFlavour_key().equals(df_key)) df = deploymentFlavour;
-              }
-              if (df == null)
-                throw new NotFoundException(
-                    "Deployment Flavour key: "
-                        + df_key
-                        + " not supported in VIM Instance: "
-                        + vimInstance.getName());
-              if (!requirements.keySet().contains(vimInstance)) {
-                Quota quota = new Quota();
-                quota.setCores(df.getVcpus());
-                quota.setInstances(1);
-                quota.setRam(df.getRam());
-                quota.setFloatingIps(floatingIpCount);
-                requirements.put(vimInstance, quota);
-              } else {
-                requirements
-                    .get(vimInstance)
-                    .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
-                requirements
-                    .get(vimInstance)
-                    .setInstances(requirements.get(vimInstance).getInstances() + 1);
-                requirements
-                    .get(vimInstance)
-                    .setRam(requirements.get(vimInstance).getRam() + df.getRam());
-                requirements
-                    .get(vimInstance)
-                    .setFloatingIps(
-                        requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
-              }
-            }
-          }
-        }
-      }
-
-      for (VimInstance vimInstance : requirements.keySet()) {
-        Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
-        Quota neededQuota = requirements.get(vimInstance);
-        log.info("Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
-        if (leftQuota.getRam() < neededQuota.getRam()
-            || leftQuota.getCores() < neededQuota.getCores()
-            || leftQuota.getInstances() < neededQuota.getInstances()
-            || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
-          throw new VimException(
-              "The VIM "
-                  + vimInstance.getName()
-                  + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
-                  + "You should lower the Deployment Flavours or free up resources.");
-        else
-          log.info(
-              "Resource check done: ",
-              "Vim Instance has enough resources. Moving on with deployment.");
-      }
-      //    }
+      // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
+      checkQuotaForNS(networkServiceDescriptor);
 
       NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
 
@@ -1160,6 +1003,15 @@ public class NetworkServiceRecordManagement
       }
     }
 
+    checkConfigParameter(networkServiceDescriptor, body);
+
+    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
+    log.debug("Returning NSR " + networkServiceRecord.getName());
+    return networkServiceRecord;
+  }
+
+  private void checkConfigParameter(
+      NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
     if (networkServiceDescriptor.getVnfd() != null) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
           networkServiceDescriptor.getVnfd()) {
@@ -1191,10 +1043,159 @@ public class NetworkServiceRecordManagement
         }
       }
     }
+  }
 
-    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body);
-    log.debug("Returning NSR " + networkServiceRecord.getName());
-    return networkServiceRecord;
+  private void checkQuotaForNS(NetworkServiceDescriptor networkServiceDescriptor)
+      throws NotFoundException, VimException, PluginException {
+    Map<VimInstance, Quota> requirements = new HashMap<>();
+
+    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        int floatingIpCount = 0;
+        for (VNFComponent vnfComponent : vdu.getVnfc()) {
+          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+            if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
+          }
+        }
+        for (String vimInstanceName : vdu.getVimInstanceName()) {
+          VimInstance vimInstance = null;
+          for (VimInstance vim : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+            if (vim.getName().equals(vimInstanceName)) vimInstance = vim;
+          }
+          DeploymentFlavour df = null;
+          String df_key = vnfd.getDeployment_flavour().iterator().next().getFlavour_key();
+          if (vimInstance != null) {
+            for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
+              // TODO: Should find a better solution for here and generic
+              if (deploymentFlavour.getFlavour_key().equals(df_key)) df = deploymentFlavour;
+            }
+            if (df == null)
+              throw new NotFoundException(
+                  "Deployment Flavour key: "
+                      + df_key
+                      + " not supported in VIM Instance: "
+                      + vimInstance.getName());
+            if (!requirements.keySet().contains(vimInstance)) {
+              Quota quota = new Quota();
+              quota.setCores(df.getVcpus());
+              quota.setInstances(1);
+              quota.setRam(df.getRam());
+              quota.setFloatingIps(floatingIpCount);
+              requirements.put(vimInstance, quota);
+            } else {
+              requirements
+                  .get(vimInstance)
+                  .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
+              requirements
+                  .get(vimInstance)
+                  .setInstances(requirements.get(vimInstance).getInstances() + 1);
+              requirements
+                  .get(vimInstance)
+                  .setRam(requirements.get(vimInstance).getRam() + df.getRam());
+              requirements
+                  .get(vimInstance)
+                  .setFloatingIps(requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
+            }
+          }
+        }
+      }
+    }
+
+    for (VimInstance vimInstance : requirements.keySet()) {
+      Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
+      Quota neededQuota = requirements.get(vimInstance);
+      log.info("Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
+      if (leftQuota.getRam() < neededQuota.getRam()
+          || leftQuota.getCores() < neededQuota.getCores()
+          || leftQuota.getInstances() < neededQuota.getInstances()
+          || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
+        throw new VimException(
+            "The VIM "
+                + vimInstance.getName()
+                + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
+                + "You should lower the Deployment Flavours or free up resources.");
+      else
+        log.info(
+            "Resource check done: ",
+            "Vim Instance has enough resources. Moving on with deployment.");
+    }
+  }
+
+  private List<String> checkIfVimAreSupportedByPackage(
+      VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
+      throws BadRequestException {
+    VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+    if (vnfPackage == null
+        || vnfPackage.getVimTypes() == null
+        || vnfPackage.getVimTypes().size() == 0) {
+      log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
+    } else {
+      for (String vimInstanceName : instanceNames) {
+        VimInstance vimInstance;
+        for (VimInstance vi : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+          if (vimInstanceName.equals(vi.getName())) {
+            vimInstance = vi;
+            log.debug("Found vim instance " + vimInstance.getName());
+            log.debug(
+                "Checking if "
+                    + vimInstance.getType()
+                    + " is contained in "
+                    + vnfPackage.getVimTypes());
+            if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+              throw new org.openbaton.exceptions.BadRequestException(
+                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
+            }
+          }
+        }
+      }
+    }
+    if (instanceNames.size() == 0) {
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+        if (vnfPackage == null
+            || vnfPackage.getVimTypes() == null
+            || vnfPackage.getVimTypes().isEmpty()) {
+          instanceNames.add(vimInstance.getName());
+        } else {
+          String type = vimInstance.getType();
+          if (type.contains(".")) {
+            type = type.split("\\.")[0];
+          }
+          if (vnfPackage.getVimTypes().contains(type)) {
+            instanceNames.add(vimInstance.getName());
+          }
+        }
+      }
+    }
+
+    if (instanceNames.size() == 0) {
+      throw new org.openbaton.exceptions.BadRequestException(
+          "No Vim Instance found for supporting the VNFD "
+              + vnfd.getName()
+              + " (looking for vim type: "
+              + vnfPackage.getVimTypes()
+              + ")");
+    }
+    log.debug("Vim Instances chosen are: " + instanceNames);
+    return instanceNames;
+  }
+
+  private List<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
+      throws MissingParameterException {
+    List<String> instanceNames;
+
+    if (body == null
+        || body.getVduVimInstances() == null
+        || body.getVduVimInstances().get(vdu.getName()) == null
+        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
+      if (vdu.getVimInstanceName() == null) {
+        throw new MissingParameterException(
+            "No VimInstance specified for vdu with name: " + vdu.getName());
+      }
+      instanceNames = vdu.getVimInstanceName();
+    } else {
+      instanceNames = body.getVduVimInstances().get(vdu.getName());
+    }
+    return instanceNames;
   }
 
   @Override

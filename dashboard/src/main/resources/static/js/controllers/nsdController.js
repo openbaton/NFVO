@@ -603,8 +603,25 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         //console.log(index, parentindex, parentparentindex);
         $scope.vnfdToVIM[parentparentindex].vdu[parentindex].vim.splice(index, 1);
     };
+    $scope.launchConfiguration = {"configurations":{}};
+    $scope.vnfdnames = [];
+    $scope.addConftoLaunch = function(vnfdname) {
+        
+        $scope.launchConfiguration.configurations[vnfdname].configurationParameters.push({description:"", confKey:"", value:""});
+    };
+    $scope.removeConf = function(index, vnfdname) {
+         $scope.launchConfiguration.configurations[vnfdname].configurationParameters.splice(index, 1);
+    };
+    
     $scope.launchOption = function (data) {
+        $scope.launchConfiguration = {"configurations":{}};
+        $scope.vnfdnames = [];
         $scope.nsdToSend = data;
+        $scope.nsdToSend.vnfd.map(function (vnfd) {
+            $scope.vnfdnames.push(vnfd.name);
+            $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
+        });
+        console.log($scope.vnfdnames);
         //loadKeys();
         $scope.launchPops = {};
         $scope.vnfdToVIM.splice(0);
@@ -678,9 +695,9 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         // $scope.launchObj.vduVimInstances = $scope.vimForLaunch;
         //console.log($scope.basicConfiguration.name);
         $scope.launchObj.configurations={};
-        $scope.launchObj.configurations[$scope.basicConfiguration.name] = $scope.basicConfiguration.config;
-         console.log(JSON.stringify($scope.launchObj));
-       http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
+        $scope.launchObj.configurations = $scope.launchConfiguration.configurations;
+        console.log(JSON.stringify($scope.launchObj));
+        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -693,6 +710,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.launchPops = {};
         $scope.vnfdToVIM.splice(0);
         $scope.vimForLaunch = {};
+        $scope.launchConfiguration = {"configurations":{}};
+        $scope.vnfdnames = [];
        
 
     };
@@ -754,21 +773,6 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 
 
     }
-
-    $scope.launchWithoutkey = function () {
-        console.log("Launching without key");
-
-
-        http.post(urlRecord + $scope.nsdToSend.id, empty = {})
-            .success(function (response) {
-                showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-        $scope.launchKeys = [];
-        $scope.launchObj = {"keys": []};
-    };
 
     $scope.Jsplumb = function () {
         http.get(url + $routeParams.nsdescriptorId)
@@ -990,13 +994,6 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             $scope.tabs.push(tab);
         }
     }
-    $scope.addConftoLaunch = function() {
-        
-        $scope.basicConfiguration.config.configurationParameters.push({description:"", confKey:"", value:""});
-    };
-    $scope.removeConf = function(index) {
-         $scope.basicConfiguration.config.configurationParameters.splice(index, 1);
-    };
     
     angular.element(document).ready(function () {
        
@@ -1038,6 +1035,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the CSAR NSD");
                             loadTable();
+                            myDropzone.removeAllFiles(true);
                         });
 
                     });
@@ -1052,6 +1050,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                                 showError(responseText, responseText.code);
                             });
                         }
+                        myDropzone.removeAllFiles(true);
                     });
                 }
             });

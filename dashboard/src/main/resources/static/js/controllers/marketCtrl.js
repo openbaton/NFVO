@@ -17,6 +17,7 @@
 
 var app = angular.module('app').controller('marketCtrl', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http) {
 
+    
     var url = $cookieStore.get('URL');
     //var defaultUrl = "lore:8082"
     var defaultUrl = "marketplace.openbaton.org:8082";
@@ -28,13 +29,25 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
     $scope.publicNSDs = [];
     $scope.csarVNFs = [];
     $scope.csarNSs = [];
+    $scope.NFVOversion = '';
 
     loadTablePublic();
     loadTablePublicNSD();
 
     getMarketURL();
+    getVersion();
 
 
+    function getVersion() {
+        http.get(url + '/api/v1/main/version/')
+            .success(function (response) {
+                console.log("version is " + response);
+                $scope.NFVOversion = response
+            })
+            .error(function (response, status) {
+                showError(status, response);
+            });
+    }
 
     function loadCSARTableVNF() {
         $http.get("http://" + defaultUrl + "/api/v1/csar-vnf")

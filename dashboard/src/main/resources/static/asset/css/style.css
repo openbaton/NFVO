@@ -962,7 +962,7 @@ ul li a:focus {
   -moz-border-radius: 1px !important;
   -ms-border-radius: 1px !important;
   -o-border-radius: 1px !important;
-  border-radius: 1px !important;
+  border-radius: 4px !important;
   padding-left: 20px;
   padding-right: 20px;
   background-color: #fff;

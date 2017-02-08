@@ -269,7 +269,8 @@ public class VnfmManager
   public Future<Void> deploy(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      Map<String, List<String>> vduVimInstances)
       throws NotFoundException {
 
     try {
@@ -298,16 +299,8 @@ public class VnfmManager
 
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
           vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
-          Collection<String> instanceNames;
-          if (body == null
-              || body.getVduVimInstances() == null
-              || body.getVduVimInstances().get(vdu.getName()) == null
-              || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
-            instanceNames = vdu.getVimInstanceName();
-          } else {
-            instanceNames = body.getVduVimInstances().get(vdu.getName());
-          }
-          for (String vimInstanceName : instanceNames) {
+          List<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
+          for (String vimInstanceName : vimInstanceNames) {
             log.debug(
                 "deployment procedure for ("
                     + vnfd.getName()
@@ -318,25 +311,27 @@ public class VnfmManager
             for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
               if (vimInstanceName.equals(vi.getName())) {
                 vimInstance = vi;
+                break;
               }
             }
 
             vimInstances.get(vdu.getId()).add(vimInstance);
           }
         }
-        for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
 
-          if (vimInstance.getValue().isEmpty()) {
-            for (VimInstance vimInstance1 :
-                vimInstanceRepository.findByProjectId(networkServiceDescriptor.getProjectId())) {
-              vimInstance.getValue().add(vimInstance1);
-            }
-          }
-          for (VimInstance vi : vimInstance.getValue()) {
-            log.debug("\t" + vi.getName());
-          }
-          log.debug("~~~~~~");
-        }
+        //        for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
+        //
+        //          if (vimInstance.getValue().isEmpty()) {
+        //            for (VimInstance vimInstance1 :
+        //                vimInstanceRepository.findByProjectId(networkServiceDescriptor.getProjectId())) {
+        //              vimInstance.getValue().add(vimInstance1);
+        //            }
+        //          }
+        //          for (VimInstance vi : vimInstance.getValue()) {
+        //            log.debug("\t" + vi.getName());
+        //          }
+        //          log.debug("~~~~~~");
+        //        }
 
         //Creating the extension
         Map<String, String> extension = getExtension();

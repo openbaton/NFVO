@@ -39,7 +39,12 @@ public class VnfPlacementManagement
   public VimInstance choseRandom(List<String> vimInstanceName, String projectId) {
     if (!vimInstanceName.isEmpty()) {
       String name = vimInstanceName.get((int) (Math.random() * 1000) % vimInstanceName.size());
-      VimInstance vimInstance = vimInstanceRepository.findFirstByName(name);
+      VimInstance vimInstance = null;
+      for (VimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
+        if (vimInstance1.getName().equals(name)) {
+          vimInstance = vimInstance1;
+          break;
+        }
       log.info("Chosen VimInstance: " + vimInstance.getName());
       return vimInstance;
     } else {

@@ -192,7 +192,11 @@ angular.module('app')
             var deferred = $q.defer();
             http.get(url).success(function (data, status) {
                 deferred.resolve(data);
+            })
+            .error(function (response, status) {
+                deferred.resolve(status);
             });
+           
             return deferred.promise;
         };
 

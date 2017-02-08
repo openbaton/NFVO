@@ -17,7 +17,10 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VL;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
 /** Created by rvl on 19.08.16. */
@@ -26,6 +29,7 @@ public class VLNodeTemplate {
   private String type = "";
   private String name = "";
   private String vendor = "";
+  private Set<String> qos;
 
   public VLNodeTemplate(NodeTemplate vl, String name) {
 
@@ -40,6 +44,10 @@ public class VLNodeTemplate {
       if (propertiesMap.containsKey("vendor")) {
 
         this.vendor = (String) propertiesMap.get("vendor");
+      }
+      if (propertiesMap.containsKey("qos")) {
+        qos = new HashSet<String>();
+        qos.addAll((ArrayList<String>) propertiesMap.get("qos"));
       }
     }
   }
@@ -81,5 +89,13 @@ public class VLNodeTemplate {
         + "vendor: "
         + vendor
         + "\n";
+  }
+
+  public Set<String> getQos() {
+    return qos;
+  }
+
+  public void setQos(Set<String> qos) {
+    this.qos = qos;
   }
 }

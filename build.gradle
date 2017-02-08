@@ -79,6 +79,8 @@ apply from: 'gradle/gradle/distribution.gradle'
 apply from: 'gradle/gradle/dependencies.updater.gradle'
 
 
+// To include if we move to Spring Boot 1.3.x
+// In that case the file openbaton-libs/gradle/gradle/run.application.java.gradle can not be imported
 //jar {
 //    from ('./src/main/resources') {
 //        include 'META-INF/services'
