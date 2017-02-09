@@ -79,7 +79,15 @@ public abstract class Vim
           client =
               (VimDriverCaller)
                   ((RabbitPluginBroker) context.getBean("rabbitPluginBroker"))
-                      .getVimDriverCaller(brokerIp, username, password, type, managementPort);
+                      .getVimDriverCaller(
+                          brokerIp,
+                          username,
+                          password,
+                          port,
+                          type,
+                          pluginName,
+                          managementPort,
+                          pluginTimeout);
         } catch (BeansException ignored) {
           client =
               new VimDriverCaller(

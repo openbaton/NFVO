@@ -31,29 +31,6 @@ public class RabbitPluginBroker {
 
   static Logger log = LoggerFactory.getLogger(RabbitPluginBroker.class);
 
-  public Object getVimDriverCaller(String type) {
-    return context.getBean("vimDriverCaller", type);
-  }
-
-  public Object getVimDriverCaller(String name, String type) {
-    return context.getBean("vimDriverCaller", name, type);
-  }
-
-  public Object getVimDriverCaller(String name, String type, String managementPort) {
-    return context.getBean("vimDriverCaller", name, type, managementPort);
-  }
-
-  public Object getVimDriverCaller(
-      String brokerIp,
-      String username,
-      String password,
-      int port,
-      String type,
-      String managementPort) {
-    return context.getBean(
-        "vimDriverCaller", brokerIp, username, password, port, type, managementPort);
-  }
-
   public Object getVimDriverCaller(
       String brokerIp,
       String username,
@@ -61,43 +38,16 @@ public class RabbitPluginBroker {
       int port,
       String type,
       String name,
-      String managementPort) {
+      String managementPort,
+      int timeout) {
     return context.getBean(
-        "vimDriverCaller", brokerIp, username, password, port, type, name, managementPort);
-  }
-
-  public Object getVimDriverCaller(
-      String brokerIp, String username, String password, String type, String managementPort) {
-    return context.getBean("vimDriverCaller", brokerIp, username, password, type, managementPort);
+        "vimDriverCaller", brokerIp, username, password, port, type, name, managementPort, timeout);
   }
 
   /*
   Monitoring plugin
    */
 
-  public Object getMonitoringPluginCaller(String type) {
-    return context.getBean("monitoringPluginCaller", type);
-  }
-
-  public Object getMonitoringPluginCaller(String name, String type) {
-    return context.getBean("monitoringPluginCaller", name, type);
-  }
-
-  public Object getMonitoringPluginCaller(String name, String type, String managementPort) {
-    return context.getBean("monitoringPluginCaller", name, type, managementPort);
-  }
-
-  public Object getMonitoringPluginCaller(
-      String brokerIp,
-      String username,
-      String password,
-      int port,
-      String type,
-      String managementPort) {
-    return context.getBean(
-        "monitoringPluginCaller", brokerIp, username, password, port, type, managementPort);
-  }
-
   public Object getMonitoringPluginCaller(
       String brokerIp,
       String username,
@@ -105,14 +55,17 @@ public class RabbitPluginBroker {
       int port,
       String type,
       String name,
-      String managementPort) {
+      String managementPort,
+      int timeout) {
     return context.getBean(
-        "monitoringPluginCaller", brokerIp, username, password, port, type, name, managementPort);
-  }
-
-  public Object getMonitoringPluginCaller(
-      String brokerIp, String username, String password, String type, String managementPort) {
-    return context.getBean(
-        "monitoringPluginCaller", brokerIp, username, password, type, managementPort);
+        "monitoringPluginCaller",
+        brokerIp,
+        username,
+        password,
+        port,
+        type,
+        name,
+        managementPort,
+        timeout);
   }
 }
