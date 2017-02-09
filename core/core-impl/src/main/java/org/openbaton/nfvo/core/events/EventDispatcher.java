@@ -46,7 +46,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Scope
-@EnableAsync
 class EventDispatcher
     implements ApplicationListener<EventNFVO>, org.openbaton.nfvo.core.interfaces.EventDispatcher {
 

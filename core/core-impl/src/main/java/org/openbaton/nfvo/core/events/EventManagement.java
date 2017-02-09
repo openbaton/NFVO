@@ -42,7 +42,6 @@ import org.springframework.stereotype.Service;
 /** Created by lto on 10/03/16. */
 @Service
 @Scope
-@EnableAsync
 @ConfigurationProperties
 public class EventManagement implements org.openbaton.nfvo.core.interfaces.EventManagement {
 
