@@ -60,8 +60,9 @@ var app = angular.module('app').controller('driverCtrl', function ($scope, servi
     }
 
     $scope.install = function (data) {
-        http.get(url + "/api/v1/plugins/" + data.id).success(function (response) {
+        http.get(url + "/api/v1/plugins/" + data.type + "/" + data.name + "/" + data.version).success(function (response) {
             showOk("Plugin " + data.name + " will be installed");
+
         })
             .error(function (data, status) {
                 showError(data, status);

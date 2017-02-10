@@ -60,12 +60,34 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     ];
 
     $scope.addVNFCIModal = function (data) {
+        $scope.connection_points = [];
         $scope.vnfrSelected = angular.copy(data);
+        $scope.vnfrSelected.vdu.map(function(vdu) {
+            console.log("Been here");
+            vdu.vnfc.map(function(vnfc) {
+                vnfc.connection_point.map(function (connection) {
+                    $scope.connection_points.push({"floatingIp":connection.floatingIp, "interfaceId":connection.interfaceId, "virtual_link_reference":connection.virtual_link_reference});
+                });
+            });
+        });
+        $scope.connection_points.map(function(cp) {
+            if (angular.isUndefined(cp.interfaceId) || cp.interfaceId.length < 1) {
+            cp.interfaceId = 0;
+            }
+        });
         $('#addVNFCItoVDU').modal('show');
     };
     $scope.addVNFCI = function () {
-        //console.log($scope.connection_points)
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point": $scope.connection_points})
+        var cp_to_send = [];
+        $scope.connection_points.map(function(cp) {
+            if (angular.isUndefined(cp.floatingIp) || cp.floatingIp.length < 1) {
+                cp_to_send.push({"interfaceId":cp.interfaceId, "virtual_link_reference":cp.virtual_link_reference});
+            } else {
+                cp_to_send.push(cp);
+            }
+        });
+        console.log(cp_to_send);
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point": cp_to_send})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -96,17 +118,38 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             });
     };
 
+    function isInt(value) {
+        return !isNaN(value) && 
+            parseInt(Number(value)) == value && 
+            !isNaN(parseInt(value, 10));
+    }
     $scope.addCPtoVNFCI = function () {
+        if (!isInt(connection_point.interfaceId)) {
+            return;
+        }
+        if (angular.isUndefined($scope.connection_point.interfaceId) || $scope.connection_point.interfaceId.length < 1) {
+            $scope.connection_point.interfaceId = 0;
+        }
+        console.log($scope.vnfrSelected.virtual_link);
         $scope.connection_points.push(angular.copy($scope.connection_point));
+      
+        $scope.connection_point.interfaceId = 0;
+        $scope.connection_point.floatingIp = "";
+        $scope.connection_point.virtual_link_reference = "";
     };
     $scope.removeCPtoVNFCI = function (index) {
+        //var test = angular.copy($scope.connection_points[index]);
+        //console.log(test);
+        
         $scope.connection_points.splice(index, 1);
+        //$scope.vnfrSelected.virtual_link.push(test);
     };
 
     $scope.connection_points = [];
     $scope.connection_point = {
         "floatingIp": "",
-        "virtual_link_reference": "private"
+        "virtual_link_reference": "private",
+        "interfaceId" : 0
     };
     $scope.addVNFCItoVDU = function (vnfr, vdu) {
 
@@ -125,7 +168,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     };
 
     $scope.addCPtoVDU = function () {
-        //console.log($scope.connection_points);
+  
+        
+              console.log($scope.connection_points);
         http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances', {"connection_point": $scope.connection_points})
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
