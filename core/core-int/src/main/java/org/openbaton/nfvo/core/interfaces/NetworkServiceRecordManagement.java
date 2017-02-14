@@ -174,4 +174,14 @@ public interface NetworkServiceRecordManagement {
           VimException, PluginException;
 
   List<NetworkServiceRecord> queryByProjectId(String projectId);
+
+  NetworkServiceRecord scaleOut(
+      String nsrId,
+      String vnfdId,
+      String projectId,
+      List keys,
+      Map vduVimInstances,
+      Map configurations)
+      throws NotFoundException, MissingParameterException, VimException, BadRequestException,
+          PluginException;
 }

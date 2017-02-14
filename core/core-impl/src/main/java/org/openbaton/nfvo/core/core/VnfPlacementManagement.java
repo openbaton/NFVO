@@ -17,8 +17,11 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,36 @@ public class VnfPlacementManagement
       List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
 
       return vimInstances.get((int) (Math.random() * 1000) % vimInstances.size());
+    }
+  }
+
+  @Override
+  public List<String> chose(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      List<String> vimTypes,
+      String projectId)
+      throws NotFoundException {
+    List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
+    List<String> vimInstancesChosen = new ArrayList<>();
+    if (vimTypes != null && !vimTypes.isEmpty()) {
+      for (VimInstance vimInstance : vimInstances) {
+        if (vimTypes.contains(vimInstance.getType())) {
+          vimInstancesChosen.add(vimInstance.getName());
+        }
+      }
+    } else {
+      for (VimInstance vimInstance : vimInstances) {
+        vimInstancesChosen.add(vimInstance.getName());
+      }
+    }
+    if (vimInstancesChosen.isEmpty() && vimTypes != null && !vimTypes.isEmpty()) {
+      throw new NotFoundException(
+          "Not found any VIM which supports the following types: " + vimTypes);
+    } else {
+      throw new NotFoundException(
+          "Not found any VIM where the VNFD "
+              + virtualNetworkFunctionDescriptor.getId()
+              + " can be deployed");
     }
   }
 }
