@@ -69,21 +69,27 @@ public class VnfPlacementManagement
       for (VimInstance vimInstance : vimInstances) {
         if (vimTypes.contains(vimInstance.getType())) {
           vimInstancesChosen.add(vimInstance.getName());
+          return vimInstancesChosen;
         }
       }
     } else {
       for (VimInstance vimInstance : vimInstances) {
         vimInstancesChosen.add(vimInstance.getName());
+        return vimInstancesChosen;
       }
     }
-    if (vimInstancesChosen.isEmpty() && vimTypes != null && !vimTypes.isEmpty()) {
-      throw new NotFoundException(
-          "Not found any VIM which supports the following types: " + vimTypes);
+    if (vimInstancesChosen.isEmpty()) {
+      if (vimTypes != null && !vimTypes.isEmpty()) {
+        throw new NotFoundException(
+            "Not found any VIM which supports the following types: " + vimTypes);
+      } else {
+        throw new NotFoundException(
+            "Not found any VIM where the VNFD "
+                + virtualNetworkFunctionDescriptor.getId()
+                + " can be deployed");
+      }
     } else {
-      throw new NotFoundException(
-          "Not found any VIM where the VNFD "
-              + virtualNetworkFunctionDescriptor.getId()
-              + " can be deployed");
+      return vimInstancesChosen;
     }
   }
 }
