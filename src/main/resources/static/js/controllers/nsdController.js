@@ -605,6 +605,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     };
     $scope.launchConfiguration = {"configurations":{}};
     $scope.vnfdnames = [];
+    $scope.nochange = 0;
     $scope.addConftoLaunch = function(vnfdname) {
         
         $scope.launchConfiguration.configurations[vnfdname].configurationParameters.push({description:"", confKey:"", value:""});
@@ -617,9 +618,15 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.launchConfiguration = {"configurations":{}};
         $scope.vnfdnames = [];
         $scope.nsdToSend = data;
+        $scope.nochange = 0;
         $scope.nsdToSend.vnfd.map(function (vnfd) {
             $scope.vnfdnames.push(vnfd.name);
-            $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
+            if (vnfd.configurations.length < 1) {
+                $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
+            } else {
+                $scope.launchConfiguration.configurations[vnfd.name] = angular.copy(vnfd.configurations);
+                $scope.nochange++;
+            }
         });
         console.log($scope.vnfdnames);
         //loadKeys();

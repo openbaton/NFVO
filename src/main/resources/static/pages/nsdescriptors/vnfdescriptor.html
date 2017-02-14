@@ -112,7 +112,6 @@
 								</tr>
 
 
-
 						</tbody>
 					</table>
 				</div>
@@ -350,8 +349,9 @@
 								</table>
 							</div>
 						</tab>
+					
 						<tab heading="Configuration Parameters">
-							<h3>{{vnfdinfo.configurations.name}}</h3>
+							<h3>{{vnfd.configurations.name}}</h3>
 							<div class="table-responsive">
 								<table class="table table-bordered table-striped table-hover tablesorter" id="">
 									<thead>
@@ -361,7 +361,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="par in vnfdinfo.configurations.configurationParameters">
+										<tr ng-repeat="par in vnfd.configurations.configurationParameters">
 											<td>{{par.confKey}}</td>
 											<td>{{par.value}}</td>
 										</tr>
