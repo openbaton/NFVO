@@ -146,6 +146,12 @@ public class NetworkServiceRecordManagement
   @Value("${nfvo.delete.all-status:true}")
   private boolean deleteInAllStatus;
 
+  @Value("${nfvo.quota.check:true}")
+  private boolean isQuotaCheckEnabled;
+
+  @Value("${nfvo.quota.check.failOnException:true}")
+  private boolean failingQuotaCheckOnException;
+
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
 
@@ -1047,77 +1053,95 @@ public class NetworkServiceRecordManagement
 
   private void checkQuotaForNS(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException, VimException, PluginException {
-    Map<VimInstance, Quota> requirements = new HashMap<>();
+    try {
+      if (isQuotaCheckEnabled) {
+        Map<VimInstance, Quota> requirements = new HashMap<>();
+        for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+          for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+            int floatingIpCount = 0;
+            for (VNFComponent vnfComponent : vdu.getVnfc()) {
+              for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+                if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
+              }
+            }
+            for (String vimInstanceName : vdu.getVimInstanceName()) {
+              VimInstance vimInstance = null;
+              for (VimInstance vim : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+                if (vim.getName().equals(vimInstanceName)) vimInstance = vim;
+              }
+              DeploymentFlavour df = null;
+              String df_key = vnfd.getDeployment_flavour().iterator().next().getFlavour_key();
+              if (vimInstance != null) {
+                for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
+                  // TODO: Should find a better solution for here and generic
+                  if (deploymentFlavour.getFlavour_key().equals(df_key)) df = deploymentFlavour;
+                }
+                if (df == null)
+                  throw new NotFoundException(
+                      "Deployment Flavour key: "
+                          + df_key
+                          + " not supported in VIM Instance: "
+                          + vimInstance.getName());
+                if (!requirements.keySet().contains(vimInstance)) {
+                  Quota quota = new Quota();
+                  quota.setCores(df.getVcpus());
+                  quota.setInstances(1);
+                  quota.setRam(df.getRam());
+                  quota.setFloatingIps(floatingIpCount);
+                  requirements.put(vimInstance, quota);
+                } else {
+                  requirements
+                      .get(vimInstance)
+                      .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
+                  requirements
+                      .get(vimInstance)
+                      .setInstances(requirements.get(vimInstance).getInstances() + 1);
+                  requirements
+                      .get(vimInstance)
+                      .setRam(requirements.get(vimInstance).getRam() + df.getRam());
+                  requirements
+                      .get(vimInstance)
+                      .setFloatingIps(
+                          requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
+                }
+              }
+            }
+          }
+        }
 
-    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        int floatingIpCount = 0;
-        for (VNFComponent vnfComponent : vdu.getVnfc()) {
-          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-            if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
-          }
+        for (VimInstance vimInstance : requirements.keySet()) {
+          Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
+          Quota neededQuota = requirements.get(vimInstance);
+          log.info(
+              "Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
+          if (leftQuota.getRam() < neededQuota.getRam()
+              || leftQuota.getCores() < neededQuota.getCores()
+              || leftQuota.getInstances() < neededQuota.getInstances()
+              || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
+            throw new VimException(
+                "The VIM "
+                    + vimInstance.getName()
+                    + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
+                    + "You should lower the Deployment Flavours or free up resources.");
+          else
+            log.info(
+                "Resource check done: ",
+                "Vim Instance has enough resources. Moving on with deployment.");
         }
-        for (String vimInstanceName : vdu.getVimInstanceName()) {
-          VimInstance vimInstance = null;
-          for (VimInstance vim : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-            if (vim.getName().equals(vimInstanceName)) vimInstance = vim;
-          }
-          DeploymentFlavour df = null;
-          String df_key = vnfd.getDeployment_flavour().iterator().next().getFlavour_key();
-          if (vimInstance != null) {
-            for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
-              // TODO: Should find a better solution for here and generic
-              if (deploymentFlavour.getFlavour_key().equals(df_key)) df = deploymentFlavour;
-            }
-            if (df == null)
-              throw new NotFoundException(
-                  "Deployment Flavour key: "
-                      + df_key
-                      + " not supported in VIM Instance: "
-                      + vimInstance.getName());
-            if (!requirements.keySet().contains(vimInstance)) {
-              Quota quota = new Quota();
-              quota.setCores(df.getVcpus());
-              quota.setInstances(1);
-              quota.setRam(df.getRam());
-              quota.setFloatingIps(floatingIpCount);
-              requirements.put(vimInstance, quota);
-            } else {
-              requirements
-                  .get(vimInstance)
-                  .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
-              requirements
-                  .get(vimInstance)
-                  .setInstances(requirements.get(vimInstance).getInstances() + 1);
-              requirements
-                  .get(vimInstance)
-                  .setRam(requirements.get(vimInstance).getRam() + df.getRam());
-              requirements
-                  .get(vimInstance)
-                  .setFloatingIps(requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
-            }
-          }
-        }
+      } else {
+        log.warn("Quota check is disabled... Please enable for comprehensive grant operation");
       }
-    }
-
-    for (VimInstance vimInstance : requirements.keySet()) {
-      Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
-      Quota neededQuota = requirements.get(vimInstance);
-      log.info("Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
-      if (leftQuota.getRam() < neededQuota.getRam()
-          || leftQuota.getCores() < neededQuota.getCores()
-          || leftQuota.getInstances() < neededQuota.getInstances()
-          || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
-        throw new VimException(
-            "The VIM "
-                + vimInstance.getName()
-                + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
-                + "You should lower the Deployment Flavours or free up resources.");
-      else
-        log.info(
-            "Resource check done: ",
-            "Vim Instance has enough resources. Moving on with deployment.");
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      if (failingQuotaCheckOnException) {
+        String errorMsg =
+            "Check Quota for NS threw an exception and operation will cancel deployment. For succeeding consider to set 'nfvo.quota.check.failOnException' to false";
+        log.error(errorMsg);
+        throw new VimException(errorMsg, e);
+      } else {
+        log.warn(
+            "Check Quota for NS threw an exception but operation will proceed. For failing consider to set 'nfvo.quota.check.failOnException' to true");
+      }
     }
   }
 
