@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -46,8 +47,15 @@ import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /** Created by lto on 20/04/15. */
+@RunWith(SpringJUnit4ClassRunner.class)
+@Configuration
+@ContextConfiguration(classes = VNFLifecycleOperationGrantingClassSuiteTest.class)
 public class VNFLifecycleOperationGrantingClassSuiteTest {
 
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
@@ -60,6 +68,9 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
+    ReflectionTestUtils.setField(vnfLifecycleOperationGranting, "isQuotaCheckEnabled", true);
+    ReflectionTestUtils.setField(
+        vnfLifecycleOperationGranting, "failingQuotaCheckOnException", true);
     log.info("Starting test");
   }
 
