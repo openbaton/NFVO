@@ -305,6 +305,10 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
     }
 
     $scope.$watch("userObj.password", function (newValue, oldValue) {
+        if ($scope.userObj.password.length < 1) {
+            $scope.passstyle = { 'background-color': 'white' };
+            return;
+        }
         if ($scope.userObj.password.length < 8 || !(/[a-z]/.test($scope.userObj.password)) || !(/[A-Z]/.test($scope.userObj.password)) || !(/[0-9]/.test($scope.userObj.password))) {
             $scope.passstyle = { 'background-color': 'pink' };
             $scope.passwordStrong = false;
@@ -366,7 +370,6 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
     $scope.$watch("userObj.email", function (newValue, oldValue) {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
         if (re.test($scope.userObj.email)) {
             $scope.emailstyle = { 'background-color': 'white' };
             $scope.emailValid = true;
@@ -378,6 +381,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
 
 
     $scope.$watchGroup(["userObj.password", "newpassword", "userObj.username"], function (newValue, oldValue) {
+       
         if ($scope.userObj.password !== $scope.newpassword) {
             $scope.passwordSame = false;
             $scope.checkstyle = { 'background-color': 'pink' };
@@ -385,12 +389,8 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
             $scope.checkstyle = { 'background-color': 'white' };
             $scope.passwordSame = true;
         }
-        if ($scope.userObj.username.length > 0) {
-            $scope.namestyle = { 'background-color': 'white' };
-
-        } else {
-            $scope.namestyle = { 'background-color': 'pink' };
-        }
+        
+        
     }, true);
 
     function updateAsUser() {
