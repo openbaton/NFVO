@@ -1473,7 +1473,7 @@
                                 <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
 
                                 <div class="col-sm-6">
-                                    <input ng-disabled="nochange > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
+                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
                                 </div>
                             </div>
                         </div>
@@ -1487,7 +1487,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input ng-disabled="($index + 1) < nochange"type="text" class="form-control" id="Configuration Name" ng-model="conf.confKey"
+                                        <td><input ng-disabled="conf.id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="conf.confKey"
                                             /></td>
                                         <td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.value"
                                             /></td>
@@ -1498,13 +1498,13 @@
 
                                 <tbody>
                                     <tr>
-                                        <td><textarea ng-disabled="($index + 1) < nochange" style="width:100%; resize:vertical;" name="Description" ng-model="conf.description" id="conf.description"
+                                        <td><textarea ng-disabled="conf.id.length > 0" style="width:100%; resize:vertical;" name="Description" ng-model="conf.description" id="conf.description"
                                                 title="Here you can put a human readable description" class="form-control">
                                 </textarea></td>
                                     </tr>
                                 </tbody>
                             </table>
-                             <button ng-disabled="($index + 1) < nochange" type="button" class="btn btn-danger" ng-click="removeConf($index, vnfdname)">Remove Parameter</button>
+                             <button ng-disabled="conf.id.length > 0" type="button" class="btn btn-danger" ng-click="removeConf($index, vnfdname)">Remove Parameter</button>
                              </br>
                              </br>
                         </div>
