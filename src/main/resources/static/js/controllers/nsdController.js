@@ -1092,6 +1092,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
+                   myDropzone.removeAllFiles(true);
 
             });
 

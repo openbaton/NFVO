@@ -358,12 +358,14 @@
 										<tr>
 											<th>Parameter</th>
 											<th>Value</th>
+											<th>Description</th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr ng-repeat="par in vnfd.configurations.configurationParameters">
 											<td>{{par.confKey}}</td>
 											<td>{{par.value}}</td>
+											<td>{{par.description}}</td>
 										</tr>
 									</tbody>
 								</table>

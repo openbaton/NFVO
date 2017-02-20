@@ -59,6 +59,9 @@
                    <tr>
                     <td>Type</td><td>{{vimInstance.type}}</td>
                   </tr>
+                  <tr ng-show="vimInstance.keyPair">
+                      <td>Key Pair</td><td>{{vimInstance.keyPair}}</td>
+                </tr>
                   <!--tr>
                     <td>VIM Key Pair</td><td>{{vimInstance.keyPair}}</td>
                   </tr-->
@@ -132,7 +135,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="network in vimInstance.networks track by $index| orderBy:predicate:reverse">
+                <tr ng-repeat="network in vimInstance.networks| orderBy:predicate:reverse">
                     <td>{{network.id}}</td>
                     <td>{{network.version}}</td>
                     <td>{{network.name}}</td>
@@ -179,7 +182,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="image in vimInstance.images track by $index| orderBy:predicate:reverse">
+                <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
                     <td>{{image.id}}</td>
                     <td>{{image.version}}</td>
                     <td>{{image.extId}}</td>

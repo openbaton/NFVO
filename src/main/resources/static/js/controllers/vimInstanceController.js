@@ -30,7 +30,6 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     loadVIM();
     loadInstalled();
 
-
     $scope.textTopologyJson = '';
     $scope.setFormInput = function () {
         formInput = true;
@@ -85,7 +84,14 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.hoverOut = function () {
         this.hoverEdit = false;
     };
-
+function checkKey() {
+    if (angular.isUndefined($scope.newvim.keyPair)) {
+        return;
+    }
+    if ($scope.newvim.keyPair === '') {
+        delete $scope.newvim.keyPair;
+    }
+}
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
 
@@ -105,6 +111,8 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.sendInfrastructure = function () {
         if (formInput) {
             console.log("Using formInput")
+            //console.log($scope.newvim);
+            checkKey();
             //console.log($scope.newvim);
             http.post(url, $scope.newvim)
                 .success(function (response) {
@@ -133,7 +141,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
 
                     });
             } else if ($scope.textTopologyJson !== '') {
-                console.log($scope.textTopologyJson);
+                //console.log($scope.textTopologyJson);
                 http.post(url, $scope.textTopologyJson)
                     .success(function (response) {
                         showOk('VIM Instance created.');
@@ -150,6 +158,10 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             showError('None of the inputs were correct');
 
         }
+        $('#modalDC').on('hidden.bs.modal', function () {
+        $(this).find("input,textarea,select").val('').end();
+
+            });
         $scope.textTopologyJson = '';
         $scope.file = '';
     };

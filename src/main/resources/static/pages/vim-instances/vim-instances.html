@@ -25,7 +25,7 @@
 <div class="row">
 	<div class="col-lg-12">
 		<button id="btn_create_topology" class="btn btn-primary pull-right" title="Create a new Data Center" data-toggle="modal"
-			data-target="#modalDC" ng-click="createDataCenter()">Register Vim</button>
+			data-target="#modalDC" ng-click="clearInput()">Register Vim</button>
 	</div>
 </div>
 <div class="row">
@@ -138,7 +138,7 @@
                                     ng-options="plugin.type as plugin.type for plugin in installed | orderBy:'name':false">
                             </select>
 						</div>	
-                        <label class="col-sm-4 control-label">Key Pair*</label>
+                        <label class="col-sm-4 control-label">Key Pair</label>
                         <div class="col-sm-6">
 							<input type="text" class="form-control" ng-model="newvim.keyPair" />
 						</div>
@@ -176,7 +176,7 @@
 				</div>
 				<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" title="Mandatory fields are marked with *" class="btn btn-primary" ng-disabled="!newvim.keyPair || !newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
+				<button type="button" title="Mandatory fields are marked with *" class="btn btn-primary" ng-disabled="!newvim.name || !newvim.authUrl || !newvim.tenant || !newvim.username || !newvim.password" ng-click="sendInfrastructure()" data-dismiss="modal">Create Vim Instance</button>
 			</div>
 				</tab>
 				<tab heading="File Input" ng-click="setFileInput()">

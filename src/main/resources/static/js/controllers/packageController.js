@@ -226,9 +226,9 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 previewsContainer: "#previews", // Define the container to display the previews
                 headers: header,
                 init: function () {
+                    myDropzone.removeAllFiles(true);
                     var submitButton = document.querySelector("#submit-all");
                     myDropzone = this; // closure
-
                     submitButton.addEventListener("click", function () {
                         $scope.$apply(function ($scope) {
                             myDropzone.processQueue();
@@ -238,7 +238,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                     this.on("success", function (file, responseText) {
                         $scope.$apply(function ($scope) {
                             showOk("Uploaded the VNF Package");
-                            myDropzone.removeAllFiles(true);
+                           
                             loadTable();
                             
                         });
@@ -255,7 +255,7 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                                 showError(responseText, responseText.code);
                             });
                         }
-                        myDropzone.removeAllFiles(true);
+                       
                         });
                 }
             });
@@ -278,15 +278,15 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
-
+                   myDropzone.removeAllFiles(true);
             });
-
 
 
             $(".cancel").onclick = function () {
                 myDropzone.removeAllFiles(true);
             };
         }
+
     });
 
 
