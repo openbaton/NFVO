@@ -18,9 +18,17 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.util.List;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 10/03/16. */
 public interface VnfPlacementManagement {
   VimInstance choseRandom(List<String> vimInstanceName, String projectId);
+
+  List<String> chose(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      List<String> vimTypes,
+      String projectId)
+      throws NotFoundException;
 }

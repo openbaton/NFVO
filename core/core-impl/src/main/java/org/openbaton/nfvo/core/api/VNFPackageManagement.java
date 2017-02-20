@@ -50,6 +50,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
+import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.ScriptRepository;
@@ -89,6 +90,7 @@ public class VNFPackageManagement
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private VnfmManager vnfmManager;
+  @Autowired private VnfPlacementManagement vnfPlacementManagement;
 
   private String real_nfvo_version;
   @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
@@ -360,6 +362,30 @@ public class VNFPackageManagement
       }
     }
 
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+      if (vdu.getVimInstanceName() == null || vdu.getVimInstanceName().isEmpty()) {
+        vdu.setVimInstanceName(new ArrayList<String>());
+        vdu.getVimInstanceName()
+            .addAll(
+                vnfPlacementManagement.chose(
+                    virtualNetworkFunctionDescriptor, vnfPackage.getVimTypes(), projectId));
+      } else {
+        if (vnfPackage.getVimTypes() != null && !vnfPackage.getVimTypes().isEmpty()) {
+          for (String vimInstanceName : vdu.getVimInstanceName()) {
+            for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+              if (vi.getName().equals(vimInstanceName)) {
+                if (!vnfPackage.getVimTypes().contains(vi.getType())) {
+                  throw new BadRequestException(
+                      "A VIM defined in VNFD "
+                          + virtualNetworkFunctionDescriptor.getName()
+                          + " is not supported based on the VIM types provided in the VNF Package");
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     if (imageDetails.get("upload").equals("true")) {
       log.debug("VNFPackageManagement: Uploading a new Image");
       if (vnfPackage.getImageLink() == null && imageFile == null) {
@@ -370,7 +396,7 @@ public class VNFPackageManagement
           && virtualNetworkFunctionDescriptor.getVdu() != null) {
         log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          if (vdu.getVimInstanceName() != null) {
+          if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
             for (String vimName : vdu.getVimInstanceName()) {
               VimInstance vimInstance = null;
 
@@ -401,7 +427,7 @@ public class VNFPackageManagement
       } else if (imageFile != null) {
         log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          if (vdu.getVimInstanceName() != null) {
+          if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
             for (String vimName : vdu.getVimInstanceName()) {
               VimInstance vimInstance = null;
 
@@ -440,13 +466,6 @@ public class VNFPackageManagement
       for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
 
         List<String> vimInstanceNames = vdu.getVimInstanceName();
-
-        if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
-          vimInstanceNames = new ArrayList<>();
-          for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
-            vimInstanceNames.add(vimInstance.getName());
-          }
-        }
 
         for (String vimName : vimInstanceNames) {
 
