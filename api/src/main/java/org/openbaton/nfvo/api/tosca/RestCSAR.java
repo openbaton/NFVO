@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.tosca;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,16 +26,7 @@ import java.io.InputStream;
 import java.net.URL;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.tosca.parser.CSARParser;
@@ -42,13 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /** Created by rvl on 29.08.16. */
@@ -63,6 +49,12 @@ public class RestCSAR {
 
   @RequestMapping(value = "/api/v1/csar-nsd", method = RequestMethod.POST)
   @ResponseBody
+  @ApiOperation(
+    value = "Add a CSAR Network Service",
+    notes =
+        "The request parameter 'file' specifies an archive which is needed to onboard a Network Service as CSAR. "
+            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/tosca-CSAR-onboarding/"
+  )
   public NetworkServiceDescriptor onboardNSD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
@@ -77,6 +69,7 @@ public class RestCSAR {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(value = "/api/v1/csar-vnfd", method = RequestMethod.POST)
   @ResponseBody
   public String onboardVNFD(
@@ -94,6 +87,7 @@ public class RestCSAR {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "/api/v1/csar-vnf/marketdownload",
     method = RequestMethod.POST,
@@ -129,6 +123,11 @@ public class RestCSAR {
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 
+  @ApiOperation(
+    value = "Download a Network Service CSAR from the Open Baton Marketplace",
+    notes =
+        "The Request Body takes a JSON with the parameter link which holds the URL to the CSAR on the Open Baton Marketplace"
+  )
   @RequestMapping(
     value = "/api/v1/csar-ns/marketdownload",
     method = RequestMethod.POST,

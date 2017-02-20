@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import io.swagger.annotations.ApiOperation;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.nfvo.core.interfaces.VNFManagerManagement;
 import org.slf4j.Logger;
@@ -32,18 +33,27 @@ public class RestVNFManager {
 
   @Autowired private VNFManagerManagement vnfManagerManagement;
 
+  @ApiOperation(value = "Retrieve all registered VNFM endpoints", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public Iterable<VnfmManagerEndpoint> findAll() {
     return vnfManagerManagement.query();
   }
 
+  @ApiOperation(
+    value = "Retrieving a registered VNFM’s endpoint",
+    notes = "Specify the id of the Virtual Network Function Manager in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public VnfmManagerEndpoint findById(@PathVariable("id") String id) {
     return vnfManagerManagement.query(id);
   }
 
+  @ApiOperation(
+    value = "Remove a registered VNFM from the NFVO",
+    notes = "Specify the id of the Virtual Network Function Manager in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVnfm(@PathVariable("id") String id) {

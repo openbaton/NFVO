@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -27,17 +28,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -45,13 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ns-descriptors")
@@ -75,6 +60,10 @@ public class RestNetworkServiceDescriptor {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @ApiOperation(
+    value = "Adding a Network Service Descriptor",
+    notes = "POST request with Network Service Descriptor as JSON content of the request body"
+  )
   public NetworkServiceDescriptor create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId)
@@ -93,6 +82,10 @@ public class RestNetworkServiceDescriptor {
    * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
    *     core
    */
+  @ApiOperation(
+    value = " Adding a NSD from the marketplace",
+    notes = "POST request with the a JSON object in the request body containing a field named link"
+  )
   @RequestMapping(
     value = "/marketdownload",
     method = RequestMethod.POST,
@@ -115,6 +108,10 @@ public class RestNetworkServiceDescriptor {
    *
    * @param id of Network Service Descriptor
    */
+  @ApiOperation(
+    value = "Removing a Network Service Descriptor",
+    notes = "DELETE request where the id in the url belongs to the NSD to delete"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -138,6 +135,10 @@ public class RestNetworkServiceDescriptor {
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
+  @ApiOperation(
+    value = "Removing multiple Network Service Descriptors",
+    notes = "Delete Request takes a list of Network Service Descriptor ids"
+  )
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
@@ -151,6 +152,10 @@ public class RestNetworkServiceDescriptor {
    *
    * @return List<NetworkServiceDescriptor>: the list of Network Service Descriptor stored
    */
+  @ApiOperation(
+    value = "Get all NSDs from a project",
+    notes = "Returns all Network Service Descriptors onboarded in the project with the specified id"
+  )
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<NetworkServiceDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
@@ -163,6 +168,10 @@ public class RestNetworkServiceDescriptor {
    * @param id of Network Service Descriptor
    * @return NetworkServiceDescriptor: the Network Service Descriptor selected @
    */
+  @ApiOperation(
+    value = "Get Network Service Descriptor by id",
+    notes = "Returns the Network Service Descriptor with the id in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -176,6 +185,11 @@ public class RestNetworkServiceDescriptor {
    * @param id : the id of Network Service Descriptor
    * @return networkServiceDescriptor: the Network Service Descriptor updated
    */
+  @ApiOperation(
+    value = "Update a Network Service Descriptor",
+    notes =
+        "Takes a Network Service Descriptor and updates the Descriptor with the id provided in the URL with the Descriptor from the request body"
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,
@@ -197,6 +211,10 @@ public class RestNetworkServiceDescriptor {
    * @return List<VirtualNetworkFunctionDescriptor>: The List of VirtualNetworkFunctionDescriptor
    *     into NSD @
    */
+  @ApiOperation(
+    value = "Gets the list of Virtual Network Functions part of the NSD",
+    notes = "Returns the VNFDs from the NSD with the id specified in the URL"
+  )
   @RequestMapping(
     value = "{id}/vnfdescriptors",
     method = RequestMethod.GET,
@@ -209,6 +227,11 @@ public class RestNetworkServiceDescriptor {
     return nsd.getVnfd();
   }
 
+  @ApiOperation(
+    value = "Gets a single VNF from the NSD",
+    notes =
+        "Returns the VNFD with the id specified in the URL and that is part of the specified NSD"
+  )
   @RequestMapping(
     value = "{idNsd}/vnfdescriptors/{idVfnd}",
     method = RequestMethod.GET,
@@ -224,6 +247,10 @@ public class RestNetworkServiceDescriptor {
         idNsd, idVfnd, projectId);
   }
 
+  @ApiOperation(
+    value = "Delete VNFD from the NSD",
+    notes = "Takes the ids of the NSD and VNFD and updates the NSD"
+  )
   @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVirtualNetworkFunctionDescriptor(
@@ -234,6 +261,11 @@ public class RestNetworkServiceDescriptor {
     networkServiceDescriptorManagement.deleteVnfDescriptor(idNsd, idVfn, projectId);
   }
 
+  @ApiOperation(
+    value = "Add a VNFD to the NSD",
+    notes =
+        "Takes a Virtual Network Function Descriptor in the Request Body and adds it to the vnfd list of the Network Service Descriptor with id specified in the URL"
+  )
   @RequestMapping(
     value = "{id}/vnfdescriptors/",
     method = RequestMethod.POST,
@@ -248,6 +280,11 @@ public class RestNetworkServiceDescriptor {
     return networkServiceDescriptorManagement.addVnfd(vnfDescriptor, idNsd, projectId);
   }
 
+  @ApiOperation(
+    value = "Update a VNFD in the NSD",
+    notes =
+        "Takes a Virtual Network Function Descriptor in the Request Body and updates the specified vnfd that is part of the Network Service Descriptor with id specified in the URL"
+  )
   @RequestMapping(
     value = "{idNsd}/vnfdescriptors/{idVfn}",
     method = RequestMethod.PUT,
@@ -269,6 +306,7 @@ public class RestNetworkServiceDescriptor {
    * @param id : The id of NSD
    * @return List<VNFDependency>: The List of VNFDependency into NSD @
    */
+  @ApiOperation(value = "Returns the list of VNFDependency from NSD", notes = "")
   @RequestMapping(
     value = "{id}/vnfdependencies",
     method = RequestMethod.GET,
@@ -281,6 +319,7 @@ public class RestNetworkServiceDescriptor {
     return nsd.getVnf_dependency();
   }
 
+  @ApiOperation(value = "Returns the list of VNF Dependency for a VNF from the NSD", notes = "")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/{idVnfd}",
     method = RequestMethod.GET,
@@ -295,6 +334,7 @@ public class RestNetworkServiceDescriptor {
     return networkServiceDescriptorManagement.getVnfDependency(idNsd, idVnfd, projectId);
   }
 
+  @ApiOperation(value = "Delete VNF Dependency from a VNF part of the NSD", notes = "")
   @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVNFDependency(
@@ -305,6 +345,7 @@ public class RestNetworkServiceDescriptor {
     networkServiceDescriptorManagement.deleteVNFDependency(idNsd, idVnfd, projectId);
   }
 
+  @ApiOperation(value = "Add a VNF Dependency", notes = "")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/",
     method = RequestMethod.POST,
@@ -320,6 +361,7 @@ public class RestNetworkServiceDescriptor {
     return vnfDependency;
   }
 
+  @ApiOperation(value = "Update a VNF Dependency", notes = "")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/{idVnf}",
     method = RequestMethod.PUT,
@@ -343,6 +385,7 @@ public class RestNetworkServiceDescriptor {
    * @return List<PhysicalNetworkFunctionDescriptor>: The List of PhysicalNetworkFunctionDescriptor
    *     into NSD @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/pnfdescriptors",
     method = RequestMethod.GET,
@@ -362,6 +405,7 @@ public class RestNetworkServiceDescriptor {
    * @param idPnf : The PhysicalNetworkFunctionDescriptor id
    * @return PhysicalNetworkFunctionDescriptor: The PhysicalNetworkFunctionDescriptor selected @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{idNds}/pnfdescriptors/{idPnf}",
     method = RequestMethod.GET,
@@ -383,6 +427,7 @@ public class RestNetworkServiceDescriptor {
    * @param idNsd id of NSD
    * @param idPnf id of PhysicalNetworkFunctionDescriptor
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(value = "{idNsd}/pnfdescriptors/{idPnf}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deletePhysicalNetworkFunctionDescriptor(
@@ -401,6 +446,7 @@ public class RestNetworkServiceDescriptor {
    * @param idNsd : The NSD id
    * @return PhysicalNetworkFunctionDescriptor: The PhysicalNetworkFunctionDescriptor stored @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/pnfdescriptors/",
     method = RequestMethod.POST,
@@ -422,6 +468,7 @@ public class RestNetworkServiceDescriptor {
    * @param id : The NSD id
    * @return PhysicalNetworkFunctionDescriptor: The PhysicalNetworkFunctionDescriptor edited @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/pnfdescriptors/{idPnf}",
     method = RequestMethod.PUT,
@@ -443,6 +490,7 @@ public class RestNetworkServiceDescriptor {
    * @param id : The id of NSD
    * @return Security: The Security of PhysicalNetworkFunctionDescriptor into NSD @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/security",
     method = RequestMethod.GET,
@@ -461,6 +509,7 @@ public class RestNetworkServiceDescriptor {
    * @param idNSD : The NSD id
    * @param idS : The Security id @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(value = "{id}/security/{idS}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteSecurity(
@@ -477,6 +526,7 @@ public class RestNetworkServiceDescriptor {
    * @param id : The id of NSD
    * @return Security: The Security stored @
    */
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/security/",
     method = RequestMethod.POST,
@@ -491,6 +541,7 @@ public class RestNetworkServiceDescriptor {
     return networkServiceDescriptorManagement.addSecurity(id, security, projectId);
   }
 
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "{id}/security/{id_s}",
     method = RequestMethod.PUT,

@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -25,14 +26,7 @@ import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,15 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -69,6 +55,12 @@ public class RestVNFPackage {
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
   /** Adds a new VNFPackage to the VNFPackages repository */
+  @ApiOperation(
+    value = "Adding a VNFPackage",
+    notes =
+        "The request parameter 'file' specifies an archive which is needed to instantiate a VNFPackage. "
+            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/vnfpackage/"
+  )
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public String onboard(
@@ -87,6 +79,11 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(
+    value = "Adding a VNFPackage from the Open Baton marketplace",
+    notes =
+        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
+  )
   @RequestMapping(
     value = "/marketdownload",
     method = RequestMethod.POST,
@@ -109,6 +106,10 @@ public class RestVNFPackage {
    *
    * @param id: id of the package to delete
    */
+  @ApiOperation(
+    value = "Remove a VNFPackage",
+    notes = "The id of the package that has to be removed in in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -122,6 +123,10 @@ public class RestVNFPackage {
    * @param ids: The List of the VNFPackage Id to be deleted
    * @throws NotFoundException, WrongAction
    */
+  @ApiOperation(
+    value = "Removing multiple VNFPackages",
+    notes = "A list of VNF Package ids has to be provided in the Request Body"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -139,11 +144,16 @@ public class RestVNFPackage {
    *
    * @return List<VNFPackage>: The list of VNFPackages available
    */
+  @ApiOperation(value = "Retrieve all VNFPackages", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
     return vnfPackageManagement.queryByProjectId(projectId);
   }
 
+  @ApiOperation(
+    value = "Retrieve a script from a VNF Package",
+    notes = "The ids of the package and the script are provided in the URL"
+  )
   @RequestMapping(
     value = "{id}/scripts/{scriptId}",
     method = RequestMethod.GET,
@@ -164,6 +174,10 @@ public class RestVNFPackage {
         "Script with id " + scriptId + " was not found into package with id " + id);
   }
 
+  @ApiOperation(
+    value = "Update a script of a VNF Package",
+    notes = "The updated script has to be passed in the Request Body"
+  )
   @RequestMapping(
     value = "{id}/scripts/{scriptId}",
     method = RequestMethod.PUT,
@@ -194,6 +208,7 @@ public class RestVNFPackage {
    * @param id : The id of the VNFPackage
    * @return VNFPackage: The VNFPackage selected
    */
+  @ApiOperation(value = "Retrieve a VNFPackage", notes = "")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -207,6 +222,10 @@ public class RestVNFPackage {
    * @param id : The id of the VNFPackage
    * @return VNFPackage The VNFPackage updated
    */
+  @ApiOperation(
+    value = "Update a VNFPackage",
+    notes = "The updated VNF Package is passed in the request body"
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,

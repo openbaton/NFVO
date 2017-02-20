@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import io.swagger.annotations.ApiOperation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,13 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /** Created by lto on 25/05/16. */
 @RestController
@@ -59,6 +54,10 @@ public class RestProject {
    * @param project
    * @return project
    */
+  @ApiOperation(
+    value = "Adding a Project",
+    notes = "Project data has to be passed as JSON in the Request Body."
+  )
   @RequestMapping(
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -80,6 +79,10 @@ public class RestProject {
    *
    * @param id : the id of project to be removed
    */
+  @ApiOperation(
+    value = "Remove a Project",
+    notes = "Specify the id of the project that will be deleted in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable("id") String id)
@@ -92,6 +95,10 @@ public class RestProject {
     }
   }
 
+  @ApiOperation(
+    value = "Removing multiple Projects",
+    notes = "In the Request Body pass a list of project ids that have to be deleted"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -112,6 +119,7 @@ public class RestProject {
    *
    * @return List<Project>: The list of Projects available
    */
+  @ApiOperation(value = "Retrieve all Projects", notes = "")
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public @ResponseBody Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
     log.trace("Finding all Projects");
@@ -130,6 +138,7 @@ public class RestProject {
    * @param id : The id of the Project
    * @return Project: The Project selected
    */
+  @ApiOperation(value = "Retrieve a Project", notes = "Pass the id of the project in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public Project findById(@PathVariable("id") String id)
       throws NotFoundException, NotAllowedException {
@@ -155,6 +164,10 @@ public class RestProject {
    * @param new_project : The Project to be updated
    * @return Project The Project updated
    */
+  @ApiOperation(
+    value = "Update a Project",
+    notes = "The Request Body holds the Project as JSON that will be updated."
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,

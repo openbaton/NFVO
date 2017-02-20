@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.security.Role;
@@ -33,12 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -55,6 +51,10 @@ public class RestUsers {
    * @param user
    * @return user
    */
+  @ApiOperation(
+    value = "Adding a User",
+    notes = "The User data is passed as JSON in the Request Body"
+  )
   @RequestMapping(
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -78,6 +78,10 @@ public class RestUsers {
    *
    * @param id : the id of user to be removed
    */
+  @ApiOperation(
+    value = "Remove a User",
+    notes = "Removes the user with the id specified in the URL. Admin privileges needed!"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable("id") String id)
@@ -95,6 +99,10 @@ public class RestUsers {
     }
   }
 
+  @ApiOperation(
+    value = "Remove multiple Users",
+    notes = "Removes all users part of the List of ids passed in the Request Body"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -116,6 +124,7 @@ public class RestUsers {
    *
    * @return List<User>: The list of Users available
    */
+  @ApiOperation(value = "Retrieve all Users", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<User> findAll() {
     log.trace("Find all Users");
@@ -128,6 +137,10 @@ public class RestUsers {
    * @param username : The username of the User
    * @return User: The User selected
    */
+  @ApiOperation(
+    value = "Retrieve a User",
+    notes = "Retrieves a user based on the username specified in the URL"
+  )
   @RequestMapping(value = "{username}", method = RequestMethod.GET)
   public User findById(@PathVariable("username") String username) throws NotFoundException {
     log.trace("find User with username " + username);
@@ -136,6 +149,7 @@ public class RestUsers {
     return user;
   }
 
+  @ApiOperation(value = " Retrieve the current User", notes = "")
   @RequestMapping(value = "current", method = RequestMethod.GET)
   public User findCurrentUser() throws NotFoundException {
     User user = userManagement.getCurrentUser();
@@ -149,6 +163,7 @@ public class RestUsers {
    * @param new_user : The User to be updated
    * @return User The User updated
    */
+  @ApiOperation(value = "Update a User", notes = "")
   @RequestMapping(
     value = "{username}",
     method = RequestMethod.PUT,
@@ -161,6 +176,7 @@ public class RestUsers {
     return userManagement.update(new_user);
   }
 
+  @ApiOperation(value = "Changing the current User’s password", notes = "")
   @RequestMapping(
     value = "changepwd",
     method = RequestMethod.PUT,
@@ -175,6 +191,10 @@ public class RestUsers {
         jsonObject.get("old_pwd").getAsString(), jsonObject.get("new_pwd").getAsString());
   }
 
+  @ApiOperation(
+    value = "Changing a User’s password",
+    notes = "If you want to change another User’s password, you have to be an admin"
+  )
   @RequestMapping(
     value = "changepwd/{username}",
     method = RequestMethod.PUT,

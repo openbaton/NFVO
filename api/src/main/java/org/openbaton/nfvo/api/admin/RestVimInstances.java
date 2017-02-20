@@ -16,29 +16,19 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/datacenters")
@@ -55,6 +45,10 @@ public class RestVimInstances {
    * @param vimInstance : Image to add
    * @return datacenter: The datacenter filled with values from the core
    */
+  @ApiOperation(
+    value = "Adding a Vim Instance",
+    notes = "Takes a Vim Instance json in the request body"
+  )
   @RequestMapping(
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -87,6 +81,10 @@ public class RestVimInstances {
    *
    * @param id: The Datacenter's id to be deleted
    */
+  @ApiOperation(
+    value = " Removing a Vim Instance",
+    notes = "Deletes the Vim Instance belonging to the id specified in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -100,6 +98,7 @@ public class RestVimInstances {
    *
    * @return List<Datacenter>: The List of Datacenters available
    */
+  @ApiOperation(value = "Retrieving all Vim Instances", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VimInstance> findAll(@RequestHeader(value = "project-id") String projectId) {
     Iterable<VimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
@@ -116,6 +115,10 @@ public class RestVimInstances {
    * @param id: The Datacenter's id selected
    * @return Datacenter: The Datacenter selected
    */
+  @ApiOperation(
+    value = "Retrieve a Vim Instance",
+    notes = "Returns the Vim Instance JSON belonging to the id specified in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VimInstance findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -131,6 +134,11 @@ public class RestVimInstances {
    * @param id the id of the old datacenter
    * @return VimInstance the VimInstance updated
    */
+  @ApiOperation(
+    value = "Updating a Vim Instance",
+    notes =
+        "Takes a Vim Instance as JSON and updates the Vim Instance with the id specified in the URL"
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,
@@ -153,6 +161,7 @@ public class RestVimInstances {
    * @param id of the VimInstance
    * @return Set<NFVImage>
    */
+  @ApiOperation(value = "Retrieve the data about images on a Vim Instance", notes = "")
   @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
   public Set<NFVImage> getAllImages(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -167,6 +176,7 @@ public class RestVimInstances {
    * @param idImage of {@code NFVImage}
    * @return {@code NFVImage} selected
    */
+  @ApiOperation(value = "Returns the data about an Image from the Vim Instance", notes = "")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
   public NFVImage getImage(
       @PathVariable("idVim") String idVim,
@@ -184,6 +194,7 @@ public class RestVimInstances {
    * @return {@code NFVImage} persisted
    * @throws VimException
    */
+  @ApiOperation(value = "Adds an image to the Vim Instance", notes = "")
   @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
   public NFVImage addImage(
       @PathVariable("id") String id,
@@ -202,6 +213,7 @@ public class RestVimInstances {
    * @return {@code NFVImage} updated
    * @throws VimException
    */
+  @ApiOperation(value = "Updates the data of an image on the Vim Instance", notes = "")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
   public NFVImage updateImage(
       @PathVariable("idVim") String idVim,
@@ -219,6 +231,7 @@ public class RestVimInstances {
    * @param idImage of {@code NFVImage}
    * @throws VimException
    */
+  @ApiOperation(value = "Remove an image on the Vim Instance", notes = "")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
   public void deleteImage(
       @PathVariable("idVim") String idVim,
@@ -235,6 +248,7 @@ public class RestVimInstances {
    * @param id: The Datacenter's id selected
    * @return Datacenter: The Datacenter selected
    */
+  @ApiOperation(value = "Refreshes the data about the Vim Instance", notes = "")
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public VimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)

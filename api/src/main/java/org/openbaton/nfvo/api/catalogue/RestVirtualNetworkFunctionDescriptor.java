@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -25,13 +26,7 @@ import org.openbaton.nfvo.core.interfaces.VirtualNetworkFunctionManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/vnf-descriptors")
@@ -49,6 +44,11 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @return VirtualNetworkFunctionDescriptor: The VirtualNetworkFunctionDescriptor filled with
    *     values from the core
    */
+  @ApiOperation(
+    value = "Adding a Virtual Network Function Descriptor",
+    notes =
+        "POST request with Virtual Network Function Descriptor as JSON content of the request body"
+  )
   @RequestMapping(
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -68,6 +68,11 @@ public class RestVirtualNetworkFunctionDescriptor {
    *
    * @param id : The virtualNetworkFunctionDescriptor's id to be deleted
    */
+  @ApiOperation(
+    value = "Removing a Virtual Network Function Descriptor",
+    notes =
+        "The id in the URL belongs to the Virtual Network Function Descriptor that will be deleted"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -83,6 +88,11 @@ public class RestVirtualNetworkFunctionDescriptor {
    *
    * @param ids
    */
+  @ApiOperation(
+    value = "Removing multiple Virtual Network Function Descriptors",
+    notes =
+        "The request takes a list of ids of Virtual Network Function Descriptor that will be deleted"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -101,6 +111,7 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @return List<virtualNetworkFunctionDescriptor>: The list of VNF software
    *     virtualNetworkFunctionDescriptors available
    */
+  @ApiOperation(value = "Retrieving all Virtual Network Function Descriptors", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VirtualNetworkFunctionDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
@@ -114,6 +125,10 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @return virtualNetworkFunctionDescriptor: The VNF software virtualNetworkFunctionDescriptor
    *     selected
    */
+  @ApiOperation(
+    value = "Retrieving a Virtual Network Function Descriptor",
+    notes = "The id in the URL belongs to the requested Virtual Network Function Descriptor"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VirtualNetworkFunctionDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -129,6 +144,11 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @param id : the id of VNF software virtualNetworkFunctionDescriptor
    * @return networkServiceDescriptor: the VNF software virtualNetworkFunctionDescriptor updated
    */
+  @ApiOperation(
+    value = "Updating a Virtual Network Function Descriptor",
+    notes =
+        "The updated VNFD is passed as JSON content in the Request Body and the id in the URL belongs to the VNFD that will be updated"
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,

@@ -16,18 +16,14 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.core.interfaces.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /** Created by rvl on 19.10.16. */
 @RestController
@@ -36,6 +32,10 @@ public class RestPlugin {
 
   @Autowired PluginManager pluginManager;
 
+  @ApiOperation(
+    value = "Download a plugin from the Open Baton Marketplace",
+    notes = "The Plugin can be downloaded by specifying the type, name and version in the URL"
+  )
   @RequestMapping(value = "{type}/{name}/{version:.+}", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public void downloadPlugin(
@@ -45,6 +45,7 @@ public class RestPlugin {
     pluginManager.downloadPlugin(type, name, version);
   }
 
+  @ApiOperation(value = "Retrieve all installed Vim Drivers", notes = "")
   @RequestMapping(method = RequestMethod.GET)
   public @ResponseBody Set<String> getListVimDrivers() throws IOException {
     return pluginManager.listInstalledVimDrivers();
