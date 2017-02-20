@@ -41,16 +41,7 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -1204,10 +1195,33 @@ public class NetworkServiceRecordManagement
                       .getConfigurations()
                       .setName(body.getConfigurations().get(vnfrName).getName());
                 }
-                virtualNetworkFunctionDescriptor
-                    .getConfigurations()
-                    .getConfigurationParameters()
-                    .addAll(body.getConfigurations().get(vnfrName).getConfigurationParameters());
+                for (ConfigurationParameter passedConfigurationParameter :
+                    body.getConfigurations().get(vnfrName).getConfigurationParameters()) {
+                  boolean isExisting = false;
+                  for (ConfigurationParameter configurationParameter :
+                      virtualNetworkFunctionDescriptor
+                          .getConfigurations()
+                          .getConfigurationParameters()) {
+                    if (configurationParameter
+                        .getConfKey()
+                        .equals(passedConfigurationParameter.getConfKey())) {
+                      configurationParameter.setValue(passedConfigurationParameter.getValue());
+                      if (passedConfigurationParameter.getDescription() != null
+                          && !passedConfigurationParameter.getDescription().isEmpty()) {
+                        configurationParameter.setDescription(
+                            passedConfigurationParameter.getDescription());
+                      }
+                      isExisting = true;
+                      break;
+                    }
+                  }
+                  if (!isExisting) {
+                    virtualNetworkFunctionDescriptor
+                        .getConfigurations()
+                        .getConfigurationParameters()
+                        .add(passedConfigurationParameter);
+                  }
+                }
               } else {
                 virtualNetworkFunctionDescriptor.setConfigurations(
                     body.getConfigurations().get(vnfrName));
