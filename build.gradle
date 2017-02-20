@@ -68,6 +68,7 @@ apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.innosetup.gradle'
 apply from: 'gradle/gradle/distribution.gradle'
+apply from: 'gradle/gradle/brew.formula.creator.gradle'
 
 
 repositories {
