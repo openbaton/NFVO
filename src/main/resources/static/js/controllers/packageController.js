@@ -134,6 +134,9 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
     }, true);
 
     $scope.$watch('csarPackage', function (newValue, oldValue) {
+        if (angular.isUndefined(myDropzone)) {
+            return;
+        }
         if ($scope.csarPackage) {
             myDropzone.options.url = urlTosca;
         } else {

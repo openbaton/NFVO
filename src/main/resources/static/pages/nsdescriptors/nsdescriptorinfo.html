@@ -247,7 +247,7 @@
                     <tabset>
                         <tab heading="Info">
                             <div class="form-group" ng-repeat="(key,value) in editObj"
-                                 ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                                 ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='vnfPackageLocation'">
                                 <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                                 <div class="col-sm-6">
@@ -268,12 +268,12 @@
                                     <div class="form-group"
                                          ng-repeat="cp in editObj.configurations.configurationParameters track by $index">
                                         <div class="col-sm-6 ">
-                                            <label for="confKey" class="control-label">confKey</label>
+                                            <label for="confKey" class="control-label">Key</label>
                                             <div class="input-group">
                                                 <input type="text" class="form-control" id="confKey" name="confKey"
                                                        ng-model="cp.confKey"/>
                                                 <span class="input-group-btn">
-                                                <button class="btn btn-default" ng-click="addNewConfig()" type="button"
+                                                <button class="btn btn-default" ng-disabled="cp.confKey.length < 1 || cp.value.length < 1" ng-click="addNewConfig()" type="button"
                                                         title="Add a new configuration">
                                                     <span class="fa fa-plus" aria-hidden="true"></span>
                                                 </button>
@@ -284,12 +284,12 @@
                                         </div>
                                         <div class="col-sm-6 ">
 
-                                            <label for="value" class="control-label">value</label>
+                                            <label for="value" class="control-label">Value</label>
                                             <div class="input-group">
                                                 <input type="text" class="form-control" id="value" name="value"
                                                        ng-model="cp.value"/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" ng-click="removeConfig($index)" type="button"
+                                                <button class="btn btn-default" ng-disabled="editObj.configurations.configurationParameters.length < 2" ng-click="removeConfig($index)" type="button"
                                                         title="Delete this configuration">
                                                     <span class="fa fa-trash" aria-hidden="true"></span>
                                                 </button>
