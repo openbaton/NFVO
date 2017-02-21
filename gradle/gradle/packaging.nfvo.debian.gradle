@@ -21,13 +21,14 @@ ext {
     baseName = 'openbaton'
     componentName = "nfvo"
     fullName = "${baseName}-${componentName}"
+    versionName = "${version}".replaceAll("-SNAPSHOT", "")
     propertiesDir = '/etc/openbaton'
     baseBinaryDir = '/usr/lib/openbaton'
     jarSubpathName = "${componentName}".replaceAll("-", "/")
 }
 
 task makeDeb(type: Deb, dependsOn: [jar, build]) {
-    packageName = (applicationRelease) ? "${fullName}-${version}" : "${fullName}-${version}-nightly"
+    packageName = (applicationRelease) ? "${fullName}-${versionName}" : "${fullName}-${versionName}-nightly"
     version = debianApplicationVersionFull
     //release = 1
     priority = 'optional'
