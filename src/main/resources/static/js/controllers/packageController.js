@@ -226,9 +226,10 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
                 previewsContainer: "#previews", // Define the container to display the previews
                 headers: header,
                 init: function () {
-                    myDropzone.removeAllFiles(true);
+                   
                     var submitButton = document.querySelector("#submit-all");
                     myDropzone = this; // closure
+                    myDropzone.removeAllFiles(true);
                     submitButton.addEventListener("click", function () {
                         $scope.$apply(function ($scope) {
                             myDropzone.processQueue();
