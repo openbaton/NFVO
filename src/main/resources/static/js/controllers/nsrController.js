@@ -586,7 +586,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
 
     }
-
+    $scope.vnfrjsonname = "";
+    $scope.vnfrJSON = "";
+    $scope.copyJson = function(vnfr) {
+        $scope.vnfrjsonname = vnfr.name;
+        $scope.vnfrJSON = JSON.stringify(vnfr, undefined, 4);
+    }
     $scope.startVNFCI = function(vnfci, vnfr) {
       startObj = {};
       vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/start';

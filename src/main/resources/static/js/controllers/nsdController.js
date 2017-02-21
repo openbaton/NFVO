@@ -966,6 +966,12 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
     }
+    $scope.vnfdJSON = "";
+    $scope.vnfdJSONname = "";
+    $scope.copyJSON = function(vnfd) {
+        $scope.vnfdJSONname = vnfd.name;
+        $scope.vnfdJSON = JSON.stringify(vnfd, undefined, 4);
+    }
 
     $scope.addPopToNsd = function (pop) {
         console.log($scope.launchPops)

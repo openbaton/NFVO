@@ -36,6 +36,8 @@
 <div class="row">
 	<div class="col-lg-12" ng-show="vnfdinfo">
 		<div class="col-lg-6">
+			<a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+          <br/>
 			<div class="table-responsive">
 				<table class="table table-bordered table-hover tablesorter" id="vnfdTabletable">
 					<tbody>
@@ -356,4 +358,24 @@
 			</div>
 		</div>
 	</div>
+</div>
+<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
+            </div>
+            <div class="modal-body">
+                <pre id="json">{{vnfdJson}}</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
