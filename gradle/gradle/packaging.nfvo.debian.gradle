@@ -44,7 +44,16 @@ task makeDeb(type: Deb, dependsOn: [jar, build]) {
     preUninstall file('gradle/gradle/scripts/debian/prerm')
     postUninstall file('gradle/gradle/scripts/debian/postrm')
 
-    requires('openjdk-7-jre')
+    // set the correct java dependency
+    if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
+        println " * Building the debian package with Java 8"
+        requires('openjdk-8-jre')
+    }
+    else {
+        println " * Building the debian package with Java 7"
+        requires('openjdk-7-jre')
+    }
+
     requires('rabbitmq-server')
     requires('openbaton-plugin-vimdriver-test')
 
