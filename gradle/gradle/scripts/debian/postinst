@@ -198,6 +198,8 @@ start_component () {
     if [ "${OPENBATON_COMPONENT_AUTOSTART}" = "true" ]; then
         if systemctl start openbaton-${OPENBATON_COMPONENT_NAME}.service >/dev/null 2>&1 ; then
             log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
+        elif service openbaton-${OPENBATON_COMPONENT_NAME} start >/dev/null 2>&1 ; then
+           log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
         elif start openbaton-${OPENBATON_COMPONENT_NAME} >/dev/null 2>&1 ; then
            log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
         else 
