@@ -445,9 +445,10 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
+                Here you can edit the floating ips for the the new VNFCI (put real floating ip, random or nothing in the floating field)
             </div>
             <div class="modal-body" >
-                <form role="form" class="form-horizontal">
+                <!--form role="form" class="form-horizontal">
 
                     <div class="col-lg-offset-1">
                         <div class="form-group ">
@@ -492,7 +493,7 @@
 
                             
                         </div>
-                    </div>
+                    </div-->
                     <table
                             class="table table-bordered table-striped table-hover tablesorter"
                             id="" ng-if="connection_pointsVDU.length > 0">
@@ -508,7 +509,8 @@
                         <tbody>
                         <tr ng-repeat="cp in connection_pointsVDU track by $index | orderBy:predicate:reverse">
                             <td>{{cp.virtual_link_reference}}</td>
-                            <td>{{cp.floatingIp}}</td>
+                            <td><input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                           ng-model="cp.floatingIp"/></td>
                             <td>{{cp.interfaceId}}</td>
                             <td>
                                 <a href="" ng-click="removeCPtoVNFCIVDU($index)"><span class="fa fa-trash"></span></a>

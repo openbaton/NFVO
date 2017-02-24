@@ -61,19 +61,18 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.addVNFCIModal = function (data) {
         $scope.connection_points = [];
         $scope.vnfrSelected = angular.copy(data);
-        $scope.vnfrSelected.vdu.map(function(vdu) {
-            console.log("Been here");
-            vdu.vnfc.map(function(vnfc) {
-                vnfc.connection_point.map(function (connection) {
+       // $scope.vnfrSelected.vdu.map(function(vdu) {
+         //   console.log("Been here");
+           //vdu.vnfc.map(function(vnfc) {
+                $scope.vnfrSelected.vdu[0].vnfc[0].connection_point.map(function (connection) {
                     $scope.connection_points.push({"floatingIp":connection.floatingIp, "interfaceId":connection.interfaceId, "virtual_link_reference":connection.virtual_link_reference});
                 });
-            });
-        });
         $scope.connection_points.map(function(cp) {
             if (angular.isUndefined(cp.interfaceId) || cp.interfaceId.length < 1) {
             cp.interfaceId = 0;
             }
         });
+        
         $('#addVNFCItoVDU').modal('show');
     };
     $scope.addVNFCI = function () {
@@ -180,12 +179,15 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         $scope.vduSelected = angular.copy(vdu);
         console.log($scope.vduSelected);
         $scope.vnfrSelected = angular.copy(vnfr);
-        $scope.vduSelected.vnfc.map(function(vnfc) {
-            console.log("mapping");
-                vnfc.connection_point.map(function (connection) {
+        //$scope.vduSelected.vnfc.map(function(vnfc) {
+          //  console.log("mapping");
+                $scope.vduSelected.vnfc[0].connection_point.map(function (connection) {
                     $scope.connection_pointsVDU.push({"floatingIp":connection.floatingIp, "interfaceId":connection.interfaceId, "virtual_link_reference":connection.virtual_link_reference});
                 });
-            });
+            //});
+            if ($scope.connection_pointsVDU.lenght > 0) {
+                $scope.connection_pointsVDU = $scope.connection_pointsVDU[0];
+            }
         $('#addVNFCItoVDU').modal('show');
         /*$scope.connectionPoints = {"connection_point": angular.copy(vdu.vnfc[0].connection_point)};
          angular.forEach($scope.connectionPoints.connection_point, function (cp, index) {
