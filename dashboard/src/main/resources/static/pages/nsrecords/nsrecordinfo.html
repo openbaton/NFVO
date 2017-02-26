@@ -251,20 +251,20 @@
 </div>
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU">
-    <div class="modal-dialog">
+<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU" >
+    <div class="modal-dialog" style="width:70%;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" >
                 <form role="form" class="form-horizontal">
 
                     <div class="col-lg-offset-1">
                         <div class="form-group ">
-                            <div class="form-group col-sm-5">
+                            <div class="form-group col-sm-3">
                                 <label class=" control-label">Virtual link reference</label>
 
                                 <div class="">
@@ -277,8 +277,18 @@
                                 </div>
                             </div>
                             <div class="col-lg-1"></div>
-                            <div class="col-sm-6 ">
-                                <label for="floatingIp" class="control-label">floatingIp</label>
+                             <div class="col-sm-4 ">
+                                <label for="floatingIp" class="control-label">Interface ID (Must be an integer)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InterfaceID" name="InterfaceID"
+                                           ng-model="connection_point.interfaceId"/>
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <label for="floatingIp" class="control-label">Floating IP</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="floatingIp" name="floatingIp"
                                            ng-model="connection_point.floatingIp"/>
@@ -292,6 +302,8 @@
 
 
                             </div>
+
+                            
                         </div>
                     </div>
                     <table
@@ -302,6 +314,7 @@
 
                             <th>Virtual link reference</th>
                             <th>floatingIp</th>
+                            <th>Interface ID </th>
                             <th>Delete</th>
                         </tr>
                         </thead>
@@ -309,6 +322,7 @@
                         <tr ng-repeat="cp in connection_points track by $index | orderBy:predicate:reverse">
                             <td>{{cp.virtual_link_reference}}</td>
                             <td>{{cp.floatingIp}}</td>
+                            <td>{{cp.interfaceId}}</td>
                             <td>
                                 <a href="" ng-click="removeCPtoVNFCI($index)"><span class="fa fa-trash"></span></a>
                             </td>

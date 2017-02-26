@@ -26,10 +26,10 @@ ext {
     jarSubpathName = "${componentName}".replaceAll("-", "/")
 }
 
-task makedeb(type: Deb, dependsOn: [jar, build]) { 
-    packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
+task makeDeb(type: Deb, dependsOn: [jar, build]) {
+    packageName = (applicationRelease) ? "${fullName}-${version}" : "${fullName}-${version}-nightly"
     version = debianApplicationVersionFull
-    //release = 1 
+    //release = 1
     priority = 'optional'
     arch = 'all'
     maintainer = 'Open Baton Team <dev@openbaton.org>'
@@ -44,7 +44,16 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     preUninstall file('gradle/gradle/scripts/debian/prerm')
     postUninstall file('gradle/gradle/scripts/debian/postrm')
 
-    requires('openjdk-7-jre')
+    // set the correct java dependency
+    if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
+        println " * Building the debian package with Java 8"
+        requires('openjdk-8-jre')
+    }
+    else {
+        println " * Building the debian package with Java 7"
+        requires('openjdk-7-jre')
+    }
+
     requires('rabbitmq-server')
     requires('openbaton-plugin-vimdriver-test')
 
@@ -65,3 +74,20 @@ task makedeb(type: Deb, dependsOn: [jar, build]) {
     from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the Component as a service (Systemd)
     from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/"}      // preexecstart file to run the Component as a service (Systemd)
 }
+
+task makeMetaDeb(type: Deb) {
+    packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
+    version = debianApplicationVersionFull
+    //release = 1
+    priority = 'optional'
+    arch = 'all'
+    maintainer = 'Open Baton Team <dev@openbaton.org>'
+    vendor = 'Open Source (Implemented by Fraunhofer FOKUS and TUB)'
+    license = 'Apache 2.0 License'
+    url = 'http://openbaton.github.io/index.html'
+    summary = 'Open Baton NFV Orchestrator (NFVO) (metapackage depending on the latest version)'
+    packageDescription = 'The Network Function Virtualization Orchestrator (NFVO) is a component of the Open Baton project which is an ETSI compliant implementation of a NFV Management and Orchestration (MANO) System'
+
+    requires("${fullName}-${version}")
+}
+

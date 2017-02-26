@@ -1,27 +1,3 @@
-apply plugin: "application"
-
-startScripts {
-    mainClassName = rootProject.mainClass
-    doLast {
-        def unixFile = file getUnixScript()
-
-        def unixTextTmp = ""
-        def unixText = unixFile.text
-        def unixDaemonScript = new File("${rootProject.projectDir}/gradle/gradle/scripts/openbaton-nfvo.pscript").text
-
-        unixText.readLines().each {
-            line ->
-                if (line.startsWith("exec")) {
-                    unixTextTmp += unixDaemonScript;
-                } else {
-                    unixTextTmp += line + '\n'
-                }
-        }
-        unixFile.text = unixTextTmp
-        unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
-    }
-}
-
 /*
  * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  *
@@ -39,24 +15,25 @@ startScripts {
  *
  */
 
-// to be executed just before the new release so that it gets the right version
-task makeBrewFormula() {
-    doLast{
-        def brewFormula = new File("${rootProject.projectDir}/gradle/gradle/scripts/osx/openbaton-nfvo.rb")
-        String brewFormulaText = brewFormula.text
-        String brewFormulaTextNew = ""
-        String currentBranch = version.toString().contains("-SNAPSHOT") ? "develop" : version;
+apply plugin: "application"
 
-        brewFormulaText.readLines().each {
+startScripts {
+    doLast {
+        def unixFile = file getUnixScript()
+
+        def unixTextTmp = ""
+        def unixText = unixFile.text
+        def unixDaemonScript = new File("${rootProject.projectDir}/gradle/gradle/scripts/openbaton-nfvo.pscript").text
+
+        unixText.readLines().each {
             line ->
-                if (line.trim().startsWith("version")) {
-                    brewFormulaTextNew += "  version \"" + version + "\"" + '\n'
-                } else if (line.trim().startsWith("url")) {
-                    brewFormulaTextNew += "  url \"https://codeload.github.com/openbaton/NFVO/legacy.tar.gz/" + currentBranch + "\"" + '\n'
+                if (line.startsWith("exec")) {
+                    unixTextTmp += unixDaemonScript;
                 } else {
-                    brewFormulaTextNew += line + '\n'
+                    unixTextTmp += line + '\n'
                 }
         }
-        brewFormula.text = brewFormulaTextNew
+        unixFile.text = unixTextTmp
+        unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
     }
 }
