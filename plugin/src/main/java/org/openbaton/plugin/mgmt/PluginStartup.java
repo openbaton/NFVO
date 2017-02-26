@@ -114,8 +114,16 @@ public class PluginStartup {
           String absolutePath = jar.getAbsolutePath();
           String pluginName =
               absolutePath.substring(absolutePath.lastIndexOf("/") + 1, absolutePath.length());
-          if (pluginName.contains("-"))
-            pluginName = pluginName.substring(0, pluginName.indexOf("-"));
+
+          String[] split = pluginName.split("-");
+          if (split.length > 4) {
+            pluginName = split[3];
+          } else if (split.length > 2) {
+            pluginName = split[split.length - 2];
+          } else {
+            if (pluginName.contains("-"))
+              pluginName = pluginName.substring(0, pluginName.indexOf("-"));
+          }
 
           installPlugin(
               pluginName,
