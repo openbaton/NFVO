@@ -1065,22 +1065,21 @@ public class GenericVIM extends Vim {
       Map<String, String> floatingIps,
       Set<Key> keys)
       throws VimException {
-    log.info("Launching new VM on VimInstance: " + vimInstance.getName());
-    log.trace("VDU is : " + vdu.toString());
-    log.trace("VNFR is : " + vnfr.toString());
-    log.trace("VNFC is : " + vnfComponent.toString());
+    log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
+    log.debug("VDU is : " + vdu.toString());
+    log.debug("VNFR is : " + vnfr.toString());
+    log.debug("VNFC is : " + vnfComponent.toString());
     /** *) choose image *) ...? */
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
-    log.info("Finding Networks...");
+    log.debug("Finding Networks...");
     Set<VNFDConnectionPoint> networks = new HashSet<>();
     for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
       //      for (Network net : vimInstance.getNetworks())
       //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
       networks.add(vnfdConnectionPoint);
     }
-    log.info("Found Networks with ExtIds: " + networks);
-
+    log.debug("Found Networks with ExtIds: " + networks);
     String flavorKey = null;
     if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
       flavorKey = vdu.getComputation_requirement();
@@ -1089,17 +1088,17 @@ public class GenericVIM extends Vim {
     }
     String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
 
-    log.info("Generating Hostname...");
+    log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
     String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 10000000));
-    log.info("Generated Hostname: " + hostname);
+    log.debug("Generated Hostname: " + hostname);
 
     userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);
 
-    log.info("Using SecurityGroups: " + vimInstance.getSecurityGroups());
+    log.debug("Using SecurityGroups: " + vimInstance.getSecurityGroups());
 
-    log.info(
-        "Launching VM with parameters: "
+    log.debug(
+        "Launching VM with params: "
             + hostname
             + " - "
             + image
@@ -1108,25 +1107,24 @@ public class GenericVIM extends Vim {
             + " - "
             + vimInstance.getKeyPair()
             + " - "
-            + vnfComponent.getConnection_point()
+            + networks
             + " - "
             + vimInstance.getSecurityGroups());
-
-    Server server;
-
-    if (vimInstance == null) throw new NullPointerException("VimInstance is null");
-    if (hostname == null) throw new NullPointerException("hostname is null");
-    if (image == null) throw new NullPointerException("image is null");
-    if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
-    if (vimInstance.getKeyPair() == null) {
-      log.debug("vimInstance.getKeyPair() is null");
-      vimInstance.setKeyPair("");
-    }
-    if (networks == null) throw new NullPointerException("networks is null");
-    if (vimInstance.getSecurityGroups() == null)
-      throw new NullPointerException("vimInstance.getSecurityGroups() is null");
-
+    Server server = null;
+    VNFCInstance vnfcInstance = null;
     try {
+      if (vimInstance == null) throw new NullPointerException("VimInstance is null");
+      if (hostname == null) throw new NullPointerException("hostname is null");
+      if (image == null) throw new NullPointerException("image is null");
+      if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
+      if (vimInstance.getKeyPair() == null) {
+        log.debug("vimInstance.getKeyPair() is null");
+        vimInstance.setKeyPair("");
+      }
+      if (networks == null || networks.isEmpty())
+        throw new NullPointerException("networks is null");
+      if (vimInstance.getSecurityGroups() == null)
+        throw new NullPointerException("vimInstance.getSecurityGroups() is null");
 
       server =
           client.launchInstanceAndWait(
@@ -1147,7 +1145,6 @@ public class GenericVIM extends Vim {
               + server.getExtId()
               + " on VimInstance "
               + vimInstance.getName());
-
     } catch (VimDriverException e) {
       if (log.isDebugEnabled()) {
         log.error(
@@ -1167,32 +1164,59 @@ public class GenericVIM extends Vim {
                 + ". Caused by: "
                 + e.getMessage());
       }
-      VNFCInstance vnfcInstance = null;
       VimDriverException vimDriverException = (VimDriverException) e.getCause();
-      server = vimDriverException.getServer();
+      if (vimDriverException != null && vimDriverException.getServer() != null) {
+        server = vimDriverException.getServer();
+        try {
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        } catch (VimDriverException e1) {
+          throw new VimException(e);
+        }
+        throw new VimException(
+            "Not launched VM with hostname "
+                + hostname
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e,
+            vdu,
+            vnfcInstance);
+      } else {
+        try {
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
 
-      if (server != null) {
-        vnfcInstance =
-            getVnfcInstanceFromServer(
-                vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        } catch (VimDriverException e1) {
+          vnfcInstance = new VNFCInstance();
+          vnfcInstance.setHostname(hostname);
+          vnfcInstance.setVim_id(vimInstance.getId());
+          vnfcInstance.setVnfComponent(vnfComponent);
+          vnfcInstance.setVc_id("unknown");
+          vnfcInstance.setState("ERROR");
+          throw new VimException(
+              "Not launched VM with hostname "
+                  + hostname
+                  + " successfully on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e,
+              vdu,
+              vnfcInstance);
+        }
       }
-
-      throw new VimException(
-          "Not launched VM with hostname "
-              + hostname
-              + " successfully on VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e,
-          vdu,
-          vnfcInstance);
     }
-
     log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
-    VNFCInstance vnfcInstance =
-        getVnfcInstanceFromServer(
-            vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+    if (vnfcInstance != null) {
+      try {
+        vnfcInstance =
+            getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+      } catch (VimDriverException e) {
+        throw new VimException(e);
+      }
+    }
 
     log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
     return new AsyncResult<>(vnfcInstance);
@@ -1231,7 +1255,10 @@ public class GenericVIM extends Vim {
       throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vm_images);
-    log.debug("Available: " + vimInstance.getImages());
+    List<String> available = new ArrayList<>();
+    for (NFVImage image : vimInstance.getImages()) available.add(image.getName());
+    log.debug("Available: " + available);
+
     if (vm_images != null && !vm_images.isEmpty()) {
       for (String image : vm_images) {
         for (NFVImage nfvImage : vimInstance.getImages()) {
@@ -1420,60 +1447,127 @@ public class GenericVIM extends Vim {
     return quota;
   }
 
-  protected VNFCInstance getVnfcInstanceFromServer(
+  protected VNFCInstance getVnfcInstance(
       VimInstance vimInstance,
       VNFComponent vnfComponent,
       String hostname,
       Server server,
       VirtualDeploymentUnit vdu,
       Map<String, String> floatingIps,
-      VirtualNetworkFunctionRecord vnfr) {
+      VirtualNetworkFunctionRecord vnfr)
+      throws VimDriverException, VimException {
     VNFCInstance vnfcInstance = new VNFCInstance();
-    if (server != null) {
-      vnfcInstance.setHostname(hostname);
+    if (server == null) {
+      log.trace("Listing potential VMs to recover...");
+      List<Server> serversFromVim = client.listServer(vimInstance);
+      log.debug("Listed potential VMs to recover -> " + serversFromVim);
+      for (Server serverFromVim : serversFromVim) {
+        if (serverFromVim.getHostName().equals(hostname)) {
+          server = serverFromVim;
+          log.debug("Found VM -> " + server);
+          break;
+        }
+      }
+      if (server == null) {
+        throw new VimException(
+            "Unable to recover VNFCInstance from VIM. Probably was not launched at all...");
+      }
+    }
+    vnfcInstance.setHostname(hostname);
+    if (server.getExtId() != null) {
       vnfcInstance.setVc_id(server.getExtId());
-      vnfcInstance.setVim_id(vimInstance.getId());
+    } else {
+      vnfcInstance.setVc_id("unknown");
+    }
+    vnfcInstance.setVim_id(vimInstance.getId());
+    vnfcInstance.setState(server.getStatus());
 
-      vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+    vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
 
-      for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-        VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
-        connectionPoint_vnfci.setVirtual_link_reference(
-            connectionPoint.getVirtual_link_reference());
-        connectionPoint_vnfci.setType(connectionPoint.getType());
-        if (server.getFloatingIps() != null)
-          for (Entry<String, String> entry : server.getFloatingIps().entrySet())
-            if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
-              connectionPoint_vnfci.setFloatingIp(entry.getValue());
-        vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
-      }
+    for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+      VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
+      connectionPoint_vnfci.setVirtual_link_reference(connectionPoint.getVirtual_link_reference());
+      connectionPoint_vnfci.setType(connectionPoint.getType());
+      if (server.getFloatingIps() != null)
+        for (Entry<String, String> entry : server.getFloatingIps().entrySet())
+          if (entry.getKey().equals(connectionPoint.getVirtual_link_reference()))
+            connectionPoint_vnfci.setFloatingIp(entry.getValue());
+      vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
+    }
 
-      if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+    if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
 
-      vnfcInstance.setVnfComponent(vnfComponent);
+    vnfcInstance.setVnfComponent(vnfComponent);
 
-      vnfcInstance.setIps(new HashSet<Ip>());
-      vnfcInstance.setFloatingIps(new HashSet<Ip>());
+    vnfcInstance.setIps(new HashSet<Ip>());
+    vnfcInstance.setFloatingIps(new HashSet<Ip>());
 
-      if (!floatingIps.isEmpty()) {
-        for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {
-          Ip ip = new Ip();
-          ip.setNetName(fip.getKey());
-          ip.setIp(fip.getValue());
-          vnfcInstance.getFloatingIps().add(ip);
-        }
-      }
-
-      for (Entry<String, List<String>> network : server.getIps().entrySet()) {
+    if (!floatingIps.isEmpty()) {
+      for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {
         Ip ip = new Ip();
-        ip.setNetName(network.getKey());
-        ip.setIp(network.getValue().iterator().next());
-        vnfcInstance.getIps().add(ip);
-        for (String ip1 : server.getIps().get(network.getKey())) {
-          vnfr.getVnf_address().add(ip1);
-        }
+        ip.setNetName(fip.getKey());
+        ip.setIp(fip.getValue());
+        vnfcInstance.getFloatingIps().add(ip);
+      }
+    }
+
+    for (Entry<String, List<String>> network : server.getIps().entrySet()) {
+      Ip ip = new Ip();
+      ip.setNetName(network.getKey());
+      ip.setIp(network.getValue().iterator().next());
+      vnfcInstance.getIps().add(ip);
+      for (String ip1 : server.getIps().get(network.getKey())) {
+        vnfr.getVnf_address().add(ip1);
       }
     }
     return vnfcInstance;
+  }
+
+  public void checkIntegrity(
+      VirtualNetworkFunctionRecord vnfr,
+      VirtualDeploymentUnit vdu,
+      VNFComponent vnfComponent,
+      VNFCInstance vnfcInstance,
+      Server server)
+      throws VimException {
+    try {
+      if (vnfComponent.getConnection_point().size() != vnfcInstance.getIps().size()) {
+        throw new VimException(
+            "Not all (or too many) internal IPs were associated. Expected: "
+                + vnfComponent.getConnection_point().size()
+                + " Allocated: "
+                + vnfcInstance.getIps().size());
+      }
+      int expectedFloatingIpCount = 0;
+      for (VNFDConnectionPoint cp : vnfComponent.getConnection_point()) {
+        if (cp.getFloatingIp() != null && !cp.getFloatingIp().isEmpty()) {
+          expectedFloatingIpCount++;
+        }
+      }
+      if (expectedFloatingIpCount != vnfcInstance.getFloatingIps().size()) {
+        throw new VimException(
+            "Not all (or too many) Floating IPs were associated. Expected: "
+                + expectedFloatingIpCount
+                + " Allocated: "
+                + vnfcInstance.getFloatingIps().size());
+      }
+      if (!vdu.getVm_image().contains(server.getImage().getName())) {
+        throw new VimException(
+            "Server launched with incorrect image. Expected: "
+                + vdu.getVm_image()
+                + " Used: "
+                + server.getImage().getName());
+      }
+      if (!server.getFlavor().getFlavour_key().equals(vnfr.getDeployment_flavour_key())) {
+        throw new VimException(
+            "Server launched with incorrect flavor. Expected: "
+                + vnfr.getDeployment_flavour_key()
+                + " Used: "
+                + server.getFlavor().getFlavour_key());
+      }
+    } catch (Exception e) {
+      throw new VimException(
+          "VNFCInstance was not deployed correctly -> " + e.getMessage(), e, vdu, vnfcInstance);
+    }
   }
 }
