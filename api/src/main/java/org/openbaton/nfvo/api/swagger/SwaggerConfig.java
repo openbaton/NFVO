@@ -58,7 +58,7 @@ public class SwaggerConfig {
 
   private ApiInfo apiInfo() {
     return new ApiInfoBuilder()
-        .title("Openbaton REST API")
+        .title("NFVO REST API")
         .version("3.2.x")
         .description(
             "Below is a detailed description of the REST API of the OpenBaton Network  Function  Virtualization  Orchestrator"
