@@ -612,14 +612,32 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.removeConf = function(index, vnfdname) {
          $scope.launchConfiguration.configurations[vnfdname].configurationParameters.splice(index, 1);
     };
-    
+    function removeEmptyConfs() {
+        for (var property in $scope.launchConfiguration.configurations) {
+            if ($scope.launchConfiguration.configurations.hasOwnProperty(property)) {
+            for (i = 0; i < $scope.launchConfiguration.configurations[property].configurationParameters.length; i++) {
+                if (angular.isUndefined($scope.launchConfiguration.configurations[property].configurationParameters[i].key) || angular.isUndefined($scope.launchConfiguration.configurations[property].configurationParameters[i].value)
+                    || $scope.launchConfiguration.configurations[property].configurationParameters[i].key.length < 1 || $scope.launchConfiguration.configurations[property].configurationParameters[i].value.length < 1) {
+                    $scope.launchConfiguration.configurations[property].configurationParameters.splice(i, 1);
+                }
+            }  
+        }    
+    }
+
+    }
     $scope.launchOption = function (data) {
+        $scope.launchConfiguration = null;
         $scope.launchConfiguration = {"configurations":{}};
+     
         $scope.vnfdnames = [];
         $scope.nsdToSend = data;
         $scope.nsdToSend.vnfd.map(function (vnfd) {
             $scope.vnfdnames.push(vnfd.name);
-            $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
+            if (vnfd.configurations.length < 1) {
+                $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
+            } else {
+                $scope.launchConfiguration.configurations[vnfd.name] = angular.copy(vnfd.configurations);
+            }
         });
         console.log($scope.vnfdnames);
         //loadKeys();
@@ -682,6 +700,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.noVIMchoicePossible = false;
     $scope.vimForLaunch = {};
     $scope.launch = function () {
+        removeEmptyConfs();
         prepareVIMs();
         console.log(JSON.stringify($scope.vimForLaunch));
 
@@ -697,7 +716,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.launchObj.configurations={};
         $scope.launchObj.configurations = $scope.launchConfiguration.configurations;
         console.log(JSON.stringify($scope.launchObj));
-        http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
+       http.post(urlRecord + $scope.nsdToSend.id, $scope.launchObj)
             .success(function (response) {
                 showOk("Created Network Service Record from Descriptor with id: \<a href=\'\#nsrecords\'>" + $scope.nsdToSend.id + "<\/a>");
             })
@@ -947,6 +966,12 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
     }
+    $scope.vnfdJSON = "";
+    $scope.vnfdJSONname = "";
+    $scope.copyJSON = function(vnfd) {
+        $scope.vnfdJSONname = vnfd.name;
+        $scope.vnfdJSON = JSON.stringify(vnfd, undefined, 4);
+    }
 
     $scope.addPopToNsd = function (pop) {
         console.log($scope.launchPops)
@@ -1073,6 +1098,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
 // Hide the total progress bar when nothing's uploading anymore
             myDropzone.on("queuecomplete", function (progress) {
                 $('.progress .bar:first').opacity = "0";
+                   myDropzone.removeAllFiles(true);
 
             });
 

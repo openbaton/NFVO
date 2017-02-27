@@ -50,6 +50,8 @@
         <div class="col-lg-12" >
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
               <div class="col-lg-6">
+                   <a href="#" data-toggle="modal" ng-click="copyJson(vnfr)" data-target="#jsonInfo">Show JSON</a>
+              <br/>
                 <div class = "table-responsive">
                    <table
                           class="table table-bordered table-hover tablesorter"
@@ -112,6 +114,9 @@
                             </tr-->
                             <tr ng-show="vnfr.vdu_dependency.length > 0">
                               <td>VDU dependency</td><td>{{vnfr.vdu_dependency}}</td>
+                            </tr>
+                            <tr>
+                              <td>Flavour</td><td>{{vnfr.deployment_flavour_key}}</td>
                             </tr>
                             <tr ng-show="vnfr.vld.length > 0">
                               <td>VLD</td><td>{{vnfr.vld}}</td>
@@ -435,20 +440,21 @@
 </div>
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU">
-    <div class="modal-dialog">
+<div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU" >
+    <div class="modal-dialog" style="width:70%;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
+                Here you can edit the floating ips for the the new VNFCI (put real floating ip, random or nothing in the floating field)
             </div>
-            <div class="modal-body">
-                <form role="form" class="form-horizontal">
+            <div class="modal-body" >
+                <!--form role="form" class="form-horizontal">
 
                     <div class="col-lg-offset-1">
                         <div class="form-group ">
-                            <div class="form-group col-sm-5">
+                            <div class="form-group col-sm-3">
                                 <label class=" control-label">Virtual link reference</label>
 
                                 <div class="">
@@ -461,42 +467,55 @@
                                 </div>
                             </div>
                             <div class="col-lg-1"></div>
+                             <div class="col-sm-4 ">
+                                <label for="floatingIp" class="control-label">Interface ID (Must be an integer)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InterfaceID" name="InterfaceID"
+                                           ng-model="connection_point.interfaceId"/>
 
-                            <div class="col-sm-6 ">
-                                <label for="floatingIp" class="control-label">floatingIp</label>
+                                </div>
+
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <label for="floatingIp" class="control-label">Floating IP</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="floatingIp" name="floatingIp"
                                            ng-model="connection_point.floatingIp"/>
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default" ng-click="addCPtoVNFCI()"
-                                                            type="button"
-                                                            title="Add this Connection Point to VNFCI">
-                                                        <span class="fa fa-plus" aria-hidden="true"></span>
-                                                    </button>
+                                                <button class="btn btn-default" ng-click="addCPtoVNFCIVDU()" type="button"
+                                                        title="Add this Connection Point to VNFCI">
+                                                    <span class="fa fa-plus" aria-hidden="true"></span>
+                                                </button>
                                             </span>
                                 </div>
 
 
                             </div>
+
+                            
                         </div>
-                    </div>
+                    </div-->
                     <table
                             class="table table-bordered table-striped table-hover tablesorter"
-                            id="" ng-if="connection_points.length > 0">
+                            id="" ng-if="connection_pointsVDU.length > 0">
                         <thead>
                         <tr>
 
                             <th>Virtual link reference</th>
                             <th>floatingIp</th>
+                            <th>Interface ID </th>
                             <th>Delete</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="cp in connection_points track by $index | orderBy:predicate:reverse">
+                        <tr ng-repeat="cp in connection_pointsVDU track by $index | orderBy:predicate:reverse">
                             <td>{{cp.virtual_link_reference}}</td>
-                            <td>{{cp.floatingIp}}</td>
+                            <td><input type="text" class="form-control" id="floatingIp" name="floatingIp"
+                                           ng-model="cp.floatingIp"/></td>
+                            <td>{{cp.interfaceId}}</td>
                             <td>
-                                <a href="" ng-click="removeCPtoVNFCI($index)"><span class="fa fa-trash"></span></a>
+                                <a href="" ng-click="removeCPtoVNFCIVDU($index)"><span class="fa fa-trash"></span></a>
                             </td>
                         </tr>
                         </tbody>
@@ -506,8 +525,29 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()" ng-disabled="connection_points.length===0">Add Instance</button>
+                <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()" ng-disabled="connection_pointsVDU.length===0">Add Instance</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <dt class="modal-title" id="myModalLabel">JSON of VNFR: {{vnfrjsonname}}</dt>
+            </div>
+            <div class="modal-body">
+                <pre id="json">{{vnfrJSON}}</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
