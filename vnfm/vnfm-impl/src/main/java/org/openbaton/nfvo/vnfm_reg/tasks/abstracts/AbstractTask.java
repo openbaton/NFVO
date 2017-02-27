@@ -426,4 +426,19 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     log.debug("Added lifecycle event history: " + lifecycleEvent);
   }
+
+  protected void setHistoryLifecycleEvent(String customEvent, String message) {
+    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+    lifecycleEvent.setEvent(customEvent);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+    lifecycleEvent.setExecutedAt(format.format(new Date()));
+    lifecycleEvent.setDescription(message);
+
+    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
+      virtualNetworkFunctionRecord.setLifecycle_event_history(
+          new LinkedList<HistoryLifecycleEvent>());
+    }
+    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+    log.debug("Added lifecycle event history: " + lifecycleEvent);
+  }
 }

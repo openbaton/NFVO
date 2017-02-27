@@ -69,6 +69,7 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version is = "
             + virtualNetworkFunctionRecord.getHb_version());
+
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       List<Future<List<String>>> ids = new ArrayList<>();
       VimInstance vimInstance = vims.get(vdu.getId());
@@ -85,7 +86,7 @@ public class AllocateresourcesTask extends AbstractTask {
               + " - id: "
               + vimInstance.getId());
       for (NFVImage image : vimInstance.getImages()) {
-        log.debug("Available image name: " + image.getName());
+        log.trace("Available image name: " + image.getName());
       }
       ids.add(
           resourceManagement.allocate(
