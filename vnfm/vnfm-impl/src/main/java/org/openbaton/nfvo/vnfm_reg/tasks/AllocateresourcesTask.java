@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
@@ -71,7 +73,7 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getHb_version());
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-      List<Future<List<String>>> ids = new ArrayList<>();
+      List<Future<VNFCInstance>> ids = new ArrayList<>();
       VimInstance vimInstance = vims.get(vdu.getId());
       if (vimInstance == null) {
         throw new NullPointerException(
@@ -88,12 +90,10 @@ public class AllocateresourcesTask extends AbstractTask {
       for (NFVImage image : vimInstance.getImages()) {
         log.trace("Available image name: " + image.getName());
       }
-      ids.add(
-          resourceManagement.allocate(
-              vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
-
-      for (Future<List<String>> id : ids) {
-        id.get();
+      for (VNFComponent vnfc : vdu.getVnfc()) {
+        resourceManagement
+            .allocate(vdu, virtualNetworkFunctionRecord, vnfc, vimInstance, userData)
+            .get();
       }
     }
     setHistoryLifecycleEvent(new Date());

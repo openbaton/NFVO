@@ -124,7 +124,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     return new AsyncResult<>(ids);
   }
 
-  private String allocateVNFC(
+  private VNFCInstance allocateVNFC(
       VimInstance vimInstance,
       VirtualDeploymentUnit virtualDeploymentUnit,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
@@ -152,7 +152,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     virtualDeploymentUnit.getVnfc_instance().add(added);
     if (!floatinIps.isEmpty() && added.getFloatingIps().isEmpty())
       log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
-    return added.getVim_id();
+    return added;
   }
 
   @Override
@@ -200,7 +200,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
 
   @Override
   @Async
-  public Future<String> allocate(
+  public Future<VNFCInstance> allocate(
       VirtualDeploymentUnit virtualDeploymentUnit,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent componentToAdd,
@@ -219,7 +219,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id()).getKeyNames()) {
       keys.add(keyRepository.findKey(virtualNetworkFunctionRecord.getProjectId(), keyName));
     }
-    String vnfc =
+    VNFCInstance vnfc =
         allocateVNFC(
             vimInstance,
             virtualDeploymentUnit,
@@ -228,6 +228,19 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
             componentToAdd,
             userdata,
             keys);
+    log.debug("Launched VM with id: " + vnfc.getVc_id());
+    Map<String, String> floatingIps = new HashMap<>();
+    for (VNFDConnectionPoint connectionPoint : vnfc.getVnfComponent().getConnection_point()) {
+      if (connectionPoint.getFloatingIp() != null)
+        floatingIps.put(
+            connectionPoint.getVirtual_link_reference(), connectionPoint.getFloatingIp());
+    }
+    if (floatingIps.size() != vnfc.getFloatingIps().size()) {
+      log.warn("NFVO wasn't able to all associate FloatingIPs. Is there enough available?");
+      log.debug("Expected FloatingIPs: " + floatingIps);
+      log.debug("Real FloatingIPs: " + vnfc.getFloatingIps());
+    }
+    log.info("Finished deploying VMs with external id: " + vnfc.getVc_id());
     return new AsyncResult<>(vnfc);
   }
 }
