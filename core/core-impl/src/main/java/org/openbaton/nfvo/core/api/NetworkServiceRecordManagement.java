@@ -489,10 +489,11 @@ public class NetworkServiceRecordManagement
       break;
     }
     if (virtualDeploymentUnit == null)
-      throw new WrongStatusException(
+      throw new NotFoundException(
           "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
 
-    log.debug("A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
+    log.debug(
+        "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
@@ -621,10 +622,11 @@ public class NetworkServiceRecordManagement
     }
 
     if (virtualDeploymentUnit == null)
-      throw new WrongStatusException(
+      throw new NotFoundException(
           "All VirtualDeploymentUnits have reached their minimum number of VNFCInstances");
 
-    log.debug("A VNFCInstance will be deleted from the VDU with id " + virtualDeploymentUnit.getId());
+    log.debug(
+        "A VNFCInstance will be deleted from the VDU with id " + virtualDeploymentUnit.getId());
 
     VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
     if (vnfcInstance == null) {
