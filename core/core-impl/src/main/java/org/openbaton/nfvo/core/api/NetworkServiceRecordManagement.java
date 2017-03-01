@@ -18,12 +18,7 @@
 package org.openbaton.nfvo.core.api;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
@@ -478,17 +473,28 @@ public class NetworkServiceRecordManagement
       throw new UnauthorizedUserException(
           "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
-    VirtualDeploymentUnit virtualDeploymentUnit =
-        virtualNetworkFunctionRecord.getVdu().iterator().next();
-    if (virtualDeploymentUnit == null) {
-      throw new NotFoundException("No VirtualDeploymentUnit found");
+
+    List<VirtualDeploymentUnit> vdusFound = new LinkedList<>();
+    VirtualDeploymentUnit virtualDeploymentUnit = null;
+
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+      if (vdu.getProjectId() != null && vdu.getProjectId().equals(projectId)) vdusFound.add(vdu);
     }
 
-    if (virtualDeploymentUnit.getScale_in_out()
-        == virtualDeploymentUnit.getVnfc_instance().size()) {
-      throw new WrongStatusException(
-          "The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
+    if (vdusFound.size() == 0) throw new NotFoundException("No VirtualDeploymentUnit found");
+
+    for (VirtualDeploymentUnit vdu : vdusFound) {
+      if (vdu.getScale_in_out() == vdu.getVnfc_instance().size()) continue;
+      virtualDeploymentUnit = vdu;
+      break;
     }
+    if (virtualDeploymentUnit == null)
+      throw new NotFoundException(
+          "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
+
+    log.debug(
+        "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
+
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
@@ -499,7 +505,7 @@ public class NetworkServiceRecordManagement
   public void addVNFCInstance(
       String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
-    log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
+    log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
@@ -597,27 +603,36 @@ public class NetworkServiceRecordManagement
           "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
+    List<VirtualDeploymentUnit> vdusFound = new LinkedList<>();
     VirtualDeploymentUnit virtualDeploymentUnit = null;
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       if (vdu.getProjectId() != null && vdu.getProjectId().equals(projectId)) {
+        vdusFound.add(vdu);
+      }
+    }
+
+    if (vdusFound.size() == 0) throw new NotFoundException("No VirtualDeploymentUnit found");
+
+    for (VirtualDeploymentUnit vdu : vdusFound) {
+      if (vdu.getVnfc_instance().size() > 1) {
         virtualDeploymentUnit = vdu;
         break;
       }
     }
 
-    if (virtualDeploymentUnit == null) {
-      throw new NotFoundException("No VirtualDeploymentUnit found");
-    }
+    if (virtualDeploymentUnit == null)
+      throw new NotFoundException(
+          "All VirtualDeploymentUnits have reached their minimum number of VNFCInstances");
 
-    if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
-      throw new WrongStatusException(
-          "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
-    }
+    log.debug(
+        "A VNFCInstance will be deleted from the VDU with id " + virtualDeploymentUnit.getId());
 
     VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
     if (vnfcInstance == null) {
-      throw new NotFoundException("No VNFCInstance was found");
+      throw new NotFoundException(
+          "No VNFCInstance was found to delete in VirtualDeploymentUnit with id: "
+              + virtualDeploymentUnit.getId());
     }
 
     networkServiceRecord.setStatus(Status.SCALING);
