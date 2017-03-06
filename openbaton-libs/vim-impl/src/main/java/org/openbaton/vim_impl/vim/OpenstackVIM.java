@@ -19,6 +19,7 @@ package org.openbaton.vim_impl.vim;
 
 import java.util.*;
 import java.util.concurrent.Future;
+import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -389,8 +390,8 @@ public class OpenstackVIM extends GenericVIM {
             + networks
             + " - "
             + vimInstance.getSecurityGroups());
-    Server server;
-
+    Server server = null;
+    VNFCInstance vnfcInstance = null;
     try {
       if (vimInstance == null) throw new NullPointerException("VimInstance is null");
       if (hostname == null) throw new NullPointerException("hostname is null");
@@ -443,30 +444,70 @@ public class OpenstackVIM extends GenericVIM {
                 + ". Caused by: "
                 + e.getMessage());
       }
-      VNFCInstance vnfcInstance = null;
       VimDriverException vimDriverException = (VimDriverException) e.getCause();
-      server = vimDriverException.getServer();
-      if (server != null) {
-        vnfcInstance =
-            getVnfcInstanceFromServer(
-                vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+      if (vimDriverException != null && vimDriverException.getServer() != null) {
+        server = vimDriverException.getServer();
+        try {
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        } catch (VimDriverException | VimException e1) {
+          throw new VimException(e);
+        }
+        throw new VimException(
+            "Not launched VM with hostname "
+                + hostname
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e,
+            vdu,
+            vnfcInstance);
+      } else {
+        try {
+          log.warn(
+              "Exception thrown while deploying... Try to recover '"
+                  + hostname
+                  + "' from VIM directly");
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
+          checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+        } catch (VimDriverException | VimException e1) {
+          if ((e1 instanceof VimException) && ((VimException) e1).getVnfcInstance() != null)
+            vnfcInstance = ((VimException) e1).getVnfcInstance();
+          else {
+            vnfcInstance = new VNFCInstance();
+            vnfcInstance.setHostname(hostname);
+            vnfcInstance.setVim_id(vimInstance.getId());
+            vnfcInstance.setVnfComponent(vnfComponent);
+            vnfcInstance.setVc_id("unknown");
+            vnfcInstance.setState("ERROR");
+            vnfcInstance.setIps(new HashSet<Ip>());
+            vnfcInstance.setFloatingIps(new HashSet<Ip>());
+          }
+          throw new VimException(
+              "Not launched VM with hostname "
+                  + hostname
+                  + " successfully on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e,
+              vdu,
+              vnfcInstance);
+        }
       }
-      throw new VimException(
-          "Not launched VM with hostname "
-              + hostname
-              + " successfully on VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e,
-          vdu,
-          vnfcInstance);
     }
-
-    log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
-    VNFCInstance vnfcInstance =
-        getVnfcInstanceFromServer(
-            vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+    if (vnfcInstance == null) {
+      try {
+        log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
+        vnfcInstance =
+            getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        //checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+      } catch (VimDriverException | VimException e) {
+        throw new VimException(e);
+      }
+    }
 
     log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
     return new AsyncResult<>(vnfcInstance);
