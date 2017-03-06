@@ -17,16 +17,8 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
@@ -39,6 +31,13 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /** Created by lto on 06/08/15. */
 @Service
@@ -71,13 +70,12 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version is = "
             + virtualNetworkFunctionRecord.getHb_version());
-
+    List<Future<List<String>>> ids = new ArrayList<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-      List<Future<VNFCInstance>> ids = new ArrayList<>();
       VimInstance vimInstance = vims.get(vdu.getId());
       if (vimInstance == null) {
         throw new NullPointerException(
-            "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
+            "Our algorithms are too complex, even for us, this is what abnormal IQ means :(");
       }
       vimInstance = vimRepository.findFirstById(vimInstance.getId());
       log.debug(
@@ -90,11 +88,12 @@ public class AllocateresourcesTask extends AbstractTask {
       for (NFVImage image : vimInstance.getImages()) {
         log.trace("Available image name: " + image.getName());
       }
-      for (VNFComponent vnfc : vdu.getVnfc()) {
-        resourceManagement
-            .allocate(vdu, virtualNetworkFunctionRecord, vnfc, vimInstance, userData)
-            .get();
-      }
+      ids.add(
+          resourceManagement.allocate(
+              vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
+    }
+    for (Future<List<String>> id : ids) {
+      id.get();
     }
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
