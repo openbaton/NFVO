@@ -17,14 +17,10 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -72,7 +68,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimException, ExecutionException, InterruptedException, PluginException {
+      throws VimException, ExecutionException, InterruptedException, PluginException,
+          TimeoutException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
@@ -132,7 +129,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException {
+      throws InterruptedException, ExecutionException, VimException, TimeoutException {
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
     for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
@@ -207,7 +204,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VimInstance vimInstance,
       String userdata)
       throws InterruptedException, ExecutionException, PluginException, VimException,
-          VimDriverException {
+          VimDriverException, TimeoutException {
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());

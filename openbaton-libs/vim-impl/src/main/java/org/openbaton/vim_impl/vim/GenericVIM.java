@@ -17,14 +17,10 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -32,12 +28,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -1064,7 +1055,7 @@ public class GenericVIM extends Vim {
       String userdata,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimException {
+      throws VimException, TimeoutException {
     log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
     log.debug("VDU is : " + vdu.toString());
     log.debug("VNFR is : " + vnfr.toString());
@@ -1455,7 +1446,7 @@ public class GenericVIM extends Vim {
       VirtualDeploymentUnit vdu,
       Map<String, String> floatingIps,
       VirtualNetworkFunctionRecord vnfr)
-      throws VimDriverException, VimException {
+      throws VimDriverException, VimException, TimeoutException {
     VNFCInstance vnfcInstance = new VNFCInstance();
     if (server == null) {
       log.trace("Listing potential VMs to recover...");
