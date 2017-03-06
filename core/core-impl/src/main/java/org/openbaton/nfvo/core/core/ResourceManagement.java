@@ -36,7 +36,6 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
-import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.repositories.KeyRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -60,7 +59,6 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 
-  @Autowired private VnfPlacementManagement vnfPlacementManagement;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
   @Autowired private KeyRepository keyRepository;
 
