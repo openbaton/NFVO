@@ -24,19 +24,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
-import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
-import org.openbaton.catalogue.mano.common.monitoring.Alarm;
-import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;
-import org.openbaton.catalogue.mano.common.monitoring.ObjectSelection;
-import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
-import org.openbaton.catalogue.mano.common.monitoring.ThresholdDetails;
-import org.openbaton.catalogue.mano.common.monitoring.ThresholdType;
+import java.util.concurrent.*;
+import org.openbaton.catalogue.mano.common.monitoring.*;
 import org.openbaton.catalogue.nfvo.Item;
 import org.openbaton.exceptions.MonitoringException;
 import org.openbaton.exceptions.NotFoundException;
@@ -116,7 +105,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public String subscribeForFault(AlarmEndpoint filter) throws MonitoringException {
+  public String subscribeForFault(AlarmEndpoint filter)
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(filter);
 
@@ -132,7 +122,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public String unsubscribeForFault(String alarmEndpointId) throws MonitoringException {
+  public String unsubscribeForFault(String alarmEndpointId)
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(alarmEndpointId);
 
@@ -154,7 +145,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public List<Alarm> getAlarmList(String vnfId, PerceivedSeverity perceivedSeverity)
-      throws MonitoringException {
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(vnfId);
     params.add(perceivedSeverity);
@@ -178,7 +169,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       List<String> performanceMetricGroup,
       Integer collectionPeriod,
       Integer reportingPeriod)
-      throws MonitoringException {
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(resourceSelector);
     params.add((Serializable) performanceMetric);
@@ -198,7 +189,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public List<String> deletePMJob(List<String> itemIdsToDelete) throws MonitoringException {
+  public List<String> deletePMJob(List<String> itemIdsToDelete)
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) itemIdsToDelete);
 
@@ -216,7 +208,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public List<Item> queryPMJob(List<String> hostnames, List<String> metrics, String period)
-      throws MonitoringException {
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) hostnames);
     params.add((Serializable) metrics);
@@ -250,7 +242,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       String performanceMetric,
       ThresholdType thresholdType,
       ThresholdDetails thresholdDetails)
-      throws MonitoringException {
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(objectSelector);
     params.add(performanceMetric);
@@ -269,7 +261,8 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public List<String> deleteThreshold(List<String> thresholdIds) throws MonitoringException {
+  public List<String> deleteThreshold(List<String> thresholdIds)
+      throws MonitoringException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) thresholdIds);
 

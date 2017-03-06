@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -44,7 +45,8 @@ public interface ResourceManagement {
       VimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws ExecutionException, InterruptedException, VimException, PluginException;
+      throws ExecutionException, InterruptedException, VimException, PluginException,
+          TimeoutException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
@@ -117,5 +119,5 @@ public interface ResourceManagement {
       VimInstance vimInstance,
       String userdata)
       throws InterruptedException, ExecutionException, PluginException, VimException,
-          VimDriverException;
+          VimDriverException, TimeoutException;
 }
