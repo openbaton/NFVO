@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -61,10 +60,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.plugin.utils.RabbitPluginBroker;
 import org.openbaton.vim.drivers.VimDriverCaller;
-import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.GenericVIM;
-import org.openbaton.vim_impl.vim.OpenstackVIM;
-import org.openbaton.vim_impl.vim.TestVIM;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -101,9 +97,7 @@ public class VimTestSuiteClass {
 
   @Mock private RabbitPluginBroker rabbitPluginBroker;
 
-  //    @InjectMocks
-  //@Qualifier("OpenstackVim")
-  private OpenstackVIM openstackVIM;
+  private GenericVIM genericVIM;
 
   /** TODO add all other tests */
   @Autowired private Environment environment;
@@ -135,20 +129,15 @@ public class VimTestSuiteClass {
             anyString(),
             anyInt())
         .thenReturn(vimDriverCaller);
-    openstackVIM =
-        new OpenstackVIM(
-            "admin", "openbaton", "localhost", 5672, "15672", null, "openstack", 120000);
-    openstackVIM.setClient(vimDriverCaller);
+    genericVIM = new GenericVIM();
+    genericVIM.setClient(vimDriverCaller);
   }
 
   @Test
   public void testVimBrokers() throws PluginException {
     Assert.assertNotNull(vimBroker);
-    Vim testVIM = vimBroker.getVim("test");
-    Assert.assertEquals(testVIM.getClass(), TestVIM.class);
-    Vim openstackVIM = vimBroker.getVim("openstack");
-    Assert.assertEquals(openstackVIM.getClass(), OpenstackVIM.class);
-    Assert.assertEquals(vimBroker.getVim("amazon").getClass(), AmazonVIM.class);
+    Vim genericVim = vimBroker.getVim("generic");
+    Assert.assertEquals(genericVim.getClass(), GenericVIM.class);
     //        exception.expect(UnsupportedOperationException.class);
     Assert.assertEquals(vimBroker.getVim("throw_exception").getClass(), GenericVIM.class);
   }
@@ -183,7 +172,7 @@ public class VimTestSuiteClass {
     try {
 
       Future<VNFCInstance> id =
-          openstackVIM.allocate(
+          genericVIM.allocate(
               vimInstance,
               vdu,
               vnfr,
@@ -202,7 +191,7 @@ public class VimTestSuiteClass {
     vdu.getVm_image().removeAll(vdu.getVm_image());
 
     exception.expect(VimException.class);
-    openstackVIM.allocate(
+    genericVIM.allocate(
         vimInstance,
         vdu,
         vnfr,
@@ -211,18 +200,6 @@ public class VimTestSuiteClass {
         new HashMap<String, String>(),
         new HashSet<Key>());
   }
-
-  @Test
-  @Ignore
-  public void testVimAmazon() {}
-
-  @Test
-  @Ignore
-  public void testVimTest() {}
-
-  @Test
-  @Ignore
-  public void testOpenstackClient() {}
 
   private VirtualNetworkFunctionRecord createVNFR() {
     VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();

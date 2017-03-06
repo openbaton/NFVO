@@ -172,12 +172,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public VimInstance refresh(VimInstance vimInstance)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
-    if (vimCheck
-        && !vimInstance
-            .getType()
-            .equals("test")) // just setting it to active without this check may lead to an
-    // ObjectOptimisticLockingFailureException
-    {
+    if (vimCheck) {
       this.checkVimInstances();
     } else {
       vimInstance.setActive(true);
@@ -257,7 +252,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           Set<Subnet> subnets_refreshed = new HashSet<>();
           Set<Subnet> subnets_new = new HashSet<>();
           Set<Subnet> subnets_old = new HashSet<>();
-          if (network_new.getSubnets() == null && !vimInstance.getType().equals("test")) {
+          if (network_new.getSubnets() == null) {
             throw new BadRequestException(
                 "New network: " + network_new.getName() + " has no subnets");
           } else if (network_new.getSubnets() == null) {
