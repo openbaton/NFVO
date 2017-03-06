@@ -110,7 +110,7 @@ public interface ResourceManagement {
    */
   void releaseReservation(VirtualDeploymentUnit vdu);
 
-  Future<String> allocate(
+  Future<VNFCInstance> allocate(
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent componentToAdd,

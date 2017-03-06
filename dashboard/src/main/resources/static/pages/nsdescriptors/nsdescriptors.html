@@ -1069,7 +1069,7 @@
             </div>
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
-                    <div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version'">
+                    <div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='enabled'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">
@@ -1126,128 +1126,6 @@
             </div>
 
             <tabset>
-                <tab heading="Keys">
-                    <form role="form" class="form-horizontal">
-                        <p> A key pair allows you to SSH into your VNF Component Instances. You may select an existing key pair,
-                            import a key pair, or generate a new key pair.</p>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <button id="" href="#" class="btn btn-primary" title="Add a new key pair" data-toggle="modal" data-target="#addKey">Import key
-                                </button>
-                                <button id="" href="#" class="btn btn-primary" title="Add a new key pair" data-toggle="modal" data-target="#createKey">Create key
-                                </button>
-                            </div>
-                        </div>
-                        <p>
-                            <br> The following list shows all the Keys that will be imported to the VNF Component Instances.
-                        </p>
-                        <div ng-init="list.expanded=true">
-                            <p style="font-size:20px">
-                                <a href="" ng-if="list.expanded" ng-click="list.expanded = false">-</a>
-                                <a href="" ng-if="!list.expanded" ng-click="list.expanded = true">+</a> Allocated ({{launchKeys.length}})
-                            </p>
-                            <div ng-if="list.expanded">
-                                <table ng-table="tableParamsFilteredLaunchKeys" class="table table-condensed table-bordered table-striped" show-filter="true">
-                                    <tr ng-init="key.expanded=false" ng-repeat="key in $data">
-
-                                        <td width="300" style="word-wrap: break-word" data-title="'Name'" sortable="'name'">
-                                            <p>{{key.name}}</p>
-                                        </td>
-                                        <td style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
-                                        <td style="width:5%">
-                                            <a ng-if="key.name.length" title="Remove a key from this NSR" href="" ng-click="removeLaunchKey(key)">Del
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <!--<tr ng-if="key.expanded" ng-repeat-end="">-->
-                                    <!--<td colspan="2" style='text-align:center;vertical-align:middle'><h5>Public Key</h5></td>-->
-                                    <!--<td colspan="2" style="word-wrap: break-word">{{key.publicKey}}</td>-->
-                                    <!--</tr>-->
-                                </table>
-                            </div>
-                        </div>
-                        <!--<div class="form-group" ng-repeat="key in launchKeys track by $index">-->
-                        <!--&lt;!&ndash;label for="action" class="col-sm-2 control-label">Key</label&ndash;&gt;-->
-                        <!--<div class="col-sm-5">-->
-                        <!--<select name="typeSelect" class="form-control modal-select" id="action"-->
-                        <!--ng-model="launchKeys[$index]"-->
-                        <!--ng-options="key.name as key.name for key in keys"-->
-                        <!--ng-change="">-->
-                        <!--</select>-->
-                        <!--</div>-->
-
-                        <!--<div class="col-sm-1">-->
-                        <!--<a href="" ng-click="launchKeys.splice($index, 1)">-->
-                        <!--<h4>-->
-                        <!--<li class="fa fa-trash"></li>-->
-                        <!--</h4>-->
-                        <!--</a>-->
-                        <!--</div>-->
-
-                        <!--</div>-->
-                        <p>
-                            <br><br> The following list shows all the Keys that are available to put into the VNF Component
-                            Instances.
-                        </p>
-                        <div ng-init="keys.expanded=false">
-                            <p style="font-size:20px">
-                                <a href="" ng-if="keys.expanded" ng-click="keys.expanded = false">-</a>
-                                <a href="" ng-if="!keys.expanded" ng-click="keys.expanded = true">+</a> Available ({{keys.length}})
-                            </p>
-                            <div ng-if="keys.expanded">
-                                <table ng-table="tableParamsFilteredKeys" class="table table-condensed table-bordered table-striped" show-filter="true">
-                                    <!--<tr ng-init="key.expanded=false" ng-repeat-start="key in $data">-->
-                                    <tr ng-repeat="key in $data">
-                                        <!--<td>-->
-                                        <!--<a href="" ng-if="key.expanded"-->
-                                        <!--ng-click="key.expanded = false">-</a>-->
-                                        <!--<a href="" ng-if="!key.expanded"-->
-                                        <!--ng-click="key.expanded = true">+</a>-->
-                                        <!--</td>-->
-                                        <td width="300" style="word-wrap: break-word" data-title="'Name'" filter="{name: 'text'}" sortable="'name'">
-                                            <p>{{key.name}}</p>
-                                        </td>
-                                        <td width="300" style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
-                                        <td style="width:5%">
-                                            <a ng-if="key.name.length" title="Add a new key to this NSR" href="" ng-click="addLaunchKey(key)">Add
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <!--<tr ng-if="key.expanded" ng-repeat-end="">-->
-                                    <!--<td colspan="2" style='text-align:center;vertical-align:middle'><h5>Public Key</h5></td>-->
-                                    <!--<td colspan="2" style="word-wrap: break-word">{{key.publicKey}}</td>-->
-                                    <!--</tr>-->
-                                </table>
-                            </div>
-                        </div>
-                        <br>
-                        <br>
-                        <br>
-
-                        <!--<div class="form-group" ng-repeat="key in launchKeys track by $index">-->
-                        <!--&lt;!&ndash;label for="action" class="col-sm-2 control-label">Key</label&ndash;&gt;-->
-                        <!--<div class="col-sm-5">-->
-                        <!--<select name="typeSelect" class="form-control modal-select" id="action"-->
-                        <!--ng-model="launchKeys[$index]"-->
-                        <!--ng-options="key.name as key.name for key in keys"-->
-                        <!--ng-change="">-->
-                        <!--</select>-->
-                        <!--</div>-->
-
-                        <!--<div class="col-sm-1">-->
-                        <!--<a href="" ng-click="launchKeys.splice($index, 1)">-->
-                        <!--<h4>-->
-                        <!--<li class="fa fa-trash"></li>-->
-                        <!--</h4>-->
-                        <!--</a>-->
-                        <!--</div>-->
-
-                        <!--</div>-->
-                        <!--<h3><a title="Add a new key to this NSR" href="" ng-click="addLaunchKey()">-->
-                        <!--<li class="fa fa-plus-square"></li>-->
-                        <!--</a></h3>-->
-                    </form>
-                </tab>
                 <!--<tab select="loadVnfdTabs()" heading="PoPs">-->
                 <tab heading="PoPs">
                     <div class="container-fluid">
@@ -1265,7 +1143,7 @@
                                             <p>
                                                 The following list shows which PoPs are choosen for the selected VNFD.
                                             </p>
-                                            <div ng-init="launchPopTable.expanded=true">
+                                            <div ng-init="launchPopTable.expanded=false">
                                                 <p style="font-size:20px">
                                                     <a href="" ng-if="launchPopTable.expanded" ng-click="launchPopTable.expanded = false">-</a>
                                                     <a href="" ng-if="!launchPopTable.expanded" ng-click="launchPopTable.expanded = true">+</a>                                                    Assigned ({{launchPops[tab.vnfd.name].pops.length}})
@@ -1300,10 +1178,10 @@
                                             <p>
                                                 The following list shows which PoPs are available.
                                             </p>
-                                            <div ng-init="popTable.expanded=false">
+                                            <div ng-init="popTable.expanded=true">
                                                 <p style="font-size:20px">
                                                     <a href="" ng-if="popTable.expanded" ng-click="popTable.expanded = false">-</a>
-                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>                              launchForm                      Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
+                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>                                                    Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
                                                 </p>
                                                 <div ng-if="popTable.expanded">
                                                     <table ng-table="tableParamsFilteredPops" class="table table-condensed table-bordered table-striped" show-filter="true">
@@ -1461,7 +1339,128 @@
                     <!--</form>-->
                     <!--</div>-->
                 </tab>
+                <tab heading="Keys">
+                    <form role="form" class="form-horizontal">
+                        <p> A key pair allows you to SSH into your VNF Component Instances. You may select an existing key pair,
+                            import a key pair, or generate a new key pair.</p>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button id="" href="#" class="btn btn-primary" title="Add a new key pair" data-toggle="modal" data-target="#addKey">Import key
+                                </button>
+                                <button id="" href="#" class="btn btn-primary" title="Add a new key pair" data-toggle="modal" data-target="#createKey">Create key
+                                </button>
+                            </div>
+                        </div>
+                        <p>
+                            <br> The following list shows all the Keys that will be imported to the VNF Component Instances.
+                        </p>
+                        <div ng-init="list.expanded=true">
+                            <p style="font-size:20px">
+                                <a href="" ng-if="list.expanded" ng-click="list.expanded = false">-</a>
+                                <a href="" ng-if="!list.expanded" ng-click="list.expanded = true">+</a> Allocated ({{launchKeys.length}})
+                            </p>
+                            <div ng-if="list.expanded">
+                                <table ng-table="tableParamsFilteredLaunchKeys" class="table table-condensed table-bordered table-striped" show-filter="true">
+                                    <tr ng-init="key.expanded=false" ng-repeat="key in $data">
 
+                                        <td width="300" style="word-wrap: break-word" data-title="'Name'" sortable="'name'">
+                                            <p>{{key.name}}</p>
+                                        </td>
+                                        <td style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
+                                        <td style="width:5%">
+                                            <a ng-if="key.name.length" title="Remove a key from this NSR" href="" ng-click="removeLaunchKey(key)">Del
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <!--<tr ng-if="key.expanded" ng-repeat-end="">-->
+                                    <!--<td colspan="2" style='text-align:center;vertical-align:middle'><h5>Public Key</h5></td>-->
+                                    <!--<td colspan="2" style="word-wrap: break-word">{{key.publicKey}}</td>-->
+                                    <!--</tr>-->
+                                </table>
+                            </div>
+                        </div>
+                        <!--<div class="form-group" ng-repeat="key in launchKeys track by $index">-->
+                        <!--&lt;!&ndash;label for="action" class="col-sm-2 control-label">Key</label&ndash;&gt;-->
+                        <!--<div class="col-sm-5">-->
+                        <!--<select name="typeSelect" class="form-control modal-select" id="action"-->
+                        <!--ng-model="launchKeys[$index]"-->
+                        <!--ng-options="key.name as key.name for key in keys"-->
+                        <!--ng-change="">-->
+                        <!--</select>-->
+                        <!--</div>-->
+
+                        <!--<div class="col-sm-1">-->
+                        <!--<a href="" ng-click="launchKeys.splice($index, 1)">-->
+                        <!--<h4>-->
+                        <!--<li class="fa fa-trash"></li>-->
+                        <!--</h4>-->
+                        <!--</a>-->
+                        <!--</div>-->
+
+                        <!--</div>-->
+                        <p>
+                            <br><br> The following list shows all the Keys that are available to put into the VNF Component
+                            Instances.
+                        </p>
+                        <div ng-init="keys.expanded=false">
+                            <p style="font-size:20px">
+                                <a href="" ng-if="keys.expanded" ng-click="keys.expanded = false">-</a>
+                                <a href="" ng-if="!keys.expanded" ng-click="keys.expanded = true">+</a> Available ({{keys.length}})
+                            </p>
+                            <div ng-if="keys.expanded">
+                                <table ng-table="tableParamsFilteredKeys" class="table table-condensed table-bordered table-striped" show-filter="true">
+                                    <!--<tr ng-init="key.expanded=false" ng-repeat-start="key in $data">-->
+                                    <tr ng-repeat="key in $data">
+                                        <!--<td>-->
+                                        <!--<a href="" ng-if="key.expanded"-->
+                                        <!--ng-click="key.expanded = false">-</a>-->
+                                        <!--<a href="" ng-if="!key.expanded"-->
+                                        <!--ng-click="key.expanded = true">+</a>-->
+                                        <!--</td>-->
+                                        <td width="300" style="word-wrap: break-word" data-title="'Name'" filter="{name: 'text'}" sortable="'name'">
+                                            <p>{{key.name}}</p>
+                                        </td>
+                                        <td width="300" style="word-wrap: normal; max-width: 100px; overflow: hidden; text-overflow: ellipsis;" ng-attr-title="{{key.fingerprint}}">{{key.fingerprint}}</td>
+                                        <td style="width:5%">
+                                            <a ng-if="key.name.length" title="Add a new key to this NSR" href="" ng-click="addLaunchKey(key)">Add
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <!--<tr ng-if="key.expanded" ng-repeat-end="">-->
+                                    <!--<td colspan="2" style='text-align:center;vertical-align:middle'><h5>Public Key</h5></td>-->
+                                    <!--<td colspan="2" style="word-wrap: break-word">{{key.publicKey}}</td>-->
+                                    <!--</tr>-->
+                                </table>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+
+                        <!--<div class="form-group" ng-repeat="key in launchKeys track by $index">-->
+                        <!--&lt;!&ndash;label for="action" class="col-sm-2 control-label">Key</label&ndash;&gt;-->
+                        <!--<div class="col-sm-5">-->
+                        <!--<select name="typeSelect" class="form-control modal-select" id="action"-->
+                        <!--ng-model="launchKeys[$index]"-->
+                        <!--ng-options="key.name as key.name for key in keys"-->
+                        <!--ng-change="">-->
+                        <!--</select>-->
+                        <!--</div>-->
+
+                        <!--<div class="col-sm-1">-->
+                        <!--<a href="" ng-click="launchKeys.splice($index, 1)">-->
+                        <!--<h4>-->
+                        <!--<li class="fa fa-trash"></li>-->
+                        <!--</h4>-->
+                        <!--</a>-->
+                        <!--</div>-->
+
+                        <!--</div>-->
+                        <!--<h3><a title="Add a new key to this NSR" href="" ng-click="addLaunchKey()">-->
+                        <!--<li class="fa fa-plus-square"></li>-->
+                        <!--</a></h3>-->
+                    </form>
+                </tab>
                
                 <tab heading="Configuration parameters">
                     <div class="container-fluid">
@@ -1476,7 +1475,7 @@
                                 <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
 
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
+                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
                                 </div>
                             </div>
                         </div>
@@ -1490,7 +1489,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.confKey"
+                                        <td><input ng-disabled="conf.id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="conf.confKey"
                                             /></td>
                                         <td><input type="text" class="form-control" id="Configuration Name" ng-model="conf.value"
                                             /></td>
@@ -1501,13 +1500,13 @@
 
                                 <tbody>
                                     <tr>
-                                        <td><textarea style="width:100%;" name="Description" ng-model="conf.description" id="conf.description"
+                                        <td><textarea ng-disabled="conf.id.length > 0" style="width:100%; resize:vertical;" name="Description" ng-model="conf.description" id="conf.description"
                                                 title="Here you can put a human readable description" class="form-control">
                                 </textarea></td>
                                     </tr>
                                 </tbody>
                             </table>
-                             <button type="button" class="btn btn-danger" ng-click="removeConf($index, vnfdname)">Remove Parameter</button>
+                             <button ng-disabled="conf.id.length > 0" type="button" class="btn btn-danger" ng-click="removeConf($index, vnfdname)">Remove Parameter</button>
                              </br>
                              </br>
                         </div>

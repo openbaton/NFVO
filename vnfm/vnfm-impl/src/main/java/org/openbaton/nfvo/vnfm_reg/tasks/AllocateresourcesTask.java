@@ -69,12 +69,12 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version is = "
             + virtualNetworkFunctionRecord.getHb_version());
+    List<Future<List<String>>> ids = new ArrayList<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-      List<Future<List<String>>> ids = new ArrayList<>();
       VimInstance vimInstance = vims.get(vdu.getId());
       if (vimInstance == null) {
         throw new NullPointerException(
-            "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
+            "Our algorithms are too complex, even for us, this is what abnormal IQ means :(");
       }
       vimInstance = vimRepository.findFirstById(vimInstance.getId());
       log.debug(
@@ -85,15 +85,14 @@ public class AllocateresourcesTask extends AbstractTask {
               + " - id: "
               + vimInstance.getId());
       for (NFVImage image : vimInstance.getImages()) {
-        log.debug("Available image name: " + image.getName());
+        log.trace("Available image name: " + image.getName());
       }
       ids.add(
           resourceManagement.allocate(
               vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
-
-      for (Future<List<String>> id : ids) {
-        id.get();
-      }
+    }
+    for (Future<List<String>> id : ids) {
+      id.get();
     }
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();

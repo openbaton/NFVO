@@ -112,7 +112,7 @@ public class ScalingTask extends AbstractTask {
       if (vimInstanceMap.size()
           == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
         try {
-          Future<String> future =
+          Future<VNFCInstance> future =
               resourceManagement.allocate(
                   vdu,
                   virtualNetworkFunctionRecord,

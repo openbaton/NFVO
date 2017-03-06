@@ -56,7 +56,7 @@
 					</thead>
 					<tbody>
 						<tr ng-show="data.nfvoVersion.substring(0,3) === NFVOversion.substring(0,3)" ng-repeat="data in publicpackages| filter:search|orderBy:predicate:reverse">
-							<td>{{data.id}}</td>
+							<td><a href="http://marketplace.openbaton.org/#/vnf-packages/{{data.vendor}}/{{data.name}}/{{data.version}}/{{data.vnfmType}}">{{data.id}}</a></td>
 							<td class="col-sm-1">{{data.name}}</td>
 							<td>{{data.description}}</td>
 							<td>{{data.type}}</td>
