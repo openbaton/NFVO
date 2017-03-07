@@ -710,275 +710,6 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
-    Network updatedNetwork = null;
-    try {
-      log.debug(
-          "Updating Network with name: "
-              + updatingNetwork.getName()
-              + " on VimInstance "
-              + vimInstance.getName());
-      updatedNetwork = client.updateNetwork(vimInstance, updatingNetwork);
-      log.info(
-          "Updated Network with name: "
-              + updatingNetwork.getName()
-              + " on VimInstance "
-              + vimInstance.getName());
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not updated Network with name: "
-                + updatingNetwork.getName()
-                + " successfully on VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not updated Network with name: "
-                + updatingNetwork.getName()
-                + " successfully on VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not updated Network with name: "
-              + updatingNetwork.getName()
-              + " successfully on VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    log.debug(
-        "Updating Subnets for Network with name: "
-            + updatingNetwork.getName()
-            + " on VimInstance "
-            + vimInstance.getName()
-            + " -> "
-            + updatingNetwork.getSubnets());
-    Set<Subnet> updatedSubnets = new HashSet<>();
-    List<String> updatedSubnetExtIds = new ArrayList<>();
-    for (Subnet subnet : updatingNetwork.getSubnets()) {
-      if (subnet.getExtId() != null) {
-        try {
-          log.debug(
-              "Updating Subnet with name: "
-                  + subnet.getName()
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-          Subnet updatedSubnet = client.updateSubnet(vimInstance, updatedNetwork, subnet);
-          log.info(
-              "Updated Subnet with name: "
-                  + subnet.getName()
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-          updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
-          updatedSubnets.add(updatedSubnet);
-          updatedSubnetExtIds.add(updatedSubnet.getExtId());
-        } catch (Exception e) {
-          if (log.isDebugEnabled()) {
-            log.error(
-                "Not updated Subnet with name: "
-                    + subnet.getName()
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage(),
-                e);
-          } else {
-            log.error(
-                "Not updated Subnet with name: "
-                    + subnet.getName()
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage());
-          }
-          throw new VimException(
-              "Not updated Subnet with name: "
-                  + subnet.getName()
-                  + " successfully on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName()
-                  + ". Caused by: "
-                  + e.getMessage(),
-              e);
-        }
-      } else {
-        try {
-          log.debug(
-              "Creating Subnet with name: "
-                  + subnet.getName()
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-          Subnet createdSubnet = client.createSubnet(vimInstance, updatedNetwork, subnet);
-          log.info(
-              "Created Subnet with name: "
-                  + subnet.getName()
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-          createdSubnet.setNetworkId(updatedNetwork.getId().toString());
-          updatedSubnets.add(createdSubnet);
-          updatedSubnetExtIds.add(createdSubnet.getExtId());
-        } catch (Exception e) {
-          if (log.isDebugEnabled()) {
-            log.error(
-                "Not created Subnet with name: "
-                    + subnet.getName()
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage(),
-                e);
-          } else {
-            log.error(
-                "Not created Subnet with name: "
-                    + subnet.getName()
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage());
-          }
-          throw new VimException(
-              "Not created Subnet with name: "
-                  + subnet.getName()
-                  + " successfully on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName()
-                  + ". Caused by: "
-                  + e.getMessage(),
-              e);
-        }
-      }
-    }
-    updatedNetwork.setSubnets(updatedSubnets);
-    List<String> existingSubnetExtIds = null;
-    try {
-      log.debug(
-          "Listing all Subnet IDs of Network with name: "
-              + updatingNetwork.getName()
-              + " on VimInstance "
-              + vimInstance.getName());
-      existingSubnetExtIds = client.getSubnetsExtIds(vimInstance, updatedNetwork.getExtId());
-      log.info(
-          "Listed all Subnet IDs of Network with name: "
-              + updatingNetwork.getName()
-              + " on VimInstance "
-              + vimInstance.getName()
-              + " -> Subnet IDs: "
-              + existingSubnetExtIds);
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not listed Subnets of Network with name: "
-                + updatingNetwork.getName()
-                + " successfully of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not listed Subnets of Network with name: "
-                + updatingNetwork.getName()
-                + " successfully of VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      throw new VimException(
-          "Not listed Subnets of Network with name: "
-              + updatingNetwork.getName()
-              + " successfully of VimInstance "
-              + vimInstance.getName()
-              + ". Caused by: "
-              + e.getMessage(),
-          e);
-    }
-    for (String existingSubnetExtId : existingSubnetExtIds) {
-      if (!updatedSubnetExtIds.contains(existingSubnetExtId)) {
-        try {
-          log.debug(
-              "Deleting Subnet with id: "
-                  + existingSubnetExtId
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-          client.deleteSubnet(vimInstance, existingSubnetExtId);
-          log.info(
-              "Deleted Subnet with id: "
-                  + existingSubnetExtId
-                  + " on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName());
-        } catch (Exception e) {
-          if (log.isDebugEnabled()) {
-            log.error(
-                "Not Deleted Subnet with id: "
-                    + existingSubnetExtId
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage(),
-                e);
-          } else {
-            log.error(
-                "Not Deleted Subnet with id: "
-                    + existingSubnetExtId
-                    + " successfully on Network with name: "
-                    + updatingNetwork.getName()
-                    + " on VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + e.getMessage());
-          }
-          throw new VimException(
-              "Not Deleted Subnet with id: "
-                  + existingSubnetExtId
-                  + " successfully on Network with name: "
-                  + updatingNetwork.getName()
-                  + " on VimInstance "
-                  + vimInstance.getName()
-                  + ". Caused by: "
-                  + e.getMessage(),
-              e);
-        }
-      }
-    }
-    log.info(
-        "Subnets of Network with name: "
-            + updatingNetwork.getName()
-            + " updated successfully on VimInstance "
-            + vimInstance.getName());
-    return updatedNetwork;
-  }
-
-  @Override
   public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
     try {
       log.debug("Listing all Networks of VimInstance " + vimInstance.getName());
@@ -1052,174 +783,6 @@ public class GenericVIM extends Vim {
               + e.getMessage(),
           e);
     }
-  }
-
-  @Override
-  @Async
-  public Future<VNFCInstance> allocate(
-      VimInstance vimInstance,
-      VirtualDeploymentUnit vdu,
-      VirtualNetworkFunctionRecord vnfr,
-      VNFComponent vnfComponent,
-      String userdata,
-      Map<String, String> floatingIps,
-      Set<Key> keys)
-      throws VimException {
-    log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
-    log.debug("VDU is : " + vdu.toString());
-    log.debug("VNFR is : " + vnfr.toString());
-    log.debug("VNFC is : " + vnfComponent.toString());
-    /** *) choose image *) ...? */
-    String image = this.chooseImage(vdu.getVm_image(), vimInstance);
-
-    log.debug("Finding Networks...");
-    Set<VNFDConnectionPoint> networks = new HashSet<>();
-    for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-      //      for (Network net : vimInstance.getNetworks())
-      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
-      networks.add(vnfdConnectionPoint);
-    }
-    log.debug("Found Networks with ExtIds: " + networks);
-    String flavorKey = null;
-    if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
-      flavorKey = vdu.getComputation_requirement();
-    } else {
-      flavorKey = vnfr.getDeployment_flavour_key();
-    }
-    String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
-
-    log.debug("Generating Hostname...");
-    vdu.setHostname(vnfr.getName());
-    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 10000000));
-    log.debug("Generated Hostname: " + hostname);
-
-    userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);
-
-    log.debug("Using SecurityGroups: " + vimInstance.getSecurityGroups());
-
-    log.debug(
-        "Launching VM with params: "
-            + hostname
-            + " - "
-            + image
-            + " - "
-            + flavorExtId
-            + " - "
-            + vimInstance.getKeyPair()
-            + " - "
-            + networks
-            + " - "
-            + vimInstance.getSecurityGroups());
-    Server server = null;
-    VNFCInstance vnfcInstance = null;
-    try {
-      if (vimInstance == null) throw new NullPointerException("VimInstance is null");
-      if (hostname == null) throw new NullPointerException("hostname is null");
-      if (image == null) throw new NullPointerException("image is null");
-      if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
-      if (vimInstance.getKeyPair() == null) {
-        log.debug("vimInstance.getKeyPair() is null");
-        vimInstance.setKeyPair("");
-      }
-      if (networks == null || networks.isEmpty())
-        throw new NullPointerException("networks is null");
-      if (vimInstance.getSecurityGroups() == null)
-        throw new NullPointerException("vimInstance.getSecurityGroups() is null");
-
-      server =
-          client.launchInstanceAndWait(
-              vimInstance,
-              hostname,
-              image,
-              flavorExtId,
-              vimInstance.getKeyPair(),
-              vnfComponent.getConnection_point(),
-              vimInstance.getSecurityGroups(),
-              userdata,
-              floatingIps,
-              new HashSet<>(keys));
-      log.debug(
-          "Launched VM with hostname "
-              + hostname
-              + " with ExtId "
-              + server.getExtId()
-              + " on VimInstance "
-              + vimInstance.getName());
-    } catch (VimDriverException e) {
-      if (log.isDebugEnabled()) {
-        log.error(
-            "Not launched VM with hostname "
-                + hostname
-                + " successfully on VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e);
-      } else {
-        log.error(
-            "Not launched VM with hostname "
-                + hostname
-                + " successfully on VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage());
-      }
-      VimDriverException vimDriverException = (VimDriverException) e.getCause();
-      if (vimDriverException != null && vimDriverException.getServer() != null) {
-        server = vimDriverException.getServer();
-        try {
-          vnfcInstance =
-              getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
-        } catch (VimDriverException e1) {
-          throw new VimException(e);
-        }
-        throw new VimException(
-            "Not launched VM with hostname "
-                + hostname
-                + " successfully on VimInstance "
-                + vimInstance.getName()
-                + ". Caused by: "
-                + e.getMessage(),
-            e,
-            vdu,
-            vnfcInstance);
-      } else {
-        try {
-          vnfcInstance =
-              getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
-
-        } catch (VimDriverException e1) {
-          vnfcInstance = new VNFCInstance();
-          vnfcInstance.setHostname(hostname);
-          vnfcInstance.setVim_id(vimInstance.getId());
-          vnfcInstance.setVnfComponent(vnfComponent);
-          vnfcInstance.setVc_id("unknown");
-          vnfcInstance.setState("ERROR");
-          throw new VimException(
-              "Not launched VM with hostname "
-                  + hostname
-                  + " successfully on VimInstance "
-                  + vimInstance.getName()
-                  + ". Caused by: "
-                  + e.getMessage(),
-              e,
-              vdu,
-              vnfcInstance);
-        }
-      }
-    }
-    log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
-    if (vnfcInstance != null) {
-      try {
-        vnfcInstance =
-            getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
-      } catch (VimDriverException e) {
-        throw new VimException(e);
-      }
-    }
-
-    log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
-    return new AsyncResult<>(vnfcInstance);
   }
 
   protected String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
@@ -1445,6 +1008,454 @@ public class GenericVIM extends Vim {
           e);
     }
     return quota;
+  }
+
+  @Override
+  public Network update(VimInstance vimInstance, Network network) throws VimException {
+    Network updatedNetwork = null;
+    try {
+      log.debug(
+          "Updating Network with name: "
+              + network.getName()
+              + " on VimInstance "
+              + vimInstance.getName());
+      updatedNetwork = client.updateNetwork(vimInstance, network);
+      log.info(
+          "Updated Network with name: "
+              + network.getName()
+              + " on VimInstance "
+              + vimInstance.getName());
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) {
+        log.error(
+            "Not updated Network with name: "
+                + network.getName()
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e);
+      } else {
+        log.error(
+            "Not updated Network with name: "
+                + network.getName()
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage());
+      }
+      throw new VimException(
+          "Not updated Network with name: "
+              + network.getName()
+              + " successfully on VimInstance "
+              + vimInstance.getName()
+              + ". Caused by: "
+              + e.getMessage(),
+          e);
+    }
+    log.debug(
+        "Updating Subnets for Network with name: "
+            + network.getName()
+            + " on VimInstance "
+            + vimInstance.getName()
+            + " -> "
+            + network.getSubnets());
+    Set<Subnet> updatedSubnets = new HashSet<>();
+    List<String> updatedSubnetExtIds = new ArrayList<>();
+    for (Subnet subnet : network.getSubnets()) {
+      if (subnet.getExtId() != null) {
+        try {
+          log.debug(
+              "Updating Subnet with name: "
+                  + subnet.getName()
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+          Subnet updatedSubnet = client.updateSubnet(vimInstance, updatedNetwork, subnet);
+          log.info(
+              "Updated Subnet with name: "
+                  + subnet.getName()
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+          updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
+          updatedSubnets.add(updatedSubnet);
+          updatedSubnetExtIds.add(updatedSubnet.getExtId());
+        } catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.error(
+                "Not updated Subnet with name: "
+                    + subnet.getName()
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage(),
+                e);
+          } else {
+            log.error(
+                "Not updated Subnet with name: "
+                    + subnet.getName()
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage());
+          }
+          throw new VimException(
+              "Not updated Subnet with name: "
+                  + subnet.getName()
+                  + " successfully on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e);
+        }
+      } else {
+        try {
+          log.debug(
+              "Creating Subnet with name: "
+                  + subnet.getName()
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+          Subnet createdSubnet = client.createSubnet(vimInstance, updatedNetwork, subnet);
+          log.info(
+              "Created Subnet with name: "
+                  + subnet.getName()
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+          createdSubnet.setNetworkId(updatedNetwork.getId().toString());
+          updatedSubnets.add(createdSubnet);
+          updatedSubnetExtIds.add(createdSubnet.getExtId());
+        } catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.error(
+                "Not created Subnet with name: "
+                    + subnet.getName()
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage(),
+                e);
+          } else {
+            log.error(
+                "Not created Subnet with name: "
+                    + subnet.getName()
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage());
+          }
+          throw new VimException(
+              "Not created Subnet with name: "
+                  + subnet.getName()
+                  + " successfully on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e);
+        }
+      }
+    }
+    updatedNetwork.setSubnets(updatedSubnets);
+    List<String> existingSubnetExtIds = null;
+    try {
+      log.debug(
+          "Listing all Subnet IDs of Network with name: "
+              + network.getName()
+              + " on VimInstance "
+              + vimInstance.getName());
+      existingSubnetExtIds = client.getSubnetsExtIds(vimInstance, updatedNetwork.getExtId());
+      log.info(
+          "Listed all Subnet IDs of Network with name: "
+              + network.getName()
+              + " on VimInstance "
+              + vimInstance.getName()
+              + " -> Subnet IDs: "
+              + existingSubnetExtIds);
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) {
+        log.error(
+            "Not listed Subnets of Network with name: "
+                + network.getName()
+                + " successfully of VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e);
+      } else {
+        log.error(
+            "Not listed Subnets of Network with name: "
+                + network.getName()
+                + " successfully of VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage());
+      }
+      throw new VimException(
+          "Not listed Subnets of Network with name: "
+              + network.getName()
+              + " successfully of VimInstance "
+              + vimInstance.getName()
+              + ". Caused by: "
+              + e.getMessage(),
+          e);
+    }
+    for (String existingSubnetExtId : existingSubnetExtIds) {
+      if (!updatedSubnetExtIds.contains(existingSubnetExtId)) {
+        try {
+          log.debug(
+              "Deleting Subnet with id: "
+                  + existingSubnetExtId
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+          client.deleteSubnet(vimInstance, existingSubnetExtId);
+          log.info(
+              "Deleted Subnet with id: "
+                  + existingSubnetExtId
+                  + " on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName());
+        } catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.error(
+                "Not Deleted Subnet with id: "
+                    + existingSubnetExtId
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage(),
+                e);
+          } else {
+            log.error(
+                "Not Deleted Subnet with id: "
+                    + existingSubnetExtId
+                    + " successfully on Network with name: "
+                    + network.getName()
+                    + " on VimInstance "
+                    + vimInstance.getName()
+                    + ". Caused by: "
+                    + e.getMessage());
+          }
+          throw new VimException(
+              "Not Deleted Subnet with id: "
+                  + existingSubnetExtId
+                  + " successfully on Network with name: "
+                  + network.getName()
+                  + " on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e);
+        }
+      }
+    }
+    log.info(
+        "Subnets of Network with name: "
+            + network.getName()
+            + " updated successfully on VimInstance "
+            + vimInstance.getName());
+    return updatedNetwork;
+  }
+
+  @Override
+  @Async
+  public Future<VNFCInstance> allocate(
+      VimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VirtualNetworkFunctionRecord vnfr,
+      VNFComponent vnfComponent,
+      String userdata,
+      Map<String, String> floatingIps,
+      Set<Key> keys)
+      throws VimException {
+    log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
+    log.debug("VDU is : " + vdu.toString());
+    log.debug("VNFR is : " + vnfr.toString());
+    log.debug("VNFC is : " + vnfComponent.toString());
+    /** *) choose image *) ...? */
+    String image = this.chooseImage(vdu.getVm_image(), vimInstance);
+
+    log.debug("Finding Networks...");
+    Set<VNFDConnectionPoint> networks = new HashSet<>();
+    for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+      //      for (Network net : vimInstance.getNetworks())
+      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
+      networks.add(vnfdConnectionPoint);
+    }
+    log.debug("Found Networks with ExtIds: " + networks);
+    String flavorKey = null;
+    if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
+      flavorKey = vdu.getComputation_requirement();
+    } else {
+      flavorKey = vnfr.getDeployment_flavour_key();
+    }
+    String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
+
+    log.debug("Generating Hostname...");
+    vdu.setHostname(vnfr.getName());
+    String hostname = vdu.getHostname() + "-" + ((int) (Math.random() * 10000000));
+    log.debug("Generated Hostname: " + hostname);
+
+    userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);
+
+    log.debug("Using SecurityGroups: " + vimInstance.getSecurityGroups());
+
+    log.debug(
+        "Launching VM with params: "
+            + hostname
+            + " - "
+            + image
+            + " - "
+            + flavorExtId
+            + " - "
+            + vimInstance.getKeyPair()
+            + " - "
+            + networks
+            + " - "
+            + vimInstance.getSecurityGroups());
+    Server server = null;
+    VNFCInstance vnfcInstance = null;
+    try {
+      if (vimInstance == null) throw new NullPointerException("VimInstance is null");
+      if (hostname == null) throw new NullPointerException("hostname is null");
+      if (image == null) throw new NullPointerException("image is null");
+      if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
+      if (vimInstance.getKeyPair() == null) {
+        log.debug("vimInstance.getKeyPair() is null");
+        vimInstance.setKeyPair("");
+      }
+      if (networks == null || networks.isEmpty())
+        throw new NullPointerException("networks is null");
+      if (vimInstance.getSecurityGroups() == null)
+        throw new NullPointerException("vimInstance.getSecurityGroups() is null");
+
+      server =
+          client.launchInstanceAndWait(
+              vimInstance,
+              hostname,
+              image,
+              flavorExtId,
+              vimInstance.getKeyPair(),
+              vnfComponent.getConnection_point(),
+              vimInstance.getSecurityGroups(),
+              userdata,
+              floatingIps,
+              new HashSet<>(keys));
+      log.debug(
+          "Launched VM with hostname "
+              + hostname
+              + " with ExtId "
+              + server.getExtId()
+              + " on VimInstance "
+              + vimInstance.getName());
+    } catch (VimDriverException e) {
+      if (log.isDebugEnabled()) {
+        log.error(
+            "Not launched VM with hostname "
+                + hostname
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e);
+      } else {
+        log.error(
+            "Not launched VM with hostname "
+                + hostname
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage());
+      }
+      VimDriverException vimDriverException = (VimDriverException) e.getCause();
+      if (vimDriverException != null && vimDriverException.getServer() != null) {
+        server = vimDriverException.getServer();
+        try {
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        } catch (VimDriverException | VimException e1) {
+          throw new VimException(e);
+        }
+        throw new VimException(
+            "Not launched VM with hostname "
+                + hostname
+                + " successfully on VimInstance "
+                + vimInstance.getName()
+                + ". Caused by: "
+                + e.getMessage(),
+            e,
+            vdu,
+            vnfcInstance);
+      } else {
+        try {
+          log.warn(
+              "Exception thrown while deploying... Try to recover '"
+                  + hostname
+                  + "' from VIM directly");
+          vnfcInstance =
+              getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
+          checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+        } catch (VimDriverException | VimException e1) {
+          if ((e1 instanceof VimException) && ((VimException) e1).getVnfcInstance() != null)
+            vnfcInstance = ((VimException) e1).getVnfcInstance();
+          else {
+            vnfcInstance = new VNFCInstance();
+            vnfcInstance.setHostname(hostname);
+            vnfcInstance.setVim_id(vimInstance.getId());
+            vnfcInstance.setVnfComponent(vnfComponent);
+            vnfcInstance.setVc_id("unknown");
+            vnfcInstance.setState("ERROR");
+            vnfcInstance.setIps(new HashSet<Ip>());
+            vnfcInstance.setFloatingIps(new HashSet<Ip>());
+          }
+          throw new VimException(
+              "Not launched VM with hostname "
+                  + hostname
+                  + " successfully on VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + e.getMessage(),
+              e,
+              vdu,
+              vnfcInstance);
+        }
+      }
+    }
+    if (vnfcInstance == null) {
+      try {
+        log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
+        vnfcInstance =
+            getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
+        //checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+      } catch (VimDriverException | VimException e) {
+        throw new VimException(e);
+      }
+    }
+
+    log.info("Launched VNFCInstance: " + vnfcInstance + " on VimInstance " + vimInstance.getName());
+    return new AsyncResult<>(vnfcInstance);
   }
 
   protected VNFCInstance getVnfcInstance(
