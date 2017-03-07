@@ -32,7 +32,6 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFNodeTemplate;
 public class TopologyTemplate {
 
   private Object inputs = null;
-  private Object substitution_mappings = null;
   private Map<String, NodeTemplate> node_templates;
 
   public Object getInputs() {
@@ -41,14 +40,6 @@ public class TopologyTemplate {
 
   public void setInputs(Object inputs) {
     this.inputs = inputs;
-  }
-
-  public Object getSubstitution_mappings() {
-    return substitution_mappings;
-  }
-
-  public void setSubstitution_mappings(Object substitution_mappings) {
-    this.substitution_mappings = substitution_mappings;
   }
 
   public Map<String, NodeTemplate> getNode_templates() {
@@ -127,14 +118,6 @@ public class TopologyTemplate {
 
   @Override
   public String toString() {
-    return "Topology: \n"
-        + "inuts: "
-        + inputs
-        + "\n"
-        + "substitution_mappings: "
-        + substitution_mappings
-        + "\n"
-        + "Nodes: \n"
-        + node_templates;
+    return "Topology: \n" + "inuts: " + inputs + "\n" + "Nodes: \n" + node_templates;
   }
 }

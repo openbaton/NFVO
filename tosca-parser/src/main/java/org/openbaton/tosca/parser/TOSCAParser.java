@@ -67,6 +67,7 @@ public class TOSCAParser {
     if (cpTemplate.getProperties() != null) {
       if (cpTemplate.getProperties().getFloatingIP() != null) {
         cp.setFloatingIp(cpTemplate.getProperties().getFloatingIP());
+        cp.setInterfaceId(cpTemplate.getProperties().getInterfaceId());
       }
     }
 
@@ -155,7 +156,7 @@ public class TOSCAParser {
 
     vnfd.setName(vnf.getName());
     vnfd.setVendor(vnf.getProperties().getVendor());
-    vnfd.setVersion((Double.toString(vnf.getProperties().getVersion())));
+    vnfd.setVersion(vnf.getProperties().getVersion());
 
     vnfd.setDeployment_flavour(vnf.getProperties().getDeploymentFlavourConverted());
     vnfd.setVnfPackageLocation(vnf.getProperties().getVnfPackageLocation());

@@ -23,8 +23,8 @@ import java.util.Map;
 public class CPProperties {
 
   private String type = null;
-  private boolean anti_spoof_protection = false;
   private String floatingIP = null;
+  private int interfaceId;
 
   public CPProperties(Object properties) {
     Map<String, Object> propertiesMap = (Map<String, Object>) properties;
@@ -33,13 +33,21 @@ public class CPProperties {
       this.type = (String) propertiesMap.get("type");
     }
 
-    if (propertiesMap.containsKey("anti_spoof_protection")) {
-      this.anti_spoof_protection = (Boolean) propertiesMap.get("anti_spoof_protection");
-    }
-
     if (propertiesMap.containsKey("floatingIP")) {
       this.floatingIP = (String) propertiesMap.get("floatingIP");
     }
+
+    if (propertiesMap.containsKey("interfaceId")) {
+      this.interfaceId = (Integer) propertiesMap.get("interfaceId");
+    }
+  }
+
+  public int getInterfaceId() {
+    return interfaceId;
+  }
+
+  public void setInterfaceId(int interfaceId) {
+    this.interfaceId = interfaceId;
   }
 
   public String getType() {
@@ -48,14 +56,6 @@ public class CPProperties {
 
   public void setType(String type) {
     this.type = type;
-  }
-
-  public boolean getAnti_spoof_protection() {
-    return anti_spoof_protection;
-  }
-
-  public void setAnti_spoof_protection(boolean anti_spoof_protection) {
-    this.anti_spoof_protection = anti_spoof_protection;
   }
 
   public String getFloatingIP() {
@@ -68,14 +68,6 @@ public class CPProperties {
 
   @Override
   public String toString() {
-    return "CP Properties: \n"
-        + "Type: "
-        + type
-        + "\n"
-        + "FloatingIp: "
-        + floatingIP
-        + "\n"
-        + "AntiSpoof: "
-        + anti_spoof_protection;
+    return "CP Properties: \n" + "Type: " + type + "\n" + "FloatingIp: " + floatingIP + "\n";
   }
 }

@@ -22,9 +22,6 @@ inputs:
              - iperf_client_start.sh
 
 topology_template:
-   inputs:
-   substitution_mappings:
-
    node_templates:
      VDU1:
        type: tosca.nodes.nfv.VDU
