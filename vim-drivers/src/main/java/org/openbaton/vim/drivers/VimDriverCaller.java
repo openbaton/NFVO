@@ -21,21 +21,12 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -95,7 +86,7 @@ public class VimDriverCaller extends VimDriver {
       Set<VNFDConnectionPoint> networks,
       Set<String> secGroup,
       String userData)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new ArrayList<>();
     params.add(vimInstance);
     params.add(name);
@@ -115,7 +106,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public List<NFVImage> listImages(VimInstance vimInstance) throws VimDriverException {
+  public List<NFVImage> listImages(VimInstance vimInstance)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
@@ -129,7 +121,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public List<Server> listServer(VimInstance vimInstance) throws VimDriverException {
+  public List<Server> listServer(VimInstance vimInstance)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
@@ -143,7 +136,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public List<Network> listNetworks(VimInstance vimInstance) throws VimDriverException {
+  public List<Network> listNetworks(VimInstance vimInstance)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
@@ -157,7 +151,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws VimDriverException {
+  public List<DeploymentFlavour> listFlavors(VimInstance vimInstance)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
@@ -182,7 +177,7 @@ public class VimDriverCaller extends VimDriver {
       String s,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(hostname);
@@ -215,7 +210,7 @@ public class VimDriverCaller extends VimDriver {
       Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(hostname);
@@ -238,7 +233,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public void deleteServerByIdAndWait(VimInstance vimInstance, String id)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(id);
@@ -250,7 +245,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Network createNetwork(VimInstance vimInstance, Network network) throws VimDriverException {
+  public Network createNetwork(VimInstance vimInstance, Network network)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(network);
@@ -266,7 +262,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(deploymentFlavour);
@@ -281,7 +277,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(image);
@@ -297,7 +293,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(image);
@@ -312,7 +308,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws VimDriverException {
+  public NFVImage updateImage(VimInstance vimInstance, NFVImage image)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(image);
@@ -327,7 +324,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(image);
@@ -342,7 +339,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public boolean deleteImage(VimInstance vimInstance, NFVImage image) throws VimDriverException {
+  public boolean deleteImage(VimInstance vimInstance, NFVImage image)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(image);
@@ -357,7 +355,8 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public DeploymentFlavour updateFlavor(
-      VimInstance vimInstance, DeploymentFlavour deploymentFlavour) throws VimDriverException {
+      VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(deploymentFlavour);
@@ -371,7 +370,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public boolean deleteFlavor(VimInstance vimInstance, String extId) throws VimDriverException {
+  public boolean deleteFlavor(VimInstance vimInstance, String extId)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(extId);
@@ -385,7 +385,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Network updateNetwork(VimInstance vimInstance, Network network) throws VimDriverException {
+  public Network updateNetwork(VimInstance vimInstance, Network network)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(network);
@@ -401,7 +402,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(createdNetwork);
@@ -417,7 +418,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(updatedNetwork);
@@ -433,7 +434,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(network_extId);
@@ -449,7 +450,7 @@ public class VimDriverCaller extends VimDriver {
 
   @Override
   public boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId)
-      throws VimDriverException {
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(existingSubnetExtId);
@@ -463,7 +464,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public boolean deleteNetwork(VimInstance vimInstance, String extId) throws VimDriverException {
+  public boolean deleteNetwork(VimInstance vimInstance, String extId)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(extId);
@@ -477,7 +479,8 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Network getNetworkById(VimInstance vimInstance, String id) throws VimDriverException {
+  public Network getNetworkById(VimInstance vimInstance, String id)
+      throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(id);
@@ -492,7 +495,7 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Quota getQuota(VimInstance vimInstance) throws VimDriverException {
+  public Quota getQuota(VimInstance vimInstance) throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
@@ -505,7 +508,7 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public String getType(VimInstance vimInstance) throws VimDriverException {
+  public String getType(VimInstance vimInstance) throws VimDriverException, TimeoutException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;

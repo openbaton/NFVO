@@ -20,6 +20,7 @@ package org.openbaton.vim.drivers.interfaces;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -46,15 +47,16 @@ public interface ClientInterfaces {
       Set<VNFDConnectionPoint> networks,
       Set<String> secGroup,
       String userData)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  List<NFVImage> listImages(VimInstance vimInstance) throws VimDriverException;
+  List<NFVImage> listImages(VimInstance vimInstance) throws VimDriverException, TimeoutException;
 
-  List<Server> listServer(VimInstance vimInstance) throws VimDriverException;
+  List<Server> listServer(VimInstance vimInstance) throws VimDriverException, TimeoutException;
 
-  List<Network> listNetworks(VimInstance vimInstance) throws VimDriverException;
+  List<Network> listNetworks(VimInstance vimInstance) throws VimDriverException, TimeoutException;
 
-  List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws VimDriverException;
+  List<DeploymentFlavour> listFlavors(VimInstance vimInstance)
+      throws VimDriverException, TimeoutException;
 
   Server launchInstanceAndWait(
       VimInstance vimInstance,
@@ -67,7 +69,7 @@ public interface ClientInterfaces {
       String s,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
   Server launchInstanceAndWait(
       VimInstance vimInstance,
@@ -78,52 +80,60 @@ public interface ClientInterfaces {
       Set<VNFDConnectionPoint> networks,
       Set<String> securityGroups,
       String s)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws VimDriverException;
+  void deleteServerByIdAndWait(VimInstance vimInstance, String id)
+      throws VimDriverException, TimeoutException;
 
-  Network createNetwork(VimInstance vimInstance, Network network) throws VimDriverException;
+  Network createNetwork(VimInstance vimInstance, Network network)
+      throws VimDriverException, TimeoutException;
 
   DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
   NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
   NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws VimDriverException;
+  NFVImage updateImage(VimInstance vimInstance, NFVImage image)
+      throws VimDriverException, TimeoutException;
 
   NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  boolean deleteImage(VimInstance vimInstance, NFVImage image) throws VimDriverException;
+  boolean deleteImage(VimInstance vimInstance, NFVImage image)
+      throws VimDriverException, TimeoutException;
 
   DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  boolean deleteFlavor(VimInstance vimInstance, String extId) throws VimDriverException;
+  boolean deleteFlavor(VimInstance vimInstance, String extId)
+      throws VimDriverException, TimeoutException;
 
   Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  Network updateNetwork(VimInstance vimInstance, Network network) throws VimDriverException;
+  Network updateNetwork(VimInstance vimInstance, Network network)
+      throws VimDriverException, TimeoutException;
 
   Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
   List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
   boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId)
-      throws VimDriverException;
+      throws VimDriverException, TimeoutException;
 
-  boolean deleteNetwork(VimInstance vimInstance, String extId) throws VimDriverException;
+  boolean deleteNetwork(VimInstance vimInstance, String extId)
+      throws VimDriverException, TimeoutException;
 
-  Network getNetworkById(VimInstance vimInstance, String id) throws VimDriverException;
+  Network getNetworkById(VimInstance vimInstance, String id)
+      throws VimDriverException, TimeoutException;
 
-  Quota getQuota(VimInstance vimInstance) throws VimDriverException;
+  Quota getQuota(VimInstance vimInstance) throws VimDriverException, TimeoutException;
 
-  String getType(VimInstance vimInstance) throws VimDriverException;
+  String getType(VimInstance vimInstance) throws VimDriverException, TimeoutException;
 }
