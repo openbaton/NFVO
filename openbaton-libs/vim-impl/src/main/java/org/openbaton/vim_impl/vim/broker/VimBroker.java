@@ -28,10 +28,7 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.interfaces.ClientInterfaces;
-import org.openbaton.vim_impl.vim.AmazonVIM;
 import org.openbaton.vim_impl.vim.GenericVIM;
-import org.openbaton.vim_impl.vim.OpenstackVIM;
-import org.openbaton.vim_impl.vim.TestVIM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,87 +179,16 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
       type = split[0];
       pluginName = split[1];
     }
-    switch (type) {
-      case "test":
-        //                return (Vim) context.getBean("testVIM", this.port);
-        if (pluginName != null) {
-          return new TestVIM(
-              Integer.parseInt(port),
-              this.managementPort,
-              pluginName,
-              Integer.parseInt(pluginTimeout),
-              context,
-              brokerIp,
-              rabbitPassword,
-              rabbitUsername);
-        }
-        return new TestVIM(
-            Integer.parseInt(port),
-            this.managementPort,
-            pluginName,
-            Integer.parseInt(pluginTimeout),
-            context,
-            brokerIp,
-            rabbitPassword,
-            rabbitUsername);
-      case "openstack":
-        //                return (Vim) context.getBean("openstackVIM", this.port, context);
-        if (pluginName != null) {
-          return new OpenstackVIM(
-              rabbitUsername,
-              rabbitPassword,
-              brokerIp,
-              Integer.parseInt(port),
-              this.managementPort,
-              context,
-              pluginName,
-              Integer.parseInt(pluginTimeout));
-        }
-        return new OpenstackVIM(
-            rabbitUsername,
-            rabbitPassword,
-            brokerIp,
-            Integer.parseInt(port),
-            this.managementPort,
-            context,
-            pluginName,
-            Integer.parseInt(pluginTimeout));
-
-      case "amazon":
-        //                return (Vim) context.getBean("amazonVIM", this.port);
-        return new AmazonVIM(
-            rabbitUsername,
-            rabbitPassword,
-            brokerIp,
-            Integer.parseInt(port),
-            this.managementPort,
-            context,
-            pluginName,
-            Integer.parseInt(pluginTimeout));
-      default:
-        if (pluginName != null) {
-          return new GenericVIM(
-              type,
-              rabbitUsername,
-              rabbitPassword,
-              brokerIp,
-              Integer.parseInt(port),
-              this.managementPort,
-              context,
-              pluginName,
-              Integer.parseInt(pluginTimeout));
-        }
-        return new GenericVIM(
-            type,
-            rabbitUsername,
-            rabbitPassword,
-            brokerIp,
-            Integer.parseInt(port),
-            this.managementPort,
-            context,
-            pluginName,
-            Integer.parseInt(pluginTimeout));
-    }
+    return new GenericVIM(
+        type,
+        rabbitUsername,
+        rabbitPassword,
+        brokerIp,
+        Integer.parseInt(port),
+        this.managementPort,
+        context,
+        pluginName,
+        Integer.parseInt(pluginTimeout));
   }
 
   //  @Override
