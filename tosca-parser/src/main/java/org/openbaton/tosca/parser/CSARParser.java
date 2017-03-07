@@ -17,6 +17,10 @@
 
 package org.openbaton.tosca.parser;
 
+import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -25,11 +29,8 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
-import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.openbaton.utils.Utils;
@@ -39,11 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 /** Created by rvl on 12.09.16. */
 @Service
 public class CSARParser {
@@ -51,9 +47,6 @@ public class CSARParser {
   @Autowired private VNFDRepository vnfdRepository;
   @Autowired private VNFPackageManagement vnfPackageManagement;
   @Autowired private VnfPackageRepository vnfPackageRepository;
-  @Autowired private VimRepository vimInstanceRepository;
-  @Autowired private VimBroker vimBroker;
-  @Autowired private NSDUtils nsdUtils;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
