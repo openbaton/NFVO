@@ -160,7 +160,7 @@ configure_new_installation () {
 configure_for_upgrade () {
     ## Procedure to merge old and new properties files ##
 
-    # The old properties file is copied in /tmp before this upgrade mechanism is executed (see 'prerm' file)
+    # The old properties file is copied in /tmp before this upgrade procedure is executed (see 'prerm' file)
     cp /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old
     cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
 
