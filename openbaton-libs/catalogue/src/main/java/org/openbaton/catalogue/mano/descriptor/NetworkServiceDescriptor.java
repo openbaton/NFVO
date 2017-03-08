@@ -73,6 +73,37 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
   private boolean enabled;
 
+  //NFVO Version
+  private String nfvo_version;
+
+  private String createdAt;
+
+  private String updatedAt;
+
+  public String getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(String createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public String getNfvo_version() {
+    return nfvo_version;
+  }
+
+  public void setNfvo_version(String nfvo_version) {
+    this.nfvo_version = nfvo_version;
+  }
+
+  public String getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(String updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
   public NetworkServiceDescriptor() {}
 
   public boolean isEnabled() {
