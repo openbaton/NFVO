@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -98,8 +97,6 @@ public class VimTestSuiteClass {
 
   @Mock private RabbitPluginBroker rabbitPluginBroker;
 
-  //    @InjectMocks
-  //@Qualifier("OpenstackVim")
   private GenericVIM genericVIM;
 
   /** TODO add all other tests */
@@ -203,18 +200,6 @@ public class VimTestSuiteClass {
         new HashMap<String, String>(),
         new HashSet<Key>());
   }
-
-  @Test
-  @Ignore
-  public void testVimAmazon() {}
-
-  @Test
-  @Ignore
-  public void testVimTest() {}
-
-  @Test
-  @Ignore
-  public void testOpenstackClient() {}
 
   private VirtualNetworkFunctionRecord createVNFR() {
     VirtualNetworkFunctionRecord vnfr = new VirtualNetworkFunctionRecord();
