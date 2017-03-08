@@ -15,9 +15,7 @@
  *
  */
 
-include 'catalogue'
-include 'vnfm-sdk'
-include 'vnfm-sdk-rest'
+include 'catalogue', 'vnfm-sdk', 'vnfm-sdk-rest'
 
 //project(':catalogue').projectDir = file('../../catalogue')
 //project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')

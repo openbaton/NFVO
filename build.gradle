@@ -15,11 +15,14 @@
  *
  */
 plugins {
-    id 'net.researchgate.release' version '2.3.4'
-    id "nebula.os-package" version "2.2.6"
+    id 'net.researchgate.release' version '2.5.0'
+    id "nebula.ospackage-application" version "4.3.0"
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
     id "com.github.hierynomus.license" version "0.13.1"
+    // For managing the dependencies' versions
+    id 'com.github.ben-manes.versions' version '0.13.0'
+    //id 'org.springframework.boot' version '1.4.3.RELEASE'
 }
 
 apply plugin: 'java'
@@ -32,12 +35,12 @@ apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
 /**
  * Project settings
  */
-project.ext {
+ext {
     //------------------------------------------------//
     /**
      * Spring Related Variables
      */
-    springVersion = '4.2.0.RELEASE'
+    springVersion = '4.3.5.RELEASE'
     springBootVersion = '1.2.5.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
@@ -59,6 +62,11 @@ project.ext {
      */
     mainClass = 'org.openbaton.nfvo.main.Application'
     //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * Junit Version
+     */
+    junitVersion = "4.12"
 }
 
 apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
@@ -68,8 +76,8 @@ apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.innosetup.gradle'
 apply from: 'gradle/gradle/distribution.gradle'
+apply from: 'gradle/gradle/dependencies.updater.gradle'
 apply from: 'gradle/gradle/brew.formula.creator.gradle'
-
 
 repositories {
     mavenCentral()

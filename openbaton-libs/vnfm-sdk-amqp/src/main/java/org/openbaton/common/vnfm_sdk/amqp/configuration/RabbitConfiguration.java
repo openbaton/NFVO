@@ -159,7 +159,7 @@ public class RabbitConfiguration {
     Properties properties = new Properties();
 
     try {
-      properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+      properties.load(this.getClass().getClassLoader().getResourceAsStream("conf.properties"));
     } catch (IOException e) {
       e.printStackTrace();
     }

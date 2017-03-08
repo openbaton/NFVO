@@ -35,14 +35,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 10/03/16. */
 @Service
 @Scope
-@EnableAsync
 @ConfigurationProperties
 public class EventManagement implements org.openbaton.nfvo.core.interfaces.EventManagement {
 

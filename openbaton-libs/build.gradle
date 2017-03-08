@@ -24,8 +24,9 @@ buildscript {
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.1.2'
-    id "com.github.sherter.google-java-format" version "0.5"
+    id 'net.researchgate.release' version '2.5.0'
+    id "com.github.sherter.google-java-format" version "0.6"
+    id 'com.github.ben-manes.versions' version '0.13.0'
 }
 
 apply from: 'gradle/gradle/git.release.gradle'
@@ -42,12 +43,12 @@ apply from: 'gradle/gradle/helpers.gradle'
 apply from: 'gradle/gradle/command.line.helper.gradle'
 apply from: 'gradle/gradle/git.helpers.gradle'
 
-project.ext {
+ext {
     //------------------------------------------------//
     /**
      * Spring Related Variables
      */
-    springVersion = '4.2.0.RELEASE'
+    springVersion = '4.3.5.RELEASE'
     springBootVersion = '1.2.5.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
@@ -55,9 +56,13 @@ project.ext {
      * Application Related Version
      */
     applicationVersion = "0.6-alpha"
-    applicationVersionDebian = "1";
-
+    applicationVersionDebian = "1"
     //------------------------------------------------//
+    //------------------------------------------------//
+    /**
+     * Junit Version
+     */
+    junitVersion = "4.12"
 }
 
 apply from: 'gradle/gradle/application.java.gradle'

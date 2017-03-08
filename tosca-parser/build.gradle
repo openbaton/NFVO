@@ -23,18 +23,18 @@ dependencies {
     compile project(':repository')
     compile project(":core-impl")
 
-    compile 'org.yaml:snakeyaml:1.16'
-    compile 'com.google.code.gson:gson:2.5'
-    compile 'commons-io:commons-io:2.4'
-    compile 'org.apache.commons:commons-compress:1.9'
+    compile 'org.yaml:snakeyaml:1.17'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.apache.commons:commons-compress:1.13'
 
-    compile 'commons-validator:commons-validator:1.4.0'
+    compile 'commons-validator:commons-validator:1.5.1'
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
     compile 'org.springframework:spring-jms:' + springVersion
-    compile 'org.springframework.data:spring-data-jpa:1.8.2.RELEASE'
+    compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
-    testCompile("org.mockito:mockito-all:1.10.19")
-    testCompile("junit:junit:4.12")
+    testCompile("org.mockito:mockito-all:2.0.2-beta")
+    testCompile("junit:junit:"+junitVersion)
 }
