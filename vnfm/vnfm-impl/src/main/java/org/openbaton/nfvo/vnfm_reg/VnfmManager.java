@@ -19,16 +19,8 @@ package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -636,6 +628,8 @@ public class VnfmManager
 
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+        networkServiceRecord.setUpdatedAt(format.format(new Date()));
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         foundAndSet = true;
       } catch (OptimisticLockingFailureException ignored) {
@@ -664,20 +658,25 @@ public class VnfmManager
           }
 
           try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
             if (networkServiceRecord.getTask().contains("Scaling in")) {
               networkServiceRecord.setTask("Scaled in");
+              networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
               publishEvent(Action.SCALE_IN, networkServiceRecord);
             } else if (networkServiceRecord.getTask().contains("Scaling out")) {
               networkServiceRecord.setTask("Scaled out");
+              networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
               publishEvent(Action.SCALE_OUT, networkServiceRecord);
             } else if (networkServiceRecord.getTask().contains("Healing")) {
               networkServiceRecord.setTask("Healed");
+              networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
               publishEvent(Action.HEAL, networkServiceRecord);
             } else {
               networkServiceRecord.setTask("Onboarded");
+              networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
               publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
             }
@@ -705,6 +704,8 @@ public class VnfmManager
 
     while (!foundAndSet) {
       try {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+        networkServiceRecord.setUpdatedAt(format.format(new Date()));
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         foundAndSet = true;
       } catch (OptimisticLockingFailureException ignored) {

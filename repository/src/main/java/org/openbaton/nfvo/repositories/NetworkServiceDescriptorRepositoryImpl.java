@@ -17,7 +17,10 @@
 
 package org.openbaton.nfvo.repositories;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.openbaton.catalogue.mano.common.Security;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -43,7 +46,10 @@ public class NetworkServiceDescriptorRepositoryImpl
   public VirtualNetworkFunctionDescriptor addVnfd(
       VirtualNetworkFunctionDescriptor vnfd, String id) {
     vnfd = vnfdRepository.save(vnfd);
-    networkServiceDescriptorRepository.findFirstById(id).getVnfd().add(vnfd);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(id);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getVnfd().add(vnfd);
     return vnfd;
   }
 
@@ -51,7 +57,10 @@ public class NetworkServiceDescriptorRepositoryImpl
   @Transactional
   public VNFDependency addVnfDependency(VNFDependency vnfd, String id) {
     vnfd = vnfDependencyRepository.save(vnfd);
-    networkServiceDescriptorRepository.findFirstById(id).getVnf_dependency().add(vnfd);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(id);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getVnf_dependency().add(vnfd);
     return vnfd;
   }
 
@@ -60,7 +69,10 @@ public class NetworkServiceDescriptorRepositoryImpl
   public PhysicalNetworkFunctionDescriptor addPnfDescriptor(
       PhysicalNetworkFunctionDescriptor pnfDescriptor, String id) {
     pnfDescriptor = pnfDescriptorRepository.save(pnfDescriptor);
-    networkServiceDescriptorRepository.findFirstById(id).getPnfd().add(pnfDescriptor);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(id);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getPnfd().add(pnfDescriptor);
     return pnfDescriptor;
   }
 
@@ -68,7 +80,10 @@ public class NetworkServiceDescriptorRepositoryImpl
   @Transactional
   public Security addSecurity(String id, Security security) {
     security = securityRepository.save(security);
-    networkServiceDescriptorRepository.findFirstById(id).setNsd_security(security);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(id);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.setNsd_security(security);
     return security;
   }
 
@@ -77,7 +92,10 @@ public class NetworkServiceDescriptorRepositoryImpl
   public void deleteSecurity(String id, String idS) {
     Security s = networkServiceDescriptorRepository.findFirstById(id).getNsd_security();
     if (s.getId().equals(securityRepository.findOne(idS).getId())) {
-      networkServiceDescriptorRepository.findFirstById(id).setNsd_security(null);
+      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+      NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(id);
+      nsd.setUpdatedAt(format.format(new Date()));
+      nsd.setNsd_security(null);
       securityRepository.delete(idS);
     }
   }
@@ -85,30 +103,30 @@ public class NetworkServiceDescriptorRepositoryImpl
   @Override
   @Transactional
   public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf) {
-    networkServiceDescriptorRepository
-        .findFirstById(idNsd)
-        .getVnfd()
-        .remove(pnfDescriptorRepository.findOne(idPnf));
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(idNsd);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getVnfd().remove(pnfDescriptorRepository.findOne(idPnf));
     pnfDescriptorRepository.delete(idPnf);
   }
 
   @Override
   @Transactional
   public void deleteVnfd(String idNsd, String idVnfd) {
-    networkServiceDescriptorRepository
-        .findFirstById(idNsd)
-        .getVnfd()
-        .remove(vnfdRepository.findOne(idVnfd));
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(idNsd);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getVnfd().remove(vnfdRepository.findOne(idVnfd));
     vnfdRepository.delete(idVnfd);
   }
 
   @Override
   @Transactional
   public void deleteVNFDependency(String idNsd, String idVnfd) {
-    networkServiceDescriptorRepository
-        .findFirstById(idNsd)
-        .getVnf_dependency()
-        .remove(vnfDependencyRepository.findOne(idVnfd));
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(idNsd);
+    nsd.setUpdatedAt(format.format(new Date()));
+    nsd.getVnf_dependency().remove(vnfDependencyRepository.findOne(idVnfd));
     vnfDependencyRepository.delete(idVnfd);
   }
 }

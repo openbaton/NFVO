@@ -1092,6 +1092,7 @@ public class NetworkServiceRecordManagement
       networkServiceRecord = NSRUtils.createNetworkServiceRecord(networkServiceDescriptor);
       SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
       networkServiceRecord.setCreatedAt(format.format(new Date()));
+      networkServiceRecord.setUpdatedAt(format.format(new Date()));
       networkServiceRecord.setTask("Onboarding");
       networkServiceRecord.setKeyNames(new HashSet<String>());
       if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
@@ -1103,6 +1104,8 @@ public class NetworkServiceRecordManagement
 
       //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+        vnfd.setCreatedAt(format.format(new Date()));
+        vnfd.setUpdatedAt(format.format(new Date()));
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
           List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
           log.debug("Checking vim instance support");
