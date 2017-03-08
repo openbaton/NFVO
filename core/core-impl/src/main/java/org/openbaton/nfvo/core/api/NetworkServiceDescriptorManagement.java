@@ -23,7 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
@@ -110,8 +112,9 @@ public class NetworkServiceDescriptorManagement
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, EntityInUseException {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
-    log.info("Staring onboarding process for NSD: " + networkServiceDescriptor.getName());
+    log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
 
     nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 
@@ -134,6 +137,8 @@ public class NetworkServiceDescriptorManagement
     //    log.trace("Fetched Data");
 
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
+      vnfd.setCreatedAt(format.format(new Date()));
+      vnfd.setUpdatedAt(format.format(new Date()));
       vnfd.setProjectId(projectId);
     }
 
@@ -146,6 +151,8 @@ public class NetworkServiceDescriptorManagement
 
     networkServiceDescriptor.setProjectId(projectId);
     try {
+      networkServiceDescriptor.setCreatedAt(format.format(new Date()));
+      networkServiceDescriptor.setUpdatedAt(format.format(new Date()));
       networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
     } catch (Exception e) {
       throw new org.openbaton.exceptions.EntityInUseException(
@@ -229,6 +236,8 @@ public class NetworkServiceDescriptorManagement
     log.debug("disabling NetworkServiceDescriptor with id " + id);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
     networkServiceDescriptor.setEnabled(false);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    networkServiceDescriptor.setUpdatedAt(format.format(new Date()));
     return networkServiceDescriptor.isEnabled();
   }
 
@@ -242,6 +251,8 @@ public class NetworkServiceDescriptorManagement
     log.debug("enabling NetworkServiceDescriptor with id " + id);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
     networkServiceDescriptor.setEnabled(true);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    networkServiceDescriptor.setUpdatedAt(format.format(new Date()));
     return networkServiceDescriptor.isEnabled();
   }
 
@@ -253,8 +264,12 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public NetworkServiceDescriptor update(NetworkServiceDescriptor newNsd, String projectId) {
-    if (nsdRepository.findFirstById(newNsd.getId()).getProjectId().equals(projectId))
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    newNsd = nsdRepository.findFirstById(newNsd.getId());
+    if (newNsd.getProjectId().equals(projectId)) {
+      newNsd.setUpdatedAt(format.format(new Date()));
       return nsdRepository.save(newNsd);
+    }
     throw new UnauthorizedUserException(
         "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
   }

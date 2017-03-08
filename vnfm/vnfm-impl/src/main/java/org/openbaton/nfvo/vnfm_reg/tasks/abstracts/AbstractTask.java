@@ -95,11 +95,16 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   protected synchronized void saveVirtualNetworkFunctionRecord() {
     log.trace(
         "ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-    if (virtualNetworkFunctionRecord.getId() == null) {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    if (virtualNetworkFunctionRecord.getId() == null
+        || virtualNetworkFunctionRecord.getId().isEmpty()) {
+      virtualNetworkFunctionRecord.setCreatedAt(format.format(new Date()));
+      virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
       virtualNetworkFunctionRecord =
           networkServiceRecordRepository.addVnfr(
               virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
     } else {
+      virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
       virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
     }
   }

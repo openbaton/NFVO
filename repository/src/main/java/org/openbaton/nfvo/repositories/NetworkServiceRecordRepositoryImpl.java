@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.repositories;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,27 +39,30 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
   @Transactional
   public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
     vnfr = vnfrRepository.save(vnfr);
-    networkServiceRecordRepository.findFirstById(id).getVnfr().add(vnfr);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(id);
+    nsr.setUpdatedAt(format.format(new Date()));
+    nsr.getVnfr().add(vnfr);
     return vnfr;
   }
 
   @Override
   @Transactional
   public void deleteVNFRecord(String idNsr, String idVnfd) {
-    networkServiceRecordRepository
-        .findFirstById(idNsr)
-        .getVnfr()
-        .remove(vnfrRepository.findOne(idVnfd));
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(idNsr);
+    nsr.setUpdatedAt(format.format(new Date()));
+    nsr.getVnfr().remove(vnfrRepository.findOne(idVnfd));
     vnfrRepository.delete(idVnfd);
   }
 
   @Override
   @Transactional
   public void deleteVNFDependency(String idNsr, String idVnfd) {
-    networkServiceRecordRepository
-        .findFirstById(idNsr)
-        .getVnf_dependency()
-        .remove(vnfRecordDependencyRepository.findFirstById(idVnfd));
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(idNsr);
+    nsr.setUpdatedAt(format.format(new Date()));
+    nsr.getVnf_dependency().remove(vnfRecordDependencyRepository.findFirstById(idVnfd));
     vnfRecordDependencyRepository.delete(idVnfd);
   }
 
@@ -64,8 +70,11 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
   @Transactional
   public VNFRecordDependency addVnfRecordDependency(
       VNFRecordDependency vnfRecordDependencyd, String id) {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(id);
+    nsr.setUpdatedAt(format.format(new Date()));
     vnfRecordDependencyd = vnfRecordDependencyRepository.save(vnfRecordDependencyd);
-    networkServiceRecordRepository.findFirstById(id).getVnf_dependency().add(vnfRecordDependencyd);
+    nsr.getVnf_dependency().add(vnfRecordDependencyd);
     return vnfRecordDependencyd;
   }
 }
