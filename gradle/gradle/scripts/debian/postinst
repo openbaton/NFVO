@@ -174,7 +174,7 @@ configure_for_upgrade () {
     sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
     sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
 
-    # Extract the common properties keys between the old and new properties file
+    # Extract the common properties keys between the old and new properties files
     grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
 
     # Extract the all line from the old property file for each common properties key
