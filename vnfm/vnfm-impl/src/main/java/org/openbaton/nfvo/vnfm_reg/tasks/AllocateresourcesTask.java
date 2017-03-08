@@ -17,13 +17,11 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -69,12 +67,12 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version is = "
             + virtualNetworkFunctionRecord.getHb_version());
-    List<Future<List<String>>> ids = new ArrayList<>();
+
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       VimInstance vimInstance = vims.get(vdu.getId());
       if (vimInstance == null) {
         throw new NullPointerException(
-            "Our algorithms are too complex, even for us, this is what abnormal IQ means :(");
+            "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
       }
       vimInstance = vimRepository.findFirstById(vimInstance.getId());
       log.debug(
@@ -87,13 +85,13 @@ public class AllocateresourcesTask extends AbstractTask {
       for (NFVImage image : vimInstance.getImages()) {
         log.trace("Available image name: " + image.getName());
       }
-      ids.add(
-          resourceManagement.allocate(
-              vdu, virtualNetworkFunctionRecord, vimInstance, userData, keys));
+      for (VNFComponent vnfc : vdu.getVnfc()) {
+        resourceManagement
+            .allocate(vdu, virtualNetworkFunctionRecord, vnfc, vimInstance, userData)
+            .get();
+      }
     }
-    for (Future<List<String>> id : ids) {
-      id.get();
-    }
+
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
 

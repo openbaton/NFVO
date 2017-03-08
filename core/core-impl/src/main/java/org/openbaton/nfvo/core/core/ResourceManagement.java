@@ -147,6 +147,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
                 floatinIps,
                 keys)
             .get();
+
     virtualDeploymentUnit.getVnfc_instance().add(added);
     if (!floatinIps.isEmpty() && added.getFloatingIps().isEmpty())
       log.warn("NFVO wasn't able to associate FloatingIPs. Is there enough available");
