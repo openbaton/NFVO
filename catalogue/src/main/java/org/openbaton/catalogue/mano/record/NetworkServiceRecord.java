@@ -154,6 +154,16 @@ public class NetworkServiceRecord implements Serializable {
 
   private String createdAt;
 
+  public String getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(String updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  private String updatedAt;
+
   public Set<String> getKeyNames() {
     return keyNames;
   }
