@@ -169,7 +169,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       List<String> performanceMetricGroup,
       Integer collectionPeriod,
       Integer reportingPeriod)
-      throws MonitoringException, TimeoutException {
+      throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add(resourceSelector);
     params.add((Serializable) performanceMetric);
@@ -189,8 +189,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public List<String> deletePMJob(List<String> itemIdsToDelete)
-      throws MonitoringException, TimeoutException {
+  public List<String> deletePMJob(List<String> itemIdsToDelete) throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) itemIdsToDelete);
 
@@ -208,7 +207,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public List<Item> queryPMJob(List<String> hostnames, List<String> metrics, String period)
-      throws MonitoringException, TimeoutException {
+      throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) hostnames);
     params.add((Serializable) metrics);
@@ -242,7 +241,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       String performanceMetric,
       ThresholdType thresholdType,
       ThresholdDetails thresholdDetails)
-      throws MonitoringException, TimeoutException {
+      throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add(objectSelector);
     params.add(performanceMetric);
@@ -261,8 +260,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public List<String> deleteThreshold(List<String> thresholdIds)
-      throws MonitoringException, TimeoutException {
+  public List<String> deleteThreshold(List<String> thresholdIds) throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add((Serializable) thresholdIds);
 

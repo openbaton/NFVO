@@ -130,9 +130,13 @@ public class PluginCaller {
   }
 
   public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType)
-      throws IOException, InterruptedException, PluginException, TimeoutException {
+      throws IOException, InterruptedException, PluginException {
 
-    connection = factory.newConnection();
+    try {
+      connection = factory.newConnection();
+    } catch (TimeoutException e) {
+      throw new PluginException("Could not open a connection after timeout.");
+    }
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
     String exchange = "plugin-exchange";

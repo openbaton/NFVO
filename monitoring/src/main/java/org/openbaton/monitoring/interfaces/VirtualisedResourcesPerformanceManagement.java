@@ -18,7 +18,6 @@
 package org.openbaton.monitoring.interfaces;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.monitoring.ObjectSelection;
 import org.openbaton.catalogue.mano.common.monitoring.ThresholdDetails;
 import org.openbaton.catalogue.mano.common.monitoring.ThresholdType;
@@ -42,20 +41,19 @@ public interface VirtualisedResourcesPerformanceManagement {
       List<String> performanceMetricGroup,
       Integer collectionPeriod,
       Integer reportingPeriod)
-      throws MonitoringException, TimeoutException;
+      throws MonitoringException;
 
   /*
    * This operation will delete one or more PM job(s).
    */
-  List<String> deletePMJob(List<String> itemIdsToDelete)
-      throws MonitoringException, TimeoutException;
+  List<String> deletePMJob(List<String> itemIdsToDelete) throws MonitoringException;
 
   /*
    * This operation will enable the NFVO to solicit from the VIM the details of one or more PM job(s).
    * This operation is not returning performance reports.
    */
   List<Item> queryPMJob(List<String> hostnames, List<String> metrics, String period)
-      throws MonitoringException, TimeoutException;
+      throws MonitoringException;
 
   /*
    * This operation enables the NFVOs to subscribe for the notifications related
@@ -86,12 +84,11 @@ public interface VirtualisedResourcesPerformanceManagement {
       String performanceMetric,
       ThresholdType thresholdType,
       ThresholdDetails thresholdDetails)
-      throws MonitoringException, TimeoutException;
+      throws MonitoringException;
   /*
    * This operation will allow the NFVO to delete one or more existing threshold(s).
    */
-  List<String> deleteThreshold(List<String> thresholdIds)
-      throws MonitoringException, TimeoutException;
+  List<String> deleteThreshold(List<String> thresholdIds) throws MonitoringException;
   /*
    * This operation will allow the NFVO to query the details of an existing threshold.
    */
