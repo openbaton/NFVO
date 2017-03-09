@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -46,7 +45,7 @@ public interface ResourceManagement {
       String userdata,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimException, TimeoutException;
+      throws VimException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an

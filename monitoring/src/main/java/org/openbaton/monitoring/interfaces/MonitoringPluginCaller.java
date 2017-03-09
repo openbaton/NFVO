@@ -105,8 +105,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public String subscribeForFault(AlarmEndpoint filter)
-      throws MonitoringException, TimeoutException {
+  public String subscribeForFault(AlarmEndpoint filter) throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add(filter);
 
@@ -122,8 +121,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
   }
 
   @Override
-  public String unsubscribeForFault(String alarmEndpointId)
-      throws MonitoringException, TimeoutException {
+  public String unsubscribeForFault(String alarmEndpointId) throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add(alarmEndpointId);
 
@@ -145,7 +143,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public List<Alarm> getAlarmList(String vnfId, PerceivedSeverity perceivedSeverity)
-      throws MonitoringException, TimeoutException {
+      throws MonitoringException {
     List<Serializable> params = new ArrayList<>();
     params.add(vnfId);
     params.add(perceivedSeverity);

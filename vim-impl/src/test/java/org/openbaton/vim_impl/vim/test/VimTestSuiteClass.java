@@ -24,7 +24,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -135,8 +134,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimOpenstack()
-      throws VimDriverException, VimException, RemoteException, TimeoutException {
+  public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
     ArrayList<String> networks = new ArrayList<>();

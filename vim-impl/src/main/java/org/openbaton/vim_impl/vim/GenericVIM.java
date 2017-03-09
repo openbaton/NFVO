@@ -20,7 +20,6 @@ package org.openbaton.vim_impl.vim;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -1280,7 +1279,7 @@ public class GenericVIM extends Vim {
       String userdata,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimException, TimeoutException {
+      throws VimException {
     log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
     log.debug("VDU is : " + vdu.toString());
     log.debug("VNFR is : " + vnfr.toString());
@@ -1457,7 +1456,7 @@ public class GenericVIM extends Vim {
       VirtualDeploymentUnit vdu,
       Map<String, String> floatingIps,
       VirtualNetworkFunctionRecord vnfr)
-      throws VimDriverException, VimException, TimeoutException {
+      throws VimDriverException, VimException {
     VNFCInstance vnfcInstance = new VNFCInstance();
     if (server == null) {
       log.trace("Listing potential VMs to recover...");
