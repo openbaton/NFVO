@@ -24,7 +24,7 @@ public class CPProperties {
 
   private String type = null;
   private String floatingIP = null;
-  private int interfaceId;
+  private int interfaceId = 0;
 
   public CPProperties(Object properties) {
     Map<String, Object> propertiesMap = (Map<String, Object>) properties;
