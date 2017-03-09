@@ -34,3 +34,12 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.10.19")
     testCompile("junit:junit:4.12")
 }
+
+
+sourceSets {
+    main {
+        java {
+            exclude '**/swagger/**'
+        }
+    }
+}
