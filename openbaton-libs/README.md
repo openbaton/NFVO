@@ -4,6 +4,7 @@
   Licensed under [Apache v2 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 [![Build Status](https://travis-ci.org/openbaton/openbaton-libs.svg?branch=master)](https://travis-ci.org/openbaton/openbaton-libs)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.openbaton/catalogue/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/org.openbaton/catalogue)
 
 # Open Baton Libs
 This project **openbaton-libs** contains modules that are shared among different projects inside the **Open Baton** framework.

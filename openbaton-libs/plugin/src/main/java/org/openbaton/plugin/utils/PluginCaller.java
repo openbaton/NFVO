@@ -17,16 +17,7 @@
 
 package org.openbaton.plugin.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import com.rabbitmq.client.Channel;
@@ -58,6 +49,7 @@ public class PluginCaller {
   private final String username;
   private final String password;
   private final long timeout;
+  private ConnectionFactory factory;
   private Connection connection;
   private Gson gson =
       new GsonBuilder()
@@ -106,7 +98,7 @@ public class PluginCaller {
     this.username = username;
     this.password = password;
     this.timeout = timeout;
-    ConnectionFactory factory = new ConnectionFactory();
+    factory = new ConnectionFactory();
     factory.setHost(brokerIp);
     if (username != null) factory.setUsername(username);
     else factory.setUsername("admin");
@@ -114,7 +106,7 @@ public class PluginCaller {
     else factory.setPassword("openbaton");
     if (port > 1024) factory.setPort(port);
     else factory.setPort(5672);
-    connection = factory.newConnection();
+    //connection = factory.newConnection();
 
     //        replyQueueName = channel.queueDeclare().getQueue();
     //        channel.queueBind(replyQueueName,exchange,replyQueueName);
@@ -140,6 +132,11 @@ public class PluginCaller {
   public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType)
       throws IOException, InterruptedException, PluginException {
 
+    try {
+      connection = factory.newConnection();
+    } catch (TimeoutException e) {
+      throw new PluginException("Could not open a connection after timeout.");
+    }
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
     String exchange = "plugin-exchange";
@@ -148,8 +145,10 @@ public class PluginCaller {
     String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
 
     //Check if plugin is still up
-    if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains(pluginId))
+    if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains(pluginId)) {
+      connection.close();
       throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
+    }
 
     String response;
     String corrId = UUID.randomUUID().toString();
@@ -174,6 +173,7 @@ public class PluginCaller {
           } else {
             log.error("Received Message with wrong correlation id");
             channel.queueDelete(replyQueueName);
+            connection.close();
             throw new PluginException(
                 "Received Message with wrong correlation id. This should not happen, if it does please call us.");
           }
@@ -183,6 +183,7 @@ public class PluginCaller {
                   + timeout / 1000
                   + " second is reached and no answer was received, supposing that the plugin crashed");
           channel.queueDelete(replyQueueName);
+          connection.close();
           throw new PluginException(
               "Timeout of "
                   + timeout / 1000
@@ -211,6 +212,7 @@ public class PluginCaller {
         } else ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
 
         log.trace("answer is: " + ret);
+        connection.close();
         return ret;
       } else {
         PluginException pluginException;
@@ -226,6 +228,7 @@ public class PluginCaller {
           pluginException =
               new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
         }
+        connection.close();
         throw pluginException;
       }
     } else {
@@ -233,6 +236,7 @@ public class PluginCaller {
         channel.queueDelete(replyQueueName);
       } catch (Exception ignored) {
       }
+      connection.close();
       return null;
     }
   }
