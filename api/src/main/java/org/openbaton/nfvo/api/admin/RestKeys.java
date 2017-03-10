@@ -18,13 +18,6 @@ package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.List;
-import javax.validation.Valid;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.KeyManagement;
@@ -40,6 +33,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/keys")
@@ -133,7 +134,7 @@ public class RestKeys {
    *
    * @return List<User>: The list of Users available
    */
-  @ApiOperation(value = "Retrieve all Keys", notes = "")
+  @ApiOperation(value = "Retrieve all Keys", notes = "Returns all the keys created for the project with id specified in the header")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<Key> findAll(@RequestHeader(value = "project-id") String projectId) {
     return keyManagement.query(projectId);

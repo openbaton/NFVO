@@ -33,7 +33,7 @@ public class RestVNFManager {
 
   @Autowired private VNFManagerManagement vnfManagerManagement;
 
-  @ApiOperation(value = "Retrieve all registered VNFM endpoints", notes = "")
+  @ApiOperation(value = "Retrieve all registered VNFM endpoints", notes = "Returns all Virtual Network Function Managers running and attached to the NFVO")
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public Iterable<VnfmManagerEndpoint> findAll() {

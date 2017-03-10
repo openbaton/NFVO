@@ -17,8 +17,6 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.core.interfaces.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.Set;
 
 /** Created by rvl on 19.10.16. */
 @RestController
@@ -50,7 +51,7 @@ public class RestPlugin {
     pluginManager.downloadPlugin(type, name, version);
   }
 
-  @ApiOperation(value = "Retrieve all installed Vim Drivers", notes = "")
+  @ApiOperation(value = "Retrieve all installed Vim Drivers", notes = "Returns the names of all the Vim Drivers currently installed")
   @RequestMapping(method = RequestMethod.GET)
   public @ResponseBody Set<String> getListVimDrivers() throws IOException {
     return pluginManager.listInstalledVimDrivers();

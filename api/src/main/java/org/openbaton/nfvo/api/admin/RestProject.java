@@ -17,10 +17,6 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.Valid;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -44,6 +40,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /** Created by lto on 25/05/16. */
 @RestController
@@ -125,7 +126,7 @@ public class RestProject {
    *
    * @return List<Project>: The list of Projects available
    */
-  @ApiOperation(value = "Retrieve all Projects", notes = "")
+  @ApiOperation(value = "Retrieve all Projects", notes = "Returns all the created projects")
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public @ResponseBody Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
     log.trace("Finding all Projects");

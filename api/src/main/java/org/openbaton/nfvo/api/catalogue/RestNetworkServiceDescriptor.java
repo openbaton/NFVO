@@ -18,11 +18,6 @@ package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.validation.Valid;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -53,6 +48,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/ns-descriptors")
@@ -322,7 +323,7 @@ public class RestNetworkServiceDescriptor {
    * @param id : The id of NSD
    * @return List<VNFDependency>: The List of VNFDependency into NSD @
    */
-  @ApiOperation(value = "Returns the list of VNFDependency from NSD", notes = "")
+  @ApiOperation(value = "Returns the list of VNFDependency from NSD", notes = "Returns all the VNF Dependencies specified in the NSD")
   @RequestMapping(
     value = "{id}/vnfdependencies",
     method = RequestMethod.GET,
@@ -335,7 +336,7 @@ public class RestNetworkServiceDescriptor {
     return nsd.getVnf_dependency();
   }
 
-  @ApiOperation(value = "Returns the list of VNF Dependency for a VNF from the NSD", notes = "")
+  @ApiOperation(value = "Returns the list of VNF Dependency for a VNF from the NSD", notes = "Returns all the VNF Dependencies only for a specific VNF specified in the NSD")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/{idVnfd}",
     method = RequestMethod.GET,
@@ -350,7 +351,7 @@ public class RestNetworkServiceDescriptor {
     return networkServiceDescriptorManagement.getVnfDependency(idNsd, idVnfd, projectId);
   }
 
-  @ApiOperation(value = "Delete VNF Dependency from a VNF part of the NSD", notes = "")
+  @ApiOperation(value = "Delete VNF Dependency from a VNF part of the NSD", notes = "Delete the VNF Dependency only for a specific VNF specified in the NSD")
   @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVNFDependency(
@@ -361,7 +362,7 @@ public class RestNetworkServiceDescriptor {
     networkServiceDescriptorManagement.deleteVNFDependency(idNsd, idVnfd, projectId);
   }
 
-  @ApiOperation(value = "Add a VNF Dependency", notes = "")
+  @ApiOperation(value = "Add a VNF Dependency", notes = "Adds a new VNF dependency to the Network Service Descriptor")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/",
     method = RequestMethod.POST,
@@ -377,7 +378,7 @@ public class RestNetworkServiceDescriptor {
     return vnfDependency;
   }
 
-  @ApiOperation(value = "Update a VNF Dependency", notes = "")
+  @ApiOperation(value = "Update a VNF Dependency", notes = "Updates a VNF dependency to the Network Service Descriptor")
   @RequestMapping(
     value = "{idNsd}/vnfdependencies/{idVnf}",
     method = RequestMethod.PUT,
