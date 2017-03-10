@@ -26,7 +26,7 @@ public class VNFProperties {
 
   private String vendor = null;
   private String ID = null;
-  private double version = 0.0;
+  private String version = "";
   private String vnfPackageLocation;
   private ArrayList<HashMap<String, String>> deploymentFlavour;
   private VNFConfigurations configurations = null;
@@ -45,7 +45,7 @@ public class VNFProperties {
       vendor = (String) propertiesMap.get("vendor");
     }
     if (propertiesMap.containsKey("version")) {
-      version = (double) propertiesMap.get("version");
+      version = String.valueOf(propertiesMap.get("version"));
     }
     if (propertiesMap.containsKey("vnfPackageLocation")) {
       vnfPackageLocation = (String) propertiesMap.get("vnfPackageLocation");
@@ -87,11 +87,11 @@ public class VNFProperties {
     this.ID = ID;
   }
 
-  public double getVersion() {
+  public String getVersion() {
     return version;
   }
 
-  public void setVersion(double version) {
+  public void setVersion(String version) {
     this.version = version;
   }
 

@@ -17,8 +17,14 @@
 
 package org.openbaton.tosca.parser;
 
-import java.util.*;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.tosca.exceptions.NotFoundException;
@@ -32,6 +38,8 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF.VNFNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 /** Created by rvl on 17.08.16. */
 @Service
@@ -68,6 +76,7 @@ public class TOSCAParser {
       if (cpTemplate.getProperties().getFloatingIP() != null) {
         cp.setFloatingIp(cpTemplate.getProperties().getFloatingIP());
       }
+      cp.setInterfaceId(cpTemplate.getProperties().getInterfaceId());
     }
 
     return cp;
@@ -155,7 +164,7 @@ public class TOSCAParser {
 
     vnfd.setName(vnf.getName());
     vnfd.setVendor(vnf.getProperties().getVendor());
-    vnfd.setVersion((Double.toString(vnf.getProperties().getVersion())));
+    vnfd.setVersion(vnf.getProperties().getVersion());
 
     vnfd.setDeployment_flavour(vnf.getProperties().getDeploymentFlavourConverted());
     vnfd.setVnfPackageLocation(vnf.getProperties().getVnfPackageLocation());

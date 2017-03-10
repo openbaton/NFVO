@@ -27,7 +27,6 @@ public class VDUNodeTemplate {
   private String type;
   private String name;
   private HashSet<String> artifacts = new HashSet<>();
-  private Object interfaces;
   private VDUProperties properties;
 
   public VDUNodeTemplate(NodeTemplate nodeTemplate, String name) {
@@ -86,14 +85,6 @@ public class VDUNodeTemplate {
     this.properties = properties;
   }
 
-  public Object getInterfaces() {
-    return interfaces;
-  }
-
-  public void setInterfaces(Object interfaces) {
-    this.interfaces = interfaces;
-  }
-
   @Override
   public String toString() {
     return "Node: \n"
@@ -102,9 +93,6 @@ public class VDUNodeTemplate {
         + "\n"
         + "name: "
         + name
-        + "\n"
-        + "Interfaces: "
-        + interfaces
         + "\n"
         + "Artifacts: "
         + artifacts

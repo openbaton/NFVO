@@ -1,12 +1,3 @@
-substitution_mappings:
-  node_type: vRouterVNF
-  requirements:
-    virtualLink: [CP12, virtualLink]
-    virtualLink: [CP13, virtualLink]
-  capabilities:
-    forwarder_ingres: [CP12, forwarder]
-    forwarder_egres: [CP13, forwarder]
-
 node_templates:
   CP12:
     type: tosca.nodes.nfv.CP

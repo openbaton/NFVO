@@ -17,6 +17,30 @@
 
 package org.openbaton.tosca.parser;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.tosca.templates.NSDTemplate;
+import org.openbaton.tosca.templates.VNFDTemplate;
+import org.openbaton.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.YamlJsonParser;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,32 +56,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Script;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
-import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
-import org.openbaton.tosca.templates.NSDTemplate;
-import org.openbaton.tosca.templates.VNFDTemplate;
-import org.openbaton.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.YamlJsonParser;
-import org.springframework.stereotype.Service;
 
 /** Created by rvl on 12.09.16. */
 @Service
@@ -66,9 +64,6 @@ public class CSARParser {
   @Autowired private VNFDRepository vnfdRepository;
   @Autowired private VNFPackageManagement vnfPackageManagement;
   @Autowired private VnfPackageRepository vnfPackageRepository;
-  @Autowired private VimRepository vimInstanceRepository;
-  @Autowired private VimBroker vimBroker;
-  @Autowired private NSDUtils nsdUtils;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -77,7 +72,6 @@ public class CSARParser {
   private Set<Script> scripts = new HashSet<>();
   private ByteArrayOutputStream metadata;
   private ByteArrayOutputStream template;
-  private ArrayList<String> imageNames = new ArrayList<>();
   private ByteArrayOutputStream vnfMetadata;
   private ArrayList<String> folderNames = new ArrayList<>();
 
@@ -132,13 +126,13 @@ public class CSARParser {
       }
     }
     if (this.metadata == null) {
-      throw new NotFoundException("CSARParser: Not found TOSCA.meta");
+      throw new NotFoundException("CSARParser: You have to include the TOSCA.meta");
     }
     if (this.vnfMetadata == null) {
-      throw new NotFoundException("CSARParser: Not found Metadata.yaml");
+      throw new NotFoundException("CSARParser: You have to include the Metadata.yaml");
     }
     if (this.template == null) {
-      throw new NotFoundException("CSARParser: Not found VNFD / NSD Template");
+      throw new NotFoundException("CSARParser: No NSD or VNFD Template found");
     }
 
     //zipStream.close();
@@ -152,17 +146,11 @@ public class CSARParser {
     String strLine;
 
     String entryDefinition = "Entry-Definitions:";
-    String image = "image:";
-
-    imageNames.clear();
 
     while ((strLine = br.readLine()) != null) {
 
       if (strLine.contains(entryDefinition)) {
         strLine.substring(entryDefinition.length(), strLine.length());
-      }
-      if (strLine.contains(image)) {
-        this.imageNames.add(strLine.substring(image.length(), strLine.length()));
       }
     }
 
@@ -290,7 +278,7 @@ public class CSARParser {
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
       if (!folderNames.contains(vnfd.getType())) {
-        throw new NotFoundException("No Scripts specified for the VNFD of type: " + vnfd.getType());
+        log.warn("No Scripts specified for the VNFD of type: " + vnfd.getType());
       }
       Set<Script> vnfScripts = new HashSet<>();
       for (Script script : scripts) {

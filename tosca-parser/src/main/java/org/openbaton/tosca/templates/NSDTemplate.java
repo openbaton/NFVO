@@ -27,7 +27,6 @@ public class NSDTemplate {
   private String tosca_default_namespace;
   private String description = "";
   private TOSCAMetadata metadata;
-  private Object node_types = null;
   private TopologyTemplate topology_template;
   private Map<String, RelationshipsTemplate> relationships_template;
 
@@ -61,14 +60,6 @@ public class NSDTemplate {
 
   public void setMetadata(TOSCAMetadata metadata) {
     this.metadata = metadata;
-  }
-
-  public Object getNode_types() {
-    return node_types;
-  }
-
-  public void setNode_types(Object node_types) {
-    this.node_types = node_types;
   }
 
   public TopologyTemplate getTopology_template() {
