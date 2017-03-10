@@ -640,7 +640,7 @@ public class RestNetworkServiceRecord {
     return null;
   }
 
-  @ApiOperation(value = "Retrieve VNF Dependencies from VNFR", notes = "")
+  @ApiOperation(value = "Retrieve VNF Dependencies from VNFR", notes = "Returns all VNF Dependencies that reference the specified VNFR")
   @RequestMapping(
     value = "{id}/vnfdependencies/{id_vnfr}",
     method = RequestMethod.GET,
@@ -656,7 +656,7 @@ public class RestNetworkServiceRecord {
     return findVNFD(nsr.getVnf_dependency(), id_vnfr);
   }
 
-  @ApiOperation(value = "Remove a VNF Dependency from a NSR", notes = "")
+  @ApiOperation(value = "Remove a VNF Dependency from a NSR", notes = "Removes a VNF Dependency based on a VNFR it concerns")
   @RequestMapping(value = "{idNsr}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVNFDependency(
@@ -667,7 +667,7 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFDependency(idNsr, idVnfd, projectId);
   }
 
-  @ApiOperation(value = "Add a VNF Dependency to a NSR", notes = "")
+  @ApiOperation(value = "Add a VNF Dependency to a NSR", notes = "Adds a new VNF Dependency to the specified NSR")
   @RequestMapping(
     value = "{id}/vnfdependencies/",
     method = RequestMethod.POST,
@@ -686,7 +686,7 @@ public class RestNetworkServiceRecord {
     return vnfDependency;
   }
 
-  @ApiOperation(value = "Update a VNF Dependency in a NSR", notes = "")
+  @ApiOperation(value = "Update a VNF Dependency in a NSR", notes = "Updates a VNF Dependency based on the if of the VNF it concerns")
   @RequestMapping(
     value = "{id}/vnfdependencies/{id_vnfd}",
     method = RequestMethod.PUT,
@@ -820,7 +820,7 @@ public class RestNetworkServiceRecord {
     return pRecord;
   }
 
-  @ApiOperation(value = "Returns the history of the VNFRs of a NSR", notes = "")
+  @ApiOperation(value = "Returns the history of the VNFRs of a NSR", notes = "Returns the history of the specified VNFR")
   @RequestMapping(
     value = "{id}/vnfrecords/{id_vnf}/history",
     method = RequestMethod.GET,
